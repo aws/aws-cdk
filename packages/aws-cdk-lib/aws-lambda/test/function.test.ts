@@ -3077,6 +3077,49 @@ describe('function', () => {
     });
   });
 
+  test('adds ADOT instrumentation to a ZIP Lambda function for instrumentation', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Base', {
+      env: { account: '111111111111', region: 'us-west-2' },
+    });
+
+    // WHEN
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      adotInstrumentation: {
+        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_13_0),
+        execWrapper: lambda.AdotLambdaExecWrapper.INSTRUMENT_HANDLER,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-python-amd64-ver-1-13-0:1'],
+      Environment: {
+        Variables: {
+          AWS_LAMBDA_EXEC_WRAPPER: '/opt/otel-instrument',
+        },
+      },
+    });
+  });
+
+  test('Adot Instrumentation errors out when not using INSTRUMENT_HANDLER', () => {
+    const stack = new cdk.Stack();
+
+    expect(() => new lambda.Function(stack, 'Fn1', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_10,
+      adotInstrumentation: {
+        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_13_0),
+        execWrapper: lambda.AdotLambdaExecWrapper.REGULAR_HANDLER,
+      },
+    })).toThrow(/Python Adot Lambda layer requires AdotLambdaExecWrapper.INSTRUMENT_HANDLER/);
+  });
+
   test('adds ADOT instrumentation to a container image Lambda function', () => {
     // GIVEN
     const app = new cdk.App();
