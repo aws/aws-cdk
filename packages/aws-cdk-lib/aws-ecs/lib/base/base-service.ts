@@ -1367,7 +1367,7 @@ export abstract class BaseService extends Resource
   }
 
   private deploymentAlarmsAvailableInRegion(): boolean {
-    const unsupportedPartitions = ['aws-cn', 'aws-us-gov', 'aws-us-iso', 'aws-us-iso-b'];
+    const unsupportedPartitions = ['aws-cn', 'aws-us-gov', 'aws-iso', 'aws-iso-b'];
     const currentRegion = RegionInfo.get(this.stack.resolve(this.stack.region));
     if (currentRegion.partition) {
       return !unsupportedPartitions.includes(currentRegion.partition);
