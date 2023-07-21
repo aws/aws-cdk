@@ -50,10 +50,10 @@ describe('DeployAssert', () => {
         service: 'Lambda',
         api: 'invoke',
         parameters: {
-          FunctionName: 'my-func',
-          InvocationType: 'Event',
-          LogType: 'Tail',
-          Payload: '{"key":"val"}',
+          FunctionName: '"my-func"',
+          InvocationType: '"Event"',
+          LogType: '"Tail"',
+          Payload: '"{\\"key\\":\\"val\\"}"',
         },
       });
     });
