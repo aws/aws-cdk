@@ -143,6 +143,8 @@ export class CdkToolkit {
       }
     }
 
+    stream.write(format('\n✨  Number of stacks with differences: %s\n', diffs));
+
     return diffs && options.fail ? 1 : 0;
   }
 
