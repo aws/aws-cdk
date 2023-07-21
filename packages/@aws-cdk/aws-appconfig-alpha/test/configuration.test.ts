@@ -366,7 +366,6 @@ describe('configuration', () => {
     Template.fromStack(stack).resourceCountIs('AWS::AppConfig::Deployment', 1);
   });
 
-  // TODO: figure out path when running in github
   // test('default configuration from asset', () => {
   //   const stack = new cdk.Stack();
   //   const app = new AppConfig(stack, 'MyAppConfig', {
