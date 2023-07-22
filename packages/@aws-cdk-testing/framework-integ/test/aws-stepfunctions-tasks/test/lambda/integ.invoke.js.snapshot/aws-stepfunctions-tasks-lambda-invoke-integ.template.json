@@ -192,7 +192,7 @@
      "Fn::Join": [
       "",
       [
-       "{\"StartAt\":\"Invoke Handler\",\"States\":{\"Invoke Handler\":{\"Next\":\"Check the job state\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"OutputPath\":\"$.Payload\",\"Resource\":\"arn:",
+       "{\"StartAt\":\"Invoke Handler\",\"States\":{\"Invoke Handler\":{\"Next\":\"Check the job state\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ClientExecutionTimeoutException\",\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"OutputPath\":\"$.Payload\",\"Resource\":\"arn:",
        {
         "Ref": "AWS::Partition"
        },
@@ -203,7 +203,7 @@
          "Arn"
         ]
        },
-       "\",\"Payload\":{\"execId.$\":\"$$.Execution.Id\",\"execInput.$\":\"$$.Execution.Input\",\"execName.$\":\"$$.Execution.Name\",\"execRoleArn.$\":\"$$.Execution.RoleArn\",\"execStartTime.$\":\"$$.Execution.StartTime\",\"stateEnteredTime.$\":\"$$.State.EnteredTime\",\"stateName.$\":\"$$.State.Name\",\"stateRetryCount.$\":\"$$.State.RetryCount\",\"stateMachineId.$\":\"$$.StateMachine.Id\",\"stateMachineName.$\":\"$$.StateMachine.Name\"}}},\"Check the job state\":{\"Next\":\"Job Complete?\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"ResultSelector\":{\"status.$\":\"$.Payload.status\"},\"Resource\":\"arn:",
+       "\",\"Payload\":{\"execId.$\":\"$$.Execution.Id\",\"execInput.$\":\"$$.Execution.Input\",\"execName.$\":\"$$.Execution.Name\",\"execRoleArn.$\":\"$$.Execution.RoleArn\",\"execStartTime.$\":\"$$.Execution.StartTime\",\"stateEnteredTime.$\":\"$$.State.EnteredTime\",\"stateName.$\":\"$$.State.Name\",\"stateRetryCount.$\":\"$$.State.RetryCount\",\"stateMachineId.$\":\"$$.StateMachine.Id\",\"stateMachineName.$\":\"$$.StateMachine.Name\"}}},\"Check the job state\":{\"Next\":\"Job Complete?\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ClientExecutionTimeoutException\",\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"ResultSelector\":{\"status.$\":\"$.Payload.status\"},\"Resource\":\"arn:",
        {
         "Ref": "AWS::Partition"
        },

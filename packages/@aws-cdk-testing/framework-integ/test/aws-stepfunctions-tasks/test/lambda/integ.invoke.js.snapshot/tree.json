@@ -373,7 +373,7 @@
                       "Fn::Join": [
                         "",
                         [
-                          "{\"StartAt\":\"Invoke Handler\",\"States\":{\"Invoke Handler\":{\"Next\":\"Check the job state\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"OutputPath\":\"$.Payload\",\"Resource\":\"arn:",
+                          "{\"StartAt\":\"Invoke Handler\",\"States\":{\"Invoke Handler\":{\"Next\":\"Check the job state\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ClientExecutionTimeoutException\",\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"OutputPath\":\"$.Payload\",\"Resource\":\"arn:",
                           {
                             "Ref": "AWS::Partition"
                           },
@@ -384,7 +384,7 @@
                               "Arn"
                             ]
                           },
-                          "\",\"Payload\":{\"execId.$\":\"$$.Execution.Id\",\"execInput.$\":\"$$.Execution.Input\",\"execName.$\":\"$$.Execution.Name\",\"execRoleArn.$\":\"$$.Execution.RoleArn\",\"execStartTime.$\":\"$$.Execution.StartTime\",\"stateEnteredTime.$\":\"$$.State.EnteredTime\",\"stateName.$\":\"$$.State.Name\",\"stateRetryCount.$\":\"$$.State.RetryCount\",\"stateMachineId.$\":\"$$.StateMachine.Id\",\"stateMachineName.$\":\"$$.StateMachine.Name\"}}},\"Check the job state\":{\"Next\":\"Job Complete?\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"ResultSelector\":{\"status.$\":\"$.Payload.status\"},\"Resource\":\"arn:",
+                          "\",\"Payload\":{\"execId.$\":\"$$.Execution.Id\",\"execInput.$\":\"$$.Execution.Input\",\"execName.$\":\"$$.Execution.Name\",\"execRoleArn.$\":\"$$.Execution.RoleArn\",\"execStartTime.$\":\"$$.Execution.StartTime\",\"stateEnteredTime.$\":\"$$.State.EnteredTime\",\"stateName.$\":\"$$.State.Name\",\"stateRetryCount.$\":\"$$.State.RetryCount\",\"stateMachineId.$\":\"$$.StateMachine.Id\",\"stateMachineName.$\":\"$$.StateMachine.Name\"}}},\"Check the job state\":{\"Next\":\"Job Complete?\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ClientExecutionTimeoutException\",\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"ResultSelector\":{\"status.$\":\"$.Payload.status\"},\"Resource\":\"arn:",
                           {
                             "Ref": "AWS::Partition"
                           },
@@ -435,7 +435,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.26"
+              "version": "10.2.52"
             }
           },
           "BootstrapVersion": {
@@ -473,7 +473,7 @@
                 "path": "IntegTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.26"
+                  "version": "10.2.52"
                 }
               },
               "DeployAssert": {
@@ -493,7 +493,7 @@
                             "path": "IntegTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.26"
+                              "version": "10.2.52"
                             }
                           }
                         },
@@ -557,7 +557,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.26"
+                      "version": "10.2.52"
                     }
                   },
                   "AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868": {
@@ -573,7 +573,7 @@
                             "path": "IntegTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.26"
+                              "version": "10.2.52"
                             }
                           }
                         },
@@ -613,7 +613,7 @@
                                 "path": "IntegTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868/WaitFor/IsCompleteProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.2.26"
+                                  "version": "10.2.52"
                                 }
                               },
                               "Invoke": {
@@ -639,7 +639,7 @@
                                 "path": "IntegTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868/WaitFor/TimeoutProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.2.26"
+                                  "version": "10.2.52"
                                 }
                               },
                               "Invoke": {
@@ -723,7 +723,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.26"
+                      "version": "10.2.52"
                     }
                   },
                   "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a": {
@@ -757,7 +757,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.26"
+                      "version": "10.2.52"
                     }
                   },
                   "BootstrapVersion": {
@@ -799,7 +799,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.26"
+          "version": "10.2.52"
         }
       }
     },
