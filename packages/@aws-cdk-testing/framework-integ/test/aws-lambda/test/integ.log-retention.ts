@@ -2,7 +2,7 @@ import * as logs from 'aws-cdk-lib/aws-logs';
 import { Construct } from 'constructs';
 import * as cdk from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 
@@ -39,9 +39,20 @@ class TestStack extends cdk.Stack {
       propagateTagsToLogGroup: true,
     });
     cdk.Tags.of(oneYearFunction).add('dept', 'eng');
+    cdk.Tags.of(oneYearFunction).add('env', 'gamma', { excludeResourceTypes: ['AWS::Logs::LogGroup'] });
   }
 }
 
-new IntegTest(app, 'aws-cdk-integ-lambda-log-retention', {
+const integTest = new IntegTest(app, 'aws-cdk-integ-lambda-log-retention', {
   testCases: [new TestStack(app, 'aws-cdk-lambda-log-retention')],
 });
+
+const oneMonthTags = integTest.assertions.awsApiCall('CloudWatchLogs', 'listTagsLogGroup', {
+  logGroupName: '/aws/lambda/OneMonthFunction',
+});
+oneMonthTags.expect(ExpectedResult.objectLike({ tags: { env: 'prod', dept: 'sales' } }));
+
+const oneYearTags = integTest.assertions.awsApiCall('CloudWatchLogs', 'listTagsLogGroup', {
+  logGroupName: '/aws/lambda/OneYearFunction',
+});
+oneYearTags.expect(ExpectedResult.objectLike({ tags: { dept: 'eng' } }));
