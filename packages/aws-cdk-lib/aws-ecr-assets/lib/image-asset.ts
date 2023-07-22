@@ -238,12 +238,6 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
    * @see https://docs.docker.com/build/buildkit/
    *
    * @default - no --ssh flag
-   *
-   * @example
-   * import { DockerBuildSsh } from 'aws-cdk-lib';
-   *
-   * const sshFlag = 'default';
-   *
    */
   readonly buildSsh?: string;
 
