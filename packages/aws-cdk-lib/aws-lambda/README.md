@@ -1134,3 +1134,32 @@ new lambda.Function(this, 'Lambda', {
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
 });
 ```
+
+## Exclude Patterns for Assets
+
+When using `lambda.Code.fromAsset(path)` an `exclude` property allows you to ignore particular files for assets based on simple glob patterns.
+
+An `ignoreMode` property can be used to write based on the [.gitignore specification](https://git-scm.com/docs/gitignore) and the [.dockerignore specification](https://docs.docker.com/engine/reference/builder/#dockerignore-file).
+
+```ts
+new lambda.Function(this, 'Function', {
+  code: lambda.Code.fromAsset(path.join(__dirname, 'my-python-handler'), {
+    exclude: ['*.ignore'],
+    ignoreMode: cdk.IgnoreMode.DOCKER, // Default is IgnoreMode.GLOB
+  }),
+  runtime: lambda.Runtime.PYTHON_3_9,
+  handler: 'index.handler',
+});
+```
+
+You can also write to include only certain files by using a negation.
+
+```ts
+new lambda.Function(this, 'Function', {
+  code: lambda.Code.fromAsset(path.join(__dirname, 'my-python-handler'), {
+    exclude: ['*', '!index.py'],
+  }),
+  runtime: lambda.Runtime.PYTHON_3_9,
+  handler: 'index.handler',
+});
+```
