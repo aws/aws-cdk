@@ -821,7 +821,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       attempt to set user data according to the OS of the machine image if explicit user data is not
       provided.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.88.0' },
     compatibilityWithOldBehaviorMd: `
       If backwards compatibility needs to be maintained due to an existing autoscaling group
       using a launch config, set this flag to false.
@@ -855,7 +855,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       If this is set, an opensearch domain will automatically be created with 
       multi-az with standby enabled.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.88.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Pass `capacity.multiAzWithStandbyEnabled: false` to `Domain` construct to restore the old behavior.',
   },
