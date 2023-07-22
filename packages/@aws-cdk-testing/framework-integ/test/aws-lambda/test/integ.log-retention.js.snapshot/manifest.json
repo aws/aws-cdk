@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9ae8c4b45bebf20d67ad67d5914bc6ad29db158779984055a9c97d316df88513.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/aec79e601835356e7fe0a6346e358aeb3d79fca4c06b2b5d4302490ecbb92172.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -125,6 +125,89 @@
         ]
       },
       "displayName": "aws-cdk-lambda-log-retention"
+    },
+    "awscdkinteglambdalogretentionDefaultTestDeployAssertD83F96C9.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "awscdkinteglambdalogretentionDefaultTestDeployAssertD83F96C9.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "awscdkinteglambdalogretentionDefaultTestDeployAssertD83F96C9": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "awscdkinteglambdalogretentionDefaultTestDeployAssertD83F96C9.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4a02815f85b828552bfbc5840ecdd41f1904422fb75b070611102c6f0fb4e652.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "awscdkinteglambdalogretentionDefaultTestDeployAssertD83F96C9.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "awscdkinteglambdalogretentionDefaultTestDeployAssertD83F96C9.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-integ-lambda-log-retention/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogslistTagsLogGroup8ed0ac90ccd4fa87bd5c62a8329b3725/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCloudWatchLogslistTagsLogGroup8ed0ac90ccd4fa87bd5c62a8329b3725"
+          }
+        ],
+        "/aws-cdk-integ-lambda-log-retention/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogslistTagsLogGroup8ed0ac90ccd4fa87bd5c62a8329b3725/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallCloudWatchLogslistTagsLogGroup8ed0ac90ccd4fa87bd5c62a8329b3725"
+          }
+        ],
+        "/aws-cdk-integ-lambda-log-retention/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/aws-cdk-integ-lambda-log-retention/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/aws-cdk-integ-lambda-log-retention/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogslistTagsLogGroup14d9a178044977ae7c394809f52b8df9/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCloudWatchLogslistTagsLogGroup14d9a178044977ae7c394809f52b8df9"
+          }
+        ],
+        "/aws-cdk-integ-lambda-log-retention/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogslistTagsLogGroup14d9a178044977ae7c394809f52b8df9/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallCloudWatchLogslistTagsLogGroup14d9a178044977ae7c394809f52b8df9"
+          }
+        ],
+        "/aws-cdk-integ-lambda-log-retention/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-integ-lambda-log-retention/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-integ-lambda-log-retention/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
