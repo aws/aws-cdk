@@ -240,7 +240,7 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
    * @default - no --ssh flag
    *
    * @example
-   * import { DockerBuildSSH } from 'aws-cdk-lib';
+   * import { DockerBuildSsh } from 'aws-cdk-lib';
    *
    * const sshFlag = 'default';
    *
@@ -391,7 +391,7 @@ export class DockerImageAsset extends Construct implements IAsset {
   /**
    * SSH agent socket or keys to pass to the `docker build` command.
    */
-  private readonly dockerBuildSSH?: string;
+  private readonly dockerBuildSsh?: string;
   /**
    * Outputs to pass to the `docker build` command.
    */
@@ -506,7 +506,7 @@ export class DockerImageAsset extends Construct implements IAsset {
     this.assetName = props.assetName;
     this.dockerBuildArgs = props.buildArgs;
     this.dockerBuildSecrets = props.buildSecrets;
-    this.dockerBuildSSH = props.buildSsh;
+    this.dockerBuildSsh = props.buildSsh;
     this.dockerBuildTarget = props.target;
     this.dockerOutputs = props.outputs;
     this.dockerCacheFrom = props.cacheFrom;
@@ -517,7 +517,7 @@ export class DockerImageAsset extends Construct implements IAsset {
       assetName: this.assetName,
       dockerBuildArgs: this.dockerBuildArgs,
       dockerBuildSecrets: this.dockerBuildSecrets,
-      dockerBuildSSH: this.dockerBuildSSH,
+      dockerBuildSsh: this.dockerBuildSsh,
       dockerBuildTarget: this.dockerBuildTarget,
       dockerFile: props.file,
       sourceHash: staging.assetHash,
@@ -561,7 +561,7 @@ export class DockerImageAsset extends Construct implements IAsset {
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKERFILE_PATH_KEY] = this.dockerfilePath;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_ARGS_KEY] = this.dockerBuildArgs;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_SECRETS_KEY] = this.dockerBuildSecrets;
-    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_SSH_KEY] = this.dockerBuildSSH;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_SSH_KEY] = this.dockerBuildSsh;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_TARGET_KEY] = this.dockerBuildTarget;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY] = resourceProperty;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_OUTPUTS_KEY] = this.dockerOutputs;

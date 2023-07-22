@@ -208,7 +208,7 @@ export interface DockerImageAssetSource {
    *
    * @default - no ssh arg is passed
    */
-  readonly dockerBuildSSH?: string;
+  readonly dockerBuildSsh?: string;
 
   /**
    * Docker target to build to

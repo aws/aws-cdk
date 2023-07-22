@@ -70,7 +70,7 @@ export interface DockerImageSource {
    *
    * @default - No ssh flag is set
    */
-  readonly dockerBuildSSH?: string;
+  readonly dockerBuildSsh?: string;
 
   /**
    * Additional build secrets
