@@ -464,6 +464,15 @@
        "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
       }
      ]
+    },
+    "OffPeakWindowOptions": {
+      "Enabled": true,
+      "OffPeakWindow": {
+        "WindowStartTime": {
+          "Hours": 0,
+          "Minutes": 0
+        }
+      }
     }
    },
    "DependsOn": [

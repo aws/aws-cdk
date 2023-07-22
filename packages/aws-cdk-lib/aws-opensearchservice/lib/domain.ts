@@ -332,10 +332,14 @@ export interface WindowStartTime {
   /**
    * The start hour of the window in Coordinated Universal Time (UTC), using 24-hour time.
    * For example, 17 refers to 5:00 P.M. UTC.
+   *
+   * @default - 0
    */
   readonly hours: number;
   /**
    * The start minute of the window, in UTC.
+   *
+   * @default - 0
    */
   readonly minutes: number;
 }
@@ -345,21 +349,28 @@ export interface OffPeakWindow {
    * A custom start time for the off-peak window, in Coordinated Universal Time (UTC).
    * The window length will always be 10 hours, so you can't specify an end time.
    * For example, if you specify 11:00 P.M. UTC as a start time, the end time will automatically be set to 9:00 A.M.
+   *
+   * @default - 00:00 UTC
    */
   readonly windowStartTime?: WindowStartTime;
 }
 
 /**
  * Off-peak window settings for the domain.
+ * You can't disable the off-peak window for a domain after it's enabled.
  */
 export interface OffPeakWindowOptions {
   /**
    * Specifies whether off-peak window settings are enabled for the domain.
+   *
+   * @default - true
    */
   readonly enabled?: boolean;
 
   /**
    * Off-peak window settings for the domain.
+   *
+   * @default - default window start time is 00:00 UTC
    */
   readonly offPeakWindow?: OffPeakWindow;
 }
@@ -370,6 +381,8 @@ export interface OffPeakWindowOptions {
 export interface SoftwareUpdateOptions {
   /**
    * Specifies whether automatic service software updates are enabled for the domain.
+   *
+   * @default - automatic software updates are disabled
    */
   readonly autoSoftwareUpdateEnabled?: boolean;
 }
@@ -561,11 +574,15 @@ export interface DomainProps {
   /**
    * Options for a domain's off-peak window, during which OpenSearch Service can perform mandatory
    * configuration changes on the domain.
+   *
+   * @default - off-peak window is enabled by default with 00:00 UTC start time.
    */
   readonly offPeakWindowOptions?: OffPeakWindowOptions;
 
   /**
    * Options for configuring service software updates for a domain.
+   *
+   * @default - no software updates configured for the domain
    */
   readonly softwareUpdateOptions?: SoftwareUpdateOptions;
 }
@@ -1615,7 +1632,22 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       }
     }
 
-    this.validateWindowStartTime(props.offPeakWindowOptions?.offPeakWindow?.windowStartTime);
+    let offPeakWindowOptions: OffPeakWindowOptions = {
+      enabled: props.offPeakWindowOptions?.enabled ?? true,
+    };
+    if (offPeakWindowOptions.enabled) {
+      offPeakWindowOptions = {
+        ...offPeakWindowOptions,
+        offPeakWindow: {
+          windowStartTime: {
+            hours: props.offPeakWindowOptions?.offPeakWindow?.windowStartTime?.hours ?? 0,
+            minutes: props.offPeakWindowOptions?.offPeakWindow?.windowStartTime?.minutes ?? 0,
+          },
+        },
+      };
+    }
+
+    this.validateWindowStartTime(offPeakWindowOptions?.offPeakWindow?.windowStartTime);
 
     // Create the domain
     this.domain = new CfnDomain(this, 'Resource', {
@@ -1691,12 +1723,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         }
         : undefined,
       advancedOptions: props.advancedOptions,
-      offPeakWindowOptions: props.offPeakWindowOptions ? {
-        enabled: props.offPeakWindowOptions.enabled,
-        offPeakWindow: props.offPeakWindowOptions.offPeakWindow && props.offPeakWindowOptions.offPeakWindow.windowStartTime ? {
-          windowStartTime: props.offPeakWindowOptions.offPeakWindow.windowStartTime,
-        } : undefined,
-      } : undefined,
+      offPeakWindowOptions: offPeakWindowOptions,
       softwareUpdateOptions: props.softwareUpdateOptions,
     });
     this.domain.applyRemovalPolicy(props.removalPolicy);
