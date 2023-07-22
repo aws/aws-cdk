@@ -37,7 +37,7 @@ const asset6 = new assets.DockerImageAsset(stack, 'DockerImage6', {
 });
 
 const asset7 = new assets.DockerImageAsset(stack, 'DockerImage7', {
-  directory: path.join(__dirname, 'demo-image'),
+  directory: path.join(__dirname, 'demo-image-ssh'),
   buildSsh: 'default',
 });
 
