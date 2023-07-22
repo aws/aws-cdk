@@ -128,8 +128,6 @@ export class LogRetention extends Construct implements cdk.ITaggable {
       properties: {
         ServiceToken: provider.functionArn,
         LogGroupName: props.logGroupName,
-        // cloudwatchlogs tagging api expects resourceArn to be in base arn format
-        LogGroupArn: logGroupBaseArn,
         LogGroupRegion: props.logGroupRegion,
         SdkRetry: retryOptions ? {
           maxRetries: retryOptions.maxRetries,
@@ -137,8 +135,12 @@ export class LogRetention extends Construct implements cdk.ITaggable {
         } : undefined,
         RetentionInDays: props.retention === RetentionDays.INFINITE ? undefined : props.retention,
         RemovalPolicy: props.removalPolicy,
-        PropagateTags: props.propagateTags,
-        Tags: this.tags.renderedTags,
+        ...props.propagateTags ? {
+          PropagateTags: props.propagateTags,
+          // cloudwatchlogs tagging api expects resourceArn to be in base arn format
+          LogGroupArn: logGroupBaseArn,
+          Tags: this.tags.renderedTags,
+        } : {},
       },
     });
   }
