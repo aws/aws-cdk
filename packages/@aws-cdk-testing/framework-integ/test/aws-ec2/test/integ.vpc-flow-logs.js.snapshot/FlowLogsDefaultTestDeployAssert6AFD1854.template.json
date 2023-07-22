@@ -14,18 +14,27 @@
     "expected": "{\"$ObjectLike\":{\"KeyCount\":1}}",
     "parameters": {
      "Bucket": {
-      "Fn::ImportValue": "FlowLogsFeatureFlag:ExportsOutputRefVPCFlowLogsS3BucketFB7DC2BE6C269563"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "FlowLogsFeatureFlag:ExportsOutputRefVPCFlowLogsS3BucketFB7DC2BE6C269563"
+        },
+        "\""
+       ]
+      ]
      },
-     "MaxKeys": 1,
+     "MaxKeys": "1",
      "Prefix": {
       "Fn::Join": [
        "",
        [
-        "AWSLogs/",
+        "\"AWSLogs/",
         {
          "Ref": "AWS::AccountId"
         },
-        "/vpcflowlogs"
+        "/vpcflowlogs\""
        ]
       ]
      }
