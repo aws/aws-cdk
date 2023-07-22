@@ -1,5 +1,5 @@
 {
-  "$version": "126.0.0",
+  "$version": "130.1.0",
   "PropertyTypes": {
     "AWS::Panorama::ApplicationInstance.ManifestOverridesPayload": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-panorama-applicationinstance-manifestoverridespayload.html",
@@ -107,12 +107,6 @@
           "Required": false,
           "UpdateType": "Immutable"
         },
-        "DeviceId": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-applicationinstance.html#cfn-panorama-applicationinstance-deviceid",
-          "PrimitiveType": "String",
-          "Required": false,
-          "UpdateType": "Mutable"
-        },
         "ManifestOverridesPayload": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-applicationinstance.html#cfn-panorama-applicationinstance-manifestoverridespayload",
           "Required": false,
@@ -136,12 +130,6 @@
           "PrimitiveType": "String",
           "Required": false,
           "UpdateType": "Immutable"
-        },
-        "StatusFilter": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-applicationinstance.html#cfn-panorama-applicationinstance-statusfilter",
-          "PrimitiveType": "String",
-          "Required": false,
-          "UpdateType": "Mutable"
         },
         "Tags": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-applicationinstance.html#cfn-panorama-applicationinstance-tags",

@@ -1,3 +1,672 @@
+# CloudFormation Resource Specification v130.1.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::HealthLake::FHIRDatastore IdentityProviderConfiguration (__added__)
+* AWS::S3Outposts::Endpoint FailedReason (__added__)
+
+## Property Type Changes
+
+* AWS::HealthLake::FHIRDatastore.IdentityProviderConfiguration (__added__)
+* AWS::S3Outposts::Endpoint.FailedReason (__added__)
+* AWS::AppFlow::ConnectorProfile.SAPODataConnectorProfileProperties DisableSSO (__added__)
+* AWS::CleanRooms::ConfiguredTable.AnalysisRuleAggregation AllowedJoinOperators (__added__)
+* AWS::CleanRooms::ConfiguredTable.AnalysisRuleList AllowedJoinOperators (__added__)
+
+# CloudFormation Resource Specification (us-west-2) v130.1.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+
+
+# CloudFormation Resource Specification v130.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+* AWS::ApiGatewayV2::ApiMapping ApiMappingId (__added__)
+* AWS::SNS::TopicPolicy Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-policy.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topicpolicy.html
+* AWS::SNS::TopicPolicy Id (__added__)
+
+## Property Changes
+
+* AWS::InternetMonitor::Monitor HealthEventsConfig (__added__)
+* AWS::SNS::TopicPolicy PolicyDocument.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-policy.html#cfn-sns-topicpolicy-policydocument
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topicpolicy.html#cfn-sns-topicpolicy-policydocument
+* AWS::SNS::TopicPolicy Topics.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-policy.html#cfn-sns-topicpolicy-topics
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topicpolicy.html#cfn-sns-topicpolicy-topics
+
+## Property Type Changes
+
+* AWS::AppFlow::Flow.DataTransferApi (__added__)
+* AWS::InternetMonitor::Monitor.HealthEventsConfig (__added__)
+* AWS::AppFlow::Flow.CustomConnectorSourceProperties DataTransferApi (__added__)
+
+# CloudFormation Resource Specification (us-west-2) v130.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+
+
+# CloudFormation Resource Specification v129.0.0
+
+## New Resource Types
+
+* AWS::AppRunner::AutoScalingConfiguration
+* AWS::AppStream::AppBlockBuilder
+* AWS::Comprehend::DocumentClassifier
+* AWS::VerifiedPermissions::IdentitySource
+* AWS::VerifiedPermissions::Policy
+* AWS::VerifiedPermissions::PolicyStore
+* AWS::VerifiedPermissions::PolicyTemplate
+
+## Attribute Changes
+
+* AWS::EC2::LaunchTemplate LaunchTemplateId (__added__)
+* AWS::EC2::Subnet AvailabilityZoneId (__added__)
+* AWS::EC2::Subnet CidrBlock (__added__)
+* AWS::IAM::ServiceLinkedRole RoleName (__added__)
+* AWS::NetworkManager::Device CreatedAt (__added__)
+
+## Property Changes
+
+* AWS::AppStream::AppBlock PackagingType (__added__)
+* AWS::AppStream::AppBlock PostSetupScriptDetails (__added__)
+* AWS::AppStream::AppBlock SetupScriptDetails.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::EC2::KeyPair KeyFormat (__added__)
+* AWS::EC2::KeyPair PublicKeyMaterial.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::KeyPair Tags.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::LaunchTemplate TagSpecifications.DuplicatesAllowed (__added__)
+* AWS::IAM::ServiceLinkedRole AWSServiceName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::LakeFormation::Permissions DataLakePrincipal.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::LakeFormation::Permissions Resource.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::LakeFormation::Resource ResourceArn.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::LakeFormation::Resource UseServiceLinkedRole.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Conditional
+* AWS::NetworkManager::ConnectPeer InsideCidrBlocks.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::NetworkManager::Device AWSLocation (__added__)
+* AWS::NetworkManager::Device Tags.DuplicatesAllowed (__changed__)
+  * Old: true
+  * New: false
+* AWS::Panorama::ApplicationInstance DeviceId (__deleted__)
+* AWS::Panorama::ApplicationInstance StatusFilter (__deleted__)
+* AWS::QuickSight::Theme BaseThemeId.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::QuickSight::Theme Configuration.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::QuickSight::Theme Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::SageMaker::ModelPackage AdditionalInferenceSpecificationDefinition (__deleted__)
+* AWS::SageMaker::ModelPackage CreatedBy (__deleted__)
+* AWS::SageMaker::ModelPackage Environment (__deleted__)
+* AWS::SageMaker::ModelPackage LastModifiedBy (__deleted__)
+* AWS::SageMaker::ModelPackage ModelPackageStatusItem (__deleted__)
+* AWS::WAFv2::WebACL AssociationConfig (__added__)
+
+## Property Type Changes
+
+* AWS::LakeFormation::DataLakeSettings.Permissions (__removed__)
+* AWS::QuickSight::Analysis.ColorsConfiguration (__removed__)
+* AWS::QuickSight::Analysis.CustomColor (__removed__)
+* AWS::QuickSight::Dashboard.ColorsConfiguration (__removed__)
+* AWS::QuickSight::Dashboard.CustomColor (__removed__)
+* AWS::QuickSight::Template.ColorsConfiguration (__removed__)
+* AWS::QuickSight::Template.CustomColor (__removed__)
+* AWS::SageMaker::ModelPackage.UserContext (__removed__)
+* AWS::NetworkManager::Device.AWSLocation (__added__)
+* AWS::QuickSight::Analysis.GeospatialHeatmapColorScale (__added__)
+* AWS::QuickSight::Analysis.GeospatialHeatmapConfiguration (__added__)
+* AWS::QuickSight::Analysis.GeospatialHeatmapDataColor (__added__)
+* AWS::QuickSight::Analysis.PivotTableFieldCollapseStateOption (__added__)
+* AWS::QuickSight::Analysis.PivotTableFieldCollapseStateTarget (__added__)
+* AWS::QuickSight::Dashboard.GeospatialHeatmapColorScale (__added__)
+* AWS::QuickSight::Dashboard.GeospatialHeatmapConfiguration (__added__)
+* AWS::QuickSight::Dashboard.GeospatialHeatmapDataColor (__added__)
+* AWS::QuickSight::Dashboard.PivotTableFieldCollapseStateOption (__added__)
+* AWS::QuickSight::Dashboard.PivotTableFieldCollapseStateTarget (__added__)
+* AWS::QuickSight::Template.GeospatialHeatmapColorScale (__added__)
+* AWS::QuickSight::Template.GeospatialHeatmapConfiguration (__added__)
+* AWS::QuickSight::Template.GeospatialHeatmapDataColor (__added__)
+* AWS::QuickSight::Template.PivotTableFieldCollapseStateOption (__added__)
+* AWS::QuickSight::Template.PivotTableFieldCollapseStateTarget (__added__)
+* AWS::WAFv2::WebACL.AssociationConfig (__added__)
+* AWS::WAFv2::WebACL.RequestBodyAssociatedResourceTypeConfig (__added__)
+* AWS::AppStream::AppBlock.S3Location S3Key.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::EC2::LaunchTemplate.CapacityReservationSpecification CapacityReservationPreference.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-capacityreservationspecification.html#cfn-ec2-launchtemplate-launchtemplatedata-capacityreservationspecification-capacityreservationpreference
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-capacityreservationspecification.html#cfn-ec2-launchtemplate-capacityreservationspecification-capacityreservationpreference
+* AWS::EC2::LaunchTemplate.CapacityReservationSpecification CapacityReservationTarget.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-capacityreservationspecification.html#cfn-ec2-launchtemplate-launchtemplatedata-capacityreservationspecification-capacityreservationtarget
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-capacityreservationspecification.html#cfn-ec2-launchtemplate-capacityreservationspecification-capacityreservationtarget
+* AWS::EC2::LaunchTemplate.CpuOptions AmdSevSnp.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-cpuoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-cpuoptions-amdsevsnp
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-cpuoptions.html#cfn-ec2-launchtemplate-cpuoptions-amdsevsnp
+* AWS::EC2::LaunchTemplate.CpuOptions CoreCount.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-cpuoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-cpuoptions-corecount
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-cpuoptions.html#cfn-ec2-launchtemplate-cpuoptions-corecount
+* AWS::EC2::LaunchTemplate.CpuOptions ThreadsPerCore.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-cpuoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-cpuoptions-threadspercore
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-cpuoptions.html#cfn-ec2-launchtemplate-cpuoptions-threadspercore
+* AWS::EC2::LaunchTemplate.CreditSpecification CpuCredits.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-creditspecification.html#cfn-ec2-launchtemplate-launchtemplatedata-creditspecification-cpucredits
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-creditspecification.html#cfn-ec2-launchtemplate-creditspecification-cpucredits
+* AWS::EC2::LaunchTemplate.Ebs DeleteOnTermination.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-blockdevicemapping-ebs.html#cfn-ec2-launchtemplate-blockdevicemapping-ebs-deleteontermination
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-ebs.html#cfn-ec2-launchtemplate-ebs-deleteontermination
+* AWS::EC2::LaunchTemplate.Ebs Encrypted.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-blockdevicemapping-ebs.html#cfn-ec2-launchtemplate-blockdevicemapping-ebs-encrypted
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-ebs.html#cfn-ec2-launchtemplate-ebs-encrypted
+* AWS::EC2::LaunchTemplate.Ebs Iops.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-blockdevicemapping-ebs.html#cfn-ec2-launchtemplate-blockdevicemapping-ebs-iops
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-ebs.html#cfn-ec2-launchtemplate-ebs-iops
+* AWS::EC2::LaunchTemplate.Ebs KmsKeyId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-blockdevicemapping-ebs.html#cfn-ec2-launchtemplate-blockdevicemapping-ebs-kmskeyid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-ebs.html#cfn-ec2-launchtemplate-ebs-kmskeyid
+* AWS::EC2::LaunchTemplate.Ebs SnapshotId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-blockdevicemapping-ebs.html#cfn-ec2-launchtemplate-blockdevicemapping-ebs-snapshotid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-ebs.html#cfn-ec2-launchtemplate-ebs-snapshotid
+* AWS::EC2::LaunchTemplate.Ebs Throughput.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-blockdevicemapping-ebs.html#cfn-ec2-launchtemplate-blockdevicemapping-ebs-throughput
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-ebs.html#cfn-ec2-launchtemplate-ebs-throughput
+* AWS::EC2::LaunchTemplate.Ebs VolumeSize.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-blockdevicemapping-ebs.html#cfn-ec2-launchtemplate-blockdevicemapping-ebs-volumesize
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-ebs.html#cfn-ec2-launchtemplate-ebs-volumesize
+* AWS::EC2::LaunchTemplate.Ebs VolumeType.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-blockdevicemapping-ebs.html#cfn-ec2-launchtemplate-blockdevicemapping-ebs-volumetype
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-ebs.html#cfn-ec2-launchtemplate-ebs-volumetype
+* AWS::EC2::LaunchTemplate.EnclaveOptions Enabled.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-enclaveoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-enclaveoptions-enabled
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-enclaveoptions.html#cfn-ec2-launchtemplate-enclaveoptions-enabled
+* AWS::EC2::LaunchTemplate.HibernationOptions Configured.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-hibernationoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-hibernationoptions-configured
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-hibernationoptions.html#cfn-ec2-launchtemplate-hibernationoptions-configured
+* AWS::EC2::LaunchTemplate.IamInstanceProfile Arn.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-iaminstanceprofile.html#cfn-ec2-launchtemplate-launchtemplatedata-iaminstanceprofile-arn
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-iaminstanceprofile.html#cfn-ec2-launchtemplate-iaminstanceprofile-arn
+* AWS::EC2::LaunchTemplate.IamInstanceProfile Name.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-iaminstanceprofile.html#cfn-ec2-launchtemplate-launchtemplatedata-iaminstanceprofile-name
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-iaminstanceprofile.html#cfn-ec2-launchtemplate-iaminstanceprofile-name
+* AWS::EC2::LaunchTemplate.InstanceMarketOptions MarketType.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancemarketoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-instancemarketoptions-markettype
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancemarketoptions.html#cfn-ec2-launchtemplate-instancemarketoptions-markettype
+* AWS::EC2::LaunchTemplate.InstanceMarketOptions SpotOptions.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancemarketoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-instancemarketoptions-spotoptions
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancemarketoptions.html#cfn-ec2-launchtemplate-instancemarketoptions-spotoptions
+* AWS::EC2::LaunchTemplate.InstanceRequirements AcceleratorCount.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-acceleratorcount
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-acceleratorcount
+* AWS::EC2::LaunchTemplate.InstanceRequirements AcceleratorManufacturers.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.InstanceRequirements AcceleratorManufacturers.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-acceleratormanufacturers
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-acceleratormanufacturers
+* AWS::EC2::LaunchTemplate.InstanceRequirements AcceleratorNames.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.InstanceRequirements AcceleratorNames.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-acceleratornames
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-acceleratornames
+* AWS::EC2::LaunchTemplate.InstanceRequirements AcceleratorTotalMemoryMiB.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-acceleratortotalmemorymib
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-acceleratortotalmemorymib
+* AWS::EC2::LaunchTemplate.InstanceRequirements AcceleratorTypes.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.InstanceRequirements AcceleratorTypes.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-acceleratortypes
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-acceleratortypes
+* AWS::EC2::LaunchTemplate.InstanceRequirements AllowedInstanceTypes.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.InstanceRequirements AllowedInstanceTypes.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-allowedinstancetypes
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-allowedinstancetypes
+* AWS::EC2::LaunchTemplate.InstanceRequirements BareMetal.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-baremetal
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-baremetal
+* AWS::EC2::LaunchTemplate.InstanceRequirements BaselineEbsBandwidthMbps.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-baselineebsbandwidthmbps
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-baselineebsbandwidthmbps
+* AWS::EC2::LaunchTemplate.InstanceRequirements BurstablePerformance.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-burstableperformance
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-burstableperformance
+* AWS::EC2::LaunchTemplate.InstanceRequirements CpuManufacturers.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.InstanceRequirements CpuManufacturers.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-cpumanufacturers
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-cpumanufacturers
+* AWS::EC2::LaunchTemplate.InstanceRequirements ExcludedInstanceTypes.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.InstanceRequirements ExcludedInstanceTypes.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-excludedinstancetypes
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-excludedinstancetypes
+* AWS::EC2::LaunchTemplate.InstanceRequirements InstanceGenerations.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.InstanceRequirements InstanceGenerations.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-instancegenerations
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-instancegenerations
+* AWS::EC2::LaunchTemplate.InstanceRequirements LocalStorage.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-localstorage
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-localstorage
+* AWS::EC2::LaunchTemplate.InstanceRequirements LocalStorageTypes.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.InstanceRequirements LocalStorageTypes.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-localstoragetypes
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-localstoragetypes
+* AWS::EC2::LaunchTemplate.InstanceRequirements MemoryGiBPerVCpu.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-memorygibpervcpu
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-memorygibpervcpu
+* AWS::EC2::LaunchTemplate.InstanceRequirements MemoryMiB.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-memorymib
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-memorymib
+* AWS::EC2::LaunchTemplate.InstanceRequirements NetworkBandwidthGbps.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-networkbandwidthgbps
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-networkbandwidthgbps
+* AWS::EC2::LaunchTemplate.InstanceRequirements NetworkInterfaceCount.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-networkinterfacecount
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-networkinterfacecount
+* AWS::EC2::LaunchTemplate.InstanceRequirements OnDemandMaxPricePercentageOverLowestPrice.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-ondemandmaxpricepercentageoverlowestprice
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-ondemandmaxpricepercentageoverlowestprice
+* AWS::EC2::LaunchTemplate.InstanceRequirements RequireHibernateSupport.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-requirehibernatesupport
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-requirehibernatesupport
+* AWS::EC2::LaunchTemplate.InstanceRequirements SpotMaxPricePercentageOverLowestPrice.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-spotmaxpricepercentageoverlowestprice
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-spotmaxpricepercentageoverlowestprice
+* AWS::EC2::LaunchTemplate.InstanceRequirements TotalLocalStorageGB.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-totallocalstoragegb
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-totallocalstoragegb
+* AWS::EC2::LaunchTemplate.InstanceRequirements VCpuCount.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-vcpucount
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-vcpucount
+* AWS::EC2::LaunchTemplate.LaunchTemplateData BlockDeviceMappings.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateData ElasticGpuSpecifications.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateData ElasticInferenceAccelerators.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateData LicenseSpecifications.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateData NetworkInterfaces.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateData SecurityGroupIds.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateData SecurityGroups.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateData TagSpecifications.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateTagSpecification Tags.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.MaintenanceOptions AutoRecovery.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-maintenanceoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-maintenanceoptions-autorecovery
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-maintenanceoptions.html#cfn-ec2-launchtemplate-maintenanceoptions-autorecovery
+* AWS::EC2::LaunchTemplate.MetadataOptions HttpEndpoint.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions-httpendpoint
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-metadataoptions.html#cfn-ec2-launchtemplate-metadataoptions-httpendpoint
+* AWS::EC2::LaunchTemplate.MetadataOptions HttpProtocolIpv6.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions-httpprotocolipv6
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-metadataoptions.html#cfn-ec2-launchtemplate-metadataoptions-httpprotocolipv6
+* AWS::EC2::LaunchTemplate.MetadataOptions HttpPutResponseHopLimit.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions-httpputresponsehoplimit
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-metadataoptions.html#cfn-ec2-launchtemplate-metadataoptions-httpputresponsehoplimit
+* AWS::EC2::LaunchTemplate.MetadataOptions HttpTokens.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions-httptokens
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-metadataoptions.html#cfn-ec2-launchtemplate-metadataoptions-httptokens
+* AWS::EC2::LaunchTemplate.MetadataOptions InstanceMetadataTags.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions-instancemetadatatags
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-metadataoptions.html#cfn-ec2-launchtemplate-metadataoptions-instancemetadatatags
+* AWS::EC2::LaunchTemplate.Monitoring Enabled.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-monitoring.html#cfn-ec2-launchtemplate-launchtemplatedata-monitoring-enabled
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-monitoring.html#cfn-ec2-launchtemplate-monitoring-enabled
+* AWS::EC2::LaunchTemplate.NetworkInterface Groups.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.NetworkInterface Ipv4Prefixes.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.NetworkInterface Ipv6Addresses.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.NetworkInterface Ipv6Prefixes.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.NetworkInterface PrivateIpAddresses.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.Placement Affinity.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-placement.html#cfn-ec2-launchtemplate-launchtemplatedata-placement-affinity
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-placement.html#cfn-ec2-launchtemplate-placement-affinity
+* AWS::EC2::LaunchTemplate.Placement AvailabilityZone.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-placement.html#cfn-ec2-launchtemplate-launchtemplatedata-placement-availabilityzone
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-placement.html#cfn-ec2-launchtemplate-placement-availabilityzone
+* AWS::EC2::LaunchTemplate.Placement GroupId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-placement.html#cfn-ec2-launchtemplate-launchtemplatedata-placement-groupid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-placement.html#cfn-ec2-launchtemplate-placement-groupid
+* AWS::EC2::LaunchTemplate.Placement GroupName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-placement.html#cfn-ec2-launchtemplate-launchtemplatedata-placement-groupname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-placement.html#cfn-ec2-launchtemplate-placement-groupname
+* AWS::EC2::LaunchTemplate.Placement HostId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-placement.html#cfn-ec2-launchtemplate-launchtemplatedata-placement-hostid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-placement.html#cfn-ec2-launchtemplate-placement-hostid
+* AWS::EC2::LaunchTemplate.Placement HostResourceGroupArn.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-placement.html#cfn-ec2-launchtemplate-launchtemplatedata-placement-hostresourcegrouparn
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-placement.html#cfn-ec2-launchtemplate-placement-hostresourcegrouparn
+* AWS::EC2::LaunchTemplate.Placement PartitionNumber.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-placement.html#cfn-ec2-launchtemplate-launchtemplatedata-placement-partitionnumber
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-placement.html#cfn-ec2-launchtemplate-placement-partitionnumber
+* AWS::EC2::LaunchTemplate.Placement SpreadDomain.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-placement.html#cfn-ec2-launchtemplate-launchtemplatedata-placement-spreaddomain
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-placement.html#cfn-ec2-launchtemplate-placement-spreaddomain
+* AWS::EC2::LaunchTemplate.Placement Tenancy.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-placement.html#cfn-ec2-launchtemplate-launchtemplatedata-placement-tenancy
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-placement.html#cfn-ec2-launchtemplate-placement-tenancy
+* AWS::EC2::LaunchTemplate.PrivateDnsNameOptions EnableResourceNameDnsAAAARecord.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-privatednsnameoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-privatednsnameoptions-enableresourcenamednsaaaarecord
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-privatednsnameoptions.html#cfn-ec2-launchtemplate-privatednsnameoptions-enableresourcenamednsaaaarecord
+* AWS::EC2::LaunchTemplate.PrivateDnsNameOptions EnableResourceNameDnsARecord.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-privatednsnameoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-privatednsnameoptions-enableresourcenamednsarecord
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-privatednsnameoptions.html#cfn-ec2-launchtemplate-privatednsnameoptions-enableresourcenamednsarecord
+* AWS::EC2::LaunchTemplate.PrivateDnsNameOptions HostnameType.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-privatednsnameoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-privatednsnameoptions-hostnametype
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-privatednsnameoptions.html#cfn-ec2-launchtemplate-privatednsnameoptions-hostnametype
+* AWS::EC2::LaunchTemplate.SpotOptions BlockDurationMinutes.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancemarketoptions-spotoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-instancemarketoptions-spotoptions-blockdurationminutes
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-spotoptions.html#cfn-ec2-launchtemplate-spotoptions-blockdurationminutes
+* AWS::EC2::LaunchTemplate.SpotOptions InstanceInterruptionBehavior.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancemarketoptions-spotoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-instancemarketoptions-spotoptions-instanceinterruptionbehavior
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-spotoptions.html#cfn-ec2-launchtemplate-spotoptions-instanceinterruptionbehavior
+* AWS::EC2::LaunchTemplate.SpotOptions MaxPrice.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancemarketoptions-spotoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-instancemarketoptions-spotoptions-maxprice
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-spotoptions.html#cfn-ec2-launchtemplate-spotoptions-maxprice
+* AWS::EC2::LaunchTemplate.SpotOptions SpotInstanceType.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancemarketoptions-spotoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-instancemarketoptions-spotoptions-spotinstancetype
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-spotoptions.html#cfn-ec2-launchtemplate-spotoptions-spotinstancetype
+* AWS::EC2::LaunchTemplate.SpotOptions ValidUntil.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancemarketoptions-spotoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-instancemarketoptions-spotoptions-validuntil
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-spotoptions.html#cfn-ec2-launchtemplate-spotoptions-validuntil
+* AWS::EC2::LaunchTemplate.TagSpecification Tags.DuplicatesAllowed (__added__)
+* AWS::EC2::VerifiedAccessInstance.VerifiedAccessLogs IncludeTrustContext (__added__)
+* AWS::EC2::VerifiedAccessInstance.VerifiedAccessLogs LogVersion (__added__)
+* AWS::LakeFormation::DataLakeSettings.DataLakePrincipal DataLakePrincipalIdentifier.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::LakeFormation::DataLakeSettings.PrincipalPermissions Permissions.PrimitiveItemType (__added__)
+* AWS::LakeFormation::DataLakeSettings.PrincipalPermissions Permissions.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::LakeFormation::DataLakeSettings.PrincipalPermissions Permissions.Type (__changed__)
+  * Old: Permissions
+  * New: List
+* AWS::LakeFormation::DataLakeSettings.PrincipalPermissions Principal.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::QuickSight::Analysis.AggregationSortConfiguration AggregationFunction.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::QuickSight::Analysis.ColumnConfiguration ColorsConfiguration (__deleted__)
+* AWS::QuickSight::Analysis.DataLabelOptions TotalsVisibility (__added__)
+* AWS::QuickSight::Analysis.DestinationParameterValueConfiguration SourceColumn (__added__)
+* AWS::QuickSight::Analysis.FilterOperationSelectedFieldsConfiguration SelectedColumns (__added__)
+* AWS::QuickSight::Analysis.GeospatialPointStyleOptions HeatmapConfiguration (__added__)
+* AWS::QuickSight::Analysis.PivotTableCellConditionalFormatting Scopes (__added__)
+* AWS::QuickSight::Analysis.PivotTableFieldOptions CollapseStateOptions (__added__)
+* AWS::QuickSight::Analysis.PivotTableOptions CollapsedRowDimensionsVisibility (__added__)
+* AWS::QuickSight::Analysis.RadarChartConfiguration AxesRangeScale (__added__)
+* AWS::QuickSight::Analysis.ReferenceLineDynamicDataConfiguration MeasureAggregationFunction.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::QuickSight::Analysis.ScatterPlotCategoricallyAggregatedFieldWells Label (__added__)
+* AWS::QuickSight::Analysis.ScatterPlotUnaggregatedFieldWells Category (__added__)
+* AWS::QuickSight::Analysis.ScatterPlotUnaggregatedFieldWells Label (__added__)
+* AWS::QuickSight::Dashboard.AggregationSortConfiguration AggregationFunction.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::QuickSight::Dashboard.ColumnConfiguration ColorsConfiguration (__deleted__)
+* AWS::QuickSight::Dashboard.DataLabelOptions TotalsVisibility (__added__)
+* AWS::QuickSight::Dashboard.DestinationParameterValueConfiguration SourceColumn (__added__)
+* AWS::QuickSight::Dashboard.FilterOperationSelectedFieldsConfiguration SelectedColumns (__added__)
+* AWS::QuickSight::Dashboard.GeospatialPointStyleOptions HeatmapConfiguration (__added__)
+* AWS::QuickSight::Dashboard.PivotTableCellConditionalFormatting Scopes (__added__)
+* AWS::QuickSight::Dashboard.PivotTableFieldOptions CollapseStateOptions (__added__)
+* AWS::QuickSight::Dashboard.PivotTableOptions CollapsedRowDimensionsVisibility (__added__)
+* AWS::QuickSight::Dashboard.RadarChartConfiguration AxesRangeScale (__added__)
+* AWS::QuickSight::Dashboard.ReferenceLineDynamicDataConfiguration MeasureAggregationFunction.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::QuickSight::Dashboard.ScatterPlotCategoricallyAggregatedFieldWells Label (__added__)
+* AWS::QuickSight::Dashboard.ScatterPlotUnaggregatedFieldWells Category (__added__)
+* AWS::QuickSight::Dashboard.ScatterPlotUnaggregatedFieldWells Label (__added__)
+* AWS::QuickSight::Template.AggregationSortConfiguration AggregationFunction.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::QuickSight::Template.ColumnConfiguration ColorsConfiguration (__deleted__)
+* AWS::QuickSight::Template.DataLabelOptions TotalsVisibility (__added__)
+* AWS::QuickSight::Template.DestinationParameterValueConfiguration SourceColumn (__added__)
+* AWS::QuickSight::Template.FilterOperationSelectedFieldsConfiguration SelectedColumns (__added__)
+* AWS::QuickSight::Template.GeospatialPointStyleOptions HeatmapConfiguration (__added__)
+* AWS::QuickSight::Template.PivotTableCellConditionalFormatting Scopes (__added__)
+* AWS::QuickSight::Template.PivotTableFieldOptions CollapseStateOptions (__added__)
+* AWS::QuickSight::Template.PivotTableOptions CollapsedRowDimensionsVisibility (__added__)
+* AWS::QuickSight::Template.RadarChartConfiguration AxesRangeScale (__added__)
+* AWS::QuickSight::Template.ReferenceLineDynamicDataConfiguration MeasureAggregationFunction.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::QuickSight::Template.ScatterPlotCategoricallyAggregatedFieldWells Label (__added__)
+* AWS::QuickSight::Template.ScatterPlotUnaggregatedFieldWells Category (__added__)
+* AWS::QuickSight::Template.ScatterPlotUnaggregatedFieldWells Label (__added__)
+* AWS::QuickSight::Theme.ResourcePermission Resource (__added__)
+* AWS::SageMaker::ModelPackage.ModelPackageContainerDefinition ProductId (__deleted__)
+* AWS::SageMaker::ModelPackage.ModelPackageStatusDetails ImageScanStatuses (__deleted__)
+* AWS::SageMaker::ModelPackage.ModelPackageStatusDetails ValidationStatuses.Required (__changed__)
+  * Old: true
+  * New: false
+
+# CloudFormation Resource Specification (us-west-2) v129.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+
+
+# CloudFormation Resource Specification v128.1.0
+
+## New Resource Types
+
+* AWS::Glue::DataQualityRuleset
+* AWS::Organizations::Organization
+* AWS::StepFunctions::StateMachineAlias
+* AWS::StepFunctions::StateMachineVersion
+
+## Attribute Changes
+
+* AWS::ApiGateway::GatewayResponse Id (__deleted__)
+* AWS::EC2::NetworkAclEntry Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkaclentry.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl-entry.html
+* AWS::EC2::NetworkAclEntry Id (__deleted__)
+* AWS::EC2::VPNGatewayRoutePropagation Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpngatewayroutepropagation.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-gatewayrouteprop.html
+* AWS::EC2::VPNGatewayRoutePropagation Id (__deleted__)
+* AWS::EC2::VolumeAttachment Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volumeattachment.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volumeattachment.html
+
+## Property Changes
+
+* AWS::ApiGateway::GatewayResponse ResponseParameters.DuplicatesAllowed (__added__)
+* AWS::ApiGateway::GatewayResponse ResponseTemplates.DuplicatesAllowed (__added__)
+* AWS::Cassandra::Keyspace ReplicationSpecification (__added__)
+* AWS::EC2::NetworkAclEntry CidrBlock.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkaclentry.html#cfn-ec2-networkaclentry-cidrblock
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl-entry.html#cfn-ec2-networkaclentry-cidrblock
+* AWS::EC2::NetworkAclEntry Egress.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkaclentry.html#cfn-ec2-networkaclentry-egress
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl-entry.html#cfn-ec2-networkaclentry-egress
+* AWS::EC2::NetworkAclEntry Icmp.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkaclentry.html#cfn-ec2-networkaclentry-icmp
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl-entry.html#cfn-ec2-networkaclentry-icmp
+* AWS::EC2::NetworkAclEntry Ipv6CidrBlock.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkaclentry.html#cfn-ec2-networkaclentry-ipv6cidrblock
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl-entry.html#cfn-ec2-networkaclentry-ipv6cidrblock
+* AWS::EC2::NetworkAclEntry NetworkAclId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkaclentry.html#cfn-ec2-networkaclentry-networkaclid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl-entry.html#cfn-ec2-networkaclentry-networkaclid
+* AWS::EC2::NetworkAclEntry PortRange.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkaclentry.html#cfn-ec2-networkaclentry-portrange
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl-entry.html#cfn-ec2-networkaclentry-portrange
+* AWS::EC2::NetworkAclEntry Protocol.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkaclentry.html#cfn-ec2-networkaclentry-protocol
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl-entry.html#cfn-ec2-networkaclentry-protocol
+* AWS::EC2::NetworkAclEntry RuleAction.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkaclentry.html#cfn-ec2-networkaclentry-ruleaction
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl-entry.html#cfn-ec2-networkaclentry-ruleaction
+* AWS::EC2::NetworkAclEntry RuleNumber.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkaclentry.html#cfn-ec2-networkaclentry-rulenumber
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl-entry.html#cfn-ec2-networkaclentry-rulenumber
+* AWS::EC2::VPNGatewayRoutePropagation RouteTableIds.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpngatewayroutepropagation.html#cfn-ec2-vpngatewayroutepropagation-routetableids
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-gatewayrouteprop.html#cfn-ec2-vpngatewayrouteprop-routetableids
+* AWS::EC2::VPNGatewayRoutePropagation VpnGatewayId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpngatewayroutepropagation.html#cfn-ec2-vpngatewayroutepropagation-vpngatewayid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-gatewayrouteprop.html#cfn-ec2-vpngatewayrouteprop-vpngatewayid
+* AWS::EC2::VolumeAttachment Device.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volumeattachment.html#cfn-ec2-ebs-volumeattachment-device
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volumeattachment.html#cfn-ec2-volumeattachment-device
+* AWS::EC2::VolumeAttachment Device.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::EC2::VolumeAttachment InstanceId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volumeattachment.html#cfn-ec2-ebs-volumeattachment-instanceid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volumeattachment.html#cfn-ec2-volumeattachment-instanceid
+* AWS::EC2::VolumeAttachment VolumeId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volumeattachment.html#cfn-ec2-ebs-volumeattachment-volumeid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volumeattachment.html#cfn-ec2-volumeattachment-volumeid
+* AWS::MediaConnect::FlowSource GatewayBridgeSource (__added__)
+* AWS::SecurityHub::Hub AutoEnableControls (__added__)
+* AWS::SecurityHub::Hub ControlFindingGenerator (__added__)
+* AWS::SecurityHub::Hub EnableDefaultStandards (__added__)
+* AWS::Transfer::Server StructuredLogDestinations (__added__)
+
+## Property Type Changes
+
+* AWS::Cassandra::Keyspace.ReplicationSpecification (__added__)
+* AWS::MediaConnect::Flow.GatewayBridgeSource (__added__)
+* AWS::MediaConnect::Flow.VpcInterfaceAttachment (__added__)
+* AWS::MediaConnect::FlowSource.GatewayBridgeSource (__added__)
+* AWS::MediaConnect::FlowSource.VpcInterfaceAttachment (__added__)
+* AWS::Transfer::Server.StructuredLogDestination (__added__)
+* AWS::FSx::StorageVirtualMachine.ActiveDirectoryConfiguration NetBiosName.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::FSx::StorageVirtualMachine.SelfManagedActiveDirectoryConfiguration DomainName.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::FSx::StorageVirtualMachine.SelfManagedActiveDirectoryConfiguration FileSystemAdministratorsGroup.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::FSx::StorageVirtualMachine.SelfManagedActiveDirectoryConfiguration OrganizationalUnitDistinguishedName.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::MediaConnect::Flow.Source GatewayBridgeSource (__added__)
+
+# CloudFormation Resource Specification (us-west-2) v128.1.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+
+
+# CloudFormation Resource Specification v127.0.0
+
+## New Resource Types
+
+* AWS::CleanRooms::Collaboration
+* AWS::CleanRooms::ConfiguredTable
+* AWS::CleanRooms::ConfiguredTableAssociation
+* AWS::CleanRooms::Membership
+* AWS::CustomerProfiles::EventStream
+* AWS::MediaConnect::Bridge
+* AWS::MediaConnect::BridgeOutput
+* AWS::MediaConnect::BridgeSource
+* AWS::MediaConnect::Gateway
+* AWS::RDS::CustomDBEngineVersion
+* AWS::SecurityHub::AutomationRule
+* AWS::SecurityHub::Standard
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::IVS::Channel Preset (__added__)
+
+## Property Type Changes
+
+* AWS::ApplicationAutoScaling::ScalableTarget.ScheduledAction EndTime.PrimitiveType (__changed__)
+  * Old: String
+  * New: Timestamp
+* AWS::ApplicationAutoScaling::ScalableTarget.ScheduledAction StartTime.PrimitiveType (__changed__)
+  * Old: String
+  * New: Timestamp
+* AWS::DynamoDB::Table.TimeToLiveSpecification AttributeName.Required (__changed__)
+  * Old: true
+  * New: false
+
+# CloudFormation Resource Specification (us-west-2) v127.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+
+
 # CloudFormation Resource Specification v126.0.0
 
 ## New Resource Types

@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/35602bb0d564115355ca8ebb1c6c0a7eb8d4519ec67d529644da6be037c05bbc.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0f3e9fc32fcf1490917da5352ae0f2fe268caf688ae73e02e94f1e5522579ad8.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -429,16 +429,16 @@
             "data": "awscdkeksclusterwindowsngtestawscdkawseksKubectlProviderframeworkonEventCEC3AFF7Arn"
           }
         ],
-        "/aws-cdk-eks-cluster-windows-ng-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterwindowsngtestClusterKubectlHandlerRoleA205E29AArn": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "referencetoawscdkeksclusterwindowsngtestClusterKubectlHandlerRoleA205E29AArn"
-          }
-        ],
         "/aws-cdk-eks-cluster-windows-ng-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterwindowsngtestKubectlLayer31B52BE6Ref": [
           {
             "type": "aws:cdk:logicalId",
             "data": "referencetoawscdkeksclusterwindowsngtestKubectlLayer31B52BE6Ref"
+          }
+        ],
+        "/aws-cdk-eks-cluster-windows-ng-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterwindowsngtestClusterKubectlHandlerRoleA205E29AArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoawscdkeksclusterwindowsngtestClusterKubectlHandlerRoleA205E29AArn"
           }
         ],
         "/aws-cdk-eks-cluster-windows-ng-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterwindowsngtestVpcPrivateSubnet1Subnet55633596Ref": [

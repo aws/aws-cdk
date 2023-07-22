@@ -809,6 +809,25 @@ test('import from service attributes', () => {
   expect(svc).toHaveProperty('serviceUrl');
 });
 
+test('serviceName validation', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  // WHEN
+  const svc = new apprunner.Service(stack, 'CustomService', {
+    source: apprunner.Source.fromEcrPublic({
+      imageConfiguration: { port: 8000 },
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
+  });
+
+  // THEN
+  // the serviceName should not be the resource.ref
+  expect(svc.serviceName).not.toEqual((svc.node.defaultChild as cdk.CfnResource).ref);
+  // serviceName and serviceArn should be different
+  expect(svc.serviceName).not.toEqual(svc.serviceArn);
+});
+
 test('undefined imageConfiguration port is allowed', () => {
   // GIVEN
   const app = new cdk.App();
@@ -1211,6 +1230,27 @@ test('autoDeploymentsEnabled flag is NOT set', () => {
     SourceConfiguration: {
       AutoDeploymentsEnabled: Match.absent(),
     },
+  });
+});
+
+test('serviceName is set', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  const serviceName = 'demo-service';
+  // WHEN
+  new apprunner.Service(stack, 'DemoService', {
+    serviceName: serviceName,
+    source: apprunner.Source.fromGitHub({
+      repositoryUrl: 'https://github.com/aws-containers/hello-app-runner',
+      branch: 'main',
+      configurationSource: apprunner.ConfigurationSourceType.REPOSITORY,
+      connection: apprunner.GitHubConnection.fromConnectionArn('MOCK'),
+    }),
+  });
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+    ServiceName: serviceName,
   });
 });
 

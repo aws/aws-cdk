@@ -108,6 +108,8 @@ Note: `lerna` uses a local cache by default. If your build fails, you can fix
 the issue and run the command again and it will not rerun any previously
 successful steps.
 
+Note: If you encounter `ERROR: Reached heap limit Allocation failed - JavaScript heap out of memory`, please try running the command with increased memory by using `export NODE_OPTIONS="--max-old-space-size=8192"`.
+
 At this point, you can run build and test the `aws-cdk-lib` module by running
 
 ```console
@@ -207,7 +209,7 @@ eval $(gp env -e)
 
 ### Amazon CodeCatalyst Dev Environments
 
-Dev Environments are cloud-based development environments. 
+Dev Environments are cloud-based development environments.
 [Amazon CodeCatalyst](https://aws.amazon.com/codecatalyst/) allows you to checkout your linked Github
 repositories in your Dev Environments with your favorite local IDEs such as VSCode or JetBrains.
 
@@ -220,7 +222,7 @@ $ NODE_OPTIONS=--max-old-space-size=8192 npx lerna run build --scope=aws-cdk-lib
 
 You may [configure your Dev Env](https://docs.aws.amazon.com/codecatalyst/latest/userguide/devenvironment-devfile.html) with the `devfile.yaml` to further customize your Dev Env for CDK development.
 
-Read the links below for more details: 
+Read the links below for more details:
 - [Dev Environments in CodeCatalyst](https://docs.aws.amazon.com/codecatalyst/latest/userguide/devenvironment.html)
 - [Using GitHub repositories in CodeCatalyst](https://docs.aws.amazon.com/codecatalyst/latest/userguide/extensions-github.html)
 - [Setting up to use the AWS CLI with CodeCatalyst](https://docs.aws.amazon.com/codecatalyst/latest/userguide/set-up-cli.html)
@@ -429,7 +431,7 @@ $ npx cdk -a test/aws-eks/test/sample.js deploy
 
 This allows you to iterate your development and ensure a minimal sample app would successfully deploy as you expect.
 You have the freedom to interact with it just as a common CDK app such as viewing differences with `npx cdk diff`
-or pass context variables with `npx cdk deploy -c`. You can rapidly iterate your testing with repeated deployments 
+or pass context variables with `npx cdk deploy -c`. You can rapidly iterate your testing with repeated deployments
 by importing existing resource such as existing VPC. This can save a lot of time and help you focus on the core changes.
 
 ```ts
@@ -439,7 +441,7 @@ const vpc = ec2.Vpc.fromLookup(stack, 'Vpc', { isDefault: true });
 As this is for testing only, do not commit `sample.ts` and `sample.js` to your PR branch.
 
 Alternatively, you can write this test as a new integration test like `integ.my-test.ts` and deploy it
-using `yarn integ --no-clean`. This may be useful when you need to publish a new 
+using `yarn integ --no-clean`. This may be useful when you need to publish a new
 integration test:
 
 ```console
@@ -1095,7 +1097,7 @@ automatically, and we have to use a feature flag:
 Adding a new flag looks as follows:
 
 1. Define a new const under
-   [cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/cx-api/lib/features.ts)
+   [cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/cx-api/lib/features.ts)
    with the name of the context key that enables this new feature (for
    example, `ENABLE_STACK_NAME_DUPLICATES`). The context key should be in the
    form `module.Type:feature` (e.g. `@aws-cdk/core:enableStackNameDuplicates`).
@@ -1106,12 +1108,12 @@ Adding a new flag looks as follows:
 2. Use `FeatureFlags.of(construct).isEnabled(cxapi.ENABLE_XXX)` to check if this feature is enabled
    in your code. If it is not defined, revert to the legacy behavior.
 3. Add your feature flag to the `FLAGS` map in
-   [cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/cx-api/lib/features.ts). In
+   [cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/cx-api/lib/features.ts). In
    your description, be sure to cover the following:
    - Consciously pick the type of feature flag. Can the flag be removed in a future major version, or not?
    - Motivate why the feature flag exists. What is the change to existing infrastructure and why is it not safe?
    - In case of a "default change flag", describe what the user needs to do to restore the old behavior.
-4. Add an entry for your feature flag in the [README](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/cx-api/README.md) file.
+4. Add an entry for your feature flag in the [README](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/cx-api/README.md) file.
 5. In your tests, ensure that you test your feature with and without the feature flag enabled. You can do this by passing the feature flag to the `context` property when instantiating an `App`.
    ```ts
    const myFeatureFlag = { [cxapi.MY_FEATURE_FLAG]: true };
@@ -1124,7 +1126,7 @@ Adding a new flag looks as follows:
 
     `fix(core): impossible to use the same physical stack name for two stacks (under feature flag)`
 
-[jest helper methods]: https://github.com/aws/aws-cdk/blob/main/tools/@aws-cdk/cdk-build-tools/lib/feature-flag.ts
+[jest helper methods]: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/core/lib/feature-flags.ts
 
 ## Versioning and Release
 

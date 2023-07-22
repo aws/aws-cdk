@@ -1041,7 +1041,6 @@ export class Service extends cdk.Resource {
 
   /**
    * The name of the service.
-   * @attribute
    */
   readonly serviceName: string;
 
@@ -1074,6 +1073,7 @@ export class Service extends cdk.Resource {
     }
 
     const resource = new CfnService(this, 'Resource', {
+      serviceName: this.props.serviceName,
       instanceConfiguration: {
         cpu: this.props.cpu?.unit,
         memory: this.props.memory?.unit,
@@ -1106,7 +1106,15 @@ export class Service extends cdk.Resource {
     this.serviceId = resource.attrServiceId;
     this.serviceUrl = resource.attrServiceUrl;
     this.serviceStatus = resource.attrStatus;
-    this.serviceName = resource.ref;
+    /**
+     * Cloudformaton does not return the serviceName attribute so we extract it from the serviceArn.
+     * The ARN comes with this format:
+     * arn:aws:apprunner:us-east-1:123456789012:service/SERVICE_NAME/SERVICE_ID
+     */
+    // First, get the last element by splitting with ':'
+    const resourceFullName = cdk.Fn.select(5, cdk.Fn.split(':', this.serviceArn));
+    // Now, split the resourceFullName with '/' to get the serviceName
+    this.serviceName = cdk.Fn.select(1, cdk.Fn.split('/', resourceFullName));
   }
 
   /**

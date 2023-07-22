@@ -1,5 +1,5 @@
 {
-  "$version": "126.0.0",
+  "$version": "130.1.0",
   "PropertyTypes": {},
   "ResourceTypes": {
     "AWS::Organizations::Account": {
@@ -54,6 +54,37 @@
           "ItemType": "Tag",
           "Required": false,
           "Type": "List",
+          "UpdateType": "Mutable"
+        }
+      }
+    },
+    "AWS::Organizations::Organization": {
+      "Attributes": {
+        "Arn": {
+          "PrimitiveType": "String"
+        },
+        "Id": {
+          "PrimitiveType": "String"
+        },
+        "ManagementAccountArn": {
+          "PrimitiveType": "String"
+        },
+        "ManagementAccountEmail": {
+          "PrimitiveType": "String"
+        },
+        "ManagementAccountId": {
+          "PrimitiveType": "String"
+        },
+        "RootId": {
+          "PrimitiveType": "String"
+        }
+      },
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-organizations-organization.html",
+      "Properties": {
+        "FeatureSet": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-organizations-organization.html#cfn-organizations-organization-featureset",
+          "PrimitiveType": "String",
+          "Required": false,
           "UpdateType": "Mutable"
         }
       }

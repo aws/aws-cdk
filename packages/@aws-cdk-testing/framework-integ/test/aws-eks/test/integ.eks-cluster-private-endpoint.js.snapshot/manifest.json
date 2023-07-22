@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/eaf7eacc44778d2724f84dafd0aa9c9abb78ef070f9dc17d4dc6fb6b24ac1e1f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/36d40992bc5e922d6e575402d26a89f97f4c39a75d0fa1b4574bbb652974c273.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -423,16 +423,16 @@
             "data": "awscdkeksclusterprivateendpointtestawscdkawseksKubectlProviderframeworkonEventC2C76E2FArn"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterprivateendpointtestClusterKubectlHandlerRole67774AF8Arn": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "referencetoawscdkeksclusterprivateendpointtestClusterKubectlHandlerRole67774AF8Arn"
-          }
-        ],
         "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterprivateendpointtestKubectlLayer9A0EA6BCRef": [
           {
             "type": "aws:cdk:logicalId",
             "data": "referencetoawscdkeksclusterprivateendpointtestKubectlLayer9A0EA6BCRef"
+          }
+        ],
+        "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterprivateendpointtestClusterKubectlHandlerRole67774AF8Arn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoawscdkeksclusterprivateendpointtestClusterKubectlHandlerRole67774AF8Arn"
           }
         ],
         "/aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterprivateendpointtestVpcPrivateSubnet1Subnet94DAD769Ref": [

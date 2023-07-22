@@ -1,5 +1,5 @@
 {
-  "$version": "126.0.0",
+  "$version": "130.1.0",
   "PropertyTypes": {
     "AWS::DynamoDB::GlobalTable.AttributeDefinition": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-globaltable-attributedefinition.html",
@@ -664,7 +664,7 @@
         "AttributeName": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-timetolivespecification.html#cfn-dynamodb-table-timetolivespecification-attributename",
           "PrimitiveType": "String",
-          "Required": true,
+          "Required": false,
           "UpdateType": "Mutable"
         },
         "Enabled": {

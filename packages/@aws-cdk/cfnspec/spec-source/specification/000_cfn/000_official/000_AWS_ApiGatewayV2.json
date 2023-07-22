@@ -1,5 +1,5 @@
 {
-  "$version": "126.0.0",
+  "$version": "130.1.0",
   "PropertyTypes": {
     "AWS::ApiGatewayV2::Api.BodyS3Location": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigatewayv2-api-bodys3location.html",
@@ -559,6 +559,11 @@
       }
     },
     "AWS::ApiGatewayV2::ApiMapping": {
+      "Attributes": {
+        "ApiMappingId": {
+          "PrimitiveType": "String"
+        }
+      },
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigatewayv2-apimapping.html",
       "Properties": {
         "ApiId": {

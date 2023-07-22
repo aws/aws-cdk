@@ -131,14 +131,6 @@
               "version": "0.0.0"
             }
           },
-          "DefaultCrNodeVersionMap": {
-            "id": "DefaultCrNodeVersionMap",
-            "path": "aws-cdk-codepipeline-elastic-beanstalk-deploy/DefaultCrNodeVersionMap",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
-              "version": "0.0.0"
-            }
-          },
           "Custom::S3AutoDeleteObjectsCustomResourceProvider": {
             "id": "Custom::S3AutoDeleteObjectsCustomResourceProvider",
             "path": "aws-cdk-codepipeline-elastic-beanstalk-deploy/Custom::S3AutoDeleteObjectsCustomResourceProvider",
@@ -217,7 +209,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "6a28458f7bc3d04e4d2b17f9c3da0709bf456e34b06ea7c96111eecb2fddd054.zip"
+                          "s3Key": "e2277687077a2abf9ae1af1cc9565e6715e2ebb62f79ec53aa75a1af9298f642.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -502,12 +494,6 @@
                       },
                       "s3Key": "9eb41a5505d37607ac419321497a4f8c21cf0ee1f9b4a6b29aa04301aea5c7fd.zip"
                     },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
-                        "Arn"
-                      ]
-                    },
                     "environment": {
                       "variables": {
                         "AWS_CA_BUNDLE": "/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem"
@@ -519,6 +505,12 @@
                         "Ref": "DeployAppAwsCliLayerAEF99B2F"
                       }
                     ],
+                    "role": {
+                      "Fn::GetAtt": [
+                        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
+                        "Arn"
+                      ]
+                    },
                     "runtime": "python3.9",
                     "timeout": 900
                   }
@@ -637,14 +629,14 @@
             "attributes": {
               "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
               "aws:cdk:cloudformation:props": {
+                "instanceProfileName": {
+                  "Ref": "instanceprofilerole786BCBC7"
+                },
                 "roles": [
                   {
                     "Ref": "instanceprofilerole786BCBC7"
                   }
-                ],
-                "instanceProfileName": {
-                  "Ref": "instanceprofilerole786BCBC7"
-                }
+                ]
               }
             },
             "constructInfo": {
@@ -700,7 +692,7 @@
                     "value": "AWSServiceRoleForElasticBeanstalkManagedUpdates"
                   }
                 ],
-                "solutionStackName": "64bit Amazon Linux 2 v5.8.1 running Node.js 16"
+                "solutionStackName": "64bit Amazon Linux 2 v5.8.3 running Node.js 16"
               }
             },
             "constructInfo": {
@@ -850,6 +842,12 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::CodePipeline::Pipeline",
                   "aws:cdk:cloudformation:props": {
+                    "artifactStore": {
+                      "type": "S3",
+                      "location": {
+                        "Ref": "PipelineBucketB967BD35"
+                      }
+                    },
                     "roleArn": {
                       "Fn::GetAtt": [
                         "PipelineRoleD68726F7",
@@ -929,13 +927,7 @@
                           }
                         ]
                       }
-                    ],
-                    "artifactStore": {
-                      "type": "S3",
-                      "location": {
-                        "Ref": "PipelineBucketB967BD35"
-                      }
-                    }
+                    ]
                   }
                 },
                 "constructInfo": {
@@ -1121,13 +1113,13 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.17"
+                      "version": "10.2.55"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.17"
+                  "version": "10.2.55"
                 }
               },
               "Deploy": {
@@ -1277,13 +1269,13 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.17"
+                      "version": "10.2.55"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.17"
+                  "version": "10.2.55"
                 }
               }
             },
@@ -1327,7 +1319,7 @@
                 "path": "codepipeline-elastic-beanstalk-deploy/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.17"
+                  "version": "10.2.55"
                 }
               },
               "DeployAssert": {
@@ -1373,7 +1365,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.17"
+          "version": "10.2.55"
         }
       }
     },

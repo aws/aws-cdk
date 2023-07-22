@@ -1,5 +1,5 @@
 {
-  "$version": "126.0.0",
+  "$version": "130.1.0",
   "PropertyTypes": {
     "AWS::QuickSight::Analysis.AggregationFunction": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-aggregationfunction.html",
@@ -29,7 +29,7 @@
       "Properties": {
         "AggregationFunction": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-aggregationsortconfiguration.html#cfn-quicksight-analysis-aggregationsortconfiguration-aggregationfunction",
-          "Required": true,
+          "Required": false,
           "Type": "AggregationFunction",
           "UpdateType": "Mutable"
         },
@@ -1226,28 +1226,9 @@
         }
       }
     },
-    "AWS::QuickSight::Analysis.ColorsConfiguration": {
-      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-colorsconfiguration.html",
-      "Properties": {
-        "CustomColors": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-colorsconfiguration.html#cfn-quicksight-analysis-colorsconfiguration-customcolors",
-          "DuplicatesAllowed": true,
-          "ItemType": "CustomColor",
-          "Required": false,
-          "Type": "List",
-          "UpdateType": "Mutable"
-        }
-      }
-    },
     "AWS::QuickSight::Analysis.ColumnConfiguration": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-columnconfiguration.html",
       "Properties": {
-        "ColorsConfiguration": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-columnconfiguration.html#cfn-quicksight-analysis-columnconfiguration-colorsconfiguration",
-          "Required": false,
-          "Type": "ColorsConfiguration",
-          "UpdateType": "Mutable"
-        },
         "Column": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-columnconfiguration.html#cfn-quicksight-analysis-columnconfiguration-column",
           "Required": true,
@@ -1960,29 +1941,6 @@
         }
       }
     },
-    "AWS::QuickSight::Analysis.CustomColor": {
-      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-customcolor.html",
-      "Properties": {
-        "Color": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-customcolor.html#cfn-quicksight-analysis-customcolor-color",
-          "PrimitiveType": "String",
-          "Required": true,
-          "UpdateType": "Mutable"
-        },
-        "FieldValue": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-customcolor.html#cfn-quicksight-analysis-customcolor-fieldvalue",
-          "PrimitiveType": "String",
-          "Required": false,
-          "UpdateType": "Mutable"
-        },
-        "SpecialValue": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-customcolor.html#cfn-quicksight-analysis-customcolor-specialvalue",
-          "PrimitiveType": "String",
-          "Required": false,
-          "UpdateType": "Mutable"
-        }
-      }
-    },
     "AWS::QuickSight::Analysis.CustomContentConfiguration": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-customcontentconfiguration.html",
       "Properties": {
@@ -2298,6 +2256,12 @@
         },
         "Position": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-datalabeloptions.html#cfn-quicksight-analysis-datalabeloptions-position",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "TotalsVisibility": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-datalabeloptions.html#cfn-quicksight-analysis-datalabeloptions-totalsvisibility",
           "PrimitiveType": "String",
           "Required": false,
           "UpdateType": "Mutable"
@@ -2893,6 +2857,12 @@
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-destinationparametervalueconfiguration.html#cfn-quicksight-analysis-destinationparametervalueconfiguration-selectallvalueoptions",
           "PrimitiveType": "String",
           "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "SourceColumn": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-destinationparametervalueconfiguration.html#cfn-quicksight-analysis-destinationparametervalueconfiguration-sourcecolumn",
+          "Required": false,
+          "Type": "ColumnIdentifier",
           "UpdateType": "Mutable"
         },
         "SourceField": {
@@ -3697,6 +3667,14 @@
     "AWS::QuickSight::Analysis.FilterOperationSelectedFieldsConfiguration": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-filteroperationselectedfieldsconfiguration.html",
       "Properties": {
+        "SelectedColumns": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-filteroperationselectedfieldsconfiguration.html#cfn-quicksight-analysis-filteroperationselectedfieldsconfiguration-selectedcolumns",
+          "DuplicatesAllowed": true,
+          "ItemType": "ColumnIdentifier",
+          "Required": false,
+          "Type": "List",
+          "UpdateType": "Mutable"
+        },
         "SelectedFieldOptions": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-filteroperationselectedfieldsconfiguration.html#cfn-quicksight-analysis-filteroperationselectedfieldsconfiguration-selectedfieldoptions",
           "PrimitiveType": "String",
@@ -4657,6 +4635,41 @@
         }
       }
     },
+    "AWS::QuickSight::Analysis.GeospatialHeatmapColorScale": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-geospatialheatmapcolorscale.html",
+      "Properties": {
+        "Colors": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-geospatialheatmapcolorscale.html#cfn-quicksight-analysis-geospatialheatmapcolorscale-colors",
+          "DuplicatesAllowed": true,
+          "ItemType": "GeospatialHeatmapDataColor",
+          "Required": false,
+          "Type": "List",
+          "UpdateType": "Mutable"
+        }
+      }
+    },
+    "AWS::QuickSight::Analysis.GeospatialHeatmapConfiguration": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-geospatialheatmapconfiguration.html",
+      "Properties": {
+        "HeatmapColor": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-geospatialheatmapconfiguration.html#cfn-quicksight-analysis-geospatialheatmapconfiguration-heatmapcolor",
+          "Required": false,
+          "Type": "GeospatialHeatmapColorScale",
+          "UpdateType": "Mutable"
+        }
+      }
+    },
+    "AWS::QuickSight::Analysis.GeospatialHeatmapDataColor": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-geospatialheatmapdatacolor.html",
+      "Properties": {
+        "Color": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-geospatialheatmapdatacolor.html#cfn-quicksight-analysis-geospatialheatmapdatacolor-color",
+          "PrimitiveType": "String",
+          "Required": true,
+          "UpdateType": "Mutable"
+        }
+      }
+    },
     "AWS::QuickSight::Analysis.GeospatialMapAggregatedFieldWells": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-geospatialmapaggregatedfieldwells.html",
       "Properties": {
@@ -4807,6 +4820,12 @@
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-geospatialpointstyleoptions.html#cfn-quicksight-analysis-geospatialpointstyleoptions-clustermarkerconfiguration",
           "Required": false,
           "Type": "ClusterMarkerConfiguration",
+          "UpdateType": "Mutable"
+        },
+        "HeatmapConfiguration": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-geospatialpointstyleoptions.html#cfn-quicksight-analysis-geospatialpointstyleoptions-heatmapconfiguration",
+          "Required": false,
+          "Type": "GeospatialHeatmapConfiguration",
           "UpdateType": "Mutable"
         },
         "SelectedPointStyle": {
@@ -7642,6 +7661,14 @@
           "Type": "PivotTableConditionalFormattingScope",
           "UpdateType": "Mutable"
         },
+        "Scopes": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-pivottablecellconditionalformatting.html#cfn-quicksight-analysis-pivottablecellconditionalformatting-scopes",
+          "DuplicatesAllowed": true,
+          "ItemType": "PivotTableConditionalFormattingScope",
+          "Required": false,
+          "Type": "List",
+          "UpdateType": "Mutable"
+        },
         "TextFormat": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-pivottablecellconditionalformatting.html#cfn-quicksight-analysis-pivottablecellconditionalformatting-textformat",
           "Required": false,
@@ -7745,6 +7772,42 @@
         }
       }
     },
+    "AWS::QuickSight::Analysis.PivotTableFieldCollapseStateOption": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-pivottablefieldcollapsestateoption.html",
+      "Properties": {
+        "State": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-pivottablefieldcollapsestateoption.html#cfn-quicksight-analysis-pivottablefieldcollapsestateoption-state",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "Target": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-pivottablefieldcollapsestateoption.html#cfn-quicksight-analysis-pivottablefieldcollapsestateoption-target",
+          "Required": true,
+          "Type": "PivotTableFieldCollapseStateTarget",
+          "UpdateType": "Mutable"
+        }
+      }
+    },
+    "AWS::QuickSight::Analysis.PivotTableFieldCollapseStateTarget": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-pivottablefieldcollapsestatetarget.html",
+      "Properties": {
+        "FieldDataPathValues": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-pivottablefieldcollapsestatetarget.html#cfn-quicksight-analysis-pivottablefieldcollapsestatetarget-fielddatapathvalues",
+          "DuplicatesAllowed": true,
+          "ItemType": "DataPathValue",
+          "Required": false,
+          "Type": "List",
+          "UpdateType": "Mutable"
+        },
+        "FieldId": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-pivottablefieldcollapsestatetarget.html#cfn-quicksight-analysis-pivottablefieldcollapsestatetarget-fieldid",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        }
+      }
+    },
     "AWS::QuickSight::Analysis.PivotTableFieldOption": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-pivottablefieldoption.html",
       "Properties": {
@@ -7771,6 +7834,14 @@
     "AWS::QuickSight::Analysis.PivotTableFieldOptions": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-pivottablefieldoptions.html",
       "Properties": {
+        "CollapseStateOptions": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-pivottablefieldoptions.html#cfn-quicksight-analysis-pivottablefieldoptions-collapsestateoptions",
+          "DuplicatesAllowed": true,
+          "ItemType": "PivotTableFieldCollapseStateOption",
+          "Required": false,
+          "Type": "List",
+          "UpdateType": "Mutable"
+        },
         "DataPathOptions": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-pivottablefieldoptions.html#cfn-quicksight-analysis-pivottablefieldoptions-datapathoptions",
           "DuplicatesAllowed": true,
@@ -7818,6 +7889,12 @@
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-pivottableoptions.html#cfn-quicksight-analysis-pivottableoptions-cellstyle",
           "Required": false,
           "Type": "TableCellStyle",
+          "UpdateType": "Mutable"
+        },
+        "CollapsedRowDimensionsVisibility": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-pivottableoptions.html#cfn-quicksight-analysis-pivottableoptions-collapsedrowdimensionsvisibility",
+          "PrimitiveType": "String",
+          "Required": false,
           "UpdateType": "Mutable"
         },
         "ColumnHeaderStyle": {
@@ -8141,6 +8218,12 @@
           "Required": false,
           "UpdateType": "Mutable"
         },
+        "AxesRangeScale": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-radarchartconfiguration.html#cfn-quicksight-analysis-radarchartconfiguration-axesrangescale",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
         "BaseSeriesSettings": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-radarchartconfiguration.html#cfn-quicksight-analysis-radarchartconfiguration-baseseriessettings",
           "Required": false,
@@ -8400,7 +8483,7 @@
         },
         "MeasureAggregationFunction": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-referencelinedynamicdataconfiguration.html#cfn-quicksight-analysis-referencelinedynamicdataconfiguration-measureaggregationfunction",
-          "Required": true,
+          "Required": false,
           "Type": "AggregationFunction",
           "UpdateType": "Mutable"
         }
@@ -8790,6 +8873,14 @@
           "Type": "List",
           "UpdateType": "Mutable"
         },
+        "Label": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-scatterplotcategoricallyaggregatedfieldwells.html#cfn-quicksight-analysis-scatterplotcategoricallyaggregatedfieldwells-label",
+          "DuplicatesAllowed": true,
+          "ItemType": "DimensionField",
+          "Required": false,
+          "Type": "List",
+          "UpdateType": "Mutable"
+        },
         "Size": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-scatterplotcategoricallyaggregatedfieldwells.html#cfn-quicksight-analysis-scatterplotcategoricallyaggregatedfieldwells-size",
           "DuplicatesAllowed": true,
@@ -8895,6 +8986,22 @@
     "AWS::QuickSight::Analysis.ScatterPlotUnaggregatedFieldWells": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-scatterplotunaggregatedfieldwells.html",
       "Properties": {
+        "Category": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-scatterplotunaggregatedfieldwells.html#cfn-quicksight-analysis-scatterplotunaggregatedfieldwells-category",
+          "DuplicatesAllowed": true,
+          "ItemType": "DimensionField",
+          "Required": false,
+          "Type": "List",
+          "UpdateType": "Mutable"
+        },
+        "Label": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-scatterplotunaggregatedfieldwells.html#cfn-quicksight-analysis-scatterplotunaggregatedfieldwells-label",
+          "DuplicatesAllowed": true,
+          "ItemType": "DimensionField",
+          "Required": false,
+          "Type": "List",
+          "UpdateType": "Mutable"
+        },
         "Size": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-analysis-scatterplotunaggregatedfieldwells.html#cfn-quicksight-analysis-scatterplotunaggregatedfieldwells-size",
           "DuplicatesAllowed": true,
@@ -11594,7 +11701,7 @@
       "Properties": {
         "AggregationFunction": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-aggregationsortconfiguration.html#cfn-quicksight-dashboard-aggregationsortconfiguration-aggregationfunction",
-          "Required": true,
+          "Required": false,
           "Type": "AggregationFunction",
           "UpdateType": "Mutable"
         },
@@ -12677,28 +12784,9 @@
         }
       }
     },
-    "AWS::QuickSight::Dashboard.ColorsConfiguration": {
-      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-colorsconfiguration.html",
-      "Properties": {
-        "CustomColors": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-colorsconfiguration.html#cfn-quicksight-dashboard-colorsconfiguration-customcolors",
-          "DuplicatesAllowed": true,
-          "ItemType": "CustomColor",
-          "Required": false,
-          "Type": "List",
-          "UpdateType": "Mutable"
-        }
-      }
-    },
     "AWS::QuickSight::Dashboard.ColumnConfiguration": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-columnconfiguration.html",
       "Properties": {
-        "ColorsConfiguration": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-columnconfiguration.html#cfn-quicksight-dashboard-columnconfiguration-colorsconfiguration",
-          "Required": false,
-          "Type": "ColorsConfiguration",
-          "UpdateType": "Mutable"
-        },
         "Column": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-columnconfiguration.html#cfn-quicksight-dashboard-columnconfiguration-column",
           "Required": true,
@@ -13411,29 +13499,6 @@
         }
       }
     },
-    "AWS::QuickSight::Dashboard.CustomColor": {
-      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-customcolor.html",
-      "Properties": {
-        "Color": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-customcolor.html#cfn-quicksight-dashboard-customcolor-color",
-          "PrimitiveType": "String",
-          "Required": true,
-          "UpdateType": "Mutable"
-        },
-        "FieldValue": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-customcolor.html#cfn-quicksight-dashboard-customcolor-fieldvalue",
-          "PrimitiveType": "String",
-          "Required": false,
-          "UpdateType": "Mutable"
-        },
-        "SpecialValue": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-customcolor.html#cfn-quicksight-dashboard-customcolor-specialvalue",
-          "PrimitiveType": "String",
-          "Required": false,
-          "UpdateType": "Mutable"
-        }
-      }
-    },
     "AWS::QuickSight::Dashboard.CustomContentConfiguration": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-customcontentconfiguration.html",
       "Properties": {
@@ -14016,6 +14081,12 @@
         },
         "Position": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-datalabeloptions.html#cfn-quicksight-dashboard-datalabeloptions-position",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "TotalsVisibility": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-datalabeloptions.html#cfn-quicksight-dashboard-datalabeloptions-totalsvisibility",
           "PrimitiveType": "String",
           "Required": false,
           "UpdateType": "Mutable"
@@ -14644,6 +14715,12 @@
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-destinationparametervalueconfiguration.html#cfn-quicksight-dashboard-destinationparametervalueconfiguration-selectallvalueoptions",
           "PrimitiveType": "String",
           "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "SourceColumn": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-destinationparametervalueconfiguration.html#cfn-quicksight-dashboard-destinationparametervalueconfiguration-sourcecolumn",
+          "Required": false,
+          "Type": "ColumnIdentifier",
           "UpdateType": "Mutable"
         },
         "SourceField": {
@@ -15481,6 +15558,14 @@
     "AWS::QuickSight::Dashboard.FilterOperationSelectedFieldsConfiguration": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-filteroperationselectedfieldsconfiguration.html",
       "Properties": {
+        "SelectedColumns": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-filteroperationselectedfieldsconfiguration.html#cfn-quicksight-dashboard-filteroperationselectedfieldsconfiguration-selectedcolumns",
+          "DuplicatesAllowed": true,
+          "ItemType": "ColumnIdentifier",
+          "Required": false,
+          "Type": "List",
+          "UpdateType": "Mutable"
+        },
         "SelectedFieldOptions": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-filteroperationselectedfieldsconfiguration.html#cfn-quicksight-dashboard-filteroperationselectedfieldsconfiguration-selectedfieldoptions",
           "PrimitiveType": "String",
@@ -16441,6 +16526,41 @@
         }
       }
     },
+    "AWS::QuickSight::Dashboard.GeospatialHeatmapColorScale": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-geospatialheatmapcolorscale.html",
+      "Properties": {
+        "Colors": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-geospatialheatmapcolorscale.html#cfn-quicksight-dashboard-geospatialheatmapcolorscale-colors",
+          "DuplicatesAllowed": true,
+          "ItemType": "GeospatialHeatmapDataColor",
+          "Required": false,
+          "Type": "List",
+          "UpdateType": "Mutable"
+        }
+      }
+    },
+    "AWS::QuickSight::Dashboard.GeospatialHeatmapConfiguration": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-geospatialheatmapconfiguration.html",
+      "Properties": {
+        "HeatmapColor": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-geospatialheatmapconfiguration.html#cfn-quicksight-dashboard-geospatialheatmapconfiguration-heatmapcolor",
+          "Required": false,
+          "Type": "GeospatialHeatmapColorScale",
+          "UpdateType": "Mutable"
+        }
+      }
+    },
+    "AWS::QuickSight::Dashboard.GeospatialHeatmapDataColor": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-geospatialheatmapdatacolor.html",
+      "Properties": {
+        "Color": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-geospatialheatmapdatacolor.html#cfn-quicksight-dashboard-geospatialheatmapdatacolor-color",
+          "PrimitiveType": "String",
+          "Required": true,
+          "UpdateType": "Mutable"
+        }
+      }
+    },
     "AWS::QuickSight::Dashboard.GeospatialMapAggregatedFieldWells": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-geospatialmapaggregatedfieldwells.html",
       "Properties": {
@@ -16591,6 +16711,12 @@
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-geospatialpointstyleoptions.html#cfn-quicksight-dashboard-geospatialpointstyleoptions-clustermarkerconfiguration",
           "Required": false,
           "Type": "ClusterMarkerConfiguration",
+          "UpdateType": "Mutable"
+        },
+        "HeatmapConfiguration": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-geospatialpointstyleoptions.html#cfn-quicksight-dashboard-geospatialpointstyleoptions-heatmapconfiguration",
+          "Required": false,
+          "Type": "GeospatialHeatmapConfiguration",
           "UpdateType": "Mutable"
         },
         "SelectedPointStyle": {
@@ -19426,6 +19552,14 @@
           "Type": "PivotTableConditionalFormattingScope",
           "UpdateType": "Mutable"
         },
+        "Scopes": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-pivottablecellconditionalformatting.html#cfn-quicksight-dashboard-pivottablecellconditionalformatting-scopes",
+          "DuplicatesAllowed": true,
+          "ItemType": "PivotTableConditionalFormattingScope",
+          "Required": false,
+          "Type": "List",
+          "UpdateType": "Mutable"
+        },
         "TextFormat": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-pivottablecellconditionalformatting.html#cfn-quicksight-dashboard-pivottablecellconditionalformatting-textformat",
           "Required": false,
@@ -19529,6 +19663,42 @@
         }
       }
     },
+    "AWS::QuickSight::Dashboard.PivotTableFieldCollapseStateOption": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-pivottablefieldcollapsestateoption.html",
+      "Properties": {
+        "State": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-pivottablefieldcollapsestateoption.html#cfn-quicksight-dashboard-pivottablefieldcollapsestateoption-state",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "Target": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-pivottablefieldcollapsestateoption.html#cfn-quicksight-dashboard-pivottablefieldcollapsestateoption-target",
+          "Required": true,
+          "Type": "PivotTableFieldCollapseStateTarget",
+          "UpdateType": "Mutable"
+        }
+      }
+    },
+    "AWS::QuickSight::Dashboard.PivotTableFieldCollapseStateTarget": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-pivottablefieldcollapsestatetarget.html",
+      "Properties": {
+        "FieldDataPathValues": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-pivottablefieldcollapsestatetarget.html#cfn-quicksight-dashboard-pivottablefieldcollapsestatetarget-fielddatapathvalues",
+          "DuplicatesAllowed": true,
+          "ItemType": "DataPathValue",
+          "Required": false,
+          "Type": "List",
+          "UpdateType": "Mutable"
+        },
+        "FieldId": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-pivottablefieldcollapsestatetarget.html#cfn-quicksight-dashboard-pivottablefieldcollapsestatetarget-fieldid",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        }
+      }
+    },
     "AWS::QuickSight::Dashboard.PivotTableFieldOption": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-pivottablefieldoption.html",
       "Properties": {
@@ -19555,6 +19725,14 @@
     "AWS::QuickSight::Dashboard.PivotTableFieldOptions": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-pivottablefieldoptions.html",
       "Properties": {
+        "CollapseStateOptions": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-pivottablefieldoptions.html#cfn-quicksight-dashboard-pivottablefieldoptions-collapsestateoptions",
+          "DuplicatesAllowed": true,
+          "ItemType": "PivotTableFieldCollapseStateOption",
+          "Required": false,
+          "Type": "List",
+          "UpdateType": "Mutable"
+        },
         "DataPathOptions": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-pivottablefieldoptions.html#cfn-quicksight-dashboard-pivottablefieldoptions-datapathoptions",
           "DuplicatesAllowed": true,
@@ -19602,6 +19780,12 @@
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-pivottableoptions.html#cfn-quicksight-dashboard-pivottableoptions-cellstyle",
           "Required": false,
           "Type": "TableCellStyle",
+          "UpdateType": "Mutable"
+        },
+        "CollapsedRowDimensionsVisibility": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-pivottableoptions.html#cfn-quicksight-dashboard-pivottableoptions-collapsedrowdimensionsvisibility",
+          "PrimitiveType": "String",
+          "Required": false,
           "UpdateType": "Mutable"
         },
         "ColumnHeaderStyle": {
@@ -19925,6 +20109,12 @@
           "Required": false,
           "UpdateType": "Mutable"
         },
+        "AxesRangeScale": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-radarchartconfiguration.html#cfn-quicksight-dashboard-radarchartconfiguration-axesrangescale",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
         "BaseSeriesSettings": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-radarchartconfiguration.html#cfn-quicksight-dashboard-radarchartconfiguration-baseseriessettings",
           "Required": false,
@@ -20184,7 +20374,7 @@
         },
         "MeasureAggregationFunction": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-referencelinedynamicdataconfiguration.html#cfn-quicksight-dashboard-referencelinedynamicdataconfiguration-measureaggregationfunction",
-          "Required": true,
+          "Required": false,
           "Type": "AggregationFunction",
           "UpdateType": "Mutable"
         }
@@ -20574,6 +20764,14 @@
           "Type": "List",
           "UpdateType": "Mutable"
         },
+        "Label": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-scatterplotcategoricallyaggregatedfieldwells.html#cfn-quicksight-dashboard-scatterplotcategoricallyaggregatedfieldwells-label",
+          "DuplicatesAllowed": true,
+          "ItemType": "DimensionField",
+          "Required": false,
+          "Type": "List",
+          "UpdateType": "Mutable"
+        },
         "Size": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-scatterplotcategoricallyaggregatedfieldwells.html#cfn-quicksight-dashboard-scatterplotcategoricallyaggregatedfieldwells-size",
           "DuplicatesAllowed": true,
@@ -20679,6 +20877,22 @@
     "AWS::QuickSight::Dashboard.ScatterPlotUnaggregatedFieldWells": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-scatterplotunaggregatedfieldwells.html",
       "Properties": {
+        "Category": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-scatterplotunaggregatedfieldwells.html#cfn-quicksight-dashboard-scatterplotunaggregatedfieldwells-category",
+          "DuplicatesAllowed": true,
+          "ItemType": "DimensionField",
+          "Required": false,
+          "Type": "List",
+          "UpdateType": "Mutable"
+        },
+        "Label": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-scatterplotunaggregatedfieldwells.html#cfn-quicksight-dashboard-scatterplotunaggregatedfieldwells-label",
+          "DuplicatesAllowed": true,
+          "ItemType": "DimensionField",
+          "Required": false,
+          "Type": "List",
+          "UpdateType": "Mutable"
+        },
         "Size": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-dashboard-scatterplotunaggregatedfieldwells.html#cfn-quicksight-dashboard-scatterplotunaggregatedfieldwells-size",
           "DuplicatesAllowed": true,
@@ -25116,7 +25330,7 @@
       "Properties": {
         "AggregationFunction": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-aggregationsortconfiguration.html#cfn-quicksight-template-aggregationsortconfiguration-aggregationfunction",
-          "Required": true,
+          "Required": false,
           "Type": "AggregationFunction",
           "UpdateType": "Mutable"
         },
@@ -26199,28 +26413,9 @@
         }
       }
     },
-    "AWS::QuickSight::Template.ColorsConfiguration": {
-      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-colorsconfiguration.html",
-      "Properties": {
-        "CustomColors": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-colorsconfiguration.html#cfn-quicksight-template-colorsconfiguration-customcolors",
-          "DuplicatesAllowed": true,
-          "ItemType": "CustomColor",
-          "Required": false,
-          "Type": "List",
-          "UpdateType": "Mutable"
-        }
-      }
-    },
     "AWS::QuickSight::Template.ColumnConfiguration": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-columnconfiguration.html",
       "Properties": {
-        "ColorsConfiguration": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-columnconfiguration.html#cfn-quicksight-template-columnconfiguration-colorsconfiguration",
-          "Required": false,
-          "Type": "ColorsConfiguration",
-          "UpdateType": "Mutable"
-        },
         "Column": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-columnconfiguration.html#cfn-quicksight-template-columnconfiguration-column",
           "Required": true,
@@ -26986,29 +27181,6 @@
         }
       }
     },
-    "AWS::QuickSight::Template.CustomColor": {
-      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-customcolor.html",
-      "Properties": {
-        "Color": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-customcolor.html#cfn-quicksight-template-customcolor-color",
-          "PrimitiveType": "String",
-          "Required": true,
-          "UpdateType": "Mutable"
-        },
-        "FieldValue": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-customcolor.html#cfn-quicksight-template-customcolor-fieldvalue",
-          "PrimitiveType": "String",
-          "Required": false,
-          "UpdateType": "Mutable"
-        },
-        "SpecialValue": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-customcolor.html#cfn-quicksight-template-customcolor-specialvalue",
-          "PrimitiveType": "String",
-          "Required": false,
-          "UpdateType": "Mutable"
-        }
-      }
-    },
     "AWS::QuickSight::Template.CustomContentConfiguration": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-customcontentconfiguration.html",
       "Properties": {
@@ -27324,6 +27496,12 @@
         },
         "Position": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-datalabeloptions.html#cfn-quicksight-template-datalabeloptions-position",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "TotalsVisibility": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-datalabeloptions.html#cfn-quicksight-template-datalabeloptions-totalsvisibility",
           "PrimitiveType": "String",
           "Required": false,
           "UpdateType": "Mutable"
@@ -27902,6 +28080,12 @@
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-destinationparametervalueconfiguration.html#cfn-quicksight-template-destinationparametervalueconfiguration-selectallvalueoptions",
           "PrimitiveType": "String",
           "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "SourceColumn": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-destinationparametervalueconfiguration.html#cfn-quicksight-template-destinationparametervalueconfiguration-sourcecolumn",
+          "Required": false,
+          "Type": "ColumnIdentifier",
           "UpdateType": "Mutable"
         },
         "SourceField": {
@@ -28706,6 +28890,14 @@
     "AWS::QuickSight::Template.FilterOperationSelectedFieldsConfiguration": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-filteroperationselectedfieldsconfiguration.html",
       "Properties": {
+        "SelectedColumns": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-filteroperationselectedfieldsconfiguration.html#cfn-quicksight-template-filteroperationselectedfieldsconfiguration-selectedcolumns",
+          "DuplicatesAllowed": true,
+          "ItemType": "ColumnIdentifier",
+          "Required": false,
+          "Type": "List",
+          "UpdateType": "Mutable"
+        },
         "SelectedFieldOptions": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-filteroperationselectedfieldsconfiguration.html#cfn-quicksight-template-filteroperationselectedfieldsconfiguration-selectedfieldoptions",
           "PrimitiveType": "String",
@@ -29666,6 +29858,41 @@
         }
       }
     },
+    "AWS::QuickSight::Template.GeospatialHeatmapColorScale": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-geospatialheatmapcolorscale.html",
+      "Properties": {
+        "Colors": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-geospatialheatmapcolorscale.html#cfn-quicksight-template-geospatialheatmapcolorscale-colors",
+          "DuplicatesAllowed": true,
+          "ItemType": "GeospatialHeatmapDataColor",
+          "Required": false,
+          "Type": "List",
+          "UpdateType": "Mutable"
+        }
+      }
+    },
+    "AWS::QuickSight::Template.GeospatialHeatmapConfiguration": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-geospatialheatmapconfiguration.html",
+      "Properties": {
+        "HeatmapColor": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-geospatialheatmapconfiguration.html#cfn-quicksight-template-geospatialheatmapconfiguration-heatmapcolor",
+          "Required": false,
+          "Type": "GeospatialHeatmapColorScale",
+          "UpdateType": "Mutable"
+        }
+      }
+    },
+    "AWS::QuickSight::Template.GeospatialHeatmapDataColor": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-geospatialheatmapdatacolor.html",
+      "Properties": {
+        "Color": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-geospatialheatmapdatacolor.html#cfn-quicksight-template-geospatialheatmapdatacolor-color",
+          "PrimitiveType": "String",
+          "Required": true,
+          "UpdateType": "Mutable"
+        }
+      }
+    },
     "AWS::QuickSight::Template.GeospatialMapAggregatedFieldWells": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-geospatialmapaggregatedfieldwells.html",
       "Properties": {
@@ -29816,6 +30043,12 @@
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-geospatialpointstyleoptions.html#cfn-quicksight-template-geospatialpointstyleoptions-clustermarkerconfiguration",
           "Required": false,
           "Type": "ClusterMarkerConfiguration",
+          "UpdateType": "Mutable"
+        },
+        "HeatmapConfiguration": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-geospatialpointstyleoptions.html#cfn-quicksight-template-geospatialpointstyleoptions-heatmapconfiguration",
+          "Required": false,
+          "Type": "GeospatialHeatmapConfiguration",
           "UpdateType": "Mutable"
         },
         "SelectedPointStyle": {
@@ -32595,6 +32828,14 @@
           "Type": "PivotTableConditionalFormattingScope",
           "UpdateType": "Mutable"
         },
+        "Scopes": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-pivottablecellconditionalformatting.html#cfn-quicksight-template-pivottablecellconditionalformatting-scopes",
+          "DuplicatesAllowed": true,
+          "ItemType": "PivotTableConditionalFormattingScope",
+          "Required": false,
+          "Type": "List",
+          "UpdateType": "Mutable"
+        },
         "TextFormat": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-pivottablecellconditionalformatting.html#cfn-quicksight-template-pivottablecellconditionalformatting-textformat",
           "Required": false,
@@ -32698,6 +32939,42 @@
         }
       }
     },
+    "AWS::QuickSight::Template.PivotTableFieldCollapseStateOption": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-pivottablefieldcollapsestateoption.html",
+      "Properties": {
+        "State": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-pivottablefieldcollapsestateoption.html#cfn-quicksight-template-pivottablefieldcollapsestateoption-state",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "Target": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-pivottablefieldcollapsestateoption.html#cfn-quicksight-template-pivottablefieldcollapsestateoption-target",
+          "Required": true,
+          "Type": "PivotTableFieldCollapseStateTarget",
+          "UpdateType": "Mutable"
+        }
+      }
+    },
+    "AWS::QuickSight::Template.PivotTableFieldCollapseStateTarget": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-pivottablefieldcollapsestatetarget.html",
+      "Properties": {
+        "FieldDataPathValues": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-pivottablefieldcollapsestatetarget.html#cfn-quicksight-template-pivottablefieldcollapsestatetarget-fielddatapathvalues",
+          "DuplicatesAllowed": true,
+          "ItemType": "DataPathValue",
+          "Required": false,
+          "Type": "List",
+          "UpdateType": "Mutable"
+        },
+        "FieldId": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-pivottablefieldcollapsestatetarget.html#cfn-quicksight-template-pivottablefieldcollapsestatetarget-fieldid",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        }
+      }
+    },
     "AWS::QuickSight::Template.PivotTableFieldOption": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-pivottablefieldoption.html",
       "Properties": {
@@ -32724,6 +33001,14 @@
     "AWS::QuickSight::Template.PivotTableFieldOptions": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-pivottablefieldoptions.html",
       "Properties": {
+        "CollapseStateOptions": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-pivottablefieldoptions.html#cfn-quicksight-template-pivottablefieldoptions-collapsestateoptions",
+          "DuplicatesAllowed": true,
+          "ItemType": "PivotTableFieldCollapseStateOption",
+          "Required": false,
+          "Type": "List",
+          "UpdateType": "Mutable"
+        },
         "DataPathOptions": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-pivottablefieldoptions.html#cfn-quicksight-template-pivottablefieldoptions-datapathoptions",
           "DuplicatesAllowed": true,
@@ -32771,6 +33056,12 @@
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-pivottableoptions.html#cfn-quicksight-template-pivottableoptions-cellstyle",
           "Required": false,
           "Type": "TableCellStyle",
+          "UpdateType": "Mutable"
+        },
+        "CollapsedRowDimensionsVisibility": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-pivottableoptions.html#cfn-quicksight-template-pivottableoptions-collapsedrowdimensionsvisibility",
+          "PrimitiveType": "String",
+          "Required": false,
           "UpdateType": "Mutable"
         },
         "ColumnHeaderStyle": {
@@ -33094,6 +33385,12 @@
           "Required": false,
           "UpdateType": "Mutable"
         },
+        "AxesRangeScale": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-radarchartconfiguration.html#cfn-quicksight-template-radarchartconfiguration-axesrangescale",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
         "BaseSeriesSettings": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-radarchartconfiguration.html#cfn-quicksight-template-radarchartconfiguration-baseseriessettings",
           "Required": false,
@@ -33353,7 +33650,7 @@
         },
         "MeasureAggregationFunction": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-referencelinedynamicdataconfiguration.html#cfn-quicksight-template-referencelinedynamicdataconfiguration-measureaggregationfunction",
-          "Required": true,
+          "Required": false,
           "Type": "AggregationFunction",
           "UpdateType": "Mutable"
         }
@@ -33743,6 +34040,14 @@
           "Type": "List",
           "UpdateType": "Mutable"
         },
+        "Label": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-scatterplotcategoricallyaggregatedfieldwells.html#cfn-quicksight-template-scatterplotcategoricallyaggregatedfieldwells-label",
+          "DuplicatesAllowed": true,
+          "ItemType": "DimensionField",
+          "Required": false,
+          "Type": "List",
+          "UpdateType": "Mutable"
+        },
         "Size": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-scatterplotcategoricallyaggregatedfieldwells.html#cfn-quicksight-template-scatterplotcategoricallyaggregatedfieldwells-size",
           "DuplicatesAllowed": true,
@@ -33848,6 +34153,22 @@
     "AWS::QuickSight::Template.ScatterPlotUnaggregatedFieldWells": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-scatterplotunaggregatedfieldwells.html",
       "Properties": {
+        "Category": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-scatterplotunaggregatedfieldwells.html#cfn-quicksight-template-scatterplotunaggregatedfieldwells-category",
+          "DuplicatesAllowed": true,
+          "ItemType": "DimensionField",
+          "Required": false,
+          "Type": "List",
+          "UpdateType": "Mutable"
+        },
+        "Label": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-scatterplotunaggregatedfieldwells.html#cfn-quicksight-template-scatterplotunaggregatedfieldwells-label",
+          "DuplicatesAllowed": true,
+          "ItemType": "DimensionField",
+          "Required": false,
+          "Type": "List",
+          "UpdateType": "Mutable"
+        },
         "Size": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-template-scatterplotunaggregatedfieldwells.html#cfn-quicksight-template-scatterplotunaggregatedfieldwells-size",
           "DuplicatesAllowed": true,
@@ -36772,6 +37093,12 @@
           "PrimitiveType": "String",
           "Required": true,
           "UpdateType": "Mutable"
+        },
+        "Resource": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-quicksight-theme-resourcepermission.html#cfn-quicksight-theme-resourcepermission-resource",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
         }
       }
     },
@@ -38595,19 +38922,19 @@
         "BaseThemeId": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-quicksight-theme.html#cfn-quicksight-theme-basethemeid",
           "PrimitiveType": "String",
-          "Required": false,
+          "Required": true,
           "UpdateType": "Mutable"
         },
         "Configuration": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-quicksight-theme.html#cfn-quicksight-theme-configuration",
-          "Required": false,
+          "Required": true,
           "Type": "ThemeConfiguration",
           "UpdateType": "Mutable"
         },
         "Name": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-quicksight-theme.html#cfn-quicksight-theme-name",
           "PrimitiveType": "String",
-          "Required": false,
+          "Required": true,
           "UpdateType": "Mutable"
         },
         "Permissions": {

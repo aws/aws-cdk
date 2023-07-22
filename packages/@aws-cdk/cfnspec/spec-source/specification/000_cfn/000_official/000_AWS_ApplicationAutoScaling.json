@@ -1,5 +1,5 @@
 {
-  "$version": "126.0.0",
+  "$version": "130.1.0",
   "PropertyTypes": {
     "AWS::ApplicationAutoScaling::ScalableTarget.ScalableTargetAction": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalabletarget-scalabletargetaction.html",
@@ -23,7 +23,7 @@
       "Properties": {
         "EndTime": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalabletarget-scheduledaction.html#cfn-applicationautoscaling-scalabletarget-scheduledaction-endtime",
-          "PrimitiveType": "String",
+          "PrimitiveType": "Timestamp",
           "Required": false,
           "UpdateType": "Mutable"
         },
@@ -47,7 +47,7 @@
         },
         "StartTime": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalabletarget-scheduledaction.html#cfn-applicationautoscaling-scalabletarget-scheduledaction-starttime",
-          "PrimitiveType": "String",
+          "PrimitiveType": "Timestamp",
           "Required": false,
           "UpdateType": "Mutable"
         },

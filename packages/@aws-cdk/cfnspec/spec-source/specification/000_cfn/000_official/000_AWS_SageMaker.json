@@ -1,5 +1,5 @@
 {
-  "$version": "126.0.0",
+  "$version": "130.1.0",
   "PropertyTypes": {
     "AWS::SageMaker::App.ResourceSpec": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sagemaker-app-resourcespec.html",
@@ -3654,31 +3654,17 @@
           "PrimitiveType": "String",
           "Required": false,
           "UpdateType": "Conditional"
-        },
-        "ProductId": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sagemaker-modelpackage-modelpackagecontainerdefinition.html#cfn-sagemaker-modelpackage-modelpackagecontainerdefinition-productid",
-          "PrimitiveType": "String",
-          "Required": false,
-          "UpdateType": "Conditional"
         }
       }
     },
     "AWS::SageMaker::ModelPackage.ModelPackageStatusDetails": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sagemaker-modelpackage-modelpackagestatusdetails.html",
       "Properties": {
-        "ImageScanStatuses": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sagemaker-modelpackage-modelpackagestatusdetails.html#cfn-sagemaker-modelpackage-modelpackagestatusdetails-imagescanstatuses",
-          "DuplicatesAllowed": true,
-          "ItemType": "ModelPackageStatusItem",
-          "Required": false,
-          "Type": "List",
-          "UpdateType": "Mutable"
-        },
         "ValidationStatuses": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sagemaker-modelpackage-modelpackagestatusdetails.html#cfn-sagemaker-modelpackage-modelpackagestatusdetails-validationstatuses",
           "DuplicatesAllowed": true,
           "ItemType": "ModelPackageStatusItem",
-          "Required": true,
+          "Required": false,
           "Type": "List",
           "UpdateType": "Mutable"
         }
@@ -3897,29 +3883,6 @@
           "PrimitiveType": "String",
           "Required": false,
           "UpdateType": "Immutable"
-        }
-      }
-    },
-    "AWS::SageMaker::ModelPackage.UserContext": {
-      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sagemaker-modelpackage-usercontext.html",
-      "Properties": {
-        "DomainId": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sagemaker-modelpackage-usercontext.html#cfn-sagemaker-modelpackage-usercontext-domainid",
-          "PrimitiveType": "String",
-          "Required": false,
-          "UpdateType": "Mutable"
-        },
-        "UserProfileArn": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sagemaker-modelpackage-usercontext.html#cfn-sagemaker-modelpackage-usercontext-userprofilearn",
-          "PrimitiveType": "String",
-          "Required": false,
-          "UpdateType": "Mutable"
-        },
-        "UserProfileName": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sagemaker-modelpackage-usercontext.html#cfn-sagemaker-modelpackage-usercontext-userprofilename",
-          "PrimitiveType": "String",
-          "Required": false,
-          "UpdateType": "Mutable"
         }
       }
     },
@@ -6387,12 +6350,6 @@
       },
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sagemaker-modelpackage.html",
       "Properties": {
-        "AdditionalInferenceSpecificationDefinition": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sagemaker-modelpackage.html#cfn-sagemaker-modelpackage-additionalinferencespecificationdefinition",
-          "Required": false,
-          "Type": "AdditionalInferenceSpecificationDefinition",
-          "UpdateType": "Mutable"
-        },
         "AdditionalInferenceSpecifications": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sagemaker-modelpackage.html#cfn-sagemaker-modelpackage-additionalinferencespecifications",
           "DuplicatesAllowed": true,
@@ -6427,12 +6384,6 @@
           "Required": false,
           "UpdateType": "Immutable"
         },
-        "CreatedBy": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sagemaker-modelpackage.html#cfn-sagemaker-modelpackage-createdby",
-          "Required": false,
-          "Type": "UserContext",
-          "UpdateType": "Mutable"
-        },
         "CustomerMetadataProperties": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sagemaker-modelpackage.html#cfn-sagemaker-modelpackage-customermetadataproperties",
           "PrimitiveItemType": "String",
@@ -6452,24 +6403,11 @@
           "Type": "DriftCheckBaselines",
           "UpdateType": "Immutable"
         },
-        "Environment": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sagemaker-modelpackage.html#cfn-sagemaker-modelpackage-environment",
-          "PrimitiveItemType": "String",
-          "Required": false,
-          "Type": "Map",
-          "UpdateType": "Mutable"
-        },
         "InferenceSpecification": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sagemaker-modelpackage.html#cfn-sagemaker-modelpackage-inferencespecification",
           "Required": false,
           "Type": "InferenceSpecification",
           "UpdateType": "Immutable"
-        },
-        "LastModifiedBy": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sagemaker-modelpackage.html#cfn-sagemaker-modelpackage-lastmodifiedby",
-          "Required": false,
-          "Type": "UserContext",
-          "UpdateType": "Mutable"
         },
         "LastModifiedTime": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sagemaker-modelpackage.html#cfn-sagemaker-modelpackage-lastmodifiedtime",
@@ -6517,12 +6455,6 @@
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sagemaker-modelpackage.html#cfn-sagemaker-modelpackage-modelpackagestatusdetails",
           "Required": false,
           "Type": "ModelPackageStatusDetails",
-          "UpdateType": "Mutable"
-        },
-        "ModelPackageStatusItem": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sagemaker-modelpackage.html#cfn-sagemaker-modelpackage-modelpackagestatusitem",
-          "Required": false,
-          "Type": "ModelPackageStatusItem",
           "UpdateType": "Mutable"
         },
         "ModelPackageVersion": {

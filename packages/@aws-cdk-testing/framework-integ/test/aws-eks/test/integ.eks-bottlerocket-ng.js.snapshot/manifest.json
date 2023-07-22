@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/770a037527307396d508b10e843c512fc31d0efe2903045dedfda33d35c27e95.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/98b694cff6ebbf29ba2d93aee00916353ee228aab7083c59933c863c06dc1b61.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -429,16 +429,16 @@
             "data": "awscdkeksclusterbottlerocketngtestawscdkawseksKubectlProviderframeworkonEvent3ECB1FCDArn"
           }
         ],
-        "/aws-cdk-eks-cluster-bottlerocket-ng-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterbottlerocketngtestClusterKubectlHandlerRoleF0C5857AArn": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "referencetoawscdkeksclusterbottlerocketngtestClusterKubectlHandlerRoleF0C5857AArn"
-          }
-        ],
         "/aws-cdk-eks-cluster-bottlerocket-ng-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterbottlerocketngtestKubectlLayer779BB176Ref": [
           {
             "type": "aws:cdk:logicalId",
             "data": "referencetoawscdkeksclusterbottlerocketngtestKubectlLayer779BB176Ref"
+          }
+        ],
+        "/aws-cdk-eks-cluster-bottlerocket-ng-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterbottlerocketngtestClusterKubectlHandlerRoleF0C5857AArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoawscdkeksclusterbottlerocketngtestClusterKubectlHandlerRoleF0C5857AArn"
           }
         ],
         "/aws-cdk-eks-cluster-bottlerocket-ng-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterbottlerocketngtestVpcPrivateSubnet1Subnet2EA4083BRef": [

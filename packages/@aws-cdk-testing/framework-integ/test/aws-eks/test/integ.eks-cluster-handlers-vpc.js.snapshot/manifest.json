@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/246f7f3ecdcf2bf7e25cad70de3cb1dbb76273774fbf2d3900b46b69df2ebd38.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d87a1588053944807513221c5b603c5d73b03a772eddb022b5bac42dc6807a66.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -459,16 +459,16 @@
             "data": "awscdkekshandlersinvpctestawscdkawseksKubectlProviderframeworkonEventB8D0A5E7Arn"
           }
         ],
-        "/aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkekshandlersinvpctestEksAllHandlersInVpcStackKubectlHandlerRole12BCDBC7Arn": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "referencetoawscdkekshandlersinvpctestEksAllHandlersInVpcStackKubectlHandlerRole12BCDBC7Arn"
-          }
-        ],
         "/aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkekshandlersinvpctestKubectlLayerAD42127BRef": [
           {
             "type": "aws:cdk:logicalId",
             "data": "referencetoawscdkekshandlersinvpctestKubectlLayerAD42127BRef"
+          }
+        ],
+        "/aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkekshandlersinvpctestEksAllHandlersInVpcStackKubectlHandlerRole12BCDBC7Arn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoawscdkekshandlersinvpctestEksAllHandlersInVpcStackKubectlHandlerRole12BCDBC7Arn"
           }
         ],
         "/aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkekshandlersinvpctestEksAllHandlersInVpcStackDefaultVpcPrivateSubnet1Subnet9479BAA8Ref": [

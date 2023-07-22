@@ -124,14 +124,6 @@
               "version": "0.0.0"
             }
           },
-          "DefaultCrNodeVersionMap": {
-            "id": "DefaultCrNodeVersionMap",
-            "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/DefaultCrNodeVersionMap",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
-              "version": "0.0.0"
-            }
-          },
           "Custom::S3AutoDeleteObjectsCustomResourceProvider": {
             "id": "Custom::S3AutoDeleteObjectsCustomResourceProvider",
             "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/Custom::S3AutoDeleteObjectsCustomResourceProvider",
@@ -443,15 +435,7 @@
                       }
                     },
                     "handler": "index.handler",
-                    "runtime": {
-                      "Fn::FindInMap": [
-                        "DefaultCrNodeVersionMap",
-                        {
-                          "Ref": "AWS::Region"
-                        },
-                        "value"
-                      ]
-                    },
+                    "runtime": "nodejs18.x",
                     "timeout": 60
                   }
                 },
@@ -1045,7 +1029,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.26"
+          "version": "10.2.55"
         }
       }
     },

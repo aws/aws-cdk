@@ -1,5 +1,5 @@
 {
-  "$version": "126.0.0",
+  "$version": "130.1.0",
   "PropertyTypes": {
     "AWS::WAFv2::LoggingConfiguration.ActionCondition": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-loggingconfiguration-actioncondition.html",
@@ -1192,6 +1192,18 @@
         }
       }
     },
+    "AWS::WAFv2::WebACL.AssociationConfig": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-webacl-associationconfig.html",
+      "Properties": {
+        "RequestBody": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-webacl-associationconfig.html#cfn-wafv2-webacl-associationconfig-requestbody",
+          "ItemType": "RequestBodyAssociatedResourceTypeConfig",
+          "Required": false,
+          "Type": "Map",
+          "UpdateType": "Mutable"
+        }
+      }
+    },
     "AWS::WAFv2::WebACL.BlockAction": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-webacl-blockaction.html",
       "Properties": {
@@ -1959,6 +1971,17 @@
         }
       }
     },
+    "AWS::WAFv2::WebACL.RequestBodyAssociatedResourceTypeConfig": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-webacl-requestbodyassociatedresourcetypeconfig.html",
+      "Properties": {
+        "DefaultSizeInspectionLimit": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-webacl-requestbodyassociatedresourcetypeconfig.html#cfn-wafv2-webacl-requestbodyassociatedresourcetypeconfig-defaultsizeinspectionlimit",
+          "PrimitiveType": "String",
+          "Required": true,
+          "UpdateType": "Mutable"
+        }
+      }
+    },
     "AWS::WAFv2::WebACL.RequestInspection": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-webacl-requestinspection.html",
       "Properties": {
@@ -2721,6 +2744,12 @@
       },
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafv2-webacl.html",
       "Properties": {
+        "AssociationConfig": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafv2-webacl.html#cfn-wafv2-webacl-associationconfig",
+          "Required": false,
+          "Type": "AssociationConfig",
+          "UpdateType": "Mutable"
+        },
         "CaptchaConfig": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafv2-webacl.html#cfn-wafv2-webacl-captchaconfig",
           "Required": false,

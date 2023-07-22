@@ -1,14 +1,102 @@
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import { IFileSystem } from 'aws-cdk-lib/aws-efs';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as ssm from 'aws-cdk-lib/aws-ssm';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import { Lazy, PhysicalName, Size } from 'aws-cdk-lib/core';
 import { Construct, IConstruct } from 'constructs';
 import { CfnJobDefinition } from 'aws-cdk-lib/aws-batch';
 import { LinuxParameters } from './linux-parameters';
+import { LogGroup } from 'aws-cdk-lib/aws-logs';
 
 const EFS_VOLUME_SYMBOL = Symbol.for('aws-cdk-lib/aws-batch/lib/container-definition.EfsVolume');
 const HOST_VOLUME_SYMBOL = Symbol.for('aws-cdk-lib/aws-batch/lib/container-definition.HostVolume');
+
+/**
+ * Specify the secret's version id or version stage
+ */
+export interface SecretVersionInfo {
+  /**
+   * version id of the secret
+   *
+   * @default - use default version id
+   */
+  readonly versionId?: string;
+  /**
+   * version stage of the secret
+   *
+   * @default - use default version stage
+   */
+  readonly versionStage?: string;
+}
+
+/**
+ * A secret environment variable.
+ */
+export abstract class Secret {
+  /**
+   * Creates an environment variable value from a parameter stored in AWS
+   * Systems Manager Parameter Store.
+   */
+  public static fromSsmParameter(parameter: ssm.IParameter): Secret {
+    return {
+      arn: parameter.parameterArn,
+      grantRead: grantee => parameter.grantRead(grantee),
+    };
+  }
+
+  /**
+   * Creates a environment variable value from a secret stored in AWS Secrets
+   * Manager.
+   *
+   * @param secret the secret stored in AWS Secrets Manager
+   * @param field the name of the field with the value that you want to set as
+   * the environment variable value. Only values in JSON format are supported.
+   * If you do not specify a JSON field, then the full content of the secret is
+   * used.
+   */
+  public static fromSecretsManager(secret: secretsmanager.ISecret, field?: string): Secret {
+    return {
+      arn: field ? `${secret.secretArn}:${field}::` : secret.secretArn,
+      hasField: !!field,
+      grantRead: grantee => secret.grantRead(grantee),
+    };
+  }
+
+  /**
+   * Creates a environment variable value from a secret stored in AWS Secrets
+   * Manager.
+   *
+   * @param secret the secret stored in AWS Secrets Manager
+   * @param versionInfo the version information to reference the secret
+   * @param field the name of the field with the value that you want to set as
+   * the environment variable value. Only values in JSON format are supported.
+   * If you do not specify a JSON field, then the full content of the secret is
+   * used.
+   */
+  public static fromSecretsManagerVersion(secret: secretsmanager.ISecret, versionInfo: SecretVersionInfo, field?: string): Secret {
+    return {
+      arn: `${secret.secretArn}:${field ?? ''}:${versionInfo.versionStage ?? ''}:${versionInfo.versionId ?? ''}`,
+      hasField: !!field,
+      grantRead: grantee => secret.grantRead(grantee),
+    };
+  }
+
+  /**
+   * The ARN of the secret
+   */
+  public abstract readonly arn: string;
+
+  /**
+   * Whether this secret uses a specific JSON field
+   */
+  public abstract readonly hasField?: boolean;
+
+  /**
+   * Grants reading the secret to a principal
+   */
+  public abstract grantRead(grantee: iam.IGrantable): iam.Grant;
+}
 
 /**
  * Options to configure an EcsVolume
@@ -342,13 +430,14 @@ export interface IEcsContainerDefinition extends IConstruct {
   readonly readonlyRootFilesystem?: boolean;
 
   /**
-   * The secrets for the container. Can be referenced in your job definition.
+   * A map from environment variable names to the secrets for the container. Allows your job definitions
+   * to reference the secret by the environment variable name defined in this property.
    *
    * @see https://docs.aws.amazon.com/batch/latest/userguide/specifying-sensitive-data.html
    *
    * @default - no secrets
    */
-  readonly secrets?: secretsmanager.ISecret[];
+  readonly secrets?: { [envVarName: string]: Secret };
 
   /**
    * The user name to use inside the container
@@ -458,13 +547,14 @@ export interface EcsContainerDefinitionProps {
   readonly readonlyRootFilesystem?: boolean;
 
   /**
-   * The secrets for the container. Can be referenced in your job definition.
+   * A map from environment variable names to the secrets for the container. Allows your job definitions
+   * to reference the secret by the environment variable name defined in this property.
    *
    * @see https://docs.aws.amazon.com/batch/latest/userguide/specifying-sensitive-data.html
    *
    * @default - no secrets
    */
-  readonly secrets?: secretsmanager.ISecret[];
+  readonly secrets?: { [envVarName: string]: Secret };
 
   /**
    * The user name to use inside the container
@@ -495,7 +585,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
   public readonly linuxParameters?: LinuxParameters;
   public readonly logDriverConfig?: ecs.LogDriverConfig;
   public readonly readonlyRootFilesystem?: boolean;
-  public readonly secrets?: secretsmanager.ISecret[];
+  public readonly secrets?: { [envVarName: string]: Secret };
   public readonly user?: string;
   public readonly volumes: EcsVolume[];
 
@@ -508,7 +598,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
     this.cpu = props.cpu;
     this.command = props.command;
     this.environment = props.environment;
-    this.executionRole = props.executionRole ?? createExecutionRole(this, 'ExecutionRole');
+    this.executionRole = props.executionRole ?? createExecutionRole(this, 'ExecutionRole', props.logging ? true : false);
     this.jobRole = props.jobRole;
     this.linuxParameters = props.linuxParameters;
     this.memory = props.memory;
@@ -553,12 +643,14 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
       logConfiguration: this.logDriverConfig,
       readonlyRootFilesystem: this.readonlyRootFilesystem,
       resourceRequirements: this._renderResourceRequirements(),
-      secrets: this.secrets?.map((secret) => {
+      secrets: this.secrets ? Object.entries(this.secrets).map(([name, secret]) => {
+        secret.grantRead(this.executionRole);
+
         return {
-          name: secret.secretName,
-          valueFrom: secret.secretArn,
+          name,
+          valueFrom: secret.arn,
         };
-      }),
+      }) : undefined,
       mountPoints: Lazy.any({
         produce: () => {
           if (this.volumes.length === 0) {
@@ -880,6 +972,13 @@ export interface IEcsFargateContainerDefinition extends IEcsContainerDefinition 
    * @default LATEST
    */
   readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
+
+  /**
+   * The size for ephemeral storage.
+   *
+   * @default - 20 GiB
+   */
+  readonly ephemeralStorageSize?: Size;
 }
 
 /**
@@ -903,6 +1002,13 @@ export interface EcsFargateContainerDefinitionProps extends EcsContainerDefiniti
    * @default LATEST
    */
   readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
+
+  /**
+   * The size for ephemeral storage.
+   *
+   * @default - 20 GiB
+   */
+  readonly ephemeralStorageSize?: Size;
 }
 
 /**
@@ -911,11 +1017,22 @@ export interface EcsFargateContainerDefinitionProps extends EcsContainerDefiniti
 export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase implements IEcsFargateContainerDefinition {
   public readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
   public readonly assignPublicIp?: boolean;
+  public readonly ephemeralStorageSize?: Size;
 
   constructor(scope: Construct, id: string, props: EcsFargateContainerDefinitionProps) {
     super(scope, id, props);
     this.assignPublicIp = props.assignPublicIp;
     this.fargatePlatformVersion = props.fargatePlatformVersion;
+    this.ephemeralStorageSize = props.ephemeralStorageSize;
+
+    // validates ephemeralStorageSize is within limits
+    if (props.ephemeralStorageSize) {
+      if (props.ephemeralStorageSize.toGibibytes() > 200) {
+        throw new Error(`ECS Fargate container '${id}' specifies 'ephemeralStorageSize' at ${props.ephemeralStorageSize.toGibibytes()} > 200 GB`);
+      } else if (props.ephemeralStorageSize.toGibibytes() < 21) {
+        throw new Error(`ECS Fargate container '${id}' specifies 'ephemeralStorageSize' at ${props.ephemeralStorageSize.toGibibytes()} < 21 GB`);
+      }
+    }
   }
 
   /**
@@ -924,6 +1041,9 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
   public _renderContainerDefinition(): CfnJobDefinition.ContainerPropertiesProperty {
     return {
       ...super._renderContainerDefinition(),
+      ephemeralStorage: this.ephemeralStorageSize? {
+        sizeInGiB: this.ephemeralStorageSize?.toGibibytes(),
+      } : undefined,
       fargatePlatformConfiguration: {
         platformVersion: this.fargatePlatformVersion?.toString(),
       },
@@ -934,10 +1054,17 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
   };
 }
 
-function createExecutionRole(scope: Construct, id: string): iam.IRole {
-  return new iam.Role(scope, id, {
+function createExecutionRole(scope: Construct, id: string, logging: boolean): iam.IRole {
+  const execRole = new iam.Role(scope, id, {
     assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
     // needed for cross-account access with TagParameterContainerImage
     roleName: PhysicalName.GENERATE_IF_NEEDED,
   });
+
+  if (!logging) {
+    // all jobs will fail without this if they produce any output at all when no logging is specified
+    LogGroup.fromLogGroupName(scope, 'batchDefaultLogGroup', '/aws/batch/job').grantWrite(execRole);
+  }
+
+  return execRole;
 }

@@ -124,14 +124,6 @@
               "version": "0.0.0"
             }
           },
-          "DefaultCrNodeVersionMap": {
-            "id": "DefaultCrNodeVersionMap",
-            "path": "StackSetPipelineStack/DefaultCrNodeVersionMap",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
-              "version": "0.0.0"
-            }
-          },
           "Custom::S3AutoDeleteObjectsCustomResourceProvider": {
             "id": "Custom::S3AutoDeleteObjectsCustomResourceProvider",
             "path": "StackSetPipelineStack/Custom::S3AutoDeleteObjectsCustomResourceProvider",
@@ -314,6 +306,12 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::CodePipeline::Pipeline",
                   "aws:cdk:cloudformation:props": {
+                    "artifactStore": {
+                      "type": "S3",
+                      "location": {
+                        "Ref": "ArtifactBucket7410C9EF"
+                      }
+                    },
                     "roleArn": {
                       "Fn::GetAtt": [
                         "PipelineRoleD68726F7",
@@ -413,13 +411,7 @@
                           }
                         ]
                       }
-                    ],
-                    "artifactStore": {
-                      "type": "S3",
-                      "location": {
-                        "Ref": "ArtifactBucket7410C9EF"
-                      }
-                    }
+                    ]
                   }
                 },
                 "constructInfo": {
@@ -605,13 +597,13 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.2.55"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.2.55"
                 }
               },
               "Cfn": {
@@ -679,7 +671,7 @@
                             "path": "StackSetPipelineStack/Pipeline/Cfn/StackSet/CodePipelineActionRole/8389e75f-0810-4838-bf64-d6f85a95cf83",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.270"
+                              "version": "10.2.55"
                             }
                           },
                           "DefaultPolicy": {
@@ -909,7 +901,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.2.55"
                     }
                   },
                   "Instances": {
@@ -973,7 +965,7 @@
                             "path": "StackSetPipelineStack/Pipeline/Cfn/Instances/CodePipelineActionRole/8389e75f-0810-4838-bf64-d6f85a95cf83",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.270"
+                              "version": "10.2.55"
                             }
                           },
                           "DefaultPolicy": {
@@ -1050,13 +1042,13 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.2.55"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.2.55"
                 }
               }
             },
@@ -1113,12 +1105,66 @@
           "version": "0.0.0"
         }
       },
+      "StackSetPipelineStackInteg": {
+        "id": "StackSetPipelineStackInteg",
+        "path": "StackSetPipelineStackInteg",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "StackSetPipelineStackInteg/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "StackSetPipelineStackInteg/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.55"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "StackSetPipelineStackInteg/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "StackSetPipelineStackInteg/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "StackSetPipelineStackInteg/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
       "Tree": {
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.2.55"
         }
       }
     },

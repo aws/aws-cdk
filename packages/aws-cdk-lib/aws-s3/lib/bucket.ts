@@ -27,7 +27,7 @@ import {
   Token,
   Tokenization,
   Annotations,
-  builtInCustomResourceProviderNodeRuntime,
+  CustomResourceProviderRuntime,
 } from '../../core';
 import { CfnReference } from '../../core/lib/private/cfn-reference';
 import * as cxapi from '../../cx-api';
@@ -1344,18 +1344,18 @@ export interface BucketProps {
    * If you choose KMS, you can specify a KMS key via `encryptionKey`. If
    * encryption key is not specified, a key will automatically be created.
    *
-   * @default - `Kms` if `encryptionKey` is specified, or `Managed` otherwise.
+   * @default - `KMS` if `encryptionKey` is specified, or `UNENCRYPTED` otherwise.
+   * But if `UNENCRYPTED` is specified, the bucket will be encrypted as `S3_MANAGED` automatically.
    */
   readonly encryption?: BucketEncryption;
 
   /**
    * External KMS key to use for bucket encryption.
    *
-   * The 'encryption' property must be either not specified or set to "Kms".
-   * An error will be emitted if encryption is set to "Unencrypted" or
-   * "Managed".
+   * The `encryption` property must be either not specified or set to `KMS` or `DSSE`.
+   * An error will be emitted if `encryption` is set to `UNENCRYPTED` or `S3_MANAGED`.
    *
-   * @default - If encryption is set to "Kms" and this property is undefined,
+   * @default - If `encryption` is set to `KMS` and this property is undefined,
    * a new KMS key will be created and associated with this bucket.
    */
   readonly encryptionKey?: kms.IKey;
@@ -2318,7 +2318,7 @@ export class Bucket extends BucketBase {
     }
 
     const routingRules = props.websiteRoutingRules ? props.websiteRoutingRules.map<CfnBucket.RoutingRuleProperty>((rule) => {
-      if (rule.condition && !rule.condition.httpErrorCodeReturnedEquals && !rule.condition.keyPrefixEquals) {
+      if (rule.condition && rule.condition.httpErrorCodeReturnedEquals == null && rule.condition.keyPrefixEquals == null) {
         throw new Error('The condition property cannot be an empty object');
       }
 
@@ -2427,8 +2427,9 @@ export class Bucket extends BucketBase {
 
   private enableAutoDeleteObjects() {
     const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, {
-      codeDirectory: path.join(__dirname, 'auto-delete-objects-handler'),
-      runtime: builtInCustomResourceProviderNodeRuntime(this),
+      codeDirectory: path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-s3', 'auto-delete-objects-handler'),
+      useCfnResponseWrapper: false,
+      runtime: CustomResourceProviderRuntime.NODEJS_18_X,
       description: `Lambda function for auto-deleting objects in ${this.bucketName} S3 bucket.`,
     });
 

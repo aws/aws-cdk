@@ -1,5 +1,5 @@
 {
-  "$version": "126.0.0",
+  "$version": "130.1.0",
   "PropertyTypes": {
     "AWS::Transfer::Connector.As2Config": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-connector-as2config.html",
@@ -168,6 +168,12 @@
           "UpdateType": "Mutable"
         }
       }
+    },
+    "AWS::Transfer::Server.StructuredLogDestination": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-server-structuredlogdestination.html",
+      "PrimitiveType": "String",
+      "Required": false,
+      "UpdateType": "Mutable"
     },
     "AWS::Transfer::Server.WorkflowDetail": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-server-workflowdetail.html",
@@ -818,6 +824,13 @@
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-transfer-server.html#cfn-transfer-server-securitypolicyname",
           "PrimitiveType": "String",
           "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "StructuredLogDestinations": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-transfer-server.html#cfn-transfer-server-structuredlogdestinations",
+          "ItemType": "StructuredLogDestination",
+          "Required": false,
+          "Type": "List",
           "UpdateType": "Mutable"
         },
         "Tags": {

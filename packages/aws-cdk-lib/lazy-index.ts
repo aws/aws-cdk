@@ -35,6 +35,7 @@ Object.defineProperty(exports, 'aws_cassandra', { get: function () { return requ
 Object.defineProperty(exports, 'aws_ce', { get: function () { return require('./aws-ce'); } });
 Object.defineProperty(exports, 'aws_certificatemanager', { get: function () { return require('./aws-certificatemanager'); } });
 Object.defineProperty(exports, 'aws_chatbot', { get: function () { return require('./aws-chatbot'); } });
+Object.defineProperty(exports, 'aws_cleanrooms', { get: function () { return require('./aws-cleanrooms'); } });
 Object.defineProperty(exports, 'aws_cloud9', { get: function () { return require('./aws-cloud9'); } });
 Object.defineProperty(exports, 'aws_cloudformation', { get: function () { return require('./aws-cloudformation'); } });
 Object.defineProperty(exports, 'aws_cloudfront_origins', { get: function () { return require('./aws-cloudfront-origins'); } });
@@ -237,6 +238,7 @@ Object.defineProperty(exports, 'aws_synthetics', { get: function () { return req
 Object.defineProperty(exports, 'aws_systemsmanagersap', { get: function () { return require('./aws-systemsmanagersap'); } });
 Object.defineProperty(exports, 'aws_timestream', { get: function () { return require('./aws-timestream'); } });
 Object.defineProperty(exports, 'aws_transfer', { get: function () { return require('./aws-transfer'); } });
+Object.defineProperty(exports, 'aws_verifiedpermissions', { get: function () { return require('./aws-verifiedpermissions'); } });
 Object.defineProperty(exports, 'aws_voiceid', { get: function () { return require('./aws-voiceid'); } });
 Object.defineProperty(exports, 'aws_vpclattice', { get: function () { return require('./aws-vpclattice'); } });
 Object.defineProperty(exports, 'aws_waf', { get: function () { return require('./aws-waf'); } });

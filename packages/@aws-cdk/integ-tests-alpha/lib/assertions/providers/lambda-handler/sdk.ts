@@ -1,7 +1,8 @@
 /* eslint-disable no-console */
 import { CustomResourceHandler } from './base';
 import { AwsApiCallRequest, AwsApiCallResult } from './types';
-import { decode } from './utils';
+import { getV3ClientPackageName, findV3ClientConstructor } from '@aws-cdk/sdk-v2-to-v3-adapter';
+import { decodeParameters, parseJsonPayload } from './utils';
 
 /**
  * Flattens a nested object
@@ -29,20 +30,69 @@ export function flatten(object: object): { [key: string]: any } {
   );
 }
 
+interface V3SdkPkg {
+  service: string;
+  packageName: string;
+  pkg: object;
+}
+
+function getServicePackage(service: string): V3SdkPkg {
+  const packageName = getV3ClientPackageName(service);
+  try {
+    /* eslint-disable-next-line @typescript-eslint/no-require-imports */
+    const pkg = require(packageName);
+
+    return {
+      service,
+      pkg,
+      packageName,
+    };
+  } catch (e) {
+    throw Error(`Service ${service} client package with name '${packageName}' does not exist.`);
+  }
+}
+
+function getServiceClient(sdkPkg: V3SdkPkg): any {
+  try {
+    const ServiceClient = findV3ClientConstructor(sdkPkg.pkg);
+    return new ServiceClient({});
+  } catch (e) {
+    console.error(e);
+    throw Error(`No client constructor found within package: ${sdkPkg.packageName}`);
+  }
+}
+
+function getSdkCommand(sdkPkg: V3SdkPkg, api: string): any {
+  const commandName = api.endsWith('Command') ? api : `${api}Command`;
+  const command = Object.entries(sdkPkg.pkg).find(
+    ([name]) => name.toLowerCase() === commandName.toLowerCase(),
+  )?.[1] as { new (input: any): any };
+
+  if (!command) {
+    throw new Error(`Unable to find command named: ${commandName} for api: ${api} in service package`);
+  }
+  return command;
+}
+
 export class AwsApiCallHandler extends CustomResourceHandler<AwsApiCallRequest, AwsApiCallResult | { [key: string]: string }> {
   protected async processEvent(request: AwsApiCallRequest): Promise<AwsApiCallResult | { [key: string]: string } | undefined> {
-    // eslint-disable-next-line
-    const AWS: any = require('aws-sdk');
-    console.log(`AWS SDK VERSION: ${AWS.VERSION}`);
+    const sdkPkg = getServicePackage(request.service);
+    const client = getServiceClient(sdkPkg);
 
-    if (!Object.prototype.hasOwnProperty.call(AWS, request.service)) {
-      throw Error(`Service ${request.service} does not exist in AWS SDK version ${AWS.VERSION}.`);
+    const Command = getSdkCommand(sdkPkg, request.api);
+    const commandInput = (request.parameters && decodeParameters(request.parameters)) ?? {};
+
+    console.log(`SDK request to ${sdkPkg.service}.${request.api} with parameters ${JSON.stringify(commandInput)}`);
+    const response = await client.send(new Command(commandInput));
+
+    // Lambda Invoke returns the payload as a buffer
+    // we need to serialize the buffer so we can assert on it
+    if (response.Payload) {
+      response.Payload = parseJsonPayload(response.Payload);
     }
 
-    const service = new (AWS as any)[request.service]();
-    const response = await service[request.api](request.parameters && decode(request.parameters)).promise();
     console.log(`SDK response received ${JSON.stringify(response)}`);
-    delete response.ResponseMetadata;
+    delete response.$metadata;
     const respond = {
       apiCallResponse: response,
     };

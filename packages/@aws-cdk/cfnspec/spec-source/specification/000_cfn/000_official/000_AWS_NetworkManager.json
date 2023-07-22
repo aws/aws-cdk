@@ -1,5 +1,5 @@
 {
-  "$version": "126.0.0",
+  "$version": "130.1.0",
   "PropertyTypes": {
     "AWS::NetworkManager::ConnectAttachment.ConnectAttachmentOptions": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-networkmanager-connectattachment-connectattachmentoptions.html",
@@ -164,6 +164,23 @@
           "PrimitiveItemType": "String",
           "Required": false,
           "Type": "List",
+          "UpdateType": "Mutable"
+        }
+      }
+    },
+    "AWS::NetworkManager::Device.AWSLocation": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-networkmanager-device-awslocation.html",
+      "Properties": {
+        "SubnetArn": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-networkmanager-device-awslocation.html#cfn-networkmanager-device-awslocation-subnetarn",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "Zone": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-networkmanager-device-awslocation.html#cfn-networkmanager-device-awslocation-zone",
+          "PrimitiveType": "String",
+          "Required": false,
           "UpdateType": "Mutable"
         }
       }
@@ -462,7 +479,7 @@
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-networkmanager-connectpeer.html#cfn-networkmanager-connectpeer-insidecidrblocks",
           "DuplicatesAllowed": true,
           "PrimitiveItemType": "String",
-          "Required": true,
+          "Required": false,
           "Type": "List",
           "UpdateType": "Immutable"
         },
@@ -569,6 +586,9 @@
     },
     "AWS::NetworkManager::Device": {
       "Attributes": {
+        "CreatedAt": {
+          "PrimitiveType": "String"
+        },
         "DeviceArn": {
           "PrimitiveType": "String"
         },
@@ -578,6 +598,12 @@
       },
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-networkmanager-device.html",
       "Properties": {
+        "AWSLocation": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-networkmanager-device.html#cfn-networkmanager-device-awslocation",
+          "Required": false,
+          "Type": "AWSLocation",
+          "UpdateType": "Mutable"
+        },
         "Description": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-networkmanager-device.html#cfn-networkmanager-device-description",
           "PrimitiveType": "String",
@@ -616,7 +642,7 @@
         },
         "Tags": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-networkmanager-device.html#cfn-networkmanager-device-tags",
-          "DuplicatesAllowed": true,
+          "DuplicatesAllowed": false,
           "ItemType": "Tag",
           "Required": false,
           "Type": "List",
