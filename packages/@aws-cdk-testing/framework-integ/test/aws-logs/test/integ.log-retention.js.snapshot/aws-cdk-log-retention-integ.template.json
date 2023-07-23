@@ -11,14 +11,7 @@
     },
     "LogGroupName": "logRetentionLogGroup1",
     "RetentionInDays": 1,
-    "RemovalPolicy": "destroy",
-    "PropagateTags": false,
-    "Tags": [
-     {
-      "Key": "env",
-      "Value": "prod"
-     }
-    ]
+    "RemovalPolicy": "destroy"
    }
   },
   "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB": {
@@ -52,8 +45,8 @@
     ],
     "Tags": [
      {
-      "Key": "env",
-      "Value": "prod"
+      "Key": "dept",
+      "Value": "eng"
      }
     ]
    }
@@ -119,9 +112,9 @@
       },
       {
        "Action": [
-        "logs:ListTagsLogGroup",
-        "logs:TagLogGroup",
-        "logs:UntagLogGroup"
+        "logs:ListTagsForResource",
+        "logs:TagResource",
+        "logs:UntagResource"
        ],
        "Effect": "Allow",
        "Resource": {
@@ -140,7 +133,7 @@
           {
            "Ref": "AWS::AccountId"
           },
-          ":log-group:logRetentionLogGroup2:*"
+          ":log-group:logRetentionLogGroup2"
          ]
         ]
        }
@@ -173,7 +166,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "03f4865a5a0af55ce1833e693c97d42df8d33908ddbf95f3c01cb19aa6cf3602.zip"
+     "S3Key": "ac0aad5df6588dda5c7cab91e288489c72bcbf9468b0250e949c6d1ed9e78561.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -183,8 +176,8 @@
     },
     "Tags": [
      {
-      "Key": "env",
-      "Value": "prod"
+      "Key": "dept",
+      "Value": "eng"
      }
     ]
    },
@@ -206,10 +199,30 @@
     "RetentionInDays": 1,
     "RemovalPolicy": "destroy",
     "PropagateTags": true,
+    "LogGroupArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":logs:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":log-group:logRetentionLogGroup2"
+      ]
+     ]
+    },
     "Tags": [
      {
-      "Key": "env",
-      "Value": "prod"
+      "Key": "dept",
+      "Value": "eng"
      }
     ]
    }

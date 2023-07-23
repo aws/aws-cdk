@@ -15,12 +15,12 @@
       "properties": {
         "templateFile": "aws-cdk-log-retention-integ.template.json",
         "tags": {
-          "env": "prod"
+          "dept": "eng"
         },
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3739e19448253af6f2099a9991460f40f92832421c56f5c0605523c757aa9ad4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/db02ebb66c10b6ec5a7d63c97dfb0fde533ad18571eee4fe04cb0a17fd253c4e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -41,8 +41,8 @@
             "type": "aws:cdk:stack-tags",
             "data": [
               {
-                "Key": "env",
-                "Value": "prod"
+                "Key": "dept",
+                "Value": "eng"
               }
             ]
           }
@@ -114,7 +114,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/499697ae088960e24d65770fe0a2eb92f4da0eab14ab8b930989b69437ab4425.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -130,6 +130,42 @@
         "LogRetentionIntegDefaultTestDeployAssert6ACC5A74.assets"
       ],
       "metadata": {
+        "/LogRetentionInteg/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogslistTagsLogGroup639c14dd99c8b81ce24072c1ab82107f/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCloudWatchLogslistTagsLogGroup639c14dd99c8b81ce24072c1ab82107f"
+          }
+        ],
+        "/LogRetentionInteg/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogslistTagsLogGroup639c14dd99c8b81ce24072c1ab82107f/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallCloudWatchLogslistTagsLogGroup639c14dd99c8b81ce24072c1ab82107f"
+          }
+        ],
+        "/LogRetentionInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/LogRetentionInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/LogRetentionInteg/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogslistTagsLogGroupfca4867db48aa713815db8e7265a0417/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCloudWatchLogslistTagsLogGroupfca4867db48aa713815db8e7265a0417"
+          }
+        ],
+        "/LogRetentionInteg/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogslistTagsLogGroupfca4867db48aa713815db8e7265a0417/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallCloudWatchLogslistTagsLogGroupfca4867db48aa713815db8e7265a0417"
+          }
+        ],
         "/LogRetentionInteg/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",

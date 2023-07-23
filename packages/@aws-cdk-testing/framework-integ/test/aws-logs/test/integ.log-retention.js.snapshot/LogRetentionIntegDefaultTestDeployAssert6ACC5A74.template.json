@@ -1,4 +1,136 @@
 {
+ "Resources": {
+  "AwsApiCallCloudWatchLogslistTagsLogGroup639c14dd99c8b81ce24072c1ab82107f": {
+   "Type": "Custom::DeployAssert@SdkCallCloudWatchLogslistTagsLogGroup",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CloudWatchLogs",
+    "api": "listTagsLogGroup",
+    "expected": "{\"$ObjectLike\":{\"tags\":{}}}",
+    "parameters": {
+     "logGroupName": "\"logRetentionLogGroup1\""
+    },
+    "flattenResponse": "false",
+    "salt": "1690141115506"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "logs:ListTagsLogGroup"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "logs:ListTagsLogGroup"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs18.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "f60471a7e85ebae9c2d317b383218cc3ebc6ef967337fd62cd5105a0cdeab396.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AwsApiCallCloudWatchLogslistTagsLogGroupfca4867db48aa713815db8e7265a0417": {
+   "Type": "Custom::DeployAssert@SdkCallCloudWatchLogslistTagsLogGroup",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CloudWatchLogs",
+    "api": "listTagsLogGroup",
+    "expected": "{\"$ObjectLike\":{\"tags\":{\"dept\":\"eng\"}}}",
+    "parameters": {
+     "logGroupName": "\"logRetentionLogGroup2\""
+    },
+    "flattenResponse": "false",
+    "salt": "1690141115507"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallCloudWatchLogslistTagsLogGroup639c14dd99c8b81ce24072c1ab82107f": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCloudWatchLogslistTagsLogGroup639c14dd99c8b81ce24072c1ab82107f",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallCloudWatchLogslistTagsLogGroupfca4867db48aa713815db8e7265a0417": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCloudWatchLogslistTagsLogGroupfca4867db48aa713815db8e7265a0417",
+     "assertion"
+    ]
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
