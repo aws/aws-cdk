@@ -940,6 +940,7 @@ The `logRetention` property can be used to set a different expiration period. In
 
 ```ts
 import * as cdk from 'aws-cdk-lib';
+import * as logs from 'aws-cdk-lib/aws-logs';
 
 const lambdaFunction = new lambda.Function(this, 'MyFunction', {
   code: new lambda.InlineCode('exports.handler = (event) => console.log(JSON.stringify(event));'),
@@ -956,6 +957,7 @@ In the above example, a `Tag` with a key of 'env' and a value of 'prod' would be
 
 ```ts
 import * as cdk from 'aws-cdk-lib';
+import * as logs from 'aws-cdk-lib/aws-logs';
 
 const lambdaFunction = new lambda.Function(this, 'MyFunction', {
   code: new lambda.InlineCode('exports.handler = (event) => console.log(JSON.stringify(event));'),
@@ -972,6 +974,7 @@ In the above example, the existing `logGroup` `Tag` with the key 'env' would be 
 
 ```ts
 import * as cdk from 'aws-cdk-lib';
+import * as logs from 'aws-cdk-lib/aws-logs';
 
 new lambda.Function(this, 'MyFunction', {
   code: new lambda.InlineCode('exports.handler = (event) => console.log(JSON.stringify(event));'),
@@ -987,6 +990,7 @@ or, alternatively
 
 ```ts
 import * as cdk from 'aws-cdk-lib';
+import * as logs from 'aws-cdk-lib/aws-logs';
 
 cdk.Tags.of(this).add('env', 'beta');
 
@@ -1005,6 +1009,7 @@ To prevent a specific `Tag` from propagating to the `logGroup` for a `Function`,
 
 ```ts
 import * as cdk from 'aws-cdk-lib';
+import * as logs from 'aws-cdk-lib/aws-logs';
 
 const lambdaFunction = new lambda.Function(this, 'MyFunction', {
   code: new lambda.InlineCode('exports.handler = (event) => console.log(JSON.stringify(event));'),
