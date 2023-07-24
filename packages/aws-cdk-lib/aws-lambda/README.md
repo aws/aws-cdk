@@ -1145,7 +1145,7 @@ An `ignoreMode` property can be used to write based on the [.gitignore specifica
 new lambda.Function(this, 'Function', {
   code: lambda.Code.fromAsset(path.join(__dirname, 'my-python-handler'), {
     exclude: ['*.ignore'],
-    ignoreMode: cdk.IgnoreMode.DOCKER, // Default is IgnoreMode.GLOB
+    ignoreMode: IgnoreMode.DOCKER, // Default is IgnoreMode.GLOB
   }),
   runtime: lambda.Runtime.PYTHON_3_9,
   handler: 'index.handler',
