@@ -108,6 +108,8 @@ Note: `lerna` uses a local cache by default. If your build fails, you can fix
 the issue and run the command again and it will not rerun any previously
 successful steps.
 
+Note: If you encounter `ERROR: Reached heap limit Allocation failed - JavaScript heap out of memory`, please try running the command with increased memory by using `export NODE_OPTIONS="--max-old-space-size=8192"`.
+
 At this point, you can run build and test the `aws-cdk-lib` module by running
 
 ```console
