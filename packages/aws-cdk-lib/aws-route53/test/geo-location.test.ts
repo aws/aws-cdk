@@ -28,7 +28,7 @@ describe('geo location', () => {
   });
 
   test('invalid country for subdivision', () => {
-    const error = /Invalid country for subdivions geolocation: .*/;
+    const error = /Invalid country for subdivisions geolocation: .*/;
     expect(() => { route53.GeoLocation.subdivision('DE', 'DE'); }).toThrow(error);
   });
 

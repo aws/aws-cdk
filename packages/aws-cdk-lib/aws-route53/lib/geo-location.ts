@@ -44,7 +44,7 @@ export class GeoLocation {
 
   private static COUNTRY_REGEX = /(^[A-Z]{2}|^\*{1})$/;
   private static COUNTRY_FOR_SUBDIVISION_REGEX = /\b(?:UA|US)\b/;
-  private static SUBDEVISION_REGEX = /^[A-Z0-9]{1,3}$/;
+  private static SUBDIVISION_REGEX = /^[A-Z0-9]{1,3}$/;
 
   private static validateCountry(country: string) {
     if (!GeoLocation.COUNTRY_REGEX.test(country)) {
@@ -56,12 +56,12 @@ export class GeoLocation {
   private static validateCountryForSubdivision(country: string) {
     if (!GeoLocation.COUNTRY_FOR_SUBDIVISION_REGEX.test(country)) {
       // eslint-disable-next-line max-len
-      throw new Error(`Invalid country for subdivions geolocation: ${country}, only UA (Ukraine) and US (United states) are supported`);
+      throw new Error(`Invalid country for subdivisions geolocation: ${country}, only UA (Ukraine) and US (United states) are supported`);
     }
   }
 
   private static validateSubDivision(subDivision: string) {
-    if (!GeoLocation.SUBDEVISION_REGEX.test(subDivision)) {
+    if (!GeoLocation.SUBDIVISION_REGEX.test(subDivision)) {
       // eslint-disable-next-line max-len
       throw new Error(`Invalid subdivision format for subdivision: ${subDivision}, subdivision should be alphanumeric and between 1 and 3 characters`);
     }
