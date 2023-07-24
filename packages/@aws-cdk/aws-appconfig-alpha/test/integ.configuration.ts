@@ -1,4 +1,4 @@
-import { App, Duration, Stack, RemovalPolicy, Fn, SecretValue } from "aws-cdk-lib";
+import { App, Duration, Stack, RemovalPolicy, Fn, SecretValue } from 'aws-cdk-lib';
 import {
   Application,
   ConfigurationContent,
@@ -8,8 +8,8 @@ import {
   JsonSchemaValidator,
   LambdaValidator,
   RolloutStrategy,
-  SourcedConfiguration
-} from "../lib";
+  SourcedConfiguration,
+} from '../lib';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
