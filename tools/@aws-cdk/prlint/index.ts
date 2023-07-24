@@ -1,8 +1,8 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
 import { Octokit } from '@octokit/rest';
-import * as linter from './lint';
 import { StatusEvent, PullRequestEvent } from '@octokit/webhooks-definitions/schema';
+import * as linter from './lint';
 
 async function run() {
   const token: string = process.env.GITHUB_TOKEN!;
@@ -39,4 +39,4 @@ async function run() {
   }
 }
 
-run()
+void run();

@@ -1,5 +1,5 @@
-import { findModulePath, moduleStability } from '../module';
 import * as path from 'path';
+import { findModulePath, moduleStability } from '../module';
 
 const repoRoot = path.join(__dirname, '..', '..', '..', '..');
 
@@ -52,4 +52,4 @@ describe('moduleStability', () => {
   function absolute(loc: string) {
     return path.join(repoRoot, loc);
   }
-})
+});
