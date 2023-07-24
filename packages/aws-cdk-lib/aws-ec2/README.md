@@ -1070,7 +1070,7 @@ new ec2.Instance(this, 'Instance3', {
   }),
 });
 
-// AWS Linux 2023
+// Amazon Linux 2023
 new ec2.Instance(this, 'Instance4', {
   vpc,
   instanceType,
