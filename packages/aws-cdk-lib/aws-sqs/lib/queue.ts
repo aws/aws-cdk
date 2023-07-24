@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { IQueue, QueueAttributes, QueueBase } from './queue-base';
+import { IQueue, QueueAttributes, QueueBase, QueueEncryption } from './queue-base';
 import { CfnQueue } from './sqs.generated';
 import { validateProps } from './validate-props';
 import * as iam from '../../aws-iam';
@@ -196,36 +196,6 @@ export interface DeadLetterQueue {
 }
 
 /**
- * What kind of encryption to apply to this queue
- */
-export enum QueueEncryption {
-  /**
-   * Messages in the queue are not encrypted
-   */
-  UNENCRYPTED = 'NONE',
-
-  /**
-   * Server-side KMS encryption with a KMS key managed by SQS.
-   */
-  KMS_MANAGED = 'KMS_MANAGED',
-
-  /**
-   * Server-side encryption with a KMS key managed by the user.
-   *
-   * If `encryptionKey` is specified, this key will be used, otherwise, one will be defined.
-   */
-  KMS = 'KMS',
-
-  /**
-   * Server-side encryption key managed by SQS (SSE-SQS).
-   *
-   * To learn more about SSE-SQS on Amazon SQS, please visit the
-   * [Amazon SQS documentation](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-server-side-encryption.html).
-   */
-  SQS_MANAGED = 'SQS_MANAGED'
-}
-
-/**
  * What kind of deduplication scope to apply
  */
 export enum DeduplicationScope {
@@ -286,6 +256,9 @@ export class Queue extends QueueBase {
         ? kms.Key.fromKeyArn(this, 'Key', attrs.keyArn)
         : undefined;
       public readonly fifo: boolean = this.determineFifo();
+      public readonly encryptionType = attrs.keyArn
+        ? QueueEncryption.KMS
+        : undefined;
 
       protected readonly autoCreatePolicy = false;
 
@@ -338,6 +311,11 @@ export class Queue extends QueueBase {
   public readonly fifo: boolean;
 
   /**
+   * Whether the contents of the queue are encrypted, and by what type of key.
+   */
+  public readonly encryptionType?: QueueEncryption;
+
+  /**
    * If this queue is configured with a dead-letter queue, this is the dead-letter queue settings.
    */
   public readonly deadLetterQueue?: DeadLetterQueue;
@@ -384,6 +362,7 @@ export class Queue extends QueueBase {
     this.encryptionMasterKey = encryptionMasterKey;
     this.queueUrl = queue.ref;
     this.deadLetterQueue = props.deadLetterQueue;
+    this.encryptionType = props.encryption;
 
     function _determineEncryptionProps(this: Queue): { encryptionProps: EncryptionProps, encryptionMasterKey?: kms.IKey } {
       let encryption = props.encryption;
