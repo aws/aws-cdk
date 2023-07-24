@@ -29,5 +29,6 @@ tsconfig.json
 **/cdk.out
 junit.xml
 
-# exclude noctilucent source
-/vendor/noctilucent/
+generate.sh
+lib/vendor/noctilucent/Dockerfile
+tmp/

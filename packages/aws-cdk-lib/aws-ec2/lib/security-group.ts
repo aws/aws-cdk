@@ -346,7 +346,7 @@ export interface SecurityGroupImportOptions {
  * allow connections to and between constructs via--for example-- the `instance.connections`
  * object. Think of it as "allowing connections to your instance", rather than
  * "adding ingress rules a security group". See the [Allowing
- * Connections](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-ec2-readme.html#allowing-connections)
+ * Connections](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-cdk-lib.aws_ec2-readme.html#allowing-connections)
  * section in the library documentation for examples.
  *
  * Direct manipulation of the Security Group through `addIngressRule` and

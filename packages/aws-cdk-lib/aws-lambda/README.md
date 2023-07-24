@@ -591,15 +591,15 @@ Lambda functions can be configured to use the Parameters and Secrets Extension. 
 import * as sm from 'aws-cdk-lib/aws-secretsmanager';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 
-const secret = new sm.Secret(stack, 'Secret');
-const parameter = new ssm.StringParameter(stack, 'Parameter', {
+const secret = new sm.Secret(this, 'Secret');
+const parameter = new ssm.StringParameter(this, 'Parameter', {
   parameterName: 'mySsmParameterName',
   stringValue: 'mySsmParameterValue',
 });
 
 const paramsAndSecrets = lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V1_0_103, {
   cacheSize: 500,
-  logLevel: lamabda.ParamsAndSecretsLogLevel.DEBUG,
+  logLevel: lambda.ParamsAndSecretsLogLevel.DEBUG,
 });
 
 const lambdaFunction = new lambda.Function(this, 'MyFunction', {
@@ -620,8 +620,8 @@ If the version of Parameters and Secrets Extension is not yet available in the C
 import * as sm from 'aws-cdk-lib/aws-secretsmanager';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 
-const secret = new sm.Secret(stack, 'Secret');
-const parameter = new ssm.StringParameter(stack, 'Parameter', {
+const secret = new sm.Secret(this, 'Secret');
+const parameter = new ssm.StringParameter(this, 'Parameter', {
   parameterName: 'mySsmParameterName',
   stringValue: 'mySsmParameterValue',
 });
@@ -640,7 +640,7 @@ const lambdaFunction = new lambda.Function(this, 'MyFunction', {
 });
 
 secret.grantRead(lambdaFunction);
-parameters.grantRead(lambdaFunction);
+parameter.grantRead(lambdaFunction);
 ```
 
 ## Event Rule Target
@@ -864,6 +864,8 @@ If you want to retrieve the ARN of the ADOT Lambda layer without enabling ADOT i
 declare const fn: lambda.Function;
 const layerArn = lambda.AdotLambdaLayerJavaSdkVersion.V1_19_0.layerArn(fn.stack, fn.architecture);
 ```
+
+When using the `AdotLambdaLayerPythonSdkVersion` the `AdotLambdaExecWrapper` needs to be `AdotLambdaExecWrapper.INSTRUMENT_HANDLER` as per [AWS Distro for OpenTelemetry Lambda Support For Python](https://aws-otel.github.io/docs/getting-started/lambda/lambda-python)
 
 ## Lambda with Profiling
 

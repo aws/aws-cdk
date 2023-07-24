@@ -1527,7 +1527,7 @@ describe('cluster', () => {
     });
   });
 
-  test('cluster with enabled monitoring', () => {
+  test('cluster with enabled monitoring (legacy)', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1543,6 +1543,58 @@ describe('cluster', () => {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc,
       },
+      monitoringInterval: cdk.Duration.minutes(1),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      MonitoringInterval: 60,
+      MonitoringRoleArn: {
+        'Fn::GetAtt': ['DatabaseMonitoringRole576991DA', 'Arn'],
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'monitoring.rds.amazonaws.com',
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      ManagedPolicyArns: [
+        {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole',
+            ],
+          ],
+        },
+      ],
+    });
+  });
+
+  test('cluster with enabled monitoring should create default role with new api', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      vpc,
+      writer: ClusterInstance.serverlessV2('writer'),
+      iamAuthentication: true,
       monitoringInterval: cdk.Duration.minutes(1),
     });
 
@@ -1874,6 +1926,72 @@ describe('cluster', () => {
         },
         excludeCharacters: " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
       },
+    });
+  });
+
+  test('addRotationSingleUser() without immediate rotation', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      writer: ClusterInstance.serverlessV2('writer'),
+      vpc,
+    });
+
+    // WHEN
+    cluster.addRotationSingleUser({ rotateImmediatelyOnUpdate: false });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
+      SecretId: {
+        Ref: 'DatabaseSecretAttachmentE5D1B020',
+      },
+      RotationLambdaARN: {
+        'Fn::GetAtt': [
+          'DatabaseRotationSingleUser65F55654',
+          'Outputs.RotationLambdaARN',
+        ],
+      },
+      RotationRules: {
+        AutomaticallyAfterDays: 30,
+      },
+      RotateImmediatelyOnUpdate: false,
+    });
+  });
+
+  test('addRotationMultiUser() without immediate rotation', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      writer: ClusterInstance.serverlessV2('writer'),
+      vpc,
+    });
+    const userSecret = new DatabaseSecret(stack, 'UserSecret', { username: 'user' });
+
+    // WHEN
+    cluster.addRotationMultiUser('user', {
+      secret: userSecret.attach(cluster),
+      rotateImmediatelyOnUpdate: false,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
+      SecretId: {
+        Ref: 'UserSecretAttachment16ACBE6D',
+      },
+      RotationLambdaARN: {
+        'Fn::GetAtt': [
+          'DatabaseuserECD1FB0C',
+          'Outputs.RotationLambdaARN',
+        ],
+      },
+      RotationRules: {
+        AutomaticallyAfterDays: 30,
+      },
+      RotateImmediatelyOnUpdate: false,
     });
   });
 
