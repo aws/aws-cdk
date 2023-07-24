@@ -186,6 +186,15 @@ const capacityProvider = new ecs.AsgCapacityProvider(this, 'AsgCapacityProvider'
 cluster.addAsgCapacityProvider(capacityProvider);
 ```
 
+It is also possible to obtain the ARN of a task based on the key pattern from Cluster.
+
+```ts
+const cluster = new ecs.Cluster(this, 'Cluster', {
+  vpc,
+});
+const taskArn = cluster.arnForTasks('*') // arn:aws:ecs:<region>:<account>:task/<clusterName>/*
+```
+
 
 ### Bottlerocket
 
