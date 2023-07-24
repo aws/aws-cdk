@@ -372,6 +372,9 @@ export class PullRequestLinter {
       mergeable_state: pr.mergeable_state,
       prLinterFailed,
       maintainerRequestedChanges,
+      maintainerApproved,
+      communityRequestedChanges,
+      communityApproved,
       userRequestsExemption,
     }, undefined, 2));
 
