@@ -268,6 +268,7 @@ describe('cluster new api', () => {
         test1Template,
       ).toEqual(Template.fromStack(stack2).toJSON());
     });
+
     test('template contains no changes (serverless instances)', () => {
       // GIVEN
       const stack1 = testStack();
