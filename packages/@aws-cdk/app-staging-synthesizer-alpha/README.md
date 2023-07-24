@@ -249,6 +249,22 @@ const app = new App({
 });
 ```
 
+### Auto Delete Staging Assets on Deletion
+
+By default, the staging resources will be cleaned up on stack deletion. That means that the
+S3 Bucket and ECR Repositories are set to `RemovalPolicy.DESTROY` and have `autoDeleteObjects`
+or `autoDeleteImages` turned on. This creates custom resources under the hood to facilitate
+cleanup. To turn this off, specify `autoDeleteStagingAssets: false`.
+
+```ts
+const app = new App({
+  defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
+    appId: 'my-app-id',
+    autoDeleteStagingAssets: false,
+  }),
+});
+```
+
 ## Using a Custom Staging Stack per Environment
 
 If you want to customize some behavior that is not configurable via properties,
@@ -339,5 +355,5 @@ Since this module is experimental, there are some known limitations:
   bootstrap stack, the staging resources in them will just go unused. You can customize the
   template to remove them if desired.
 - Due to limitations on the CloudFormation template size, CDK Applications can have
-  at most 38 independent ECR images. Please upvote [this issue](https://github.com/aws/aws-cdk/issues/26119)
+  at most 20 independent ECR images. Please upvote [this issue](https://github.com/aws/aws-cdk/issues/26119)
   if you need more than this.

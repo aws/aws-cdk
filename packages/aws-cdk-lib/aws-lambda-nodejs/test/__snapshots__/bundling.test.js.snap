@@ -3,7 +3,7 @@
 exports[`esbuild bundling with esbuild options 1`] = `
 ""use strict";
 (() => {
-  // aws-lambda-nodejs/test/integ-handlers/define.ts
+  // aws-lambda-nodejs/test/handlers/define.ts
   function handler() {
     return [
       "VALUE",

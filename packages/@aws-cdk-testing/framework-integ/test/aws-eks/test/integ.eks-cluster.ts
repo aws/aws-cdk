@@ -131,6 +131,16 @@ class EksClusterStack extends Stack {
       repository: 'https://helm.nginx.com/stable',
       namespace: 'nginx',
       wait: true,
+      release: 'nginx-ingress',
+      // https://github.com/nginxinc/helm-charts/tree/master/stable
+      version: '0.17.1',
+      values: {
+        controller: {
+          service: {
+            create: false,
+          },
+        },
+      },
       createNamespace: false,
       timeout: Duration.minutes(15),
     });
@@ -162,6 +172,8 @@ class EksClusterStack extends Stack {
     // deploy the Kubernetes dashboard through a helm chart
     this.cluster.addHelmChart('dashboard', {
       chart: 'kubernetes-dashboard',
+      // https://artifacthub.io/packages/helm/k8s-dashboard/kubernetes-dashboard
+      version: '6.0.8',
       repository: 'https://kubernetes.github.io/dashboard/',
     });
   }
@@ -343,6 +355,7 @@ if (process.env.CDK_INTEG_ACCOUNT !== '12345678') {
 
 new integ.IntegTest(app, 'aws-cdk-eks-cluster', {
   testCases: [stack],
+  diffAssets: true,
   cdkCommandOptions: {
     deploy: {
       args: {

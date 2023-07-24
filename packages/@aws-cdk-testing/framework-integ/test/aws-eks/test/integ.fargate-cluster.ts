@@ -23,6 +23,7 @@ const app = new App();
 const stack = new EksFargateClusterStack(app, 'aws-cdk-eks-fargate-cluster-test');
 new integ.IntegTest(app, 'aws-cdk-eks-fargate-cluster', {
   testCases: [stack],
+  diffAssets: true,
 });
 
 app.synth();
