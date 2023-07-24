@@ -394,7 +394,11 @@ export class PullRequestLinter {
       readyForReview = false;
     }
 
-    if (readyForReview && (fixesP1 || communityApproved)) {
+    // needs-maintainer-review means one of the following
+    // 1) fixes a p1 bug
+    // 2) is already community approved
+    // 3) is authored by a core team member
+    if (readyForReview && (fixesP1 || communityApproved || pr.labels.some(label => label.name === 'contribution/core'))) {
       this.addLabel('pr/needs-maintainer-review', pr);
       this.removeLabel('pr/needs-community-review', pr);
     } else if (readyForReview && !fixesP1) {
