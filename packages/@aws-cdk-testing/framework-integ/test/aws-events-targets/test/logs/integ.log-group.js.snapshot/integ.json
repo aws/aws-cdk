@@ -5,6 +5,7 @@
       "stacks": [
         "log-group-events"
       ],
+      "diffAssets": true,
       "assertionStack": "LogGroup/DefaultTest/DeployAssert",
       "assertionStackName": "LogGroupDefaultTestDeployAssert353EE07A"
     }
