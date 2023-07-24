@@ -175,7 +175,7 @@ interface TableOptions {
 /**
  * Options used to configure a replica table.
  */
-export interface ReplicaTableOptions extends TableOptions {}
+export interface ReplicaTableProps extends TableOptions {}
 
 /**
  * Properties of a global table.
@@ -219,7 +219,7 @@ export interface GlobalTableProps extends TableOptions, SchemaOptions {
    *
    * @default - a single replica will exist in the region associated with the deployment stack
    */
-  readonly replicas?: ReplicaTableOptions[];
+  readonly replicas?: ReplicaTableProps[];
 
   /**
    * Global secondary indexes to be created on all replicas in the global table.
@@ -348,16 +348,20 @@ export class GlobalTable extends GlobalTableBase {
    */
   public readonly tableStreamArn: string;
 
+  private readonly tablePartitionKey: Attribute;
   private readonly billingMode: string;
   private readonly keySchema: CfnGlobalTable.KeySchemaProperty[] = [];
-  private readonly attributeDefintions: CfnGlobalTable.AttributeDefinitionProperty[] = [];
+  private readonly attributeDefinitions: CfnGlobalTable.AttributeDefinitionProperty[] = [];
   private readonly globalSecondaryIndexes: GlobalSecondaryIndexOptions[];
+  private readonly localSecondaryIndexes: LocalSecondaryIndexOptions[];
   private readonly secondaryIndexSchemas = new Map<string, boolean>();
   private readonly nonKeyAttributes = new Set<string>();
   private readonly writeProvisionedThroughput?: CfnGlobalTable.WriteProvisionedThroughputSettingsProperty;
 
   public constructor(scope: Construct, id: string, props: GlobalTableProps) {
     super(scope, id, { physicalName: props.tableName });
+
+    this.tablePartitionKey = props.partitionKey;
 
     // TODO: fix validation for provisioning
     if (props.billing) {
@@ -375,17 +379,19 @@ export class GlobalTable extends GlobalTableBase {
     }
 
     this.globalSecondaryIndexes = props.globalSecondaryIndexes ? [...props.globalSecondaryIndexes] : [];
+    this.localSecondaryIndexes = props.localSecondaryIndexes ? [...props.localSecondaryIndexes] : [];
 
     const resource = new CfnGlobalTable(this, 'Resource', {
       tableName: props.tableName,
       keySchema: this.keySchema,
-      attributeDefinitions: Lazy.any({ produce: () => this.attributeDefintions }),
+      attributeDefinitions: Lazy.any({ produce: () => this.attributeDefinitions }),
       replicas: Lazy.any({ produce: () => [] }),
       streamSpecification: { streamViewType: NEW_AND_OLD_IMAGES },
       timeToLiveSpecification: props.timeToLiveAttribute
         ? { attributeName: props.timeToLiveAttribute, enabled: true }
         : undefined,
-      globalSecondaryIndexes: Lazy.any({ produce: () => this.configureGlobalSecondaryIndexes() }),
+      globalSecondaryIndexes: Lazy.any({ produce: () => this.configureGlobalSecondaryIndexes() }, { omitEmptyArray: true }),
+      localSecondaryIndexes: Lazy.any({ produce: () => this.configureLocalSecondaryIndexes() }, { omitEmptyArray: true }),
       billingMode: this.billingMode,
       writeProvisionedThroughputSettings: this.billingMode === BillingMode.PROVISIONED
         ? this.writeProvisionedThroughput
@@ -445,6 +451,26 @@ export class GlobalTable extends GlobalTableBase {
     return globalSecondaryIndexes;
   }
 
+  private configureLocalSecondaryIndexes() {
+    // TODO: validate number of local secondary indexes
+    const localSecondaryIndexes: CfnGlobalTable.LocalSecondaryIndexProperty[] = [];
+    for (const index of this.localSecondaryIndexes) {
+      this.validateIndexName(index.indexName);
+
+      const indexKeySchema = this.buildIndexKeySchema(this.tablePartitionKey, index.sortKey);
+      const indexProjection = this.buildIndexProjection(index);
+
+      localSecondaryIndexes.push({
+        indexName: index.indexName,
+        keySchema: indexKeySchema,
+        projection: indexProjection,
+      });
+
+      this.secondaryIndexSchemas.set(index.indexName, true);
+    }
+    return localSecondaryIndexes;
+  }
+
   private buildIndexKeySchema(partitionKey: Attribute, sortKey?: Attribute) {
     this.addAttributeDefinition(partitionKey);
     const indexKeySchema: CfnGlobalTable.KeySchemaProperty[] = [
@@ -479,13 +505,13 @@ export class GlobalTable extends GlobalTableBase {
 
   private addAttributeDefinition(attribute: Attribute) {
     const { name, type } = attribute;
-    const existingAttributeDef = this.attributeDefintions.find(def => def.attributeName === name);
+    const existingAttributeDef = this.attributeDefinitions.find(def => def.attributeName === name);
     // attribute definitions cannot be redefined
     if (existingAttributeDef && existingAttributeDef.attributeType !== type) {
       throw new Error(`Unable to specify ${name} as ${type} because it was already defined as ${existingAttributeDef.attributeType}`);
     }
     if (!existingAttributeDef) {
-      this.attributeDefintions.push({ attributeName: name, attributeType: type });
+      this.attributeDefinitions.push({ attributeName: name, attributeType: type });
     }
   }
 
