@@ -312,7 +312,7 @@ describe('step scaling policy', () => {
         metric: new cloudwatch.Metric({ namespace: 'Test', metricName: 'Metric' }),
         scalingSteps: steps,
       });
-    }).toThrow(/must have less than 40/);
+    }).toThrow('You must have less than 40 steps in StepScalingPolicyProps.scalingSteps; you had 41 steps');
   });
 });
 

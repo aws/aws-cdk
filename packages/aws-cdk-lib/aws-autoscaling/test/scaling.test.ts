@@ -378,7 +378,7 @@ describe('step-scaling-policy scalingSteps length validation checks', () => {
         // only one scaling step throws an error
         scalingSteps: steps,
       });
-    }).toThrow(/must have less than 40/);
+    }).toThrow('You must have less than 40 steps in StepScalingPolicyProps.scalingSteps; you had 41 steps');
   });
 });
 
