@@ -1314,5 +1314,8 @@
   },
   "verifiedpermissions": {
     "name": "VerifiedPermissions"
+  },
+  "appfabric": {
+    "name": "AppFabric"
   }
 }
