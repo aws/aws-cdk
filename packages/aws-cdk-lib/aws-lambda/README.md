@@ -1137,9 +1137,9 @@ new lambda.Function(this, 'Lambda', {
 
 ## Exclude Patterns for Assets
 
-When using `lambda.Code.fromAsset(path)` an `exclude` property allows you to ignore particular files for assets based on simple glob patterns.
+When using `lambda.Code.fromAsset(path)` an `exclude` property allows you to ignore particular files for assets by providing patterns for file paths to exclude. Note that this has no effect on `Assets` bundled using the `bundling` property.
 
-An `ignoreMode` property can be used to write based on the [.gitignore specification](https://git-scm.com/docs/gitignore) and the [.dockerignore specification](https://docs.docker.com/engine/reference/builder/#dockerignore-file).
+The `ignoreMode` property can be used with the `exclude` property to specify the file paths to ignore based on the [.gitignore specification](https://git-scm.com/docs/gitignore) or the [.dockerignore specification](https://docs.docker.com/engine/reference/builder/#dockerignore-file). The default behavior is to ignore file paths based on simple glob patterns.
 
 ```ts
 new lambda.Function(this, 'Function', {
