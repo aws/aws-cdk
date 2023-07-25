@@ -298,6 +298,8 @@ const crossAccountRole = new iam.Role(this, 'CrossAccountRole', {
   // The other account
   assumedBy: new iam.AccountPrincipal('12345678901'),
 });
+
+const zoneFromId = route53.PublicHostedZone.fromPublicHostedZoneId(this, 'MyZone', 'ZOJJZC49E0EPZ');
 zoneFromId.grantDelegation(crossAccountRole);
 ```
 
