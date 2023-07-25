@@ -3,7 +3,6 @@
 
 name: PR Linter
 on:
-  # Necessary to have sufficient permissions to write to the PR
   pull_request_target:
     types:
       - labeled
@@ -12,10 +11,14 @@ on:
       - opened
       - synchronize
       - reopened
+  pull_request_review:
+    types:
+      - submitted
   status:
 
 jobs:
   validate-pr:
+    # Necessary to have sufficient permissions to write to the PR
     permissions:
       contents: read
       pull-requests: write
