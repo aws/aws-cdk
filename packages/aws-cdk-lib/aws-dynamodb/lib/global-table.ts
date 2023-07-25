@@ -1,373 +1,119 @@
 import { Construct } from 'constructs';
 import { CfnGlobalTable } from './dynamodb.generated';
 import {
-  TableClass, SecondaryIndexProps, SchemaOptions, Attribute,
+  Attribute, SchemaOptions, TableClass, SecondaryIndexProps,
   BillingMode, ProjectionType,
-} from './table';
-import { IResource, RemovalPolicy, Resource, Lazy } from '../../core';
+} from './shared';
+import { IStream } from '../../aws-kinesis';
+import { IResource, Lazy, RemovalPolicy, Resource, Token } from '../../core';
 
-const NEW_AND_OLD_IMAGES = 'NEW_AND_OLD_IMAGES';
 const HASH_KEY_TYPE = 'HASH';
 const RANGE_KEY_TYPE = 'RANGE';
+const NEW_AND_OLD_IMAGES = 'NEW_AND_OLD_IMAGES';
+const MAX_GSI_COUNT = 20;
+const MAX_LSI_COUNT = 5;
+const MAX_NON_KEY_ATTRIBUTES = 100;
 const DEFAULT_TARGET_UTILIZATION = 70;
 
-/**
- * Capacity modes used for read and write operations.
- */
 export enum CapacityMode {
-  /**
-   * Fixed capacity mode.
-   */
   FIXED = 'FIXED',
-
-  /**
-   * Autoscaled capacity mode.
-   */
   AUTOSCALED = 'AUTOSCALED',
 }
 
-/**
- * Options used to configure capacity settings for fixed and autoscaled mode.
- */
 interface CapacityConfigOptions {
-  /**
-   * The number of capacity units for fixed capacity mode.
-   *
-   * @default - no capacity units
-   */
   readonly units?: number;
-
-  /**
-   * The minimum capacity to scale to for autoscaled capacity mode.
-   *
-   * @default - no minimum capacity
-   */
   readonly minCapacity?: number;
-
-  /**
-   * The maximum capacity to scale to for autoscaled capacity mode.
-   *
-   * @default - no maximum capacity
-   */
   readonly maxCapacity?: number;
-
-  /**
-   * The ratio of consumed capacity units to provisioned capacity units to target for autoscaled
-   * capacity mode.
-   *
-   * @default - no target utilization percent
-   */
   readonly targetUtilizationPercent?: number;
 }
 
-/**
- * Options used to configure read and write capacity for table operations.
- */
 export interface ThroughputOptions {
-  /**
-   * The capacity used for read operations.
-   */
   readonly readCapacity: Capacity;
-
-  /**
-   * The capacity used for write operations.
-   */
   readonly writeCapacity: Capacity;
 }
 
-/**
- * Options used to configure autoscaled capacity mode.
- */
 export interface AutoscaledCapacityOptions {
-  /**
-   * The minimum capacity to scale to.
-   */
   readonly minCapacity: number;
-
-  /**
-   * The maximum capacity to scale to.
-   */
   readonly maxCapacity: number;
-
-  /**
-   * The ratio of consumed capacity units to provisioned capacity units.
-   *
-   * @default 70%
-   */
   readonly targetUtilizationPercent?: number;
 }
 
-/**
- * Options used to configure a global secondary index.
- */
-export interface GlobalSecondaryIndexOptions extends SecondaryIndexProps, SchemaOptions {
-  /**
-   * The read capacity for the global secondary index.
-   *
-   * Note: This can only be provided if the table billing is provisioned.
-   *
-   * @default - inherited from global table
-   */
+export interface GlobalSecondaryIndexOptions extends SchemaOptions, SecondaryIndexProps {
   readonly readCapacity?: Capacity;
-
-  /**
-   * The write capacity for the global secondary index.
-   *
-   * Note: This can only be provided if the table billing is on-demand.
-   *
-   * @default - inherited from global table
-   */
   readonly writeCapacity?: Capacity;
 }
 
-/**
- * Options used to configure a local secondary index.
- */
 export interface LocalSecondaryIndexOptions extends SecondaryIndexProps {
-  /**
-   * The attribute of a sort key for the local secondary index.
-   */
   readonly sortKey: Attribute;
 }
 
-/**
- * Common configuration options between a global table and its replicas.
- */
 interface TableOptions {
-  /**
-   * Whether or not CloudWatch contributor insights is enabled for all replicas in the
-   * global table.
-   *
-   * Note: This property is configurable on a per-replica basis.
-   *
-   * @default false
-   */
-  readonly constributorInsights?: boolean;
-
-  /**
-   * Whether or not deletion protection is enabled for all replicas in the global table.
-   *
-   * Note: This property is configurable on a per-replica basis.
-   *
-   * @default false
-   */
+  readonly contributorInsights?: boolean;
   readonly deletionProtection?: boolean;
-
-  /**
-   * Whether or not point-in-time recovery is enabled for all replicas in the global table.
-   *
-   * Note: This property is configurable on a per-replica basis.
-   *
-   * @default false
-   */
   readonly pointInTimeRecovery?: boolean;
-
-  /**
-   * The table class for all replicas in the global table.
-   *
-   * Note: This property is configurable on a per-replica basis
-   *
-   * @default TableClass.STANDARD
-   */
-  readonly tableClass?: TableClass
+  readonly tableClass?: TableClass;
 }
 
-/**
- * Options used to configure a replica table.
- */
-export interface ReplicaTableProps extends TableOptions {}
+export interface ReplicaTableProps extends TableOptions {
+  readonly region: string;
+  readonly readCapacity?: Capacity;
+  readonly kinesisStream?: IStream;
+}
 
-/**
- * Properties of a global table.
- */
 export interface GlobalTableProps extends TableOptions, SchemaOptions {
-  /**
-   * The name of all replicas in the global table.
-   *
-   * @default - generated by CloudFormation
-   */
   readonly tableName?: string;
-
-  /**
-   * The name of the TTL attribute for all replicas in the global table.
-   *
-   * @default - TTL is disabled
-   */
   readonly timeToLiveAttribute?: string;
-
-  /**
-   * The removal policy to apply to all replicas in the global table.
-   *
-   * @default RemovalPolicy.RETAIN
-   */
   readonly removalPolicy?: RemovalPolicy;
-
-  /**
-   * The billing used for all replicas in the global table. This is used to configure both the
-   * billing mode and how read and write capacity is managed.
-   *
-   * @default Billing.onDemand()
-   */
   readonly billing?: Billing;
-
-  /**
-   * The replicas in the global table.
-   *
-   * Note: You can create a new global table with as many replicas as needed. You can add or
-   * remove replicas after table creation, but you can only add or remove a single replica in
-   * each update.
-   *
-   * @default - a single replica will exist in the region associated with the deployment stack
-   */
   readonly replicas?: ReplicaTableProps[];
-
-  /**
-   * Global secondary indexes to be created on all replicas in the global table.
-   *
-   * Note: You can create up to 20 global secondary indexes. You can only create or delete one global
-   * secondary index in a single stack operation. By default, each replica in your global table will
-   * have the same global secondary index settings. However, the `readCapacity` of a global secondary
-   * index can be set on a per-replica basis.
-   *
-   * @default - no global secondary indexes
-   */
   readonly globalSecondaryIndexes?: GlobalSecondaryIndexOptions[];
-
-  /**
-   * Local secondary indexes to be created on all replicas in the global table.
-   *
-   * Note: You can only have up to five local secondary indexes.
-   *
-   * @default - no local secondary indexes
-   */
   readonly localSecondaryIndexes?: LocalSecondaryIndexOptions[];
-
-  // TODO: Add table encryption
 }
 
-/**
- * Represents an instance of a global table.
- */
 export interface IGlobalTable extends IResource {
-  /**
-   * The ARN of the replica in the region that the stack is deployed to.
-   *
-   * @attribute
-   */
   readonly tableArn: string;
-
-  /**
-   * The name of the global table.
-   *
-   * @attribute
-   */
   readonly tableName: string;
-
-  /**
-   * The ID of the replica in the region that the stack is deployed to.
-   *
-   * @attribute
-   */
   readonly tableId: string;
-
-  /**
-   * The ARN of the stream of the replica in the region that the stack is deployed to.
-   *
-   * @attribute
-   */
   readonly tableStreamArn: string;
 }
 
-/**
- * Reference to a global table.
- */
 export interface GlobalTableAttributes {}
 
-/**
- * Base class for a global table.
- */
 abstract class GlobalTableBase extends Resource implements IGlobalTable {
-  /**
-   * The ARN of the replica in the region that the stack is deployed to.
-   *
-   * @attribute
-   */
   public abstract readonly tableArn: string;
-
-  /**
-   * The name of the global table.
-   *
-   * @attribute
-   */
   public abstract readonly tableName: string;
-
-  /**
-   * The ID of the replica in the region that the stack is deployed to.
-   *
-   * @attribute
-   */
   public abstract readonly tableId: string;
-
-  /**
-   * The ARN of the stream of the replica in the region that the stack is deployed to.
-   *
-   * @attribute
-   */
   public abstract readonly tableStreamArn: string;
 }
 
-/**
- * Provides a global table.
- */
 export class GlobalTable extends GlobalTableBase {
-  /**
-   * Returns the ARN of the replica in the region that the stack is deployed to.
-   *
-   * @attribute
-   */
   public readonly tableArn: string;
-
-  /**
-   * Returns the name of the global table.
-   *
-   * @attribute
-   */
   public readonly tableName: string;
-
-  /**
-   * Returns the ID of the replica in the region that the stack is deployed to.
-   *
-   * @attribute
-   */
   public readonly tableId: string;
-
-  /**
-   * Returns the ARN of the stream of the replica in the region that the stack is deployed to.
-   *
-   * @attribute
-   */
   public readonly tableStreamArn: string;
 
   private readonly tablePartitionKey: Attribute;
   private readonly billingMode: string;
+  private readonly tableWriteProvisioning?: CfnGlobalTable.WriteProvisionedThroughputSettingsProperty;
   private readonly keySchema: CfnGlobalTable.KeySchemaProperty[] = [];
   private readonly attributeDefinitions: CfnGlobalTable.AttributeDefinitionProperty[] = [];
+  private readonly nonKeyAttributes = new Set<string>();
+  private readonly resolvedReplicaRegions = new Map<string, boolean>();
+  private readonly replicaTables: ReplicaTableProps[];
+  private readonly secondaryIndexSchemas = new Map<string, boolean>();
   private readonly globalSecondaryIndexes: GlobalSecondaryIndexOptions[];
   private readonly localSecondaryIndexes: LocalSecondaryIndexOptions[];
-  private readonly secondaryIndexSchemas = new Map<string, boolean>();
-  private readonly nonKeyAttributes = new Set<string>();
-  private readonly writeProvisionedThroughput?: CfnGlobalTable.WriteProvisionedThroughputSettingsProperty;
 
   public constructor(scope: Construct, id: string, props: GlobalTableProps) {
     super(scope, id, { physicalName: props.tableName });
 
     this.tablePartitionKey = props.partitionKey;
 
-    // TODO: fix validation for provisioning
     if (props.billing) {
       this.billingMode = props.billing.mode;
       if (this.billingMode === BillingMode.PROVISIONED) {
-        this.writeProvisionedThroughput = this.configureWriteProvisioning(props.billing.writeCapacity);
+        // writeCapacity has to be provided when billing mode is provisioned
+        this.tableWriteProvisioning = this.configureWriteProvisioning(props.billing.writeCapacity!);
       }
     } else {
       this.billingMode = BillingMode.PAY_PER_REQUEST;
@@ -378,23 +124,22 @@ export class GlobalTable extends GlobalTableBase {
       this.addKey(props.sortKey, RANGE_KEY_TYPE);
     }
 
-    this.globalSecondaryIndexes = props.globalSecondaryIndexes ? [...props.globalSecondaryIndexes] : [];
-    this.localSecondaryIndexes = props.localSecondaryIndexes ? [...props.localSecondaryIndexes] : [];
+    this.replicaTables = props.replicas ? props.replicas : [];
+    this.globalSecondaryIndexes = props.globalSecondaryIndexes ? props.globalSecondaryIndexes : [];
+    this.localSecondaryIndexes = props.localSecondaryIndexes ? props.localSecondaryIndexes : [];
 
     const resource = new CfnGlobalTable(this, 'Resource', {
-      tableName: props.tableName,
+      tableName: this.physicalName,
       keySchema: this.keySchema,
       attributeDefinitions: Lazy.any({ produce: () => this.attributeDefinitions }),
-      replicas: Lazy.any({ produce: () => [] }),
-      streamSpecification: { streamViewType: NEW_AND_OLD_IMAGES },
-      timeToLiveSpecification: props.timeToLiveAttribute
-        ? { attributeName: props.timeToLiveAttribute, enabled: true }
-        : undefined,
+      replicas: Lazy.any({ produce: () => this.configureReplicaTables(props) }),
       globalSecondaryIndexes: Lazy.any({ produce: () => this.configureGlobalSecondaryIndexes() }, { omitEmptyArray: true }),
       localSecondaryIndexes: Lazy.any({ produce: () => this.configureLocalSecondaryIndexes() }, { omitEmptyArray: true }),
+      streamSpecification: { streamViewType: NEW_AND_OLD_IMAGES },
       billingMode: this.billingMode,
-      writeProvisionedThroughputSettings: this.billingMode === BillingMode.PROVISIONED
-        ? this.writeProvisionedThroughput
+      writeProvisionedThroughputSettings: this.tableWriteProvisioning,
+      timeToLiveSpecification: props.timeToLiveAttribute
+        ? { attributeName: props.timeToLiveAttribute, enabled: true }
         : undefined,
     });
     resource.applyRemovalPolicy(props.removalPolicy);
@@ -407,20 +152,70 @@ export class GlobalTable extends GlobalTableBase {
     this.tableName = this.getResourceNameAttribute(resource.ref);
     this.tableId = resource.attrTableId;
     this.tableStreamArn = resource.attrStreamArn;
+
+    if (props.tableName) {
+      this.node.addMetadata('aws:cdk:hasPhysicalName', this.tableName);
+    }
   }
 
-  private configureWriteProvisioning(writeCapacity?: Capacity): CfnGlobalTable.WriteProvisionedThroughputSettingsProperty | undefined {
-    if (!writeCapacity) {
-      return undefined;
+  /**
+   * Add a global secondary index to the global table.
+   *
+   * @param props the properties of a global secondary index
+   */
+  public addGlobalSecondaryIndex(props: GlobalSecondaryIndexOptions) {
+    this.globalSecondaryIndexes.push(props);
+  }
+
+  /**
+   * Add a local secondary index to the global table.
+   *
+   * @param props the properties of a local secondary index
+   */
+  public addLocalSecondaryIndex(props: LocalSecondaryIndexOptions) {
+    this.localSecondaryIndexes.push(props);
+  }
+
+  private configureReplicaTables(props: TableOptions) {
+    const replicaTables: CfnGlobalTable.ReplicaSpecificationProperty[] = [];
+
+    for (const replicaTable of this.replicaTables) {
+      const region = replicaTable.region;
+      const isRegionResolved = !Token.isUnresolved(region);
+      if (isRegionResolved && this.resolvedReplicaRegions.has(region)) {
+        throw new Error(`Duplicate replica region, ${region}, is not allowed`);
+      }
+
+      if (isRegionResolved) {
+        this.resolvedReplicaRegions.set(region, true);
+      }
+
+      const pointInTimeRecovery = replicaTable.pointInTimeRecovery ?? props.pointInTimeRecovery;
+      const contributorInsights = replicaTable.contributorInsights ?? props.contributorInsights;
+
+      replicaTables.push({
+        region,
+        deletionProtectionEnabled: replicaTable.contributorInsights ?? props.contributorInsights,
+        tableClass: replicaTable.tableClass ?? props.tableClass,
+        contributorInsightsSpecification: contributorInsights !== undefined ? { enabled: contributorInsights } : undefined,
+        pointInTimeRecoverySpecification: pointInTimeRecovery !== undefined
+          ? { pointInTimeRecoveryEnabled: pointInTimeRecovery }
+          : undefined,
+      });
     }
+
+    return replicaTables;
+  }
+
+  private configureWriteProvisioning(writeCapacity: Capacity): CfnGlobalTable.WriteProvisionedThroughputSettingsProperty {
     if (writeCapacity.mode === CapacityMode.FIXED) {
       throw new Error('Write capacity must be configured using autoscaled capacity mode');
     }
+
     return {
       writeCapacityAutoScalingSettings: {
-        // min and max capacity are required for autoscaled capacity mode
-        minCapacity: writeCapacity.minCapacity!,
-        maxCapacity: writeCapacity.maxCapacity!,
+        minCapacity: writeCapacity.minCapacity!, // minCapacity is required for autoscaled mode
+        maxCapacity: writeCapacity.maxCapacity!, // maxCapacity is required for autoscaled mode
         targetTrackingScalingPolicyConfiguration: {
           targetValue: writeCapacity.targetUtilizationPercent ?? DEFAULT_TARGET_UTILIZATION,
         },
@@ -430,30 +225,43 @@ export class GlobalTable extends GlobalTableBase {
 
   private configureGlobalSecondaryIndexes() {
     const globalSecondaryIndexes: CfnGlobalTable.GlobalSecondaryIndexProperty[] = [];
+    if (this.globalSecondaryIndexes.length > MAX_GSI_COUNT) {
+      throw new Error(`A table can only have a maximum of ${MAX_GSI_COUNT} global secondary indexes`);
+    }
+
     for (const index of this.globalSecondaryIndexes) {
-      this.validateProvisioning({ readCapacity: index.readCapacity, writeCapacity: index.writeCapacity });
       this.validateIndexName(index.indexName);
+      if (this.billingMode === BillingMode.PAY_PER_REQUEST && (index.readCapacity || index.writeCapacity)) {
+        throw new Error('You cannot provision read and write capacity for a global secondary index on a table with on-demand billing mode');
+      }
 
       const indexKeySchema = this.buildIndexKeySchema(index.partitionKey, index.sortKey);
       const indexProjection = this.buildIndexProjection(index);
+
+      let indexWriteProvisioning = undefined;
+      if (this.billingMode === BillingMode.PROVISIONED && index.writeCapacity) {
+        indexWriteProvisioning = this.configureWriteProvisioning(index.writeCapacity);
+      }
 
       globalSecondaryIndexes.push({
         indexName: index.indexName,
         keySchema: indexKeySchema,
         projection: indexProjection,
-        writeProvisionedThroughputSettings: this.billingMode === BillingMode.PROVISIONED
-          ? this.configureWriteProvisioning(index.writeCapacity) ?? this.writeProvisionedThroughput
-          : undefined,
+        writeProvisionedThroughputSettings: indexWriteProvisioning ?? this.tableWriteProvisioning,
       });
 
       this.secondaryIndexSchemas.set(index.indexName, true);
     }
+
     return globalSecondaryIndexes;
   }
 
   private configureLocalSecondaryIndexes() {
-    // TODO: validate number of local secondary indexes
     const localSecondaryIndexes: CfnGlobalTable.LocalSecondaryIndexProperty[] = [];
+    if (this.localSecondaryIndexes.length > MAX_LSI_COUNT) {
+      throw new Error(`A table can only have a maximum of ${MAX_LSI_COUNT} local secondary indexes`);
+    }
+
     for (const index of this.localSecondaryIndexes) {
       this.validateIndexName(index.indexName);
 
@@ -468,6 +276,7 @@ export class GlobalTable extends GlobalTableBase {
 
       this.secondaryIndexSchemas.set(index.indexName, true);
     }
+
     return localSecondaryIndexes;
   }
 
@@ -476,9 +285,11 @@ export class GlobalTable extends GlobalTableBase {
     const indexKeySchema: CfnGlobalTable.KeySchemaProperty[] = [
       { attributeName: partitionKey.name, keyType: HASH_KEY_TYPE },
     ];
+
     if (sortKey) {
       indexKeySchema.push({ attributeName: sortKey.name, keyType: RANGE_KEY_TYPE });
     }
+
     return indexKeySchema;
   }
 
@@ -486,12 +297,15 @@ export class GlobalTable extends GlobalTableBase {
     if (props.projectionType === ProjectionType.INCLUDE && !props.nonKeyAttributes) {
       throw new Error(`Non-key attributes should be specified when using ${ProjectionType.INCLUDE} projection type`);
     }
+
     if (props.projectionType !== ProjectionType.INCLUDE && props.nonKeyAttributes) {
       throw new Error(`Non-key attributes should not be specified when not using ${ProjectionType.INCLUDE} projection type`);
     }
+
     if (props.nonKeyAttributes) {
       this.validateNonKeyAttributes(props.nonKeyAttributes);
     }
+
     return {
       projectionType: props.projectionType ?? ProjectionType.ALL,
       nonKeyAttributes: props.nonKeyAttributes ?? undefined,
@@ -510,16 +324,9 @@ export class GlobalTable extends GlobalTableBase {
     if (existingAttributeDef && existingAttributeDef.attributeType !== type) {
       throw new Error(`Unable to specify ${name} as ${type} because it was already defined as ${existingAttributeDef.attributeType}`);
     }
+
     if (!existingAttributeDef) {
       this.attributeDefinitions.push({ attributeName: name, attributeType: type });
-    }
-  }
-
-  private validateProvisioning(props: { readCapacity?: Capacity, writeCapacity?: Capacity }) {
-    if (this.billingMode === BillingMode.PAY_PER_REQUEST) {
-      if (props.readCapacity || props.writeCapacity) {
-        throw new Error('You cannot provision read and write capacity for a global table with on-demand billing mode');
-      }
     }
   }
 
@@ -530,62 +337,44 @@ export class GlobalTable extends GlobalTableBase {
   }
 
   private validateNonKeyAttributes(nonKeyAttributes: string[]) {
-    if (this.nonKeyAttributes.size + nonKeyAttributes.length > 100) {
-      // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Limits.html#limits-secondary-indexes
-      throw new RangeError('A maximum number of nonKeyAttributes across all secondary indexes is 100');
+    if (this.nonKeyAttributes.size + nonKeyAttributes.length > MAX_NON_KEY_ATTRIBUTES) {
+      throw new Error(`The maximum number of nonKeyAttributes across all secondary indexes is ${MAX_NON_KEY_ATTRIBUTES}`);
     }
   }
 }
 
-/**
- * The capacity mode and settings for read and write operations.
- */
+export class Billing {
+  public static onDemand() {
+    return new Billing(BillingMode.PAY_PER_REQUEST);
+  }
+
+  public static provisioned(options: ThroughputOptions) {
+    return new Billing(BillingMode.PROVISIONED, options);
+  }
+
+  public readonly mode: string;
+  public readonly readCapacity?: Capacity;
+  public readonly writeCapacity?: Capacity;
+
+  private constructor(mode: string, options?: ThroughputOptions) {
+    this.mode = mode;
+    this.readCapacity = options?.readCapacity;
+    this.writeCapacity = options?.writeCapacity;
+  }
+}
+
 export class Capacity {
-  /**
-   * Used to configure fixed capacity mode with specific capacity units.
-   */
   public static fixed(units: number) {
     return new Capacity(CapacityMode.FIXED, { units });
   }
-
-  /**
-   * Used to configure autoscaled capacity mode with capacity autoscaled setting.
-   */
   public static autoscaled(options: AutoscaledCapacityOptions) {
     return new Capacity(CapacityMode.AUTOSCALED, { ...options });
   }
 
-  /**
-   * The capacity mode for read and write operations.
-   */
   public readonly mode: string;
-
-  /**
-   * The number of capacity units.
-   *
-   * Note: This is only set when the capacity mode is fixed.
-   */
   public readonly units?: number;
-
-  /**
-   * The minimum capacity to scale to.
-   *
-   * Note: This is only set when the capacity mode is autoscaled.
-   */
   public readonly minCapacity?: number;
-
-  /**
-   * The maximum capacity to scale to.
-   *
-   * Note: This is only set when the capacity mode is autoscaled.
-   */
   public readonly maxCapacity?: number;
-
-  /**
-   * The ratio of consumed capacity units to provisioned capacity units.
-   *
-   * Note: This is only set when the capacity mode is autoscaled.
-   */
   public readonly targetUtilizationPercent?: number;
 
   private constructor(mode: string, options: CapacityConfigOptions) {
@@ -594,50 +383,5 @@ export class Capacity {
     this.minCapacity = options.minCapacity;
     this.maxCapacity = options.maxCapacity;
     this.targetUtilizationPercent = options.targetUtilizationPercent;
-  }
-}
-
-/**
- * Represents the billing used to specify how you are charged for read and write throughput
- * and how you manage capacity.
- */
-export class Billing {
-  /**
-   * Configure on-demand billing.
-   */
-  public static onDemand() {
-    return new Billing(BillingMode.PAY_PER_REQUEST);
-  }
-
-  /**
-   * Configure provisioned billing.
-   */
-  public static provisioned(options: ThroughputOptions) {
-    return new Billing(BillingMode.PROVISIONED, options);
-  }
-
-  /**
-   * The billing mode for read and write operations.
-   */
-  public readonly mode: string;
-
-  /**
-   * The capacity used for read operations.
-   *
-   * Note: This is only set if the billing mode is provisioned.
-   */
-  public readonly readCapacity?: Capacity;
-
-  /**
-   * The capacity used for write operations.
-   *
-   * Note: This is only set if the billing mode is provisioned.
-   */
-  public readonly writeCapacity?: Capacity;
-
-  private constructor(mode: string, options?: ThroughputOptions) {
-    this.mode = mode;
-    this.readCapacity = options?.readCapacity;
-    this.writeCapacity = options?.writeCapacity;
   }
 }
