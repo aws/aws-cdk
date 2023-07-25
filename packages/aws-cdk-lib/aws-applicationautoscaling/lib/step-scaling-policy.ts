@@ -114,7 +114,7 @@ export class StepScalingPolicy extends Construct {
     }
 
     if (props.scalingSteps.length > 40) {
-      throw new Error(`You must have less than 40 steps in StepScalingPolicyProps.scalingSteps; you had ${props.scalingSteps.length} steps`);
+      throw new Error(`'scalingSteps' can have at most 40 steps, got ${props.scalingSteps.length}`);
     }
 
     if (props.datapointsToAlarm !== undefined && props.datapointsToAlarm < 1) {

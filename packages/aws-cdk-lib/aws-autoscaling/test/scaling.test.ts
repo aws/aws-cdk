@@ -341,7 +341,7 @@ describe('step-scaling-policy scalingSteps length validation checks', () => {
           dimensionsMap: { Mustache: 'Bushy' },
         }),
         estimatedInstanceWarmup: cdk.Duration.seconds(150),
-        // only one scaling step throws an error
+        // only one scaling step throws an error.
         scalingSteps: [
           { lower: 0, upper: 2, change: +1 },
         ],
@@ -375,10 +375,9 @@ describe('step-scaling-policy scalingSteps length validation checks', () => {
           dimensionsMap: { Mustache: 'Bushy' },
         }),
         estimatedInstanceWarmup: cdk.Duration.seconds(150),
-        // only one scaling step throws an error
         scalingSteps: steps,
       });
-    }).toThrow('You must have less than 40 steps in StepScalingPolicyProps.scalingSteps; you had 41 steps');
+    }).toThrow('\'scalingSteps\' can have at most 40 steps, got 41');
   });
 });
 
