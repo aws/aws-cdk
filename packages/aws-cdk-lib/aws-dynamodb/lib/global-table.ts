@@ -38,12 +38,12 @@ export interface AutoscaledCapacityOptions {
   readonly targetUtilizationPercent?: number;
 }
 
-export interface GlobalSecondaryIndexOptions extends SchemaOptions, SecondaryIndexProps {
+export interface GlobalSecondaryIndexPropsV2 extends SchemaOptions, SecondaryIndexProps {
   readonly readCapacity?: Capacity;
   readonly writeCapacity?: Capacity;
 }
 
-export interface LocalSecondaryIndexOptions extends SecondaryIndexProps {
+export interface LocalSecondaryIndexPropsV2 extends SecondaryIndexProps {
   readonly sortKey: Attribute;
 }
 
@@ -66,8 +66,8 @@ export interface GlobalTableProps extends TableOptions, SchemaOptions {
   readonly removalPolicy?: RemovalPolicy;
   readonly billing?: Billing;
   readonly replicas?: ReplicaTableProps[];
-  readonly globalSecondaryIndexes?: GlobalSecondaryIndexOptions[];
-  readonly localSecondaryIndexes?: LocalSecondaryIndexOptions[];
+  readonly globalSecondaryIndexes?: GlobalSecondaryIndexPropsV2[];
+  readonly localSecondaryIndexes?: LocalSecondaryIndexPropsV2[];
 }
 
 export interface IGlobalTable extends IResource {
@@ -101,8 +101,8 @@ export class GlobalTable extends GlobalTableBase {
   private readonly resolvedReplicaRegions = new Map<string, boolean>();
   private readonly replicaTables: ReplicaTableProps[];
   private readonly secondaryIndexSchemas = new Map<string, boolean>();
-  private readonly globalSecondaryIndexes: GlobalSecondaryIndexOptions[];
-  private readonly localSecondaryIndexes: LocalSecondaryIndexOptions[];
+  private readonly globalSecondaryIndexes: GlobalSecondaryIndexPropsV2[];
+  private readonly localSecondaryIndexes: LocalSecondaryIndexPropsV2[];
 
   public constructor(scope: Construct, id: string, props: GlobalTableProps) {
     super(scope, id, { physicalName: props.tableName });
@@ -113,7 +113,7 @@ export class GlobalTable extends GlobalTableBase {
       this.billingMode = props.billing.mode;
       if (this.billingMode === BillingMode.PROVISIONED) {
         // writeCapacity has to be provided when billing mode is provisioned
-        this.tableWriteProvisioning = this.configureWriteProvisioning(props.billing.writeCapacity!);
+        this.tableWriteProvisioning = this.configureWriteProvisioning(props.billing.writeCapacity);
       }
     } else {
       this.billingMode = BillingMode.PAY_PER_REQUEST;
@@ -163,7 +163,7 @@ export class GlobalTable extends GlobalTableBase {
    *
    * @param props the properties of a global secondary index
    */
-  public addGlobalSecondaryIndex(props: GlobalSecondaryIndexOptions) {
+  public addGlobalSecondaryIndex(props: GlobalSecondaryIndexPropsV2) {
     this.globalSecondaryIndexes.push(props);
   }
 
@@ -172,7 +172,7 @@ export class GlobalTable extends GlobalTableBase {
    *
    * @param props the properties of a local secondary index
    */
-  public addLocalSecondaryIndex(props: LocalSecondaryIndexOptions) {
+  public addLocalSecondaryIndex(props: LocalSecondaryIndexPropsV2) {
     this.localSecondaryIndexes.push(props);
   }
 
@@ -198,9 +198,7 @@ export class GlobalTable extends GlobalTableBase {
         deletionProtectionEnabled: replicaTable.contributorInsights ?? props.contributorInsights,
         tableClass: replicaTable.tableClass ?? props.tableClass,
         contributorInsightsSpecification: contributorInsights !== undefined ? { enabled: contributorInsights } : undefined,
-        pointInTimeRecoverySpecification: pointInTimeRecovery !== undefined
-          ? { pointInTimeRecoveryEnabled: pointInTimeRecovery }
-          : undefined,
+        pointInTimeRecoverySpecification: pointInTimeRecovery !== undefined ? { pointInTimeRecoveryEnabled: pointInTimeRecovery } : undefined,
       });
     }
 
@@ -214,10 +212,10 @@ export class GlobalTable extends GlobalTableBase {
 
     return {
       writeCapacityAutoScalingSettings: {
-        minCapacity: writeCapacity.minCapacity!, // minCapacity is required for autoscaled mode
-        maxCapacity: writeCapacity.maxCapacity!, // maxCapacity is required for autoscaled mode
+        minCapacity: writeCapacity.minCapacity,
+        maxCapacity: writeCapacity.maxCapacity,
         targetTrackingScalingPolicyConfiguration: {
-          targetValue: writeCapacity.targetUtilizationPercent ?? DEFAULT_TARGET_UTILIZATION,
+          targetValue: writeCapacity.targetUtilizationPercent,
         },
       },
     };
@@ -353,13 +351,27 @@ export class Billing {
   }
 
   public readonly mode: string;
-  public readonly readCapacity?: Capacity;
-  public readonly writeCapacity?: Capacity;
+  private readonly _readCapacity?: Capacity;
+  private readonly _writeCapacity?: Capacity;
+
+  public get readCapacity() {
+    if (!this._readCapacity) {
+      throw new Error();
+    }
+    return this._readCapacity;
+  }
+
+  public get writeCapacity() {
+    if (!this._writeCapacity) {
+      throw new Error();
+    }
+    return this._writeCapacity;
+  }
 
   private constructor(mode: string, options?: ThroughputOptions) {
     this.mode = mode;
-    this.readCapacity = options?.readCapacity;
-    this.writeCapacity = options?.writeCapacity;
+    this._readCapacity = options?.readCapacity;
+    this._writeCapacity = options?.writeCapacity;
   }
 }
 
@@ -367,21 +379,50 @@ export class Capacity {
   public static fixed(units: number) {
     return new Capacity(CapacityMode.FIXED, { units });
   }
+
   public static autoscaled(options: AutoscaledCapacityOptions) {
     return new Capacity(CapacityMode.AUTOSCALED, { ...options });
   }
 
   public readonly mode: string;
-  public readonly units?: number;
-  public readonly minCapacity?: number;
-  public readonly maxCapacity?: number;
-  public readonly targetUtilizationPercent?: number;
+  private readonly _units?: number;
+  private readonly _minCapacity?: number;
+  private readonly _maxCapacity?: number;
+  private readonly _targetUtilizationPercent?: number;
+
+  public get units() {
+    if (this._units === undefined) {
+      throw new Error(`Capacity units are not configured for ${CapacityMode.AUTOSCALED} capacity mode`);
+    }
+    return this._units;
+  }
+
+  public get minCapacity() {
+    if (this._minCapacity === undefined) {
+      throw new Error(`Minimum capacity is not configured for ${CapacityMode.FIXED} capacity mode`);
+    }
+    return this._minCapacity;
+  }
+
+  public get maxCapacity() {
+    if (this._maxCapacity === undefined) {
+      throw new Error(`Maximum capacity is not configured for ${CapacityMode.FIXED} capacity mode`);
+    }
+    return this._maxCapacity;
+  }
+
+  public get targetUtilizationPercent() {
+    if (this.mode === CapacityMode.FIXED) {
+      throw new Error(`Target utilization percent is not configured for ${CapacityMode.FIXED} capacity mode`);
+    }
+    return this._targetUtilizationPercent ?? DEFAULT_TARGET_UTILIZATION;
+  }
 
   private constructor(mode: string, options: CapacityConfigOptions) {
     this.mode = mode;
-    this.units = options.units;
-    this.minCapacity = options.minCapacity;
-    this.maxCapacity = options.maxCapacity;
-    this.targetUtilizationPercent = options.targetUtilizationPercent;
+    this._units = options.units;
+    this._minCapacity = options.minCapacity;
+    this._maxCapacity = options.maxCapacity;
+    this._targetUtilizationPercent = options.targetUtilizationPercent;
   }
 }
