@@ -71,7 +71,7 @@ export function makeHostedZoneArn(construct: Construct, hostedZoneId: string): s
   });
 }
 
-export function makeGrantDelegation(grantee: iam.IGrantable, hostedZoneArn: string) {
+export function makeGrantDelegation(grantee: iam.IGrantable, hostedZoneArn: string): iam.Grant {
   const g1 = iam.Grant.addToPrincipal({
     grantee,
     actions: ['route53:ChangeResourceRecordSets'],

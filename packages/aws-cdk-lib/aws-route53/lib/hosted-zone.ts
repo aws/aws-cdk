@@ -242,7 +242,7 @@ export interface IPublicHostedZone extends IHostedZone {
   /**
    * Grant permissions to add delegation records to this zone
    */
-  grantDelegation(grantee: iam.IGrantable): void;
+  grantDelegation(grantee: iam.IGrantable): iam.Grant;
 }
 
 /**
@@ -269,8 +269,8 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }
-      public grantDelegation(grantee: iam.IGrantable) {
-        makeGrantDelegation(grantee, this.hostedZoneArn);
+      public grantDelegation(grantee: iam.IGrantable): iam.Grant {
+        return makeGrantDelegation(grantee, this.hostedZoneArn);
       };
     }
     return new Import(scope, id);
@@ -292,8 +292,8 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }
-      public grantDelegation(grantee: iam.IGrantable) {
-        makeGrantDelegation(grantee, this.hostedZoneArn);
+      public grantDelegation(grantee: iam.IGrantable): iam.Grant {
+        return makeGrantDelegation(grantee, this.hostedZoneArn);
       };
     }
     return new Import(scope, id);
@@ -365,8 +365,8 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
     });
   }
 
-  public grantDelegation(grantee: iam.IGrantable) {
-    makeGrantDelegation(grantee, this.hostedZoneArn);
+  public grantDelegation(grantee: iam.IGrantable): iam.Grant {
+    return makeGrantDelegation(grantee, this.hostedZoneArn);
   }
 }
 
