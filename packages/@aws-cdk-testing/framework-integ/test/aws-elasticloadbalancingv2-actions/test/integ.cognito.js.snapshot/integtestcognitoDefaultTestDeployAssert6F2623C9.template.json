@@ -11,7 +11,7 @@
     },
     "service": "Lambda",
     "api": "invoke",
-    "expected": "{\"$ObjectLike\":{\"Payload\":\"Authenticated\"}}",
+    "expected": "{\"$ObjectLike\":{\"Payload\":\"\\\"Authenticated\\\"\"}}",
     "parameters": {
      "FunctionName": {
       "Fn::Join": [

@@ -214,7 +214,7 @@ const invoke = test.assertions.invokeFunction({
   functionName: signinFunction.functionName,
 });
 invoke.expect(integ.ExpectedResult.objectLike({
-  Payload: 'Authenticated',
+  Payload: '"Authenticated"',
 }));
 
 app.synth();
