@@ -170,9 +170,10 @@ export enum GrowthType {
  * Defines the deployment strategy ID's of AWS AppConfig predefined strategies.
  */
 export enum PredefinedDeploymentStrategyId {
-  ALL_AT_ONCE = 'AppConfig.AllAtOnce',
-  LINEAR_50_PERCENT_EVERY_30_SECONDS = 'AppConfig.Linear50PercentEvery30Seconds',
   CANARY_10_PERCENT_20_MINUTES = 'AppConfig.Canary10Percent20Minutes',
+  LINEAR_50_PERCENT_EVERY_30_SECONDS = 'AppConfig.Linear50PercentEvery30Seconds',
+  LINEAR_20_PERCENT_EVERY_6_MINUTES = 'AppConfig.Linear20PercentEvery6Minutes',
+  ALL_AT_ONCE = 'AppConfig.AllAtOnce',
 }
 
 /**
@@ -186,6 +187,7 @@ export enum PredefinedDeploymentStrategyId {
 export abstract class RolloutStrategy {
   public static readonly CANARY_10_PERCENT_20_MINUTES = RolloutStrategy.exponential(10, Duration.minutes(20), Duration.minutes(10));
   public static readonly LINEAR_50_PERCENT_EVERY_30_SECONDS = RolloutStrategy.linear(50, Duration.minutes(1), Duration.minutes(1));
+  public static readonly LINEAR_20_PERCENT_EVERY_6_MINUTES = RolloutStrategy.linear(20, Duration.minutes(30), Duration.minutes(30));
   public static readonly ALL_AT_ONCE = RolloutStrategy.linear(100, Duration.minutes(0), Duration.minutes(10));
 
   /**
