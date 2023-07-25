@@ -806,7 +806,7 @@ describe('DatabaseCluster', () => {
           maxCapacity: 10,
         },
       });
-    }).toThrow(/ServerlessScalingConfiguration minCapacity must be greater or equal than 1/);
+    }).toThrow(/ServerlessScalingConfiguration minCapacity must be greater or equal than 1, received 0/);
 
     expect(() => {
       new DatabaseCluster(stack, 'Database2', {
@@ -817,7 +817,7 @@ describe('DatabaseCluster', () => {
           maxCapacity: 200,
         },
       });
-    }).toThrow(/ServerlessScalingConfiguration maxCapacity must be between 2.5 and 128/);
+    }).toThrow(/ServerlessScalingConfiguration maxCapacity must be between 2.5 and 128, reveived 200/);
 
     expect(() => {
       new DatabaseCluster(stack, 'Database3', {
@@ -828,7 +828,7 @@ describe('DatabaseCluster', () => {
           maxCapacity: 5,
         },
       });
-    }).toThrow(/ServerlessScalingConfiguration minCapacity must be less than serverlessScalingConfiguration maxCapacity/);
+    }).toThrow(/ServerlessScalingConfiguration minCapacity 10 must be less than serverlessScalingConfiguration maxCapacity 5/);
   });
 });
 

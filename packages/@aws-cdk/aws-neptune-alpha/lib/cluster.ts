@@ -680,13 +680,14 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
   private validateServerlessScalingConfiguration(serverlessScalingConfiguration?: ServerlessScalingConfiguration) {
     if (!serverlessScalingConfiguration) return;
     if (serverlessScalingConfiguration.minCapacity < 1) {
-      throw new Error('ServerlessScalingConfiguration minCapacity must be greater or equal than 1');
+      throw new Error(`ServerlessScalingConfiguration minCapacity must be greater or equal than 1, received ${serverlessScalingConfiguration.minCapacity}`);
     }
     if (serverlessScalingConfiguration.maxCapacity < 2.5 || serverlessScalingConfiguration.maxCapacity > 128) {
-      throw new Error('ServerlessScalingConfiguration maxCapacity must be between 2.5 and 128');
+      throw new Error(`ServerlessScalingConfiguration maxCapacity must be between 2.5 and 128, reveived ${serverlessScalingConfiguration.maxCapacity}`);
     }
     if (serverlessScalingConfiguration.minCapacity >= serverlessScalingConfiguration.maxCapacity) {
-      throw new Error('ServerlessScalingConfiguration minCapacity must be less than serverlessScalingConfiguration maxCapacity');
+      throw new Error(`ServerlessScalingConfiguration minCapacity ${serverlessScalingConfiguration.minCapacity} ` +
+        `must be less than serverlessScalingConfiguration maxCapacity ${serverlessScalingConfiguration.maxCapacity}`);
     }
   }
 }
