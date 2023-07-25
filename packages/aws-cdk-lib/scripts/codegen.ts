@@ -1,1 +1,1 @@
-export * from '@aws-cdk/cfn2ts';
+export * from '@aws-cdk/spec2cdk/lib/cfn2ts';

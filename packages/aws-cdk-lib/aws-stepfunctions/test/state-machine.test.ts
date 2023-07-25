@@ -579,4 +579,26 @@ describe('State Machine', () => {
       DeletionPolicy: 'Retain',
     });
   });
+
+  test('stateMachineRevisionId property uses attribute reference', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const stateMachine = new sfn.StateMachine(stack, 'MyStateMachine', {
+      stateMachineName: 'MyStateMachine',
+      definitionBody: sfn.DefinitionBody.fromChainable(new sfn.Pass(stack, 'Pass')),
+    });
+
+    new sfn.CfnStateMachineVersion(stack, 'MyStateMachineVersion', {
+      stateMachineRevisionId: stateMachine.stateMachineRevisionId,
+      stateMachineArn: stateMachine.stateMachineArn,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachineVersion', {
+      StateMachineArn: { Ref: 'MyStateMachine6C968CA5' },
+      StateMachineRevisionId: { 'Fn::GetAtt': ['MyStateMachine6C968CA5', 'StateMachineRevisionId'] },
+    });
+  });
 });
