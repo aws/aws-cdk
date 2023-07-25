@@ -347,10 +347,6 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
     };
   }
 
-  /**
-   * Validate the specified tags according to
-   * https://docs.aws.amazon.com/batch/latest/APIReference/API_SubmitJob.html
-   */
   private validateTags(tags?: { [key: string]: string }) {
     if (tags === undefined) return;
     const tagEntries = Object.entries(tags);
