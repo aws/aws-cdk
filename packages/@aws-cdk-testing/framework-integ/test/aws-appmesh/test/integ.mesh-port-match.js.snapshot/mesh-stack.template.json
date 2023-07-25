@@ -1,0 +1,768 @@
+{
+ "Resources": {
+  "vpcA2121C38": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "mesh-stack/vpc"
+     }
+    ]
+   }
+  },
+  "vpcPublicSubnet1Subnet2E65531E": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "mesh-stack/vpc/PublicSubnet1"
+     }
+    ]
+   }
+  },
+  "vpcPublicSubnet1RouteTable48A2DF9B": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "mesh-stack/vpc/PublicSubnet1"
+     }
+    ]
+   }
+  },
+  "vpcPublicSubnet1RouteTableAssociation5D3F4579": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "vpcPublicSubnet1RouteTable48A2DF9B"
+    },
+    "SubnetId": {
+     "Ref": "vpcPublicSubnet1Subnet2E65531E"
+    }
+   }
+  },
+  "vpcPublicSubnet1DefaultRoute10708846": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "vpcPublicSubnet1RouteTable48A2DF9B"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "vpcIGWE57CBDCA"
+    }
+   },
+   "DependsOn": [
+    "vpcVPCGW7984C166"
+   ]
+  },
+  "vpcPublicSubnet1EIPDA49DCBE": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "mesh-stack/vpc/PublicSubnet1"
+     }
+    ]
+   }
+  },
+  "vpcPublicSubnet1NATGateway9C16659E": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "SubnetId": {
+     "Ref": "vpcPublicSubnet1Subnet2E65531E"
+    },
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "vpcPublicSubnet1EIPDA49DCBE",
+      "AllocationId"
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "mesh-stack/vpc/PublicSubnet1"
+     }
+    ]
+   },
+   "DependsOn": [
+    "vpcPublicSubnet1DefaultRoute10708846",
+    "vpcPublicSubnet1RouteTableAssociation5D3F4579"
+   ]
+  },
+  "vpcPublicSubnet2Subnet009B674F": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.64.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "mesh-stack/vpc/PublicSubnet2"
+     }
+    ]
+   }
+  },
+  "vpcPublicSubnet2RouteTableEB40D4CB": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "mesh-stack/vpc/PublicSubnet2"
+     }
+    ]
+   }
+  },
+  "vpcPublicSubnet2RouteTableAssociation21F81B59": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "vpcPublicSubnet2RouteTableEB40D4CB"
+    },
+    "SubnetId": {
+     "Ref": "vpcPublicSubnet2Subnet009B674F"
+    }
+   }
+  },
+  "vpcPublicSubnet2DefaultRouteA1EC0F60": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "vpcPublicSubnet2RouteTableEB40D4CB"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "vpcIGWE57CBDCA"
+    }
+   },
+   "DependsOn": [
+    "vpcVPCGW7984C166"
+   ]
+  },
+  "vpcPrivateSubnet1Subnet934893E8": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.128.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "mesh-stack/vpc/PrivateSubnet1"
+     }
+    ]
+   }
+  },
+  "vpcPrivateSubnet1RouteTableB41A48CC": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "mesh-stack/vpc/PrivateSubnet1"
+     }
+    ]
+   }
+  },
+  "vpcPrivateSubnet1RouteTableAssociation67945127": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "vpcPrivateSubnet1RouteTableB41A48CC"
+    },
+    "SubnetId": {
+     "Ref": "vpcPrivateSubnet1Subnet934893E8"
+    }
+   }
+  },
+  "vpcPrivateSubnet1DefaultRoute1AA8E2E5": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "vpcPrivateSubnet1RouteTableB41A48CC"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "vpcPublicSubnet1NATGateway9C16659E"
+    }
+   }
+  },
+  "vpcPrivateSubnet2Subnet7031C2BA": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.192.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "mesh-stack/vpc/PrivateSubnet2"
+     }
+    ]
+   }
+  },
+  "vpcPrivateSubnet2RouteTable7280F23E": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "mesh-stack/vpc/PrivateSubnet2"
+     }
+    ]
+   }
+  },
+  "vpcPrivateSubnet2RouteTableAssociation007E94D3": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "vpcPrivateSubnet2RouteTable7280F23E"
+    },
+    "SubnetId": {
+     "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
+    }
+   }
+  },
+  "vpcPrivateSubnet2DefaultRouteB0E07F99": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "vpcPrivateSubnet2RouteTable7280F23E"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "vpcPublicSubnet1NATGateway9C16659E"
+    }
+   }
+  },
+  "vpcIGWE57CBDCA": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "mesh-stack/vpc"
+     }
+    ]
+   }
+  },
+  "vpcVPCGW7984C166": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    },
+    "InternetGatewayId": {
+     "Ref": "vpcIGWE57CBDCA"
+    }
+   }
+  },
+  "testnamespace01FA2CAF": {
+   "Type": "AWS::ServiceDiscovery::PrivateDnsNamespace",
+   "Properties": {
+    "Name": "domain.local",
+    "Vpc": {
+     "Ref": "vpcA2121C38"
+    }
+   }
+  },
+  "meshACDFE68E": {
+   "Type": "AWS::AppMesh::Mesh",
+   "Properties": {
+    "MeshName": "meshstackmesh680D3CEB",
+    "Spec": {}
+   }
+  },
+  "meshhttprouter1DC8881A": {
+   "Type": "AWS::AppMesh::VirtualRouter",
+   "Properties": {
+    "MeshName": {
+     "Fn::GetAtt": [
+      "meshACDFE68E",
+      "MeshName"
+     ]
+    },
+    "Spec": {
+     "Listeners": [
+      {
+       "PortMapping": {
+        "Port": 1233,
+        "Protocol": "http"
+       }
+      }
+     ]
+    },
+    "VirtualRouterName": "meshstackmeshhttprouter85E0114B"
+   }
+  },
+  "meshhttprouterhttprouteA1EC61B9": {
+   "Type": "AWS::AppMesh::Route",
+   "Properties": {
+    "MeshName": {
+     "Fn::GetAtt": [
+      "meshACDFE68E",
+      "MeshName"
+     ]
+    },
+    "Spec": {
+     "HttpRoute": {
+      "Action": {
+       "WeightedTargets": [
+        {
+         "VirtualNode": {
+          "Fn::GetAtt": [
+           "meshhttpnode26144F8B",
+           "VirtualNodeName"
+          ]
+         },
+         "Weight": 1
+        }
+       ]
+      },
+      "Match": {
+       "Port": 1233,
+       "Prefix": "/"
+      }
+     }
+    },
+    "VirtualRouterName": {
+     "Fn::GetAtt": [
+      "meshhttprouter1DC8881A",
+      "VirtualRouterName"
+     ]
+    },
+    "RouteName": "http-route"
+   }
+  },
+  "meshgrpcrouter885C4D83": {
+   "Type": "AWS::AppMesh::VirtualRouter",
+   "Properties": {
+    "MeshName": {
+     "Fn::GetAtt": [
+      "meshACDFE68E",
+      "MeshName"
+     ]
+    },
+    "Spec": {
+     "Listeners": [
+      {
+       "PortMapping": {
+        "Port": 1234,
+        "Protocol": "grpc"
+       }
+      }
+     ]
+    },
+    "VirtualRouterName": "meshstackmeshgrpcrouter2CCBF824"
+   }
+  },
+  "meshgrpcroutergrpcrouteC2C69C40": {
+   "Type": "AWS::AppMesh::Route",
+   "Properties": {
+    "MeshName": {
+     "Fn::GetAtt": [
+      "meshACDFE68E",
+      "MeshName"
+     ]
+    },
+    "Spec": {
+     "GrpcRoute": {
+      "Action": {
+       "WeightedTargets": [
+        {
+         "Port": 1234,
+         "VirtualNode": {
+          "Fn::GetAtt": [
+           "meshgrpcnode5DE90B75",
+           "VirtualNodeName"
+          ]
+         },
+         "Weight": 1
+        }
+       ]
+      },
+      "Match": {
+       "Port": 1234
+      }
+     }
+    },
+    "VirtualRouterName": {
+     "Fn::GetAtt": [
+      "meshgrpcrouter885C4D83",
+      "VirtualRouterName"
+     ]
+    },
+    "RouteName": "grpc-route"
+   }
+  },
+  "meshhttpnode26144F8B": {
+   "Type": "AWS::AppMesh::VirtualNode",
+   "Properties": {
+    "MeshName": {
+     "Fn::GetAtt": [
+      "meshACDFE68E",
+      "MeshName"
+     ]
+    },
+    "Spec": {
+     "Listeners": [
+      {
+       "PortMapping": {
+        "Port": 1233,
+        "Protocol": "http"
+       }
+      }
+     ],
+     "ServiceDiscovery": {
+      "DNS": {
+       "Hostname": "node.domain.local",
+       "ResponseType": "ENDPOINTS"
+      }
+     }
+    },
+    "VirtualNodeName": "meshstackmeshhttpnodeECE697CA"
+   }
+  },
+  "meshgrpcnode5DE90B75": {
+   "Type": "AWS::AppMesh::VirtualNode",
+   "Properties": {
+    "MeshName": {
+     "Fn::GetAtt": [
+      "meshACDFE68E",
+      "MeshName"
+     ]
+    },
+    "Spec": {
+     "Listeners": [
+      {
+       "PortMapping": {
+        "Port": 1234,
+        "Protocol": "grpc"
+       }
+      }
+     ],
+     "ServiceDiscovery": {
+      "DNS": {
+       "Hostname": "node.domain.local",
+       "ResponseType": "ENDPOINTS"
+      }
+     }
+    },
+    "VirtualNodeName": "meshstackmeshgrpcnode22C47BCC"
+   }
+  },
+  "meshgateway7E10276F": {
+   "Type": "AWS::AppMesh::VirtualGateway",
+   "Properties": {
+    "MeshName": {
+     "Fn::GetAtt": [
+      "meshACDFE68E",
+      "MeshName"
+     ]
+    },
+    "Spec": {
+     "Listeners": [
+      {
+       "PortMapping": {
+        "Port": 1233,
+        "Protocol": "http"
+       }
+      }
+     ],
+     "Logging": {
+      "AccessLog": {
+       "File": {
+        "Path": "/dev/stdout"
+       }
+      }
+     }
+    },
+    "VirtualGatewayName": "gateway"
+   }
+  },
+  "meshgatewaygatewayroutehttpFC878A78": {
+   "Type": "AWS::AppMesh::GatewayRoute",
+   "Properties": {
+    "MeshName": {
+     "Fn::GetAtt": [
+      "meshACDFE68E",
+      "MeshName"
+     ]
+    },
+    "Spec": {
+     "HttpRoute": {
+      "Action": {
+       "Target": {
+        "VirtualService": {
+         "VirtualServiceName": {
+          "Fn::GetAtt": [
+           "httpserviceA998E5F0",
+           "VirtualServiceName"
+          ]
+         }
+        }
+       }
+      },
+      "Match": {
+       "Port": 1233,
+       "Prefix": "/"
+      }
+     }
+    },
+    "VirtualGatewayName": {
+     "Fn::GetAtt": [
+      "meshgateway7E10276F",
+      "VirtualGatewayName"
+     ]
+    },
+    "GatewayRouteName": "meshstackmeshgatewaygatewayroutehttp4CA31BCC"
+   }
+  },
+  "meshgateway2A278D68E": {
+   "Type": "AWS::AppMesh::VirtualGateway",
+   "Properties": {
+    "MeshName": {
+     "Fn::GetAtt": [
+      "meshACDFE68E",
+      "MeshName"
+     ]
+    },
+    "Spec": {
+     "Listeners": [
+      {
+       "PortMapping": {
+        "Port": 1234,
+        "Protocol": "grpc"
+       }
+      }
+     ],
+     "Logging": {
+      "AccessLog": {
+       "File": {
+        "Path": "/dev/stdout"
+       }
+      }
+     }
+    },
+    "VirtualGatewayName": "gateway2"
+   }
+  },
+  "meshgateway2gateway2routegrpcD0DA968B": {
+   "Type": "AWS::AppMesh::GatewayRoute",
+   "Properties": {
+    "MeshName": {
+     "Fn::GetAtt": [
+      "meshACDFE68E",
+      "MeshName"
+     ]
+    },
+    "Spec": {
+     "GrpcRoute": {
+      "Action": {
+       "Target": {
+        "VirtualService": {
+         "VirtualServiceName": {
+          "Fn::GetAtt": [
+           "grpcserviceF42BA24D",
+           "VirtualServiceName"
+          ]
+         }
+        }
+       }
+      },
+      "Match": {
+       "Port": 1234
+      }
+     }
+    },
+    "VirtualGatewayName": {
+     "Fn::GetAtt": [
+      "meshgateway2A278D68E",
+      "VirtualGatewayName"
+     ]
+    },
+    "GatewayRouteName": "meshstackmeshgateway2gateway2routegrpc65A85E78"
+   }
+  },
+  "httpserviceA998E5F0": {
+   "Type": "AWS::AppMesh::VirtualService",
+   "Properties": {
+    "MeshName": {
+     "Fn::GetAtt": [
+      "meshACDFE68E",
+      "MeshName"
+     ]
+    },
+    "Spec": {
+     "Provider": {
+      "VirtualRouter": {
+       "VirtualRouterName": {
+        "Fn::GetAtt": [
+         "meshhttprouter1DC8881A",
+         "VirtualRouterName"
+        ]
+       }
+      }
+     }
+    },
+    "VirtualServiceName": "service1.domain.local"
+   }
+  },
+  "grpcserviceF42BA24D": {
+   "Type": "AWS::AppMesh::VirtualService",
+   "Properties": {
+    "MeshName": {
+     "Fn::GetAtt": [
+      "meshACDFE68E",
+      "MeshName"
+     ]
+    },
+    "Spec": {
+     "Provider": {
+      "VirtualRouter": {
+       "VirtualRouterName": {
+        "Fn::GetAtt": [
+         "meshgrpcrouter885C4D83",
+         "VirtualRouterName"
+        ]
+       }
+      }
+     }
+    },
+    "VirtualServiceName": "service2.domain.local"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

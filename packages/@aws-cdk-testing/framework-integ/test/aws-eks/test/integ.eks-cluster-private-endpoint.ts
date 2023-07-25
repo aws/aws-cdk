@@ -42,12 +42,12 @@ class EksClusterStack extends Stack {
   }
 }
 
-
 const app = new App();
 
 const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster-private-endpoint-test');
 new integ.IntegTest(app, 'aws-cdk-eks-cluster-private-endpoint', {
   testCases: [stack],
+  diffAssets: true,
 });
 
 app.synth();

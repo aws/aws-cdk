@@ -3,7 +3,6 @@ import { App, Stack, Size } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as batch from '../lib';
 
-
 const app = new App();
 const stack = new Stack(app, 'stack');
 
@@ -34,11 +33,17 @@ new batch.EksJobDefinition(stack, 'EksJobDefn', {
         readonly: true,
         sizeLimit: Size.mebibytes(2048),
       }),
-      /*batch.EksVolume.secret({
-        name: 'foofoo',
-        secretName: 'foo',
+      batch.EksVolume.secret({
+        name: 'secretVolumeName',
+        secretName: 'secretName',
+        mountPath: '/secret/path',
+        optional: false,
       }),
-      */
+      batch.EksVolume.secret({
+        name: 'defaultOptionalSettingSecretVolume',
+        secretName: 'NewSecretName',
+        mountPath: '/secret/path2',
+      }),
       batch.EksVolume.hostPath({
         name: 'hostPath',
         hostPath: '/foo/bar',
@@ -47,7 +52,6 @@ new batch.EksJobDefinition(stack, 'EksJobDefn', {
     ],
   }),
 });
-
 
 new integ.IntegTest(app, 'BatchEcsJobDefinitionTest', {
   testCases: [stack],

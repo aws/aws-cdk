@@ -436,7 +436,6 @@ export class Stage extends StageBase {
     }
   }
 
-
   private renderMethodSettings(props: StageProps): CfnStage.MethodSettingProperty[] | undefined {
     const settings = new Array<CfnStage.MethodSettingProperty>();
     const self = this;

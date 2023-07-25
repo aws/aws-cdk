@@ -16,6 +16,7 @@ In addition, the library also supports defining Kubernetes resource manifests wi
   * [Endpoint Access](#endpoint-access)
   * [ALB Controller](#alb-controller)
   * [VPC Support](#vpc-support)
+  * [IPv6 Support](#ipv6-support)
   * [Kubectl Support](#kubectl-support)
   * [ARM64 Support](#arm64-support)
   * [Masters Role](#masters-role)
@@ -61,33 +62,6 @@ cluster.addManifest('mypod', {
     ],
   },
 });
-```
-
-In order to interact with your cluster through `kubectl`, you can use the `aws eks update-kubeconfig` [AWS CLI command](https://docs.aws.amazon.com/cli/latest/reference/eks/update-kubeconfig.html)
-to configure your local kubeconfig. The EKS module will define a CloudFormation output in your stack which contains the command to run. For example:
-
-```plaintext
-Outputs:
-ClusterConfigCommand43AAE40F = aws eks update-kubeconfig --name cluster-xxxxx --role-arn arn:aws:iam::112233445566:role/yyyyy
-```
-
-Execute the `aws eks update-kubeconfig ...` command in your terminal to create or update a local kubeconfig context:
-
-```console
-$ aws eks update-kubeconfig --name cluster-xxxxx --role-arn arn:aws:iam::112233445566:role/yyyyy
-Added new context arn:aws:eks:rrrrr:112233445566:cluster/cluster-xxxxx to /home/boom/.kube/config
-```
-
-And now you can simply use `kubectl`:
-
-```console
-$ kubectl get all -n kube-system
-NAME                           READY   STATUS    RESTARTS   AGE
-pod/aws-node-fpmwv             1/1     Running   0          21m
-pod/aws-node-m9htf             1/1     Running   0          21m
-pod/coredns-5cb4fb54c7-q222j   1/1     Running   0          23m
-pod/coredns-5cb4fb54c7-v9nxx   1/1     Running   0          23m
-...
 ```
 
 ## Architectural Overview
@@ -205,6 +179,49 @@ cluster.addNodegroupCapacity('custom-node-group', {
       value: 'bar',
     },
   ],
+});
+```
+
+#### Node Groups with IPv6 Support
+
+Node groups are available with IPv6 configured networks.  For custom roles assigned to node groups additional permissions are necessary in order for pods to obtain an IPv6 address.  The default node role will include these permissions.
+
+> For more details visit [Configuring the Amazon VPC CNI plugin for Kubernetes to use IAM roles for service accounts](https://docs.aws.amazon.com/eks/latest/userguide/cni-iam-role.html#cni-iam-role-create-role)
+
+```ts
+const ipv6Management = new iam.PolicyDocument({
+    statements: [new iam.PolicyStatement({
+    resources: ['arn:aws:ec2:*:*:network-interface/*'],
+    actions: [
+        'ec2:AssignIpv6Addresses',
+        'ec2:UnassignIpv6Addresses',
+    ],
+    })],
+});
+
+const eksClusterNodeGroupRole = new iam.Role(this, 'eksClusterNodeGroupRole', {
+  roleName: 'eksClusterNodeGroupRole',
+  assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+  managedPolicies: [
+    iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSWorkerNodePolicy'),
+    iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'),
+    iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKS_CNI_Policy'),
+  ],
+    inlinePolicies: {
+    ipv6Management,
+  },
+});
+
+const cluster = new eks.Cluster(this, 'HelloEKS', {
+  version: eks.KubernetesVersion.V1_27,
+  defaultCapacity: 0,
+});
+
+cluster.addNodegroupCapacity('custom-node-group', {
+  instanceTypes: [new ec2.InstanceType('m5.large')],
+  minSize: 2,
+  diskSize: 100,
+  nodeRole: eksClusterNodeGroupRole,
 });
 ```
 
@@ -339,7 +356,7 @@ The following code defines an Amazon EKS cluster with a default Fargate Profile 
 
 ```ts
 const cluster = new eks.FargateCluster(this, 'MyCluster', {
-  version: eks.KubernetesVersion.V1_21,
+  version: eks.KubernetesVersion.V1_27,
 });
 ```
 
@@ -416,7 +433,7 @@ You can also configure the cluster to use an auto-scaling group as the default c
 
 ```ts
 const cluster = new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_21,
+  version: eks.KubernetesVersion.V1_27,
   defaultCapacityType: eks.DefaultCapacityType.EC2,
 });
 ```
@@ -509,7 +526,7 @@ You can configure the [cluster endpoint access](https://docs.aws.amazon.com/eks/
 
 ```ts
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_21,
+  version: eks.KubernetesVersion.V1_27,
   endpointAccess: eks.EndpointAccess.PRIVATE, // No access outside of your VPC.
 });
 ```
@@ -630,6 +647,43 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
 });
 ```
 
+### IPv6 Support
+
+You can optionally choose to configure your cluster to use IPv6 using the [`ipFamily`](https://docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html#AmazonEKS-Type-KubernetesNetworkConfigRequest-ipFamily) definition for your cluster.  Note that this will require the underlying subnets to have an associated IPv6 CIDR.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+function associateSubnetWithV6Cidr(vpc: ec2.Vpc, count: number, subnet: ec2.ISubnet) {
+  const cfnSubnet = subnet.node.defaultChild as ec2.CfnSubnet;
+  cfnSubnet.ipv6CidrBlock = Fn.select(count, Fn.cidr(Fn.select(0, vpc.vpcIpv6CidrBlocks), 256, (128 - 64).toString()));
+  cfnSubnet.assignIpv6AddressOnCreation = true;
+}
+
+// make an ipv6 cidr
+const ipv6cidr = new ec2.CfnVPCCidrBlock(this, 'CIDR6', {
+  vpcId: vpc.vpcId,
+  amazonProvidedIpv6CidrBlock: true,
+});
+
+// connect the ipv6 cidr to all vpc subnets
+let subnetcount = 0;
+const subnets = vpc.publicSubnets.concat(vpc.privateSubnets);
+for (let subnet of subnets) {
+  // Wait for the ipv6 cidr to complete
+  subnet.node.addDependency(ipv6cidr);
+  associateSubnetWithV6Cidr(vpc, subnetcount, subnet);
+  subnetcount = subnetcount + 1;
+}
+
+const cluster = new eks.Cluster(this, 'hello-eks', {
+  version: eks.KubernetesVersion.V1_27,
+  vpc: vpc,
+  ipFamily: eks.IpFamily.IP_V6,
+  vpcSubnets: [{ subnets: vpc.publicSubnets }],
+});
+```
+
 ### Kubectl Support
 
 The resources are created in the cluster by running `kubectl apply` from a python lambda function.
@@ -638,8 +692,10 @@ By default, CDK will create a new python lambda function to apply your k8s manif
 
 ```ts
 const handlerRole = iam.Role.fromRoleArn(this, 'HandlerRole', 'arn:aws:iam::123456789012:role/lambda-role');
+// get the serivceToken from the custom resource provider
+const functionArn = lambda.Function.fromFunctionName(this, 'ProviderOnEventFunc', 'ProviderframeworkonEvent-XXX').functionArn;
 const kubectlProvider = eks.KubectlProvider.fromKubectlProviderAttributes(this, 'KubectlProvider', {
-  functionArn: 'arn:aws:lambda:us-east-2:123456789012:function:my-function:1',
+  functionArn,
   kubectlRoleArn: 'arn:aws:iam::123456789012:role/kubectl-role',
   handlerRole,
 });
@@ -672,8 +728,8 @@ the `@aws-cdk/lambda-layer-awscli` and `@aws-cdk/lambda-layer-kubectl` modules.
 The version of kubectl used must be compatible with the Kubernetes version of the
 cluster. kubectl is supported within one minor version (older or newer) of Kubernetes
 (see [Kubernetes version skew policy](https://kubernetes.io/releases/version-skew-policy/#kubectl)).
-Only version 1.20 of kubectl is available in `aws-cdk-lib`. If you need a different
-version, you will need to use one of the `@aws-cdk/lambda-layer-kubectl-vXY` packages.
+Depending on which version of kubernetes you're targeting, you will need to use one of 
+the `@aws-cdk/lambda-layer-kubectl-vXY` packages.
 
 ```ts
 import { KubectlV27Layer } from '@aws-cdk/lambda-layer-kubectl-v27';
@@ -777,14 +833,36 @@ new eks.Cluster(this, 'HelloEKS', {
 });
 ```
 
-If you do not specify it, a default role will be created on your behalf, that can be assumed by anyone in the account with `sts:AssumeRole` permissions for this role.
+In order to interact with your cluster through `kubectl`, you can use the `aws eks update-kubeconfig` [AWS CLI command](https://docs.aws.amazon.com/cli/latest/reference/eks/update-kubeconfig.html)
+to configure your local kubeconfig. The EKS module will define a CloudFormation output in your stack which contains the command to run. For example:
 
-This is the role you see as part of the stack outputs mentioned in the [Quick Start](#quick-start).
+```plaintext
+Outputs:
+ClusterConfigCommand43AAE40F = aws eks update-kubeconfig --name cluster-xxxxx --role-arn arn:aws:iam::112233445566:role/yyyyy
+```
+
+Execute the `aws eks update-kubeconfig ...` command in your terminal to create or update a local kubeconfig context:
 
 ```console
 $ aws eks update-kubeconfig --name cluster-xxxxx --role-arn arn:aws:iam::112233445566:role/yyyyy
 Added new context arn:aws:eks:rrrrr:112233445566:cluster/cluster-xxxxx to /home/boom/.kube/config
 ```
+
+And now you can simply use `kubectl`:
+
+```console
+$ kubectl get all -n kube-system
+NAME                           READY   STATUS    RESTARTS   AGE
+pod/aws-node-fpmwv             1/1     Running   0          21m
+pod/aws-node-m9htf             1/1     Running   0          21m
+pod/coredns-5cb4fb54c7-q222j   1/1     Running   0          23m
+pod/coredns-5cb4fb54c7-v9nxx   1/1     Running   0          23m
+...
+```
+
+If you do not specify it, you won't have access to the cluster from outside of the CDK application.
+
+> Note that `cluster.addManifest` and `new KubernetesManifest` will still work.
 
 ### Encryption
 

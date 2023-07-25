@@ -1,4 +1,4 @@
-import * as core from 'aws-cdk-lib';
+import * as core from 'aws-cdk-lib/core';
 import * as cli from 'aws-cdk/lib';
 import { AwsCdkCli } from '../lib';
 import { RequireApproval, StackActivityProgress } from '../lib/commands';
@@ -31,7 +31,6 @@ describe('deploy', () => {
       expect.anything(),
     );
   });
-
 
   test('deploy with all arguments', async () => {
     // WHEN
@@ -119,7 +118,6 @@ describe('deploy', () => {
     );
   });
 
-
   test('can parse boolean arguments', async () => {
     // WHEN
     await await cdk.deploy({
@@ -163,7 +161,6 @@ describe('deploy', () => {
       expect.anything(),
     );
   });
-
 
   test('can parse context', async () => {
     // WHEN
@@ -285,7 +282,6 @@ describe('destroy', () => {
   });
 });
 
-
 describe('list', () => {
   test('default list', async () => {
     // WHEN
@@ -322,4 +318,16 @@ describe('list', () => {
       expect.anything(),
     );
   });
+
+  test('bootstrap without options', async () => {
+    // WHEN
+    await cdk.bootstrap();
+
+    // THEN
+    expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(
+      ['bootstrap', '--all'],
+      expect.anything(),
+    );
+  });
+
 });

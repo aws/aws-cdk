@@ -20,7 +20,6 @@ export class BucketStack extends Stack {
   }
 }
 
-
 export class PlainStackApp extends Stage {
   constructor(scope: Construct, id: string, props?: StageProps) {
     super(scope, id, props);
@@ -75,6 +74,7 @@ const stack = new PipelineStack(app, 'PreparelessPipelineStack');
 
 new integ.IntegTest(app, 'PreparelessPipelineTest', {
   testCases: [stack],
+  diffAssets: true,
 });
 
 app.synth();

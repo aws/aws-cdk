@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "32.0.0",
   "artifacts": {
     "stack.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9186f9ef6b963bbe6a32d639a67ffce49446d36bd04de52f495e7ee371e3ce3d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4c2c5be0c984c7727839ce1c8317ff866f53e08c586077ca24ffebb2db889325.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -195,10 +195,34 @@
             "data": "myFileSystemEfsMountTarget2E187D733"
           }
         ],
+        "/stack/mySecret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "mySecretE4D0A59C"
+          }
+        ],
+        "/stack/anotherSecret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "anotherSecret11974229"
+          }
+        ],
+        "/stack/ssm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ssm85049941"
+          }
+        ],
         "/stack/myContainer/ExecutionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myContainerExecutionRoleEBACF86C"
+          }
+        ],
+        "/stack/myContainer/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myContainerExecutionRoleDefaultPolicy42DA929E"
           }
         ],
         "/stack/ECSJobDefn/Resource": [
@@ -211,6 +235,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "myFargateContainerExecutionRoleB9EB79EA"
+          }
+        ],
+        "/stack/myFargateContainer/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myFargateContainerExecutionRoleDefaultPolicy4FF431BF"
           }
         ],
         "/stack/ECSFargateJobDefn/Resource": [

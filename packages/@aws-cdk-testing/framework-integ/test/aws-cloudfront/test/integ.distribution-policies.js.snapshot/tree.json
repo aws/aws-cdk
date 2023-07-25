@@ -40,13 +40,95 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-cloudfront.CfnCachePolicy",
+                  "fqn": "aws-cdk-lib.aws_cloudfront.CfnCachePolicy",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-cloudfront.CachePolicy",
+              "fqn": "aws-cdk-lib.aws_cloudfront.CachePolicy",
+              "version": "0.0.0"
+            }
+          },
+          "MinTtlParam": {
+            "id": "MinTtlParam",
+            "path": "integ-distribution-policies/MinTtlParam",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "DefaultTtlParam": {
+            "id": "DefaultTtlParam",
+            "path": "integ-distribution-policies/DefaultTtlParam",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "MaxTtlParam": {
+            "id": "MaxTtlParam",
+            "path": "integ-distribution-policies/MaxTtlParam",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CachePolicyWithRef": {
+            "id": "CachePolicyWithRef",
+            "path": "integ-distribution-policies/CachePolicyWithRef",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-distribution-policies/CachePolicyWithRef/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFront::CachePolicy",
+                  "aws:cdk:cloudformation:props": {
+                    "cachePolicyConfig": {
+                      "name": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "integdistributionpoliciesCachePolicyWithRef80C59B6E-",
+                            {
+                              "Ref": "AWS::Region"
+                            }
+                          ]
+                        ]
+                      },
+                      "minTtl": {
+                        "Ref": "MinTtlParam"
+                      },
+                      "maxTtl": {
+                        "Ref": "MaxTtlParam"
+                      },
+                      "defaultTtl": {
+                        "Ref": "DefaultTtlParam"
+                      },
+                      "parametersInCacheKeyAndForwardedToOrigin": {
+                        "cookiesConfig": {
+                          "cookieBehavior": "none"
+                        },
+                        "headersConfig": {
+                          "headerBehavior": "none"
+                        },
+                        "enableAcceptEncodingGzip": false,
+                        "enableAcceptEncodingBrotli": false,
+                        "queryStringsConfig": {
+                          "queryStringBehavior": "none"
+                        }
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cloudfront.CfnCachePolicy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cloudfront.CachePolicy",
               "version": "0.0.0"
             }
           },
@@ -63,7 +145,10 @@
                     "originRequestPolicyConfig": {
                       "name": "ACustomOriginRequestPolicy",
                       "cookiesConfig": {
-                        "cookieBehavior": "none"
+                        "cookieBehavior": "whitelist",
+                        "cookies": [
+                          "cookie1"
+                        ]
                       },
                       "headersConfig": {
                         "headerBehavior": "allViewerAndWhitelistCloudFront",
@@ -72,19 +157,22 @@
                         ]
                       },
                       "queryStringsConfig": {
-                        "queryStringBehavior": "none"
+                        "queryStringBehavior": "allExcept",
+                        "queryStrings": [
+                          "querystringparam"
+                        ]
                       }
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-cloudfront.CfnOriginRequestPolicy",
+                  "fqn": "aws-cdk-lib.aws_cloudfront.CfnOriginRequestPolicy",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-cloudfront.OriginRequestPolicy",
+              "fqn": "aws-cdk-lib.aws_cloudfront.OriginRequestPolicy",
               "version": "0.0.0"
             }
           },
@@ -143,13 +231,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-cloudfront.CfnResponseHeadersPolicy",
+                  "fqn": "aws-cdk-lib.aws_cloudfront.CfnResponseHeadersPolicy",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-cloudfront.ResponseHeadersPolicy",
+              "fqn": "aws-cdk-lib.aws_cloudfront.ResponseHeadersPolicy",
               "version": "0.0.0"
             }
           },
@@ -162,7 +250,7 @@
                 "path": "integ-distribution-policies/Dist/Origin1",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.2.52"
                 }
               },
               "Resource": {
@@ -203,13 +291,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-cloudfront.CfnDistribution",
+                  "fqn": "aws-cdk-lib.aws_cloudfront.CfnDistribution",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-cloudfront.Distribution",
+              "fqn": "aws-cdk-lib.aws_cloudfront.Distribution",
               "version": "0.0.0"
             }
           },
@@ -222,7 +310,7 @@
                 "path": "integ-distribution-policies/Dist-2/Origin1",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.2.52"
                 }
               },
               "Resource": {
@@ -246,7 +334,7 @@
                         "pathPattern": "*",
                         "targetOriginId": "integdistributionpoliciesDist2Origin16AFA66C6",
                         "cachePolicyId": {
-                          "Ref": "CachePolicy26D8A535"
+                          "Ref": "CachePolicyWithRefD7C98251"
                         },
                         "compress": true,
                         "originRequestPolicyId": "b689b0a8-53d0-40ab-baf2-68738e2966ac",
@@ -261,13 +349,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-cloudfront.CfnDistribution",
+                  "fqn": "aws-cdk-lib.aws_cloudfront.CfnDistribution",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-cloudfront.Distribution",
+              "fqn": "aws-cdk-lib.aws_cloudfront.Distribution",
               "version": "0.0.0"
             }
           },
@@ -275,7 +363,7 @@
             "id": "BootstrapVersion",
             "path": "integ-distribution-policies/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
+              "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
             }
           },
@@ -283,13 +371,67 @@
             "id": "CheckBootstrapVersion",
             "path": "integ-distribution-policies/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "DistributionPolicies": {
+        "id": "DistributionPolicies",
+        "path": "DistributionPolicies",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "DistributionPolicies/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "DistributionPolicies/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.52"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "DistributionPolicies/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "DistributionPolicies/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "DistributionPolicies/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
           "version": "0.0.0"
         }
       },
@@ -298,12 +440,12 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.2.52"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
+      "fqn": "aws-cdk-lib.App",
       "version": "0.0.0"
     }
   }

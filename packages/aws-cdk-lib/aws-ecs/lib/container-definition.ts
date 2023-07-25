@@ -294,8 +294,9 @@ export interface ContainerDefinitionOptions {
   readonly readonlyRootFilesystem?: boolean;
 
   /**
-   * The user name to use inside the container.
+   * The user to use inside the container. This parameter maps to User in the Create a container section of the Docker Remote API and the --user option to docker run.
    *
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#ContainerDefinition-user
    * @default root
    */
   readonly user?: string;
@@ -705,7 +706,6 @@ export class ContainerDefinition extends Construct {
     this._namedPorts.set(pm.name, pm);
   }
 
-
   /**
    * Set HostPort to 0 When netowork mode is Brdige
    */
@@ -718,7 +718,6 @@ export class ContainerDefinition extends Construct {
     newPM.hostPort = 0;
     return newPM;
   }
-
 
   /**
    * Whether this container definition references a specific JSON field of a secret
@@ -1172,7 +1171,6 @@ export class PortMap {
 
 }
 
-
 /**
  * ServiceConnect ValueObjectClass having by ContainerDefinition
  */
@@ -1243,7 +1241,6 @@ export enum Protocol {
    */
   UDP = 'udp',
 }
-
 
 /**
  * Service connect app protocol.

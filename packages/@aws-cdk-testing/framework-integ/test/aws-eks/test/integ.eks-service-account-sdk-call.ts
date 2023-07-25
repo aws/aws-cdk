@@ -10,7 +10,6 @@ import { BucketPinger } from './bucket-pinger/bucket-pinger';
 import * as eks from 'aws-cdk-lib/aws-eks';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 
-
 const app = new App();
 const stack = new Stack(app, 'aws-eks-service-account-sdk-calls-test');
 
@@ -78,6 +77,7 @@ new CfnOutput(stack, 'PingerResponse', {
 
 new integ.IntegTest(app, 'aws-cdk-eks-service-account-sdk-call', {
   testCases: [stack],
+  diffAssets: false, // otherwise this test will block every dependency upgrade PR
 });
 
 app.synth();

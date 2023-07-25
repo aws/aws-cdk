@@ -392,6 +392,22 @@ beforehand.
 This can be useful for configuring routing using a combination of gateways:
 for more information see [Routing](#routing) below.
 
+### Disabling the creation of the default internet gateway
+
+If you need to control the creation of the internet gateway explicitly,
+you can disable the creation of the default one using the `createInternetGateway`
+property:
+
+```ts
+const vpc = new ec2.Vpc(this, "VPC", {
+  createInternetGateway: false,
+  subnetConfiguration: [{
+      subnetType: ec2.SubnetType.PUBLIC,
+      name: 'Public',
+    }]
+});
+```
+
 #### Routing
 
 It's possible to add routes to any subnets using the `addRoute()` method. If for
@@ -1553,6 +1569,34 @@ const aspect = new ec2.InstanceRequireImdsv2Aspect();
 Aspects.of(this).add(aspect);
 ```
 
+### Associating a Public IP Address with an Instance
+
+All subnets have an attribute that determines whether instances launched into that subnet are assigned a public IPv4 address. This attribute is set to true by default for default public subnets. Thus, an EC2 instance launched into a default public subnet will be assigned a public IPv4 address. Nondefault public subnets have this attribute set to false by default and any EC2 instance launched into a nondefault public subnet will not be assigned a public IPv4 address automatically. To automatically assign a public IPv4 address to an instance launched into a nondefault public subnet, you can set the `associatePublicIpAddress` property on the `Instance` construct to true. Alternatively, to not automatically assign a public IPv4 address to an instance launched into a default public subnet, you can set `associatePublicIpAddress` to false. Including this property, removing this property, or updating the value of this property on an existing instance will result in replacement of the instance.
+
+```ts
+const vpc = new ec2.Vpc(this, 'VPC', {
+  cidr: '10.0.0.0/16',
+  natGateways: 0,
+  maxAzs: 3,
+  subnetConfiguration: [
+    {
+      name: 'public-subnet-1',
+      subnetType: ec2.SubnetType.PUBLIC,
+      cidrMask: 24,
+    },
+  ],
+});
+
+const instance = new ec2.Instance(this, 'Instance', {
+  vpc,
+  vpcSubnets: { subnetGroupName: 'public-subnet-1' },
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.NANO),
+  machineImage: new ec2.AmazonLinuxImage({ generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 }),
+  detailedMonitoring: true,
+  associatePublicIpAddress: true,
+});
+```
+
 ## VPC Flow Logs
 
 VPC Flow Logs is a feature that enables you to capture information about the IP traffic going to and from network interfaces in your VPC. Flow log data can be published to Amazon CloudWatch Logs and Amazon S3. After you've created a flow log, you can retrieve and view its data in the chosen destination. (<https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html>).
@@ -1815,16 +1859,24 @@ Launch templates enable you to store launch parameters so that you do not have t
 an instance. For information on Launch Templates please see the
 [official documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-launch-templates.html).
 
-The following demonstrates how to create a launch template with an Amazon Machine Image, and security group.
+The following demonstrates how to create a launch template with an Amazon Machine Image, security group, and an instance profile.
 
 ```ts
 declare const vpc: ec2.Vpc;
+
+const role = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+});
+const instanceProfile = new iam.InstanceProfile(this, 'InstanceProfile', {
+  role,
+});
 
 const template = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
   machineImage: ec2.MachineImage.latestAmazonLinux2022(),
   securityGroup: new ec2.SecurityGroup(this, 'LaunchTemplateSG', {
     vpc: vpc,
   }),
+  instanceProfile,
 });
 ```
 
@@ -1837,6 +1889,34 @@ new ec2.LaunchTemplate(this, 'LaunchTemplate', {
   httpPutResponseHopLimit: 1,
   httpTokens: ec2.LaunchTemplateHttpTokens.REQUIRED,
   instanceMetadataTags: true,
+});
+```
+
+And the following demonstrates how to add one or more security groups to launch template.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const sg1 = new ec2.SecurityGroup(this, 'sg1', {
+  vpc: vpc,
+});
+const sg2 = new ec2.SecurityGroup(this, 'sg2', {
+  vpc: vpc,
+});
+
+const launchTemplate = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
+  machineImage: ec2.MachineImage.latestAmazonLinux2022(),
+  securityGroup: sg1,
+});
+
+launchTemplate.addSecurityGroup(sg2);
+```
+
+To use [AWS Systems Manager parameters instead of AMI IDs](https://docs.aws.amazon.com/autoscaling/ec2/userguide/using-systems-manager-parameters.html) in launch templates and resolve the AMI IDs at instance launch time:
+
+```ts
+const launchTemplate = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
+  machineImage: ec2.MachineImage.resolveSsmParameterAtLaunch('parameterName'),
 });
 ```
 

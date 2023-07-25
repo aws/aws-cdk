@@ -11,7 +11,6 @@ import { Annotations } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { FactName } from '../../../region-info';
 
-
 /**
  * The lambda runtime used by default for aws-cdk vended custom resources. Can change
  * based on region.
@@ -429,9 +428,9 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
 
     const provider = new lambda.SingletonFunction(this, 'Provider', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'runtime'), {
-        exclude: ['*.ts'],
+        exclude: ['*.ts', 'aws-sdk-v3-handler.js'],
       }),
-      runtime: builtInCustomResourceNodeRuntime(scope),
+      runtime: lambda.Runtime.NODEJS_18_X,
       handler: 'index.handler',
       uuid: AwsCustomResource.PROVIDER_FUNCTION_UUID,
       lambdaPurpose: 'AWS',

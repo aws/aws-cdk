@@ -17,9 +17,11 @@ import {
   Stack,
   ArnFormat,
   FeatureFlags,
+  Token,
 } from '../../../core';
 import * as cxapi from '../../../cx-api';
 
+import { RegionInfo } from '../../../region-info';
 import { LoadBalancerTargetOptions, NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster, CapacityProviderStrategy, ExecuteCommandLogging, Cluster } from '../cluster';
 import { ContainerDefinition, Protocol } from '../container-definition';
@@ -66,6 +68,45 @@ export interface DeploymentCircuitBreaker {
    * @default false
    */
   readonly rollback?: boolean;
+}
+
+/**
+ * Deployment behavior when an ECS Service Deployment Alarm is triggered
+ */
+export enum AlarmBehavior {
+  /**
+   * ROLLBACK_ON_ALARM causes the service to roll back to the previous deployment
+   * when any deployment alarm enters the 'Alarm' state. The Cloudformation stack
+   * will be rolled back and enter state "UPDATE_ROLLBACK_COMPLETE".
+   */
+  ROLLBACK_ON_ALARM = 'ROLLBACK_ON_ALARM',
+  /**
+   * FAIL_ON_ALARM causes the deployment to fail immediately when any deployment
+   * alarm enters the 'Alarm' state. In order to restore functionality, you must
+   * roll the stack forward by pushing a new version of the ECS service.
+   */
+  FAIL_ON_ALARM = 'FAIL_ON_ALARM',
+}
+
+/**
+ * Options for deployment alarms
+ */
+export interface DeploymentAlarmOptions {
+  /**
+   * Default rollback on alarm
+   * @default AlarmBehavior.ROLLBACK_ON_ALARM
+   */
+  readonly behavior?: AlarmBehavior;
+}
+
+/**
+ * Configuration for deployment alarms
+ */
+export interface DeploymentAlarmConfig extends DeploymentAlarmOptions {
+  /**
+   * List of alarm names to monitor during deployments
+   */
+  readonly alarmNames: string[];
 }
 
 export interface EcsTarget {
@@ -272,6 +313,15 @@ export interface BaseServiceOptions {
    * @default - disabled
    */
   readonly circuitBreaker?: DeploymentCircuitBreaker;
+
+  /**
+   * The alarm(s) to monitor during deployment, and behavior to apply if at least one enters a state of alarm
+   * during the deployment or bake time.
+   *
+   *
+   * @default - No alarms will be monitored during deployment.
+   */
+  readonly deploymentAlarms?: DeploymentAlarmConfig;
 
   /**
    * A list of Capacity Provider strategies used to place a service.
@@ -494,6 +544,12 @@ export abstract class BaseService extends Resource
   protected networkConfiguration?: CfnService.NetworkConfigurationProperty;
 
   /**
+   * The deployment alarms property - this will be rendered directly and lazily as the CfnService.alarms
+   * property.
+   */
+  protected deploymentAlarms?: CfnService.DeploymentAlarmsProperty;
+
+  /**
    * The details of the service discovery registries to assign to this service.
    * For more information, see Service Discovery.
    */
@@ -534,7 +590,6 @@ export abstract class BaseService extends Resource
 
     const propagateTagsFromSource = props.propagateTaskTagsFrom ?? props.propagateTags ?? PropagatedTagSource.NONE;
     const deploymentController = this.getDeploymentController(props);
-
     this.resource = new CfnService(this, 'Service', {
       desiredCount: props.desiredCount,
       serviceName: this.physicalName,
@@ -546,6 +601,7 @@ export abstract class BaseService extends Resource
           enable: true,
           rollback: props.circuitBreaker.rollback ?? false,
         } : undefined,
+        alarms: Lazy.any({ produce: () => this.deploymentAlarms }, { omitEmptyArray: true }),
       },
       propagateTags: propagateTagsFromSource === PropagatedTagSource.NONE ? undefined : props.propagateTags,
       enableEcsManagedTags: props.enableECSManagedTags ?? false,
@@ -561,6 +617,8 @@ export abstract class BaseService extends Resource
       ...additionalProps,
     });
 
+    this.node.addDependency(this.taskDefinition.taskRole);
+
     if (props.deploymentController?.type === DeploymentControllerType.EXTERNAL) {
       Annotations.of(this).addWarning('taskDefinition and launchType are blanked out when using external deployment controller.');
     }
@@ -570,6 +628,13 @@ export abstract class BaseService extends Resource
         && deploymentController.type !== DeploymentControllerType.ECS) {
       Annotations.of(this).addError('Deployment circuit breaker requires the ECS deployment controller.');
     }
+
+    if (props.deploymentAlarms
+      && deploymentController
+      && deploymentController.type !== DeploymentControllerType.ECS) {
+      throw new Error('Deployment alarms requires the ECS deployment controller.');
+    }
+
     if (props.deploymentController?.type === DeploymentControllerType.CODE_DEPLOY) {
       // Strip the revision ID from the service's task definition property to
       // prevent new task def revisions in the stack from triggering updates
@@ -607,10 +672,82 @@ export abstract class BaseService extends Resource
         this.executeCommandLogConfiguration();
       }
     }
+
+    if (props.deploymentAlarms) {
+      if (props.deploymentAlarms.alarmNames.length === 0) {
+        throw new Error('at least one alarm name is required when specifying deploymentAlarms, received empty array');
+      }
+      this.deploymentAlarms = {
+        alarmNames: props.deploymentAlarms.alarmNames,
+        enable: true,
+        rollback: props.deploymentAlarms.behavior !== AlarmBehavior.FAIL_ON_ALARM,
+      };
+    // CloudWatch alarms is only supported for Amazon ECS services that use the rolling update (ECS) deployment controller.
+    } else if ((!props.deploymentController ||
+      props.deploymentController?.type === DeploymentControllerType.ECS) && this.deploymentAlarmsAvailableInRegion()) {
+      this.deploymentAlarms = {
+        alarmNames: [],
+        enable: false,
+        rollback: false,
+      };
+    }
+
     this.node.defaultChild = this.resource;
   }
 
-  /**   * Enable Service Connect
+  /**
+   * Enable Deployment Alarms which take advantage of arbitrary alarms and configure them after service initialization.
+   * If you have already enabled deployment alarms, this function can be used to tell ECS about additional alarms that
+   * should interrupt a deployment.
+   *
+   * New alarms specified in subsequent calls of this function will be appended to the existing list of alarms.
+   *
+   * The same Alarm Behavior must be used on all deployment alarms. If you specify different AlarmBehavior values in
+   * multiple calls to this function, or the Alarm Behavior used here doesn't match the one used in the service
+   * constructor, an error will be thrown.
+   *
+   * If the alarm's metric references the service, you cannot pass `Alarm.alarmName` here. That will cause a circular
+   * dependency between the service and its deployment alarm. See this package's README for options to alarm on service
+   * metrics, and avoid this circular dependency.
+   *
+   */
+  public enableDeploymentAlarms(alarmNames: string[], options?: DeploymentAlarmOptions) {
+    if (alarmNames.length === 0 ) {
+      throw new Error('at least one alarm name is required when calling enableDeploymentAlarms(), received empty array');
+    }
+
+    alarmNames.forEach(alarmName => {
+      if (Token.isUnresolved(alarmName)) {
+        Annotations.of(this).addInfo(
+          `Deployment alarm (${JSON.stringify(this.stack.resolve(alarmName))}) enabled on ${this.node.id} may cause a circular dependency error when this stack deploys. The alarm name references the alarm's logical id, or another resource. See the 'Deployment alarms' section in the module README for more details.`,
+        );
+      }
+    });
+
+    if (this.deploymentAlarms?.enable && options?.behavior) {
+      if (
+        (AlarmBehavior.ROLLBACK_ON_ALARM === options.behavior && !this.deploymentAlarms.rollback) ||
+        (AlarmBehavior.FAIL_ON_ALARM === options.behavior && this.deploymentAlarms.rollback)
+      ) {
+        throw new Error(`all deployment alarms on an ECS service must have the same AlarmBehavior. Attempted to enable deployment alarms with ${options.behavior}, but alarms were previously enabled with ${this.deploymentAlarms.rollback ? AlarmBehavior.ROLLBACK_ON_ALARM : AlarmBehavior.FAIL_ON_ALARM}`);
+      }
+    }
+
+    if (!this.deploymentAlarms?.enable) {
+      this.deploymentAlarms = {
+        enable: true,
+        alarmNames: alarmNames,
+        rollback: options?.behavior !== AlarmBehavior.FAIL_ON_ALARM,
+      };
+    } else {
+      // If deployment alarms have previously been enabled, we only need to add
+      // the new alarm names, since rollback behaviors can't be updated/mixed.
+      this.deploymentAlarms.alarmNames.concat(alarmNames);
+    }
+  }
+
+  /**
+   * Enable Service Connect on this service.
    */
   public enableServiceConnect(config?: ServiceConnectProps) {
     if (this._serviceConnectConfig) {
@@ -1227,6 +1364,15 @@ export abstract class BaseService extends Resource
       ],
       resources: ['*'],
     }));
+  }
+
+  private deploymentAlarmsAvailableInRegion(): boolean {
+    const unsupportedPartitions = ['aws-cn', 'aws-us-gov', 'aws-iso', 'aws-iso-b'];
+    const currentRegion = RegionInfo.get(this.stack.resolve(this.stack.region));
+    if (currentRegion.partition) {
+      return !unsupportedPartitions.includes(currentRegion.partition);
+    }
+    return true;
   }
 }
 

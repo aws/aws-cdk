@@ -216,7 +216,6 @@ export class Bundling implements cdk.BundlingOptions {
       ...this.props.metafile ? [`--metafile=${pathJoin(options.outputDir, 'index.meta.json')}`] : [],
       ...this.props.banner ? [`--banner:js=${JSON.stringify(this.props.banner)}`] : [],
       ...this.props.footer ? [`--footer:js=${JSON.stringify(this.props.footer)}`] : [],
-      ...this.props.charset ? [`--charset=${this.props.charset}`] : [],
       ...this.props.mainFields ? [`--main-fields=${this.props.mainFields.join(',')}`] : [],
       ...this.props.inject ? this.props.inject.map(i => `--inject:${i}`) : [],
       ...this.props.esbuildArgs ? [toCliArgs(this.props.esbuildArgs)] : [],
@@ -246,7 +245,7 @@ export class Bundling implements cdk.BundlingOptions {
         osCommand.copy(lockFilePath, pathJoin(options.outputDir, this.packageManager.lockFile)),
         osCommand.changeDirectory(options.outputDir),
         this.packageManager.installCommand.join(' '),
-        isPnpm ? osCommand.remove(pathJoin(options.outputDir, 'node_modules', '.modules.yaml')) : '', // Remove '.modules.yaml' file which changes on each deployment
+        isPnpm ? osCommand.remove(pathJoin(options.outputDir, 'node_modules', '.modules.yaml'), true) : '', // Remove '.modules.yaml' file which changes on each deployment
       ]);
     }
 
@@ -350,12 +349,13 @@ class OsCommand {
     return `cd "${dir}"`;
   }
 
-  public remove(filePath: string): string {
+  public remove(filePath: string, force: boolean = false): string {
     if (this.osPlatform === 'win32') {
       return `del "${filePath}"`;
     }
 
-    return `rm "${filePath}"`;
+    const opts = force ? ['-f'] : [];
+    return `rm ${opts.join(' ')} "${filePath}"`;
   }
 }
 

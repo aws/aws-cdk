@@ -857,14 +857,20 @@ Here's an example:
 To use an S3 Bucket as a deployment target in CodePipeline:
 
 ```ts
+import * as kms from 'aws-cdk-lib/aws-kms';
+
 const sourceOutput = new codepipeline.Artifact();
 const targetBucket = new s3.Bucket(this, 'MyBucket');
+const key: kms.IKey = new kms.Key(this, 'EnvVarEncryptKey', {
+  description: 'sample key',
+});
 
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
 const deployAction = new codepipeline_actions.S3DeployAction({
   actionName: 'S3Deploy',
   bucket: targetBucket,
   input: sourceOutput,
+  encryptionKey: key,
 });
 const deployStage = pipeline.addStage({
   stageName: 'Deploy',

@@ -32,7 +32,6 @@ const cloudFrontStack = new cdk.Stack(app, 'integ-cloudfront-stack', {
   crossRegionReferences: true,
 });
 
-
 const hostedZone = route53.PublicHostedZone.fromHostedZoneAttributes(acmStack, 'HostedZone', {
   hostedZoneId,
   zoneName: hostedZoneName,
@@ -51,6 +50,6 @@ new cloudfront.Distribution(cloudFrontStack, 'Distro', {
 
 new IntegTest(app, 'integ-cloudfront-cross-region-acm', {
   testCases: [cloudFrontStack],
-  diffAssets: false,
+  diffAssets: true,
   enableLookups: true,
 });

@@ -1,7 +1,7 @@
 import * as codecommit from 'aws-cdk-lib/aws-codecommit';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { IUser } from 'aws-cdk-lib/aws-iam';
-import * as cdk from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnEnvironmentEC2 } from 'aws-cdk-lib/aws-cloud9';
 
@@ -124,6 +124,16 @@ export interface Ec2EnvironmentProps {
    *
    */
   readonly imageId: ImageId
+
+  /**
+   * The number of minutes until the running instance is shut down after the
+   * environment was last used.
+   *
+   * Setting a value of 0 means the instance will never be automatically shut down."
+   *
+   * @default - The instance will not be shut down automatically.
+   */
+  readonly automaticStop?: cdk.Duration
 }
 
 /**
@@ -200,6 +210,7 @@ export class Ec2Environment extends cdk.Resource implements IEc2Environment {
       })) : undefined,
       connectionType: props.connectionType ?? ConnectionType.CONNECT_SSH,
       imageId: props.imageId,
+      automaticStopTimeMinutes: props.automaticStop?.toMinutes(),
     });
     this.environmentId = c9env.ref;
     this.ec2EnvironmentArn = c9env.getAtt('Arn').toString();
@@ -245,7 +256,6 @@ export class Owner {
   public static user(user: IUser): Owner {
     return { ownerArn: user.userArn };
   }
-
 
   /**
    * Make the Account Root User the environment owner (not recommended)

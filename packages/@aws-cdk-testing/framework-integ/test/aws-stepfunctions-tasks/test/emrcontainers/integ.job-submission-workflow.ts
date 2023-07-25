@@ -70,7 +70,6 @@ const startJobRun = new EmrContainersStartJobRun(stack, 'Start a Job Run', {
   resultPath: '$.job',
 });
 
-
 const deleteVirtualCluster = new EmrContainersDeleteVirtualCluster(stack, 'Delete a Virtual Cluster', {
   virtualClusterId: sfn.TaskInput.fromJsonPathAt('$.job.VirtualClusterId'),
 });
@@ -91,6 +90,7 @@ new cdk.CfnOutput(stack, 'stateMachineArn', {
 
 new integ.IntegTest(app, 'aws-stepfunctions-tasks-emr-containers-all-services', {
   testCases: [stack],
+  diffAssets: true,
   cdkCommandOptions: {
     deploy: {
       args: {
