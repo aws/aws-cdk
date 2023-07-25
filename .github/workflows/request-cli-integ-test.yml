@@ -1,0 +1,43 @@
+# Request a deployment to the test pipeline
+
+name: request-cli-integ-test
+on:
+  pull_request: {}
+
+jobs:
+  cli-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      any-changed-files: ${{ steps.changed-cli-files.outputs.cli_any_changed }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Find changed cli files
+        id: changed-cli-files
+        uses: tj-actions/changed-files@v37
+        with:
+          files_yaml: |
+            cli:
+              - packages/aws-cdk/lib/**     
+  submit-to-test-pipeline:
+    environment: test-pipeline
+    needs: cli-changes
+    if: needs.cli-changes.outputs.any-changed-files == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+      - name: Submit to test-pipeline
+        if:  steps.changed-files-yaml.outputs.test_any_changed == 'true'
+        run: |
+          git config --global user.name 'aws-cdk-automation'
+          git config --global user.email 'aws-cdk-automation@users.noreply.github.com'
+          git push --force-with-lease --atomic https://oauth2:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git FETCH_HEAD:test-main-pipeline
