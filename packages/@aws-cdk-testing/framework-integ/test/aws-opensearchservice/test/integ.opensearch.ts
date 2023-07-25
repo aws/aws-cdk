@@ -41,18 +41,13 @@ class TestStack extends Stack {
       capacity: {
         multiAzWithStandbyEnabled: false,
       },
-      offPeakWindowOptions: {
-        enabled: true,
-        offPeakWindow: {
-          windowStartTime: {
-            hours: 20,
-            minutes: 0,
-          },
+      offPeakWindow: {
+        windowStartTime: {
+          hours: 20,
+          minutes: 0,
         },
       },
-      softwareUpdateOptions: {
-        autoSoftwareUpdateEnabled: true,
-      },
+      enableAutoSoftwareUpdate: true,
     };
 
     // create 2 domains to ensure that Cloudwatch Log Group policy names dont conflict

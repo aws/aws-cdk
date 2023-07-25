@@ -1980,17 +1980,14 @@ each(testedOpenSearchVersions).describe('cognito dashboards auth', (engineVersio
   });
 });
 
-each(testedOpenSearchVersions).describe('offPeakWindowOptions and softwareUpdateOptions properties', (engineVersion) => {
-  test('with offPeakWindowOptions enabled', () => {
+each(testedOpenSearchVersions).describe('offPeakWindow and enableAutoSoftwareUpdate properties', (engineVersion) => {
+  test('with offPeakWindow', () => {
     new Domain(stack, 'Domain', {
       version: engineVersion,
-      offPeakWindowOptions: {
-        enabled: true,
-        offPeakWindow: {
-          windowStartTime: {
-            hours: 10,
-            minutes: 0,
-          },
+      offPeakWindow: {
+        windowStartTime: {
+          hours: 10,
+          minutes: 0,
         },
       },
     });
@@ -2008,24 +2005,12 @@ each(testedOpenSearchVersions).describe('offPeakWindowOptions and softwareUpdate
     });
   });
 
-  test('with offPeakWindowOptions disabled', () => {
+  test('offPeakWindow default start time', () => {
     new Domain(stack, 'Domain', {
       version: engineVersion,
-      offPeakWindowOptions: {
-        enabled: false,
-      },
-    });
+      offPeakWindow: {
 
-    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
-      OffPeakWindowOptions: {
-        Enabled: false,
       },
-    });
-  });
-
-  test('offPeakWindowOptions default value', () => {
-    new Domain(stack, 'Domain', {
-      version: engineVersion,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
@@ -2033,7 +2018,7 @@ each(testedOpenSearchVersions).describe('offPeakWindowOptions and softwareUpdate
         Enabled: true,
         OffPeakWindow: {
           WindowStartTime: {
-            Hours: 0,
+            Hours: 22,
             Minutes: 0,
           },
         },
@@ -2041,12 +2026,10 @@ each(testedOpenSearchVersions).describe('offPeakWindowOptions and softwareUpdate
     });
   });
 
-  test('with softwareUpdateOptions', () => {
+  test('with enableAutoSoftwareUpdate', () => {
     new Domain(stack, 'Domain', {
       version: engineVersion,
-      softwareUpdateOptions: {
-        autoSoftwareUpdateEnabled: true,
-      },
+      enableAutoSoftwareUpdate: true,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
@@ -2056,17 +2039,14 @@ each(testedOpenSearchVersions).describe('offPeakWindowOptions and softwareUpdate
     });
   });
 
-  test('with invalid offPeakWindowOptions.offPeakWindow.windowStartTime', () => {
+  test('with invalid offPeakWindow.windowStartTime', () => {
     expect(() => {
       new Domain(stack, 'Domain1', {
         version: engineVersion,
-        offPeakWindowOptions: {
-          enabled: true,
-          offPeakWindow: {
-            windowStartTime: {
-              hours: 50,
-              minutes: 0,
-            },
+        offPeakWindow: {
+          windowStartTime: {
+            hours: 50,
+            minutes: 0,
           },
         },
       });
@@ -2077,13 +2057,10 @@ each(testedOpenSearchVersions).describe('offPeakWindowOptions and softwareUpdate
     expect(() => {
       new Domain(stack, 'Domain2', {
         version: engineVersion,
-        offPeakWindowOptions: {
-          enabled: true,
-          offPeakWindow: {
-            windowStartTime: {
-              hours: 10,
-              minutes: 90,
-            },
+        offPeakWindow: {
+          windowStartTime: {
+            hours: 10,
+            minutes: 90,
           },
         },
       });

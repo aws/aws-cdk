@@ -118,15 +118,6 @@
     "LogPublishingOptions": {},
     "NodeToNodeEncryptionOptions": {
      "Enabled": false
-    },
-    "OffPeakWindowOptions": {
-      "Enabled": true,
-      "OffPeakWindow": {
-        "WindowStartTime": {
-          "Hours": 0,
-          "Minutes": 0
-        }
-      }
     }
    },
    "UpdateReplacePolicy": "Delete",
