@@ -84,7 +84,7 @@ describe('Code', () => {
     });
   });
 
-  describe('.fromAsset()', () => {
+  describe('glue.Code.fromAsset()', () => {
     const filePath = path.join(__dirname, 'job-script/hello_world.py');
     const directoryPath = path.join(__dirname, 'job-script');
 
