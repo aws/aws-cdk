@@ -1904,7 +1904,7 @@ const sg2 = new ec2.SecurityGroup(this, 'sg2', {
   vpc: vpc,
 });
 
-const launchTemplate = new ec2.LaunchTemplate(stack, 'LaunchTemplate', {
+const launchTemplate = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
   machineImage: ec2.MachineImage.latestAmazonLinux2023(),
   securityGroup: sg1,
 });
