@@ -44,4 +44,5 @@ jobs:
       with:
         title: Monthly issue metrics report
         content-filepath: ./issue_metrics.md
+        token: ${{ secrets.GITHUB_TOKEN }}
         assignees: evgenyka
