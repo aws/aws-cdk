@@ -183,3 +183,21 @@ instance.metric('SparqlRequestsPerSec') // instance-level SparqlErrors metric
 ```
 
 For more details on the available metrics, refer to https://docs.aws.amazon.com/neptune/latest/userguide/cw-metrics.html
+
+## Neptune Serverless
+
+You can configure a Neptune Serverless cluster using the dedicated instance type along with the 
+`serverlessScalingConfiguration` property.
+
+> Visit [Using Amazon Neptune Serverless](https://docs.aws.amazon.com/neptune/latest/userguide/neptune-serverless-using.html) for more details.
+
+```ts
+const cluster = new neptune.DatabaseCluster(this, 'ServerlessDatabase', {
+  vpc,
+  instanceType: neptune.InstanceType.SERVERLESS,
+  serverlessScalingConfiguration: {
+    minCapacity: 1,
+    maxCapacity: 5,
+  },
+});
+```
