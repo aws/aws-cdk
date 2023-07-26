@@ -35,6 +35,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
+          token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - name: Submit to test-pipeline
@@ -42,7 +43,7 @@ jobs:
         run: |
           git config --global user.name 'aws-cdk-automation'
           git config --global user.email 'aws-cdk-automation@users.noreply.github.com'
-          git push --force --atomic https://oauth2:${{ secrets.PROJEN_GITHUB_TOKEN }}@github.com/${{ github.repository }}.git FETCH_HEAD:test-main-pipeline
+          git push --force --atomic ${{ github.repositoryUrl }} FETCH_HEAD:test-main-pipeline
       - name: Explain next steps
         uses: thollander/actions-comment-pull-request@v2
         with:
