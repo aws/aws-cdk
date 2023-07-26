@@ -36,15 +36,19 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - name: Submit to test-pipeline
+        # Needs to run with PROJEN_GITHUB_TOKEN because we need permissions to force push the branch
         run: |
           git config --global user.name 'aws-cdk-automation'
           git config --global user.email 'aws-cdk-automation@users.noreply.github.com'
-          git push --force-with-lease --atomic https://oauth2:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git FETCH_HEAD:test-main-pipeline
+          git push --force --atomic https://oauth2:${{ secrets.PROJEN_GITHUB_TOKEN }}@github.com/${{ github.repository }}.git FETCH_HEAD:test-main-pipeline
       - name: Explain next steps
         uses: thollander/actions-comment-pull-request@v2
         with:
           message: |
-            Build to testing pipeline submitted.
-            A maintainer must now manually check the pipeline and add the 'pr-linter/cli-integ-tested' label once the pipeline succeeds.
+            :arrow_right: **PR build request submitted to `test-main-pipeline`** :arrow_left:
+
+            A maintainer must now manually check the pipeline and add the `pr-linter/cli-integ-tested` label once the pipeline succeeds.
           comment_tag: request-cli-integ-test
           mode: recreate
+          # Post as our automation user
+          GITHUB_TOKEN: ${{ secrets.PROJEN_GITHUB_TOKEN }}
