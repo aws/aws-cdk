@@ -8,6 +8,7 @@ import { Construct, IConstruct } from 'constructs';
 import { CfnJobDefinition } from 'aws-cdk-lib/aws-batch';
 import { LinuxParameters } from './linux-parameters';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
+import { RuntimePlatform } from './runtime-platform';
 
 const EFS_VOLUME_SYMBOL = Symbol.for('aws-cdk-lib/aws-batch/lib/container-definition.EfsVolume');
 const HOST_VOLUME_SYMBOL = Symbol.for('aws-cdk-lib/aws-batch/lib/container-definition.HostVolume');
@@ -428,6 +429,15 @@ export interface IEcsContainerDefinition extends IConstruct {
    * @default false
    */
   readonly readonlyRootFilesystem?: boolean;
+
+  /**
+   * The operating system that your task definitions are running on.
+   *
+   * A runtimePlatform is supported only for tasks using the Fargate launch type.
+   *
+   * @default - Undefined.
+   */
+  readonly runtimePlatform?: RuntimePlatform;
 
   /**
    * A map from environment variable names to the secrets for the container. Allows your job definitions
