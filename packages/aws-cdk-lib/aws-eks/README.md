@@ -953,6 +953,7 @@ your_current_role.addToPolicy(new iam.PolicyStatement({
 ```ts
 // Option 2: create your custom mastersRole with scoped assumeBy arn as the Cluster prop. Switch to this role from the AWS console.
 import { KubectlV27Layer } from '@aws-cdk/lambda-layer-kubectl-v27';
+declare const vpc: ec2.Vpc;
 
 const mastersRole = new iam.Role(this, 'MastersRole', {
   assumedBy: new iam.ArnPrincipal('arn_for_trusted_principal'),
