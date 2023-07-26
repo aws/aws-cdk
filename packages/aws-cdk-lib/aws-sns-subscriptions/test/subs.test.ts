@@ -1193,6 +1193,46 @@ describe('Restrict sqs decryption feature flag', () => {
   });
 });
 
+test('throws an error when a queue is encrypted by AWS managed KMS kye for queue subscription', () => {
+  // WHEN
+  const queue = new sqs.Queue(stack, 'MyQueue', {
+    encryption: sqs.QueueEncryption.KMS_MANAGED,
+  });
+
+  // THEN
+  expect(() => topic.addSubscription(new subs.SqsSubscription(queue)))
+    .toThrowError(/SQS queue encrypted by AWS managed KMS key cannot be used as SNS subscription/);
+});
+
+test('throws an error when a dead-letter queue is encrypted by AWS managed KMS kye for queue subscription', () => {
+  // WHEN
+  const queue = new sqs.Queue(stack, 'MyQueue');
+  const dlq = new sqs.Queue(stack, 'MyDLQ', {
+    encryption: sqs.QueueEncryption.KMS_MANAGED,
+  });
+
+  // THEN
+  expect(() => topic.addSubscription(new subs.SqsSubscription(queue, {
+    deadLetterQueue: dlq,
+  })))
+    .toThrowError(/SQS queue encrypted by AWS managed KMS key cannot be used as dead-letter queue/);
+});
+
+test('importing SQS queue and specify this as subscription', () => {
+  // WHEN
+  const queue = sqs.Queue.fromQueueArn(stack, 'Queue', 'arn:aws:sqs:us-east-1:123456789012:queue1');
+  topic.addSubscription(new subs.SqsSubscription(queue));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
+    'Endpoint': 'arn:aws:sqs:us-east-1:123456789012:queue1',
+    'Protocol': 'sqs',
+    'TopicArn': {
+      'Ref': 'MyTopic86869434',
+    },
+  });
+});
+
 test('lambda subscription', () => {
   const func = new lambda.Function(stack, 'MyFunc', {
     runtime: lambda.Runtime.NODEJS_14_X,
