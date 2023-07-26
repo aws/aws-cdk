@@ -60,3 +60,7 @@ Owner: Core CDK team
 [issue-reprioritization.yml](issue-reprioritization.yml): GitHub action that labels `p2`
 issues as `p1` if a certain level of community engagement is met.
 Owner: Core CDK team
+
+### Issue Metrics
+[issue-metrics.yml](issue-metrics.yml): GitHub action that runs monthly to report on metrics for issues created last month.
+Owner: Core CDK team
