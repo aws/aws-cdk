@@ -23,7 +23,9 @@ jobs:
         with:
           files_yaml: |
             cli:
-              - packages/aws-cdk/lib/**     
+              - packages/aws-cdk/bin/**
+              - packages/aws-cdk/lib/**
+              - packages/aws-cdk/test/**
   submit-to-test-pipeline:
     environment: test-pipeline
     needs: cli-changes
