@@ -100,7 +100,8 @@ export class RotationSchedule extends Resource {
         );
       }
 
-      props.rotationLambda.grantInvoke(new iam.ServicePrincipal('secretsmanager.amazonaws.com'));
+      const grant = props.rotationLambda.grantInvoke(new iam.ServicePrincipal('secretsmanager.amazonaws.com'));
+      grant.applyBefore(this);
 
       props.rotationLambda.addToRolePolicy(
         new iam.PolicyStatement({
