@@ -1980,11 +1980,33 @@ each(testedOpenSearchVersions).describe('cognito dashboards auth', (engineVersio
   });
 });
 
-each(testedOpenSearchVersions).describe('offPeakWindowOptions and softwareUpdateOptions', (engineVersion) => {
-  test('with offPeakWindowOptions enabled', () => {
+each(testedOpenSearchVersions).describe('offPeakWindow and softwareUpdateOptions', (engineVersion) => {
+  test('with offPeakWindowStart and offPeakWindowEnabled', () => {
     new Domain(stack, 'Domain', {
       version: engineVersion,
       offPeakWindowEnabled: true,
+      offPeakWindowStart: {
+        hours: 10,
+        minutes: 30,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      OffPeakWindowOptions: {
+        Enabled: true,
+        OffPeakWindow: {
+          WindowStartTime: {
+            Hours: 10,
+            Minutes: 30,
+          },
+        },
+      },
+    });
+  });
+
+  test('with offPeakWindowStart only', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
       offPeakWindowStart: {
         hours: 10,
         minutes: 30,

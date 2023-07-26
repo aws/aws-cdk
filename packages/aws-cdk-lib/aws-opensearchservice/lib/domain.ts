@@ -509,6 +509,7 @@ export interface DomainProps {
    * domain resource, use the EnableVersionUpgrade update policy.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-updatepolicy.html#cfn-attributes-updatepolicy-upgradeopensearchdomain
+   *
    * @default - false
    */
   readonly enableVersionUpgrade?: boolean;
@@ -524,6 +525,7 @@ export interface DomainProps {
    * To configure a custom domain configure these options
    *
    * If you specify a Route53 hosted zone it will create a CNAME record and use DNS validation for the certificate
+   *
    * @default - no custom domain endpoint will be configured
    */
   readonly customEndpoint?: CustomEndpointOptions;
@@ -539,7 +541,8 @@ export interface DomainProps {
    * You can't disable the off-peak window for a domain after it's enabled.
    *
    * @see https://docs.aws.amazon.com/it_it/AWSCloudFormation/latest/UserGuide/aws-properties-opensearchservice-domain-offpeakwindow.html
-   * @default - disabled for domains created before February 16, 2023. enabled for domains created after.
+   *
+   * @default - Disabled for domains created before February 16, 2023. Enabled for domains created after. Enabled if `offPeakWindowStart` is set.
    */
   readonly offPeakWindowEnabled?: boolean;
 
@@ -556,6 +559,7 @@ export interface DomainProps {
    * Specifies whether automatic service software updates are enabled for the domain.
    *
    * @see https://docs.aws.amazon.com/it_it/AWSCloudFormation/latest/UserGuide/aws-properties-opensearchservice-domain-softwareupdateoptions.html
+   *
    * @default - false
    */
   readonly enableAutoSoftwareUpdate?: boolean;
@@ -1137,7 +1141,6 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
 
     return grant;
   }
-
 }
 
 /**
@@ -1606,7 +1609,8 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       }
     }
 
-    if (props.offPeakWindowEnabled) {
+    const offPeakWindowEnabled = props.offPeakWindowEnabled ?? props.offPeakWindowStart !== undefined;
+    if (offPeakWindowEnabled) {
       this.validateWindowStartTime(props.offPeakWindowStart);
     }
 
@@ -1684,8 +1688,8 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         }
         : undefined,
       advancedOptions: props.advancedOptions,
-      offPeakWindowOptions: props.offPeakWindowEnabled !== undefined ? {
-        enabled: props.offPeakWindowEnabled,
+      offPeakWindowOptions: offPeakWindowEnabled ? {
+        enabled: offPeakWindowEnabled,
         offPeakWindow: {
           windowStartTime: props.offPeakWindowStart ?? {
             hours: 22,
