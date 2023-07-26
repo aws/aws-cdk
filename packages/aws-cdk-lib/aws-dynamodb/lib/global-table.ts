@@ -5,7 +5,7 @@ import {
   BillingMode, ProjectionType,
 } from './shared';
 import { IStream } from '../../aws-kinesis';
-import { IResource, Lazy, RemovalPolicy, Resource, Token } from '../../core';
+import { IResource, Lazy, RemovalPolicy, Resource, Token, Stack } from '../../core';
 
 const HASH_KEY_TYPE = 'HASH';
 const RANGE_KEY_TYPE = 'RANGE';
@@ -88,6 +88,12 @@ abstract class GlobalTableBase extends Resource implements IGlobalTable {
 }
 
 export class GlobalTable extends GlobalTableBase {
+  public static fromTableName() {}
+
+  public static fromTableArn() {}
+
+  public static fromTableAttributes() {}
+
   public readonly tableArn: string;
   public readonly tableName: string;
   public readonly tableId: string;
@@ -95,6 +101,7 @@ export class GlobalTable extends GlobalTableBase {
 
   private readonly tablePartitionKey: Attribute;
   private readonly billingMode: string;
+  private readonly deploymentRegion: string;
   private readonly tableReadCapacity?: Capacity;
   private readonly tableWriteProvisioning?: CfnGlobalTable.WriteProvisionedThroughputSettingsProperty;
   private readonly keySchema: CfnGlobalTable.KeySchemaProperty[] = [];
@@ -108,6 +115,11 @@ export class GlobalTable extends GlobalTableBase {
 
   public constructor(scope: Construct, id: string, props: GlobalTableProps) {
     super(scope, id, { physicalName: props.tableName });
+
+    this.deploymentRegion = Stack.of(this).region;
+    if (Token.isUnresolved(this.deploymentRegion)) {
+      throw new Error('The region of the stack a global table is defined in must not be a token');
+    }
 
     this.tablePartitionKey = props.partitionKey;
 
@@ -185,13 +197,15 @@ export class GlobalTable extends GlobalTableBase {
     for (const replicaTable of this.replicaTables) {
       const region = replicaTable.region;
       const isRegionResolved = !Token.isUnresolved(region);
-      if (isRegionResolved && this.resolvedReplicaRegions.has(region)) {
+      if (!isRegionResolved) {
+        throw new Error('Replica table `region` value must not be a token');
+      }
+
+      if (this.resolvedReplicaRegions.has(region)) {
         throw new Error(`Duplicate replica region, ${region}, is not allowed`);
       }
 
-      if (isRegionResolved) {
-        this.resolvedReplicaRegions.set(region, true);
-      }
+      this.resolvedReplicaRegions.set(region, true);
 
       let readProvisionedThroughputSettings = undefined;
       if (replicaTable.readCapacity) {
@@ -206,7 +220,7 @@ export class GlobalTable extends GlobalTableBase {
       replicaTables.push({
         region,
         readProvisionedThroughputSettings,
-        deletionProtectionEnabled: replicaTable.contributorInsights ?? props.contributorInsights,
+        deletionProtectionEnabled: replicaTable.deletionProtection ?? props.deletionProtection,
         tableClass: replicaTable.tableClass ?? props.tableClass,
         kinesisStreamSpecification: replicaTable.kinesisStream
           ? { streamArn: replicaTable.kinesisStream.streamArn }
@@ -216,6 +230,24 @@ export class GlobalTable extends GlobalTableBase {
           : undefined,
         pointInTimeRecoverySpecification: pointInTimeRecovery !== undefined
           ? { pointInTimeRecoveryEnabled: pointInTimeRecovery }
+          : undefined,
+      });
+    }
+
+    // global table must contain at least replica in deployment region
+    if (!this.resolvedReplicaRegions.has(this.deploymentRegion)) {
+      replicaTables.push({
+        region: this.deploymentRegion,
+        deletionProtectionEnabled: props.deletionProtection,
+        tableClass: props.tableClass,
+        readProvisionedThroughputSettings: this.tableReadCapacity
+          ? this.configureReadProvisioning(this.tableReadCapacity)
+          : undefined,
+        contributorInsightsSpecification: props.contributorInsights
+          ? { enabled: props.contributorInsights }
+          : undefined,
+        pointInTimeRecoverySpecification: props.pointInTimeRecovery
+          ? { pointInTimeRecoveryEnabled: props.pointInTimeRecovery }
           : undefined,
       });
     }

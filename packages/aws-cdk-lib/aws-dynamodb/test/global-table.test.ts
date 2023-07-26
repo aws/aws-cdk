@@ -6,7 +6,7 @@ import { GlobalTable, Billing, Capacity, AttributeType } from '../lib';
 describe('global table configuration', () => {
   test('with default properties', () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
 
     // WHEN
     new GlobalTable(stack, 'GlobalTable', {
