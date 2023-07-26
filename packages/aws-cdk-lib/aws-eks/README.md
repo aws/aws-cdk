@@ -932,13 +932,13 @@ To access the Kubernetes resources from the console, make sure your viewing prin
 in the `aws-auth` ConfigMap. Some options to consider:
 
 ```ts
+import { KubectlV27Layer } from '@aws-cdk/lambda-layer-kubectl-v27';
 declare const cluster: eks.Cluster;
 declare const your_current_role: iam.Role;
 declare const vpc: ec2.Vpc;
 
-// Option 1: Add your current assumed IAM role to system:masters. Make sure to add
-// relevant policies.
-cluster.awsAuth.addMastersRole(your_current_role)
+// Option 1: Add your current assumed IAM role to system:masters. Make sure to add relevant policies.
+cluster.awsAuth.addMastersRole(your_current_role);
 
 your_current_role.addToPolicy(new iam.PolicyStatement({
   actions: [
@@ -949,9 +949,7 @@ your_current_role.addToPolicy(new iam.PolicyStatement({
   resources: [ cluster.clusterArn ],
 }));
 
-
-// Option 2: create your custom mastersRole with scoped assumeBy arn as the Cluster prop.
-// Switch to this role from the AWS console.
+// Option 2: create your custom mastersRole with scoped assumeBy arn as the Cluster prop. Switch to this role from the AWS console.
 const mastersRole = new iam.Role(this, 'MastersRole', {
   assumedBy: new iam.ArnPrincipal('arn_for_trusted_principal'),
 });
@@ -959,7 +957,7 @@ const mastersRole = new iam.Role(this, 'MastersRole', {
 const cluster = new eks.Cluster(this, 'EksCluster', {
   vpc,
   version: eks.KubernetesVersion.V1_27,
-  kubectlLayer: new KubectlLayer(this, 'KubectlLayer'),
+  kubectlLayer: new KubectlV27Layer(this, 'KubectlLayer'),
   mastersRole,
 });
 
@@ -972,8 +970,7 @@ mastersRole.addToPolicy(new iam.PolicyStatement({
   resources: [ cluster.clusterArn ],
 }));
 
-// Option 3: Create a new role that allows the account root principal to assume. 
-// Add this role in the `system:masters` and witch to this role from the AWS console.
+// Option 3: Create a new role that allows the account root principal to assume. Add this role in the `system:masters` and witch to this role from the AWS console.
 const consoleReadOnlyRole = new iam.Role(this, 'ConsoleReadOnlyRole', {
   assumedBy: new iam.ArnPrincipal('arn_for_trusted_principal'),
 });
