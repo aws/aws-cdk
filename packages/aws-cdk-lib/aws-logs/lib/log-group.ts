@@ -527,6 +527,8 @@ export interface SubscriptionFilterOptions {
 
   /**
    * The name of the subscription filter.
+   *
+   * @default Automatically generated
    */
   readonly filterName?: string;
 }
