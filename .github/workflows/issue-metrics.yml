@@ -27,13 +27,27 @@ jobs:
         echo "$first_day..$last_day"
         echo "last_month=$first_day..$last_day" >> "$GITHUB_ENV"
 
-    - name: Run issue-metrics tool
+    - name: Report on issues
       uses: github/issue-metrics@v2
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SEARCH_QUERY: 'repo:aws/aws-cdk is:issue created:${{ env.last_month }} -reason:"not planned"'
 
-    - name: Create issue
+    - name: Create report for issues
+      uses: peter-evans/create-issue-from-file@v4
+      with:
+        title: Monthly issue metrics report
+        token: ${{ secrets.GITHUB_TOKEN }}
+        content-filepath: ./issue_metrics.md
+        assignees: evgenyka
+        
+    - name: Report on PRs
+      uses: github/issue-metrics@v2
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SEARCH_QUERY: 'repo:aws/aws-cdk is:pr created:${{ env.last_month }} -is:draft'
+
+    - name: Create report for PRs
       uses: peter-evans/create-issue-from-file@v4
       with:
         title: Monthly issue metrics report
