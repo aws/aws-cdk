@@ -21,6 +21,7 @@ jobs:
         id: changed-cli-files
         uses: tj-actions/changed-files@920e7b9ae1d45913fc81f86c956fee89c77d2e5e
         with:
+          base_sha: ${{ github.event.pull_request.base.sha }}
           files_yaml: |
             cli:
               - packages/aws-cdk/bin/**
