@@ -58,8 +58,8 @@ const integ = new IntegTest(app, 'LogGroup', {
   diffAssets: true,
 });
 
-const putEventsDate = Date.now().toString();
-const expectedValue = `abc${putEventsDate}`;
+const putEventsDate = Date.now();
+const expectedValue = `abc${putEventsDate.toString()}`;
 
 const putEvent = integ.assertions.awsApiCall('EventBridge', 'putEvents', {
   Entries: [
