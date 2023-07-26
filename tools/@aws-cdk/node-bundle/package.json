@@ -10,7 +10,7 @@
     "package": "mkdir -p dist/js && mv $(npm pack) dist/js/",
     "test": "jest --passWithNoTests --updateSnapshot",
     "test:watch": "jest --watch",
-    "watch": "tsc --build -w"
+    "watch": "tsc --build -w tsconfig.dev.json"
   },
   "devDependencies": {
     "@types/jest": "^29.5.3",

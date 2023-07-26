@@ -30,6 +30,8 @@ junit.xml
 /coverage/
 /dist/changelog.md
 /dist/version.txt
+*.d.ts
+*.js
 !/test/
 !/tsconfig.json
 !/tsconfig.dev.json
