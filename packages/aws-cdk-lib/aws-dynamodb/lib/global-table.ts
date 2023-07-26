@@ -5,7 +5,7 @@ import {
   BillingMode, ProjectionType,
 } from './shared';
 import { IStream } from '../../aws-kinesis';
-import { IResource, Lazy, RemovalPolicy, Resource, Token, Stack } from '../../core';
+import { IResource, Lazy, RemovalPolicy, Resource, Token, Stack, ArnFormat } from '../../core';
 
 const HASH_KEY_TYPE = 'HASH';
 const RANGE_KEY_TYPE = 'RANGE';
@@ -74,25 +74,78 @@ export interface GlobalTableProps extends TableOptions, SchemaOptions {
 export interface IGlobalTable extends IResource {
   readonly tableArn: string;
   readonly tableName: string;
-  readonly tableId: string;
-  readonly tableStreamArn: string;
+  readonly tableId?: string;
+  readonly tableStreamArn?: string;
 }
 
-export interface GlobalTableAttributes {}
+export interface GlobalTableAttributes {
+  readonly tableArn?: string;
+  readonly tableName?: string;
+  readonly tableId?: string;
+  readonly tableStreamArn?: string;
+}
 
 abstract class GlobalTableBase extends Resource implements IGlobalTable {
   public abstract readonly tableArn: string;
   public abstract readonly tableName: string;
-  public abstract readonly tableId: string;
-  public abstract readonly tableStreamArn: string;
+  public abstract readonly tableId?: string;
+  public abstract readonly tableStreamArn?: string;
 }
 
 export class GlobalTable extends GlobalTableBase {
-  public static fromTableName() {}
+  public static fromTableName(scope: Construct, id: string, tableName: string): IGlobalTable {
+    return GlobalTable.fromTableAttributes(scope, id, { tableName });
+  }
 
-  public static fromTableArn() {}
+  public static fromTableArn(scope: Construct, id: string, tableArn: string): IGlobalTable {
+    return GlobalTable.fromTableAttributes(scope, id, { tableArn });
+  }
 
-  public static fromTableAttributes() {}
+  public static fromTableAttributes(scope: Construct, id: string, attrs: GlobalTableAttributes): IGlobalTable {
+    class Import extends GlobalTableBase {
+      public readonly tableArn: string;
+      public readonly tableName: string;
+      public readonly tableId?: string;
+      public readonly tableStreamArn?: string;
+
+      public constructor(tableArn: string, tableName: string, tableId?: string, tableStreamArn?: string) {
+        super(scope, id);
+        this.tableArn = tableArn;
+        this.tableName = tableName;
+        this.tableId = tableId;
+        this.tableStreamArn = tableStreamArn;
+      }
+    }
+
+    let tableName: string;
+    let tableArn: string;
+    const stack = Stack.of(scope);
+    if (!attrs.tableArn) {
+      if (!attrs.tableName) {
+        throw new Error('At least one of tableArn or tableName must be provided');
+      }
+
+      tableName = attrs.tableName;
+      tableArn = stack.formatArn({
+        service: 'dynamodb',
+        resource: 'table',
+        resourceName: tableName,
+      });
+    } else {
+      if (attrs.tableArn) {
+        throw new Error('Only one of tableArn or tableName can be provided, but not both');
+      }
+
+      tableArn = attrs.tableArn;
+      const resourceName = stack.splitArn(tableArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
+      if (!resourceName) {
+        throw new Error('');
+      }
+      tableName = resourceName;
+    }
+
+    return new Import(tableArn, tableName, attrs.tableId, attrs.tableStreamArn);
+  }
 
   public readonly tableArn: string;
   public readonly tableName: string;
@@ -176,7 +229,7 @@ export class GlobalTable extends GlobalTableBase {
   /**
    * Add a global secondary index to the global table.
    *
-   * @param props the properties of a global secondary index
+   * @param props the properties of the global secondary index to add
    */
   public addGlobalSecondaryIndex(props: GlobalSecondaryIndexPropsV2) {
     this.globalSecondaryIndexes.push(props);
@@ -185,10 +238,19 @@ export class GlobalTable extends GlobalTableBase {
   /**
    * Add a local secondary index to the global table.
    *
-   * @param props the properties of a local secondary index
+   * @param props the properties of the local secondary index to add
    */
   public addLocalSecondaryIndex(props: LocalSecondaryIndexPropsV2) {
     this.localSecondaryIndexes.push(props);
+  }
+
+  /**
+   * Add a replica table to the global table.
+   *
+   * @param props the properties of the replica table to add
+   */
+  public addReplica(props: ReplicaTableProps) {
+    this.replicaTables.push(props);
   }
 
   private configureReplicaTables(props: TableOptions) {
@@ -255,38 +317,6 @@ export class GlobalTable extends GlobalTableBase {
     return replicaTables;
   }
 
-  private configureWriteProvisioning(writeCapacity: Capacity): CfnGlobalTable.WriteProvisionedThroughputSettingsProperty {
-    if (writeCapacity.mode === CapacityMode.FIXED) {
-      throw new Error('Write capacity must be configured using autoscaled capacity mode');
-    }
-
-    return {
-      writeCapacityAutoScalingSettings: {
-        minCapacity: writeCapacity.minCapacity,
-        maxCapacity: writeCapacity.maxCapacity,
-        targetTrackingScalingPolicyConfiguration: {
-          targetValue: writeCapacity.targetUtilizationPercent,
-        },
-      },
-    };
-  }
-
-  private configureReadProvisioning(readCapacity: Capacity): CfnGlobalTable.ReadProvisionedThroughputSettingsProperty {
-    if (readCapacity.mode === CapacityMode.FIXED) {
-      return { readCapacityUnits: readCapacity.units };
-    }
-
-    return {
-      readCapacityAutoScalingSettings: {
-        minCapacity: readCapacity.minCapacity,
-        maxCapacity: readCapacity.maxCapacity,
-        targetTrackingScalingPolicyConfiguration: {
-          targetValue: readCapacity.targetUtilizationPercent,
-        },
-      },
-    };
-  }
-
   private configureGlobalSecondaryIndexes() {
     const globalSecondaryIndexes: CfnGlobalTable.GlobalSecondaryIndexProperty[] = [];
     if (this.globalSecondaryIndexes.length > MAX_GSI_COUNT) {
@@ -342,6 +372,38 @@ export class GlobalTable extends GlobalTableBase {
     }
 
     return localSecondaryIndexes;
+  }
+
+  private configureWriteProvisioning(writeCapacity: Capacity): CfnGlobalTable.WriteProvisionedThroughputSettingsProperty {
+    if (writeCapacity.mode === CapacityMode.FIXED) {
+      throw new Error('Write capacity must be configured using autoscaled capacity mode');
+    }
+
+    return {
+      writeCapacityAutoScalingSettings: {
+        minCapacity: writeCapacity.minCapacity,
+        maxCapacity: writeCapacity.maxCapacity,
+        targetTrackingScalingPolicyConfiguration: {
+          targetValue: writeCapacity.targetUtilizationPercent,
+        },
+      },
+    };
+  }
+
+  private configureReadProvisioning(readCapacity: Capacity): CfnGlobalTable.ReadProvisionedThroughputSettingsProperty {
+    if (readCapacity.mode === CapacityMode.FIXED) {
+      return { readCapacityUnits: readCapacity.units };
+    }
+
+    return {
+      readCapacityAutoScalingSettings: {
+        minCapacity: readCapacity.minCapacity,
+        maxCapacity: readCapacity.maxCapacity,
+        targetTrackingScalingPolicyConfiguration: {
+          targetValue: readCapacity.targetUtilizationPercent,
+        },
+      },
+    };
   }
 
   private buildIndexKeySchema(partitionKey: Attribute, sortKey?: Attribute) {

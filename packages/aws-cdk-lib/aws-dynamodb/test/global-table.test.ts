@@ -9,7 +9,7 @@ describe('global table configuration', () => {
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
 
     // WHEN
-    new GlobalTable(stack, 'GlobalTable', {
+    const globalTable = new GlobalTable(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       billing: Billing.provisioned({
         readCapacity: Capacity.fixed(10),
@@ -36,6 +36,9 @@ describe('global table configuration', () => {
         { region: 'us-east-1', pointInTimeRecovery: false },
       ],
     });
+
+    globalTable.addReplica({ region: 'us-east-2' });
+    globalTable.addReplica({ region: 'us-east-1' });
 
     // THEN
     console.log(JSON.stringify(Template.fromStack(stack), null, 4));
