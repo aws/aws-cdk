@@ -1980,15 +1980,14 @@ each(testedOpenSearchVersions).describe('cognito dashboards auth', (engineVersio
   });
 });
 
-each(testedOpenSearchVersions).describe('offPeakWindow and enableAutoSoftwareUpdate properties', (engineVersion) => {
-  test('with offPeakWindow', () => {
+each(testedOpenSearchVersions).describe('offPeakWindowOptions and softwareUpdateOptions', (engineVersion) => {
+  test('with offPeakWindowOptions enabled', () => {
     new Domain(stack, 'Domain', {
       version: engineVersion,
-      offPeakWindow: {
-        windowStartTime: {
-          hours: 10,
-          minutes: 0,
-        },
+      offPeakWindowEnabled: true,
+      offPeakWindowStart: {
+        hours: 10,
+        minutes: 30,
       },
     });
 
@@ -1998,19 +1997,17 @@ each(testedOpenSearchVersions).describe('offPeakWindow and enableAutoSoftwareUpd
         OffPeakWindow: {
           WindowStartTime: {
             Hours: 10,
-            Minutes: 0,
+            Minutes: 30,
           },
         },
       },
     });
   });
 
-  test('offPeakWindow default start time', () => {
+  test('with offPeakWindowOptions default start time', () => {
     new Domain(stack, 'Domain', {
       version: engineVersion,
-      offPeakWindow: {
-
-      },
+      offPeakWindowEnabled: true,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
@@ -2026,7 +2023,7 @@ each(testedOpenSearchVersions).describe('offPeakWindow and enableAutoSoftwareUpd
     });
   });
 
-  test('with enableAutoSoftwareUpdate', () => {
+  test('with autoSoftwareUpdateEnabled', () => {
     new Domain(stack, 'Domain', {
       version: engineVersion,
       enableAutoSoftwareUpdate: true,
@@ -2039,15 +2036,14 @@ each(testedOpenSearchVersions).describe('offPeakWindow and enableAutoSoftwareUpd
     });
   });
 
-  test('with invalid offPeakWindow.windowStartTime', () => {
+  test('with invalid offPeakWindowStart', () => {
     expect(() => {
       new Domain(stack, 'Domain1', {
         version: engineVersion,
-        offPeakWindow: {
-          windowStartTime: {
-            hours: 50,
-            minutes: 0,
-          },
+        offPeakWindowEnabled: true,
+        offPeakWindowStart: {
+          hours: 50,
+          minutes: 0,
         },
       });
     }).toThrow(
@@ -2057,11 +2053,10 @@ each(testedOpenSearchVersions).describe('offPeakWindow and enableAutoSoftwareUpd
     expect(() => {
       new Domain(stack, 'Domain2', {
         version: engineVersion,
-        offPeakWindow: {
-          windowStartTime: {
-            hours: 10,
-            minutes: 90,
-          },
+        offPeakWindowEnabled: true,
+        offPeakWindowStart: {
+          hours: 10,
+          minutes: 90,
         },
       });
     }).toThrow(

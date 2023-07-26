@@ -413,11 +413,10 @@ You can't disable the off-peak window for a domain after it's enabled.
 ```ts
 const domain = new Domain(this, 'Domain', {
   version: EngineVersion.OPENSEARCH_1_3,
-  offPeakWindow: {
-    windowStartTime: {
-      hours: 20,
-      minutes: 0,
-    },
+  offPeakWindowEnabled: true,
+  offPeakWindowStart: {
+    hours: 20,
+    minutes: 0,
   },
 });
 ```

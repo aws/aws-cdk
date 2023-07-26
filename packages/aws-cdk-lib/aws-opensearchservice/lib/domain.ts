@@ -344,17 +344,6 @@ export interface WindowStartTime {
   readonly minutes: number;
 }
 
-export interface OffPeakWindow {
-  /**
-   * A custom start time for the off-peak window, in Coordinated Universal Time (UTC).
-   * The window length will always be 10 hours, so you can't specify an end time.
-   * For example, if you specify 11:00 P.M. UTC as a start time, the end time will automatically be set to 9:00 A.M.
-   *
-   * @default - 10:00 P.M. local time
-   */
-  readonly windowStartTime?: WindowStartTime;
-}
-
 /**
  * Properties for an Amazon OpenSearch Service domain.
  */
@@ -540,7 +529,7 @@ export interface DomainProps {
   readonly customEndpoint?: CustomEndpointOptions;
 
   /**
-   * Options for a domain's off-peak window, during which OpenSearch Service can perform mandatory
+   * Options for enabling a domain's off-peak window, during which OpenSearch Service can perform mandatory
    * configuration changes on the domain.
    *
    * Off-peak windows were introduced on February 16, 2023.
@@ -550,9 +539,18 @@ export interface DomainProps {
    * You can't disable the off-peak window for a domain after it's enabled.
    *
    * @see https://docs.aws.amazon.com/it_it/AWSCloudFormation/latest/UserGuide/aws-properties-opensearchservice-domain-offpeakwindow.html
-   * @default - no off-peak window will be configured
+   * @default - disabled for domains created before February 16, 2023. enabled for domains created after.
    */
-  readonly offPeakWindow?: OffPeakWindow;
+  readonly offPeakWindowEnabled?: boolean;
+
+  /**
+   * Start time for the off-peak window, in Coordinated Universal Time (UTC).
+   * The window length will always be 10 hours, so you can't specify an end time.
+   * For example, if you specify 11:00 P.M. UTC as a start time, the end time will automatically be set to 9:00 A.M.
+   *
+   * @default - 10:00 P.M. local time
+   */
+  readonly offPeakWindowStart?: WindowStartTime;
 
   /**
    * Specifies whether automatic service software updates are enabled for the domain.
@@ -1608,7 +1606,9 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       }
     }
 
-    this.validateWindowStartTime(props.offPeakWindow?.windowStartTime);
+    if (props.offPeakWindowEnabled) {
+      this.validateWindowStartTime(props.offPeakWindowStart);
+    }
 
     // Create the domain
     this.domain = new CfnDomain(this, 'Resource', {
@@ -1684,10 +1684,10 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         }
         : undefined,
       advancedOptions: props.advancedOptions,
-      offPeakWindowOptions: props.offPeakWindow ? {
-        enabled: true,
+      offPeakWindowOptions: props.offPeakWindowEnabled !== undefined ? {
+        enabled: props.offPeakWindowEnabled,
         offPeakWindow: {
-          windowStartTime: props.offPeakWindow.windowStartTime ?? {
+          windowStartTime: props.offPeakWindowStart ?? {
             hours: 22,
             minutes: 0,
           },

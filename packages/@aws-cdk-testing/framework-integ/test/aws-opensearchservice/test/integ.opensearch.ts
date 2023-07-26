@@ -41,11 +41,10 @@ class TestStack extends Stack {
       capacity: {
         multiAzWithStandbyEnabled: false,
       },
-      offPeakWindow: {
-        windowStartTime: {
-          hours: 20,
-          minutes: 0,
-        },
+      offPeakWindowEnabled: true,
+      offPeakWindowStart: {
+        hours: 20,
+        minutes: 0,
       },
       enableAutoSoftwareUpdate: true,
     };
