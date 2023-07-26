@@ -1,4 +1,4 @@
-name: Monthly issue metrics
+name: Monthly repo metrics
 on:
   workflow_dispatch:
   schedule:
@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   build:
-    name: issue metrics
+    name: metrics
     runs-on: ubuntu-latest
 
     steps:
