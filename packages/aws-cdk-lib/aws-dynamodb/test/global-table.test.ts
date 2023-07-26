@@ -32,9 +32,8 @@ describe('global table configuration', () => {
         },
       ],
       replicas: [
-        { region: stack.region },
+        { region: stack.region, readCapacity: Capacity.autoscaled({ minCapacity: 1, maxCapacity: 10 }) },
         { region: 'us-east-1', pointInTimeRecovery: false },
-        { region: 'us-east-1' },
       ],
     });
 

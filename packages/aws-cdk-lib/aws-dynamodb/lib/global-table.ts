@@ -68,6 +68,7 @@ export interface GlobalTableProps extends TableOptions, SchemaOptions {
   readonly replicas?: ReplicaTableProps[];
   readonly globalSecondaryIndexes?: GlobalSecondaryIndexPropsV2[];
   readonly localSecondaryIndexes?: LocalSecondaryIndexPropsV2[];
+  readonly encryption?: TableEncryptionV2;
 }
 
 export interface IGlobalTable extends IResource {
@@ -94,6 +95,7 @@ export class GlobalTable extends GlobalTableBase {
 
   private readonly tablePartitionKey: Attribute;
   private readonly billingMode: string;
+  private readonly tableReadCapacity?: Capacity;
   private readonly tableWriteProvisioning?: CfnGlobalTable.WriteProvisionedThroughputSettingsProperty;
   private readonly keySchema: CfnGlobalTable.KeySchemaProperty[] = [];
   private readonly attributeDefinitions: CfnGlobalTable.AttributeDefinitionProperty[] = [];
@@ -112,6 +114,7 @@ export class GlobalTable extends GlobalTableBase {
     if (props.billing) {
       this.billingMode = props.billing.mode;
       if (this.billingMode === BillingMode.PROVISIONED) {
+        this.tableReadCapacity = props.billing.readCapacity;
         // writeCapacity has to be provided when billing mode is provisioned
         this.tableWriteProvisioning = this.configureWriteProvisioning(props.billing.writeCapacity);
       }
@@ -190,15 +193,30 @@ export class GlobalTable extends GlobalTableBase {
         this.resolvedReplicaRegions.set(region, true);
       }
 
+      let readProvisionedThroughputSettings = undefined;
+      if (replicaTable.readCapacity) {
+        readProvisionedThroughputSettings = this.configureReadProvisioning(replicaTable.readCapacity);
+      } else if (this.tableReadCapacity) {
+        readProvisionedThroughputSettings = this.configureReadProvisioning(this.tableReadCapacity);
+      }
+
       const pointInTimeRecovery = replicaTable.pointInTimeRecovery ?? props.pointInTimeRecovery;
       const contributorInsights = replicaTable.contributorInsights ?? props.contributorInsights;
 
       replicaTables.push({
         region,
+        readProvisionedThroughputSettings,
         deletionProtectionEnabled: replicaTable.contributorInsights ?? props.contributorInsights,
         tableClass: replicaTable.tableClass ?? props.tableClass,
-        contributorInsightsSpecification: contributorInsights !== undefined ? { enabled: contributorInsights } : undefined,
-        pointInTimeRecoverySpecification: pointInTimeRecovery !== undefined ? { pointInTimeRecoveryEnabled: pointInTimeRecovery } : undefined,
+        kinesisStreamSpecification: replicaTable.kinesisStream
+          ? { streamArn: replicaTable.kinesisStream.streamArn }
+          : undefined,
+        contributorInsightsSpecification: contributorInsights !== undefined
+          ? { enabled: contributorInsights }
+          : undefined,
+        pointInTimeRecoverySpecification: pointInTimeRecovery !== undefined
+          ? { pointInTimeRecoveryEnabled: pointInTimeRecovery }
+          : undefined,
       });
     }
 
@@ -216,6 +234,22 @@ export class GlobalTable extends GlobalTableBase {
         maxCapacity: writeCapacity.maxCapacity,
         targetTrackingScalingPolicyConfiguration: {
           targetValue: writeCapacity.targetUtilizationPercent,
+        },
+      },
+    };
+  }
+
+  private configureReadProvisioning(readCapacity: Capacity): CfnGlobalTable.ReadProvisionedThroughputSettingsProperty {
+    if (readCapacity.mode === CapacityMode.FIXED) {
+      return { readCapacityUnits: readCapacity.units };
+    }
+
+    return {
+      readCapacityAutoScalingSettings: {
+        minCapacity: readCapacity.minCapacity,
+        maxCapacity: readCapacity.maxCapacity,
+        targetTrackingScalingPolicyConfiguration: {
+          targetValue: readCapacity.targetUtilizationPercent,
         },
       },
     };
@@ -426,3 +460,5 @@ export class Capacity {
     this._targetUtilizationPercent = options.targetUtilizationPercent;
   }
 }
+
+export class TableEncryptionV2 {}
