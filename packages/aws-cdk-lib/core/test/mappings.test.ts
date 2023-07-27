@@ -349,7 +349,7 @@ describe('defaultValue included', () => {
     it('creates CfnMapping if top level key cannot be resolved', () => {
       const retrievedValue = mapping.findInMap(Aws.REGION, 'SecondLevelKey1', defValue);
 
-      expect(stack.resolve(retrievedValue)).toStrictEqual({ 'Fn::FindInMap': ['LazyMapping', { Ref: 'AWS::Region' }, 'SecondLevelKey1', defValue] }); // should I use string or variable here? variable works
+      expect(stack.resolve(retrievedValue)).toStrictEqual({ 'Fn::FindInMap': ['LazyMapping', { Ref: 'AWS::Region' }, 'SecondLevelKey1', { DefaultValue: defValue }] }); // should I use string or variable here? variable works
       expect(toCloudFormation(stack)).toStrictEqual({
         Mappings: {
           LazyMapping: backing,
@@ -360,7 +360,7 @@ describe('defaultValue included', () => {
     it('creates CfnMapping if second level key cannot be resolved', () => {
       const retrievedValue = mapping.findInMap('TopLevelKey1', Aws.REGION, defValue);
 
-      expect(stack.resolve(retrievedValue)).toStrictEqual({ 'Fn::FindInMap': ['LazyMapping', 'TopLevelKey1', { Ref: 'AWS::Region' }, defValue] });
+      expect(stack.resolve(retrievedValue)).toStrictEqual({ 'Fn::FindInMap': ['LazyMapping', 'TopLevelKey1', { Ref: 'AWS::Region' }, { DefaultValue: defValue }] });
       expect(toCloudFormation(stack)).toStrictEqual({
         Mappings: {
           LazyMapping: backing,
@@ -410,7 +410,7 @@ describe('defaultValue included', () => {
     it('creates CfnMapping if top level key cannot be resolved', () => {
       const retrievedValue = mapping.findInMap(Aws.REGION, 'SecondLevelKey1', defValue);
 
-      expect(stack.resolve(retrievedValue)).toStrictEqual({ 'Fn::FindInMap': ['LazyMapping', { Ref: 'AWS::Region' }, 'SecondLevelKey1', defValue] }); // should I use string or variable here? variable works
+      expect(stack.resolve(retrievedValue)).toStrictEqual({ 'Fn::FindInMap': ['LazyMapping', { Ref: 'AWS::Region' }, 'SecondLevelKey1', { DefaultValue: defValue }] }); // should I use string or variable here? variable works
       expect(toCloudFormation(stack)).toStrictEqual({
         Mappings: {
           LazyMapping: backing,
@@ -421,7 +421,7 @@ describe('defaultValue included', () => {
     it('creates CfnMapping if second level key cannot be resolved', () => {
       const retrievedValue = mapping.findInMap('TopLevelKey1', Aws.REGION, defValue);
 
-      expect(stack.resolve(retrievedValue)).toStrictEqual({ 'Fn::FindInMap': ['LazyMapping', 'TopLevelKey1', { Ref: 'AWS::Region' }, defValue] });
+      expect(stack.resolve(retrievedValue)).toStrictEqual({ 'Fn::FindInMap': ['LazyMapping', 'TopLevelKey1', { Ref: 'AWS::Region' }, { DefaultValue: defValue }] });
       expect(toCloudFormation(stack)).toStrictEqual({
         Mappings: {
           LazyMapping: backing,

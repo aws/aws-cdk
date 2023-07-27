@@ -503,7 +503,7 @@ class FnFindInMap extends FnBase {
    * @param defaultValue The value of the default value returned if either the key is not found in the map
    */
   constructor(mapName: string, topLevelKey: any, secondLevelKey: any, defaultValue?: string) {
-    super('Fn::FindInMap', [mapName, topLevelKey, secondLevelKey, defaultValue]);
+    super('Fn::FindInMap', [mapName, topLevelKey, secondLevelKey, defaultValue !== undefined ? { DefaultValue: defaultValue } : undefined]);
   }
 }
 
