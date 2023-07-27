@@ -500,6 +500,7 @@ class FnFindInMap extends FnBase {
    * @param mapName The logical name of a mapping declared in the Mappings section that contains the keys and values.
    * @param topLevelKey The top-level key name. Its value is a list of key-value pairs.
    * @param secondLevelKey The second-level key name, which is set to one of the keys from the list assigned to TopLevelKey.
+   * @param defaultValue The value of the default value returned if either the key is not found in the map
    */
   constructor(mapName: string, topLevelKey: any, secondLevelKey: any, defaultValue?: string) {
     super('Fn::FindInMap', [mapName, topLevelKey, secondLevelKey, defaultValue]);
