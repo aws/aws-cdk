@@ -1,4 +1,4 @@
-name: Pr Linter Trigger
+name: PRLinter Trigger
 
 on:
   pull_request_review:
