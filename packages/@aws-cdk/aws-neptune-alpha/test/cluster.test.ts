@@ -754,6 +754,82 @@ describe('DatabaseCluster', () => {
       Threshold: 1,
     });
   });
+
+  test('should instantiate a serverless cluster', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      vpc,
+      instanceType: InstanceType.SERVERLESS,
+      serverlessScalingConfiguration: {
+        minCapacity: 1,
+        maxCapacity: 10,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Neptune::DBCluster', {
+      Properties: {
+        ServerlessScalingConfiguration: {
+          MinCapacity: 1,
+          MaxCapacity: 10,
+        },
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBInstance', {
+      DBInstanceClass: 'db.serverless',
+    });
+  });
+
+  test('should validate serverlessScalingConfiguration', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    expect(() => {
+      new DatabaseCluster(stack, 'Database0', {
+        vpc,
+        instanceType: InstanceType.SERVERLESS,
+      });
+    }).toThrow(/You need to specify a serverless scaling configuration with a db.serverless instance type./);
+
+    expect(() => {
+      new DatabaseCluster(stack, 'Database1', {
+        vpc,
+        instanceType: InstanceType.SERVERLESS,
+        serverlessScalingConfiguration: {
+          minCapacity: 0,
+          maxCapacity: 10,
+        },
+      });
+    }).toThrow(/ServerlessScalingConfiguration minCapacity must be greater or equal than 1, received 0/);
+
+    expect(() => {
+      new DatabaseCluster(stack, 'Database2', {
+        vpc,
+        instanceType: InstanceType.SERVERLESS,
+        serverlessScalingConfiguration: {
+          minCapacity: 1,
+          maxCapacity: 200,
+        },
+      });
+    }).toThrow(/ServerlessScalingConfiguration maxCapacity must be between 2.5 and 128, reveived 200/);
+
+    expect(() => {
+      new DatabaseCluster(stack, 'Database3', {
+        vpc,
+        instanceType: InstanceType.SERVERLESS,
+        serverlessScalingConfiguration: {
+          minCapacity: 10,
+          maxCapacity: 5,
+        },
+      });
+    }).toThrow(/ServerlessScalingConfiguration minCapacity 10 must be less than serverlessScalingConfiguration maxCapacity 5/);
+  });
 });
 
 function testStack() {
