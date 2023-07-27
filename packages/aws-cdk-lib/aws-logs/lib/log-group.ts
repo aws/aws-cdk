@@ -524,6 +524,13 @@ export interface SubscriptionFilterOptions {
    * Log events matching this pattern will be sent to the destination.
    */
   readonly filterPattern: IFilterPattern;
+
+  /**
+   * The name of the subscription filter.
+   *
+   * @default Automatically generated
+   */
+  readonly filterName?: string;
 }
 
 /**
