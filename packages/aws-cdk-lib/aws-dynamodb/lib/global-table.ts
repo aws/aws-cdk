@@ -163,8 +163,8 @@ export class GlobalTable extends GlobalTableBase {
   private readonly billingMode: string;
   private readonly deploymentRegion: string;
 
-  // update this to table read provisioning
-  private readonly tableReadCapacity?: Capacity;
+  private readonly globalTableOptions: TableOptions;
+  private readonly tableReadProvisioning?: CfnGlobalTable.ReadProvisionedThroughputSettingsProperty;
   private readonly tableWriteProvisioning?: CfnGlobalTable.WriteProvisionedThroughputSettingsProperty;
 
   private readonly keySchema: CfnGlobalTable.KeySchemaProperty[] = [];
@@ -174,6 +174,7 @@ export class GlobalTable extends GlobalTableBase {
   private readonly _replicaTables = new Map<string, ReplicaTableProps>();
 
   private readonly _globalSecondaryIndexes = new Map<string, CfnGlobalTable.GlobalSecondaryIndexProperty>();
+  private readonly globalSecondaryReadCapacitys = new Map<string, Capacity>();
   private readonly _localSecondaryIndexes = new Map<string, CfnGlobalTable.LocalSecondaryIndexProperty>();
 
   public constructor(scope: Construct, id: string, props: GlobalTableProps) {
@@ -184,12 +185,13 @@ export class GlobalTable extends GlobalTableBase {
       throw new Error('The region of the stack a global table is defined in must not be a token');
     }
 
+    this.globalTableOptions = props;
     this.tablePartitionKey = props.partitionKey;
 
     if (props.billing) {
       this.billingMode = props.billing.mode;
       if (this.billingMode === BillingMode.PROVISIONED) {
-        this.tableReadCapacity = props.billing.readCapacity;
+        this.tableReadProvisioning = this.configureReadProvisioning(props.billing.readCapacity);
         this.tableWriteProvisioning = this.configureWriteProvisioning(props.billing.writeCapacity);
       }
     } else {
@@ -209,7 +211,7 @@ export class GlobalTable extends GlobalTableBase {
       tableName: this.physicalName,
       keySchema: this.keySchema,
       attributeDefinitions: Lazy.any({ produce: () => this.attributeDefinitions }),
-      replicas: Lazy.any({ produce: () => this.configureReplicaTables(props) }),
+      replicas: Lazy.any({ produce: () => this.replicaTables }),
       globalSecondaryIndexes: Lazy.any({ produce: () => this.globalSecondaryIndexes }, { omitEmptyArray: true }),
       localSecondaryIndexes: Lazy.any({ produce: () => this.localSecondaryIndexes }, { omitEmptyArray: true }),
       streamSpecification: { streamViewType: NEW_AND_OLD_IMAGES },
@@ -288,8 +290,6 @@ export class GlobalTable extends GlobalTableBase {
     this._replicaTables.set(props.region, props);
   }
 
-  private get replicas() {}
-
   private get globalSecondaryIndexes() {
     return Array.from(this._globalSecondaryIndexes.values());
   }
@@ -298,61 +298,74 @@ export class GlobalTable extends GlobalTableBase {
     return Array.from(this._localSecondaryIndexes.values());
   }
 
-  private configureReplicaTables(props: TableOptions) {
+  private get replicaTables() {
     const replicaTables: CfnGlobalTable.ReplicaSpecificationProperty[] = [];
 
-    for (const replicaTable of this._replicaTables.values()) {
-      let readProvisionedThroughputSettings = undefined;
-      if (replicaTable.readCapacity) {
-        readProvisionedThroughputSettings = this.configureReadProvisioning(replicaTable.readCapacity);
-      } else if (this.tableReadCapacity) {
-        readProvisionedThroughputSettings = this.configureReadProvisioning(this.tableReadCapacity);
-      }
-
-      const pointInTimeRecovery = replicaTable.pointInTimeRecovery ?? props.pointInTimeRecovery;
-      const contributorInsights = replicaTable.contributorInsights ?? props.contributorInsights;
-
-      replicaTables.push({
-        region: replicaTable.region,
-        readProvisionedThroughputSettings,
-        deletionProtectionEnabled: replicaTable.deletionProtection ?? props.deletionProtection,
-        tableClass: replicaTable.tableClass ?? props.tableClass,
-        kinesisStreamSpecification: replicaTable.kinesisStream
-          ? { streamArn: replicaTable.kinesisStream.streamArn }
-          : undefined,
-        contributorInsightsSpecification: contributorInsights !== undefined
-          ? { enabled: contributorInsights }
-          : undefined,
-        pointInTimeRecoverySpecification: pointInTimeRecovery !== undefined
-          ? { pointInTimeRecoveryEnabled: pointInTimeRecovery }
-          : undefined,
-      });
+    if (!this._replicaTables.has(this.deploymentRegion)) {
+      // add deployment region
     }
 
-    // global table must contain at least replica in deployment region
-    if (!this._replicaTables.has(this.deploymentRegion)) {
-      replicaTables.push({
-        region: this.deploymentRegion,
-        deletionProtectionEnabled: props.deletionProtection,
-        tableClass: props.tableClass,
-        readProvisionedThroughputSettings: this.tableReadCapacity
-          ? this.configureReadProvisioning(this.tableReadCapacity)
-          : undefined,
-        contributorInsightsSpecification: props.contributorInsights
-          ? { enabled: props.contributorInsights }
-          : undefined,
-        pointInTimeRecoverySpecification: props.pointInTimeRecovery
-          ? { pointInTimeRecoveryEnabled: props.pointInTimeRecovery }
-          : undefined,
-      });
+    for (const replicaTable of this._replicaTables.values()) {
+      replicaTables.push(this.configureReplicaTable(replicaTable));
     }
 
     return replicaTables;
   }
 
+  private configureReplicaTable(replicaTable: ReplicaTableProps): CfnGlobalTable.ReplicaSpecificationProperty {
+    const pointInTimeRecovery = replicaTable.pointInTimeRecovery ?? this.globalTableOptions.pointInTimeRecovery;
+    const contributorInsights = replicaTable.contributorInsights ?? this.globalTableOptions.contributorInsights;
+    const readProvisionedThroughputSettings = replicaTable.readCapacity
+      ? this.configureReadProvisioning(replicaTable.readCapacity)
+      : this.tableReadProvisioning;
+
+    const globalSecondaryIndexes: CfnGlobalTable.ReplicaGlobalSecondaryIndexSpecificationProperty[] = [];
+    for (const indexName in this._globalSecondaryIndexes.keys()) {
+      /* eslint-disable no-console */
+      console.log(indexName);
+      if (!this._globalSecondaryIndexes.has(indexName)) {
+        throw new Error();
+      }
+
+      const replicaGsiOptions = replicaTable.globalSecondaryIndexOptions
+        ? replicaTable.globalSecondaryIndexOptions[indexName]
+        : undefined;
+      const replicaGsi = this.configureReplicaGlobalSecondaryIndex({
+        indexName,
+        contributorInsights: replicaGsiOptions?.contributorInsights ?? this.globalTableOptions.contributorInsights,
+        readCapacity: replicaGsiOptions?.readCapacity ?? this.globalSecondaryReadCapacitys.get(indexName),
+      });
+
+      globalSecondaryIndexes.push(replicaGsi);
+    }
+
+    return {
+      region: replicaTable.region,
+      readProvisionedThroughputSettings,
+      deletionProtectionEnabled: replicaTable.deletionProtection ?? this.globalTableOptions.deletionProtection,
+      tableClass: replicaTable.tableClass ?? this.globalTableOptions.tableClass,
+      globalSecondaryIndexes: globalSecondaryIndexes.length > 0
+        ? globalSecondaryIndexes
+        : undefined,
+      kinesisStreamSpecification: replicaTable.kinesisStream
+        ? { streamArn: replicaTable.kinesisStream.streamArn }
+        : undefined,
+      contributorInsightsSpecification: contributorInsights !== undefined
+        ? { enabled: contributorInsights }
+        : undefined,
+      pointInTimeRecoverySpecification: pointInTimeRecovery !== undefined
+        ? { pointInTimeRecoveryEnabled: pointInTimeRecovery }
+        : undefined,
+    };
+  }
+
   private configureGlobalSecondaryIndex(gsi: GlobalSecondaryIndexPropsV2): CfnGlobalTable.GlobalSecondaryIndexProperty {
     const indexKeySchema = this.buildIndexKeySchema(gsi.partitionKey, gsi.sortKey);
     const indexProjection = this.buildIndexProjection(gsi);
+
+    if (gsi.readCapacity) {
+      this.globalSecondaryReadCapacitys.set(gsi.indexName, gsi.readCapacity);
+    }
 
     const indexWriteProvisioning = this.billingMode === BillingMode.PROVISIONED && gsi.writeCapacity
       ? this.configureWriteProvisioning(gsi.writeCapacity)
@@ -363,6 +376,19 @@ export class GlobalTable extends GlobalTableBase {
       keySchema: indexKeySchema,
       projection: indexProjection,
       writeProvisionedThroughputSettings: indexWriteProvisioning ?? this.tableWriteProvisioning,
+    };
+  }
+
+  private configureReplicaGlobalSecondaryIndex(gsi: ReplicaGlobalSecondaryIndexOptions):
+  CfnGlobalTable.ReplicaGlobalSecondaryIndexSpecificationProperty {
+    return {
+      indexName: gsi.indexName,
+      readProvisionedThroughputSettings: gsi.readCapacity
+        ? this.configureReadProvisioning(gsi.readCapacity)
+        : undefined,
+      contributorInsightsSpecification: gsi.contributorInsights !== undefined
+        ? { enabled: gsi.contributorInsights }
+        : undefined,
     };
   }
 
