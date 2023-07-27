@@ -73,3 +73,20 @@ test('a data quality ruleset with tags', () => {
     },
   });
 });
+
+test('a data quality ruleset without a target table', () => {
+  const stack = new cdk.Stack();
+  new glue.DataQualityRuleset(stack, 'DataQualityRuleset', {
+    clientToken: 'client_token',
+    description: 'description',
+    rulesetName: 'ruleset_name',
+    rulesetDqdl: 'ruleset_dqdl',
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Glue::DataQualityRuleset', {
+    ClientToken: 'client_token',
+    Description: 'description',
+    Name: 'ruleset_name',
+    Ruleset: 'ruleset_dqdl',
+  });
+});

@@ -75,7 +75,7 @@ export interface DataQualityRulesetProps {
    * The target table of the ruleset
    * @attribute
    */
-  readonly targetTable: DataQualityTargetTable;
+  readonly targetTable?: DataQualityTargetTable;
 }
 
 /**
