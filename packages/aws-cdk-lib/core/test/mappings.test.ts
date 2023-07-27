@@ -326,7 +326,7 @@ describe('defaultValue included', () => {
 
   const defValue = 'foo';
 
-  //let app: App;
+  let app: App;
   let stack: Stack;
   let mapping: CfnMapping;
 
@@ -376,6 +376,57 @@ describe('defaultValue included', () => {
       expect(stack.resolve(retrievedValue2)).toStrictEqual('foo');
 
       expect(toCloudFormation(stack)).toStrictEqual({});
+    });
+  });
+
+  describe('eager by default', () => {
+    beforeEach(() => {
+      app = new App();
+      stack = new Stack(app, 'Stack');
+      mapping = new CfnMapping(stack, 'Lazy Mapping', {
+        mapping: backing,
+      });
+    });
+
+    it('emits warning if every findInMap resolves immediately', () => {
+      mapping.findInMap('TopLevelKey1', 'SecondLevelKey1', defValue);
+
+      const assembly = app.synth();
+
+      expect(getInfoAnnotations(assembly)).toStrictEqual([{
+        path: '/Stack/Lazy Mapping',
+        message: 'Consider making this CfnMapping a lazy mapping by providing `lazy: true`: either no findInMap was called or every findInMap could be immediately resolved without using Fn::FindInMap',
+      }]);
+    });
+
+    it('does not emit warning if a findInMap could not resolve immediately', () => {
+      mapping.findInMap('TopLevelKey1', Aws.REGION, defValue);
+
+      const assembly = app.synth();
+
+      expect(getInfoAnnotations(assembly)).toStrictEqual([]);
+    });
+
+    it('creates CfnMapping if top level key cannot be resolved', () => {
+      const retrievedValue = mapping.findInMap(Aws.REGION, 'SecondLevelKey1', defValue);
+
+      expect(stack.resolve(retrievedValue)).toStrictEqual({ 'Fn::FindInMap': ['LazyMapping', { Ref: 'AWS::Region' }, 'SecondLevelKey1', defValue] }); // should I use string or variable here? variable works
+      expect(toCloudFormation(stack)).toStrictEqual({
+        Mappings: {
+          LazyMapping: backing,
+        },
+      });
+    });
+
+    it('creates CfnMapping if second level key cannot be resolved', () => {
+      const retrievedValue = mapping.findInMap('TopLevelKey1', Aws.REGION, defValue);
+
+      expect(stack.resolve(retrievedValue)).toStrictEqual({ 'Fn::FindInMap': ['LazyMapping', 'TopLevelKey1', { Ref: 'AWS::Region' }, defValue] });
+      expect(toCloudFormation(stack)).toStrictEqual({
+        Mappings: {
+          LazyMapping: backing,
+        },
+      });
     });
   });
 });

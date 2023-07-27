@@ -86,30 +86,14 @@ export class CfnMapping extends CfnRefElement {
         fullyResolved = true;
       }
     }
-    if (fullyResolved) {
-      if (this.lazy) {
-        if (notInMap) {
-          if (defaultValue !== undefined) {
-            return defaultValue;
-          } else {
-            return this.mapping[key1][key2];
-          }
-        } else {
-          return 'notInMap';
-        }
-      }
-      return 'lazy';
-    }
-    return 'fullResolve';
-    /*
-    if (fullyResolved && this.lazy) {
-      if (notInMap && defaultValue !== undefined) { // do not think this secondary check is necessary but linter flags it
+
+    if (this.lazy) {
+      if (notInMap && defaultValue !== undefined) {
         return defaultValue;
-      } else {
+      } else if (fullyResolved) {
         return this.mapping[key1][key2];
       }
     }
-    */
 
     this.lazyRender = !fullyResolved;
 
