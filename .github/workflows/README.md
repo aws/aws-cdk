@@ -82,6 +82,12 @@ Owner: CDK support team
 patch file for downloading.
 Owner: Core CDK team
 
+### AWS Service Spec Update
+
+[spec-update.yml](spec-update.yml): Updates AWS Service Spec and related packages to their latest versions
+and submits an auto-approve PR for it.
+Owner: Core CDK team
+
 ### Issue Reprioritizer
 
 [issue-reprioritization.yml](issue-reprioritization.yml): GitHub action that labels `p2`
