@@ -235,8 +235,8 @@ export class Fn {
    * keys in a two-level map that is declared in the Mappings section.
    * @returns a token represented as a string
    */
-  public static findInMap(mapName: string, topLevelKey: string, secondLevelKey: string): string {
-    return Fn._findInMap(mapName, topLevelKey, secondLevelKey).toString();
+  public static findInMap(mapName: string, topLevelKey: string, secondLevelKey: string, defaultValue?: string): string {
+    return Fn._findInMap(mapName, topLevelKey, secondLevelKey, defaultValue).toString();
   }
 
   /**
@@ -245,8 +245,8 @@ export class Fn {
    *
    * @internal
    */
-  public static _findInMap(mapName: string, topLevelKey: string, secondLevelKey: string): IResolvable {
-    return new FnFindInMap(mapName, topLevelKey, secondLevelKey);
+  public static _findInMap(mapName: string, topLevelKey: string, secondLevelKey: string, defaultValue?: string): IResolvable {
+    return new FnFindInMap(mapName, topLevelKey, secondLevelKey, defaultValue);
   }
 
   /**
@@ -501,8 +501,8 @@ class FnFindInMap extends FnBase {
    * @param topLevelKey The top-level key name. Its value is a list of key-value pairs.
    * @param secondLevelKey The second-level key name, which is set to one of the keys from the list assigned to TopLevelKey.
    */
-  constructor(mapName: string, topLevelKey: any, secondLevelKey: any) {
-    super('Fn::FindInMap', [mapName, topLevelKey, secondLevelKey]);
+  constructor(mapName: string, topLevelKey: any, secondLevelKey: any, defaultValue?: string) {
+    super('Fn::FindInMap', [mapName, topLevelKey, secondLevelKey, defaultValue]);
   }
 }
 

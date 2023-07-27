@@ -67,35 +67,53 @@ export class CfnMapping extends CfnRefElement {
    */
   public findInMap(key1: string, key2: string, defaultValue?: string): string {
     let fullyResolved = false;
+    let notInMap = false;
     if (!Token.isUnresolved(key1)) {
       if (!(key1 in this.mapping)) {
-        if (defaultValue !== undefined) {
-          return defaultValue; // or new CfnMappingEmbedder(this, this.mapping, key1, key2, defaultValue).toString();
-        } else {
+        if (defaultValue === undefined) {
           throw new Error(`Mapping doesn't contain top-level key '${key1}'`);
+        } else {
+          notInMap = true;
         }
-      }
-      if (!Token.isUnresolved(key2)) {
+      } else if (!Token.isUnresolved(key2)) {
         if (!(key2 in this.mapping[key1])) {
-          if (defaultValue !== undefined) {
-            return defaultValue; // or new CfnMappingEmbedder(this, this.mapping, key1, key2, defaultValue).toString();
-          } else {
+          if (defaultValue === undefined) {
             throw new Error(`Mapping doesn't contain second-level key '${key2}'`);
+          } else {
+            notInMap = true;
           }
         }
         fullyResolved = true;
-
       }
     }
     if (fullyResolved) {
       if (this.lazy) {
+        if (notInMap) {
+          if (defaultValue !== undefined) {
+            return defaultValue;
+          } else {
+            return this.mapping[key1][key2];
+          }
+        } else {
+          return 'notInMap';
+        }
+      }
+      return 'lazy';
+    }
+    return 'fullResolve';
+    /*
+    if (fullyResolved && this.lazy) {
+      if (notInMap && defaultValue !== undefined) { // do not think this secondary check is necessary but linter flags it
+        return defaultValue;
+      } else {
         return this.mapping[key1][key2];
       }
-    } else {
-      this.lazyRender = true;
     }
+    */
 
-    return new CfnMappingEmbedder(this, this.mapping, key1, key2).toString();
+    this.lazyRender = !fullyResolved;
+
+    return new CfnMappingEmbedder(this, this.mapping, key1, key2, defaultValue).toString();
   }
 
   /**
@@ -139,12 +157,16 @@ export class CfnMapping extends CfnRefElement {
 class CfnMappingEmbedder implements IResolvable {
   readonly creationStack: string[] = [];
 
-  constructor(private readonly cfnMapping: CfnMapping, readonly mapping: Mapping, private readonly key1: string, private readonly key2: string) { }
+  constructor(private readonly cfnMapping: CfnMapping,
+    readonly mapping: Mapping,
+    private readonly key1: string,
+    private readonly key2: string,
+    private readonly defaultValue?: string) { }
 
   public resolve(context: IResolveContext): string {
     const consumingStack = Stack.of(context.scope);
     if (consumingStack === Stack.of(this.cfnMapping)) {
-      return Fn.findInMap(this.cfnMapping.logicalId, this.key1, this.key2);
+      return Fn.findInMap(this.cfnMapping.logicalId, this.key1, this.key2, this.defaultValue);
     }
 
     const constructScope = consumingStack;
@@ -157,7 +179,7 @@ class CfnMappingEmbedder implements IResolvable {
       });
     }
 
-    return Fn.findInMap(mappingCopy.logicalId, this.key1, this.key2);
+    return Fn.findInMap(mappingCopy.logicalId, this.key1, this.key2, this.defaultValue);
   }
 
   public toString() {
