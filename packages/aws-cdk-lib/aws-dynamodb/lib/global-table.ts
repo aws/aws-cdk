@@ -173,8 +173,8 @@ export class GlobalTable extends GlobalTableBase {
 
   private readonly _replicaTables = new Map<string, ReplicaTableProps>();
 
-  private readonly _globalSecondaryIndexes = new Map<string, CfnGlobalTable.GlobalSecondaryIndexProperty>();
   private readonly globalSecondaryReadCapacitys = new Map<string, Capacity>();
+  private readonly _globalSecondaryIndexes = new Map<string, CfnGlobalTable.GlobalSecondaryIndexProperty>();
   private readonly _localSecondaryIndexes = new Map<string, CfnGlobalTable.LocalSecondaryIndexProperty>();
 
   public constructor(scope: Construct, id: string, props: GlobalTableProps) {
@@ -253,6 +253,10 @@ export class GlobalTable extends GlobalTableBase {
       throw new Error('You cannot provision read and write capacity for a global secondary index on a table with on-demand billing mode');
     }
 
+    if (this.billingMode === BillingMode.PROVISIONED && !props.readCapacity) {
+      throw new Error(`You must specify 'readCapacity' on a global secondary index when the billing mode is ${BillingMode.PROVISIONED}`);
+    }
+
     const globalSecondaryIndex = this.configureGlobalSecondaryIndex(props);
     this._globalSecondaryIndexes.set(props.indexName, globalSecondaryIndex);
   }
@@ -302,7 +306,7 @@ export class GlobalTable extends GlobalTableBase {
     const replicaTables: CfnGlobalTable.ReplicaSpecificationProperty[] = [];
 
     if (!this._replicaTables.has(this.deploymentRegion)) {
-      // add deployment region
+      replicaTables.push(this.configureReplicaTable({ region: this.deploymentRegion }));
     }
 
     for (const replicaTable of this._replicaTables.values()) {
@@ -320,9 +324,7 @@ export class GlobalTable extends GlobalTableBase {
       : this.tableReadProvisioning;
 
     const globalSecondaryIndexes: CfnGlobalTable.ReplicaGlobalSecondaryIndexSpecificationProperty[] = [];
-    for (const indexName in this._globalSecondaryIndexes.keys()) {
-      /* eslint-disable no-console */
-      console.log(indexName);
+    for (const indexName of this._globalSecondaryIndexes.keys()) {
       if (!this._globalSecondaryIndexes.has(indexName)) {
         throw new Error();
       }
@@ -330,6 +332,11 @@ export class GlobalTable extends GlobalTableBase {
       const replicaGsiOptions = replicaTable.globalSecondaryIndexOptions
         ? replicaTable.globalSecondaryIndexOptions[indexName]
         : undefined;
+
+      if (this.billingMode === BillingMode.PAY_PER_REQUEST && replicaGsiOptions?.readCapacity) {
+        throw new Error(`You cannot configure replica global secondary index, ${indexName}, 'readCapacity' when table billing mode is ${BillingMode.PAY_PER_REQUEST}`);
+      }
+
       const replicaGsi = this.configureReplicaGlobalSecondaryIndex({
         indexName,
         contributorInsights: replicaGsiOptions?.contributorInsights ?? this.globalTableOptions.contributorInsights,
@@ -367,15 +374,15 @@ export class GlobalTable extends GlobalTableBase {
       this.globalSecondaryReadCapacitys.set(gsi.indexName, gsi.readCapacity);
     }
 
-    const indexWriteProvisioning = this.billingMode === BillingMode.PROVISIONED && gsi.writeCapacity
+    const writeProvisionedThroughputSettings = gsi.writeCapacity
       ? this.configureWriteProvisioning(gsi.writeCapacity)
-      : undefined;
+      : this.tableWriteProvisioning;
 
     return {
       indexName: gsi.indexName,
       keySchema: indexKeySchema,
       projection: indexProjection,
-      writeProvisionedThroughputSettings: indexWriteProvisioning ?? this.tableWriteProvisioning,
+      writeProvisionedThroughputSettings,
     };
   }
 
@@ -385,7 +392,7 @@ export class GlobalTable extends GlobalTableBase {
       indexName: gsi.indexName,
       readProvisionedThroughputSettings: gsi.readCapacity
         ? this.configureReadProvisioning(gsi.readCapacity)
-        : undefined,
+        : this.tableReadProvisioning,
       contributorInsightsSpecification: gsi.contributorInsights !== undefined
         ? { enabled: gsi.contributorInsights }
         : undefined,
