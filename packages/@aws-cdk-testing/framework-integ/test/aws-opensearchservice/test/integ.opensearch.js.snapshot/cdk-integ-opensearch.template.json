@@ -152,6 +152,18 @@
     },
     "NodeToNodeEncryptionOptions": {
      "Enabled": true
+    },
+    "OffPeakWindowOptions": {
+      "Enabled": true,
+      "OffPeakWindow": {
+        "WindowStartTime": {
+          "Hours": 20,
+          "Minutes": 0
+        }
+      }
+    },
+    "SoftwareUpdateOptions": {
+      "AutoSoftwareUpdateEnabled": true
     }
    },
    "DependsOn": [
@@ -458,6 +470,18 @@
     },
     "NodeToNodeEncryptionOptions": {
      "Enabled": true
+    },
+    "OffPeakWindowOptions": {
+      "Enabled": true,
+      "OffPeakWindow": {
+        "WindowStartTime": {
+          "Hours": 20,
+          "Minutes": 0
+        }
+      }
+    },
+    "SoftwareUpdateOptions": {
+      "AutoSoftwareUpdateEnabled": true
     }
    },
    "DependsOn": [
