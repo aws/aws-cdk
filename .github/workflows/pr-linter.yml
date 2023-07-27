@@ -12,7 +12,7 @@ on:
       - synchronize
       - reopened
   workflow_run:
-    workflows: [PRLinter Trigger]
+    workflows: [PR Linter Trigger]
     types:
       - completed
   status:
