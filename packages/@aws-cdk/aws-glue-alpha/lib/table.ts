@@ -323,7 +323,7 @@ export class Table extends Resource implements ITable {
   /**
    * The tables' storage descriptor properties.
    */
-  public readonly storageDescriptor?: StorageParameter[];
+  public readonly storageParameters?: StorageParameter[];
 
   /**
    * Partition indexes must be created one at a time. To avoid
@@ -347,7 +347,7 @@ export class Table extends Resource implements ITable {
     validateSchema(props.columns, props.partitionKeys);
     this.columns = props.columns;
     this.partitionKeys = props.partitionKeys;
-    this.storageDescriptor = props.storageParameters;
+    this.storageParameters = props.storageParameters;
 
     this.compressed = props.compressed ?? false;
     const { bucket, encryption, encryptionKey } = createBucket(this, props);
