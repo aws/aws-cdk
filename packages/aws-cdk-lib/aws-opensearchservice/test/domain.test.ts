@@ -9,6 +9,7 @@ import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as route53 from '../../aws-route53';
 import { App, Stack, Duration, SecretValue, CfnParameter, Token } from '../../core';
+import * as cxapi from '../../cx-api';
 import { Domain, EngineVersion } from '../lib';
 
 let app: App;
@@ -382,6 +383,37 @@ each([testedOpenSearchVersions]).test('can use tokens in capacity configuration'
       WarmType: {
         Ref: 'warmInstanceType',
       },
+    },
+  });
+});
+
+each([testedOpenSearchVersions]).test('can specify multiAZWithStandbyEnabled in capacity configuration', (engineVersion) => {
+  new Domain(stack, 'Domain', {
+    version: engineVersion,
+    capacity: {
+      multiAzWithStandbyEnabled: true,
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+    ClusterConfig: {
+      MultiAZWithStandbyEnabled: true,
+    },
+  });
+});
+
+each([testedOpenSearchVersions]).test('ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY set multiAZWithStandbyEnabled value', (engineVersion) => {
+  const stackWithFlag = new Stack(app, 'StackWithFlag', {
+    env: { account: '1234', region: 'testregion' },
+  });
+  stackWithFlag.node.setContext(cxapi.ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY, true);
+  new Domain(stackWithFlag, 'Domain', {
+    version: engineVersion,
+  });
+
+  Template.fromStack(stackWithFlag).hasResourceProperties('AWS::OpenSearchService::Domain', {
+    ClusterConfig: {
+      MultiAZWithStandbyEnabled: true,
     },
   });
 });
@@ -1945,6 +1977,113 @@ each(testedOpenSearchVersions).describe('cognito dashboards auth', (engineVersio
         UserPoolId: userPoolId,
       },
     });
+  });
+});
+
+each(testedOpenSearchVersions).describe('offPeakWindow and softwareUpdateOptions', (engineVersion) => {
+  test('with offPeakWindowStart and offPeakWindowEnabled', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      offPeakWindowEnabled: true,
+      offPeakWindowStart: {
+        hours: 10,
+        minutes: 30,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      OffPeakWindowOptions: {
+        Enabled: true,
+        OffPeakWindow: {
+          WindowStartTime: {
+            Hours: 10,
+            Minutes: 30,
+          },
+        },
+      },
+    });
+  });
+
+  test('with offPeakWindowStart only', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      offPeakWindowStart: {
+        hours: 10,
+        minutes: 30,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      OffPeakWindowOptions: {
+        Enabled: true,
+        OffPeakWindow: {
+          WindowStartTime: {
+            Hours: 10,
+            Minutes: 30,
+          },
+        },
+      },
+    });
+  });
+
+  test('with offPeakWindowOptions default start time', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      offPeakWindowEnabled: true,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      OffPeakWindowOptions: {
+        Enabled: true,
+        OffPeakWindow: {
+          WindowStartTime: {
+            Hours: 22,
+            Minutes: 0,
+          },
+        },
+      },
+    });
+  });
+
+  test('with autoSoftwareUpdateEnabled', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      enableAutoSoftwareUpdate: true,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      SoftwareUpdateOptions: {
+        AutoSoftwareUpdateEnabled: true,
+      },
+    });
+  });
+
+  test('with invalid offPeakWindowStart', () => {
+    expect(() => {
+      new Domain(stack, 'Domain1', {
+        version: engineVersion,
+        offPeakWindowEnabled: true,
+        offPeakWindowStart: {
+          hours: 50,
+          minutes: 0,
+        },
+      });
+    }).toThrow(
+      /Hours must be a value between 0 and 23/,
+    );
+
+    expect(() => {
+      new Domain(stack, 'Domain2', {
+        version: engineVersion,
+        offPeakWindowEnabled: true,
+        offPeakWindowStart: {
+          hours: 10,
+          minutes: 90,
+        },
+      });
+    }).toThrow(
+      /Minutes must be a value between 0 and 59/,
+    );
   });
 });
 
