@@ -19,18 +19,6 @@ import {
 } from '../../../core';
 
 /**
- * Properties for creating a Lambda@Edge function
- */
-export interface EdgeFunctionProps extends lambda.FunctionProps {
-  /**
-   * The stack ID of Lambda@Edge function.
-   *
-   * @default - `edge-lambda-stack-${region}`
-   */
-  readonly stackId?: string;
-}
-
-/**
  * Properties for creating a Lambda@Edge function With Nodejs
  */
 export interface EdgeFunctionProps extends lambdaNodejs.NodejsFunctionProps {
@@ -53,7 +41,7 @@ export interface EdgeFunctionProps extends lambdaNodejs.NodejsFunctionProps {
  *
  * @resource AWS::Lambda::Function
  */
-export class EdgeFunction extends Resource implements lambda.IVersion {
+export class EdgeNodejsFunction extends Resource implements lambda.IVersion {
 
   private static readonly EDGE_REGION: string = 'us-east-1';
 
@@ -138,19 +126,19 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     return this.lambda.grantInvokeUrl(identity);
   }
   public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.lambda.metric(metricName, { ...props, region: EdgeFunction.EDGE_REGION });
+    return this.lambda.metric(metricName, { ...props, region: EdgeNodejsFunction.EDGE_REGION });
   }
   public metricDuration(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.lambda.metricDuration({ ...props, region: EdgeFunction.EDGE_REGION });
+    return this.lambda.metricDuration({ ...props, region: EdgeNodejsFunction.EDGE_REGION });
   }
   public metricErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.lambda.metricErrors({ ...props, region: EdgeFunction.EDGE_REGION });
+    return this.lambda.metricErrors({ ...props, region: EdgeNodejsFunction.EDGE_REGION });
   }
   public metricInvocations(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.lambda.metricInvocations({ ...props, region: EdgeFunction.EDGE_REGION });
+    return this.lambda.metricInvocations({ ...props, region: EdgeNodejsFunction.EDGE_REGION });
   }
   public metricThrottles(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.lambda.metricThrottles({ ...props, region: EdgeFunction.EDGE_REGION });
+    return this.lambda.metricThrottles({ ...props, region: EdgeNodejsFunction.EDGE_REGION });
   }
   /** Adds an event source to this function. */
   public addEventSource(source: lambda.IEventSource): void {
@@ -164,8 +152,8 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
   }
 
   /** Create a function in-region */
-  private createInRegionFunction(props: lambda.FunctionProps): FunctionConfig {
-    const edgeFunction = new lambda.Function(this, 'Fn', props);
+  private createInRegionFunction(props: lambdaNodejs.NodejsFunctionProps): FunctionConfig {
+    const edgeFunction = new lambdaNodejs.NodejsFunction(this, 'Fn', props);
     addEdgeLambdaToRoleTrustStatement(edgeFunction.role!);
 
     return { edgeFunction, edgeArn: edgeFunction.currentVersion.edgeArn };
@@ -182,7 +170,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     const parameterName = `/${parameterNamePrefix}/${this.env.region}/${sanitizedPath}`;
     const functionStack = this.edgeStack(props.stackId);
 
-    const edgeFunction = new lambda.Function(functionStack, id, props);
+    const edgeFunction = new lambdaNodejs.NodejsFunction(functionStack, id, props);
     addEdgeLambdaToRoleTrustStatement(edgeFunction.role!);
 
     // Store the current version's ARN to be retrieved by the cross region reader below.
@@ -203,7 +191,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     // must work for multiple EdgeFunctions.
     const parameterArnPrefix = this.stack.formatArn({
       service: 'ssm',
-      region: EdgeFunction.EDGE_REGION,
+      region: EdgeNodejsFunction.EDGE_REGION,
       resource: 'parameter',
       resourceName: parameterNamePrefix + '/*',
     });
@@ -222,7 +210,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
       resourceType: resourceType,
       serviceToken,
       properties: {
-        Region: EdgeFunction.EDGE_REGION,
+        Region: EdgeNodejsFunction.EDGE_REGION,
         ParameterName: parameterName,
         // This is used to determine when the function has changed, to refresh the ARN from the custom resource.
         //
@@ -251,7 +239,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     if (!edgeStack) {
       edgeStack = new Stack(stage, edgeStackId, {
         env: {
-          region: EdgeFunction.EDGE_REGION,
+          region: EdgeNodejsFunction.EDGE_REGION,
           account: Stack.of(this).account,
         },
       });
