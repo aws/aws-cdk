@@ -1,0 +1,12 @@
+{
+  "version": "32.0.0",
+  "testCases": {
+    "cdk-integ-sfn-start-execution-alias/DefaultTest": {
+      "stacks": [
+        "integ-sfn-start-execution-alias"
+      ],
+      "assertionStack": "cdk-integ-sfn-start-execution-alias/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegsfnstartexecutionaliasDefaultTestDeployAssert466C4AD5"
+    }
+  }
+}

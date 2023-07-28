@@ -42,6 +42,15 @@ export interface StepFunctionsStartExecutionProps extends sfn.TaskStateBaseProps
    * @default - false
    */
   readonly associateWithParent?: boolean;
+
+  /**
+   * The Step Functions state machine ARN to start the execution on.
+   * This allows to specify the ARN of a specific state machine version or alias.
+   * If specified, it overrides the ARN of the stateMachine.
+   *
+   * @default - The ARN of stateMachine is used
+   */
+  readonly stateMachineArn?: string;
 }
 
 /**
@@ -60,9 +69,12 @@ export class StepFunctionsStartExecution extends sfn.TaskStateBase {
   protected readonly taskPolicies?: iam.PolicyStatement[];
 
   private readonly integrationPattern: sfn.IntegrationPattern;
+  private readonly stateMachineArn: string;
 
   constructor(scope: Construct, id: string, private readonly props: StepFunctionsStartExecutionProps) {
     super(scope, id, props);
+
+    this.stateMachineArn = props.stateMachineArn ?? props.stateMachine.stateMachineArn;
 
     this.integrationPattern = props.integrationPattern || sfn.IntegrationPattern.REQUEST_RESPONSE;
     validatePatternSupported(this.integrationPattern, StepFunctionsStartExecution.SUPPORTED_INTEGRATION_PATTERNS);
@@ -100,7 +112,7 @@ export class StepFunctionsStartExecution extends sfn.TaskStateBase {
       Resource: `${integrationResourceArn('states', 'startExecution', this.integrationPattern)}${suffix}`,
       Parameters: sfn.FieldUtils.renderObject({
         Input: input,
-        StateMachineArn: this.props.stateMachine.stateMachineArn,
+        StateMachineArn: this.stateMachineArn,
         Name: this.props.name,
       }),
     };
@@ -119,7 +131,7 @@ export class StepFunctionsStartExecution extends sfn.TaskStateBase {
     const policyStatements = [
       new iam.PolicyStatement({
         actions: ['states:StartExecution'],
-        resources: [this.props.stateMachine.stateMachineArn],
+        resources: [this.stateMachineArn],
       }),
     ];
 
@@ -134,7 +146,7 @@ export class StepFunctionsStartExecution extends sfn.TaskStateBase {
               service: 'states',
               resource: 'execution',
               arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-              resourceName: `${stack.splitArn(this.props.stateMachine.stateMachineArn, ArnFormat.COLON_RESOURCE_NAME).resourceName}*`,
+              resourceName: `${stack.splitArn(this.stateMachineArn, ArnFormat.COLON_RESOURCE_NAME).resourceName}*`,
             }),
           ],
         }),

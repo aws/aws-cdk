@@ -267,3 +267,92 @@ test('Execute State Machine - Associate With Parent - Incorrect Input Type', () 
     });
   }).toThrow('Could not enable `associateWithParent` because `input` is taken directly from a JSON path. Use `sfn.TaskInput.fromObject` instead.');
 });
+
+test('Execute State Machine - Uses a specific state machine version', () => {
+  const stateMachineVersion = new sfn.CfnStateMachineVersion(stack, 'MyStateMachineVersion', {
+    stateMachineRevisionId: child.stateMachineRevisionId,
+    stateMachineArn: child.stateMachineArn,
+  });
+
+  const task = new StepFunctionsStartExecution(stack, 'MyExecutionVersion', {
+    stateMachine: child,
+    stateMachineArn: stateMachineVersion.attrArn,
+    input: sfn.TaskInput.fromObject({
+      foo: 'bar',
+    }),
+    name: 'myExecutionVersion',
+  });
+
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::states:startExecution',
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      Input: {
+        foo: 'bar',
+      },
+      Name: 'myExecutionVersion',
+      StateMachineArn: {
+        'Fn::GetAtt': [
+          'MyStateMachineVersion',
+          'Arn',
+        ],
+      },
+    },
+  });
+});
+
+test('Execute State Machine - Uses a specific state machine alias', () => {
+  const stateMachineAlias = new sfn.CfnStateMachineAlias(stack, 'MyStateMachineAlias', {
+    name: 'alias',
+  });
+
+  const task = new StepFunctionsStartExecution(stack, 'MyExecutionAlias', {
+    stateMachine: child,
+    stateMachineArn: stateMachineAlias.attrArn,
+    input: sfn.TaskInput.fromObject({
+      foo: 'bar',
+    }),
+    name: 'myExecutionAlias',
+  });
+
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::states:startExecution',
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      Input: {
+        foo: 'bar',
+      },
+      Name: 'myExecutionAlias',
+      StateMachineArn: {
+        'Fn::GetAtt': [
+          'MyStateMachineAlias',
+          'Arn',
+        ],
+      },
+    },
+  });
+});
