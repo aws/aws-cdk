@@ -1337,7 +1337,49 @@ export interface IntelligentTieringConfiguration {
   readonly deepArchiveAccessTierTime?: Duration;
 }
 
-export interface BucketProps {
+/**
+ * `BucketProps` is a type that can either be a `BucketPropsPublicReadAccess` or `BucketPropsPrivateAccess`.
+ * Depending on the need of the bucket to have public read access or not.
+ * 
+ * If the public read access is needed, `BucketPropsPublicReadAccess` type should be used, and the 
+ * block public access configuration should be supplied as well to ensure that only the necessary 
+ * permissions are exposed.
+ * 
+ * If the public read access is not required, `BucketPropsPrivateAccess` type should be used.
+ */
+export type BucketProps =
+  | BucketPropsPublicReadAccess
+  | BucketPropsPrivateAccess;
+
+/**
+ * The `BucketPropsPublicReadAccess` type is derived from `BucketPropsBase`, and is meant to be used 
+ * for buckets that should allow public read access. Hence, `publicReadAccess` is set to true.
+ * Additionally, `blockPublicAccess` configuration must be supplied to control the level of public 
+ * access that should be blocked, as a security measure.
+ */
+export type BucketPropsPublicReadAccess = Omit<
+  BucketPropsBase,
+  "publicReadAccess" | "blockPublicAccess"
+> & {
+  publicReadAccess: true;
+  blockPublicAccess: BlockPublicAccess;
+};
+
+/**
+ * The `BucketPropsPrivateAccess` type is derived from `BucketPropsBase`, and is meant to be used 
+ * for buckets that should not allow public read access. Hence, `publicReadAccess` is set to false or 
+ * undefined. The `blockPublicAccess` configuration can optionally be supplied to block public 
+ * access at different levels.
+ */
+export type BucketPropsPrivateAccess = Omit<
+  BucketPropsBase,
+  "publicReadAccess" | "blockPublicAccess"
+> & {
+  publicReadAccess?: false;
+  blockPublicAccess?: BlockPublicAccess;
+};
+
+export interface BucketPropsBase {
   /**
    * The kind of server-side encryption to apply to this bucket.
    *
