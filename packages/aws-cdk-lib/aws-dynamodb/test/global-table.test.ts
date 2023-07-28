@@ -1,6 +1,6 @@
 import { Template } from '../../assertions';
 import { CfnDeletionPolicy, RemovalPolicy, Stack } from '../../core';
-import { GlobalTable, AttributeType, TableClass, Billing, Capacity, BillingMode } from '../lib';
+import { GlobalTable, AttributeType, TableClass, Billing, Capacity, BillingMode, ProjectionType } from '../lib';
 
 /* eslint-disable no-console */
 describe('global table configuration', () => {
@@ -36,6 +36,29 @@ describe('global table configuration', () => {
       StreamSpecification: {
         StreamViewType: 'NEW_AND_OLD_IMAGES',
       },
+    });
+  });
+
+  test('with sort key', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+    // WHEN
+    new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      sortKey: { name: 'sk', type: AttributeType.NUMBER },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      AttributeDefinitions: [
+        { AttributeName: 'pk', AttributeType: 'S' },
+        { AttributeName: 'sk', AttributeType: 'N' },
+      ],
+      KeySchema: [
+        { AttributeName: 'pk', KeyType: 'HASH' },
+        { AttributeName: 'sk', KeyType: 'RANGE' },
+      ],
     });
   });
 
@@ -257,6 +280,22 @@ describe('secondary indexes', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      AttributeDefinitions: [
+        {
+          AttributeName: 'pk',
+          AttributeType: 'S',
+        },
+        {
+          AttributeName: 'gsiPk',
+          AttributeType: 'S',
+        },
+      ],
+      KeySchema: [
+        {
+          AttributeName: 'pk',
+          KeyType: 'HASH',
+        },
+      ],
       GlobalSecondaryIndexes: [
         {
           IndexName: 'gsi',
@@ -274,7 +313,6 @@ describe('secondary indexes', () => {
     });
   });
 
-  // pass read to replica
   test('global secondary index with provisioned billing and fixed read capacity', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
@@ -297,6 +335,22 @@ describe('secondary indexes', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      AttributeDefinitions: [
+        {
+          AttributeName: 'pk',
+          AttributeType: 'S',
+        },
+        {
+          AttributeName: 'gsiPk',
+          AttributeType: 'S',
+        },
+      ],
+      KeySchema: [
+        {
+          AttributeName: 'pk',
+          KeyType: 'HASH',
+        },
+      ],
       GlobalSecondaryIndexes: [
         {
           IndexName: 'gsi',
@@ -309,15 +363,33 @@ describe('secondary indexes', () => {
           Projection: {
             ProjectionType: 'ALL',
           },
-          ReadProvisionedThroughputSettings: {
-            ReadCapacityUnits: 15,
+          WriteProvisionedThroughputSettings: {
+            WriteCapacityAutoScalingSettings: {
+              MinCapacity: 1,
+              MaxCapacity: 10,
+              TargetTrackingScalingPolicyConfiguration: {
+                TargetValue: 70,
+              },
+            },
           },
+        },
+      ],
+      Replicas: [
+        {
+          Region: 'us-west-2',
+          GlobalSecondaryIndexes: [
+            {
+              IndexName: 'gsi',
+              ReadProvisionedThroughputSettings: {
+                ReadCapacityUnits: 15,
+              },
+            },
+          ],
         },
       ],
     });
   });
 
-  // pass read to replica
   test('global secondary index with provisioned billing and autoscaled read capacity', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
@@ -340,6 +412,22 @@ describe('secondary indexes', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      AttributeDefinitions: [
+        {
+          AttributeName: 'pk',
+          AttributeType: 'S',
+        },
+        {
+          AttributeName: 'gsiPk',
+          AttributeType: 'S',
+        },
+      ],
+      KeySchema: [
+        {
+          AttributeName: 'pk',
+          KeyType: 'HASH',
+        },
+      ],
       GlobalSecondaryIndexes: [
         {
           IndexName: 'gsi',
@@ -352,9 +440,9 @@ describe('secondary indexes', () => {
           Projection: {
             ProjectionType: 'ALL',
           },
-          ReadProvisionedThroughputSettings: {
-            ReadCapacityAutoScalingSettings: {
-              MinCapacity: 5,
+          WriteProvisionedThroughputSettings: {
+            WriteCapacityAutoScalingSettings: {
+              MinCapacity: 1,
               MaxCapacity: 10,
               TargetTrackingScalingPolicyConfiguration: {
                 TargetValue: 70,
@@ -363,10 +451,29 @@ describe('secondary indexes', () => {
           },
         },
       ],
+      Replicas: [
+        {
+          Region: 'us-west-2',
+          GlobalSecondaryIndexes: [
+            {
+              IndexName: 'gsi',
+              ReadProvisionedThroughputSettings: {
+                ReadCapacityAutoScalingSettings: {
+                  MinCapacity: 5,
+                  MaxCapacity: 10,
+                  TargetTrackingScalingPolicyConfiguration: {
+                    TargetValue: 70,
+                  },
+                },
+              },
+            },
+          ],
+        },
+      ],
     });
   });
 
-  test('with multiple globale secondary indexes', () => {
+  test('global secondary index with project type as INCLUDE', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
 
@@ -375,22 +482,99 @@ describe('secondary indexes', () => {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       globalSecondaryIndexes: [
         {
-          indexName: 'gsi1',
+          indexName: 'gsi',
           partitionKey: { name: 'gsiPk', type: AttributeType.STRING },
-        },
-        {
-          indexName: 'gsi2',
-          partitionKey: { name: 'gsiPk', type: AttributeType.STRING },
-        },
-        {
-          indexName: 'gsi3',
-          partitionKey: { name: 'gsiPk', type: AttributeType.STRING },
+          projectionType: ProjectionType.INCLUDE,
+          nonKeyAttributes: ['nonKey1', 'nonKey2'],
         },
       ],
     });
 
     // THEN
-    console.log(JSON.stringify(Template.fromStack(stack), null, 4));
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      AttributeDefinitions: [
+        {
+          AttributeName: 'pk',
+          AttributeType: 'S',
+        },
+        {
+          AttributeName: 'gsiPk',
+          AttributeType: 'S',
+        },
+      ],
+      KeySchema: [
+        {
+          AttributeName: 'pk',
+          KeyType: 'HASH',
+        },
+      ],
+      GlobalSecondaryIndexes: [
+        {
+          IndexName: 'gsi',
+          KeySchema: [
+            {
+              AttributeName: 'gsiPk',
+              KeyType: 'HASH',
+            },
+          ],
+          Projection: {
+            ProjectionType: 'INCLUDE',
+            NonKeyAttributes: ['nonKey1', 'nonKey2'],
+          },
+        },
+      ],
+    });
+  });
+
+  test('global secondary index with project type as KEYS_ONLY', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+    // WHEN
+    new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      globalSecondaryIndexes: [
+        {
+          indexName: 'gsi',
+          partitionKey: { name: 'gsiPk', type: AttributeType.STRING },
+          projectionType: ProjectionType.KEYS_ONLY,
+        },
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      AttributeDefinitions: [
+        {
+          AttributeName: 'pk',
+          AttributeType: 'S',
+        },
+        {
+          AttributeName: 'gsiPk',
+          AttributeType: 'S',
+        },
+      ],
+      KeySchema: [
+        {
+          AttributeName: 'pk',
+          KeyType: 'HASH',
+        },
+      ],
+      GlobalSecondaryIndexes: [
+        {
+          IndexName: 'gsi',
+          KeySchema: [
+            {
+              AttributeName: 'gsiPk',
+              KeyType: 'HASH',
+            },
+          ],
+          Projection: {
+            ProjectionType: 'KEYS_ONLY',
+          },
+        },
+      ],
+    });
   });
 
   test('throws if read capacity is configured when billing mode is on demand', () => {
@@ -498,6 +682,64 @@ describe('secondary indexes', () => {
         ],
       });
     }).toThrow('Unable to specify gsiPk as N because it was already defined as S');
+  });
+
+  test('throws for global secondary index with INCLUDE projection type without non-key attributes', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+    // WHEN / THEN
+    expect(() => {
+      new GlobalTable(stack, 'GlobalTable', {
+        partitionKey: { name: 'pk', type: AttributeType.STRING },
+        globalSecondaryIndexes: [
+          {
+            indexName: 'gsi',
+            partitionKey: { name: 'gsiPk', type: AttributeType.STRING },
+            projectionType: ProjectionType.INCLUDE,
+          },
+        ],
+      });
+    }).toThrow('Non-key attributes should be specified when using INCLUDE projection type');
+  });
+
+  test('throws for global secondary index with ALL projection type with non-key attributes', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+    // WHEN / THEN
+    expect(() => {
+      new GlobalTable(stack, 'GlobalTable', {
+        partitionKey: { name: 'pk', type: AttributeType.STRING },
+        globalSecondaryIndexes: [
+          {
+            indexName: 'gsi',
+            partitionKey: { name: 'gsiPk', type: AttributeType.STRING },
+            nonKeyAttributes: ['nonKey1', 'nonKey2'],
+          },
+        ],
+      });
+    }).toThrow('Non-key attributes should not be specified when not using INCLUDE projection type');
+  });
+
+  test('throws for global secondary index with KEYS_ONLY projection type with non-key attributes', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+    // WHEN / THEN
+    expect(() => {
+      new GlobalTable(stack, 'GlobalTable', {
+        partitionKey: { name: 'pk', type: AttributeType.STRING },
+        globalSecondaryIndexes: [
+          {
+            indexName: 'gsi',
+            partitionKey: { name: 'gsiPk', type: AttributeType.STRING },
+            projectionType: ProjectionType.KEYS_ONLY,
+            nonKeyAttributes: ['nonKey1', 'nonKey2'],
+          },
+        ],
+      });
+    }).toThrow('Non-key attributes should not be specified when not using INCLUDE projection type');
   });
 });
 

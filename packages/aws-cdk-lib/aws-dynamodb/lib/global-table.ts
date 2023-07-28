@@ -397,38 +397,36 @@ export class GlobalTable extends GlobalTableBase {
   }
 
   private configureReplicaGlobalSecondaryIndexes(options?: { [indexName: string]: ReplicaGlobalSecondaryIndexOptions }) {
-    if (!options) {
-      return undefined;
-    }
-
     const processedGlobalSecondaryIndexes = [];
     const globalSecondaryIndexes: CfnGlobalTable.ReplicaGlobalSecondaryIndexSpecificationProperty[] = [];
-    for (const indexName of Object.keys(options)) {
-      if (!this._globalSecondaryIndexes.has(indexName)) {
-        throw new Error(`Cannot configure global secondary index, ${indexName}, because it is not defined on the global table`);
+    if (options) {
+      for (const indexName of Object.keys(options)) {
+        if (!this._globalSecondaryIndexes.has(indexName)) {
+          throw new Error(`Cannot configure global secondary index, ${indexName}, because it is not defined on the global table`);
+        }
+
+        processedGlobalSecondaryIndexes.push(indexName);
+        const replicaGsiOptions = options[indexName];
+
+        if (this.billingMode === BillingMode.PAY_PER_REQUEST && replicaGsiOptions.readCapacity) {
+          throw new Error(`Cannot configure 'readCapacity' for global seocndary index, ${indexName}, because billing mode is ${BillingMode.PAY_PER_REQUEST}`);
+        }
+
+        const contributorInsights = replicaGsiOptions.contributorInsights ?? this.tableOptions.contributorInsights;
+        const readCapacity = replicaGsiOptions.readCapacity ?? this.globalSecondaryIndexReadCapacitys.get(indexName);
+
+        const readProvisionedThroughputSettings = readCapacity
+          ? this.configureReadProvisioning(readCapacity)
+          : undefined;
+
+        globalSecondaryIndexes.push({
+          indexName,
+          readProvisionedThroughputSettings,
+          contributorInsightsSpecification: contributorInsights !== undefined
+            ? { enabled: contributorInsights }
+            : undefined,
+        });
       }
-
-      processedGlobalSecondaryIndexes.push(indexName);
-      const replicaGsiOptions = options[indexName];
-
-      if (this.billingMode === BillingMode.PAY_PER_REQUEST && replicaGsiOptions.readCapacity) {
-        throw new Error(`Cannot configure 'readCapacity' for global seocndary index, ${indexName}, because billing mode is ${BillingMode.PAY_PER_REQUEST}`);
-      }
-
-      const contributorInsights = replicaGsiOptions.contributorInsights ?? this.tableOptions.contributorInsights;
-      const readCapacity = replicaGsiOptions.readCapacity ?? this.globalSecondaryIndexReadCapacitys.get(indexName);
-
-      const readProvisionedThroughputSettings = readCapacity
-        ? this.configureReadProvisioning(readCapacity)
-        : undefined;
-
-      globalSecondaryIndexes.push({
-        indexName,
-        readProvisionedThroughputSettings,
-        contributorInsightsSpecification: contributorInsights !== undefined
-          ? { enabled: contributorInsights }
-          : undefined,
-      });
     }
 
     // each gsi needs to be specified on replicas for provisioned billing
