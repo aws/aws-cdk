@@ -349,12 +349,16 @@ describe('defaultValue included', () => {
     it('creates CfnMapping if top level key cannot be resolved', () => {
       const retrievedValue = mapping.findInMap(Aws.REGION, 'SecondLevelKey1', defValue);
 
-      expect(stack.resolve(retrievedValue)).toStrictEqual({ 'Fn::FindInMap': ['LazyMapping', { Ref: 'AWS::Region' }, 'SecondLevelKey1', { DefaultValue: defValue }] }); // should I use string or variable here? variable works
-      expect(toCloudFormation(stack)).toStrictEqual({
+      expect(stack.resolve(retrievedValue)).toStrictEqual({ 'Fn::FindInMap': ['LazyMapping', { Ref: 'AWS::Region' }, 'SecondLevelKey1', { DefaultValue: defValue }] });
+      expect(toCloudFormation(stack)).toEqual({
         Mappings: {
           LazyMapping: backing,
         },
+        Transform: 'AWS::LanguageExtensions',
       });
+      expect(stack.templateOptions.transforms).toEqual(expect.arrayContaining([
+        'AWS::LanguageExtensions',
+      ]));
     });
 
     it('creates CfnMapping if second level key cannot be resolved', () => {
@@ -365,7 +369,11 @@ describe('defaultValue included', () => {
         Mappings: {
           LazyMapping: backing,
         },
+        Transform: 'AWS::LanguageExtensions',
       });
+      expect(stack.templateOptions.transforms).toEqual(expect.arrayContaining([
+        'AWS::LanguageExtensions',
+      ]));
     });
 
     it('returns default value if keys can be resolved but are not found in mapping', () => {
@@ -376,6 +384,25 @@ describe('defaultValue included', () => {
       expect(stack.resolve(retrievedValue2)).toStrictEqual('foo');
 
       expect(toCloudFormation(stack)).toStrictEqual({});
+    });
+
+    it('handles multiple unresolved calls', () => {
+      const retrievedValue1 = mapping.findInMap(Aws.REGION, 'SecondLevelKey1', defValue);
+      const retrievedValue2 = mapping.findInMap('TopLevelKey1', Aws.REGION, defValue);
+
+      expect(stack.resolve(retrievedValue1)).toStrictEqual({ 'Fn::FindInMap': ['LazyMapping', { Ref: 'AWS::Region' }, 'SecondLevelKey1', { DefaultValue: defValue }] });
+      expect(stack.resolve(retrievedValue2)).toStrictEqual({ 'Fn::FindInMap': ['LazyMapping', 'TopLevelKey1', { Ref: 'AWS::Region' }, { DefaultValue: defValue }] });
+
+      expect(toCloudFormation(stack)).toStrictEqual({
+        Mappings: {
+          LazyMapping: backing,
+        },
+        Transform: expect.arrayContaining(['AWS::LanguageExtensions']),
+      });
+
+      expect(stack.templateOptions.transforms).toEqual(expect.arrayContaining([
+        'AWS::LanguageExtensions',
+      ]));
     });
   });
 
@@ -400,11 +427,16 @@ describe('defaultValue included', () => {
     });
 
     it('does not emit warning if a findInMap could not resolve immediately', () => {
-      mapping.findInMap('TopLevelKey1', Aws.REGION, defValue);
+      const retrievedValue = mapping.findInMap('TopLevelKey1', Aws.REGION, defValue);
 
       const assembly = app.synth();
 
       expect(getInfoAnnotations(assembly)).toStrictEqual([]);
+
+      stack.resolve(retrievedValue);
+      expect(stack.templateOptions.transforms).toEqual(expect.arrayContaining([
+        'AWS::LanguageExtensions',
+      ]));
     });
 
     it('creates CfnMapping if top level key cannot be resolved', () => {
@@ -415,7 +447,11 @@ describe('defaultValue included', () => {
         Mappings: {
           LazyMapping: backing,
         },
+        Transform: 'AWS::LanguageExtensions',
       });
+      expect(stack.templateOptions.transforms).toEqual(expect.arrayContaining([
+        'AWS::LanguageExtensions',
+      ]));
     });
 
     it('creates CfnMapping if second level key cannot be resolved', () => {
@@ -426,7 +462,11 @@ describe('defaultValue included', () => {
         Mappings: {
           LazyMapping: backing,
         },
+        Transform: 'AWS::LanguageExtensions',
       });
+      expect(stack.templateOptions.transforms).toEqual(expect.arrayContaining([
+        'AWS::LanguageExtensions',
+      ]));
     });
   });
 });
