@@ -13,7 +13,7 @@ These test cases need to add DNS records that are then retrieved via the public 
 
 If you haven't got one ready, see the [Route 53 guide](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/CreatingHostedZone.html) to manually create a hosted zone.
 
-AWS CDK core team members, please check our team internal docs for additional guidance.
+AWS CDK core team members, please check our team internal docs for guidance on how to configure domains for testing.
 
 #### How to correctly run these tests
 
