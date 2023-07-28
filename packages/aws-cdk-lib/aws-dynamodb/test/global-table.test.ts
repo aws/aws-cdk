@@ -197,7 +197,7 @@ describe('global table configuration', () => {
         {
           Region: 'us-west-2',
           ReadProvisionedThroughputSettings: {
-            ReadCapacityUnit: 10,
+            ReadCapacityUnits: 10,
           },
         },
       ],
