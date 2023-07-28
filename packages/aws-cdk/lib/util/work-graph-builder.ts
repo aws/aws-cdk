@@ -19,7 +19,6 @@ export class WorkGraphBuilder {
     'stack': 5,
   };
   private readonly graph = new WorkGraph();
-  private readonly assetBuildNodes = new Map<string, AssetBuildNode>;
 
   constructor(private readonly prebuildAssets: boolean, private readonly idPrefix = '') { }
 
@@ -27,7 +26,7 @@ export class WorkGraphBuilder {
     this.graph.addNodes({
       type: 'stack',
       id: `${this.idPrefix}${artifact.id}`,
-      dependencies: new Set(this.getDepIds(artifact.dependencies)),
+      dependencies: new Set(this.getDepIds(onlyStacks(artifact.dependencies))),
       stack: artifact,
       deploymentState: DeploymentState.PENDING,
       priority: WorkGraphBuilder.PRIORITIES.stack,
@@ -39,19 +38,23 @@ export class WorkGraphBuilder {
    */
   // eslint-disable-next-line max-len
   private addAsset(parentStack: cxapi.CloudFormationStackArtifact, assetArtifact: cxapi.AssetManifestArtifact, assetManifest: AssetManifest, asset: IManifestEntry) {
-    const buildId = `${this.idPrefix}${asset.id}-build`;
+    // Just the artifact identifier
+    const assetId = asset.id.assetId;
+    // Unique per destination where the artifact needs to go
+    const assetDestinationId = `${asset.id}`;
 
-    // Add the build node, but only one per "source"
-    // The genericSource includes a relative path we could make absolute to do more effective deduplication of build steps. Not doing that right now.
-    const assetBuildNodeKey = JSON.stringify(asset.genericSource);
-    if (!this.assetBuildNodes.has(assetBuildNodeKey)) {
+    const buildId = `${this.idPrefix}${assetId}-build`;
+    const publishNodeId = `${this.idPrefix}${assetDestinationId}-publish`;
+
+    // Build node only gets added once because they are all the same
+    if (!this.graph.tryGetNode(buildId)) {
       const node: AssetBuildNode = {
         type: 'asset-build',
         id: buildId,
         dependencies: new Set([
           ...this.getDepIds(assetArtifact.dependencies),
-          // If we disable prebuild, then assets inherit dependencies from their parent stack
-          ...!this.prebuildAssets ? this.getDepIds(parentStack.dependencies) : [],
+          // If we disable prebuild, then assets inherit (stack) dependencies from their parent stack
+          ...!this.prebuildAssets ? this.getDepIds(onlyStacks(parentStack.dependencies)) : [],
         ]),
         parentStack,
         assetManifestArtifact: assetArtifact,
@@ -60,30 +63,37 @@ export class WorkGraphBuilder {
         deploymentState: DeploymentState.PENDING,
         priority: WorkGraphBuilder.PRIORITIES['asset-build'],
       };
-      this.assetBuildNodes.set(assetBuildNodeKey, node);
       this.graph.addNodes(node);
     }
 
-    // Always add the publish
-    const publishNodeId = `${this.idPrefix}${asset.id}-publish`;
-    this.graph.addNodes({
-      type: 'asset-publish',
-      id: publishNodeId,
-      dependencies: new Set([
-        buildId,
-        // The asset publish step also depends on the stacks that the parent depends on.
-        // This is purely cosmetic: if we don't do this, the progress printing of asset publishing
-        // is going to interfere with the progress bar of the stack deployment. We could remove this
-        // for overall faster deployments if we ever have a better method of progress displaying.
-        ...this.getDepIds(parentStack.dependencies),
-      ]),
-      parentStack,
-      assetManifestArtifact: assetArtifact,
-      assetManifest,
-      asset,
-      deploymentState: DeploymentState.PENDING,
-      priority: WorkGraphBuilder.PRIORITIES['asset-publish'],
-    });
+    const publishNode = this.graph.tryGetNode(publishNodeId);
+    if (!publishNode) {
+      this.graph.addNodes({
+        type: 'asset-publish',
+        id: publishNodeId,
+        dependencies: new Set([
+          buildId,
+        ]),
+        parentStack,
+        assetManifestArtifact: assetArtifact,
+        assetManifest,
+        asset,
+        deploymentState: DeploymentState.PENDING,
+        priority: WorkGraphBuilder.PRIORITIES['asset-publish'],
+      });
+    }
+
+    for (const inheritedDep of this.getDepIds(onlyStacks(parentStack.dependencies))) {
+      // The asset publish step also depends on the stacks that the parent depends on.
+      // This is purely cosmetic: if we don't do this, the progress printing of asset publishing
+      // is going to interfere with the progress bar of the stack deployment. We could remove this
+      // for overall faster deployments if we ever have a better method of progress displaying.
+      // Note: this may introduce a cycle if one of the parent's dependencies is another stack that
+      // depends on this asset. To workaround this we remove these cycles once all nodes have
+      // been added to the graph.
+      this.graph.addDependency(publishNodeId, inheritedDep);
+    }
+
     // This will work whether the stack node has been added yet or not
     this.graph.addDependency(`${this.idPrefix}${parentStack.id}`, publishNodeId);
   }
@@ -114,6 +124,10 @@ export class WorkGraphBuilder {
     }
 
     this.graph.removeUnavailableDependencies();
+
+    // Remove any potentially introduced cycles between asset publishing and the stacks that depend on them.
+    this.removeStackPublishCycles();
+
     return this.graph;
   }
 
@@ -129,6 +143,21 @@ export class WorkGraphBuilder {
     }
     return ids;
   }
+
+  /**
+   * We may have accidentally introduced cycles in an attempt to make the messages printed to the
+   * console not interfere with each other too much. Remove them again.
+   */
+  private removeStackPublishCycles() {
+    const publishSteps = this.graph.nodesOfType('asset-publish');
+    for (const publishStep of publishSteps) {
+      for (const dep of publishStep.dependencies) {
+        if (this.graph.reachable(dep, publishStep.id)) {
+          publishStep.dependencies.delete(dep);
+        }
+      }
+    }
+  }
 }
 
 function stacksFromAssets(artifacts: cxapi.CloudArtifact[]) {
@@ -141,4 +170,8 @@ function stacksFromAssets(artifacts: cxapi.CloudArtifact[]) {
   }
 
   return ret;
+}
+
+function onlyStacks(artifacts: cxapi.CloudArtifact[]) {
+  return artifacts.filter(cxapi.CloudFormationStackArtifact.isCloudFormationStackArtifact);
 }

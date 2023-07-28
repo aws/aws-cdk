@@ -203,7 +203,7 @@ export class Method extends Resource {
       authorizer._attachToApi(this.api);
     }
 
-    this.methodResponses = options.methodResponses ?? [];
+    this.methodResponses = options.methodResponses ?? defaultMethodOptions.methodResponses ?? [];
 
     const integration = props.integration ?? this.resource.defaultIntegration ?? new MockIntegration();
     const bindResult = integration.bind(this);
@@ -213,7 +213,7 @@ export class Method extends Resource {
       restApiId: this.api.restApiId,
       httpMethod: this.httpMethod,
       operationName: options.operationName || defaultMethodOptions.operationName,
-      apiKeyRequired: options.apiKeyRequired || defaultMethodOptions.apiKeyRequired,
+      apiKeyRequired: options.apiKeyRequired ?? defaultMethodOptions.apiKeyRequired,
       authorizationType,
       authorizerId,
       requestParameters: options.requestParameters || defaultMethodOptions.requestParameters,

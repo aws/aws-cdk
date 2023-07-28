@@ -142,6 +142,14 @@ export class Runtime {
   });
 
   /**
+   * The Python 3.11 runtime (python3.11)
+   */
+  public static readonly PYTHON_3_11 = new Runtime('python3.11', RuntimeFamily.PYTHON, {
+    supportsInlineCode: true,
+    supportsCodeGuruProfiling: true,
+  });
+
+  /**
    * The Java 8 runtime (java8)
    */
   public static readonly JAVA_8 = new Runtime('java8', RuntimeFamily.JAVA, {
@@ -213,6 +221,11 @@ export class Runtime {
    * The Ruby 2.7 runtime (ruby2.7)
    */
   public static readonly RUBY_2_7 = new Runtime('ruby2.7', RuntimeFamily.RUBY);
+
+  /**
+   * The Ruby 3.2 runtime (ruby3.2)
+   */
+  public static readonly RUBY_3_2 = new Runtime('ruby3.2', RuntimeFamily.RUBY);
 
   /**
    * The custom provided runtime (provided)

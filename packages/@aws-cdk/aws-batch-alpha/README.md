@@ -204,6 +204,22 @@ new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2ComputeEnv', {
 });
 ```
 
+### Tagging Instances
+
+You can tag any instances launched by your managed EC2 ComputeEnvironments by using the CDK `Tags` API:
+
+```ts
+import { Tags } from 'aws-cdk-lib';
+
+declare const vpc: ec2.IVpc;
+
+const tagCE = new batch.ManagedEc2EcsComputeEnvironment(this, 'CEThatMakesTaggedInstnaces', {
+  vpc,
+});
+
+Tags.of(tagCE).add('super', 'salamander');
+```
+
 Unmanaged `ComputeEnvironment`s do not support `maxvCpus` or `minvCpus` because you must provision and manage the instances yourself;
 that is, Batch will not scale them up and down as needed.
 
@@ -477,6 +493,29 @@ jobDefn.container.addVolume(batch.EcsVolume.efs({
   fileSystem: myFileSystem,
   containerPath: '/Volumes/myVolume',
 }));
+```
+
+### Secrets
+
+You can expose SecretsManager Secret ARNs or SSM Parameters to your container as environment variables.
+The following example defines the `MY_SECRET_ENV_VAR` environment variable that contains the
+ARN of the Secret defined by `mySecret`:
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+
+declare const mySecret: secretsmanager.ISecret;
+
+const jobDefn = new batch.EcsJobDefinition(this, 'JobDefn', {
+  container: new batch.EcsEc2ContainerDefinition(this, 'containerDefn', {
+    image: ecs.ContainerImage.fromRegistry('public.ecr.aws/amazonlinux/amazonlinux:latest'),
+    memory: cdk.Size.mebibytes(2048),
+    cpu: 256,
+    secrets: {
+      MY_SECRET_ENV_VAR: batch.Secret.fromSecretsManager(mySecret),
+    }
+  }),
+});
 ```
 
 ### Running Kubernetes Workflows

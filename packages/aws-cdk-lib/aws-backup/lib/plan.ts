@@ -192,6 +192,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
       enableContinuousBackup: rule.props.enableContinuousBackup,
       targetBackupVault: vault.backupVaultName,
       copyActions: rule.props.copyActions?.map(this.planCopyActions),
+      recoveryPointTags: rule.props.recoveryPointTags,
     });
   }
 

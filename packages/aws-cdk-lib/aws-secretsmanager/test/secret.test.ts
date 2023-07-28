@@ -1357,3 +1357,36 @@ describe('secretObjectValue', () => {
     });
   });
 });
+
+test('cross-environment grant with direct object reference', () => {
+  // GIVEN
+  const producerStack = new cdk.Stack(app, 'ProducerStack', { env: { region: 'foo', account: '1111111111' } });
+  const consumerStack = new cdk.Stack(app, 'ConsumerStack', { env: { region: 'bar', account: '1111111111' } });
+  const secret = new secretsmanager.Secret(producerStack, 'Secret', { secretName: 'MySecret' });
+  const role = new iam.Role(consumerStack, 'Role', { assumedBy: new iam.AccountRootPrincipal() });
+
+  // WHEN
+  secret.grantRead(role);
+
+  // THEN
+  Template.fromStack(consumerStack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Version: '2012-10-17',
+      Statement: [{
+        Action: [
+          'secretsmanager:GetSecretValue',
+          'secretsmanager:DescribeSecret',
+        ],
+        Effect: 'Allow',
+        Resource: {
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':secretsmanager:foo:1111111111:secret:MySecret-??????',
+          ]],
+        },
+      }],
+    },
+  });
+
+});

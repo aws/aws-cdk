@@ -2,90 +2,125 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from 'aws-cdk-lib/custom-resources';
+import { Construct } from 'constructs';
+
+interface AwsCdkSdkJsStackProps {
+  readonly runtime?: lambda.Runtime;
+}
+
+class AwsCdkSdkJsStack extends cdk.Stack {
+  constructor(scope: Construct, id: string, props?: AwsCdkSdkJsStackProps) {
+    super(scope, id);
+    const topic = new sns.Topic(this, 'Topic');
+
+    const snsPublish = new AwsCustomResource(this, 'Publish', {
+      resourceType: 'Custom::SNSPublisher',
+      onUpdate: {
+        service: 'SNS',
+        action: 'publish',
+        parameters: {
+          Message: 'hello',
+          TopicArn: topic.topicArn,
+        },
+        physicalResourceId: PhysicalResourceId.of(topic.topicArn),
+      },
+      policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+    });
+
+    const listTopics = new AwsCustomResource(this, 'ListTopics', {
+      onUpdate: {
+        service: 'SNS',
+        action: 'listTopics',
+        physicalResourceId: PhysicalResourceId.fromResponse('Topics.0.TopicArn'),
+      },
+      policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+    });
+    listTopics.node.addDependency(topic);
+
+    const ssmParameter = new ssm.StringParameter(this, 'Utf8Parameter', {
+      stringValue: 'ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ!"#¤%&/()=?`´^*+~_-.,:;<>|',
+    });
+    const getParameter = new AwsCustomResource(this, 'GetParameter', {
+      resourceType: 'Custom::SSMParameter',
+      onUpdate: {
+        service: 'SSM',
+        action: 'getParameter',
+        parameters: {
+          Name: ssmParameter.parameterName,
+          WithDecryption: true,
+        },
+        physicalResourceId: PhysicalResourceId.fromResponse('Parameter.ARN'),
+      },
+      policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+    });
+
+    const customRole = new iam.Role(this, 'CustomRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+    customRole.addToPolicy(
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        resources: ['*'],
+        actions: [
+          'ssm:*',
+        ],
+      }),
+    );
+    const getParameterNoPolicy = new AwsCustomResource(this, 'GetParameterNoPolicy', {
+      resourceType: 'Custom::SSMParameter',
+      onUpdate: {
+        service: 'SSM',
+        action: 'getParameter',
+        parameters: {
+          Name: ssmParameter.parameterName,
+          WithDecryption: true,
+        },
+        physicalResourceId: PhysicalResourceId.fromResponse('Parameter.ARN'),
+      },
+      role: customRole,
+    });
+
+    new AwsCustomResource(this, 'DescribeCluster', {
+      resourceType: 'Custom::EKSClusterDescription',
+      onUpdate: {
+        service: 'EKS',
+        action: 'describeCluster',
+        parameters: {
+          name: 'fake-cluster',
+        },
+        physicalResourceId: PhysicalResourceId.of('fake-cluster'),
+        ignoreErrorCodesMatching: 'ResourceNotFoundException',
+      },
+      policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+    });
+
+    new cdk.CfnOutput(this, 'MessageId', { value: snsPublish.getResponseField('MessageId') });
+    new cdk.CfnOutput(this, 'TopicArn', { value: listTopics.getResponseField('Topics.0.TopicArn') });
+    new cdk.CfnOutput(this, 'ParameterValue', { value: getParameter.getResponseField('Parameter.Value') });
+    new cdk.CfnOutput(this, 'ParameterValueNoPolicy', { value: getParameterNoPolicy.getResponseField('Parameter.Value') });
+
+    if (props?.runtime) {
+      const awsCustomResourceProviderId ='AWS679f53fac002430cb0da5b7982bd2287';
+      const provider = this.node.findChild(awsCustomResourceProviderId).node.defaultChild as lambda.CfnFunction;
+      provider.runtime = props.runtime.name;
+    }
+  }
+}
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'aws-cdk-sdk-js');
-
-const topic = new sns.Topic(stack, 'Topic');
-
-const snsPublish = new AwsCustomResource(stack, 'Publish', {
-  resourceType: 'Custom::SNSPublisher',
-  onUpdate: {
-    service: 'SNS',
-    action: 'publish',
-    parameters: {
-      Message: 'hello',
-      TopicArn: topic.topicArn,
-    },
-    physicalResourceId: PhysicalResourceId.of(topic.topicArn),
-  },
-  policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
-});
-
-const listTopics = new AwsCustomResource(stack, 'ListTopics', {
-  onUpdate: {
-    service: 'SNS',
-    action: 'listTopics',
-    physicalResourceId: PhysicalResourceId.fromResponse('Topics.0.TopicArn'),
-  },
-  policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
-});
-listTopics.node.addDependency(topic);
-
-const ssmParameter = new ssm.StringParameter(stack, 'Utf8Parameter', {
-  stringValue: 'ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ!"#¤%&/()=?`´^*+~_-.,:;<>|',
-});
-const getParameter = new AwsCustomResource(stack, 'GetParameter', {
-  resourceType: 'Custom::SSMParameter',
-  onUpdate: {
-    service: 'SSM',
-    action: 'getParameter',
-    parameters: {
-      Name: ssmParameter.parameterName,
-      WithDecryption: true,
-    },
-    physicalResourceId: PhysicalResourceId.fromResponse('Parameter.ARN'),
-  },
-  policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
-});
-
-const customRole = new iam.Role(stack, 'CustomRole', {
-  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-});
-customRole.addToPolicy(
-  new iam.PolicyStatement({
-    effect: iam.Effect.ALLOW,
-    resources: ['*'],
-    actions: [
-      'ssm:*',
-    ],
-  }),
-);
-const getParameterNoPolicy = new AwsCustomResource(stack, 'GetParameterNoPolicy', {
-  resourceType: 'Custom::SSMParameter',
-  onUpdate: {
-    service: 'SSM',
-    action: 'getParameter',
-    parameters: {
-      Name: ssmParameter.parameterName,
-      WithDecryption: true,
-    },
-    physicalResourceId: PhysicalResourceId.fromResponse('Parameter.ARN'),
-  },
-  role: customRole,
-});
-
-new cdk.CfnOutput(stack, 'MessageId', { value: snsPublish.getResponseField('MessageId') });
-new cdk.CfnOutput(stack, 'TopicArn', { value: listTopics.getResponseField('Topics.0.TopicArn') });
-new cdk.CfnOutput(stack, 'ParameterValue', { value: getParameter.getResponseField('Parameter.Value') });
-new cdk.CfnOutput(stack, 'ParameterValueNoPolicy', { value: getParameterNoPolicy.getResponseField('Parameter.Value') });
-
 new integ.IntegTest(app, 'AwsCustomResourceTest', {
-  testCases: [stack],
+  testCases: [
+    new AwsCdkSdkJsStack(app, 'aws-cdk-sdk-js'),
+    new AwsCdkSdkJsStack(app, 'aws-cdk-sdk-js-v3', {
+      runtime: lambda.Runtime.NODEJS_18_X,
+    }),
+  ],
+  diffAssets: true,
 });
 
 app.synth();

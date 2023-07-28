@@ -1,0 +1,14 @@
+{
+  "version": "32.0.0",
+  "testCases": {
+    "LambdaModules/DefaultTest": {
+      "stacks": [
+        "cdk-integ-lambda-nodejs-modules-mts",
+        "cdk-integ-lambda-nodejs-modules-cts",
+        "cdk-integ-lambda-nodejs-modules-cjs"
+      ],
+      "assertionStack": "LambdaModules/DefaultTest/DeployAssert",
+      "assertionStackName": "LambdaModulesDefaultTestDeployAssert7E536B97"
+    }
+  }
+}

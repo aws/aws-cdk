@@ -142,7 +142,7 @@ describe('lambda-insights', () => {
     const stack = new cdk.Stack();
     new lambda.DockerImageFunction(stack, 'MyFunction', {
       code: lambda.DockerImageCode.fromEcr(ecr.Repository.fromRepositoryArn(stack, 'MyRepo',
-        'arn:aws:ecr:us-east-1:0123456789:repository/MyRepo')),
+        'arn:aws:ecr:us-east-1:123456789012:repository/MyRepo')),
       insightsVersion: lambda.LambdaInsightsVersion.VERSION_1_0_98_0,
     });
 

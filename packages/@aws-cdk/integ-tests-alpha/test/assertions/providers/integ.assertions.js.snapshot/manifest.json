@@ -1,5 +1,5 @@
 {
-  "version": "30.1.0",
+  "version": "32.0.0",
   "artifacts": {
     "Assertions.assets": {
       "type": "cdk:asset-manifest",
@@ -76,7 +76,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d368a027f6944d4ebf8f88e67236867c5b721d43e9e9cb1d4dcb16106dceff3d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2ef86b8cd519122b8b6ca4bb7cad1dd433d4750651d4bbf50ce5e52b44d6a361.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -93,16 +93,16 @@
         "AssertionsTestDefaultTestDeployAssertDC0672BB.assets"
       ],
       "metadata": {
-        "/AssertionsTest/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter/Default/Default": [
+        "/AssertionsTest/DefaultTest/DeployAssert/AwsApiCallSSMgetParametere2d1ba6ca5f8b296a8dfc6b4036a90f2/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSSMgetParameter"
+            "data": "AwsApiCallSSMgetParametere2d1ba6ca5f8b296a8dfc6b4036a90f2"
           }
         ],
-        "/AssertionsTest/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter/AssertionResults": [
+        "/AssertionsTest/DefaultTest/DeployAssert/AwsApiCallSSMgetParametere2d1ba6ca5f8b296a8dfc6b4036a90f2/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallSSMgetParameter"
+            "data": "AssertionResultsAwsApiCallSSMgetParametere2d1ba6ca5f8b296a8dfc6b4036a90f2"
           }
         ],
         "/AssertionsTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [

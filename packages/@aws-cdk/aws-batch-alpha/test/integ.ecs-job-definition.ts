@@ -2,11 +2,13 @@ import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import { ContainerImage, FargatePlatformVersion } from 'aws-cdk-lib/aws-ecs';
 import * as efs from 'aws-cdk-lib/aws-efs';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
+import * as ssm from 'aws-cdk-lib/aws-ssm';
 import { App, Duration, Size, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as batch from '../lib';
 import { DockerImageAsset } from 'aws-cdk-lib/aws-ecr-assets';
 import * as path from 'path';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 
 const app = new App();
 const stack = new Stack(app, 'stack');
@@ -40,6 +42,14 @@ new batch.EcsJobDefinition(stack, 'ECSJobDefn', {
       name: batch.UlimitName.CORE,
       softLimit: 10,
     }],
+    secrets: {
+      MY_SECRET_ENV_VAR: batch.Secret.fromSecretsManager(new secretsmanager.Secret(stack, 'mySecret')),
+      ANOTHER_ONE: batch.Secret.fromSecretsManagerVersion(new secretsmanager.Secret(stack, 'anotherSecret'), {
+        versionId: 'foo',
+        versionStage: 'bar',
+      }),
+      SSM_TIME: batch.Secret.fromSsmParameter(new ssm.StringParameter(stack, 'ssm', { stringValue: 'myString' })),
+    },
   }),
 });
 
@@ -48,6 +58,7 @@ new batch.EcsJobDefinition(stack, 'ECSFargateJobDefn', {
     image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
     cpu: 16,
     memory: Size.mebibytes(32768),
+    ephemeralStorageSize: Size.gibibytes(100),
     fargatePlatformVersion: FargatePlatformVersion.LATEST,
   }),
   jobDefinitionName: 'foofoo',

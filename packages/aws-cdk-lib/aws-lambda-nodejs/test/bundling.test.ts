@@ -233,7 +233,7 @@ test('esbuild bundling with esbuild options', () => {
           defineInstructions,
           '--log-level=silent --keep-names --tsconfig=/asset-input/lib/custom-tsconfig.ts',
           '--metafile=/asset-output/index.meta.json --banner:js="/* comments */" --footer:js="/* comments */"',
-          '--charset=utf8 --main-fields=module,main --inject:./my-shim.js',
+          '--main-fields=module,main --inject:./my-shim.js',
           '--log-limit="0" --resolve-extensions=".ts,.js" --splitting --keep-names',
         ].join(' '),
       ],
@@ -241,7 +241,7 @@ test('esbuild bundling with esbuild options', () => {
   });
 
   // Make sure that the define instructions are working as expected with the esbuild CLI
-  const bundleProcess = util.exec('bash', ['-c', `npx esbuild --bundle ${`${__dirname}/integ-handlers/define.ts`} ${defineInstructions}`]);
+  const bundleProcess = util.exec('bash', ['-c', `npx esbuild --bundle ${`${__dirname}/handlers/define.ts`} ${defineInstructions}`]);
   expect(bundleProcess.stdout.toString()).toMatchSnapshot();
 });
 
@@ -432,7 +432,7 @@ test('Detects pnpm-lock.yaml', () => {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: expect.arrayContaining([
-        expect.stringMatching(/echo '' > "\/asset-output\/pnpm-workspace.yaml\".+pnpm-lock\.yaml.+pnpm install --config.node-linker=hoisted --config.package-import-method=clone-or-copy --no-prefer-frozen-lockfile && rm "\/asset-output\/node_modules\/.modules.yaml"/),
+        expect.stringMatching(/echo '' > "\/asset-output\/pnpm-workspace.yaml\".+pnpm-lock\.yaml.+pnpm install --config.node-linker=hoisted --config.package-import-method=clone-or-copy --no-prefer-frozen-lockfile && rm -f "\/asset-output\/node_modules\/.modules.yaml"/),
       ]),
     }),
   });
