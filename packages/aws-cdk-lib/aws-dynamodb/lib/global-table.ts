@@ -62,7 +62,6 @@ export interface GlobalSecondaryIndexPropsV2 extends SchemaOptions, SecondaryInd
  * Options to configure a global secondary index on a per-replica basis
  */
 export interface ReplicaGlobalSecondaryIndexOptions {
-  readonly indexName: string;
   readonly contributorInsights?: boolean;
   readonly readCapacity?: Capacity;
 }
@@ -245,8 +244,8 @@ export class GlobalTable extends GlobalTableBase {
       keySchema: this.keySchema,
       attributeDefinitions: Lazy.any({ produce: () => this.attributeDefinitions }),
       replicas: Lazy.any({ produce: () => this.replicaTables }),
-      localSecondaryIndexes: Lazy.any({ produce: () => Array.from(this.localSecondaryIndexes.values()) }),
-      globalSecondaryIndexes: Lazy.any({ produce: () => Array.from(this.globalSecondaryIndexes.values()) }),
+      localSecondaryIndexes: Lazy.any({ produce: () => Array.from(this.localSecondaryIndexes.values()) }, { omitEmptyArray: true }),
+      globalSecondaryIndexes: Lazy.any({ produce: () => Array.from(this.globalSecondaryIndexes.values()) }, { omitEmptyArray: true }),
       billingMode: this.billingMode,
       streamSpecification: { streamViewType: NEW_AND_OLD_IMAGES },
       writeProvisionedThroughputSettings: this.writeProvisioning,
