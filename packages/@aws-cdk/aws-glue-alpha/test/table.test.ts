@@ -1478,6 +1478,27 @@ describe('validate', () => {
       encryption: glue.TableEncryption.CLIENT_SIDE_KMS,
     })).not.toThrow();
   });
+
+  test('unique storage descriptor parameters', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const database = new glue.Database(stack, 'Database');
+
+    expect(() => new glue.Table(stack, 'Table', {
+      database,
+      columns: [{
+        name: 'col',
+        type: glue.Schema.STRING,
+      }],
+      dataFormat: glue.DataFormat.JSON,
+      storageParameters: [
+        glue.StorageParameter.skipHeaderLineCount(2),
+        glue.StorageParameter.compressionType(glue.CompressionType.GZIP),
+        glue.StorageParameter.custom('foo', 'bar'),
+        glue.StorageParameter.custom(glue.StorageParameters.COMPRESSION_TYPE, 'true'),
+      ],
+    })).toThrowError('Duplicate storage parameter key: compression_type');
+  });
 });
 
 test('Table.fromTableArn', () => {
