@@ -966,7 +966,11 @@ const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromRegistry('example-image'),
   memoryLimitMiB: 256,
-  logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'EventDemo' }),
+  logging: ecs.LogDrivers.awsLogs({ 
+    streamPrefix: 'EventDemo',
+    mode: ecs.AwsLogDriverMode.NON_BLOCKING,
+    maxBufferSize: Size.mebibytes(25), 
+  }),
 });
 ```
 
