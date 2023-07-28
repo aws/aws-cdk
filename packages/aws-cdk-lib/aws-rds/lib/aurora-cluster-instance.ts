@@ -128,53 +128,6 @@ export interface ProvisionedClusterInstanceProps extends ClusterInstanceOptions 
    * @default 2
    */
   readonly promotionTier?: number;
-
-  /**
-   * Only used for migrating existing clusters from using `instanceProps` to `writer` and `readers`
-   *
-   * @example
-   * // existing cluster
-   * declare const vpc: ec2.Vpc;
-   * const cluster = new rds.DatabaseCluster(this, 'Database', {
-   *   engine: rds.DatabaseClusterEngine.auroraMysql({
-   *     version: rds.AuroraMysqlEngineVersion.VER_3_03_0,
-   *   }),
-   *   instances: 2,
-   *   instanceProps: {
-   *     instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
-   *     vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
-   *     vpc,
-   *   },
-   * });
-   *
-   * // migration
-   *
-   * const instanceProps = {
-   *   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
-   *   isFromLegacyInstanceProps: true,
-   * };
-   *
-   * const myCluster = new rds.DatabaseCluster(this, 'Database', {
-   *   engine: rds.DatabaseClusterEngine.auroraMysql({
-   *     version: rds.AuroraMysqlEngineVersion.VER_3_03_0,
-   *   }),
-   *   vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
-   *   vpc,
-   *   writer: rds.ClusterInstance.provisioned('Instance1', {
-   *     instanceType: instanceProps.instanceType,
-   *     isFromLegacyInstanceProps: instanceProps.isFromLegacyInstanceProps,
-   *   }),
-   *   readers: [
-   *     rds.ClusterInstance.provisioned('Instance2', {
-   *       instanceType: instanceProps.instanceType,
-   *       isFromLegacyInstanceProps: instanceProps.isFromLegacyInstanceProps,
-   *     }),
-   *   ],
-   * });
-   *
-   * @default false
-   */
-  readonly isFromLegacyInstanceProps?: boolean;
 }
 
 /**
@@ -199,7 +152,7 @@ export interface ServerlessV2ClusterInstanceProps extends ClusterInstanceOptions
 /**
  * Common options for creating cluster instances (both serverless and provisioned)
  */
-export interface ClusterInstanceProps extends ClusterInstanceOptions{
+export interface ClusterInstanceProps extends ClusterInstanceOptions {
   /**
    * The type of cluster instance to create. Can be either
    * provisioned or serverless v2
@@ -218,13 +171,6 @@ export interface ClusterInstanceProps extends ClusterInstanceOptions{
    * @default 2
    */
   readonly promotionTier?: number;
-
-  /**
-   * Only used for migrating existing clusters from using `instanceProps` to `writer` and `readers`
-   *
-   * @default false
-   */
-  readonly isFromLegacyInstanceProps?: boolean;
 }
 
 /**
@@ -299,6 +245,53 @@ export interface ClusterInstanceOptions {
    * @default the cluster parameter group is used
    */
   readonly parameterGroup?: IParameterGroup;
+
+  /**
+   * Only used for migrating existing clusters from using `instanceProps` to `writer` and `readers`
+   *
+   * @example
+   * // existing cluster
+   * declare const vpc: ec2.Vpc;
+   * const cluster = new rds.DatabaseCluster(this, 'Database', {
+   *   engine: rds.DatabaseClusterEngine.auroraMysql({
+   *     version: rds.AuroraMysqlEngineVersion.VER_3_03_0,
+   *   }),
+   *   instances: 2,
+   *   instanceProps: {
+   *     instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+   *     vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+   *     vpc,
+   *   },
+   * });
+   *
+   * // migration
+   *
+   * const instanceProps = {
+   *   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+   *   isFromLegacyInstanceProps: true,
+   * };
+   *
+   * const myCluster = new rds.DatabaseCluster(this, 'Database', {
+   *   engine: rds.DatabaseClusterEngine.auroraMysql({
+   *     version: rds.AuroraMysqlEngineVersion.VER_3_03_0,
+   *   }),
+   *   vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+   *   vpc,
+   *   writer: rds.ClusterInstance.provisioned('Instance1', {
+   *     instanceType: instanceProps.instanceType,
+   *     isFromLegacyInstanceProps: instanceProps.isFromLegacyInstanceProps,
+   *   }),
+   *   readers: [
+   *     rds.ClusterInstance.provisioned('Instance2', {
+   *       instanceType: instanceProps.instanceType,
+   *       isFromLegacyInstanceProps: instanceProps.isFromLegacyInstanceProps,
+   *     }),
+   *   ],
+   * });
+   *
+   * @default false
+   */
+  readonly isFromLegacyInstanceProps?: boolean;
 }
 
 /**
