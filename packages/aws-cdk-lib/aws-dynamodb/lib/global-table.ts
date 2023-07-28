@@ -182,7 +182,7 @@ export class GlobalTable extends GlobalTableBase {
       tableArn = attrs.tableArn;
       const resourceName = stack.splitArn(tableArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
       if (!resourceName) {
-        throw new Error('');
+        throw new Error('Invalid table ARN');
       }
       tableName = resourceName;
     }
@@ -209,8 +209,8 @@ export class GlobalTable extends GlobalTableBase {
 
   private readonly _replicaTables = new Map<string, ReplicaTableProps>();
 
-  private readonly localSecondaryIndexes = new Map<string, CfnGlobalTable.LocalSecondaryIndexProperty>();
-  private readonly globalSecondaryIndexes = new Map<string, CfnGlobalTable.GlobalSecondaryIndexProperty>();
+  private readonly _localSecondaryIndexes = new Map<string, CfnGlobalTable.LocalSecondaryIndexProperty>();
+  private readonly _globalSecondaryIndexes = new Map<string, CfnGlobalTable.GlobalSecondaryIndexProperty>();
   private readonly globalSecondaryIndexReadCapacitys = new Map<string, Capacity>();
 
   public constructor(scope: Construct, id: string, props: GlobalTableProps) {
@@ -248,8 +248,8 @@ export class GlobalTable extends GlobalTableBase {
       keySchema: this.keySchema,
       attributeDefinitions: Lazy.any({ produce: () => this.attributeDefinitions }),
       replicas: Lazy.any({ produce: () => this.replicaTables }),
-      localSecondaryIndexes: Lazy.any({ produce: () => Array.from(this.localSecondaryIndexes.values()) }, { omitEmptyArray: true }),
-      globalSecondaryIndexes: Lazy.any({ produce: () => Array.from(this.globalSecondaryIndexes.values()) }, { omitEmptyArray: true }),
+      localSecondaryIndexes: Lazy.any({ produce: () => this.localSecondaryIndexes }, { omitEmptyArray: true }),
+      globalSecondaryIndexes: Lazy.any({ produce: () => this.globalSecondaryIndexes }, { omitEmptyArray: true }),
       billingMode: this.billingMode,
       streamSpecification: { streamViewType: NEW_AND_OLD_IMAGES },
       writeProvisionedThroughputSettings: this.writeProvisioning,
@@ -271,6 +271,26 @@ export class GlobalTable extends GlobalTableBase {
     if (props.tableName) {
       this.node.addMetadata('aws:cdk:hasPhysicalName', this.tableName);
     }
+  }
+
+  private get localSecondaryIndexes() {
+    const localSecondaryIndexes: CfnGlobalTable.LocalSecondaryIndexProperty[] = [];
+
+    for (const localSecondaryIndex of this._localSecondaryIndexes.values()) {
+      localSecondaryIndexes.push(localSecondaryIndex);
+    }
+
+    return localSecondaryIndexes;
+  }
+
+  private get globalSecondaryIndexes() {
+    const globalSecondaryIndexes: CfnGlobalTable.GlobalSecondaryIndexProperty[] = [];
+
+    for (const globalSecondaryIndex of this._globalSecondaryIndexes.values()) {
+      globalSecondaryIndexes.push(globalSecondaryIndex);
+    }
+
+    return globalSecondaryIndexes;
   }
 
   private get replicaTables() {
@@ -296,12 +316,12 @@ export class GlobalTable extends GlobalTableBase {
   public addLocalSecondaryIndex(props: LocalSecondaryIndexProps) {
     this.validateIndexName(props.indexName);
 
-    if (this.localSecondaryIndexes.size > MAX_LSI_COUNT) {
+    if (this._localSecondaryIndexes.size > MAX_LSI_COUNT) {
       throw new Error(`A table can only support a maximum of ${MAX_LSI_COUNT} local secondary indexes`);
     }
 
     const localSecondaryIndex = this.configureLocalSecondaryIndex(props);
-    this.localSecondaryIndexes.set(props.indexName, localSecondaryIndex);
+    this._localSecondaryIndexes.set(props.indexName, localSecondaryIndex);
   }
 
   /**
@@ -312,7 +332,7 @@ export class GlobalTable extends GlobalTableBase {
   public addGlobalSecondaryIndex(props: GlobalSecondaryIndexPropsV2) {
     this.validateIndexName(props.indexName);
 
-    if (this.globalSecondaryIndexes.size === MAX_GSI_COUNT) {
+    if (this._globalSecondaryIndexes.size === MAX_GSI_COUNT) {
       throw new Error(`A table can only support a maximum of ${MAX_GSI_COUNT} global secondary indexes`);
     }
 
@@ -325,7 +345,7 @@ export class GlobalTable extends GlobalTableBase {
     }
 
     const globalSecondaryIndex = this.configureGlobalSecondaryIndex(props);
-    this.globalSecondaryIndexes.set(props.indexName, globalSecondaryIndex);
+    this._globalSecondaryIndexes.set(props.indexName, globalSecondaryIndex);
   }
 
   /**
@@ -381,13 +401,19 @@ export class GlobalTable extends GlobalTableBase {
       return undefined;
     }
 
+    const processedGlobalSecondaryIndexes = [];
     const globalSecondaryIndexes: CfnGlobalTable.ReplicaGlobalSecondaryIndexSpecificationProperty[] = [];
     for (const indexName of Object.keys(options)) {
-      if (!this.globalSecondaryIndexes.has(indexName)) {
+      if (!this._globalSecondaryIndexes.has(indexName)) {
         throw new Error(`Cannot configure global secondary index, ${indexName}, because it is not defined on the global table`);
       }
 
+      processedGlobalSecondaryIndexes.push(indexName);
       const replicaGsiOptions = options[indexName];
+
+      if (this.billingMode === BillingMode.PAY_PER_REQUEST && replicaGsiOptions.readCapacity) {
+        throw new Error(`Cannot configure 'readCapacity' for global seocndary index, ${indexName}, because billing mode is ${BillingMode.PAY_PER_REQUEST}`);
+      }
 
       const contributorInsights = replicaGsiOptions.contributorInsights ?? this.tableOptions.contributorInsights;
       const readCapacity = replicaGsiOptions.readCapacity ?? this.globalSecondaryIndexReadCapacitys.get(indexName);
@@ -403,6 +429,28 @@ export class GlobalTable extends GlobalTableBase {
           ? { enabled: contributorInsights }
           : undefined,
       });
+    }
+
+    // each gsi needs to be specified on replicas for provisioned billing
+    if (this.billingMode === BillingMode.PROVISIONED) {
+      for (const gsi of this._globalSecondaryIndexes.values()) {
+        if (processedGlobalSecondaryIndexes.includes(gsi.indexName)) {
+          continue;
+        }
+
+        const readCapacity = this.globalSecondaryIndexReadCapacitys.get(gsi.indexName);
+        const readProvisionedThroughputSettings = readCapacity
+          ? this.configureReadProvisioning(readCapacity)
+          : undefined;
+
+        globalSecondaryIndexes.push({
+          indexName: gsi.indexName,
+          readProvisionedThroughputSettings,
+          contributorInsightsSpecification: this.tableOptions.contributorInsights
+            ? { enabled: this.tableOptions.contributorInsights }
+            : undefined,
+        });
+      }
     }
 
     return globalSecondaryIndexes;
@@ -523,7 +571,7 @@ export class GlobalTable extends GlobalTableBase {
   }
 
   private validateIndexName(indexName: string) {
-    if (this.localSecondaryIndexes.has(indexName) || this.globalSecondaryIndexes.has(indexName)) {
+    if (this._localSecondaryIndexes.has(indexName) || this._globalSecondaryIndexes.has(indexName)) {
       throw new Error(`Duplicate secondary index name, ${indexName}, is not allowed`);
     }
   }
@@ -622,4 +670,12 @@ export class Capacity {
   }
 }
 
-export class TableEncryptionV2 {}
+export class TableEncryptionV2 {
+  public static dynamoOwnedKey() {}
+
+  public static awsManagedKey() {}
+
+  public static customerManagedKey() {}
+
+  private constructor() {}
+}
