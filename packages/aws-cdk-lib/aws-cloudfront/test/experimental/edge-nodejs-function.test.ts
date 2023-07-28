@@ -18,7 +18,7 @@ beforeEach(() => {
 
 describe('stacks', () => {
   test('creates a custom resource and supporting resources in main stack', () => {
-    new cloudfront.experimental.EdgeFunction(stack, 'MyFn', defaultEdgeFunctionProps());
+    new cloudfront.experimental.EdgeNodejsFunction(stack, 'MyFn', defaultEdgeFunctionProps());
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
@@ -62,7 +62,7 @@ describe('stacks', () => {
   });
 
   test('creates the actual function and supporting resources in us-east-1 stack', () => {
-    new cloudfront.experimental.EdgeFunction(stack, 'MyFn', defaultEdgeFunctionProps());
+    new cloudfront.experimental.EdgeNodejsFunction(stack, 'MyFn', defaultEdgeFunctionProps());
 
     const fnStack = getFnStack();
 
@@ -103,7 +103,7 @@ describe('stacks', () => {
   });
 
   test('us-east-1 stack inherits account of parent stack', () => {
-    new cloudfront.experimental.EdgeFunction(stack, 'MyFn', defaultEdgeFunctionProps());
+    new cloudfront.experimental.EdgeNodejsFunction(stack, 'MyFn', defaultEdgeFunctionProps());
 
     const fnStack = getFnStack();
 
@@ -114,7 +114,7 @@ describe('stacks', () => {
     stack = new cdk.Stack(app, 'StackWithDefaultAccount', {
       env: { region: 'testregion' },
     });
-    new cloudfront.experimental.EdgeFunction(stack, 'MyFn', defaultEdgeFunctionProps());
+    new cloudfront.experimental.EdgeNodejsFunction(stack, 'MyFn', defaultEdgeFunctionProps());
 
     const fnStack = getFnStack();
 
@@ -126,7 +126,7 @@ describe('stacks', () => {
     stack = new cdk.Stack(app, 'Stack', {
       env: { account: '111111111111', region: 'us-east-1' },
     });
-    new cloudfront.experimental.EdgeFunction(stack, 'MyFn', defaultEdgeFunctionProps());
+    new cloudfront.experimental.EdgeNodejsFunction(stack, 'MyFn', defaultEdgeFunctionProps());
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
@@ -160,8 +160,8 @@ describe('stacks', () => {
   });
 
   test('only one cross-region stack is created for multiple functions', () => {
-    new cloudfront.experimental.EdgeFunction(stack, 'MyFn1', defaultEdgeFunctionProps());
-    new cloudfront.experimental.EdgeFunction(stack, 'MyFn2', defaultEdgeFunctionProps());
+    new cloudfront.experimental.EdgeNodejsFunction(stack, 'MyFn1', defaultEdgeFunctionProps());
+    new cloudfront.experimental.EdgeNodejsFunction(stack, 'MyFn2', defaultEdgeFunctionProps());
 
     const fnStack = getFnStack();
     Template.fromStack(fnStack).resourceCountIs('AWS::Lambda::Function', 2);
@@ -169,9 +169,9 @@ describe('stacks', () => {
 
   test('can set the stack id for each function', () => {
     const fn1StackId = 'edge-lambda-stack-testregion-1';
-    new cloudfront.experimental.EdgeFunction(stack, 'MyFn1', defaultEdgeFunctionProps(fn1StackId));
+    new cloudfront.experimental.EdgeNodejsFunction(stack, 'MyFn1', defaultEdgeFunctionProps(fn1StackId));
     const fn2StackId = 'edge-lambda-stack-testregion-2';
-    new cloudfront.experimental.EdgeFunction(stack, 'MyFn2', defaultEdgeFunctionProps(fn2StackId));
+    new cloudfront.experimental.EdgeNodejsFunction(stack, 'MyFn2', defaultEdgeFunctionProps(fn2StackId));
 
     const fn1Stack = app.node.findChild(fn1StackId) as cdk.Stack;
     Template.fromStack(fn1Stack).resourceCountIs('AWS::Lambda::Function', 1);
@@ -186,7 +186,7 @@ describe('stacks', () => {
       env: { account: '111111111111', region: 'testregion' },
     });
 
-    new cloudfront.experimental.EdgeFunction(stack, 'MyFn', defaultEdgeFunctionProps());
+    new cloudfront.experimental.EdgeNodejsFunction(stack, 'MyFn', defaultEdgeFunctionProps());
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       Handler: '__entrypoint__.handler',
@@ -210,8 +210,8 @@ describe('stacks', () => {
     const secondStack = new cdk.Stack(app, 'SecondStack', {
       env: { account: '111111111111', region: 'testregion' },
     });
-    new cloudfront.experimental.EdgeFunction(firstStack, 'MyFn', defaultEdgeFunctionProps());
-    new cloudfront.experimental.EdgeFunction(secondStack, 'MyFn', defaultEdgeFunctionProps());
+    new cloudfront.experimental.EdgeNodejsFunction(firstStack, 'MyFn', defaultEdgeFunctionProps());
+    new cloudfront.experimental.EdgeNodejsFunction(secondStack, 'MyFn', defaultEdgeFunctionProps());
 
     // Two stacks in us-east-1
     const firstFnStack = app.node.findChild(`edge-lambda-stack-${firstStack.node.addr}`) as cdk.Stack;
@@ -228,7 +228,7 @@ describe('stacks', () => {
 });
 
 test('addAlias() creates alias in function stack', () => {
-  const fn = new cloudfront.experimental.EdgeFunction(stack, 'MyFn', defaultEdgeFunctionProps());
+  const fn = new cloudfront.experimental.EdgeNodejsFunction(stack, 'MyFn', defaultEdgeFunctionProps());
 
   fn.addAlias('MyCurrentAlias');
 
@@ -239,8 +239,8 @@ test('addAlias() creates alias in function stack', () => {
 });
 
 test('mutliple aliases with the same name can be added to the same stack', () => {
-  const fn1 = new cloudfront.experimental.EdgeFunction(stack, 'MyFn1', defaultEdgeFunctionProps());
-  const fn2 = new cloudfront.experimental.EdgeFunction(stack, 'MyFn2', defaultEdgeFunctionProps());
+  const fn1 = new cloudfront.experimental.EdgeNodejsFunction(stack, 'MyFn1', defaultEdgeFunctionProps());
+  const fn2 = new cloudfront.experimental.EdgeNodejsFunction(stack, 'MyFn2', defaultEdgeFunctionProps());
   fn1.addAlias('live');
   fn2.addAlias('live');
 
@@ -250,7 +250,7 @@ test('mutliple aliases with the same name can be added to the same stack', () =>
 });
 
 test('addPermission() creates permissions in function stack', () => {
-  const fn = new cloudfront.experimental.EdgeFunction(stack, 'MyFn', defaultEdgeFunctionProps());
+  const fn = new cloudfront.experimental.EdgeNodejsFunction(stack, 'MyFn', defaultEdgeFunctionProps());
 
   fn.addPermission('MyPerms', {
     action: 'lambda:InvokeFunction',
@@ -265,7 +265,7 @@ test('addPermission() creates permissions in function stack', () => {
 });
 
 test('metric methods', () => {
-  const fn = new cloudfront.experimental.EdgeFunction(stack, 'MyFn', defaultEdgeFunctionProps());
+  const fn = new cloudfront.experimental.EdgeNodejsFunction(stack, 'MyFn', defaultEdgeFunctionProps());
 
   const metrics = new Array<cloudwatch.Metric>();
   metrics.push(fn.metricDuration());
@@ -287,17 +287,17 @@ test('cross-region stack supports new-style synthesis with assets', () => {
     env: { account: '111111111111', region: 'testregion' },
   });
 
-  new cloudfront.experimental.EdgeFunction(stack, 'MyFn', {
-    code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
+  new cloudfront.experimental.EdgeNodejsFunction(stack, 'MyFn', {
+    entry: `${__dirname}/my-lambda-nodejs-handler/index.ts`,
     handler: 'index.handler',
-    runtime: lambda.Runtime.PYTHON_3_8,
+    runtime: lambda.Runtime.NODEJS_18_X,
   });
 
   expect(() => app.synth()).not.toThrow();
 });
 
 test('SSM parameter name is sanitized to remove disallowed characters', () => {
-  new cloudfront.experimental.EdgeFunction(stack, 'My Bad#Fn$Name-With.Bonus', defaultEdgeFunctionProps());
+  new cloudfront.experimental.EdgeNodejsFunction(stack, 'My Bad#Fn$Name-With.Bonus', defaultEdgeFunctionProps());
 
   const fnStack = getFnStack();
 

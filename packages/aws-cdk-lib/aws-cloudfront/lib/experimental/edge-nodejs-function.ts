@@ -21,7 +21,7 @@ import {
 /**
  * Properties for creating a Lambda@Edge function With Nodejs
  */
-export interface EdgeFunctionProps extends lambdaNodejs.NodejsFunctionProps {
+export interface EdgeNodejsFunctionProps extends lambdaNodejs.NodejsFunctionProps {
   /**
    * The stack ID of Lambda@Edge function.
    *
