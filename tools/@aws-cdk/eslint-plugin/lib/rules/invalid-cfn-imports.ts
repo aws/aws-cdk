@@ -108,10 +108,10 @@ function reportErrorIfImportedLocationIsNotValid(context: Rule.RuleContext, node
 }
 
 function currentFileIsInAlphaPackage(filename: string): boolean {
-  const filePathSplit = filename.split('/');
+  const filePathSplit = filename.split(path.sep);
   const awsCdkNamespaceIndex = filePathSplit.findIndex(e => e.match('@aws-cdk'))
   if (awsCdkNamespaceIndex !== -1) {
-    const packageDir = filePathSplit.slice(0, awsCdkNamespaceIndex + 2).join('/');
+    const packageDir = filePathSplit.slice(0, awsCdkNamespaceIndex + 2).join(path.sep);
     return isAlphaPackage(packageDir);
   }
   return false;
@@ -137,7 +137,7 @@ function getCdkRootDir(filename: string): string | undefined {
   }
 
   if (rootDirIndex !== -1) {
-    return filenameSplit.slice(0, rootDirIndex).join('/');
+    return filenameSplit.slice(0, rootDirIndex).join(path.sep);
   }
   return undefined;
 }
