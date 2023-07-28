@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.89.0](https://github.com/aws/aws-cdk/compare/v2.88.0...v2.89.0) (2023-07-28)
+
+
+### Features
+
+* support max-buffer-size for AWSLogs driver ([#26396](https://github.com/aws/aws-cdk/issues/26396)) ([a74536b](https://github.com/aws/aws-cdk/commit/a74536b030a6050ee7fdae289abdbe5a1226ba19))
+* update AWS Service Spec ([#26541](https://github.com/aws/aws-cdk/issues/26541)) ([b1ca3c0](https://github.com/aws/aws-cdk/commit/b1ca3c09e68a2c1f5bf5ce4c9c40f12db7f1767f))
+* **cli:** add diff message on the number of stacks with differences ([#26297](https://github.com/aws/aws-cdk/issues/26297)) ([a9e2789](https://github.com/aws/aws-cdk/commit/a9e2789d2f927c26db0aee4ce7cb2cc073a99bc5)), closes [#10417](https://github.com/aws/aws-cdk/issues/10417)
+* **logs:** configure custom subscription filter name ([#26498](https://github.com/aws/aws-cdk/issues/26498)) ([7ddb305](https://github.com/aws/aws-cdk/commit/7ddb3059915fb3bd05d9d59eee46f90833c62861)), closes [#26485](https://github.com/aws/aws-cdk/issues/26485)
+* **opensearchservice:** L2 properties for offPeakWindowOptions and softwareUpdateOptions ([#26403](https://github.com/aws/aws-cdk/issues/26403)) ([02e8d58](https://github.com/aws/aws-cdk/commit/02e8d5892a35f9e5a467e32413a0532b217ca3bc)), closes [#26388](https://github.com/aws/aws-cdk/issues/26388)
+* **rds:** `isFromLegacyInstanceProps` migration flag with `ClusterInstance.serverlessV2` ([#26472](https://github.com/aws/aws-cdk/issues/26472)) ([6ec9829](https://github.com/aws/aws-cdk/commit/6ec9829ac2d20855a35dad03c4110c46dd89cba8)), closes [/github.com/aws/aws-cdk/issues/20197#issuecomment-1284485844](https://github.com/aws//github.com/aws/aws-cdk/issues/20197/issues/issuecomment-1284485844) [#25942](https://github.com/aws/aws-cdk/issues/25942)
+* **rds:** support aurora mysql 3.03.1 ([#26507](https://github.com/aws/aws-cdk/issues/26507)) ([7fa74c4](https://github.com/aws/aws-cdk/commit/7fa74c48d77461c5305e00f68127621abe975086))
+* **route53:** support geolocation routing ([#26383](https://github.com/aws/aws-cdk/issues/26383)) ([6bd9a2d](https://github.com/aws/aws-cdk/commit/6bd9a2d1293b94e83cb6fe9b3768155f646d9066)), closes [#9478](https://github.com/aws/aws-cdk/issues/9478)
+* **stepfunctions:** add stateMachineRevisionId property to StateMachine ([#26443](https://github.com/aws/aws-cdk/issues/26443)) ([3e47d1b](https://github.com/aws/aws-cdk/commit/3e47d1b2e82bdb156bcac797ead5d9f2e522a018)), closes [#26440](https://github.com/aws/aws-cdk/issues/26440)
+
+
+### Bug Fixes
+
+* **autoscaling:** StepScalingPolicy intervals not checked for going over allowable maximum ([#26490](https://github.com/aws/aws-cdk/issues/26490)) ([58b004e](https://github.com/aws/aws-cdk/commit/58b004ef7385cfb42910b6978b4b5b836cbb69f7)), closes [/github.com/aws/aws-cdk/blob/bc029fe5ac69a8b7fd2dfdbcd8834e9a2cf8e000/packages/aws-cdk-lib/aws-autoscaling/lib/step-scaling-policy.ts#L136-L166](https://github.com/aws//github.com/aws/aws-cdk/blob/bc029fe5ac69a8b7fd2dfdbcd8834e9a2cf8e000/packages/aws-cdk-lib/aws-autoscaling/lib/step-scaling-policy.ts/issues/L136-L166) [/github.com/aws/aws-cdk/blob/bc029fe5ac69a8b7fd2dfdbcd8834e9a2cf8e000/packages/aws-cdk-lib/aws-autoscaling/lib/step-scaling-policy.ts#L105-L134](https://github.com/aws//github.com/aws/aws-cdk/blob/bc029fe5ac69a8b7fd2dfdbcd8834e9a2cf8e000/packages/aws-cdk-lib/aws-autoscaling/lib/step-scaling-policy.ts/issues/L105-L134) [#26215](https://github.com/aws/aws-cdk/issues/26215)
+* **cdk:** allow bootstrap with policy names with a path ([#26378](https://github.com/aws/aws-cdk/issues/26378)) ([1820fc9](https://github.com/aws/aws-cdk/commit/1820fc902c6f37faed0538305bd701103dae43ff)), closes [#26320](https://github.com/aws/aws-cdk/issues/26320)
+* **core:** policy validation trace incorrect for larger constructs ([#26466](https://github.com/aws/aws-cdk/issues/26466)) ([fd181c7](https://github.com/aws/aws-cdk/commit/fd181c70f3668b2f0ec0ccbca38a5ef9100eb86b))
+* **ecs:** deployment alarm configurations are being added in isolated partitions ([#26458](https://github.com/aws/aws-cdk/issues/26458)) ([eea223b](https://github.com/aws/aws-cdk/commit/eea223b52f4445e6084b1fa1fa15a3a78f83fa18)), closes [#26456](https://github.com/aws/aws-cdk/issues/26456)
+* **ecs-patterns:** `minHealthyPercent` and `maxHealthyPercent` props validation ([#26193](https://github.com/aws/aws-cdk/issues/26193)) ([bdfdc91](https://github.com/aws/aws-cdk/commit/bdfdc91b1b8f86104290a9fb6899013617e307ef)), closes [#26158](https://github.com/aws/aws-cdk/issues/26158)
+* **lambda:** bundling fails with pnpm >= 8.4.0 ([#26478](https://github.com/aws/aws-cdk/issues/26478)) ([#26479](https://github.com/aws/aws-cdk/issues/26479)) ([1df243a](https://github.com/aws/aws-cdk/commit/1df243a0130ed15034f53d95e6544935de911a88))
+* **rds:** Add missing Aurora engine 8.0.mysql_aurora.3.02.3 ([#26462](https://github.com/aws/aws-cdk/issues/26462)) ([ac9bb1a](https://github.com/aws/aws-cdk/commit/ac9bb1a27c704f5bcb4d8ca15dc5a224a592bd27))
+* **secretsmanager:** `arnForPolicies` evaluates to the partial ARN if accessed from a cross-env stack ([#26308](https://github.com/aws/aws-cdk/issues/26308)) ([0e808d8](https://github.com/aws/aws-cdk/commit/0e808d81d8a6b4b860f9dbf6be6bdf85429eaf77))
+* **sns-subscriptions:** SQS queue encrypted by AWS managed KMS key is allowed to be specified as subscription and dead-letter queue ([#26110](https://github.com/aws/aws-cdk/issues/26110)) ([0531492](https://github.com/aws/aws-cdk/commit/0531492451b4f99fe469380ba926f22addbfc492)), closes [#19796](https://github.com/aws/aws-cdk/issues/19796)
+* **stepfunctions-tasks:** Default Retry policy for `LambdaInvoke` does not include `Lambda.ClientExecutionTimeoutException` default Retry settings ([#26474](https://github.com/aws/aws-cdk/issues/26474)) ([f22bd4e](https://github.com/aws/aws-cdk/commit/f22bd4e2b1914b42450ffa061d27009039469b2b)), closes [#26470](https://github.com/aws/aws-cdk/issues/26470)
+* **stepfunctions-tasks:** specify tags in BatchSubmitJob properties ([#26349](https://github.com/aws/aws-cdk/issues/26349)) ([f24ece1](https://github.com/aws/aws-cdk/commit/f24ece1dba43e1a0fda3cc917e04af61d90040fc)), closes [#26336](https://github.com/aws/aws-cdk/issues/26336)
+
 ## [2.88.0](https://github.com/aws/aws-cdk/compare/v2.87.0...v2.88.0) (2023-07-20)
 
 
