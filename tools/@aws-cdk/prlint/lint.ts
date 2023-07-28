@@ -358,7 +358,7 @@ export class PullRequestLinter {
     );
     const communityRequestedChanges = reviews.data.some(
       review => this.getTrustedCommunityMembers().includes(review.user?.login ?? '')
-        && review.state !== 'APPROVED', // community members cannot request changes
+        && review.state === 'COMMENTED', // community members cannot request changes
     );
     const communityApproved = reviews.data.some(
       review => this.getTrustedCommunityMembers().includes(review.user?.login ?? '')
