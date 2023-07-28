@@ -10,6 +10,14 @@ These workflows and actions are configured in the AWS CDK GitHub repository.
 `auto-approve` label.
 Owner: Core CDK team
 
+### PR Linter Trigger
+
+[pr-linter-trigger.yml](pr-linter-trigger.yml): A workflow triggered by `pull_request_review`
+that uploads necessary information about the pull request and then triggers the
+[pr-linter](pr-linter.yml). Necessary because the `pull_request_review` trigger runs actions
+on the merge branch not the base branch (with its secrets).
+Owner: Core CDK team
+
 ### PR Linter
 
 [pr-linter.yml](pr-linter.yml): Runs `tools/@aws-cdk-prlint` on each PR to
@@ -72,6 +80,12 @@ Owner: CDK support team
 
 [yarn-upgrade.yml](yarn-upgrade.yml): Upgrades yarn dependencies and creates a
 patch file for downloading.
+Owner: Core CDK team
+
+### AWS Service Spec Update
+
+[spec-update.yml](spec-update.yml): Updates AWS Service Spec and related packages to their latest versions
+and submits an auto-approve PR for it.
 Owner: Core CDK team
 
 ### Issue Reprioritizer
