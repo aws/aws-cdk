@@ -108,10 +108,10 @@ new glue.Table(stack, 'MyTableWithStorageDescriptorParameters', {
   columns,
   dataFormat: glue.DataFormat.JSON,
   storageParameters: [
-    { key: glue.StorageParameters.SKIP_HEADER_LINE_COUNT, value: glue.StorageParameterValue.custom('1') },
-    { key: glue.StorageParameters.COMPRESSION_TYPE, value: glue.StorageParameterValue.compressionType(glue.CompressionType.GZIP) },
-    { key: glue.StorageParameters.custom('foo'), value: glue.StorageParameterValue.custom('bar') }, // Will have no effect
-    { key: glue.StorageParameters.custom('separatorChar'), value: glue.StorageParameterValue.custom(',') }, // Will describe the separator char used in the data
+    glue.StorageParameter.skipHeaderLineCount(1),
+    glue.StorageParameter.compressionType(glue.CompressionType.GZIP),
+    glue.StorageParameter.custom('foo', 'bar'), // Will have no effect
+    glue.StorageParameter.custom('separatorChar', ','), // Will describe the separator char used in the data
   ],
 });
 

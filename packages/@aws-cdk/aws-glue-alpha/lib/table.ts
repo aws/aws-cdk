@@ -9,7 +9,7 @@ import { Construct } from 'constructs';
 import { DataFormat } from './data-format';
 import { IDatabase } from './database';
 import { Column } from './schema';
-import { StorageParameterValue, StorageParameters } from './storage-parameter';
+import { StorageParameter } from './storage-parameter';
 
 /**
  * Properties of a Partition Index.
@@ -72,18 +72,6 @@ export enum TableEncryption {
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingClientSideEncryption.html
    */
   CLIENT_SIDE_KMS = 'CSE-KMS'
-}
-
-export interface StorageParameter {
-  /**
-   * The key of the property. If you want to use a custom key, use `StorageParameters.custom()`.
-   */
-  readonly key: StorageParameters;
-
-  /**
-   * The value of the property. If you want to use a custom value, use `StorageParameterValue.custom()`.
-   */
-  readonly value: StorageParameterValue;
 }
 
 export interface TableAttributes {
@@ -211,10 +199,11 @@ export interface TableProps {
    *    declare const glueDatabase: glue.IDatabase;
    *    const table = new glue.Table(this, 'Table', {
    *      storageParameters: [
-   *          { key: glue.StorageParameters.SKIP_HEADER_LINE_COUNT, value: glue.StorageParameterValue.custom('1') },
-   *          { key: glue.StorageParameters.COMPRESSION_TYPE, value: glue.StorageParameterValue.compressionType(glue.CompressionType.GZIP) },
-   *          { key: glue.StorageParameters.custom('foo'), value: glue.StorageParameterValue.custom('bar') }, // Will have no effect
-   *          { key: glue.StorageParameters.custom('separatorChar'), value: glue.StorageParameterValue.custom(',') }, // Will describe the separator char used in the data
+   *          glue.StorageParameter.skipHeaderLineCount(1),
+   *          glue.StorageParameter.compressionType(glue.CompressionType.GZIP),
+   *          glue.StorageParameter.custom('foo', 'bar'), // Will have no effect
+   *          glue.StorageParameter.custom('separatorChar', ','), // Will describe the separator char used in the data
+   *          glue.StorageParameter.custom(glue.StorageParameters.COMPRESSION_TYPE, 'true'), // Will have no effect
    *      ],
    *      // ...
    *      database: glueDatabase,
@@ -382,8 +371,11 @@ export class Table extends Resource implements ITable {
             serializationLibrary: props.dataFormat.serializationLibrary.className,
           },
           parameters: props.storageParameters ? props.storageParameters.reduce((acc, param) => {
-            const key = param.key.key;
-            acc[key] = param.value.value;
+            if (param.key in acc) {
+              throw new Error(`Duplicate storage parameter key: ${param.key}`);
+            }
+            const key = param.key;
+            acc[key] = param.value;
             return acc;
           }, {} as { [key: string]: string }) : undefined,
         },
