@@ -39,7 +39,7 @@
     "@aws-cdk/eslint-plugin": "0.0.0",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-jest": "^24.7.0",
-    "jest": "^29.6.1"
+    "jest": "^29.6.2"
   },
   "repository": {
     "type": "git",

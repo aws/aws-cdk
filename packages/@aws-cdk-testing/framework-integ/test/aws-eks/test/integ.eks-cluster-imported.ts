@@ -211,7 +211,8 @@ const stack = new EksClusterStack(app, 'aws-cdk-eks-import-cluster-test');
 
 new integ.IntegTest(app, 'aws-cdk-eks-import-cluster', {
   testCases: [stack],
-  diffAssets: true,
+  // Test includes assets that are updated weekly. If not disabled, the upgrade PR will fail.
+  diffAssets: false,
   cdkCommandOptions: {
     deploy: {
       args: {
