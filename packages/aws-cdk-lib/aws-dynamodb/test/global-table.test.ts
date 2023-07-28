@@ -1,6 +1,6 @@
 import { Template } from '../../assertions';
-import { Stack } from '../../core';
-import { GlobalTable, AttributeType, TableClass, Billing, Capacity } from '../lib';
+import { CfnDeletionPolicy, RemovalPolicy, Stack } from '../../core';
+import { GlobalTable, AttributeType, TableClass, Billing, Capacity, BillingMode } from '../lib';
 
 /* eslint-disable no-console */
 describe('global table configuration', () => {
@@ -163,7 +163,17 @@ describe('global table configuration', () => {
   });
 
   test('with removal policy as DESTROY', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
 
+    // WHEN
+    new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::DynamoDB::GlobalTable', { DeletionPolicy: CfnDeletionPolicy.DELETE });
   });
 
   test('with provisioned billing', () => {
@@ -184,6 +194,7 @@ describe('global table configuration', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      BillingMode: 'PROVISIONED',
       WriteProvisionedThroughputSettings: {
         WriteCapacityAutoScalingSettings: {
           MinCapacity: 1,
@@ -208,7 +219,7 @@ describe('global table configuration', () => {
     // GIVEN
     const stack = new Stack();
 
-    // WHEN
+    // WHEN / THEN
     expect(() => {
       new GlobalTable(stack, 'GlobalTable', {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
@@ -229,7 +240,265 @@ describe('replica table configuration', () => {
 });
 
 describe('secondary indexes', () => {
+  test('global secondary index with on-demand billing', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
 
+    // WHEN
+    new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      globalSecondaryIndexes: [
+        {
+          indexName: 'gsi',
+          partitionKey: { name: 'gsiPk', type: AttributeType.STRING },
+        },
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      GlobalSecondaryIndexes: [
+        {
+          IndexName: 'gsi',
+          KeySchema: [
+            {
+              AttributeName: 'gsiPk',
+              KeyType: 'HASH',
+            },
+          ],
+          Projection: {
+            ProjectionType: 'ALL',
+          },
+        },
+      ],
+    });
+  });
+
+  // pass read to replica
+  test('global secondary index with provisioned billing and fixed read capacity', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+    // WHEN
+    new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      billing: Billing.provisioned({
+        readCapacity: Capacity.fixed(10),
+        writeCapacity: Capacity.autoscaled({ minCapacity: 1, maxCapacity: 10 }),
+      }),
+      globalSecondaryIndexes: [
+        {
+          indexName: 'gsi',
+          partitionKey: { name: 'gsiPk', type: AttributeType.STRING },
+          readCapacity: Capacity.fixed(15),
+        },
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      GlobalSecondaryIndexes: [
+        {
+          IndexName: 'gsi',
+          KeySchema: [
+            {
+              AttributeName: 'gsiPk',
+              KeyType: 'HASH',
+            },
+          ],
+          Projection: {
+            ProjectionType: 'ALL',
+          },
+          ReadProvisionedThroughputSettings: {
+            ReadCapacityUnits: 15,
+          },
+        },
+      ],
+    });
+  });
+
+  // pass read to replica
+  test('global secondary index with provisioned billing and autoscaled read capacity', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+    // WHEN
+    new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      billing: Billing.provisioned({
+        readCapacity: Capacity.fixed(10),
+        writeCapacity: Capacity.autoscaled({ minCapacity: 1, maxCapacity: 10 }),
+      }),
+      globalSecondaryIndexes: [
+        {
+          indexName: 'gsi',
+          partitionKey: { name: 'gsiPk', type: AttributeType.STRING },
+          readCapacity: Capacity.autoscaled({ minCapacity: 5, maxCapacity: 10 }),
+        },
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      GlobalSecondaryIndexes: [
+        {
+          IndexName: 'gsi',
+          KeySchema: [
+            {
+              AttributeName: 'gsiPk',
+              KeyType: 'HASH',
+            },
+          ],
+          Projection: {
+            ProjectionType: 'ALL',
+          },
+          ReadProvisionedThroughputSettings: {
+            ReadCapacityAutoScalingSettings: {
+              MinCapacity: 5,
+              MaxCapacity: 10,
+              TargetTrackingScalingPolicyConfiguration: {
+                TargetValue: 70,
+              },
+            },
+          },
+        },
+      ],
+    });
+  });
+
+  test('with multiple globale secondary indexes', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+    // WHEN
+    new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      globalSecondaryIndexes: [
+        {
+          indexName: 'gsi1',
+          partitionKey: { name: 'gsiPk', type: AttributeType.STRING },
+        },
+        {
+          indexName: 'gsi2',
+          partitionKey: { name: 'gsiPk', type: AttributeType.STRING },
+        },
+        {
+          indexName: 'gsi3',
+          partitionKey: { name: 'gsiPk', type: AttributeType.STRING },
+        },
+      ],
+    });
+
+    // THEN
+    console.log(JSON.stringify(Template.fromStack(stack), null, 4));
+  });
+
+  test('throws if read capacity is configured when billing mode is on demand', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+    // WHEN / THEN
+    expect(() => {
+      new GlobalTable(stack, 'GlobalTable', {
+        partitionKey: { name: 'pk', type: AttributeType.STRING },
+        globalSecondaryIndexes: [
+          {
+            indexName: 'gsi',
+            partitionKey: { name: 'gsiPk', type: AttributeType.STRING },
+            readCapacity: Capacity.fixed(10),
+          },
+        ],
+      });
+    }).toThrow(`You cannot configure read or write capacity on a global secondary index if the billing mode is ${BillingMode.PAY_PER_REQUEST}`);
+  });
+
+  test('throws if write capacity is configured when billing mode is on demand', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+    // WHEN / THEN
+    expect(() => {
+      new GlobalTable(stack, 'GlobalTable', {
+        partitionKey: { name: 'pk', type: AttributeType.STRING },
+        globalSecondaryIndexes: [
+          {
+            indexName: 'gsi',
+            partitionKey: { name: 'gsiPk', type: AttributeType.STRING },
+            writeCapacity: Capacity.autoscaled({ minCapacity: 1, maxCapacity: 10 }),
+          },
+        ],
+      });
+    }).toThrow(`You cannot configure read or write capacity on a global secondary index if the billing mode is ${BillingMode.PAY_PER_REQUEST}`);
+  });
+
+  test('throws if read capacity is not configured when billing mode is provisioned', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+    // WHEN / THEN
+    expect(() => {
+      new GlobalTable(stack, 'GlobalTable', {
+        partitionKey: { name: 'pk', type: AttributeType.STRING },
+        billing: Billing.provisioned({
+          readCapacity: Capacity.fixed(10),
+          writeCapacity: Capacity.autoscaled({
+            minCapacity: 1,
+            maxCapacity: 10,
+          }),
+        }),
+        globalSecondaryIndexes: [
+          {
+            indexName: 'gsi',
+            partitionKey: { name: 'gsiPk', type: AttributeType.STRING },
+          },
+        ],
+      });
+    }).toThrow(`You must specify 'readCapacity' on a global secondary index when the billing mode is ${BillingMode.PROVISIONED}`);
+  });
+
+  test('throws for duplicate global secondary index names', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+    // WHEN / THEN
+    expect(() => {
+      new GlobalTable(stack, 'GlobalTable', {
+        partitionKey: { name: 'pk', type: AttributeType.STRING },
+        globalSecondaryIndexes: [
+          {
+            indexName: 'gsi',
+            partitionKey: { name: 'gsiPk', type: AttributeType.STRING },
+          },
+          {
+            indexName: 'gsi',
+            partitionKey: { name: 'gsiPk', type: AttributeType.STRING },
+          },
+        ],
+      });
+    }).toThrow('Duplicate secondary index name, gsi, is not allowed');
+  });
+
+  test('throws if attribute definition is redefined', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+    // WHEN / THEN
+    expect(() => {
+      new GlobalTable(stack, 'GlobalTable', {
+        partitionKey: { name: 'pk', type: AttributeType.STRING },
+        globalSecondaryIndexes: [
+          {
+            indexName: 'gsi1',
+            partitionKey: { name: 'gsiPk', type: AttributeType.STRING },
+          },
+          {
+            indexName: 'gsi2',
+            partitionKey: { name: 'gsiPk', type: AttributeType.NUMBER },
+          },
+        ],
+      });
+    }).toThrow('Unable to specify gsiPk as N because it was already defined as S');
+  });
 });
 
 describe('billing and capacity', () => {
