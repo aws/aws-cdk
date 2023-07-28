@@ -53,7 +53,9 @@ export interface SubscriptionFilterProps extends SubscriptionFilterOptions {
  */
 export class SubscriptionFilter extends Resource {
   constructor(scope: Construct, id: string, props: SubscriptionFilterProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.filterName,
+    });
 
     const destProps = props.destination.bind(this, props.logGroup);
 
@@ -62,6 +64,7 @@ export class SubscriptionFilter extends Resource {
       destinationArn: destProps.arn,
       roleArn: destProps.role && destProps.role.roleArn,
       filterPattern: props.filterPattern.logPatternString,
+      filterName: this.physicalName,
     });
   }
 }

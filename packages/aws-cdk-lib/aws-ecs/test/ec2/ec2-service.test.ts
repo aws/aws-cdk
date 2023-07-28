@@ -2365,6 +2365,32 @@ describe('ec2 service', () => {
         });
       });
 
+      test('no deployment alarms in isolated partitions', () => {
+        const app = new cdk.App();
+        const govCloudStack = new cdk.Stack(app, 'IsoStack', {
+          env: { region: 'us-isob-east-1' },
+        });
+        const vpc = new ec2.Vpc(govCloudStack, 'MyVpc', {});
+        const gcCluster = new ecs.Cluster(govCloudStack, 'EcsCluster', { vpc });
+        addDefaultCapacityProvider(gcCluster, govCloudStack, vpc);
+        const gcTaskDefinition = new ecs.Ec2TaskDefinition(govCloudStack, 'Ec2TaskDef');
+
+        gcTaskDefinition.addContainer('web', {
+          image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+          memoryLimitMiB: 512,
+        });
+        new ecs.Ec2Service(govCloudStack, 'Ec2Service', {
+          cluster: gcCluster,
+          taskDefinition: gcTaskDefinition,
+        });
+
+        Template.fromStack(govCloudStack).hasResourceProperties('AWS::ECS::Service', {
+          DeploymentConfiguration: {
+            Alarms: Match.absent(),
+          },
+        });
+      });
+
       /**
        * This section of tests test all combinations of the following possible
        * alarm names and metrics. Most combinations work just fine, some

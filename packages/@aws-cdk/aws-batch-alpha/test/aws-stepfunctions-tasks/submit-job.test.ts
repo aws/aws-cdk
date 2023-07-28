@@ -361,3 +361,89 @@ test('Task throws if attempt duration is less than 60 sec', () => {
     /attempt duration must be greater than 60 seconds./,
   );
 });
+
+test('supports passing tags', () => {
+  // WHEN
+  const task = new BatchSubmitJob(stack, 'Task', {
+    jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
+    jobQueueArn: batchJobQueue.jobQueueArn,
+    jobName: sfn.JsonPath.stringAt('$.jobName'),
+    tags: {
+      test: 'this is a tag',
+    },
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::batch:submitJob.sync',
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      'JobDefinition': { Ref: 'JobDefinition24FFE3ED' },
+      'JobName.$': '$.jobName',
+      'JobQueue': {
+        'Fn::GetAtt': [
+          'JobQueueEE3AD499',
+          'JobQueueArn',
+        ],
+      },
+      'Tags': {
+        test: 'this is a tag',
+      },
+    },
+  });
+});
+
+test('throws if tags has invalid value', () => {
+  expect(() => {
+    const tags: { [key: string]: string } = {};
+    for (let i = 0; i < 100; i++) {
+      tags[i] = 'tag';
+    }
+    new BatchSubmitJob(stack, 'Task1', {
+      jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
+      jobName: 'JobName',
+      jobQueueArn: batchJobQueue.jobQueueArn,
+      tags,
+    });
+  }).toThrow(
+    /Maximum tag number of entries is 50./,
+  );
+
+  expect(() => {
+    const keyTooLong = 'k'.repeat(150);
+    const tags: { [key: string]: string } = {};
+    tags[keyTooLong] = 'tag';
+    new BatchSubmitJob(stack, 'Task2', {
+      jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
+      jobName: 'JobName',
+      jobQueueArn: batchJobQueue.jobQueueArn,
+      tags,
+    });
+  }).toThrow(
+    /Tag key size must be between 1 and 128/,
+  );
+
+  expect(() => {
+    const tags = { key: 'k'.repeat(300) };
+    new BatchSubmitJob(stack, 'Task3', {
+      jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
+      jobName: 'JobName',
+      jobQueueArn: batchJobQueue.jobQueueArn,
+      tags,
+    });
+  }).toThrow(
+    /Tag value maximum size is 256/,
+  );
+});

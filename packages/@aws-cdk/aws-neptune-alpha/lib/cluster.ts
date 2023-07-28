@@ -104,6 +104,18 @@ export class LogType {
   public constructor(public readonly value: string) {}
 }
 
+export interface ServerlessScalingConfiguration {
+  /**
+   * Minimum NCU capacity (min value 1)
+   */
+  readonly minCapacity: number;
+
+  /**
+   * Maximum NCU capacity (min value 2.5 - max value 128)
+   */
+  readonly maxCapacity: number;
+}
+
 /**
  * Properties for a new database cluster
  */
@@ -297,6 +309,14 @@ export interface DatabaseClusterProps {
    * @default - a new role is created.
    */
   readonly cloudwatchLogsRetentionRole?: iam.IRole;
+
+  /**
+   * Specify minimum and maximum NCUs capacity for a serverless cluster.
+   * See https://docs.aws.amazon.com/neptune/latest/userguide/neptune-serverless-capacity-scaling.html
+   *
+   * @default - required if instanceType is db.serverless
+   */
+  readonly serverlessScalingConfiguration?: ServerlessScalingConfiguration;
 }
 
 /**
@@ -565,6 +585,12 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
 
     this.enableIamAuthentication = props.iamAuthentication;
 
+    if (props.instanceType === InstanceType.SERVERLESS && !props.serverlessScalingConfiguration) {
+      throw new Error('You need to specify a serverless scaling configuration with a db.serverless instance type.');
+    }
+
+    this.validateServerlessScalingConfiguration(props.serverlessScalingConfiguration);
+
     // Create the Neptune cluster
     const cluster = new CfnDBCluster(this, 'Resource', {
       // Basic
@@ -585,6 +611,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       // CloudWatch Logs exports
       enableCloudwatchLogsExports: props.cloudwatchLogsExports?.map(logType => logType.value),
       storageEncrypted,
+      serverlessScalingConfiguration: props.serverlessScalingConfiguration,
     });
 
     cluster.applyRemovalPolicy(props.removalPolicy, {
@@ -648,5 +675,19 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       defaultPort: ec2.Port.tcp(port),
       securityGroups: securityGroups,
     });
+  }
+
+  private validateServerlessScalingConfiguration(serverlessScalingConfiguration?: ServerlessScalingConfiguration) {
+    if (!serverlessScalingConfiguration) return;
+    if (serverlessScalingConfiguration.minCapacity < 1) {
+      throw new Error(`ServerlessScalingConfiguration minCapacity must be greater or equal than 1, received ${serverlessScalingConfiguration.minCapacity}`);
+    }
+    if (serverlessScalingConfiguration.maxCapacity < 2.5 || serverlessScalingConfiguration.maxCapacity > 128) {
+      throw new Error(`ServerlessScalingConfiguration maxCapacity must be between 2.5 and 128, reveived ${serverlessScalingConfiguration.maxCapacity}`);
+    }
+    if (serverlessScalingConfiguration.minCapacity >= serverlessScalingConfiguration.maxCapacity) {
+      throw new Error(`ServerlessScalingConfiguration minCapacity ${serverlessScalingConfiguration.minCapacity} ` +
+        `must be less than serverlessScalingConfiguration maxCapacity ${serverlessScalingConfiguration.maxCapacity}`);
+    }
   }
 }

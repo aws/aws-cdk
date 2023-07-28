@@ -955,7 +955,9 @@
         "awslogs-stream-prefix": "firelens",
         "awslogs-region": {
          "Ref": "AWS::Region"
-        }
+        },
+        "mode": "non-blocking",
+        "max-buffer-size": "26214400b"
        }
       },
       "MemoryReservation": 50,

@@ -382,7 +382,8 @@ if (process.env.CDK_INTEG_ACCOUNT !== '12345678') {
 
 new integ.IntegTest(app, 'aws-cdk-eks-cluster-ipv6', {
   testCases: [stack],
-  diffAssets: true,
+  // Test includes assets that are updated weekly. If not disabled, the upgrade PR will fail.
+  diffAssets: false,
   cdkCommandOptions: {
     deploy: {
       args: {

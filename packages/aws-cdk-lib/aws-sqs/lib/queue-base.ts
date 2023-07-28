@@ -37,6 +37,11 @@ export interface IQueue extends IResource {
   readonly fifo: boolean;
 
   /**
+   * Whether the contents of the queue are encrypted, and by what type of key.
+   */
+  readonly encryptionType?: QueueEncryption;
+
+  /**
    * Adds a statement to the IAM resource policy associated with this queue.
    *
    * If this queue was created in this stack (`new Queue`), a queue policy
@@ -125,6 +130,11 @@ export abstract class QueueBase extends Resource implements IQueue {
    * Whether this queue is an Amazon SQS FIFO queue. If false, this is a standard queue.
    */
   public abstract readonly fifo: boolean;
+
+  /**
+   * Whether the contents of the queue are encrypted, and by what type of key.
+   */
+  public abstract readonly encryptionType?: QueueEncryption;
 
   /**
    * Controls automatic creation of policy objects.
@@ -300,4 +310,34 @@ export interface QueueAttributes {
    * @default - if fifo is not specified, the property will be determined based on the queue name (not possible for FIFO queues imported from a token)
    */
   readonly fifo?: boolean;
+}
+
+/**
+ * What kind of encryption to apply to this queue
+ */
+export enum QueueEncryption {
+  /**
+   * Messages in the queue are not encrypted
+   */
+  UNENCRYPTED = 'NONE',
+
+  /**
+   * Server-side KMS encryption with a KMS key managed by SQS.
+   */
+  KMS_MANAGED = 'KMS_MANAGED',
+
+  /**
+   * Server-side encryption with a KMS key managed by the user.
+   *
+   * If `encryptionKey` is specified, this key will be used, otherwise, one will be defined.
+   */
+  KMS = 'KMS',
+
+  /**
+   * Server-side encryption key managed by SQS (SSE-SQS).
+   *
+   * To learn more about SSE-SQS on Amazon SQS, please visit the
+   * [Amazon SQS documentation](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-server-side-encryption.html).
+   */
+  SQS_MANAGED = 'SQS_MANAGED'
 }

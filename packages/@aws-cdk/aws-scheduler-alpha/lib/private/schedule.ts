@@ -1,6 +1,7 @@
 import { Resource } from 'aws-cdk-lib';
 import { CfnSchedule } from 'aws-cdk-lib/aws-scheduler';
 import { Construct } from 'constructs';
+import { IGroup } from '../group';
 import { ISchedule } from '../schedule';
 import { ScheduleExpression } from '../schedule-expression';
 
@@ -36,19 +37,31 @@ export interface ScheduleProps {
    * @default - no value
    */
   readonly description?: string;
+
+  /**
+   * The schedule's group.
+   *
+   * @deafult - By default a schedule will be associated with the `default` group.
+   */
+  readonly group?: IGroup;
 }
 
 /**
  * An EventBridge Schedule
  */
 export class Schedule extends Resource implements ISchedule {
+  public readonly group?: IGroup;
+
   constructor(scope: Construct, id: string, props: ScheduleProps) {
     super(scope, id);
+
+    this.group = props.group;
 
     new CfnSchedule(this, 'Resource', {
       flexibleTimeWindow: { mode: 'OFF' },
       scheduleExpression: props.schedule.expressionString,
       scheduleExpressionTimezone: props.schedule.timeZone?.timezoneName,
+      groupName: this.group?.groupName,
       target: {
         ...props.target.bind(this),
       },

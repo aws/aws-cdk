@@ -57,6 +57,9 @@ deployment will fail, as if a resource failed to provision. This makes it easy
 to implement "self tests" via triggers by simply making a set of assertions on
 some provisioned infrastructure.
 
+Note that this behavior is only applied when invocationType is `REQUEST_RESPONSE`. When invocationType is `EVENT`, Lambda function is invoked asynchronously.
+In that case, if Lambda function is invoked successfully, the trigger will success regardless of the result for the function execution.
+
 ## Order of Execution
 
 By default, a trigger will be executed by CloudFormation after the associated
