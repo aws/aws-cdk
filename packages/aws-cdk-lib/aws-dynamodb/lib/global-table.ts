@@ -1,11 +1,13 @@
 import { Construct } from 'constructs';
-import { IStream } from '../../aws-kinesis';
-import { IResource, RemovalPolicy, Resource, Stack, Token, Lazy, ArnFormat } from '../../core';
+import { CfnGlobalTable } from './dynamodb.generated';
 import {
   SecondaryIndexProps, SchemaOptions, TableClass, LocalSecondaryIndexProps,
   BillingMode, Attribute, ProjectionType,
 } from './shared';
-import { CfnGlobalTable } from './dynamodb.generated';
+import { IStream } from '../../aws-kinesis';
+import { IResource, RemovalPolicy, Resource, Stack, Token, Lazy, ArnFormat } from '../../core';
+
+/* eslint-disable no-console */
 
 const HASH_KEY_TYPE = 'HASH';
 const RANGE_KEY_TYPE = 'RANGE';
@@ -238,6 +240,8 @@ export class GlobalTable extends GlobalTableBase {
     }
 
     props.globalSecondaryIndexes?.forEach(gsi => this.addGlobalSecondaryIndex(gsi));
+    props.localSecondaryIndexes?.forEach(lsi => this.addLocalSecondaryIndex(lsi));
+    props.replicas?.forEach(replica => this.addReplica(replica));
 
     const resource = new CfnGlobalTable(scope, 'Resource', {
       tableName: this.physicalName,
@@ -551,7 +555,7 @@ export class Billing {
 
   public get writeCapacity() {
     if (!this._writeCapacity) {
-      throw new Error(`writeCapacity is not configured when billing mode is ${BillingMode.PROVISIONED}`);
+      throw new Error(`writeCapacity is not configured when billing mode is ${BillingMode.PAY_PER_REQUEST}`);
     }
     return this._writeCapacity;
   }
@@ -583,28 +587,28 @@ export class Capacity {
 
   public get units() {
     if (this._units === undefined) {
-      throw new Error(`Capacity units are not configured when capacity mode is ${CapacityMode.FIXED}`);
+      throw new Error(`Capacity units are not configured when capacity mode is ${CapacityMode.AUTOSCALED}`);
     }
     return this._units;
   }
 
   public get minCapacity() {
     if (this._minCapacity === undefined) {
-      throw new Error(`Minimum capacity is not configured when capacity mode is ${CapacityMode.AUTOSCALED}`);
+      throw new Error(`Minimum capacity is not configured when capacity mode is ${CapacityMode.FIXED}`);
     }
     return this._minCapacity;
   }
 
   public get maxCapacity() {
     if (this._maxCapacity === undefined) {
-      throw new Error(`Maximum capacity is not configured when capacity mode is ${CapacityMode.AUTOSCALED}`);
+      throw new Error(`Maximum capacity is not configured when capacity mode is ${CapacityMode.FIXED}`);
     }
     return this._maxCapacity;
   }
 
   public get targetUtilizationPercent() {
-    if (this._targetUtilizationPercent === undefined) {
-      throw new Error(`Target utilization percent is not configured when capacity mode is ${CapacityMode.AUTOSCALED}`);
+    if (this.mode === CapacityMode.FIXED) {
+      throw new Error(`Target utilization percent is not configured when capacity mode is ${CapacityMode.FIXED}`);
     }
     return this._targetUtilizationPercent ?? DEFAULT_TARGET_UTILIZATION;
   }

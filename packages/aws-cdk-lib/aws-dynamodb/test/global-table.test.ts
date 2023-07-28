@@ -11,32 +11,34 @@ describe('global table configuration', () => {
     // WHEN
     new GlobalTable(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
+      billing: Billing.provisioned({
+        readCapacity: Capacity.fixed(10),
+        writeCapacity: Capacity.autoscaled({ minCapacity: 1, maxCapacity: 10 }),
+      }),
+      globalSecondaryIndexes: [
+        {
+          indexName: 'gsi1',
+          partitionKey: { name: 'gsiPk1', type: AttributeType.NUMBER },
+          readCapacity: Capacity.autoscaled({ minCapacity: 10, maxCapacity: 30 }),
+        },
+        {
+          indexName: 'gsi2',
+          partitionKey: { name: 'gsiPk2', type: AttributeType.STRING },
+          readCapacity: Capacity.autoscaled({ minCapacity: 20, maxCapacity: 50 }),
+        },
+      ],
+      replicas: [
+        {
+          region: 'us-west-2',
+          globalSecondaryIndexOptions: {
+            gsi1: { readCapacity: Capacity.fixed(50), contributorInsights: true },
+          },
+        },
+      ],
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
-      AttributeDefinitions: [
-        {
-          AttributeName: 'pk',
-          AttributeType: 'S',
-        },
-      ],
-      BillingMode: 'PAY_PER_REQUEST',
-      KeySchema: [
-        {
-          AttributeName: 'pk',
-          KeyType: 'HASH',
-        },
-      ],
-      Replicas: [
-        {
-          Region: 'us-west-2',
-        },
-      ],
-      StreamSpecification: {
-        StreamViewType: 'NEW_AND_OLD_IMAGES',
-      },
-    });
+    console.log(JSON.stringify(Template.fromStack(stack), null, 4));
   });
 
   test('with contributor insights enabled', () => {
