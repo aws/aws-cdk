@@ -7,7 +7,7 @@ import { EnableScalingProps, IScalableTableAttribute } from './scalable-attribut
 import { ScalableTableAttribute } from './scalable-table-attribute';
 import {
   Attribute, SchemaOptions, BillingMode, ProjectionType,
-  SecondaryIndexProps, TableClass,
+  SecondaryIndexProps, TableClass, LocalSecondaryIndexProps,
 } from './shared';
 import * as appscaling from '../../aws-applicationautoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
@@ -317,16 +317,6 @@ export interface GlobalSecondaryIndexProps extends SecondaryIndexProps, SchemaOp
    * @default 5
    */
   readonly writeCapacity?: number;
-}
-
-/**
- * Properties for a local secondary index
- */
-export interface LocalSecondaryIndexProps extends SecondaryIndexProps {
-  /**
-   * The attribute of a sort key for the local secondary index.
-   */
-  readonly sortKey: Attribute;
 }
 
 /**

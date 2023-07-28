@@ -1,11 +1,11 @@
 import { Construct } from 'constructs';
-import { CfnGlobalTable } from './dynamodb.generated';
-import {
-  Attribute, SchemaOptions, TableClass, SecondaryIndexProps,
-  BillingMode, ProjectionType,
-} from './shared';
 import { IStream } from '../../aws-kinesis';
-import { IResource, Lazy, RemovalPolicy, Resource, Token, Stack, ArnFormat } from '../../core';
+import { IResource, RemovalPolicy, Resource, Stack, Token, Lazy, ArnFormat } from '../../core';
+import {
+  SecondaryIndexProps, SchemaOptions, TableClass, LocalSecondaryIndexProps,
+  BillingMode, Attribute, ProjectionType,
+} from './shared';
+import { CfnGlobalTable } from './dynamodb.generated';
 
 const HASH_KEY_TYPE = 'HASH';
 const RANGE_KEY_TYPE = 'RANGE';
@@ -15,69 +15,95 @@ const MAX_LSI_COUNT = 5;
 const MAX_NON_KEY_ATTRIBUTES = 100;
 const DEFAULT_TARGET_UTILIZATION = 70;
 
+/**
+ * Capacity modes
+ */
 export enum CapacityMode {
   FIXED = 'FIXED',
   AUTOSCALED = 'AUTOSCALED',
 }
 
-interface CapacityConfigOptions {
+/**
+ * Options used to configure capacity
+ */
+export interface CapacityOptions {
   readonly units?: number;
   readonly minCapacity?: number;
   readonly maxCapacity?: number;
   readonly targetUtilizationPercent?: number;
 }
 
-export interface ThroughputOptions {
-  readonly readCapacity: Capacity;
-  readonly writeCapacity: Capacity;
-}
-
+/**
+ * Options used to configure autoscaled capacity
+ */
 export interface AutoscaledCapacityOptions {
   readonly minCapacity: number;
   readonly maxCapacity: number;
   readonly targetUtilizationPercent?: number;
 }
 
+/**
+ * Properties used to configure throughput capacity settings
+ */
+export interface ThroughputProps {
+  readonly readCapacity: Capacity;
+  readonly writeCapacity: Capacity;
+}
+
+/**
+ * Properties used to configure a global secondary index
+ */
+export interface GlobalSecondaryIndexPropsV2 extends SchemaOptions, SecondaryIndexProps {
+  readonly readCapacity?: Capacity;
+  readonly writeCapacity?: Capacity;
+}
+
+/**
+ * Options to configure a global secondary index on a per-replica basis
+ */
 export interface ReplicaGlobalSecondaryIndexOptions {
   readonly indexName: string;
   readonly contributorInsights?: boolean;
   readonly readCapacity?: Capacity;
 }
 
-export interface GlobalSecondaryIndexPropsV2 extends SchemaOptions, SecondaryIndexProps {
-  readonly readCapacity?: Capacity;
-  readonly writeCapacity?: Capacity;
-}
-
-export interface LocalSecondaryIndexPropsV2 extends SecondaryIndexProps {
-  readonly sortKey: Attribute;
-}
-
-interface TableOptions {
+/**
+ * Configurable table options common to global tables and replica tables
+ */
+export interface TableOptionsV2 {
   readonly contributorInsights?: boolean;
   readonly deletionProtection?: boolean;
   readonly pointInTimeRecovery?: boolean;
   readonly tableClass?: TableClass;
 }
 
-export interface ReplicaTableProps extends TableOptions {
+/**
+ * Properties used to configure a replica table
+ */
+export interface ReplicaTableProps extends TableOptionsV2 {
   readonly region: string;
   readonly readCapacity?: Capacity;
   readonly kinesisStream?: IStream;
   readonly globalSecondaryIndexOptions?: { [indexName: string]: ReplicaGlobalSecondaryIndexOptions };
 }
 
-export interface GlobalTableProps extends TableOptions, SchemaOptions {
+/**
+ * Properties used to configure a global table
+ */
+export interface GlobalTableProps extends TableOptionsV2, SchemaOptions {
   readonly tableName?: string;
   readonly timeToLiveAttribute?: string;
   readonly removalPolicy?: RemovalPolicy;
   readonly billing?: Billing;
   readonly replicas?: ReplicaTableProps[];
   readonly globalSecondaryIndexes?: GlobalSecondaryIndexPropsV2[];
-  readonly localSecondaryIndexes?: LocalSecondaryIndexPropsV2[];
+  readonly localSecondaryIndexes?: LocalSecondaryIndexProps[];
   readonly encryption?: TableEncryptionV2;
 }
 
+/**
+ * Represents an instance of a global table
+ */
 export interface IGlobalTable extends IResource {
   readonly tableArn: string;
   readonly tableName: string;
@@ -85,6 +111,9 @@ export interface IGlobalTable extends IResource {
   readonly tableStreamArn?: string;
 }
 
+/**
+ * Attributes of a global table
+ */
 export interface GlobalTableAttributes {
   readonly tableArn?: string;
   readonly tableName?: string;
@@ -92,6 +121,9 @@ export interface GlobalTableAttributes {
   readonly tableStreamArn?: string;
 }
 
+/**
+ * The base class for a global table
+ */
 abstract class GlobalTableBase extends Resource implements IGlobalTable {
   public abstract readonly tableArn: string;
   public abstract readonly tableName: string;
@@ -99,6 +131,9 @@ abstract class GlobalTableBase extends Resource implements IGlobalTable {
   public abstract readonly tableStreamArn?: string;
 }
 
+/**
+ * A global table
+ */
 export class GlobalTable extends GlobalTableBase {
   public static fromTableName(scope: Construct, id: string, tableName: string): IGlobalTable {
     return GlobalTable.fromTableAttributes(scope, id, { tableName });
@@ -159,40 +194,40 @@ export class GlobalTable extends GlobalTableBase {
   public readonly tableId?: string;
   public readonly tableStreamArn?: string;
 
-  private readonly tablePartitionKey: Attribute;
+  private readonly region: string;
   private readonly billingMode: string;
-  private readonly deploymentRegion: string;
+  private readonly partitionKey: Attribute;
+  private readonly tableOptions: TableOptionsV2;
 
-  private readonly globalTableOptions: TableOptions;
-  private readonly tableReadProvisioning?: CfnGlobalTable.ReadProvisionedThroughputSettingsProperty;
-  private readonly tableWriteProvisioning?: CfnGlobalTable.WriteProvisionedThroughputSettingsProperty;
+  private readonly readProvisioning?: CfnGlobalTable.ReadProvisionedThroughputSettingsProperty;
+  private readonly writeProvisioning?: CfnGlobalTable.WriteProvisionedThroughputSettingsProperty;
 
-  private readonly keySchema: CfnGlobalTable.KeySchemaProperty[] = [];
   private readonly attributeDefinitions: CfnGlobalTable.AttributeDefinitionProperty[] = [];
+  private readonly keySchema: CfnGlobalTable.KeySchemaProperty[] = [];
   private readonly nonKeyAttributes = new Set<string>();
 
   private readonly _replicaTables = new Map<string, ReplicaTableProps>();
 
-  private readonly globalSecondaryReadCapacitys = new Map<string, Capacity>();
-  private readonly _globalSecondaryIndexes = new Map<string, CfnGlobalTable.GlobalSecondaryIndexProperty>();
-  private readonly _localSecondaryIndexes = new Map<string, CfnGlobalTable.LocalSecondaryIndexProperty>();
+  private readonly localSecondaryIndexes = new Map<string, CfnGlobalTable.LocalSecondaryIndexProperty>();
+  private readonly globalSecondaryIndexes = new Map<string, CfnGlobalTable.GlobalSecondaryIndexProperty>();
+  private readonly globalSecondaryIndexReadCapacitys = new Map<string, Capacity>();
 
   public constructor(scope: Construct, id: string, props: GlobalTableProps) {
     super(scope, id, { physicalName: props.tableName });
 
-    this.deploymentRegion = Stack.of(this).region;
-    if (Token.isUnresolved(this.deploymentRegion)) {
-      throw new Error('The region of the stack a global table is defined in must not be a token');
+    this.region = Stack.of(this).region;
+    if (Token.isUnresolved(this.region)) {
+      throw new Error('The deployment region for a global table must not be a token');
     }
 
-    this.globalTableOptions = props;
-    this.tablePartitionKey = props.partitionKey;
+    this.partitionKey = props.partitionKey;
+    this.tableOptions = props;
 
     if (props.billing) {
       this.billingMode = props.billing.mode;
       if (this.billingMode === BillingMode.PROVISIONED) {
-        this.tableReadProvisioning = this.configureReadProvisioning(props.billing.readCapacity);
-        this.tableWriteProvisioning = this.configureWriteProvisioning(props.billing.writeCapacity);
+        this.readProvisioning = this.configureReadProvisioning(props.billing.readCapacity);
+        this.writeProvisioning = this.configureWriteProvisioning(props.billing.writeCapacity);
       }
     } else {
       this.billingMode = BillingMode.PAY_PER_REQUEST;
@@ -203,20 +238,18 @@ export class GlobalTable extends GlobalTableBase {
       this.addKey(props.sortKey, RANGE_KEY_TYPE);
     }
 
-    props.replicas?.forEach(replica => this.addReplica(replica));
     props.globalSecondaryIndexes?.forEach(gsi => this.addGlobalSecondaryIndex(gsi));
-    props.localSecondaryIndexes?.forEach(lsi => this.addLocalSecondaryIndex(lsi));
 
-    const resource = new CfnGlobalTable(this, 'Resource', {
+    const resource = new CfnGlobalTable(scope, 'Resource', {
       tableName: this.physicalName,
       keySchema: this.keySchema,
       attributeDefinitions: Lazy.any({ produce: () => this.attributeDefinitions }),
       replicas: Lazy.any({ produce: () => this.replicaTables }),
-      globalSecondaryIndexes: Lazy.any({ produce: () => this.globalSecondaryIndexes }, { omitEmptyArray: true }),
-      localSecondaryIndexes: Lazy.any({ produce: () => this.localSecondaryIndexes }, { omitEmptyArray: true }),
-      streamSpecification: { streamViewType: NEW_AND_OLD_IMAGES },
+      localSecondaryIndexes: Lazy.any({ produce: () => Array.from(this.localSecondaryIndexes.values()) }),
+      globalSecondaryIndexes: Lazy.any({ produce: () => Array.from(this.globalSecondaryIndexes.values()) }),
       billingMode: this.billingMode,
-      writeProvisionedThroughputSettings: this.tableWriteProvisioning,
+      streamSpecification: { streamViewType: NEW_AND_OLD_IMAGES },
+      writeProvisionedThroughputSettings: this.writeProvisioning,
       timeToLiveSpecification: props.timeToLiveAttribute
         ? { attributeName: props.timeToLiveAttribute, enabled: true }
         : undefined,
@@ -237,76 +270,12 @@ export class GlobalTable extends GlobalTableBase {
     }
   }
 
-  /**
-   * Add a global secondary index to the global table.
-   *
-   * @param props the properties of the global secondary index to add
-   */
-  public addGlobalSecondaryIndex(props: GlobalSecondaryIndexPropsV2) {
-    this.validateIndexName(props.indexName);
-
-    if (this._globalSecondaryIndexes.size === MAX_GSI_COUNT) {
-      throw new Error(`A table can only have a maximum of ${MAX_GSI_COUNT} global secondary indexes`);
-    }
-
-    if (this.billingMode === BillingMode.PAY_PER_REQUEST && (props.readCapacity || props.writeCapacity)) {
-      throw new Error('You cannot provision read and write capacity for a global secondary index on a table with on-demand billing mode');
-    }
-
-    if (this.billingMode === BillingMode.PROVISIONED && !props.readCapacity) {
-      throw new Error(`You must specify 'readCapacity' on a global secondary index when the billing mode is ${BillingMode.PROVISIONED}`);
-    }
-
-    const globalSecondaryIndex = this.configureGlobalSecondaryIndex(props);
-    this._globalSecondaryIndexes.set(props.indexName, globalSecondaryIndex);
-  }
-
-  /**
-   * Add a local secondary index to the global table.
-   *
-   * @param props the properties of the local secondary index to add
-   */
-  public addLocalSecondaryIndex(props: LocalSecondaryIndexPropsV2) {
-    this.validateIndexName(props.indexName);
-
-    if (this._localSecondaryIndexes.size > MAX_LSI_COUNT) {
-      throw new Error(`A table can only have a maximum of ${MAX_LSI_COUNT} local secondary indexes`);
-    }
-
-    const localSecondaryIndex = this.configureLocalSecondaryIndex(props);
-    this._localSecondaryIndexes.set(props.indexName, localSecondaryIndex);
-  }
-
-  /**
-   * Add a replica table to the global table.
-   *
-   * @param props the properties of the replica table to add
-   */
-  public addReplica(props: ReplicaTableProps) {
-    if (Token.isUnresolved(props.region)) {
-      throw new Error('Replica table `region` value must not be a token');
-    }
-
-    if (this._replicaTables.has(props.region)) {
-      throw new Error(`Duplicate replica region, ${props.region}, is not allowed`);
-    }
-
-    this._replicaTables.set(props.region, props);
-  }
-
-  private get globalSecondaryIndexes() {
-    return Array.from(this._globalSecondaryIndexes.values());
-  }
-
-  private get localSecondaryIndexes() {
-    return Array.from(this._localSecondaryIndexes.values());
-  }
-
   private get replicaTables() {
     const replicaTables: CfnGlobalTable.ReplicaSpecificationProperty[] = [];
 
-    if (!this._replicaTables.has(this.deploymentRegion)) {
-      replicaTables.push(this.configureReplicaTable({ region: this.deploymentRegion }));
+    if (!this._replicaTables.has(this.region)) {
+      const replicaTable = this.configureReplicaTable({ region: this.region });
+      replicaTables.push(replicaTable);
     }
 
     for (const replicaTable of this._replicaTables.values()) {
@@ -316,46 +285,142 @@ export class GlobalTable extends GlobalTableBase {
     return replicaTables;
   }
 
-  private configureReplicaTable(replicaTable: ReplicaTableProps): CfnGlobalTable.ReplicaSpecificationProperty {
-    const pointInTimeRecovery = replicaTable.pointInTimeRecovery ?? this.globalTableOptions.pointInTimeRecovery;
-    const contributorInsights = replicaTable.contributorInsights ?? this.globalTableOptions.contributorInsights;
-    const readProvisionedThroughputSettings = replicaTable.readCapacity
-      ? this.configureReadProvisioning(replicaTable.readCapacity)
-      : this.tableReadProvisioning;
+  /**
+   * Add a local secondary index to the global table and its replicas
+   *
+   * @param props the properties of the local secondary index to add
+   */
+  public addLocalSecondaryIndex(props: LocalSecondaryIndexProps) {
+    this.validateIndexName(props.indexName);
 
-    const globalSecondaryIndexes: CfnGlobalTable.ReplicaGlobalSecondaryIndexSpecificationProperty[] = [];
-    for (const indexName of this._globalSecondaryIndexes.keys()) {
-      if (!this._globalSecondaryIndexes.has(indexName)) {
-        throw new Error();
-      }
-
-      const replicaGsiOptions = replicaTable.globalSecondaryIndexOptions
-        ? replicaTable.globalSecondaryIndexOptions[indexName]
-        : undefined;
-
-      if (this.billingMode === BillingMode.PAY_PER_REQUEST && replicaGsiOptions?.readCapacity) {
-        throw new Error(`You cannot configure replica global secondary index, ${indexName}, 'readCapacity' when table billing mode is ${BillingMode.PAY_PER_REQUEST}`);
-      }
-
-      const replicaGsi = this.configureReplicaGlobalSecondaryIndex({
-        indexName,
-        contributorInsights: replicaGsiOptions?.contributorInsights ?? this.globalTableOptions.contributorInsights,
-        readCapacity: replicaGsiOptions?.readCapacity ?? this.globalSecondaryReadCapacitys.get(indexName),
-      });
-
-      globalSecondaryIndexes.push(replicaGsi);
+    if (this.localSecondaryIndexes.size > MAX_LSI_COUNT) {
+      throw new Error(`A table can only support a maximum of ${MAX_LSI_COUNT} local secondary indexes`);
     }
 
+    const localSecondaryIndex = this.configureLocalSecondaryIndex(props);
+    this.localSecondaryIndexes.set(props.indexName, localSecondaryIndex);
+  }
+
+  /**
+   * Add a global secondary index to the global table and its replicas
+   *
+   * @param props the properties of the global secondary index to add
+   */
+  public addGlobalSecondaryIndex(props: GlobalSecondaryIndexPropsV2) {
+    this.validateIndexName(props.indexName);
+
+    if (this.globalSecondaryIndexes.size === MAX_GSI_COUNT) {
+      throw new Error(`A table can only support a maximum of ${MAX_GSI_COUNT} global secondary indexes`);
+    }
+
+    if (this.billingMode === BillingMode.PAY_PER_REQUEST && (props.readCapacity || props.writeCapacity)) {
+      throw new Error(`You cannot configure read or write capacity on a global secondary index if the billing mode is ${BillingMode.PAY_PER_REQUEST}`);
+    }
+
+    if (this.billingMode === BillingMode.PROVISIONED && !props.readCapacity) {
+      throw new Error(`You must specify 'readCapacity' on a global secondary index when the billing mode is ${BillingMode.PROVISIONED}`);
+    }
+
+    const globalSecondaryIndex = this.configureGlobalSecondaryIndex(props);
+    this.globalSecondaryIndexes.set(props.indexName, globalSecondaryIndex);
+  }
+
+  /**
+   * Add a replica table to the global table
+   *
+   * @param props the properties of the replica table to add
+   */
+  public addReplica(props: ReplicaTableProps) {
+    if (Token.isUnresolved(props.region)) {
+      throw new Error('Replica table `region` must not be a token');
+    }
+
+    if (this._replicaTables.has(props.region)) {
+      throw new Error(`Duplicate replica region, ${props.region}, is not allowed`);
+    }
+
+    this._replicaTables.set(props.region, props);
+  }
+
+  private configureLocalSecondaryIndex(props: LocalSecondaryIndexProps): CfnGlobalTable.LocalSecondaryIndexProperty {
+    const indexKeySchema = this.configureIndexKeySchema(this.partitionKey, props.sortKey);
+    const indexProjection = this.configureIndexProjection(props);
+
     return {
-      region: replicaTable.region,
+      indexName: props.indexName,
+      keySchema: indexKeySchema,
+      projection: indexProjection,
+    };
+  }
+
+  private configureGlobalSecondaryIndex(props: GlobalSecondaryIndexPropsV2): CfnGlobalTable.GlobalSecondaryIndexProperty {
+    const indexKeySchema = this.configureIndexKeySchema(props.partitionKey, props.sortKey);
+    const indexProjection = this.configureIndexProjection(props);
+
+    if (props.readCapacity) {
+      this.globalSecondaryIndexReadCapacitys.set(props.indexName, props.readCapacity);
+    }
+
+    const writeProvisionedThroughputSettings = props.writeCapacity
+      ? this.configureWriteProvisioning(props.writeCapacity)
+      : this.writeProvisioning;
+
+    return {
+      indexName: props.indexName,
+      keySchema: indexKeySchema,
+      projection: indexProjection,
+      writeProvisionedThroughputSettings,
+    };
+  }
+
+  private configureReplicaGlobalSecondaryIndexes(options?: { [indexName: string]: ReplicaGlobalSecondaryIndexOptions }) {
+    if (!options) {
+      return undefined;
+    }
+
+    const globalSecondaryIndexes: CfnGlobalTable.ReplicaGlobalSecondaryIndexSpecificationProperty[] = [];
+    for (const indexName of Object.keys(options)) {
+      if (!this.globalSecondaryIndexes.has(indexName)) {
+        throw new Error(`Cannot configure global secondary index, ${indexName}, because it is not defined on the global table`);
+      }
+
+      const replicaGsiOptions = options[indexName];
+
+      const contributorInsights = replicaGsiOptions.contributorInsights ?? this.tableOptions.contributorInsights;
+      const readCapacity = replicaGsiOptions.readCapacity ?? this.globalSecondaryIndexReadCapacitys.get(indexName);
+
+      const readProvisionedThroughputSettings = readCapacity
+        ? this.configureReadProvisioning(readCapacity)
+        : undefined;
+
+      globalSecondaryIndexes.push({
+        indexName,
+        readProvisionedThroughputSettings,
+        contributorInsightsSpecification: contributorInsights !== undefined
+          ? { enabled: contributorInsights }
+          : undefined,
+      });
+    }
+
+    return globalSecondaryIndexes;
+  }
+
+  private configureReplicaTable(props: ReplicaTableProps): CfnGlobalTable.ReplicaSpecificationProperty {
+    const globalSecondaryIndexes = this.configureReplicaGlobalSecondaryIndexes(props.globalSecondaryIndexOptions);
+    const pointInTimeRecovery = props.pointInTimeRecovery ?? this.tableOptions.pointInTimeRecovery;
+    const contributorInsights = props.contributorInsights ?? this.tableOptions.contributorInsights;
+    const readProvisionedThroughputSettings = props.readCapacity
+      ? this.configureReadProvisioning(props.readCapacity)
+      : this.readProvisioning;
+
+    return {
+      region: props.region,
       readProvisionedThroughputSettings,
-      deletionProtectionEnabled: replicaTable.deletionProtection ?? this.globalTableOptions.deletionProtection,
-      tableClass: replicaTable.tableClass ?? this.globalTableOptions.tableClass,
-      globalSecondaryIndexes: globalSecondaryIndexes.length > 0
-        ? globalSecondaryIndexes
-        : undefined,
-      kinesisStreamSpecification: replicaTable.kinesisStream
-        ? { streamArn: replicaTable.kinesisStream.streamArn }
+      globalSecondaryIndexes,
+      deletionProtectionEnabled: props.deletionProtection ?? this.tableOptions.deletionProtection,
+      tableClass: props.tableClass ?? this.tableOptions.tableClass,
+      kinesisStreamSpecification: props.kinesisStream
+        ? { streamArn: props.kinesisStream.streamArn }
         : undefined,
       contributorInsightsSpecification: contributorInsights !== undefined
         ? { enabled: contributorInsights }
@@ -363,66 +428,6 @@ export class GlobalTable extends GlobalTableBase {
       pointInTimeRecoverySpecification: pointInTimeRecovery !== undefined
         ? { pointInTimeRecoveryEnabled: pointInTimeRecovery }
         : undefined,
-    };
-  }
-
-  private configureGlobalSecondaryIndex(gsi: GlobalSecondaryIndexPropsV2): CfnGlobalTable.GlobalSecondaryIndexProperty {
-    const indexKeySchema = this.buildIndexKeySchema(gsi.partitionKey, gsi.sortKey);
-    const indexProjection = this.buildIndexProjection(gsi);
-
-    if (gsi.readCapacity) {
-      this.globalSecondaryReadCapacitys.set(gsi.indexName, gsi.readCapacity);
-    }
-
-    const writeProvisionedThroughputSettings = gsi.writeCapacity
-      ? this.configureWriteProvisioning(gsi.writeCapacity)
-      : this.tableWriteProvisioning;
-
-    return {
-      indexName: gsi.indexName,
-      keySchema: indexKeySchema,
-      projection: indexProjection,
-      writeProvisionedThroughputSettings,
-    };
-  }
-
-  private configureReplicaGlobalSecondaryIndex(gsi: ReplicaGlobalSecondaryIndexOptions):
-  CfnGlobalTable.ReplicaGlobalSecondaryIndexSpecificationProperty {
-    return {
-      indexName: gsi.indexName,
-      readProvisionedThroughputSettings: gsi.readCapacity
-        ? this.configureReadProvisioning(gsi.readCapacity)
-        : this.tableReadProvisioning,
-      contributorInsightsSpecification: gsi.contributorInsights !== undefined
-        ? { enabled: gsi.contributorInsights }
-        : undefined,
-    };
-  }
-
-  private configureLocalSecondaryIndex(lsi: LocalSecondaryIndexPropsV2): CfnGlobalTable.LocalSecondaryIndexProperty {
-    const indexKeySchema = this.buildIndexKeySchema(this.tablePartitionKey, lsi.sortKey);
-    const indexProjection = this.buildIndexProjection(lsi);
-
-    return {
-      indexName: lsi.indexName,
-      keySchema: indexKeySchema,
-      projection: indexProjection,
-    };
-  }
-
-  private configureWriteProvisioning(writeCapacity: Capacity): CfnGlobalTable.WriteProvisionedThroughputSettingsProperty {
-    if (writeCapacity.mode === CapacityMode.FIXED) {
-      throw new Error('Write capacity must be configured using autoscaled capacity mode');
-    }
-
-    return {
-      writeCapacityAutoScalingSettings: {
-        minCapacity: writeCapacity.minCapacity,
-        maxCapacity: writeCapacity.maxCapacity,
-        targetTrackingScalingPolicyConfiguration: {
-          targetValue: writeCapacity.targetUtilizationPercent,
-        },
-      },
     };
   }
 
@@ -442,20 +447,38 @@ export class GlobalTable extends GlobalTableBase {
     };
   }
 
-  private buildIndexKeySchema(partitionKey: Attribute, sortKey?: Attribute) {
+  private configureWriteProvisioning(writeCapacity: Capacity): CfnGlobalTable.WriteProvisionedThroughputSettingsProperty {
+    if (writeCapacity.mode === CapacityMode.FIXED) {
+      throw new Error(`Write capacity must be configured using ${CapacityMode.AUTOSCALED} capacity mode`);
+    }
+
+    return {
+      writeCapacityAutoScalingSettings: {
+        minCapacity: writeCapacity.minCapacity,
+        maxCapacity: writeCapacity.maxCapacity,
+        targetTrackingScalingPolicyConfiguration: {
+          targetValue: writeCapacity.targetUtilizationPercent,
+        },
+      },
+    };
+  }
+
+  private configureIndexKeySchema(partitionKey: Attribute, sortKey?: Attribute) {
     this.addAttributeDefinition(partitionKey);
+
     const indexKeySchema: CfnGlobalTable.KeySchemaProperty[] = [
       { attributeName: partitionKey.name, keyType: HASH_KEY_TYPE },
     ];
 
     if (sortKey) {
+      this.addAttributeDefinition(sortKey);
       indexKeySchema.push({ attributeName: sortKey.name, keyType: RANGE_KEY_TYPE });
     }
 
     return indexKeySchema;
   }
 
-  private buildIndexProjection(props: SecondaryIndexProps): CfnGlobalTable.ProjectionProperty {
+  private configureIndexProjection(props: SecondaryIndexProps): CfnGlobalTable.ProjectionProperty {
     if (props.projectionType === ProjectionType.INCLUDE && !props.nonKeyAttributes) {
       throw new Error(`Non-key attributes should be specified when using ${ProjectionType.INCLUDE} projection type`);
     }
@@ -465,7 +488,11 @@ export class GlobalTable extends GlobalTableBase {
     }
 
     if (props.nonKeyAttributes) {
-      this.validateNonKeyAttributes(props.nonKeyAttributes);
+      props.nonKeyAttributes.forEach(attr => this.nonKeyAttributes.add(attr));
+    }
+
+    if (this.nonKeyAttributes.size > MAX_NON_KEY_ATTRIBUTES) {
+      throw new Error(`The maximum number of nonKeyAttributes across all secondary indexes is ${MAX_NON_KEY_ATTRIBUTES}`);
     }
 
     return {
@@ -481,8 +508,8 @@ export class GlobalTable extends GlobalTableBase {
 
   private addAttributeDefinition(attribute: Attribute) {
     const { name, type } = attribute;
+
     const existingAttributeDef = this.attributeDefinitions.find(def => def.attributeName === name);
-    // attribute definitions cannot be redefined
     if (existingAttributeDef && existingAttributeDef.attributeType !== type) {
       throw new Error(`Unable to specify ${name} as ${type} because it was already defined as ${existingAttributeDef.attributeType}`);
     }
@@ -493,25 +520,23 @@ export class GlobalTable extends GlobalTableBase {
   }
 
   private validateIndexName(indexName: string) {
-    if (this._globalSecondaryIndexes.has(indexName) || this._localSecondaryIndexes.has(indexName)) {
+    if (this.localSecondaryIndexes.has(indexName) || this.globalSecondaryIndexes.has(indexName)) {
       throw new Error(`Duplicate secondary index name, ${indexName}, is not allowed`);
-    }
-  }
-
-  private validateNonKeyAttributes(nonKeyAttributes: string[]) {
-    if (this.nonKeyAttributes.size + nonKeyAttributes.length > MAX_NON_KEY_ATTRIBUTES) {
-      throw new Error(`The maximum number of nonKeyAttributes across all secondary indexes is ${MAX_NON_KEY_ATTRIBUTES}`);
     }
   }
 }
 
+/**
+ * A class used to configure how you are charged for read and write throughput and how you
+ * manage capacity for a global table and its replicas
+ */
 export class Billing {
   public static onDemand() {
-    return new Billing(BillingMode.PAY_PER_REQUEST);
+    return new Billing(BillingMode.PAY_PER_REQUEST, undefined, undefined);
   }
 
-  public static provisioned(options: ThroughputOptions) {
-    return new Billing(BillingMode.PROVISIONED, options);
+  public static provisioned(props: ThroughputProps) {
+    return new Billing(BillingMode.PROVISIONED, props.readCapacity, props.writeCapacity);
   }
 
   public readonly mode: string;
@@ -520,25 +545,28 @@ export class Billing {
 
   public get readCapacity() {
     if (!this._readCapacity) {
-      throw new Error();
+      throw new Error(`readCapacity is not configured when billing mode is ${BillingMode.PAY_PER_REQUEST}`);
     }
     return this._readCapacity;
   }
 
   public get writeCapacity() {
     if (!this._writeCapacity) {
-      throw new Error();
+      throw new Error(`writeCapacity is not configured when billing mode is ${BillingMode.PROVISIONED}`);
     }
     return this._writeCapacity;
   }
 
-  private constructor(mode: string, options?: ThroughputOptions) {
+  private constructor(mode: string, readCapacity: Capacity | undefined, writeCapacity: Capacity | undefined) {
     this.mode = mode;
-    this._readCapacity = options?.readCapacity;
-    this._writeCapacity = options?.writeCapacity;
+    this._readCapacity = readCapacity;
+    this._writeCapacity = writeCapacity;
   }
 }
 
+/**
+ * A class used to configure read and write capacity for a global table and its replicas
+ */
 export class Capacity {
   public static fixed(units: number) {
     return new Capacity(CapacityMode.FIXED, { units });
@@ -556,33 +584,33 @@ export class Capacity {
 
   public get units() {
     if (this._units === undefined) {
-      throw new Error(`Capacity units are not configured for ${CapacityMode.AUTOSCALED} capacity mode`);
+      throw new Error(`Capacity units are not configured when capacity mode is ${CapacityMode.FIXED}`);
     }
     return this._units;
   }
 
   public get minCapacity() {
     if (this._minCapacity === undefined) {
-      throw new Error(`Minimum capacity is not configured for ${CapacityMode.FIXED} capacity mode`);
+      throw new Error(`Minimum capacity is not configured when capacity mode is ${CapacityMode.AUTOSCALED}`);
     }
     return this._minCapacity;
   }
 
   public get maxCapacity() {
     if (this._maxCapacity === undefined) {
-      throw new Error(`Maximum capacity is not configured for ${CapacityMode.FIXED} capacity mode`);
+      throw new Error(`Maximum capacity is not configured when capacity mode is ${CapacityMode.AUTOSCALED}`);
     }
     return this._maxCapacity;
   }
 
   public get targetUtilizationPercent() {
-    if (this.mode === CapacityMode.FIXED) {
-      throw new Error(`Target utilization percent is not configured for ${CapacityMode.FIXED} capacity mode`);
+    if (this._targetUtilizationPercent === undefined) {
+      throw new Error(`Target utilization percent is not configured when capacity mode is ${CapacityMode.AUTOSCALED}`);
     }
     return this._targetUtilizationPercent ?? DEFAULT_TARGET_UTILIZATION;
   }
 
-  private constructor(mode: string, options: CapacityConfigOptions) {
+  private constructor(mode: string, options: CapacityOptions) {
     this.mode = mode;
     this._units = options.units;
     this._minCapacity = options.minCapacity;

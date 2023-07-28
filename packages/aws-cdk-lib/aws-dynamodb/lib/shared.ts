@@ -130,3 +130,13 @@ export interface SecondaryIndexProps {
    */
   readonly nonKeyAttributes?: string[];
 }
+
+/**
+ * Properties for a local secondary index
+ */
+export interface LocalSecondaryIndexProps extends SecondaryIndexProps {
+  /**
+   * The attribute of a sort key for the local secondary index.
+   */
+  readonly sortKey: Attribute;
+}
