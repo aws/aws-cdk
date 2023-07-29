@@ -164,12 +164,7 @@ export class InlineCode extends Code {
     }
   }
 
-  public bind(_scope: Construct, handler: string, _family: RuntimeFamily): CodeConfig {
-
-    if (handler !== 'index.handler') {
-      throw new Error(`The handler for inline code must be "index.handler" (got "${handler}")`);
-    }
-
+  public bind(_scope: Construct, _handler: string, _family: RuntimeFamily): CodeConfig {
     return {
       inlineCode: this.code,
     };

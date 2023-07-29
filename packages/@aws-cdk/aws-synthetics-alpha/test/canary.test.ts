@@ -703,3 +703,81 @@ testDeprecated('Role policy generated as expected', () => {
     }],
   });
 });
+
+testDeprecated('Should create handler with path for recent runtimes', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    canaryName: 'mycanary',
+    test: synthetics.Test.custom({
+      handler: 'folder/fileName.functionName',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+    Name: 'mycanary',
+    Code: {
+      Handler: 'folder/fileName.functionName',
+    },
+    RuntimeVersion: 'syn-nodejs-puppeteer-3.8',
+  });
+});
+
+describe('handler validation', () => {
+  testDeprecated('legacy runtimes', () => {
+    const stack = new Stack();
+    expect(() => {
+      new synthetics.Canary(stack, 'Canary', {
+        test: synthetics.Test.custom({
+          handler: 'index.functionName',
+          code: synthetics.Code.fromInline('/* Synthetics handler code'),
+        }),
+        runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_1_0,
+      });
+    }).toThrow(/Canary Handler must be specified as 'fileName.handler' for legacy runtimes/);
+  });
+
+  testDeprecated('syn-nodejs-puppeteer-3.4', () => {
+    const stack = new Stack();
+    expect(() => {
+      new synthetics.Canary(stack, 'Canary', {
+        test: synthetics.Test.custom({
+          handler: 'folder/fileName.functionName',
+          code: synthetics.Code.fromInline('/* Synthetics handler code'),
+        }),
+        runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_4,
+      });
+    }).toThrow(/Canary Handler must be specified either as 'fileName.handler' or 'fileName.functionName' for the 'syn-nodejs-puppeteer-3.4' runtime/);
+  });
+
+  testDeprecated('recent runtimes', () => {
+    const stack = new Stack();
+    expect(() => {
+      new synthetics.Canary(stack, 'Canary', {
+        test: synthetics.Test.custom({
+          handler: 'invalidHandler',
+          code: synthetics.Code.fromInline('/* Synthetics handler code'),
+        }),
+        runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
+      });
+    }).toThrow(/Canary Handler must be specified either as 'fileName.handler', 'fileName.functionName', or 'folder\/fileName.functionName'/);
+  });
+
+  testDeprecated('handler length', () => {
+    const stack = new Stack();
+    expect(() => {
+      new synthetics.Canary(stack, 'Canary1', {
+        test: synthetics.Test.custom({
+          handler: 'longHandlerName'.repeat(10) + '.handler',
+          code: synthetics.Code.fromInline('/* Synthetics handler code'),
+        }),
+        runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
+      });
+    }).toThrow(/Canary Handler length must be between 1 and 128/);
+  });
+});
