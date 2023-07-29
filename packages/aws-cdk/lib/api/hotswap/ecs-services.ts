@@ -192,7 +192,9 @@ export async function isHotswappableEcsServiceChange(
 function mergeTaskDefinitions(patch: {containerDefinitions: {[key:string]: any}[]}, target: AWS.ECS.DescribeTaskDefinitionResponse) {
   const src = patch.containerDefinitions;
   const dst = target.taskDefinition?.containerDefinitions;
-  if (dst === undefined) return;
+  if (dst === undefined) {
+    return;
+  }
   // schema: https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html
   for (const i in src) {
     for (const key of Object.keys(src[i])) {
