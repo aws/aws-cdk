@@ -1,6 +1,6 @@
 import { generateSchema, SCHEMAS } from '../scripts/update-schema';
 
-test.skip('if this test fails, run "yarn update-schema"', () => {
+test('if this test fails, run "yarn update-schema"', () => {
 
   // when we compare schemas we ignore changes the
   // description that is generated from the ts docstrings.

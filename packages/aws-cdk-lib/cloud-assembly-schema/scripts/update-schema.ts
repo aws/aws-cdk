@@ -59,6 +59,7 @@ export function generateSchema(schemaName: string, saveToFile: boolean = true) {
     topRef: true,
     noExtraProps: false,
     out,
+    skipLibCheck: true,
   };
 
   const compilerOptions = {
