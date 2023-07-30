@@ -95,6 +95,7 @@ export class EvaluateExpression extends sfn.TaskStateBase {
 }
 
 function createEvalFn(runtime: lambda.Runtime | undefined, scope: Construct) {
+  const NO_RUNTIME = Symbol.for('no-runtime');
   const lambdaPurpose = 'Eval';
 
   const nodeJsGuids = {
@@ -103,37 +104,23 @@ function createEvalFn(runtime: lambda.Runtime | undefined, scope: Construct) {
     [lambda.Runtime.NODEJS_14_X.name]: 'da2d1181-604e-4a45-8694-1a6abd7fe42d',
     [lambda.Runtime.NODEJS_12_X.name]: '2b81e383-aad2-44db-8aaf-b4809ae0e3b4',
     [lambda.Runtime.NODEJS_10_X.name]: 'a0d2ce44-871b-4e74-87a1-f5e63d7c3bdc',
+
+    // UUID used when falling back to the default node runtime, which is a token and might be different per region
+    [NO_RUNTIME]: '41256dc5-4457-4273-8ed9-17bc818694e5',
   };
 
-  // UUID used when using the default node runtime, which is a token and different
-  // pre region.
-  let uuid;
-  if (runtime) {
-    switch (runtime?.name) {
-      case lambda.Runtime.NODEJS_18_X.name:
-      case lambda.Runtime.NODEJS_16_X.name:
-      case lambda.Runtime.NODEJS_14_X.name:
-      case lambda.Runtime.NODEJS_12_X.name:
-      case lambda.Runtime.NODEJS_10_X.name:
-        uuid = nodeJsGuids[runtime.name];
-        break;
-    }
-  } else {
-    uuid = '41256dc5-4457-4273-8ed9-17bc818694e5';
+  const uuid = nodeJsGuids[runtime?.name ?? NO_RUNTIME];
+  if (!uuid) {
+    throw new Error(`The runtime ${runtime?.name} is currently not supported.`);
   }
 
-  if (uuid) {
-    return new lambda.SingletonFunction(scope, 'EvalFunction', {
-      runtime: runtime ?? lambda.Runtime.NODEJS_18_X,
-      uuid,
-      handler: 'index.handler',
-      lambdaPurpose,
-      code: lambda.Code.fromAsset(path.join(__dirname, 'eval-nodejs-handler'), {
-        exclude: ['*.ts'],
-      }),
-    });
-  }
-
-  // Runtime always defined here
-  throw new Error(`The runtime ${runtime?.name} is currently not supported.`);
+  return new lambda.SingletonFunction(scope, 'EvalFunction', {
+    runtime: runtime ?? lambda.Runtime.NODEJS_18_X,
+    uuid,
+    handler: 'index.handler',
+    lambdaPurpose,
+    code: lambda.Code.fromAsset(path.join(__dirname, 'eval-nodejs-handler'), {
+      exclude: ['*.ts'],
+    }),
+  });
 }

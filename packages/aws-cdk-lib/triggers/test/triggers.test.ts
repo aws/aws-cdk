@@ -11,7 +11,7 @@ test('minimal trigger function', () => {
   // WHEN
   new triggers.TriggerFunction(stack, 'MyTrigger', {
     handler: 'index.handler',
-    runtime: lambda.Runtime.NODEJS_14_X,
+    runtime: lambda.Runtime.NODEJS_16_X,
     code: lambda.Code.fromInline('foo'),
   });
 
@@ -33,7 +33,7 @@ test('before/after', () => {
 
   // WHEN
   const myTrigger = new triggers.TriggerFunction(stack, 'MyTrigger', {
-    runtime: lambda.Runtime.NODEJS_14_X,
+    runtime: lambda.Runtime.NODEJS_16_X,
     code: lambda.Code.fromInline('zoo'),
     handler: 'index.handler',
 
@@ -73,13 +73,13 @@ test('multiple functions', () => {
   // WHEN
   new triggers.TriggerFunction(stack, 'MyTrigger', {
     handler: 'index.handler',
-    runtime: lambda.Runtime.NODEJS_14_X,
+    runtime: lambda.Runtime.NODEJS_16_X,
     code: lambda.Code.fromInline('foo'),
   });
 
   new triggers.TriggerFunction(stack, 'MySecondTrigger', {
     handler: 'index.handler',
-    runtime: lambda.Runtime.NODEJS_14_X,
+    runtime: lambda.Runtime.NODEJS_16_X,
     code: lambda.Code.fromInline('bar'),
   });
 
@@ -95,7 +95,7 @@ test('minimal trigger', () => {
   const stack = new Stack();
   const func = new lambda.Function(stack, 'MyFunction', {
     handler: 'index.handler',
-    runtime: lambda.Runtime.NODEJS_14_X,
+    runtime: lambda.Runtime.NODEJS_16_X,
     code: lambda.Code.fromInline('foo'),
   });
 
@@ -118,7 +118,7 @@ test('trigger with optional properties', () => {
   const stack = new Stack();
   const func = new lambda.Function(stack, 'MyFunction', {
     handler: 'index.handler',
-    runtime: lambda.Runtime.NODEJS_14_X,
+    runtime: lambda.Runtime.NODEJS_16_X,
     code: lambda.Code.fromInline('foo'),
   });
 
