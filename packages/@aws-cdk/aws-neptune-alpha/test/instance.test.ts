@@ -181,6 +181,24 @@ describe('DatabaseInstance', () => {
       Threshold: 1,
     });
   });
+
+  test('should instantiate a serverless instance', () => {
+    // GIVEN
+    const stack = testStack();
+
+    // WHEN
+    new DatabaseInstance(stack, 'Instance', {
+      cluster: stack.cluster,
+      instanceType: InstanceType.SERVERLESS,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Neptune::DBInstance', {
+      Properties: {
+        DBInstanceClass: 'db.serverless',
+      },
+    });
+  });
 });
 
 class TestStack extends cdk.Stack {
