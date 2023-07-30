@@ -6,7 +6,8 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { CfnScheduleGroup } from 'aws-cdk-lib/aws-scheduler';
 import { ScheduleExpression, ScheduleTargetInput } from '../lib';
 import { Group, GroupProps } from '../lib/group';
-import { Schedule, targets } from '../lib/private';
+import { Schedule } from '../lib/private';
+import { targets } from '../lib/target';
 
 describe('Schedule Group', () => {
   let stack: Stack;
@@ -101,18 +102,18 @@ describe('Schedule Group', () => {
     const schedule1 = new Schedule(stack, 'MyScheduleDummy1', {
       schedule: expr,
       group: group,
-      target: new targets.LambdaInvoke({
+      target: new targets.LambdaInvoke(func, {
         role,
         input: ScheduleTargetInput.fromText('test'),
-      }, func),
+      }),
     });
     const schedule2 = new Schedule(stack, 'MyScheduleDummy2', {
       schedule: expr,
       group: group,
-      target: new targets.LambdaInvoke({
+      target: new targets.LambdaInvoke(func, {
         role,
         input: ScheduleTargetInput.fromText('test'),
-      }, func),
+      }),
     });
 
     expect(schedule1.group).toEqual(group);

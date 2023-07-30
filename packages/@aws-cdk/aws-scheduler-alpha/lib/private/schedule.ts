@@ -4,17 +4,7 @@ import { Construct } from 'constructs';
 import { IGroup } from '../group';
 import { ISchedule } from '../schedule';
 import { ScheduleExpression } from '../schedule-expression';
-
-/**
- * DISCLAIMER: WORK IN PROGRESS, INTERFACE MIGHT CHANGE
- *
- * This unit is not yet finished. Only rudimentary Schedule is implemented in order
- * to be able to create some sensible unit tests
- */
-
-export interface IScheduleTarget {
-  bind(_schedule: ISchedule): CfnSchedule.TargetProperty;
-}
+import { IScheduleTarget } from '../target';
 
 /**
  * Construction properties for `Schedule`.
@@ -30,6 +20,15 @@ export interface ScheduleProps {
    * The schedule's target details.
    */
   readonly target: IScheduleTarget;
+
+  /**
+   * The name of the schedule.
+   *
+   * Up to 64 letters (uppercase and lowercase), numbers, hyphens, underscores and dots are allowed.
+   *
+   * @default - A unique name will be generated
+   */
+  readonly scheduleName?: string;
 
   /**
    * The description you specify for the schedule.
@@ -51,20 +50,43 @@ export interface ScheduleProps {
  */
 export class Schedule extends Resource implements ISchedule {
   public readonly group?: IGroup;
+  public readonly scheduleArn: string;
+  public readonly scheduleName: string;
 
   constructor(scope: Construct, id: string, props: ScheduleProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.scheduleName,
+    });
 
     this.group = props.group;
 
-    new CfnSchedule(this, 'Resource', {
+    const targetConfig = props.target.bind(this);
+
+    const resource = new CfnSchedule(this, 'Resource', {
+      name: this.physicalName,
       flexibleTimeWindow: { mode: 'OFF' },
       scheduleExpression: props.schedule.expressionString,
       scheduleExpressionTimezone: props.schedule.timeZone?.timezoneName,
       groupName: this.group?.groupName,
       target: {
-        ...props.target.bind(this),
+        arn: targetConfig.arn,
+        roleArn: targetConfig.role.roleArn,
+        input: targetConfig.input?.bind(this),
+        deadLetterConfig: targetConfig.deadLetterConfig,
+        retryPolicy: targetConfig.retryPolicy,
+        ecsParameters: targetConfig.ecsParameters,
+        kinesisParameters: targetConfig.kinesisParameters,
+        eventBridgeParameters: targetConfig.eventBridgeParameters,
+        sageMakerPipelineParameters: targetConfig.sageMakerPipelineParameters,
+        sqsParameters: targetConfig.sqsParameters,
       },
+    });
+
+    this.scheduleName = this.getResourceNameAttribute(resource.ref);
+    this.scheduleArn = this.getResourceArnAttribute(resource.attrArn, {
+      service: 'scheduler',
+      resource: 'schedule',
+      resourceName: `${this.group?.groupName ?? 'default'}/${this.physicalName}`,
     });
   }
 }
