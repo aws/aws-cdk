@@ -90,7 +90,7 @@ describe('stacks', () => {
       Code: { ZipFile: 'foo' },
       Handler: 'index.handler',
       Role: { 'Fn::GetAtt': ['MyFnServiceRoleF3016589', 'Arn'] },
-      Runtime: 'nodejs14.x',
+      Runtime: 'nodejs16.x',
     });
     Template.fromStack(fnStack).hasResourceProperties('AWS::Lambda::Version', {
       FunctionName: { Ref: 'MyFn6F8F742F' },
@@ -152,7 +152,7 @@ describe('stacks', () => {
       Code: { ZipFile: 'foo' },
       Handler: 'index.handler',
       Role: { 'Fn::GetAtt': ['MyFnServiceRole3F9D41E1', 'Arn'] },
-      Runtime: 'nodejs14.x',
+      Runtime: 'nodejs16.x',
     });
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Version', {
       FunctionName: { Ref: 'MyFn223608AD' },
@@ -310,7 +310,7 @@ function defaultEdgeFunctionProps(stackId?: string) {
   return {
     code: lambda.Code.fromInline('foo'),
     handler: 'index.handler',
-    runtime: lambda.Runtime.NODEJS_14_X,
+    runtime: lambda.Runtime.NODEJS_16_X,
     stackId: stackId,
   };
 }

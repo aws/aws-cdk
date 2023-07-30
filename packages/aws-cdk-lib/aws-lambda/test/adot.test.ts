@@ -95,7 +95,7 @@ describe('ADOT Lambda Layer', () => {
       const fn = new lambda.Function(stack, 'Function', {
         code: new lambda.InlineCode('FooBar'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_14_X,
+        runtime: lambda.Runtime.NODEJS_16_X,
         architecture: lambda.Architecture.ARM_64,
       });
 

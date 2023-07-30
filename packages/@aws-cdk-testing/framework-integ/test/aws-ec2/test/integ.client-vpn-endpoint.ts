@@ -40,7 +40,7 @@ class ImportCertificates extends Construct {
 
     const serviceToken = CustomResourceProvider.getOrCreate(this, IMPORT_CERTIFICATES_RESOURCE_TYPE, {
       codeDirectory: path.join(__dirname, 'import-certificates-handler'),
-      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_16_X,
       policyStatements: [{
         Effect: 'Allow',
         Action: ['acm:ImportCertificate', 'acm:DeleteCertificate'],

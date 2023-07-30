@@ -26,7 +26,7 @@ describe('custom resource provider', () => {
       // WHEN
       const cr = CustomResourceProvider.getOrCreateProvider(stack, 'Custom:MyResourceType', {
         codeDirectory: TEST_HANDLER,
-        runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+        runtime: CustomResourceProviderRuntime.NODEJS_16_X,
       });
       cr.addToRolePolicy({
         Action: 's3:GetBucket',
@@ -103,7 +103,7 @@ describe('custom resource provider', () => {
       // WHEN
       const cr = CustomResourceProvider.getOrCreateProvider(stack, 'Custom:MyResourceType', {
         codeDirectory: TEST_HANDLER,
-        runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+        runtime: CustomResourceProviderRuntime.NODEJS_16_X,
       });
       cr.addToRolePolicy({
         Action: 's3:GetBucket',
@@ -164,7 +164,7 @@ describe('custom resource provider', () => {
     // WHEN
     CustomResourceProvider.getOrCreate(stack, 'Custom:MyResourceType', {
       codeDirectory: TEST_HANDLER,
-      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_16_X,
     });
 
     // THEN
@@ -250,7 +250,7 @@ describe('custom resource provider', () => {
                 'Arn',
               ],
             },
-            Runtime: 'nodejs14.x',
+            Runtime: 'nodejs16.x',
           },
           DependsOn: [
             'CustomMyResourceTypeCustomResourceProviderRoleBD5E655F',
@@ -284,7 +284,7 @@ describe('custom resource provider', () => {
     // WHEN
     CustomResourceProvider.getOrCreate(stack, 'Custom:MyResourceType', {
       codeDirectory: TEST_HANDLER,
-      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_16_X,
     });
 
     // Then
@@ -326,7 +326,7 @@ describe('custom resource provider', () => {
     // WHEN
     CustomResourceProvider.getOrCreate(stack, 'Custom:MyResourceType', {
       codeDirectory: TEST_HANDLER,
-      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_16_X,
     });
 
     // THEN -- no exception
@@ -343,7 +343,7 @@ describe('custom resource provider', () => {
     // WHEN
     CustomResourceProvider.getOrCreate(stack, 'Custom:MyResourceType', {
       codeDirectory: TEST_HANDLER,
-      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_16_X,
       policyStatements: [
         { statement1: 123 },
         { statement2: { foo: 111 } },
@@ -370,7 +370,7 @@ describe('custom resource provider', () => {
     // WHEN
     const provider = CustomResourceProvider.getOrCreateProvider(stack, 'Custom:MyResourceType', {
       codeDirectory: TEST_HANDLER,
-      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_16_X,
       policyStatements: [
         { statement1: 123 },
         { statement2: { foo: 111 } },
@@ -397,7 +397,7 @@ describe('custom resource provider', () => {
     // WHEN
     CustomResourceProvider.getOrCreate(stack, 'Custom:MyResourceType', {
       codeDirectory: TEST_HANDLER,
-      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_16_X,
       memorySize: Size.gibibytes(2),
       timeout: Duration.minutes(5),
       description: 'veni vidi vici',
@@ -419,7 +419,7 @@ describe('custom resource provider', () => {
     // WHEN
     CustomResourceProvider.getOrCreate(stack, 'Custom:MyResourceType', {
       codeDirectory: TEST_HANDLER,
-      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_16_X,
       environment: {
         B: 'b',
         A: 'a',
@@ -445,7 +445,7 @@ describe('custom resource provider', () => {
     // WHEN
     const cr = CustomResourceProvider.getOrCreateProvider(stack, 'Custom:MyResourceType', {
       codeDirectory: TEST_HANDLER,
-      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_16_X,
     });
 
     // THEN
@@ -466,12 +466,12 @@ describe('custom resource provider', () => {
       expect(rt).toEqual(CustomResourceProviderRuntime.NODEJS_16_X);
     });
 
-    test('returns node14 for iso region', () => {
+    test('returns node16 for iso region', () => {
       const app = new App();
       const stack = new Stack(app, 'MyStack', { env: { region: 'us-iso-east-1' } });
 
       const rt = builtInCustomResourceProviderNodeRuntime(stack);
-      expect(rt).toEqual(CustomResourceProviderRuntime.NODEJS_14_X);
+      expect(rt).toEqual(CustomResourceProviderRuntime.NODEJS_16_X);
     });
   });
 });

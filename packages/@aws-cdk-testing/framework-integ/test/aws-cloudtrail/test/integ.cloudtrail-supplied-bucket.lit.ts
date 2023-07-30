@@ -13,7 +13,7 @@ const bucket = new s3.Bucket(stack, 'Bucket', {
   autoDeleteObjects: true,
 });
 const lambdaFunction = new lambda.Function(stack, 'LambdaFunction', {
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: lambda.Runtime.NODEJS_16_X,
   handler: 'hello.handler',
   code: lambda.Code.fromInline('exports.handler = {}'),
 });

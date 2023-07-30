@@ -9,7 +9,7 @@ beforeEach(() => {
   fn = new Function(stack, 'fn', {
     handler: 'index.handler',
     code: Code.fromInline('exports.handler = ${handler.toString()}'),
-    runtime: Runtime.NODEJS_14_X,
+    runtime: Runtime.NODEJS_16_X,
   });
 });
 

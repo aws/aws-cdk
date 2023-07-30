@@ -22,7 +22,7 @@ class TestStack extends Stack {
     new lambda.Function(this, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_16_X,
       logRetention: RetentionDays.ONE_DAY,
     });
     const logRetentionFunction = this.node.tryFindChild('LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a')!;
@@ -47,12 +47,12 @@ class TestNestedStack extends Stack {
     const resource1 = new lambda.Function(stack1, 'Lambda1', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_16_X,
     }).node.defaultChild! as CfnResource;
     const resource2 = new lambda.Function(stack2, 'Lambda2', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_16_X,
     }).node.defaultChild! as CfnResource;
 
     // The following two statements should cancel each other out

@@ -12,7 +12,7 @@ const app = new App();
 const stack = new Stack(app, 'integ-user-pool-custom-sender');
 
 const customSenderLambda = new lambda.Function(stack, 'emailLambda', {
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: lambda.Runtime.NODEJS_16_X,
   handler: 'index.handler',
   code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { console.log("Mocked custom email send");return cb(null, "success"); }'),
 });

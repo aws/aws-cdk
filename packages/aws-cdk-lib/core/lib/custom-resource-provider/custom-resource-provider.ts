@@ -65,7 +65,7 @@ export interface CustomResourceProviderProps {
    * @example
    * const provider = CustomResourceProvider.getOrCreateProvider(this, 'Custom::MyCustomResourceType', {
    *   codeDirectory: `${__dirname}/my-handler`,
-   *   runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+   *   runtime: CustomResourceProviderRuntime.NODEJS_16_X,
    *   policyStatements: [
    *     {
    *       Effect: 'Allow',
@@ -120,7 +120,7 @@ export enum CustomResourceProviderRuntime {
   /**
    * Node.js 12.x
    *
-   * @deprecated Use `NODEJS_14_X`
+   * @deprecated Use `NODEJS_12_X`
    */
   NODEJS_12 = 'deprecated_nodejs12.x',
 

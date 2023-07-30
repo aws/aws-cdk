@@ -2,6 +2,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { PackageInstallation } from './package-installation';
 import { LockFile, PackageManager } from './package-manager';
+import { DEFAULT_RUNTIME } from './private/default-runtime';
 import { BundlingOptions, OutputFormat, SourceMapMode } from './types';
 import { exec, extractDependencies, findUp, getTsconfigCompilerOptions } from './util';
 import { Architecture, AssetCode, Code, Runtime } from '../../aws-lambda';
@@ -135,8 +136,8 @@ export class Bundling implements cdk.BundlingOptions {
       {
         buildArgs: {
           ...props.buildArgs ?? {},
-          // If runtime isn't passed use regional default, lowest common denominator is node14
-          IMAGE: (props.runtime ?? Runtime.NODEJS_14_X).bundlingImage.image,
+          // If runtime isn't passed use regional default, lowest common denominator is node16
+          IMAGE: (props.runtime ?? Runtime.NODEJS_18_X).bundlingImage.image,
           ESBUILD_VERSION: props.esbuildVersion ?? ESBUILD_MAJOR_VERSION,
         },
         platform: props.architecture.dockerPlatform,
@@ -200,7 +201,7 @@ export class Bundling implements cdk.BundlingOptions {
     const esbuildCommand: string[] = [
       options.esbuildRunner,
       '--bundle', `"${relativeEntryPath}"`,
-      `--target=${this.props.target ?? toTarget(this.props.runtime ?? Runtime.NODEJS_14_X)}`,
+      `--target=${this.props.target ?? toTarget(this.props.runtime ?? DEFAULT_RUNTIME)}`,
       '--platform=node',
       ...this.props.format ? [`--format=${this.props.format}`] : [],
       `--outfile="${pathJoin(options.outputDir, outFile)}"`,
@@ -394,7 +395,7 @@ function toTarget(runtime: Runtime): string {
 }
 
 function toCliArgs(esbuildArgs: { [key: string]: string | boolean }): string {
-  const args = [];
+  const args = new Array<string>();
 
   for (const [key, value] of Object.entries(esbuildArgs)) {
     if (value === true || value === '') {
@@ -407,7 +408,11 @@ function toCliArgs(esbuildArgs: { [key: string]: string | boolean }): string {
   return args.join(' ');
 }
 
-function isSdkV2Runtime(runtime?: Runtime): boolean {
+/**
+ * Detect of the a given Node.js runtime uses SDKv2
+ * @param runtime Optional. Default runtime if not set.
+ */
+function isSdkV2Runtime(runtime: Runtime = DEFAULT_RUNTIME): boolean {
   const sdkV2RuntimeList = [
     Runtime.NODEJS,
     Runtime.NODEJS_4_3,
@@ -418,10 +423,6 @@ function isSdkV2Runtime(runtime?: Runtime): boolean {
     Runtime.NODEJS_14_X,
     Runtime.NODEJS_16_X,
   ];
-  if (runtime) {
-    return sdkV2RuntimeList.some((r) => {return r.family === runtime.family && r.name === runtime.name;});
-  } else {
-    // If undefined regional default is used which is node14/16
-    return true;
-  }
+
+  return sdkV2RuntimeList.some((r) => {return r.family === runtime.family && r.name === runtime.name;});
 }

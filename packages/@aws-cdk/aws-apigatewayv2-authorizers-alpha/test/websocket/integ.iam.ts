@@ -15,7 +15,7 @@ const userAccessKey = new iam.AccessKey(stack, 'UserAccess', {
 });
 
 const handler = new Function(stack, 'auth-function', {
-  runtime: Runtime.NODEJS_14_X,
+  runtime: Runtime.NODEJS_16_X,
   code: Code.fromInline('exports.handler = () => {return true}'),
   handler: 'index.handler',
 });

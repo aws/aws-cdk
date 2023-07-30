@@ -15,18 +15,18 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'lambda-layer-node-proxy-agent-integ-stack');
 const layer = new NodeProxyAgentLayer(stack, 'NodeProxyAgentLayer');
 
-const provider = new cr.Provider(stack, 'ProviderNode14', {
-  onEventHandler: new lambda.Function(stack, 'Lambda$Node14', {
+const provider = new cr.Provider(stack, 'ProviderNode16', {
+  onEventHandler: new lambda.Function(stack, 'Lambda$Node16', {
     code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
     handler: 'index.handler',
-    runtime: lambda.Runtime.NODEJS_14_X,
+    runtime: lambda.Runtime.NODEJS_16_X,
     layers: [layer],
     memorySize: 512,
     timeout: cdk.Duration.seconds(30),
   }),
 });
 
-new cdk.CustomResource(stack, 'CustomResourceNode14', {
+new cdk.CustomResource(stack, 'CustomResourceNode16', {
   serviceToken: provider.serviceToken,
 });
 

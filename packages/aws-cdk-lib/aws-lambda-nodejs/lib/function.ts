@@ -3,6 +3,7 @@ import * as path from 'path';
 import { Construct } from 'constructs';
 import { Bundling } from './bundling';
 import { LockFile } from './package-manager';
+import { DEFAULT_RUNTIME } from './private/default-runtime';
 import { BundlingOptions } from './types';
 import { callsites, findUpMultiple } from './util';
 import { Architecture } from '../../aws-lambda';
@@ -36,7 +37,7 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
    * The runtime environment. Only runtimes of the Node.js family are
    * supported.
    *
-   * @default Runtime.NODEJS_14_X
+   * @default Runtime.NODEJS_18_X
    */
   readonly runtime?: lambda.Runtime;
 
@@ -101,7 +102,7 @@ export class NodejsFunction extends lambda.Function {
 
     super(scope, id, {
       ...props,
-      runtime: props.runtime ?? lambda.Runtime.NODEJS_18_X,
+      runtime: props.runtime ?? DEFAULT_RUNTIME,
       code: Bundling.bundle({
         ...props.bundling ?? {},
         entry,

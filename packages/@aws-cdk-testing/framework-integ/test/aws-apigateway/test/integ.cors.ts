@@ -14,7 +14,7 @@ class TestStack extends Stack {
     });
 
     const handler = new lambda.Function(this, 'handler', {
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_16_X,
       handler: 'index.handler',
       code: lambda.Code.fromAsset(path.join(__dirname, 'integ.cors.handler')),
     });

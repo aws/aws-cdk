@@ -126,8 +126,8 @@ export const CR_DEFAULT_RUNTIME_MAP: Record<Partition, string> = {
   [Partition.Default]: 'nodejs16.x',
   [Partition.Cn]: 'nodejs16.x',
   [Partition.UsGov]: 'nodejs16.x',
-  [Partition.UsIso]: 'nodejs14.x',
-  [Partition.UsIsoB]: 'nodejs14.x',
+  [Partition.UsIso]: 'nodejs16.x',
+  [Partition.UsIsoB]: 'nodejs16.x',
 };
 
 // https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html#access-logging-bucket-permissions
