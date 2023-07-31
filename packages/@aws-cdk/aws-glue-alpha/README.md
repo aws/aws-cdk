@@ -229,7 +229,7 @@ Glue tables can be configured to contain user-defined properties, to describe th
 declare const myDatabase: glue.Database;
 new glue.Table(this, 'MyTable', {
   storageParameters: [
-    glue.StorageParameter.skipHeaderLineCount(1), // note this is a number. The static method should convert it to a string.
+    glue.StorageParameter.skipHeaderLineCount(1),
     glue.StorageParameter.compressionType(glue.CompressionType.GZIP),
     glue.StorageParameter.custom('separatorChar', ',')
   ],
