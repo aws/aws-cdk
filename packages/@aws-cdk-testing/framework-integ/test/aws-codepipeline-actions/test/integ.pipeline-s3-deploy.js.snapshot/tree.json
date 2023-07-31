@@ -18,6 +18,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::KMS::Key",
                   "aws:cdk:cloudformation:props": {
+                    "description": "sample key",
                     "keyPolicy": {
                       "Statement": [
                         {
@@ -45,8 +46,7 @@
                         }
                       ],
                       "Version": "2012-10-17"
-                    },
-                    "description": "sample key"
+                    }
                   }
                 },
                 "constructInfo": {
@@ -624,6 +624,27 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::CodePipeline::Pipeline",
                   "aws:cdk:cloudformation:props": {
+                    "artifactStore": {
+                      "type": "S3",
+                      "location": {
+                        "Ref": "PipelineBucketB967BD35"
+                      },
+                      "encryptionKey": {
+                        "type": "KMS",
+                        "id": {
+                          "Fn::GetAtt": [
+                            "EnvVarEncryptKey1A7CABDB",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    },
+                    "disableInboundStageTransitions": [
+                      {
+                        "reason": "Transition disabled",
+                        "stageName": "Disabled"
+                      }
+                    ],
                     "roleArn": {
                       "Fn::GetAtt": [
                         "PipelineRoleD68726F7",
@@ -735,27 +756,6 @@
                             }
                           }
                         ]
-                      }
-                    ],
-                    "artifactStore": {
-                      "type": "S3",
-                      "location": {
-                        "Ref": "PipelineBucketB967BD35"
-                      },
-                      "encryptionKey": {
-                        "type": "KMS",
-                        "id": {
-                          "Fn::GetAtt": [
-                            "EnvVarEncryptKey1A7CABDB",
-                            "Arn"
-                          ]
-                        }
-                      }
-                    },
-                    "disableInboundStageTransitions": [
-                      {
-                        "reason": "Transition disabled",
-                        "stageName": "Disabled"
                       }
                     ]
                   }
