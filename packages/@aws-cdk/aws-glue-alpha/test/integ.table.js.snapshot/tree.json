@@ -741,7 +741,8 @@
                           "skip.header.line.count": "1",
                           "compression_type": "gzip",
                           "foo": "bar",
-                          "separatorChar": ","
+                          "separatorChar": ",",
+                          "write.parallel": "off"
                         }
                       },
                       "tableType": "EXTERNAL_TABLE"
@@ -1189,7 +1190,7 @@
                 "path": "aws-cdk-glue-table-integ/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.2.69"
                 }
               },
               "DeployAssert": {
@@ -1235,7 +1236,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.2.69"
         }
       }
     },

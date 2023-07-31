@@ -112,6 +112,7 @@ new glue.Table(stack, 'MyTableWithStorageDescriptorParameters', {
     glue.StorageParameter.compressionType(glue.CompressionType.GZIP),
     glue.StorageParameter.custom('foo', 'bar'), // Will have no effect
     glue.StorageParameter.custom('separatorChar', ','), // Will describe the separator char used in the data
+    glue.StorageParameter.custom(glue.StorageParameters.WRITE_PARALLEL, 'off'),
   ],
 });
 

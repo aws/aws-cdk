@@ -547,7 +547,8 @@
        "skip.header.line.count": "1",
        "compression_type": "gzip",
        "foo": "bar",
-       "separatorChar": ","
+       "separatorChar": ",",
+       "write.parallel": "off"
       },
       "SerdeInfo": {
        "SerializationLibrary": "org.openx.data.jsonserde.JsonSerDe"
