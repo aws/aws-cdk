@@ -1,4 +1,4 @@
-import * as cdk from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { DatabaseOptions } from '../database-options';
 import { ITable, TableAction } from '../table';
