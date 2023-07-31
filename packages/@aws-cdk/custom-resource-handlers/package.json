@@ -33,7 +33,9 @@
   },
   "dependencies": {
     "@aws-sdk/client-ecr": "^3.370.0",
-    "@aws-sdk/client-s3": "^3.370.0"
+    "@aws-sdk/client-s3": "^3.370.0",
+    "@aws-sdk/client-lambda": "^3.370.0",
+    "@aws-sdk/client-synthetics": "^3.370.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
