@@ -1,7 +1,7 @@
-import { IResource } from '../../core';
-import * as iam from '../../aws-iam';
 import * as cloudwatch from '../../aws-cloudwatch';
+import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
+import { IResource } from '../../core';
 
 /**
  * Supported DynamoDB table operations.

@@ -1,7 +1,6 @@
 import { Template } from '../../assertions';
-import { ServicePrincipal } from '../../aws-iam';
 import { CfnDeletionPolicy, RemovalPolicy, Stack } from '../../core';
-import { GlobalTable, AttributeType, TableClass, Billing, Capacity, BillingMode, ProjectionType } from '../lib';
+import { GlobalTable, AttributeType, TableClass, Billing, Capacity, BillingMode, ProjectionType, GlobalSecondaryIndexPropsV2, LocalSecondaryIndexProps } from '../lib';
 
 /* eslint-disable no-console */
 describe('global table configuration', () => {
@@ -237,6 +236,10 @@ describe('global table configuration', () => {
         },
       ],
     });
+  });
+
+  test('with all properties configured', () => {
+
   });
 
   test('throws if deployment region is a token', () => {
@@ -675,6 +678,10 @@ describe('secondary indexes', () => {
           IndexName: 'lsi',
           KeySchema: [
             {
+              AttributeName: 'pk',
+              KeyType: 'HASH',
+            },
+            {
               AttributeName: 'lsiSk',
               KeyType: 'RANGE',
             },
@@ -727,6 +734,10 @@ describe('secondary indexes', () => {
           IndexName: 'lsi',
           KeySchema: [
             {
+              AttributeName: 'pk',
+              KeyType: 'HASH',
+            },
+            {
               AttributeName: 'lsiSk',
               KeyType: 'RANGE',
             },
@@ -738,6 +749,153 @@ describe('secondary indexes', () => {
         },
       ],
     });
+  });
+
+  test('local secondary index with projection type as KEYS_ONLY', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+    // WHEN
+    new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      localSecondaryIndexes: [
+        {
+          indexName: 'lsi',
+          sortKey: { name: 'lsiSk', type: AttributeType.STRING },
+          projectionType: ProjectionType.KEYS_ONLY,
+        },
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      AttributeDefinitions: [
+        {
+          AttributeName: 'pk',
+          AttributeType: 'S',
+        },
+        {
+          AttributeName: 'lsiSk',
+          AttributeType: 'S',
+        },
+      ],
+      KeySchema: [
+        {
+          AttributeName: 'pk',
+          KeyType: 'HASH',
+        },
+      ],
+      LocalSecondaryIndexes: [
+        {
+          IndexName: 'lsi',
+          KeySchema: [
+            {
+              AttributeName: 'pk',
+              KeyType: 'HASH',
+            },
+            {
+              AttributeName: 'lsiSk',
+              KeyType: 'RANGE',
+            },
+          ],
+          Projection: {
+            ProjectionType: 'KEYS_ONLY',
+          },
+        },
+      ],
+    });
+  });
+
+  test('global secondary index and local secondary index', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+    // WHEN
+    new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      sortKey: { name: 'sk', type: AttributeType.NUMBER },
+      globalSecondaryIndexes: [
+        {
+          indexName: 'gsi',
+          partitionKey: { name: 'gsiPk', type: AttributeType.NUMBER },
+        },
+      ],
+      localSecondaryIndexes: [
+        {
+          indexName: 'lsi',
+          sortKey: { name: 'lsiSk', type: AttributeType.STRING },
+        },
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      AttributeDefinitions: [
+        {
+          AttributeName: 'pk',
+          AttributeType: 'S',
+        },
+        {
+          AttributeName: 'sk',
+          AttributeType: 'N',
+        },
+        {
+          AttributeName: 'gsiPk',
+          AttributeType: 'N',
+        },
+        {
+          AttributeName: 'lsiSk',
+          AttributeType: 'S',
+        },
+      ],
+      KeySchema: [
+        {
+          AttributeName: 'pk',
+          KeyType: 'HASH',
+        },
+        {
+          AttributeName: 'sk',
+          KeyType: 'RANGE',
+        },
+      ],
+      GlobalSecondaryIndexes: [
+        {
+          IndexName: 'gsi',
+          KeySchema: [
+            {
+              AttributeName: 'gsiPk',
+              KeyType: 'HASH',
+            },
+          ],
+        },
+      ],
+      LocalSecondaryIndexes: [
+        {
+          IndexName: 'lsi',
+          KeySchema: [
+            {
+              AttributeName: 'pk',
+              KeyType: 'HASH',
+            },
+            {
+              AttributeName: 'lsiSk',
+              KeyType: 'RANGE',
+            },
+          ],
+          Projection: {
+            ProjectionType: 'ALL',
+          },
+        },
+      ],
+    });
+  });
+
+  test('can add a global secondary index', () => {
+
+  });
+
+  test('can add a local secondary index', () => {
+
   });
 
   test('throws if read capacity is configured when billing mode is on demand', () => {
@@ -825,7 +983,53 @@ describe('secondary indexes', () => {
     }).toThrow('Duplicate secondary index name, gsi, is not allowed');
   });
 
-  test('throws if attribute definition is redefined', () => {
+  test('throws for duplicate local secondary index names', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+    // WHEN / THEN
+    expect(() => {
+      new GlobalTable(stack, 'GlobalTable', {
+        partitionKey: { name: 'pk', type: AttributeType.STRING },
+        localSecondaryIndexes: [
+          {
+            indexName: 'lsi',
+            sortKey: { name: 'lsiSk', type: AttributeType.STRING },
+          },
+          {
+            indexName: 'lsi',
+            sortKey: { name: 'lsiSk', type: AttributeType.STRING },
+          },
+        ],
+      });
+    }).toThrow('Duplicate secondary index name, lsi, is not allowed');
+  });
+
+  test('throws for global secondary index and local secondary index with same index name', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+    // WHEN / THEN
+    expect(() => {
+      new GlobalTable(stack, 'GlobalTable', {
+        partitionKey: { name: 'pk', type: AttributeType.STRING },
+        globalSecondaryIndexes: [
+          {
+            indexName: 'index-name',
+            partitionKey: { name: 'gsiPk', type: AttributeType.STRING },
+          },
+        ],
+        localSecondaryIndexes: [
+          {
+            indexName: 'index-name',
+            sortKey: { name: 'lsiSk', type: AttributeType.STRING },
+          },
+        ],
+      });
+    }).toThrow('Duplicate secondary index name, index-name, is not allowed');
+  });
+
+  test('throws if attribute definition is redefined within global secondary indexes', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
 
@@ -845,6 +1049,52 @@ describe('secondary indexes', () => {
         ],
       });
     }).toThrow('Unable to specify gsiPk as N because it was already defined as S');
+  });
+
+  test('throws if attribute definition is redefined within local secondary indexes', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+    // WHEN / THEN
+    expect(() => {
+      new GlobalTable(stack, 'GlobalTable', {
+        partitionKey: { name: 'pk', type: AttributeType.STRING },
+        localSecondaryIndexes: [
+          {
+            indexName: 'lsi1',
+            sortKey: { name: 'lsiPk', type: AttributeType.STRING },
+          },
+          {
+            indexName: 'lsi2',
+            sortKey: { name: 'lsiPk', type: AttributeType.NUMBER },
+          },
+        ],
+      });
+    }).toThrow('Unable to specify lsiPk as N because it was already defined as S');
+  });
+
+  test('throws if attribute definition is redefined across global secondary index and local secondary index', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+    // WHEN / THEN
+    expect(() => {
+      new GlobalTable(stack, 'GlobalTable', {
+        partitionKey: { name: 'pk', type: AttributeType.STRING },
+        globalSecondaryIndexes: [
+          {
+            indexName: 'gsi',
+            partitionKey: { name: 'key-name', type: AttributeType.STRING },
+          },
+        ],
+        localSecondaryIndexes: [
+          {
+            indexName: 'lsi',
+            sortKey: { name: 'key-name', type: AttributeType.NUMBER },
+          },
+        ],
+      });
+    }).toThrow('Unable to specify key-name as N because it was already defined as S');
   });
 
   test('throws for global secondary index with INCLUDE projection type without non-key attributes', () => {
@@ -904,34 +1154,89 @@ describe('secondary indexes', () => {
       });
     }).toThrow('Non-key attributes should not be specified when not using INCLUDE projection type');
   });
+
+  test('throws for local secondary index with ALL projection type with non-key attributes', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+    // WHEN / THEN
+    expect(() => {
+      new GlobalTable(stack, 'GlobalTable', {
+        partitionKey: { name: 'pk', type: AttributeType.STRING },
+        localSecondaryIndexes: [
+          {
+            indexName: 'lsi',
+            sortKey: { name: 'lsiSk', type: AttributeType.STRING },
+            nonKeyAttributes: ['nonKey1', 'nonKey2'],
+          },
+        ],
+      });
+    }).toThrow('Non-key attributes should not be specified when not using INCLUDE projection type');
+  });
+
+  test('throws for global secondary index with KEYS_ONLY projection type with non-key attributes', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+    // WHEN / THEN
+    expect(() => {
+      new GlobalTable(stack, 'GlobalTable', {
+        partitionKey: { name: 'pk', type: AttributeType.STRING },
+        localSecondaryIndexes: [
+          {
+            indexName: 'gsi',
+            sortKey: { name: 'lsiSk', type: AttributeType.STRING },
+            projectionType: ProjectionType.KEYS_ONLY,
+            nonKeyAttributes: ['nonKey1', 'nonKey2'],
+          },
+        ],
+      });
+    }).toThrow('Non-key attributes should not be specified when not using INCLUDE projection type');
+  });
+
+  test('throws if number of global secondary indexes is greater than 20', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+    const globalSecondaryIndexes: GlobalSecondaryIndexPropsV2[] = [];
+    for (let count = 0; count <= 20; count++) {
+      globalSecondaryIndexes.push({
+        indexName: `gsi${count}`,
+        partitionKey: { name: 'gsiPk', type: AttributeType.STRING },
+      });
+    }
+
+    // WHEN / THEN
+    expect(() => {
+      new GlobalTable(stack, 'GlobalTable', {
+        partitionKey: { name: 'pk', type: AttributeType.STRING },
+        globalSecondaryIndexes,
+      });
+    }).toThrow('A table can only support a maximum of 20 global secondary indexes');
+  });
+
+  test('throws if number of local secondary indexes is greater than 5', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+    const localSecondaryIndexes: LocalSecondaryIndexProps[] = [];
+    for (let count = 0; count <= 5; count++) {
+      localSecondaryIndexes.push({
+        indexName: `lsi${count}`,
+        sortKey: { name: 'lsiPk', type: AttributeType.STRING },
+      });
+    }
+
+    // WHEN / THEN
+    expect(() => {
+      new GlobalTable(stack, 'GlobalTable', {
+        partitionKey: { name: 'pk', type: AttributeType.STRING },
+        localSecondaryIndexes,
+      });
+    }).toThrow('A table can only support a maximum of 5 local secondary indexes');
+  });
 });
 
 describe('billing and capacity', () => {
 
-});
-
-test('replica table test', () => {
-  // GIVEN
-  const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
-
-  // WHEN
-  const globalTable = new GlobalTable(stack, 'GlobalTable', {
-    partitionKey: { name: 'pk', type: AttributeType.STRING },
-    billing: Billing.provisioned({
-      readCapacity: Capacity.fixed(10),
-      writeCapacity: Capacity.autoscaled({ minCapacity: 1, maxCapacity: 10 }),
-    }),
-    globalSecondaryIndexes: [
-      {
-        indexName: 'gsi',
-        partitionKey: { name: 'gsiPk', type: AttributeType.STRING },
-        readCapacity: Capacity.autoscaled({ minCapacity: 5, maxCapacity: 10 }),
-      },
-    ],
-  });
-
-  const replica = globalTable.replica('us-west-2');
-  replica.grantReadData(new ServicePrincipal('amazon.lambda.aws'));
-
-  console.log(JSON.stringify(Template.fromStack(stack)));
 });
