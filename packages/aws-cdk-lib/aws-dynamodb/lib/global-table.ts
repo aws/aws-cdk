@@ -2,10 +2,12 @@ import { Construct } from 'constructs';
 import { CfnGlobalTable } from './dynamodb.generated';
 import {
   SecondaryIndexProps, SchemaOptions, TableClass, LocalSecondaryIndexProps,
-  BillingMode, Attribute, ProjectionType,
+  BillingMode, Attribute, ProjectionType, TableEncryption,
 } from './shared';
 import { IStream } from '../../aws-kinesis';
-import { IResource, RemovalPolicy, Resource, Stack, Token, Lazy, ArnFormat } from '../../core';
+import {
+  IResource, RemovalPolicy, Resource, Stack, Token, Lazy, ArnFormat,
+} from '../../core';
 
 /* eslint-disable no-console */
 
@@ -669,11 +671,21 @@ export class Capacity {
 }
 
 export class TableEncryptionV2 {
-  public static dynamoOwnedKey() {}
+  public static dynamoOwnedKey() {
+    return new TableEncryptionV2(TableEncryption.DEFAULT);
+  }
 
-  public static awsManagedKey() {}
+  public static awsManagedKey() {
+    return new TableEncryptionV2(TableEncryption.AWS_MANAGED);
+  }
 
-  public static customerManagedKey() {}
+  public static customerManagedKey() {
+    return new TableEncryptionV2(TableEncryption.CUSTOMER_MANAGED);
+  }
 
-  private constructor() {}
+  public readonly type: string;
+
+  private constructor(type: string) {
+    this.type = type;
+  }
 }

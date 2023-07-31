@@ -1,4 +1,5 @@
 import { Template } from '../../assertions';
+import { ServicePrincipal } from '../../aws-iam';
 import { CfnDeletionPolicy, RemovalPolicy, Stack } from '../../core';
 import { GlobalTable, AttributeType, TableClass, Billing, Capacity, BillingMode, ProjectionType } from '../lib';
 
@@ -263,7 +264,7 @@ describe('replica table configuration', () => {
 });
 
 describe('secondary indexes', () => {
-  test('global secondary index with on-demand billing', () => {
+  test('global secondary index', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
 
@@ -303,6 +304,65 @@ describe('secondary indexes', () => {
             {
               AttributeName: 'gsiPk',
               KeyType: 'HASH',
+            },
+          ],
+          Projection: {
+            ProjectionType: 'ALL',
+          },
+        },
+      ],
+    });
+  });
+
+  test('global secondary index with sort key', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+    // WHEN
+    new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      globalSecondaryIndexes: [
+        {
+          indexName: 'gsi',
+          partitionKey: { name: 'gsiPk', type: AttributeType.STRING },
+          sortKey: { name: 'gsiSk', type: AttributeType.STRING },
+        },
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      AttributeDefinitions: [
+        {
+          AttributeName: 'pk',
+          AttributeType: 'S',
+        },
+        {
+          AttributeName: 'gsiPk',
+          AttributeType: 'S',
+        },
+        {
+          AttributeName: 'gsiSk',
+          AttributeType: 'S',
+        },
+      ],
+      KeySchema: [
+        {
+          AttributeName: 'pk',
+          KeyType: 'HASH',
+        },
+      ],
+      GlobalSecondaryIndexes: [
+        {
+          IndexName: 'gsi',
+          KeySchema: [
+            {
+              AttributeName: 'gsiPk',
+              KeyType: 'HASH',
+            },
+            {
+              AttributeName: 'gsiSk',
+              KeyType: 'RANGE',
             },
           ],
           Projection: {
@@ -473,7 +533,7 @@ describe('secondary indexes', () => {
     });
   });
 
-  test('global secondary index with project type as INCLUDE', () => {
+  test('global secondary index with projection type as INCLUDE', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
 
@@ -571,6 +631,109 @@ describe('secondary indexes', () => {
           ],
           Projection: {
             ProjectionType: 'KEYS_ONLY',
+          },
+        },
+      ],
+    });
+  });
+
+  test('local secondary index', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+    // WHEN
+    new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      localSecondaryIndexes: [
+        {
+          indexName: 'lsi',
+          sortKey: { name: 'lsiSk', type: AttributeType.STRING },
+        },
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      AttributeDefinitions: [
+        {
+          AttributeName: 'pk',
+          AttributeType: 'S',
+        },
+        {
+          AttributeName: 'lsiSk',
+          AttributeType: 'S',
+        },
+      ],
+      KeySchema: [
+        {
+          AttributeName: 'pk',
+          KeyType: 'HASH',
+        },
+      ],
+      LocalSecondaryIndexes: [
+        {
+          IndexName: 'lsi',
+          KeySchema: [
+            {
+              AttributeName: 'lsiSk',
+              KeyType: 'RANGE',
+            },
+          ],
+          Projection: {
+            ProjectionType: 'ALL',
+          },
+        },
+      ],
+    });
+  });
+
+  test('local secondary index with projection type as INCLUDES', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+    // WHEN
+    new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      localSecondaryIndexes: [
+        {
+          indexName: 'lsi',
+          sortKey: { name: 'lsiSk', type: AttributeType.STRING },
+          projectionType: ProjectionType.INCLUDE,
+          nonKeyAttributes: ['nonKey1', 'nonKey2'],
+        },
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      AttributeDefinitions: [
+        {
+          AttributeName: 'pk',
+          AttributeType: 'S',
+        },
+        {
+          AttributeName: 'lsiSk',
+          AttributeType: 'S',
+        },
+      ],
+      KeySchema: [
+        {
+          AttributeName: 'pk',
+          KeyType: 'HASH',
+        },
+      ],
+      LocalSecondaryIndexes: [
+        {
+          IndexName: 'lsi',
+          KeySchema: [
+            {
+              AttributeName: 'lsiSk',
+              KeyType: 'RANGE',
+            },
+          ],
+          Projection: {
+            ProjectionType: 'INCLUDE',
+            NonKeyAttributes: ['nonKey1', 'nonKey2'],
           },
         },
       ],
@@ -745,4 +908,30 @@ describe('secondary indexes', () => {
 
 describe('billing and capacity', () => {
 
+});
+
+test('replica table test', () => {
+  // GIVEN
+  const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+  // WHEN
+  const globalTable = new GlobalTable(stack, 'GlobalTable', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+    billing: Billing.provisioned({
+      readCapacity: Capacity.fixed(10),
+      writeCapacity: Capacity.autoscaled({ minCapacity: 1, maxCapacity: 10 }),
+    }),
+    globalSecondaryIndexes: [
+      {
+        indexName: 'gsi',
+        partitionKey: { name: 'gsiPk', type: AttributeType.STRING },
+        readCapacity: Capacity.autoscaled({ minCapacity: 5, maxCapacity: 10 }),
+      },
+    ],
+  });
+
+  const replica = globalTable.replica('us-west-2');
+  replica.grantReadData(new ServicePrincipal('amazon.lambda.aws'));
+
+  console.log(JSON.stringify(Template.fromStack(stack)));
 });
