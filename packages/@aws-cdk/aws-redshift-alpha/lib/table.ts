@@ -236,7 +236,6 @@ export class Table extends TableBase {
   readonly tableColumns: Column[];
   readonly cluster: ICluster;
   readonly databaseName: string;
-  readonly id: string;
 
   private resource: DatabaseQuery<TableHandlerProps>;
 
@@ -254,7 +253,6 @@ export class Table extends TableBase {
     this.tableColumns = this.configureTableColumns(props.tableColumns);
     this.cluster = props.cluster;
     this.databaseName = props.databaseName;
-    this.id = id;
 
     const useColumnIds = !!cdk.FeatureFlags.of(this).isEnabled(REDSHIFT_COLUMN_ID);
 
