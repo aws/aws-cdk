@@ -203,7 +203,7 @@ export interface TableProps {
    *          glue.StorageParameter.compressionType(glue.CompressionType.GZIP),
    *          glue.StorageParameter.custom('foo', 'bar'), // Will have no effect
    *          glue.StorageParameter.custom('separatorChar', ','), // Will describe the separator char used in the data
-   *          glue.StorageParameter.custom(glue.StorageParameters.COMPRESSION_TYPE, 'true'), // Will have no effect
+   *          glue.StorageParameter.custom(glue.StorageParameters.WRITE_PARALLEL, 'off'),
    *      ],
    *      // ...
    *      database: glueDatabase,
