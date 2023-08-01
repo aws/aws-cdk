@@ -1,9 +1,9 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
+/* eslint-disable import/no-extraneous-dependencies */
 import { LambdaClient, DeleteFunctionCommand } from '@aws-sdk/client-lambda';
 import { SyntheticsClient, GetCanaryCommand } from '@aws-sdk/client-synthetics';
 import { makeHandler } from '../../nodejs-entrypoint';
 
-const AUTO_DELETE_LAMBDA_TAG = 'aws-cdk:auto-delete-lambdas';
+const AUTO_DELETE_LAMBDA_TAG = 'aws-cdk:auto-delete-lambda';
 
 const lambda = new LambdaClient({});
 const synthetics = new SyntheticsClient({});
@@ -25,13 +25,13 @@ async function onUpdate(event: AWSLambda.CloudFormationCustomResourceEvent) {
   const updateEvent = event as AWSLambda.CloudFormationCustomResourceUpdateEvent;
   const oldCanaryName = updateEvent.OldResourceProperties?.CanaryName;
   const newCanaryName = updateEvent.ResourceProperties?.CanaryName;
-  const repositoryNameHasChanged = (newCanaryName && oldCanaryName)
+  const canaryNameHasChanged = (newCanaryName && oldCanaryName)
     && (newCanaryName !== oldCanaryName);
 
   // If the name of the canary has changed, CloudFormation will delete the canary
   // and create a new one with the new name. So the old lambda will be isolated
   // and we should try to delete the old lambdae. */
-  if (repositoryNameHasChanged) {
+  if (canaryNameHasChanged) {
     return onDelete(oldCanaryName);
   }
 }
