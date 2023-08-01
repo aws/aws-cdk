@@ -8,6 +8,8 @@ on:
 
 jobs:
   update-spec:
+    # this workflow will always fail in forks; bail if this isn't running in the upstream
+    if: github.repository == 'aws/aws-cdk'
     name: Update AWS Service Spec packages
     permissions:
       contents: read
@@ -81,7 +83,7 @@ jobs:
           title: 'feat: update AWS Service Spec'
           body: |-
              AWS Service Spec packages to latest versions.
-          labels: contribution/core,dependencies,auto-approve
+          labels: contribution/core,dependencies,auto-approve,pr-linter/exempt-integ-test,pr-linter/exempt-readme,pr-linter/exempt-test
           team-reviewers: aws-cdk-team
           # Github prevents further Github actions to be run if the default Github token is used.
           # Instead use a privileged token here, so further GH actions can be triggered on this PR.
