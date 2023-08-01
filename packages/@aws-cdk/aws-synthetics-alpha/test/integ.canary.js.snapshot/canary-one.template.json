@@ -112,7 +112,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "89c643a8a6c919d906e0b1cb079b0c5e131cf3cc19c05126f90fc118647fb08c.zip"
+     "S3Key": "216218e507a977a1bb3592f29c1a62ab3e0a9eb25569109a395315638e154329.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -150,10 +150,10 @@
   "ApiGatewayDeploymentA26796E849bfdafc1a375345a13992f6e2987daf": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
+    "Description": "Automatically created by the RestApi construct",
     "RestApiId": {
      "Ref": "ApiGateway11E7F47B"
-    },
-    "Description": "Automatically created by the RestApi construct"
+    }
    },
    "DependsOn": [
     "ApiGatewayGET25EBFEA3"
@@ -162,11 +162,11 @@
   "ApiGatewayDeploymentStageprod1C6D5CD6": {
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
-    "RestApiId": {
-     "Ref": "ApiGateway11E7F47B"
-    },
     "DeploymentId": {
      "Ref": "ApiGatewayDeploymentA26796E849bfdafc1a375345a13992f6e2987daf"
+    },
+    "RestApiId": {
+     "Ref": "ApiGateway11E7F47B"
     },
     "StageName": "prod"
    }
@@ -174,17 +174,8 @@
   "ApiGatewayGET25EBFEA3": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "HttpMethod": "GET",
-    "ResourceId": {
-     "Fn::GetAtt": [
-      "ApiGateway11E7F47B",
-      "RootResourceId"
-     ]
-    },
-    "RestApiId": {
-     "Ref": "ApiGateway11E7F47B"
-    },
     "AuthorizationType": "NONE",
+    "HttpMethod": "GET",
     "Integration": {
      "IntegrationResponses": [
       {
@@ -201,7 +192,16 @@
      {
       "StatusCode": "200"
      }
-    ]
+    ],
+    "ResourceId": {
+     "Fn::GetAtt": [
+      "ApiGateway11E7F47B",
+      "RootResourceId"
+     ]
+    },
+    "RestApiId": {
+     "Ref": "ApiGateway11E7F47B"
+    }
    }
   },
   "InlineAssetServiceRole90EB5484": {
@@ -525,12 +525,6 @@
      ]
     },
     "Name": "canaryonedirect63ce4e",
-    "RuntimeVersion": "syn-nodejs-puppeteer-4.0",
-    "Schedule": {
-     "DurationInSeconds": "0",
-     "Expression": "rate(5 minutes)"
-    },
-    "DeleteLambdaResourcesOnCanaryDeletion": true,
     "RunConfig": {
      "EnvironmentVariables": {
       "URL": {
@@ -558,6 +552,11 @@
        ]
       }
      }
+    },
+    "RuntimeVersion": "syn-nodejs-puppeteer-4.0",
+    "Schedule": {
+     "DurationInSeconds": "0",
+     "Expression": "rate(5 minutes)"
     },
     "StartCanaryAfterCreation": true
    }
@@ -956,11 +955,6 @@
      ]
     },
     "Name": "canaryonesynnodec5378",
-    "RuntimeVersion": "syn-nodejs-puppeteer-3.9",
-    "Schedule": {
-     "DurationInSeconds": "0",
-     "Expression": "rate(5 minutes)"
-    },
     "RunConfig": {
      "EnvironmentVariables": {
       "URL": {
@@ -988,6 +982,11 @@
        ]
       }
      }
+    },
+    "RuntimeVersion": "syn-nodejs-puppeteer-3.9",
+    "Schedule": {
+     "DurationInSeconds": "0",
+     "Expression": "rate(5 minutes)"
     },
     "StartCanaryAfterCreation": true
    }
@@ -1181,11 +1180,6 @@
      ]
     },
     "Name": "canaryonesynnodc37fe2",
-    "RuntimeVersion": "syn-nodejs-puppeteer-4.0",
-    "Schedule": {
-     "DurationInSeconds": "0",
-     "Expression": "rate(5 minutes)"
-    },
     "RunConfig": {
      "EnvironmentVariables": {
       "URL": {
@@ -1213,6 +1207,11 @@
        ]
       }
      }
+    },
+    "RuntimeVersion": "syn-nodejs-puppeteer-4.0",
+    "Schedule": {
+     "DurationInSeconds": "0",
+     "Expression": "rate(5 minutes)"
     },
     "StartCanaryAfterCreation": true
    }
@@ -1406,11 +1405,6 @@
      ]
     },
     "Name": "canaryonesynpyt659e03",
-    "RuntimeVersion": "syn-python-selenium-1.3",
-    "Schedule": {
-     "DurationInSeconds": "0",
-     "Expression": "rate(5 minutes)"
-    },
     "RunConfig": {
      "EnvironmentVariables": {
       "URL": {
@@ -1438,6 +1432,11 @@
        ]
       }
      }
+    },
+    "RuntimeVersion": "syn-python-selenium-1.3",
+    "Schedule": {
+     "DurationInSeconds": "0",
+     "Expression": "rate(5 minutes)"
     },
     "StartCanaryAfterCreation": true
    }

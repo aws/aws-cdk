@@ -18,14 +18,23 @@
     },
     "parameters": {
      "Name": {
-      "Fn::ImportValue": "canary-one:ExportsOutputRefInlineAsset5EAEB9B5D9353D4F"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "canary-one:ExportsOutputRefInlineAsset5EAEB9B5D9353D4F"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "true",
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1688756012414"
+    "salt": "1690930164318"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -295,7 +304,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "fe2373df587bda7e4bf68910b7be30b2042493413a6f6f2c43efab4f184d3bad.zip"
+     "S3Key": "18f77fb224555ccad15f9c2e0f71ae6930fc011792c4f74ec74daaa2bbd9a33f.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -401,7 +410,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "fe2373df587bda7e4bf68910b7be30b2042493413a6f6f2c43efab4f184d3bad.zip"
+     "S3Key": "18f77fb224555ccad15f9c2e0f71ae6930fc011792c4f74ec74daaa2bbd9a33f.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -443,7 +452,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "fe2373df587bda7e4bf68910b7be30b2042493413a6f6f2c43efab4f184d3bad.zip"
+     "S3Key": "18f77fb224555ccad15f9c2e0f71ae6930fc011792c4f74ec74daaa2bbd9a33f.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",
@@ -473,14 +482,23 @@
     },
     "parameters": {
      "Name": {
-      "Fn::ImportValue": "canary-one:ExportsOutputRefDirectoryAssetB49EFE5C6067345C"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "canary-one:ExportsOutputRefDirectoryAssetB49EFE5C6067345C"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "true",
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1688756012414"
+    "salt": "1690930164319"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -620,14 +638,23 @@
     },
     "parameters": {
      "Name": {
-      "Fn::ImportValue": "canary-one:ExportsOutputRefZipAssetA028C65FBA619339"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "canary-one:ExportsOutputRefZipAssetA028C65FBA619339"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "true",
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1688756012415"
+    "salt": "1690930164319"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -767,14 +794,23 @@
     },
     "parameters": {
      "Name": {
-      "Fn::ImportValue": "canary-one:ExportsOutputRefSynNodejsPuppeteer3978815E0AC2F26208"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "canary-one:ExportsOutputRefSynNodejsPuppeteer3978815E0AC2F26208"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "true",
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1688756012415"
+    "salt": "1690930164319"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -914,14 +950,23 @@
     },
     "parameters": {
      "Name": {
-      "Fn::ImportValue": "canary-one:ExportsOutputRefSynNodejsPuppeteer406C46FFAF8F9722F2"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "canary-one:ExportsOutputRefSynNodejsPuppeteer406C46FFAF8F9722F2"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "true",
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1688756012415"
+    "salt": "1690930164320"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1061,14 +1106,23 @@
     },
     "parameters": {
      "Name": {
-      "Fn::ImportValue": "canary-one:ExportsOutputRefSynPythonSelenium13F92D8275979DE724"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "canary-one:ExportsOutputRefSynPythonSelenium13F92D8275979DE724"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "true",
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1688756012416"
+    "salt": "1690930164320"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

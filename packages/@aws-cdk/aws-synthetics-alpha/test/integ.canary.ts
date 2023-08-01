@@ -52,7 +52,6 @@ const directoryAsset = new Canary(stack, 'DirectoryAsset', {
   environmentVariables: {
     URL: api.url,
   },
-  enableAutoDeleteLambdas: true,
 });
 
 const zipAsset = new Canary(stack, 'ZipAsset', {

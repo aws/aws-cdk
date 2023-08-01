@@ -35,7 +35,7 @@ testDeprecated('Basic canary properties work', () => {
   });
 });
 
-testDeprecated('Can set `DeleteLambdaResourceOnCanaryDeletion`', () => {
+testDeprecated('autoDeleteLambda introduces custom resource to delete lambda', () => {
   // GIVEN
   const stack = new Stack();
 
@@ -45,14 +45,12 @@ testDeprecated('Can set `DeleteLambdaResourceOnCanaryDeletion`', () => {
       handler: 'index.handler',
       code: synthetics.Code.fromInline('/* Synthetics handler code'),
     }),
-    enableAutoDeleteLambdas: true,
+    autoDeleteLambda: true,
     runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
   });
 
   // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
-    DeleteLambdaResourcesOnCanaryDeletion: true,
-  });
+  Template.fromStack(stack).resourceCountIs('Custom::SyntheticsAutoDeleteLambda', 1);
 });
 
 testDeprecated('Canary can have generated name', () => {

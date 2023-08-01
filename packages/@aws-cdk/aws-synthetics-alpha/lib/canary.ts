@@ -225,7 +225,7 @@ export interface CanaryProps {
    *
    * @default false
    */
-  readonly autoDeleteLambda: boolean;
+  readonly autoDeleteLambda?: boolean;
 
   /**
    * Lifecycle rules for the generated canary artifact bucket. Has no effect

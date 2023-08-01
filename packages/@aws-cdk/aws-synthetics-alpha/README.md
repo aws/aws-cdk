@@ -105,6 +105,7 @@ If you want the canary to run just once upon deployment, you can use `Schedule.o
 ### Deleting underlying resources on canary deletion
 
 When you delete a lambda, the following underlying resources are isolated in your AWS account:
+
   - Lambda Function that runs your canary script
   - S3 Bucket for artifact storage
   - IAM roles and policies
