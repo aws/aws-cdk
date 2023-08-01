@@ -314,7 +314,7 @@ export interface GraphqlApiProps {
   /**
    * GraphQL schema definition. Specify how you want to define your schema.
    *
-   * Schema.fromFile(filePath: string) allows schema definition through schema.graphql file
+   * SchemaFile.fromAsset(filePath: string) allows schema definition through schema.graphql file
    *
    * @default - schema will be generated code-first (i.e. addType, addObjectType, etc.)
    *
