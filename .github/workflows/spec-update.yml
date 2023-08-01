@@ -8,6 +8,8 @@ on:
 
 jobs:
   update-spec:
+    # this workflow will always fail in forks; bail if this isn't running in the upstream
+    if: github.repository == 'aws/aws-cdk'
     name: Update AWS Service Spec packages
     permissions:
       contents: read
