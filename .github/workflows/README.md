@@ -98,3 +98,8 @@ Owner: Core CDK team
 
 [repo-metrics.yml](repo-metrics.yml): GitHub action that runs monthly to report on metrics for issues and PRs created last month.
 Owner: Core CDK team
+
+### Contributors File
+
+[update-contributors.yml](update-contributors.yml): GitHub action that runs monthly to create a pull request for updating a CONTRIBUTORS file with the top contributors.
+Owner: Core CDK team
