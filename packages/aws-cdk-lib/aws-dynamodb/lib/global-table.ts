@@ -39,9 +39,32 @@ export enum CapacityMode {
  * Options used to configure capacity
  */
 export interface CapacityOptions {
+  /**
+   * The number of capacity units.
+   *
+   * @default - no capacity units
+   */
   readonly units?: number;
+
+  /**
+   * The minimum allowable capacity.
+   *
+   * @default - no minimum capacity
+   */
   readonly minCapacity?: number;
+
+  /**
+   * The maximum allowable capacity.
+   *
+   * @default - no maximum capacity
+   */
   readonly maxCapacity?: number;
+
+  /**
+   * The ratio of consumed capacity units to provisioned capacity units.
+   *
+   * @default 70
+   */
   readonly targetUtilizationPercent?: number;
 }
 
@@ -49,8 +72,25 @@ export interface CapacityOptions {
  * Options used to configure autoscaled capacity
  */
 export interface AutoscaledCapacityOptions {
+  /**
+   * The minimum allowable capacity.
+   *
+   * @default - no minimum capacity
+   */
   readonly minCapacity: number;
+
+  /**
+   * The maximum allowable capacity.
+   *
+   * @default - no maximum capacity
+   */
   readonly maxCapacity: number;
+
+  /**
+   * The ratio of consumed capacity units to provisioned capacity units.
+   *
+   * @default 70
+   */
   readonly targetUtilizationPercent?: number;
 }
 
@@ -58,7 +98,14 @@ export interface AutoscaledCapacityOptions {
  * Properties used to configure throughput capacity settings
  */
 export interface ThroughputProps {
+  /**
+   * The read capacity.
+   */
   readonly readCapacity: Capacity;
+
+  /**
+   * The write capacity.
+   */
   readonly writeCapacity: Capacity;
 }
 
@@ -66,7 +113,18 @@ export interface ThroughputProps {
  * Properties used to configure a global secondary index
  */
 export interface GlobalSecondaryIndexPropsV2 extends SchemaOptions, SecondaryIndexProps {
+  /**
+   * The read capacity for the global secondary index
+   *
+   * @default
+   */
   readonly readCapacity?: Capacity;
+
+  /**
+   * The write capacity for the global secondary index
+   *
+   * @default
+   */
   readonly writeCapacity?: Capacity;
 }
 
@@ -74,7 +132,20 @@ export interface GlobalSecondaryIndexPropsV2 extends SchemaOptions, SecondaryInd
  * Options to configure a global secondary index on a per-replica basis
  */
 export interface ReplicaGlobalSecondaryIndexOptions {
+  /**
+   * Whether CloudWatch contributor insights is enabled on the global secondary index.
+   *
+   * @default - contributor insights is set based on global table contributor insights
+   * setting
+   */
   readonly contributorInsights?: boolean;
+
+  /**
+   * The read capacity for a specific global secondary index.
+   *
+   * @default - read capacity is inherited from the global secondary index configuration
+   * at the global table level
+   */
   readonly readCapacity?: Capacity;
 }
 
@@ -82,9 +153,41 @@ export interface ReplicaGlobalSecondaryIndexOptions {
  * Configurable table options common to global tables and replica tables
  */
 export interface TableOptionsV2 {
+  /**
+   * Whether CloudWatch contributor insights is enabled on all replica tables in the
+   * global table.
+   *
+   * Note: This is configurable on a per-replica basis.
+   *
+   * @default false
+   */
   readonly contributorInsights?: boolean;
+
+  /**
+   * Whether deletion protection is enabled on all replica tables in the global table.
+   *
+   * Note: This is configurable on a per-replica basis.
+   *
+   * @default false
+   */
   readonly deletionProtection?: boolean;
+
+  /**
+   * Whether point-in-time recovery is enabled on all replica tables in the global table.
+   *
+   * Note: This is configurable on a per-replica basis.
+   *
+   * @default false
+   */
   readonly pointInTimeRecovery?: boolean;
+
+  /**
+   * The table class for all replica tables in the global table.
+   *
+   * Note: This is configurable on a per-replica basis.
+   *
+   * @default TableClass.STANDARD
+   */
   readonly tableClass?: TableClass;
 }
 
@@ -92,9 +195,32 @@ export interface TableOptionsV2 {
  * Properties used to configure a replica table
  */
 export interface ReplicaTableProps extends TableOptionsV2 {
+  /**
+   * The region that the replica table will be created in.
+   */
   readonly region: string;
+
+  /**
+   * The read capacity for the replica table.
+   *
+   * @default - replica table read capacity is inherited from read capacity defined at
+   * global table
+   */
   readonly readCapacity?: Capacity;
+
+  /**
+   * Kinesis Data Stream to capture item-level changes for the replica table.
+   *
+   * @default - no Kinesis Data Stream
+   */
   readonly kinesisStream?: IStream;
+
+  /**
+   * Options used to configure global secondary indexes on a per-replica basis.
+   *
+   * @default - global secondary index options configured on the global table level will
+   * be applied to the replica table
+   */
   readonly globalSecondaryIndexOptions?: { [indexName: string]: ReplicaGlobalSecondaryIndexOptions };
 }
 
@@ -103,17 +229,75 @@ export interface ReplicaTableProps extends TableOptionsV2 {
  */
 export interface GlobalTableProps extends TableOptionsV2, SchemaOptions {
   /**
-   * The name of all replica tables in the global table
+   * The name of all replica tables in the global table.
    *
    * @default - generated by CloudFormation
    */
   readonly tableName?: string;
+
+  /**
+   * The name of the TTL attribute for all replica tables in the global table.
+   *
+   * @default - TTL is disabled
+   */
   readonly timeToLiveAttribute?: string;
+
+  /**
+   * The removal policy applied to the global table.
+   *
+   * @default RemovalPolicy.RETAIN
+   */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * The billing mode and the associated read and write capacity settings for all replica
+   * tables in the global table.
+   *
+   * Note: Read capacity is configurable on a per-replica basis.
+   *
+   * @default Billing.onDemand()
+   */
   readonly billing?: Billing;
+
+  /**
+   * Properties used to configure the replica tables in the global table.
+   *
+   * Note: You can add or remove replicas after table creation, but you can only add or
+   * remove a single replica in each update.
+   *
+   * @default - a single replica table will be created in the region the global table is
+   * deployed to
+   */
   readonly replicas?: ReplicaTableProps[];
+
+  /**
+   * Global secondary indexes to define on all replica tables in the global table.
+   *
+   * Note: Global secondary indexes can be configured on a per-replica basis. Tables only
+   * support a maximum of 20 global secondary indexes. You can only create or delete one
+   * global secondary index in a single stack operation.
+   *
+   * @default - no global secondary indexes
+   */
   readonly globalSecondaryIndexes?: GlobalSecondaryIndexPropsV2[];
+
+  /**
+   * Local secondary indexes to define on all replica tables in the global table.
+   *
+   * Note: Tables only support a maximum of 5 local secondary indexes.
+   *
+   * @default - no local secondary indexes
+   */
   readonly localSecondaryIndexes?: LocalSecondaryIndexProps[];
+
+  /**
+   * The server-side encryption to apply to all replica tables in the global table.
+   *
+   * Note: If the encryption type is customer managed, you must provide the ARN of a KMS
+   * key for each replica region.
+   *
+   * @default TableEncryptionV2.dynamoOwnedKey()
+   */
   readonly encryption?: TableEncryptionV2;
 }
 
@@ -626,14 +810,24 @@ export class GlobalTable extends GlobalTableBase {
 }
 
 /**
- * A class used to configure how you are charged for read and write throughput and how you
+ * Used to configure how you are charged for read and write throughput and how you
  * manage capacity for a global table and its replicas
  */
 export class Billing {
+  /**
+   * Configure on-demand billing.
+   *
+   * Note: This will set the billing mode to PAY_PER_REQUEST.
+   */
   public static onDemand() {
     return new Billing(BillingMode.PAY_PER_REQUEST, undefined, undefined);
   }
 
+  /**
+   * Configure provisioned billing.
+   *
+   * Note: This will set the billing mode to PROVISIONED.
+   */
   public static provisioned(props: ThroughputProps) {
     return new Billing(BillingMode.PROVISIONED, props.readCapacity, props.writeCapacity);
   }
@@ -664,13 +858,23 @@ export class Billing {
 }
 
 /**
- * A class used to configure read and write capacity for a global table and its replicas
+ * Used to configure read and write capacity for a global table and its replicas
  */
 export class Capacity {
+  /**
+   * Configure fixed capacity.
+   *
+   * Note: This will set the capacity mode to FIXED.
+   */
   public static fixed(units: number) {
     return new Capacity(CapacityMode.FIXED, { units });
   }
 
+  /**
+   * Configure autoscaled capacity.
+   *
+   * Note: This will set the capacity mode to AUTOSCALED.
+   */
   public static autoscaled(options: AutoscaledCapacityOptions) {
     return new Capacity(CapacityMode.AUTOSCALED, { ...options });
   }
@@ -728,15 +932,37 @@ export class Capacity {
   }
 }
 
+/**
+ * Used to configure server-side encryption for a global table and its replicas
+ */
 export class TableEncryptionV2 {
+  /**
+   * Configure table encryption using a DynamoDB owned key.
+   *
+   * Note: This will set the encryption type to AWS_OWNED.
+   */
   public static dynamoOwnedKey() {
     return new TableEncryptionV2(TableEncryption.DEFAULT, undefined, undefined);
   }
 
+  /**
+   * Configure table encryption using an AWS managed key.
+   *
+   * Note: This will set the encryption type to AWS_MANAGED.
+   */
   public static awsManagedKey() {
     return new TableEncryptionV2(TableEncryption.AWS_MANAGED, undefined, undefined);
   }
 
+  /**
+   * Configure table encryption using a customer managed key.
+   *
+   * Note: This will set the encryption type to CUSTOMER_MANAGED.
+   *
+   * @param tableKey the KMS key used for the replica table in the deployment region
+   * @param replicaKeyArns KMS key ARNS for all replica tables except the replica table in the
+   * deployment region
+   */
   public static customerManagedKey(tableKey: IKey, replicaKeyArns: { [region: string]: string } = {}) {
     return new TableEncryptionV2(TableEncryption.CUSTOMER_MANAGED, tableKey, replicaKeyArns);
   }
