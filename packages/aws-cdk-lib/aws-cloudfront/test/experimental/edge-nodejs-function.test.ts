@@ -1,4 +1,3 @@
-import * as path from 'path';
 import { Template } from '../../../assertions';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as iam from '../../../aws-iam';
