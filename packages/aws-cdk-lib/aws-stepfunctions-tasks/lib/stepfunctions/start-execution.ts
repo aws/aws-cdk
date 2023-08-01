@@ -45,10 +45,10 @@ export interface StepFunctionsStartExecutionProps extends sfn.TaskStateBaseProps
 
   /**
    * The Step Functions state machine ARN to start the execution on.
-   * This allows to specify the ARN of a specific state machine version or alias.
+   * This allows you to specify a state machine version or alias ARN.
    * If specified, it overrides the ARN of the stateMachine.
    *
-   * @default - The ARN of stateMachine is used
+   * @default - The ARN of StepFunctionsStartExecutionProps.stateMachine is used
    */
   readonly stateMachineArn?: string;
 }
@@ -128,10 +128,19 @@ export class StepFunctionsStartExecution extends sfn.TaskStateBase {
   private createScopedAccessPolicy(): iam.PolicyStatement[] {
     const stack = Stack.of(this);
 
+    const resourceName = stack.splitArn(this.stateMachineArn, ArnFormat.COLON_RESOURCE_NAME).resourceName;
+
     const policyStatements = [
       new iam.PolicyStatement({
         actions: ['states:StartExecution'],
-        resources: [this.stateMachineArn],
+        resources: [
+          stack.formatArn({
+            service: 'states',
+            resource: 'execution',
+            arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+            resourceName,
+          }),
+        ],
       }),
     ];
 
@@ -146,7 +155,7 @@ export class StepFunctionsStartExecution extends sfn.TaskStateBase {
               service: 'states',
               resource: 'execution',
               arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-              resourceName: `${stack.splitArn(this.stateMachineArn, ArnFormat.COLON_RESOURCE_NAME).resourceName}*`,
+              resourceName: `${resourceName}*`,
             }),
           ],
         }),

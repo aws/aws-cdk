@@ -92,7 +92,37 @@ test('Execute State Machine - Run Job', () => {
           Action: 'states:StartExecution',
           Effect: 'Allow',
           Resource: {
-            Ref: 'ChildStateMachine9133117F',
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':states:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':execution:',
+                {
+                  'Fn::Select': [
+                    6,
+                    {
+                      'Fn::Split': [
+                        ':',
+                        {
+                          Ref: 'ChildStateMachine9133117F',
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            ],
           },
         },
         {
@@ -283,6 +313,10 @@ test('Execute State Machine - Uses a specific state machine version', () => {
     name: 'myExecutionVersion',
   });
 
+  new sfn.StateMachine(stack, 'ParentStateMachine', {
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
+  });
+
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
@@ -311,6 +345,53 @@ test('Execute State Machine - Uses a specific state machine version', () => {
       },
     },
   });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'states:StartExecution',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':states:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':execution:',
+                {
+                  'Fn::Select': [
+                    6,
+                    {
+                      'Fn::Split': [
+                        ':',
+                        {
+                          'Fn::GetAtt': [
+                            'MyStateMachineVersion',
+                            'Arn',
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            ],
+          },
+        },
+      ],
+    },
+  });
 });
 
 test('Execute State Machine - Uses a specific state machine alias', () => {
@@ -325,6 +406,10 @@ test('Execute State Machine - Uses a specific state machine alias', () => {
       foo: 'bar',
     }),
     name: 'myExecutionAlias',
+  });
+
+  new sfn.StateMachine(stack, 'ParentStateMachine', {
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
   });
 
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -355,4 +440,64 @@ test('Execute State Machine - Uses a specific state machine alias', () => {
       },
     },
   });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'states:StartExecution',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':states:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':execution:',
+                {
+                  'Fn::Select': [
+                    6,
+                    {
+                      'Fn::Split': [
+                        ':',
+                        {
+                          'Fn::GetAtt': [
+                            'MyStateMachineAlias',
+                            'Arn',
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            ],
+          },
+        },
+      ],
+    },
+  });
+});
+
+test('Execute State Machine - stateMachineArn should be a valid ARN', () => {
+  expect(() => {
+    new StepFunctionsStartExecution(stack, 'MyExecutionAlias', {
+      stateMachine: child,
+      stateMachineArn: 'invalid ARN',
+      input: sfn.TaskInput.fromObject({
+        foo: 'bar',
+      }),
+      name: 'myExecutionAlias',
+    });
+  }).toThrow(/ARNs must start with "arn:" and have at least 6 components/);
 });

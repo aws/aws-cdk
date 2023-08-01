@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "33.0.0",
   "artifacts": {
     "integ-sfn-start-execution-alias.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2754c418a40213db4163027ecc52068de0b972cd36c128ef490d3dc6883fed65.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a73e09d00cfe8b80032fb71af866ab9072fe1625675aefe92ac4cc9324cc1a40.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -49,6 +49,30 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyStateMachineVersion"
+          }
+        ],
+        "/integ-sfn-start-execution-alias/MyStateMachineAlias": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyStateMachineAlias"
+          }
+        ],
+        "/integ-sfn-start-execution-alias/Parent/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ParentRole5F0C366C"
+          }
+        ],
+        "/integ-sfn-start-execution-alias/Parent/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ParentRoleDefaultPolicy9BDC56DC"
+          }
+        ],
+        "/integ-sfn-start-execution-alias/Parent/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Parent8B210403"
           }
         ],
         "/integ-sfn-start-execution-alias/BootstrapVersion": [
