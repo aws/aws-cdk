@@ -5,6 +5,7 @@ import {
   BillingMode, Attribute, ProjectionType, TableEncryption,
 } from './shared';
 import { IStream } from '../../aws-kinesis';
+import { IKey } from '../../aws-kms';
 import {
   IResource, RemovalPolicy, Resource, Stack, Token, Lazy, ArnFormat,
 } from '../../core';
@@ -201,6 +202,7 @@ export class GlobalTable extends GlobalTableBase {
   private readonly billingMode: string;
   private readonly partitionKey: Attribute;
   private readonly tableOptions: TableOptionsV2;
+  private readonly encryption?: TableEncryptionV2;
 
   private readonly readProvisioning?: CfnGlobalTable.ReadProvisionedThroughputSettingsProperty;
   private readonly writeProvisioning?: CfnGlobalTable.WriteProvisionedThroughputSettingsProperty;
@@ -241,6 +243,9 @@ export class GlobalTable extends GlobalTableBase {
       this.addKey(props.sortKey, RANGE_KEY_TYPE);
     }
 
+    this.encryption = props.encryption;
+    const sseSpecification = this.encryption ? this.configureSseSpecification(this.encryption) : undefined;
+
     props.globalSecondaryIndexes?.forEach(gsi => this.addGlobalSecondaryIndex(gsi));
     props.localSecondaryIndexes?.forEach(lsi => this.addLocalSecondaryIndex(lsi));
     props.replicas?.forEach(replica => this.addReplica(replica));
@@ -255,6 +260,7 @@ export class GlobalTable extends GlobalTableBase {
       billingMode: this.billingMode,
       streamSpecification: { streamViewType: NEW_AND_OLD_IMAGES },
       writeProvisionedThroughputSettings: this.writeProvisioning,
+      sseSpecification,
       timeToLiveSpecification: props.timeToLiveAttribute
         ? { attributeName: props.timeToLiveAttribute, enabled: true }
         : undefined,
@@ -318,7 +324,7 @@ export class GlobalTable extends GlobalTableBase {
   public addLocalSecondaryIndex(props: LocalSecondaryIndexProps) {
     this.validateIndexName(props.indexName);
 
-    if (this._localSecondaryIndexes.size > MAX_LSI_COUNT) {
+    if (this._localSecondaryIndexes.size === MAX_LSI_COUNT) {
       throw new Error(`A table can only support a maximum of ${MAX_LSI_COUNT} local secondary indexes`);
     }
 
@@ -363,6 +369,8 @@ export class GlobalTable extends GlobalTableBase {
     if (this._replicaTables.has(props.region)) {
       throw new Error(`Duplicate replica region, ${props.region}, is not allowed`);
     }
+
+    if (props.globalSecondaryIndexOptions) {}
 
     this._replicaTables.set(props.region, props);
   }
@@ -453,7 +461,7 @@ export class GlobalTable extends GlobalTableBase {
       }
     }
 
-    return globalSecondaryIndexes;
+    return globalSecondaryIndexes.length > 0 ? globalSecondaryIndexes : undefined;
   }
 
   private configureReplicaTable(props: ReplicaTableProps): CfnGlobalTable.ReplicaSpecificationProperty {
@@ -470,6 +478,7 @@ export class GlobalTable extends GlobalTableBase {
       globalSecondaryIndexes,
       deletionProtectionEnabled: props.deletionProtection ?? this.tableOptions.deletionProtection,
       tableClass: props.tableClass ?? this.tableOptions.tableClass,
+      sseSpecification: this.configureReplicaSseSpecification(props.region),
       kinesisStreamSpecification: props.kinesisStream
         ? { streamArn: props.kinesisStream.streamArn }
         : undefined,
@@ -480,6 +489,33 @@ export class GlobalTable extends GlobalTableBase {
         ? { pointInTimeRecoveryEnabled: pointInTimeRecovery }
         : undefined,
     };
+  }
+
+  private configureSseSpecification(encryption: TableEncryptionV2): CfnGlobalTable.SSESpecificationProperty {
+    if (encryption.type === TableEncryption.DEFAULT) {
+      return { sseEnabled: false };
+    }
+
+    return { sseEnabled: true, sseType: 'KMS' };
+  }
+
+  private configureReplicaSseSpecification(region: string): CfnGlobalTable.ReplicaSSESpecificationProperty | undefined {
+    if (!this.encryption || this.encryption.type !== TableEncryption.CUSTOMER_MANAGED) {
+      return undefined;
+    }
+
+    if (region === this.region) {
+      return { kmsMasterKeyId: this.encryption.tableKey.keyArn };
+    }
+
+    if (this.encryption && this.encryption.type === TableEncryption.CUSTOMER_MANAGED) {
+      const regionInReplicaKeyArns = this.encryption.replicaKeyArns.hasOwnProperty(region);
+      if (!regionInReplicaKeyArns) {
+        throw new Error(`You must specify a KMS key ARN for each replica table when encryption type is ${TableEncryption.CUSTOMER_MANAGED}`);
+      }
+    }
+
+    return { kmsMasterKeyId: this.encryption.replicaKeyArns[region] };
   }
 
   private configureReadProvisioning(readCapacity: Capacity): CfnGlobalTable.ReadProvisionedThroughputSettingsProperty {
@@ -662,6 +698,16 @@ export class Capacity {
   }
 
   private constructor(mode: string, options: CapacityOptions) {
+    if (this._minCapacity && this._maxCapacity) {
+      if (this._minCapacity > this._maxCapacity) {
+        throw new Error(`Min capacity: ${this._minCapacity} must be less than or equal to max capacity: ${this._maxCapacity}`);
+      }
+    }
+
+    if (this._targetUtilizationPercent && (this._targetUtilizationPercent < 20 || this._targetUtilizationPercent > 90)) {
+      throw new Error(`Target utilization percent must be between 20 and 90, inclusive. Provided: ${this._targetUtilizationPercent}`);
+    }
+
     this.mode = mode;
     this._units = options.units;
     this._minCapacity = options.minCapacity;
@@ -672,20 +718,38 @@ export class Capacity {
 
 export class TableEncryptionV2 {
   public static dynamoOwnedKey() {
-    return new TableEncryptionV2(TableEncryption.DEFAULT);
+    return new TableEncryptionV2(TableEncryption.DEFAULT, undefined, undefined);
   }
 
   public static awsManagedKey() {
-    return new TableEncryptionV2(TableEncryption.AWS_MANAGED);
+    return new TableEncryptionV2(TableEncryption.AWS_MANAGED, undefined, undefined);
   }
 
-  public static customerManagedKey() {
-    return new TableEncryptionV2(TableEncryption.CUSTOMER_MANAGED);
+  public static customerManagedKey(tableKey: IKey, replicaKeyArns: { [region: string]: string } = {}) {
+    return new TableEncryptionV2(TableEncryption.CUSTOMER_MANAGED, tableKey, replicaKeyArns);
   }
 
   public readonly type: string;
+  private readonly _tableKey?: IKey;
+  private readonly _replicaKeyArns?: { [region: string]: string };
 
-  private constructor(type: string) {
+  public get tableKey() {
+    if (this._tableKey === undefined) {
+      throw new Error(`Table key is only configured when encryption type is ${TableEncryption.CUSTOMER_MANAGED}`);
+    }
+    return this._tableKey;
+  }
+
+  public get replicaKeyArns() {
+    if (this._replicaKeyArns === undefined) {
+      throw new Error(`Replica key ARNs are only configured when encryption type is ${TableEncryption.CUSTOMER_MANAGED}`);
+    }
+    return this._replicaKeyArns;
+  }
+
+  private constructor(type: string, tableKey: IKey | undefined, replicaKeyArns: { [region: string]: string } | undefined) {
     this.type = type;
+    this._tableKey = tableKey;
+    this._replicaKeyArns = replicaKeyArns;
   }
 }

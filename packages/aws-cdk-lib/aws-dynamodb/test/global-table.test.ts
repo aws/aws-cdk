@@ -1,6 +1,10 @@
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
+import { Key } from '../../aws-kms';
 import { CfnDeletionPolicy, RemovalPolicy, Stack } from '../../core';
-import { GlobalTable, AttributeType, TableClass, Billing, Capacity, BillingMode, ProjectionType, GlobalSecondaryIndexPropsV2, LocalSecondaryIndexProps } from '../lib';
+import {
+  GlobalTable, AttributeType, TableClass, Billing, Capacity, TableEncryptionV2,
+  BillingMode, ProjectionType, GlobalSecondaryIndexPropsV2, LocalSecondaryIndexProps,
+} from '../lib';
 
 /* eslint-disable no-console */
 describe('global table configuration', () => {
@@ -238,8 +242,280 @@ describe('global table configuration', () => {
     });
   });
 
-  test('with all properties configured', () => {
+  test('with aws managed key encryption', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
 
+    // WHEN
+    new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      encryption: TableEncryptionV2.awsManagedKey(),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      SSESpecification: {
+        SSEEnabled: true,
+        SSEType: 'KMS',
+      },
+      Replicas: [
+        {
+          Region: 'us-west-2',
+          SSESpecification: Match.absent(),
+        },
+      ],
+    });
+  });
+
+  test('with dynamo owned key encryption', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+    // WHEN
+    new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      encryption: TableEncryptionV2.dynamoOwnedKey(),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      SSESpecification: {
+        SSEEnabled: false,
+      },
+      Replicas: [
+        {
+          Region: 'us-west-2',
+          SSESpecification: Match.absent(),
+        },
+      ],
+    });
+  });
+
+  test('customer managed key', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const tableKmsKey = new Key(stack, 'Key');
+    const replicaKeyArns = { 'us-east-1': 'arn' };
+
+    // WHEN
+    new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      encryption: TableEncryptionV2.customerManagedKey(tableKmsKey, replicaKeyArns),
+      replicas: [{ region: 'us-east-1' }],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      SSESpecification: {
+        SSEEnabled: true,
+        SSEType: 'KMS',
+      },
+      Replicas: [
+        {
+          Region: 'us-west-2',
+          SSESpecification: {
+            KMSMasterKeyId: {
+              'Fn::GetAtt': [
+                'Key961B73FD',
+                'Arn',
+              ],
+            },
+          },
+        },
+        {
+          Region: 'us-east-1',
+          SSESpecification: {
+            KMSMasterKeyId: 'arn',
+          },
+        },
+      ],
+    });
+  });
+
+  test('with all properties configured', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+    // WHEN
+    new GlobalTable(stack, 'GlobalTable', {
+      tableName: 'my-global-table',
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      sortKey: { name: 'sk', type: AttributeType.STRING },
+      timeToLiveAttribute: 'attribute',
+      removalPolicy: RemovalPolicy.DESTROY,
+      contributorInsights: true,
+      deletionProtection: true,
+      pointInTimeRecovery: true,
+      tableClass: TableClass.STANDARD_INFREQUENT_ACCESS,
+      encryption: TableEncryptionV2.dynamoOwnedKey(),
+      billing: Billing.provisioned({
+        readCapacity: Capacity.fixed(10),
+        writeCapacity: Capacity.autoscaled({ minCapacity: 1, maxCapacity: 10 }),
+      }),
+      replicas: [
+        { region: 'us-east-1' },
+      ],
+      globalSecondaryIndexes: [
+        {
+          indexName: 'gsi',
+          partitionKey: { name: 'gsiPk', type: AttributeType.STRING },
+          readCapacity: Capacity.fixed(10),
+        },
+      ],
+      localSecondaryIndexes: [
+        {
+          indexName: 'lsi',
+          sortKey: { name: 'lsiSk', type: AttributeType.STRING },
+        },
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      AttributeDefinitions: [
+        {
+          AttributeName: 'pk',
+          AttributeType: 'S',
+        },
+        {
+          AttributeName: 'sk',
+          AttributeType: 'S',
+        },
+        {
+          AttributeName: 'gsiPk',
+          AttributeType: 'S',
+        },
+        {
+          AttributeName: 'lsiSk',
+          AttributeType: 'S',
+        },
+      ],
+      BillingMode: 'PROVISIONED',
+      SSESpecification: {
+        SSEEnabled: false,
+      },
+      GlobalSecondaryIndexes: [
+        {
+          IndexName: 'gsi',
+          KeySchema: [
+            {
+              AttributeName: 'gsiPk',
+              KeyType: 'HASH',
+            },
+          ],
+          Projection: {
+            ProjectionType: 'ALL',
+          },
+          WriteProvisionedThroughputSettings: {
+            WriteCapacityAutoScalingSettings: {
+              MaxCapacity: 10,
+              MinCapacity: 1,
+              TargetTrackingScalingPolicyConfiguration: {
+                TargetValue: 70,
+              },
+            },
+          },
+        },
+      ],
+      KeySchema: [
+        {
+          AttributeName: 'pk',
+          KeyType: 'HASH',
+        },
+        {
+          AttributeName: 'sk',
+          KeyType: 'RANGE',
+        },
+      ],
+      LocalSecondaryIndexes: [
+        {
+          IndexName: 'lsi',
+          KeySchema: [
+            {
+              AttributeName: 'pk',
+              KeyType: 'HASH',
+            },
+            {
+              AttributeName: 'lsiSk',
+              KeyType: 'RANGE',
+            },
+          ],
+          Projection: {
+            ProjectionType: 'ALL',
+          },
+        },
+      ],
+      Replicas: [
+        {
+          ContributorInsightsSpecification: {
+            Enabled: true,
+          },
+          DeletionProtectionEnabled: true,
+          GlobalSecondaryIndexes: [
+            {
+              ContributorInsightsSpecification: {
+                Enabled: true,
+              },
+              IndexName: 'gsi',
+              ReadProvisionedThroughputSettings: {
+                ReadCapacityUnits: 10,
+              },
+            },
+          ],
+          PointInTimeRecoverySpecification: {
+            PointInTimeRecoveryEnabled: true,
+          },
+          ReadProvisionedThroughputSettings: {
+            ReadCapacityUnits: 10,
+          },
+          Region: 'us-west-2',
+          TableClass: 'STANDARD_INFREQUENT_ACCESS',
+        },
+        {
+          ContributorInsightsSpecification: {
+            Enabled: true,
+          },
+          DeletionProtectionEnabled: true,
+          GlobalSecondaryIndexes: [
+            {
+              ContributorInsightsSpecification: {
+                Enabled: true,
+              },
+              IndexName: 'gsi',
+              ReadProvisionedThroughputSettings: {
+                ReadCapacityUnits: 10,
+              },
+            },
+          ],
+          PointInTimeRecoverySpecification: {
+            PointInTimeRecoveryEnabled: true,
+          },
+          ReadProvisionedThroughputSettings: {
+            ReadCapacityUnits: 10,
+          },
+          Region: 'us-east-1',
+          TableClass: 'STANDARD_INFREQUENT_ACCESS',
+        },
+      ],
+      StreamSpecification: {
+        StreamViewType: 'NEW_AND_OLD_IMAGES',
+      },
+      TableName: 'my-global-table',
+      TimeToLiveSpecification: {
+        AttributeName: 'attribute',
+        Enabled: true,
+      },
+      WriteProvisionedThroughputSettings: {
+        WriteCapacityAutoScalingSettings: {
+          MaxCapacity: 10,
+          MinCapacity: 1,
+          TargetTrackingScalingPolicyConfiguration: {
+            TargetValue: 70,
+          },
+        },
+      },
+    });
+    Template.fromStack(stack).hasResource('AWS::DynamoDB::GlobalTable', { DeletionPolicy: CfnDeletionPolicy.DELETE });
   });
 
   test('throws if deployment region is a token', () => {
@@ -259,6 +535,24 @@ describe('global table configuration', () => {
         }),
       });
     }).toThrow('The deployment region for a global table must not be a token');
+  });
+
+  test('throws if encryption type is CUSTOMER_MANAGED and replica is missing key ARN', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const tableKmsKey = new Key(stack, 'Key');
+
+    // WHEN
+    new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      encryption: TableEncryptionV2.customerManagedKey(tableKmsKey),
+      replicas: [{ region: 'us-east-1' }],
+    });
+
+    // THEN
+    expect(() => {
+      Template.fromStack(stack);
+    }).toThrow('You must specify a KMS key ARN for each replica table when encryption type is CUSTOMER_MANAGED');
   });
 });
 
@@ -891,11 +1185,103 @@ describe('secondary indexes', () => {
   });
 
   test('can add a global secondary index', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
 
+    // WHEN
+    globalTable.addGlobalSecondaryIndex({
+      indexName: 'gsi',
+      partitionKey: { name: 'gsiPk', type: AttributeType.STRING },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      AttributeDefinitions: [
+        {
+          AttributeName: 'pk',
+          AttributeType: 'S',
+        },
+        {
+          AttributeName: 'gsiPk',
+          AttributeType: 'S',
+        },
+      ],
+      KeySchema: [
+        {
+          AttributeName: 'pk',
+          KeyType: 'HASH',
+        },
+      ],
+      GlobalSecondaryIndexes: [
+        {
+          IndexName: 'gsi',
+          KeySchema: [
+            {
+              AttributeName: 'gsiPk',
+              KeyType: 'HASH',
+            },
+          ],
+          Projection: {
+            ProjectionType: 'ALL',
+          },
+        },
+      ],
+    });
   });
 
   test('can add a local secondary index', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
 
+    // WHEN
+    globalTable.addLocalSecondaryIndex({
+      indexName: 'lsi',
+      sortKey: { name: 'lsiSk', type: AttributeType.STRING },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      AttributeDefinitions: [
+        {
+          AttributeName: 'pk',
+          AttributeType: 'S',
+        },
+        {
+          AttributeName: 'lsiSk',
+          AttributeType: 'S',
+        },
+      ],
+      KeySchema: [
+        {
+          AttributeName: 'pk',
+          KeyType: 'HASH',
+        },
+      ],
+      LocalSecondaryIndexes: [
+        {
+          IndexName: 'lsi',
+          KeySchema: [
+            {
+              AttributeName: 'pk',
+              KeyType: 'HASH',
+            },
+            {
+              AttributeName: 'lsiSk',
+              KeyType: 'RANGE',
+            },
+          ],
+          Projection: {
+            ProjectionType: 'ALL',
+          },
+        },
+      ],
+    });
   });
 
   test('throws if read capacity is configured when billing mode is on demand', () => {
@@ -1238,5 +1624,9 @@ describe('secondary indexes', () => {
 });
 
 describe('billing and capacity', () => {
+
+});
+
+describe('encryption', () => {
 
 });
