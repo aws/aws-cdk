@@ -11,3 +11,4 @@ export * from './managed-compute-environment';
 export * from './multinode-job-definition';
 export * from './scheduling-policy';
 export * from './unmanaged-compute-environment';
+export * from './runtime-platform';

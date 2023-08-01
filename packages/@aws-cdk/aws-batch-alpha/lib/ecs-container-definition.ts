@@ -557,6 +557,15 @@ export interface EcsContainerDefinitionProps {
   readonly readonlyRootFilesystem?: boolean;
 
   /**
+   * The operating system that your task definitions are running on.
+   *
+   * A runtimePlatform is supported only for tasks using the Fargate launch type.
+   *
+   * @default - Undefined.
+   */
+  readonly runtimePlatform?: RuntimePlatform;
+
+  /**
    * A map from environment variable names to the secrets for the container. Allows your job definitions
    * to reference the secret by the environment variable name defined in this property.
    *
@@ -595,6 +604,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
   public readonly linuxParameters?: LinuxParameters;
   public readonly logDriverConfig?: ecs.LogDriverConfig;
   public readonly readonlyRootFilesystem?: boolean;
+  public readonly runtimePlatform?: RuntimePlatform;
   public readonly secrets?: { [envVarName: string]: Secret };
   public readonly user?: string;
   public readonly volumes: EcsVolume[];
@@ -627,6 +637,10 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
     this.secrets = props.secrets;
     this.user = props.user;
     this.volumes = props.volumes ?? [];
+
+    if (props.runtimePlatform) {
+      this.runtimePlatform = props.runtimePlatform;
+    }
 
     this.imageConfig = props.image.bind(this, {
       ...this as any,
