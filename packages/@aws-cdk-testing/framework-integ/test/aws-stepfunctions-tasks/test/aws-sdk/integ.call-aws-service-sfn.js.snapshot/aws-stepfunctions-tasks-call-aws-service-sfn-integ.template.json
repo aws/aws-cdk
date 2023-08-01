@@ -93,7 +93,37 @@
        "Action": "states:StartExecution",
        "Effect": "Allow",
        "Resource": {
-        "Ref": "ChildStateMachine9133117F"
+        "Fn::Join": [
+          "",
+          [
+            "arn:",
+            {
+              "Ref": "AWS::Partition"
+            },
+            ":states:",
+            {
+              "Ref": "AWS::Region"
+            },
+            ":",
+            {
+              "Ref": "AWS::AccountId"
+            },
+            ":execution:",
+            {
+              "Fn::Select": [
+                6,
+                {
+                  "Fn::Split": [
+                    ":",
+                    {
+                      "Ref": "ChildStateMachine9133117F"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        ]
        }
       }
      ],
