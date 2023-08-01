@@ -1,0 +1,19 @@
+{
+  "version": "32.0.0",
+  "files": {
+    "4c953dadd81493b9ba7f2a1c7b5aea35907c8e0df9be35cd5171c5d4393f5482": {
+      "source": {
+        "path": "s3-bucket-routing.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "4c953dadd81493b9ba7f2a1c7b5aea35907c8e0df9be35cd5171c5d4393f5482.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

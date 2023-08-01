@@ -1,8 +1,9 @@
 #!/usr/bin/env node
+import * as integ from '@aws-cdk/integ-tests-alpha';
+import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as cdk from 'aws-cdk-lib';
 import * as glue from '../lib';
 
 const app = new cdk.App();
@@ -128,6 +129,21 @@ new glue.Table(stack, 'MyTableWithCustomLocation', {
   externalDataLocation: 'default_db.public.test',
 });
 
+new glue.Table(stack, 'MyTableWithStorageDescriptorParameters', {
+  database,
+  bucket,
+  tableName: 'table_with_storage_descriptor_parameters',
+  columns,
+  dataFormat: glue.DataFormat.JSON,
+  storageParameters: [
+    glue.StorageParameter.skipHeaderLineCount(1),
+    glue.StorageParameter.compressionType(glue.CompressionType.GZIP),
+    glue.StorageParameter.custom('foo', 'bar'), // Will have no effect
+    glue.StorageParameter.custom('separatorChar', ','), // Will describe the separator char used in the data
+    glue.StorageParameter.custom(glue.StorageParameters.WRITE_PARALLEL, 'off'),
+  ],
+});
+
 const user = new iam.User(stack, 'MyUser');
 csvTable.grantReadWrite(user);
 encryptedTable.grantReadWrite(user);
@@ -136,5 +152,9 @@ const anotherUser = new iam.User(stack, 'AnotherUser');
 avroTable.grantReadWrite(anotherUser);
 jsonTable.grantReadWrite(anotherUser);
 parquetTable.grantReadWrite(anotherUser);
+
+new integ.IntegTest(app, 'aws-cdk-glue-table-integ', {
+  testCases: [stack],
+});
 
 app.synth();
