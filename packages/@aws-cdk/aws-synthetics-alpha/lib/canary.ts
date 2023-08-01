@@ -13,8 +13,8 @@ import { CfnCanary } from 'aws-cdk-lib/aws-synthetics';
 import { CustomResource, CustomResourceProvider, CustomResourceProviderRuntime } from 'aws-cdk-lib/core';
 import * as path from 'path';
 
-const AUTO_DELETE_LAMBDAS_RESOURCE_TYPE = 'Custom::SyntheticsAutoDeleteLambdas';
-const AUTO_DELETE_LAMBDAS_TAG = 'aws-cdk:auto-delete-lambdas';
+const AUTO_DELETE_LAMBDA_RESOURCE_TYPE = 'Custom::SyntheticsAutoDeleteLambda';
+const AUTO_DELETE_LAMBDA_TAG = 'aws-cdk:auto-delete-lambda';
 
 /**
  * Specify a test that the canary should run
@@ -216,8 +216,16 @@ export interface CanaryProps {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-synthetics-canary.html#cfn-synthetics-canary-deletelambdaresourcesoncanarydeletion
    *
    * @default false
+   * @deprecated use autoDeleteLambda instead
    */
   readonly enableAutoDeleteLambdas?: boolean;
+
+  /**
+   * Whether or not to delete the lambda resource when the canary is deleted
+   *
+   * @default false
+   */
+  readonly autoDeleteLambda: boolean;
 
   /**
    * Lifecycle rules for the generated canary artifact bucket. Has no effect
@@ -314,17 +322,17 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     this.canaryState = resource.attrState;
     this.canaryName = this.getResourceNameAttribute(resource.ref);
 
-    if (props.enableAutoDeleteLambdas) {
-      this.enableAutoDeleteLambdas();
+    if (props.autoDeleteLambda ?? props.enableAutoDeleteLambdas) {
+      this.enableAutoDeleteLambda();
     }
   }
 
-  private enableAutoDeleteLambdas() {
-    const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_LAMBDAS_RESOURCE_TYPE, {
-      codeDirectory: path.join(__dirname, '..', 'custom-resource-handlers', 'dist', 'aws-synthetics-alpha', 'auto-delete-lambdas-handler'),
+  private enableAutoDeleteLambda() {
+    const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_LAMBDA_RESOURCE_TYPE, {
+      codeDirectory: path.join(__dirname, '..', 'custom-resource-handlers', 'dist', 'aws-synthetics-alpha', 'auto-delete-lambda-handler'),
       useCfnResponseWrapper: false,
       runtime: CustomResourceProviderRuntime.NODEJS_18_X,
-      description: `Lambda function for auto-deleting lambdas created by ${this.canaryName}.`,
+      description: `Lambda function for auto-deleting lambda created by ${this.canaryName}.`,
       policyStatements: [{
         Effect: 'Allow',
         Action: ['lambda:DeleteFunction'],
@@ -337,7 +345,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     });
 
     new CustomResource(this, 'AutoDeleteObjectsCustomResource', {
-      resourceType: AUTO_DELETE_LAMBDAS_RESOURCE_TYPE,
+      resourceType: AUTO_DELETE_LAMBDA_RESOURCE_TYPE,
       serviceToken: provider.serviceToken,
       properties: {
         CanaryName: this.canaryName,
@@ -347,9 +355,9 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     // We also tag the canary to record the fact that we want it autodeleted.
     // The custom resource will check this tag before actually doing the delete.
     // Because tagging and untagging will ALWAYS happen before the CR is deleted,
-    // we can set `enableAutoDeleteLambdas: false` without the removal of the CR emptying
+    // we can set `autoDeleteLambda: false` without the removal of the CR emptying
     // the lambda as a side effect.
-    cdk.Tags.of(this._resource).add(AUTO_DELETE_LAMBDAS_TAG, 'true');
+    cdk.Tags.of(this._resource).add(AUTO_DELETE_LAMBDA_TAG, 'true');
   }
 
   /**
