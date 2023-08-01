@@ -1980,6 +1980,113 @@ each(testedOpenSearchVersions).describe('cognito dashboards auth', (engineVersio
   });
 });
 
+each(testedOpenSearchVersions).describe('offPeakWindow and softwareUpdateOptions', (engineVersion) => {
+  test('with offPeakWindowStart and offPeakWindowEnabled', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      offPeakWindowEnabled: true,
+      offPeakWindowStart: {
+        hours: 10,
+        minutes: 30,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      OffPeakWindowOptions: {
+        Enabled: true,
+        OffPeakWindow: {
+          WindowStartTime: {
+            Hours: 10,
+            Minutes: 30,
+          },
+        },
+      },
+    });
+  });
+
+  test('with offPeakWindowStart only', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      offPeakWindowStart: {
+        hours: 10,
+        minutes: 30,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      OffPeakWindowOptions: {
+        Enabled: true,
+        OffPeakWindow: {
+          WindowStartTime: {
+            Hours: 10,
+            Minutes: 30,
+          },
+        },
+      },
+    });
+  });
+
+  test('with offPeakWindowOptions default start time', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      offPeakWindowEnabled: true,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      OffPeakWindowOptions: {
+        Enabled: true,
+        OffPeakWindow: {
+          WindowStartTime: {
+            Hours: 22,
+            Minutes: 0,
+          },
+        },
+      },
+    });
+  });
+
+  test('with autoSoftwareUpdateEnabled', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      enableAutoSoftwareUpdate: true,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      SoftwareUpdateOptions: {
+        AutoSoftwareUpdateEnabled: true,
+      },
+    });
+  });
+
+  test('with invalid offPeakWindowStart', () => {
+    expect(() => {
+      new Domain(stack, 'Domain1', {
+        version: engineVersion,
+        offPeakWindowEnabled: true,
+        offPeakWindowStart: {
+          hours: 50,
+          minutes: 0,
+        },
+      });
+    }).toThrow(
+      /Hours must be a value between 0 and 23/,
+    );
+
+    expect(() => {
+      new Domain(stack, 'Domain2', {
+        version: engineVersion,
+        offPeakWindowEnabled: true,
+        offPeakWindowStart: {
+          hours: 10,
+          minutes: 90,
+        },
+      });
+    }).toThrow(
+      /Minutes must be a value between 0 and 59/,
+    );
+  });
+});
+
 function testGrant(
   expectedActions: string[],
   invocation: (user: iam.IPrincipal, domain: Domain) => void,
