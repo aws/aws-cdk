@@ -1628,5 +1628,43 @@ describe('billing and capacity', () => {
 });
 
 describe('encryption', () => {
+  test('throws if getting tableKey with dynamo owned key encryption', () => {
+    // GIVEN
+    const encryption = TableEncryptionV2.dynamoOwnedKey();
 
+    // WHEN / THEN
+    expect(() => {
+      encryption.tableKey;
+    }).toThrow('Table key is only configured when encryption type is CUSTOMER_MANAGED');
+  });
+
+  test('throws if getting replicaKeyArns with dynamo owned key encryption', () => {
+    // GIVEN
+    const encryption = TableEncryptionV2.dynamoOwnedKey();
+
+    // WHEN / THEN
+    expect(() => {
+      encryption.replicaKeyArns;
+    }).toThrow('Replica key ARNs are only configured when encryption type is CUSTOMER_MANAGED');
+  });
+
+  test('throws if getting tableKey with aws managed key encryption', () => {
+    // GIVEN
+    const encryption = TableEncryptionV2.awsManagedKey();
+
+    // WHEN / THEN
+    expect(() => {
+      encryption.tableKey;
+    }).toThrow('Table key is only configured when encryption type is CUSTOMER_MANAGED');
+  });
+
+  test('throws if getting replicaKeyArns with aws managed key encryption', () => {
+    // GIVEN
+    const encryption = TableEncryptionV2.awsManagedKey();
+
+    // WHEN / THEN
+    expect(() => {
+      encryption.replicaKeyArns;
+    }).toThrow('Replica key ARNs are only configured when encryption type is CUSTOMER_MANAGED');
+  });
 });
