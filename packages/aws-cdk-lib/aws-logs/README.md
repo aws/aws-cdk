@@ -116,6 +116,7 @@ new logs.SubscriptionFilter(this, 'Subscription', {
   logGroup,
   destination: new destinations.LambdaDestination(fn),
   filterPattern: logs.FilterPattern.allTerms("ERROR", "MainThread"),
+  filterName: 'ErrorInMainThread',
 });
 ```
 

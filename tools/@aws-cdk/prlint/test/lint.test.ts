@@ -743,7 +743,7 @@ describe('integration tests required on features', () => {
       mockListReviews.mockImplementation(() => {
         return {
           data: [
-            { id: 1111122223, user: { login: 'pahud' }, state: 'COMMENT' },
+            { id: 1111122223, user: { login: 'pahud' }, state: 'COMMENTED' },
           ],
         };
       });
