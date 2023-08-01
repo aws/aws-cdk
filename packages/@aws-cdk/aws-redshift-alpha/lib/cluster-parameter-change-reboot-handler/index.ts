@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { Redshift } from '@aws-sdk/client-redshift';
+import { InvalidClusterStateFault, Redshift } from '@aws-sdk/client-redshift';
 
 const redshift = new Redshift({});
 
@@ -21,7 +21,7 @@ async function rebootClusterIfRequired(clusterId: string, parameterGroupName: st
       try {
         await redshift.rebootCluster({ ClusterIdentifier: clusterId });
       } catch (err: any) {
-        if (err.code === 'InvalidClusterState') {
+        if (err instanceof InvalidClusterStateFault) {
           return await executeActionForStatus(status, 30000);
         } else {
           throw err;

@@ -49,7 +49,7 @@ describe('SdkHandler', () => {
       service: 'S3',
       api: 'listObjects',
       parameters: {
-        Bucket: 'myBucket',
+        Bucket: '"myBucket"',
       },
     };
 
@@ -70,7 +70,7 @@ describe('SdkHandler', () => {
         service: 'EC2',
         api: 'describeInstances',
         parameters: {
-          DryRun: 'TRUE:BOOLEAN',
+          DryRun: 'true',
         },
       };
 
@@ -89,7 +89,7 @@ describe('SdkHandler', () => {
         service: 'EC2',
         api: 'describeInstances',
         parameters: {
-          DryRun: 'FALSE:BOOLEAN',
+          DryRun: 'false',
         },
       };
 
@@ -98,6 +98,64 @@ describe('SdkHandler', () => {
 
       // THEN
       expect(ec2Mock).toHaveReceivedCommandWith(DescribeInstancesCommand, { DryRun: false });
+    });
+
+    test('numbers', async () => {
+      // GIVEN
+      ec2Mock.on(DescribeInstancesCommand).resolves({});
+      const handler = sdkHandler() as any;
+      const request: AwsApiCallRequest = {
+        service: 'EC2',
+        api: 'describeInstances',
+        parameters: {
+          MaxResults: 1,
+        },
+      };
+
+      // WHEN
+      await handler.processEvent(request);
+
+      // THEN
+      expect(ec2Mock).toHaveReceivedCommandWith(DescribeInstancesCommand, { MaxResults: 1 });
+    });
+
+    test('strings', async () => {
+      // GIVEN
+      ec2Mock.on(DescribeInstancesCommand).resolves({});
+      const handler = sdkHandler() as any;
+      const request: AwsApiCallRequest = {
+        service: 'EC2',
+        api: 'describeInstances',
+        parameters: {
+          NextToken: '"TOKEN"',
+          InstanceIds: '["foo","bar"]',
+        },
+      };
+
+      // WHEN
+      await handler.processEvent(request);
+
+      // THEN
+      expect(ec2Mock).toHaveReceivedCommandWith(DescribeInstancesCommand, { NextToken: 'TOKEN', InstanceIds: ['foo', 'bar'] });
+    });
+
+    test('unparsable values are unchanged', async () => {
+      // GIVEN
+      ec2Mock.on(DescribeInstancesCommand).resolves({});
+      const handler = sdkHandler() as any;
+      const request: AwsApiCallRequest = {
+        service: 'EC2',
+        api: 'describeInstances',
+        parameters: {
+          NextToken: 'To"ken',
+        },
+      };
+
+      // WHEN
+      await handler.processEvent(request);
+
+      // THEN
+      expect(ec2Mock).toHaveReceivedCommandWith(DescribeInstancesCommand, { NextToken: 'To"ken' });
     });
   });
 
@@ -122,7 +180,7 @@ describe('SdkHandler', () => {
       service: 'S3',
       api: 'listObjects',
       parameters: {
-        Bucket: 'myBucket',
+        Bucket: '"myBucket"',
       },
       outputPaths: ['Name', 'Contents.0.Key'],
     };

@@ -229,16 +229,7 @@ export class AssertionsProvider extends Construct {
     if (!obj) {
       return obj;
     }
-    return JSON.parse(JSON.stringify(obj), (_k, v) => {
-      switch (v) {
-        case true:
-          return 'TRUE:BOOLEAN';
-        case false:
-          return 'FALSE:BOOLEAN';
-        default:
-          return v;
-      }
-    });
+    return Object.fromEntries(Object.entries(obj).map(([key, value]) => [key, JSON.stringify(value)]));
   }
 
   /**

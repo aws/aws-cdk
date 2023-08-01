@@ -12,7 +12,8 @@
      "WarmCount": 2,
      "WarmEnabled": true,
      "WarmType": "ultrawarm1.medium.search",
-     "ZoneAwarenessEnabled": false
+     "ZoneAwarenessEnabled": false,
+     "MultiAZWithStandbyEnabled": false
     },
     "DomainEndpointOptions": {
      "EnforceHTTPS": false,
