@@ -618,7 +618,7 @@ export interface CommonProjectProps {
    *
    * Only used if 'vpc' is supplied.
    *
-   * @default - All private subnets.
+   * @default - private subnets if any else public subnets
    */
   readonly subnetSelection?: ec2.SubnetSelection;
 
