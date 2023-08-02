@@ -1282,4 +1282,16 @@ describe('ec2 task definition', () => {
       new ecs.Ec2TaskDefinition(stack, 'TaskDef', { networkMode: ecs.NetworkMode.BRIDGE, proxyConfiguration });
     }).toThrow(/ProxyConfiguration can only be used with AwsVpc network mode, got: bridge/);
   });
+
+  test('throws an error when an invalid constraint is provided', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const invalidConstraint = ecs.PlacementConstraint.distinctInstances();
+
+    // THEN
+    expect(() => {
+      new ecs.Ec2TaskDefinition(stack, 'TaskDef', { placementConstraints: [invalidConstraint] });
+    }).toThrow(/Invalid placement constraint\(s\): distinctInstance. Only 'memberOf' is currently supported in the Ec2TaskDefinition class./);
+  });
+
 });
