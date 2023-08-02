@@ -1,3 +1,4 @@
+import * as path from 'path';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
@@ -712,8 +713,8 @@ testDeprecated('Should create handler with path for recent runtimes', () => {
   new synthetics.Canary(stack, 'Canary', {
     canaryName: 'mycanary',
     test: synthetics.Test.custom({
-      handler: 'folder/fileName.functionName',
-      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+      handler: 'folder/canary.functionName',
+      code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
     }),
     runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
   });
@@ -722,7 +723,7 @@ testDeprecated('Should create handler with path for recent runtimes', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
     Name: 'mycanary',
     Code: {
-      Handler: 'folder/fileName.functionName',
+      Handler: 'folder/canary.functionName',
     },
     RuntimeVersion: 'syn-nodejs-puppeteer-3.8',
   });
@@ -735,37 +736,45 @@ describe('handler validation', () => {
       new synthetics.Canary(stack, 'Canary', {
         test: synthetics.Test.custom({
           handler: 'index.functionName',
-          code: synthetics.Code.fromInline('/* Synthetics handler code'),
+          code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
         }),
         runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_1_0,
       });
     }).toThrow(/Canary Handler must be specified as 'fileName.handler' for legacy runtimes/);
   });
 
-  testDeprecated('syn-nodejs-puppeteer-3.4', () => {
-    const stack = new Stack();
-    expect(() => {
-      new synthetics.Canary(stack, 'Canary', {
-        test: synthetics.Test.custom({
-          handler: 'folder/fileName.functionName',
-          code: synthetics.Code.fromInline('/* Synthetics handler code'),
-        }),
-        runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_4,
-      });
-    }).toThrow(/Canary Handler must be specified either as 'fileName.handler' or 'fileName.functionName' for the 'syn-nodejs-puppeteer-3.4' runtime/);
-  });
-
   testDeprecated('recent runtimes', () => {
     const stack = new Stack();
+
     expect(() => {
       new synthetics.Canary(stack, 'Canary', {
         test: synthetics.Test.custom({
           handler: 'invalidHandler',
-          code: synthetics.Code.fromInline('/* Synthetics handler code'),
+          code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
         }),
         runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
       });
     }).toThrow(/Canary Handler must be specified either as 'fileName.handler', 'fileName.functionName', or 'folder\/fileName.functionName'/);
+
+    expect(() => {
+      new synthetics.Canary(stack, 'Canary1', {
+        test: synthetics.Test.custom({
+          handler: 'canary.functionName',
+          code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
+        }),
+        runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
+      });
+    }).not.toThrow();
+
+    expect(() => {
+      new synthetics.Canary(stack, 'Canary2', {
+        test: synthetics.Test.custom({
+          handler: 'folder/canary.functionName',
+          code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
+        }),
+        runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
+      });
+    }).not.toThrow();
   });
 
   testDeprecated('handler length', () => {
@@ -774,7 +783,7 @@ describe('handler validation', () => {
       new synthetics.Canary(stack, 'Canary1', {
         test: synthetics.Test.custom({
           handler: 'longHandlerName'.repeat(10) + '.handler',
-          code: synthetics.Code.fromInline('/* Synthetics handler code'),
+          code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
         }),
         runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
       });

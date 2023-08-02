@@ -420,20 +420,23 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     };
   }
 
+  /**
+   * Verifies that the handler name matches the conventions given a certain runtime.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-synthetics-canary-code.html#cfn-synthetics-canary-code-handler
+   * @param handler - the name of the handler
+   * @param runtime - the runtime version
+   */
   private validateHandler(handler: string, runtime: Runtime) {
-    if (
-      runtime === Runtime.SYNTHETICS_PYTHON_SELENIUM_1_0 ||
-      runtime === Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_0 ||
-      runtime === Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_1 ||
-      runtime === Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_2 ||
-      runtime === Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_3
-    ) {
+    const oldRuntimes = [
+      Runtime.SYNTHETICS_PYTHON_SELENIUM_1_0,
+      Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_0,
+      Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_1,
+      Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_2,
+    ];
+    if (oldRuntimes.includes(runtime)) {
       if (!handler.match(/^[0-9A-Za-z_\\-]+\.handler*$/)) {
         throw new Error(`Canary Handler must be specified as \'fileName.handler\' for legacy runtimes, received ${handler}`);
-      }
-    } else if (runtime === Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_4) {
-      if (!handler.match(/^[0-9A-Za-z_\\-]+\.[A-Za-z_][A-Za-z0-9_]*$/)) {
-        throw new Error(`Canary Handler must be specified either as \'fileName.handler\' or \'fileName.functionName\' for the \'syn-nodejs-puppeteer-3.4'\ runtime, received ${handler}`);
       }
     } else {
       if (!handler.match(/^([0-9a-zA-Z_-]+\/)*[0-9A-Za-z_\\-]+\.[A-Za-z_][A-Za-z0-9_]*$/)) {
