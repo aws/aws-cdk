@@ -50,8 +50,8 @@ export enum RemovalPolicy {
   SNAPSHOT = 'snapshot',
 
   /**
-   * Resource will be retained when they are requested to be deleted
-   * or need to be replaced due to an update request.
+   * Resource will be retained when they are requested to be deleted during a stack delete request
+   * or need to be replaced due to a stack update request.
    * Resource are not retained, if the creation is rolled back.
    *
    * The result is that new, empty, and unused resources are deleted,
