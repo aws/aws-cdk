@@ -2,8 +2,9 @@ import { Construct } from 'constructs';
 import { CfnGlobalTable } from './dynamodb.generated';
 import {
   SecondaryIndexProps, SchemaOptions, TableClass, LocalSecondaryIndexProps,
-  BillingMode, Attribute, ProjectionType, TableEncryption,
+  BillingMode, Attribute, ProjectionType, TableEncryption, ITable,
 } from './shared';
+import { Table } from './table';
 import { IStream } from '../../aws-kinesis';
 import { IKey } from '../../aws-kms';
 import {
@@ -305,9 +306,33 @@ export interface GlobalTableProps extends TableOptionsV2, SchemaOptions {
  * Represents an instance of a global table
  */
 export interface IGlobalTable extends IResource {
+  /**
+   * The ARN of the replica table in the region that the global table is deployed to.
+   *
+   * @attribute
+   */
   readonly tableArn: string;
+
+  /**
+   * The name of all replica tables in the global table.
+   *
+   * @attribute
+   */
   readonly tableName: string;
+
+  /**
+   * The ID of the replica table in the region that the global table is deployed to.
+   *
+   * @attribute
+   */
   readonly tableId?: string;
+
+  /**
+   * The ARN of the DynamoDB stream of the replica table in the region that the global
+   * table is deployed to.
+   *
+   * @attribute
+   */
   readonly tableStreamArn?: string;
 }
 
@@ -319,36 +344,105 @@ export interface GlobalTableAttributes {
   readonly tableName?: string;
   readonly tableId?: string;
   readonly tableStreamArn?: string;
+  readonly encryption?: TableEncryptionV2;
 }
 
 /**
  * The base class for a global table
  */
 abstract class GlobalTableBase extends Resource implements IGlobalTable {
+  /**
+   * The ARN of the replica table in the region that the global table is deployed to.
+   *
+   * @attribute
+   */
   public abstract readonly tableArn: string;
+
+  /**
+   * The name of all replica tables in the global table.
+   *
+   * @attribute
+   */
   public abstract readonly tableName: string;
+
+  /**
+   * The ID of the replica table in the region that the global table is deployed to.
+   *
+   * @attribute
+   */
   public abstract readonly tableId?: string;
+
+  /**
+   * The ARN of the DynamoDB stream of the replica table in the region that the global
+   * table is deployed to.
+   *
+   * @attribute
+   */
   public abstract readonly tableStreamArn?: string;
+
+  /**
+   * The server-side encryption for the global table and its replica tables.
+   */
+  public abstract readonly encryption?: TableEncryptionV2;
+
+  /**
+   * @internal
+   */
+  protected readonly _replicaTables = new Map<string, ReplicaTableProps>();
+
+  /**
+   *
+   * @param region the region of the replica table
+   */
+  public replica(region: string): ITable {
+    if (!this._replicaTables.has(region)) {
+      throw new Error(`The global table does not have a replica table defined in region ${region}`);
+    }
+
+    return Table.fromTableAttributes(this, `ReplicaTable-${region}`, {});
+  }
 }
 
 /**
  * A global table
  */
 export class GlobalTable extends GlobalTableBase {
+  /**
+   * Creates a Global Table construct that represents an external global table via table name.
+   *
+   * @param scope construct scope (usually `this`)
+   * @param id construct name
+   * @param tableName the name of the global table
+   */
   public static fromTableName(scope: Construct, id: string, tableName: string): IGlobalTable {
     return GlobalTable.fromTableAttributes(scope, id, { tableName });
   }
 
+  /**
+   * Creates a Global Table construct that represents an external global table via table ARN.
+   *
+   * @param scope construct scope (usually `this`)
+   * @param id construct name
+   * @param tableArn the ARN of the global table
+   */
   public static fromTableArn(scope: Construct, id: string, tableArn: string): IGlobalTable {
     return GlobalTable.fromTableAttributes(scope, id, { tableArn });
   }
 
+  /**
+   * Creates a Global Table construct that represents an external global table.
+   *
+   * @param scope construct scope (usually `this`)
+   * @param id construct name
+   * @param attrs the attributes representing the global table
+   */
   public static fromTableAttributes(scope: Construct, id: string, attrs: GlobalTableAttributes): IGlobalTable {
     class Import extends GlobalTableBase {
       public readonly tableArn: string;
       public readonly tableName: string;
       public readonly tableId?: string;
       public readonly tableStreamArn?: string;
+      public readonly encryption?: TableEncryptionV2;
 
       public constructor(tableArn: string, tableName: string, tableId?: string, tableStreamArn?: string) {
         super(scope, id);
@@ -389,16 +483,43 @@ export class GlobalTable extends GlobalTableBase {
     return new Import(tableArn, tableName, attrs.tableId, attrs.tableStreamArn);
   }
 
+  /**
+   * Returns the ARN of the replica table in the region that the global table is deployed to.
+   *
+   * @attribute
+   */
   public readonly tableArn: string;
+
+  /**
+   * Returns the name of all replica tables in the global table.
+   *
+   * @attribute
+   */
   public readonly tableName: string;
+
+  /**
+   * Returns the ID of the replica table in the region that the global table is deployed to.
+   *
+   * @attribute
+   */
   public readonly tableId?: string;
+
+  /**
+   * Returns the ARN of the DynamoDB stream of the replica table in the region that the global
+   * table is deployed to.
+   *
+   * @attribute
+   */
   public readonly tableStreamArn?: string;
 
-  private readonly region: string;
+  /**
+   * Returns the server-side encryption for the global table and its replica tables.
+   */
+  public readonly encryption?: TableEncryptionV2;
+
   private readonly billingMode: string;
   private readonly partitionKey: Attribute;
   private readonly tableOptions: TableOptionsV2;
-  private readonly encryption?: TableEncryptionV2;
 
   private readonly readProvisioning?: CfnGlobalTable.ReadProvisionedThroughputSettingsProperty;
   private readonly writeProvisioning?: CfnGlobalTable.WriteProvisionedThroughputSettingsProperty;
@@ -407,19 +528,12 @@ export class GlobalTable extends GlobalTableBase {
   private readonly keySchema: CfnGlobalTable.KeySchemaProperty[] = [];
   private readonly nonKeyAttributes = new Set<string>();
 
-  private readonly _replicaTables = new Map<string, ReplicaTableProps>();
-
   private readonly _localSecondaryIndexes = new Map<string, CfnGlobalTable.LocalSecondaryIndexProperty>();
   private readonly _globalSecondaryIndexes = new Map<string, CfnGlobalTable.GlobalSecondaryIndexProperty>();
   private readonly globalSecondaryIndexReadCapacitys = new Map<string, Capacity>();
 
   public constructor(scope: Construct, id: string, props: GlobalTableProps) {
     super(scope, id, { physicalName: props.tableName });
-
-    this.region = Stack.of(this).region;
-    if (Token.isUnresolved(this.region)) {
-      throw new Error('The deployment region for a global table must not be a token');
-    }
 
     this.partitionKey = props.partitionKey;
     this.tableOptions = props;
@@ -500,8 +614,8 @@ export class GlobalTable extends GlobalTableBase {
   private get replicaTables() {
     const replicaTables: CfnGlobalTable.ReplicaSpecificationProperty[] = [];
 
-    if (!this._replicaTables.has(this.region)) {
-      const replicaTable = this.configureReplicaTable({ region: this.region });
+    if (!this._replicaTables.has(this.stack.region)) {
+      const replicaTable = this.configureReplicaTable({ region: this.stack.region });
       replicaTables.push(replicaTable);
     }
 
@@ -565,8 +679,6 @@ export class GlobalTable extends GlobalTableBase {
     if (this._replicaTables.has(props.region)) {
       throw new Error(`Duplicate replica region, ${props.region}, is not allowed`);
     }
-
-    if (props.globalSecondaryIndexOptions) {}
 
     this._replicaTables.set(props.region, props);
   }
@@ -700,7 +812,7 @@ export class GlobalTable extends GlobalTableBase {
       return undefined;
     }
 
-    if (region === this.region) {
+    if (region === this.stack.region) {
       return { kmsMasterKeyId: this.encryption.tableKey.keyArn };
     }
 

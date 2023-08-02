@@ -10,7 +10,7 @@ import {
 describe('global table configuration', () => {
   test('with default properties', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
 
     // WHEN
     new GlobalTable(stack, 'GlobalTable', {
@@ -34,7 +34,9 @@ describe('global table configuration', () => {
       ],
       Replicas: [
         {
-          Region: 'us-west-2',
+          Region: {
+            Ref: 'AWS::Region',
+          },
         },
       ],
       StreamSpecification: {
@@ -45,7 +47,7 @@ describe('global table configuration', () => {
 
   test('with sort key', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
 
     // WHEN
     new GlobalTable(stack, 'GlobalTable', {
@@ -68,7 +70,7 @@ describe('global table configuration', () => {
 
   test('with contributor insights enabled', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
 
     // WHEN
     new GlobalTable(stack, 'GlobalTable', {
@@ -80,7 +82,9 @@ describe('global table configuration', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
       Replicas: [
         {
-          Region: 'us-west-2',
+          Region: {
+            Ref: 'AWS::Region',
+          },
           ContributorInsightsSpecification: {
             Enabled: true,
           },
@@ -91,7 +95,7 @@ describe('global table configuration', () => {
 
   test('with deletion protection enabled', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
 
     // WHEN
     new GlobalTable(stack, 'GlobalTable', {
@@ -103,7 +107,9 @@ describe('global table configuration', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
       Replicas: [
         {
-          Region: 'us-west-2',
+          Region: {
+            Ref: 'AWS::Region',
+          },
           DeletionProtectionEnabled: true,
         },
       ],
@@ -112,7 +118,7 @@ describe('global table configuration', () => {
 
   test('with point-in-time recovery enabled', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
 
     // WHEN
     new GlobalTable(stack, 'GlobalTable', {
@@ -124,7 +130,9 @@ describe('global table configuration', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
       Replicas: [
         {
-          Region: 'us-west-2',
+          Region: {
+            Ref: 'AWS::Region',
+          },
           PointInTimeRecoverySpecification: {
             PointInTimeRecoveryEnabled: true,
           },
@@ -135,7 +143,7 @@ describe('global table configuration', () => {
 
   test('with standard IA table class', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
 
     // WHEN
     new GlobalTable(stack, 'GlobalTable', {
@@ -147,7 +155,9 @@ describe('global table configuration', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
       Replicas: [
         {
-          Region: 'us-west-2',
+          Region: {
+            Ref: 'AWS::Region',
+          },
           TableClass: 'STANDARD_INFREQUENT_ACCESS',
         },
       ],
@@ -156,7 +166,7 @@ describe('global table configuration', () => {
 
   test('with table name', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
 
     // WHEN
     new GlobalTable(stack, 'GlobalTable', {
@@ -172,7 +182,7 @@ describe('global table configuration', () => {
 
   test('with TTL attribute', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
 
     // WHEN
     new GlobalTable(stack, 'GlobalTable', {
@@ -191,7 +201,7 @@ describe('global table configuration', () => {
 
   test('with removal policy as DESTROY', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
 
     // WHEN
     new GlobalTable(stack, 'GlobalTable', {
@@ -205,7 +215,7 @@ describe('global table configuration', () => {
 
   test('with provisioned billing and fixed readCapacity', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
 
     // WHEN
     new GlobalTable(stack, 'GlobalTable', {
@@ -233,7 +243,9 @@ describe('global table configuration', () => {
       },
       Replicas: [
         {
-          Region: 'us-west-2',
+          Region: {
+            Ref: 'AWS::Region',
+          },
           ReadProvisionedThroughputSettings: {
             ReadCapacityUnits: 10,
           },
@@ -244,7 +256,7 @@ describe('global table configuration', () => {
 
   test('with provisioned billing and autoscaled readCapacity', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
 
     // WHEN
     new GlobalTable(stack, 'GlobalTable', {
@@ -275,7 +287,9 @@ describe('global table configuration', () => {
       },
       Replicas: [
         {
-          Region: 'us-west-2',
+          Region: {
+            Ref: 'AWS::Region',
+          },
           ReadProvisionedThroughputSettings: {
             ReadCapacityAutoScalingSettings: {
               MinCapacity: 10,
@@ -292,7 +306,7 @@ describe('global table configuration', () => {
 
   test('with aws managed key encryption', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
 
     // WHEN
     new GlobalTable(stack, 'GlobalTable', {
@@ -308,7 +322,9 @@ describe('global table configuration', () => {
       },
       Replicas: [
         {
-          Region: 'us-west-2',
+          Region: {
+            Ref: 'AWS::Region',
+          },
           SSESpecification: Match.absent(),
         },
       ],
@@ -317,7 +333,7 @@ describe('global table configuration', () => {
 
   test('with dynamo owned key encryption', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
 
     // WHEN
     new GlobalTable(stack, 'GlobalTable', {
@@ -332,7 +348,9 @@ describe('global table configuration', () => {
       },
       Replicas: [
         {
-          Region: 'us-west-2',
+          Region: {
+            Ref: 'AWS::Region',
+          },
           SSESpecification: Match.absent(),
         },
       ],
@@ -341,9 +359,9 @@ describe('global table configuration', () => {
 
   test('customer managed key', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
     const tableKmsKey = new Key(stack, 'Key');
-    const replicaKeyArns = { 'us-east-1': 'arn' };
+    const replicaKeyArns = { 'us-east-1': 'arn:aws:kms:us-east-1:586193817576:key/95fecd1f-91f1-4897-9ea1-84066e2c6a0f' };
 
     // WHEN
     new GlobalTable(stack, 'GlobalTable', {
@@ -360,7 +378,9 @@ describe('global table configuration', () => {
       },
       Replicas: [
         {
-          Region: 'us-west-2',
+          Region: {
+            Ref: 'AWS::Region',
+          },
           SSESpecification: {
             KMSMasterKeyId: {
               'Fn::GetAtt': [
@@ -373,7 +393,7 @@ describe('global table configuration', () => {
         {
           Region: 'us-east-1',
           SSESpecification: {
-            KMSMasterKeyId: 'arn',
+            KMSMasterKeyId: 'arn:aws:kms:us-east-1:586193817576:key/95fecd1f-91f1-4897-9ea1-84066e2c6a0f',
           },
         },
       ],
@@ -382,7 +402,7 @@ describe('global table configuration', () => {
 
   test('with all properties configured', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
 
     // WHEN
     new GlobalTable(stack, 'GlobalTable', {
@@ -516,7 +536,9 @@ describe('global table configuration', () => {
           ReadProvisionedThroughputSettings: {
             ReadCapacityUnits: 10,
           },
-          Region: 'us-west-2',
+          Region: {
+            Ref: 'AWS::Region',
+          },
           TableClass: 'STANDARD_INFREQUENT_ACCESS',
         },
         {
@@ -566,28 +588,9 @@ describe('global table configuration', () => {
     Template.fromStack(stack).hasResource('AWS::DynamoDB::GlobalTable', { DeletionPolicy: CfnDeletionPolicy.DELETE });
   });
 
-  test('throws if deployment region is a token', () => {
-    // GIVEN
-    const stack = new Stack();
-
-    // WHEN / THEN
-    expect(() => {
-      new GlobalTable(stack, 'GlobalTable', {
-        partitionKey: { name: 'pk', type: AttributeType.STRING },
-        billing: Billing.provisioned({
-          readCapacity: Capacity.fixed(10),
-          writeCapacity: Capacity.autoscaled({
-            minCapacity: 1,
-            maxCapacity: 10,
-          }),
-        }),
-      });
-    }).toThrow('The deployment region for a global table must not be a token');
-  });
-
   test('throws if encryption type is CUSTOMER_MANAGED and replica is missing key ARN', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
     const tableKmsKey = new Key(stack, 'Key');
 
     // WHEN
@@ -611,7 +614,7 @@ describe('replica table configuration', () => {
 describe('secondary indexes', () => {
   test('global secondary index', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
 
     // WHEN
     new GlobalTable(stack, 'GlobalTable', {
@@ -661,7 +664,7 @@ describe('secondary indexes', () => {
 
   test('global secondary index with sort key', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
 
     // WHEN
     new GlobalTable(stack, 'GlobalTable', {
@@ -720,7 +723,7 @@ describe('secondary indexes', () => {
 
   test('global secondary index with provisioned billing and fixed read capacity', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
 
     // WHEN
     new GlobalTable(stack, 'GlobalTable', {
@@ -781,7 +784,9 @@ describe('secondary indexes', () => {
       ],
       Replicas: [
         {
-          Region: 'us-west-2',
+          Region: {
+            Ref: 'AWS::Region',
+          },
           GlobalSecondaryIndexes: [
             {
               IndexName: 'gsi',
@@ -797,7 +802,7 @@ describe('secondary indexes', () => {
 
   test('global secondary index with provisioned billing and autoscaled read capacity', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
 
     // WHEN
     new GlobalTable(stack, 'GlobalTable', {
@@ -858,7 +863,9 @@ describe('secondary indexes', () => {
       ],
       Replicas: [
         {
-          Region: 'us-west-2',
+          Region: {
+            Ref: 'AWS::Region',
+          },
           GlobalSecondaryIndexes: [
             {
               IndexName: 'gsi',
@@ -880,7 +887,7 @@ describe('secondary indexes', () => {
 
   test('global secondary index with projection type as INCLUDE', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
 
     // WHEN
     new GlobalTable(stack, 'GlobalTable', {
@@ -933,7 +940,7 @@ describe('secondary indexes', () => {
 
   test('global secondary index with project type as KEYS_ONLY', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
 
     // WHEN
     new GlobalTable(stack, 'GlobalTable', {
@@ -984,7 +991,7 @@ describe('secondary indexes', () => {
 
   test('local secondary index', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
 
     // WHEN
     new GlobalTable(stack, 'GlobalTable', {
@@ -1038,7 +1045,7 @@ describe('secondary indexes', () => {
 
   test('local secondary index with projection type as INCLUDES', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
 
     // WHEN
     new GlobalTable(stack, 'GlobalTable', {
@@ -1095,7 +1102,7 @@ describe('secondary indexes', () => {
 
   test('local secondary index with projection type as KEYS_ONLY', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
 
     // WHEN
     new GlobalTable(stack, 'GlobalTable', {
@@ -1150,7 +1157,7 @@ describe('secondary indexes', () => {
 
   test('global secondary index and local secondary index', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
 
     // WHEN
     new GlobalTable(stack, 'GlobalTable', {
@@ -1234,7 +1241,7 @@ describe('secondary indexes', () => {
 
   test('can add a global secondary index', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
     const globalTable = new GlobalTable(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
@@ -1282,7 +1289,7 @@ describe('secondary indexes', () => {
 
   test('can add a local secondary index', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
     const globalTable = new GlobalTable(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
@@ -1334,7 +1341,7 @@ describe('secondary indexes', () => {
 
   test('throws if read capacity is configured when billing mode is on demand', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
 
     // WHEN / THEN
     expect(() => {
@@ -1353,7 +1360,7 @@ describe('secondary indexes', () => {
 
   test('throws if write capacity is configured when billing mode is on demand', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
 
     // WHEN / THEN
     expect(() => {
@@ -1372,7 +1379,7 @@ describe('secondary indexes', () => {
 
   test('throws if read capacity is not configured when billing mode is provisioned', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
 
     // WHEN / THEN
     expect(() => {
@@ -1397,7 +1404,7 @@ describe('secondary indexes', () => {
 
   test('throws for duplicate global secondary index names', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
 
     // WHEN / THEN
     expect(() => {
@@ -1419,7 +1426,7 @@ describe('secondary indexes', () => {
 
   test('throws for duplicate local secondary index names', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
 
     // WHEN / THEN
     expect(() => {
@@ -1441,7 +1448,7 @@ describe('secondary indexes', () => {
 
   test('throws for global secondary index and local secondary index with same index name', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
 
     // WHEN / THEN
     expect(() => {
@@ -1465,7 +1472,7 @@ describe('secondary indexes', () => {
 
   test('throws if attribute definition is redefined within global secondary indexes', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
 
     // WHEN / THEN
     expect(() => {
@@ -1487,7 +1494,7 @@ describe('secondary indexes', () => {
 
   test('throws if attribute definition is redefined within local secondary indexes', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
 
     // WHEN / THEN
     expect(() => {
@@ -1509,7 +1516,7 @@ describe('secondary indexes', () => {
 
   test('throws if attribute definition is redefined across global secondary index and local secondary index', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
 
     // WHEN / THEN
     expect(() => {
@@ -1533,7 +1540,7 @@ describe('secondary indexes', () => {
 
   test('throws for global secondary index with INCLUDE projection type without non-key attributes', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
 
     // WHEN / THEN
     expect(() => {
@@ -1552,7 +1559,7 @@ describe('secondary indexes', () => {
 
   test('throws for global secondary index with ALL projection type with non-key attributes', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
 
     // WHEN / THEN
     expect(() => {
@@ -1571,7 +1578,7 @@ describe('secondary indexes', () => {
 
   test('throws for global secondary index with KEYS_ONLY projection type with non-key attributes', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
 
     // WHEN / THEN
     expect(() => {
@@ -1591,7 +1598,7 @@ describe('secondary indexes', () => {
 
   test('throws for local secondary index with ALL projection type with non-key attributes', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
 
     // WHEN / THEN
     expect(() => {
@@ -1610,7 +1617,7 @@ describe('secondary indexes', () => {
 
   test('throws for global secondary index with KEYS_ONLY projection type with non-key attributes', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
 
     // WHEN / THEN
     expect(() => {
@@ -1630,7 +1637,7 @@ describe('secondary indexes', () => {
 
   test('throws if number of global secondary indexes is greater than 20', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
 
     const globalSecondaryIndexes: GlobalSecondaryIndexPropsV2[] = [];
     for (let count = 0; count <= 20; count++) {
@@ -1651,7 +1658,7 @@ describe('secondary indexes', () => {
 
   test('throws if number of local secondary indexes is greater than 5', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stack = new Stack(undefined, 'Stack');
 
     const localSecondaryIndexes: LocalSecondaryIndexProps[] = [];
     for (let count = 0; count <= 5; count++) {
