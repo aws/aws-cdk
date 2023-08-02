@@ -682,7 +682,9 @@ export abstract class BaseService extends Resource
         enable: true,
         rollback: props.deploymentAlarms.behavior !== AlarmBehavior.FAIL_ON_ALARM,
       };
-    } else if (this.deploymentAlarmsAvailableInRegion()) {
+    // CloudWatch alarms is only supported for Amazon ECS services that use the rolling update (ECS) deployment controller.
+    } else if ((!props.deploymentController ||
+      props.deploymentController?.type === DeploymentControllerType.ECS) && this.deploymentAlarmsAvailableInRegion()) {
       this.deploymentAlarms = {
         alarmNames: [],
         enable: false,
@@ -1365,7 +1367,7 @@ export abstract class BaseService extends Resource
   }
 
   private deploymentAlarmsAvailableInRegion(): boolean {
-    const unsupportedPartitions = ['aws-cn', 'aws-us-gov', 'aws-us-iso', 'aws-us-iso-b'];
+    const unsupportedPartitions = ['aws-cn', 'aws-us-gov', 'aws-iso', 'aws-iso-b'];
     const currentRegion = RegionInfo.get(this.stack.resolve(this.stack.region));
     if (currentRegion.partition) {
       return !unsupportedPartitions.includes(currentRegion.partition);
