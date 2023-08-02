@@ -353,7 +353,7 @@ export class AssetStaging extends Construct {
       assetHash,
       stagedPath,
       packaging: bundledAsset.packaging,
-      isArchive: true, // bundling always produces an archive
+      isArchive: bundlingOutputType !== BundlingOutput.SINGLE_FILE,
     };
   }
 
