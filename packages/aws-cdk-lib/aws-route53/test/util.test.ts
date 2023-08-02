@@ -73,7 +73,7 @@ describe('util', () => {
     const stack = new cdk.Stack();
 
     // WHEN
-    const providedName = cdk.Token.asString('test');
+    const providedName = cdk.Token.asString({ Ref: 'fqdn' });
     const qualified = util.determineFullyQualifiedDomainName(providedName, HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
       hostedZoneId: 'fakeId',
       zoneName: 'domain.com.',
