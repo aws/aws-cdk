@@ -53,7 +53,7 @@ async function onDelete(canaryName: string) {
     }
 
     await lambda.send(new DeleteFunctionCommand({
-      FunctionName: `cwsyn-${canaryName}-${response.Canary?.Id}`,
+      FunctionName: response.Canary?.ExecutionRoleArn,
     }));
   } catch (error: any) {
     if (error.name !== 'ResourceNotFoundException') {

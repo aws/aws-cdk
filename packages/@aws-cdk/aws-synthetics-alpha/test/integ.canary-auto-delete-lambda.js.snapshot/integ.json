@@ -1,0 +1,14 @@
+{
+  "version": "33.0.0",
+  "testCases": {
+    "cdk-integ-synthetics-canary-auto-delete-lambda/DefaultTest": {
+      "stacks": [
+        "cdk-synthetics-canary-auto-delete-lambda"
+      ],
+      "diffAssets": true,
+      "stackUpdateWorkflow": false,
+      "assertionStack": "cdk-integ-synthetics-canary-auto-delete-lambda/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegsyntheticscanaryautodeletelambdaDefaultTestDeployAssertA62965CE"
+    }
+  }
+}
