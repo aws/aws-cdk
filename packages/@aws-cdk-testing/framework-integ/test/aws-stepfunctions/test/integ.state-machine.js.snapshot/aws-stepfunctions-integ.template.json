@@ -121,7 +121,7 @@
       "Arn"
      ]
     },
-    "DefinitionString": "{\"StartAt\":\"wait time\",\"States\":{\"wait time\":{\"Type\":\"Wait\",\"SecondsPath\":\"$.waitSeconds\",\"End\":true}}}"
+    "DefinitionString": "{\"StartAt\":\"wait time\",\"States\":{\"wait time\":{\"Type\":\"Wait\",\"SecondsPath\":\"$.waitSeconds\",\"End\":true}},\"Comment\":\"a super cool state machine\"}"
    },
    "DependsOn": [
     "StateMachineRoleB840431D"

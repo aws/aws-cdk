@@ -59,6 +59,7 @@ const definition = submitJob
 new sfn.StateMachine(this, 'StateMachine', {
   definition,
   timeout: Duration.minutes(5),
+  comment: 'a super cool state machine',
 });
 ```
 
@@ -532,6 +533,7 @@ const chain = sfn.Chain.start(custom)
 const sm = new sfn.StateMachine(this, 'StateMachine', {
   definition: chain,
   timeout: Duration.seconds(30),
+  comment: 'a super cool state machine',
 });
 
 // don't forget permissions. You need to assign them
