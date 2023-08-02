@@ -11,7 +11,6 @@ import {
   ROUTE_53_BUCKET_WEBSITE_ZONE_IDS,
   EBS_ENV_ENDPOINT_HOSTED_ZONE_IDS,
   ADOT_LAMBDA_LAYER_ARNS,
-  CR_DEFAULT_RUNTIME_MAP,
   PARAMS_AND_SECRETS_LAMBDA_LAYER_ARNS,
 } from './fact-tables';
 import {
@@ -82,8 +81,6 @@ export async function main(): Promise<void> {
     registerFact(region, 'DLC_REPOSITORY_ACCOUNT', DLC_REPOSITORY_ACCOUNTS[region]);
 
     registerFact(region, 'APPMESH_ECR_ACCOUNT', APPMESH_ECR_ACCOUNTS[region]);
-
-    registerFact(region, 'DEFAULT_CR_NODE_VERSION', CR_DEFAULT_RUNTIME_MAP[partition]);
 
     const firehoseCidrBlock = FIREHOSE_CIDR_BLOCKS[region];
     if (firehoseCidrBlock) {
