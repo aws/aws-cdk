@@ -5,7 +5,7 @@ import * as iam from '../../aws-iam';
 import * as s3_assets from '../../aws-s3-assets';
 import * as cdk from '../../core';
 import { ArnFormat } from '../../core';
-import { FactName } from '../../region-info';
+import { Runtime } from '../../aws-lambda';
 
 /**
  * Construction properties for a LogRetention.
@@ -61,7 +61,8 @@ export interface LogRetentionRetryOptions {
   /**
    * The base duration to use in the exponential backoff for operation retries.
    *
-   * @default Duration.millis(100) (AWS SDK default)
+   * @deprecated Unused since the upgrade to use AWS SDK v3 which uses a different retry strategy
+   * @default - none, not used
    */
   readonly base?: cdk.Duration;
 }
@@ -171,7 +172,7 @@ class LogRetentionFunction extends Construct implements cdk.ITaggable {
       type: 'AWS::Lambda::Function',
       properties: {
         Handler: 'index.handler',
-        Runtime: cdk.Stack.of(scope).regionalFact(FactName.DEFAULT_CR_NODE_VERSION, 'nodejs16.x'), // Equivalent to Runtime.NODEJS_16_X
+        Runtime: Runtime.NODEJS_18_X,
         Code: {
           S3Bucket: asset.s3BucketName,
           S3Key: asset.s3ObjectKey,

@@ -1,124 +1,70 @@
 /* eslint-disable no-console */
-
 // eslint-disable-next-line import/no-extraneous-dependencies
-import * as AWS from 'aws-sdk';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import type { RetryDelayOptions } from 'aws-sdk/lib/config-base';
-
-interface SdkRetryOptions {
-  maxRetries?: number;
-  retryOptions?: RetryDelayOptions;
-}
+import * as Logs from '@aws-sdk/client-cloudwatch-logs';
 
 /**
  * Creates a log group and doesn't throw if it exists.
- *
- * @param logGroupName the name of the log group to create.
- * @param region to create the log group in
- * @param options CloudWatch API SDK options.
  */
-async function createLogGroupSafe(logGroupName: string, region?: string, options?: SdkRetryOptions) {
-  // If we set the log retention for a lambda, then due to the async nature of
-  // Lambda logging there could be a race condition when the same log group is
-  // already being created by the lambda execution. This can sometime result in
-  // an error "OperationAbortedException: A conflicting operation is currently
-  // in progress...Please try again."
-  // To avoid an error, we do as requested and try again.
-  let retryCount = options?.maxRetries == undefined ? 10 : options.maxRetries;
-  const delay = options?.retryOptions?.base == undefined ? 10 : options.retryOptions.base;
-  do {
+async function createLogGroupSafe(logGroupName: string, client: Logs.CloudWatchLogsClient, withDelay: (block: () => Promise<void>) => Promise<void>) {
+  await withDelay(async () => {
     try {
-      const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28', region, ...options });
-      await cloudwatchlogs.createLogGroup({ logGroupName }).promise();
-      return;
+      const params = { logGroupName };
+      const command = new Logs.CreateLogGroupCommand(params);
+      await client.send(command);
+
     } catch (error: any) {
-      if (error.code === 'ResourceAlreadyExistsException') {
+      if (error instanceof Logs.ResourceAlreadyExistsException || error.name === 'ResourceAlreadyExistsException') {
         // The log group is already created by the lambda execution
         return;
       }
-      if (error.code === 'OperationAbortedException') {
-        if (retryCount > 0) {
-          retryCount--;
-          await new Promise(resolve => setTimeout(resolve, delay));
-          continue;
-        } else {
-          // The log group is still being created by another execution but we are out of retries
-          throw new Error('Out of attempts to create a logGroup');
-        }
-      }
+
       throw error;
     }
-  } while (true); // exit happens on retry count check
+  });
 }
 
-//delete a log group
-async function deleteLogGroup(logGroupName: string, region?: string, options?: SdkRetryOptions) {
-  let retryCount = options?.maxRetries == undefined ? 10 : options.maxRetries;
-  const delay = options?.retryOptions?.base == undefined ? 10 : options.retryOptions.base;
-  do {
+/**
+ * Deletes a log group and doesn't throw if it does not exist.
+ */
+async function deleteLogGroup(logGroupName: string, client: Logs.CloudWatchLogsClient, withDelay: (block: () => Promise<void>) => Promise<void>) {
+  await withDelay(async () => {
     try {
-      const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28', region, ...options });
-      await cloudwatchlogs.deleteLogGroup({ logGroupName }).promise();
-      return;
+      const params = { logGroupName };
+      const command = new Logs.DeleteLogGroupCommand(params);
+      await client.send(command);
+
     } catch (error: any) {
-      if (error.code === 'ResourceNotFoundException') {
+      if (error instanceof Logs.ResourceNotFoundException || error.name === 'ResourceNotFoundException') {
         // The log group doesn't exist
         return;
       }
-      if (error.code === 'OperationAbortedException') {
-        if (retryCount > 0) {
-          retryCount--;
-          await new Promise(resolve => setTimeout(resolve, delay));
-          continue;
-        } else {
-          // The log group is still being deleted by another execution but we are out of retries
-          throw new Error('Out of attempts to delete a logGroup');
-        }
-      }
+
       throw error;
     }
-  } while (true); // exit happens on retry count check
+  });
 }
 
 /**
  * Puts or deletes a retention policy on a log group.
- *
- * @param logGroupName the name of the log group to create
- * @param region the region of the log group
- * @param options CloudWatch API SDK options.
- * @param retentionInDays the number of days to retain the log events in the specified log group.
  */
-async function setRetentionPolicy(logGroupName: string, region?: string, options?: SdkRetryOptions, retentionInDays?: number) {
-  // The same as in createLogGroupSafe(), here we could end up with the race
-  // condition where a log group is either already being created or its retention
-  // policy is being updated. This would result in an OperationAbortedException,
-  // which we will try to catch and retry the command a number of times before failing
-  let retryCount = options?.maxRetries == undefined ? 10 : options.maxRetries;
-  const delay = options?.retryOptions?.base == undefined ? 10 : options.retryOptions.base;
-  do {
-    try {
-      const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28', region, ...options });
-      if (!retentionInDays) {
-        await cloudwatchlogs.deleteRetentionPolicy({ logGroupName }).promise();
-      } else {
-        await cloudwatchlogs.putRetentionPolicy({ logGroupName, retentionInDays }).promise();
-      }
-      return;
+async function setRetentionPolicy(
+  logGroupName: string,
+  client: Logs.CloudWatchLogsClient,
+  withDelay: (block: () => Promise<void>) => Promise<void>,
+  retentionInDays?: number,
+) {
 
-    } catch (error: any) {
-      if (error.code === 'OperationAbortedException') {
-        if (retryCount > 0) {
-          retryCount--;
-          await new Promise(resolve => setTimeout(resolve, delay));
-          continue;
-        } else {
-          // The log group is still being created by another execution but we are out of retries
-          throw new Error('Out of attempts to create a logGroup');
-        }
-      }
-      throw error;
+  await withDelay(async () => {
+    if (!retentionInDays) {
+      const params = { logGroupName };
+      const deleteCommand = new Logs.DeleteRetentionPolicyCommand(params);
+      await client.send(deleteCommand);
+    } else {
+      const params = { logGroupName, retentionInDays };
+      const putCommand = new Logs.PutRetentionPolicyCommand(params);
+      await client.send(putCommand);
     }
-  } while (true); // exit happens on retry count check
+  });
 }
 
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) {
@@ -132,37 +78,48 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     const logGroupRegion = event.ResourceProperties.LogGroupRegion;
 
     // Parse to AWS SDK retry options
-    const retryOptions = parseRetryOptions(event.ResourceProperties.SdkRetry);
+    const retryOptions = event.ResourceProperties.SdkRetry;
+    // const retryOptions = parseRetryOptions(event.ResourceProperties.SdkRetry);
+    const withDelay = makeWithDelay(retryOptions.maxRetries);
+
+    const sdkConfig: Logs.CloudWatchLogsClientConfig = {
+      logger: console,
+      region: logGroupRegion,
+    };
+    const client = new Logs.CloudWatchLogsClient(sdkConfig);
 
     if (event.RequestType === 'Create' || event.RequestType === 'Update') {
       // Act on the target log group
-      await createLogGroupSafe(logGroupName, logGroupRegion, retryOptions);
-      await setRetentionPolicy(logGroupName, logGroupRegion, retryOptions, parseInt(event.ResourceProperties.RetentionInDays, 10));
+      await createLogGroupSafe(logGroupName, client, withDelay);
+      await setRetentionPolicy(logGroupName, client, withDelay, parseInt(event.ResourceProperties.RetentionInDays, 10));
 
+      // Configure the Log Group for the Custom Resource function itself
       if (event.RequestType === 'Create') {
+        const clientForCustomResourceFunction = new Logs.CloudWatchLogsClient({
+          logger: console,
+          region: process.env.AWS_REGION,
+        });
         // Set a retention policy of 1 day on the logs of this very function.
         // Due to the async nature of the log group creation, the log group for this function might
         // still be not created yet at this point. Therefore we attempt to create it.
         // In case it is being created, createLogGroupSafe will handle the conflict.
-        const region = process.env.AWS_REGION;
-        await createLogGroupSafe(`/aws/lambda/${context.functionName}`, region, retryOptions);
+        await createLogGroupSafe(`/aws/lambda/${context.functionName}`, clientForCustomResourceFunction, withDelay);
         // If createLogGroupSafe fails, the log group is not created even after multiple attempts.
         // In this case we have nothing to set the retention policy on but an exception will skip
         // the next line.
-        await setRetentionPolicy(`/aws/lambda/${context.functionName}`, region, retryOptions, 1);
+        await setRetentionPolicy(`/aws/lambda/${context.functionName}`, clientForCustomResourceFunction, withDelay, 1);
       }
     }
 
-    //When the requestType is delete, delete the log group if the removal policy is delete
+    // When the requestType is delete, delete the log group if the removal policy is delete
     if (event.RequestType === 'Delete' && event.ResourceProperties.RemovalPolicy === 'destroy') {
-      await deleteLogGroup(logGroupName, logGroupRegion, retryOptions);
-      //else retain the log group
+      await deleteLogGroup(logGroupName, client, withDelay);
+      // else retain the log group
     }
 
     await respond('SUCCESS', 'OK', logGroupName);
   } catch (e: any) {
     console.log(e);
-
     await respond('FAILED', e.message, event.ResourceProperties.LogGroupName);
   }
 
@@ -206,19 +163,33 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       }
     });
   }
+}
 
-  function parseRetryOptions(rawOptions: any): SdkRetryOptions {
-    const retryOptions: SdkRetryOptions = {};
-    if (rawOptions) {
-      if (rawOptions.maxRetries) {
-        retryOptions.maxRetries = parseInt(rawOptions.maxRetries, 10);
+function makeWithDelay(maxRetries: number = 10, delay: number = 100): (block: () => Promise<void>) => Promise<void> {
+  // If we try to update the log group, then due to the async nature of
+  // Lambda logging there could be a race condition when the same log group is
+  // already being created by the lambda execution. This can sometime result in
+  // an error "OperationAbortedException: A conflicting operation is currently
+  // in progress...Please try again."
+  // To avoid an error, we do as requested and try again.
+
+  return async (block: () => Promise<void>) => {
+    do {
+      try {
+        return await block();
+      } catch (error: any) {
+        if (error instanceof Logs.OperationAbortedException || error.name === 'OperationAbortedException') {
+          if (maxRetries > 0) {
+            maxRetries--;
+            await new Promise(resolve => setTimeout(resolve, delay));
+            continue;
+          } else {
+            // The log group is still being changed by another execution but we are out of retries
+            throw new Error('Out of attempts to change log group');
+          }
+        }
+        throw error;
       }
-      if (rawOptions.base) {
-        retryOptions.retryOptions = {
-          base: parseInt(rawOptions.base, 10),
-        };
-      }
-    }
-    return retryOptions;
-  }
+    } while (true); // exit happens on retry count check
+  };
 }
