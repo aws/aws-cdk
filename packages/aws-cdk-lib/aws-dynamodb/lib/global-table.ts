@@ -345,6 +345,7 @@ export interface GlobalTableAttributes {
   readonly tableId?: string;
   readonly tableStreamArn?: string;
   readonly encryption?: TableEncryptionV2;
+  readonly replicaRegions?: string[];
 }
 
 /**
@@ -672,8 +673,12 @@ export class GlobalTable extends GlobalTableBase {
    * @param props the properties of the replica table to add
    */
   public addReplica(props: ReplicaTableProps) {
+    if (Token.isUnresolved(this.stack.region)) {
+      throw new Error('You cannot add replica tables to a region agnostic stack');
+    }
+
     if (Token.isUnresolved(props.region)) {
-      throw new Error('Replica table `region` must not be a token');
+      throw new Error('Replica table region must not be a token');
     }
 
     if (this._replicaTables.has(props.region)) {
@@ -727,7 +732,7 @@ export class GlobalTable extends GlobalTableBase {
         const replicaGsiOptions = options[indexName];
 
         if (this.billingMode === BillingMode.PAY_PER_REQUEST && replicaGsiOptions.readCapacity) {
-          throw new Error(`Cannot configure 'readCapacity' for global seocndary index, ${indexName}, because billing mode is ${BillingMode.PAY_PER_REQUEST}`);
+          throw new Error(`Cannot configure 'readCapacity' for global secondary index, ${indexName}, because billing mode is ${BillingMode.PAY_PER_REQUEST}`);
         }
 
         const contributorInsights = replicaGsiOptions.contributorInsights ?? this.tableOptions.contributorInsights;

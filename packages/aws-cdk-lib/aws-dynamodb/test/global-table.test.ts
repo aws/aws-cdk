@@ -1,6 +1,6 @@
 import { Match, Template } from '../../assertions';
 import { Key } from '../../aws-kms';
-import { CfnDeletionPolicy, RemovalPolicy, Stack } from '../../core';
+import { CfnDeletionPolicy, Lazy, RemovalPolicy, Stack } from '../../core';
 import {
   GlobalTable, AttributeType, TableClass, Billing, Capacity, TableEncryptionV2,
   BillingMode, ProjectionType, GlobalSecondaryIndexPropsV2, LocalSecondaryIndexProps,
@@ -357,9 +357,9 @@ describe('global table configuration', () => {
     });
   });
 
-  test('customer managed key', () => {
+  test('with customer managed key', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack');
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
     const tableKmsKey = new Key(stack, 'Key');
     const replicaKeyArns = { 'us-east-1': 'arn:aws:kms:us-east-1:586193817576:key/95fecd1f-91f1-4897-9ea1-84066e2c6a0f' };
 
@@ -378,9 +378,7 @@ describe('global table configuration', () => {
       },
       Replicas: [
         {
-          Region: {
-            Ref: 'AWS::Region',
-          },
+          Region: 'us-west-2',
           SSESpecification: {
             KMSMasterKeyId: {
               'Fn::GetAtt': [
@@ -402,7 +400,7 @@ describe('global table configuration', () => {
 
   test('with all properties configured', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack');
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
 
     // WHEN
     new GlobalTable(stack, 'GlobalTable', {
@@ -536,9 +534,7 @@ describe('global table configuration', () => {
           ReadProvisionedThroughputSettings: {
             ReadCapacityUnits: 10,
           },
-          Region: {
-            Ref: 'AWS::Region',
-          },
+          Region: 'us-west-2',
           TableClass: 'STANDARD_INFREQUENT_ACCESS',
         },
         {
@@ -590,7 +586,7 @@ describe('global table configuration', () => {
 
   test('throws if encryption type is CUSTOMER_MANAGED and replica is missing key ARN', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack');
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
     const tableKmsKey = new Key(stack, 'Key');
 
     // WHEN
@@ -608,7 +604,243 @@ describe('global table configuration', () => {
 });
 
 describe('replica table configuration', () => {
+  test('can add new replica to global table', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
 
+    // WHEN
+    globalTable.addReplica({ region: 'us-east-1' });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: [
+        {
+          Region: 'us-west-2',
+        },
+        {
+          Region: 'us-east-1',
+        },
+      ],
+    });
+  });
+
+  test('can configure read capacity on a per-replica basis', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+    // WHEN
+    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      billing: Billing.provisioned({
+        readCapacity: Capacity.fixed(10),
+        writeCapacity: Capacity.autoscaled({ minCapacity: 1, maxCapacity: 10 }),
+      }),
+      replicas: [
+        {
+          region: 'us-west-2',
+          readCapacity: Capacity.fixed(15),
+        },
+        {
+          region: 'us-east-2',
+        },
+      ],
+    });
+    globalTable.addReplica({
+      region: 'us-east-1',
+      readCapacity: Capacity.autoscaled({ minCapacity: 10, maxCapacity: 40 }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: [
+        {
+          Region: 'us-west-2',
+          ReadProvisionedThroughputSettings: {
+            ReadCapacityUnits: 15,
+          },
+        },
+        {
+          Region: 'us-east-2',
+          ReadProvisionedThroughputSettings: {
+            ReadCapacityUnits: 10,
+          },
+        },
+        {
+          Region: 'us-east-1',
+          ReadProvisionedThroughputSettings: {
+            ReadCapacityAutoScalingSettings: {
+              MinCapacity: 10,
+              MaxCapacity: 40,
+              TargetTrackingScalingPolicyConfiguration: {
+                TargetValue: 70,
+              },
+            },
+          },
+        },
+      ],
+    });
+  });
+
+  test('can configure contributor insights on a per-replica basis', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+    // WHEN
+    new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      contributorInsights: true,
+      replicas: [
+        {
+          region: 'us-east-2',
+          contributorInsights: false,
+        },
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: [
+        {
+          Region: 'us-west-2',
+          ContributorInsightsSpecification: {
+            Enabled: true,
+          },
+        },
+        {
+          Region: 'us-east-2',
+          ContributorInsightsSpecification: {
+            Enabled: false,
+          },
+        },
+      ],
+    });
+  });
+
+  test('can configure point-in-time recovery on a per-replica basis', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+    // WHEN
+    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      pointInTimeRecovery: true,
+      replicas: [
+        {
+          region: 'us-east-2',
+        },
+      ],
+    });
+    globalTable.addReplica({ region: 'us-west-2', pointInTimeRecovery: false });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: [
+        {
+          Region: 'us-east-2',
+          PointInTimeRecoverySpecification: {
+            PointInTimeRecoveryEnabled: true,
+          },
+        },
+        {
+          Region: 'us-west-2',
+          PointInTimeRecoverySpecification: {
+            PointInTimeRecoveryEnabled: false,
+          },
+        },
+      ],
+    });
+  });
+
+  test('can configure replica table with kinesis stream', () => {});
+
+  test('replica tables do not have global secondary indexes set when billing mode is PAY_PER_REQUEST', () => {});
+
+  test('replica tables have all global secondary indexes when billing mode is PROVISIONED', () => {});
+
+  test('can configure read capacity on global secondary indexes on a per-replica basis', () => {});
+
+  test('can configure contributor insights on global secondary indexes on a per-replica basis', () => {});
+
+  test('can configure table class on a per-replica basis', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+    // WHEN
+    new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      tableClass: TableClass.STANDARD_INFREQUENT_ACCESS,
+      replicas: [
+        {
+          region: 'us-west-2',
+          tableClass: TableClass.STANDARD,
+        },
+        {
+          region: 'us-east-2',
+        },
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: [
+        {
+          Region: 'us-west-2',
+          TableClass: 'STANDARD',
+        },
+        {
+          Region: 'us-east-2',
+          TableClass: 'STANDARD_INFREQUENT_ACCESS',
+        },
+      ],
+    });
+  });
+
+  test('throws if adding replica to region agnostic stack', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+
+    // WHEN / THEN
+    expect(() => {
+      new GlobalTable(stack, 'GlobalTable', {
+        partitionKey: { name: 'pk', type: AttributeType.STRING },
+        replicas: [{ region: 'us-east-1' }],
+      });
+    }).toThrow('You cannot add replica tables to a region agnostic stack');
+  });
+
+  test('throws if adding duplicate replica', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      replicas: [{ region: 'us-east-1' }],
+    });
+
+    // WHEN / THEN
+    expect(() => {
+      globalTable.addReplica({ region: 'us-east-1' });
+    }).toThrow('Duplicate replica region, us-east-1, is not allowed');
+  });
+
+  test('throws if adding replica with tokenized region', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+
+    // WHEN / THEN
+    expect(() => {
+      globalTable.addReplica({ region: Lazy.string({ produce: () => 'us-east-1' }) });
+    }).toThrow('Replica table region must not be a token');
+  });
+
+  test('throws if configuring global secondary index options for non-existent global secondary index', () => {});
+
+  test('throws if configuring read capacity on global secondary index when billing mode is PAY_PER_REQUEST', () => {});
 });
 
 describe('secondary indexes', () => {
