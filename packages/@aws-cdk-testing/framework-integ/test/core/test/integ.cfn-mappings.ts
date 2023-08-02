@@ -1,5 +1,5 @@
 import * as cdk from 'aws-cdk-lib/core';
-//import { Bucket } from 'aws-cdk-lib/aws-s3';
+import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
@@ -19,26 +19,31 @@ const stack = new cdk.Stack(app, 'core-cfn-mapping-1'/*,{ env }*/);
 
 const backing = {
   TopLevelKey1: {
-    SecondLevelKey1: [1, 2, 3],
-    SecondLevelKey2: { Hello: 'World' },
+    SecondLevelKey1: 'Yes',
+    SecondLevelKey2: 'No',
   },
 };
 
-const mapping = new cdk.CfnMapping(stack, 'Lazy Mapping', {
+//const mapping =
+new cdk.CfnMapping(stack, 'Lazy Mapping', {
   mapping: backing,
   //lazy: true,
 });
 
-const defValue = 'foo';
-const m1 = mapping.findInMap('TopLevelKey1', 'SecondLevelKey3', defValue);
+const defValue = 'bart';
+//const m1 = mapping.findInMap('TopLevelKey1', 'SecondLevelKey1');
+//stack.resolve(mapping.findInMap('TopLevelKey1', 'SecondLevelKey3', defValue));
 
-new cdk.CfnOutput(stack, 'Output', { value: m1.toString() });
+//const abc = cdk.Fn.toJsonString(cdk.Aws.REGION);
+const abc = cdk.Fn.findInMap('Lazy Mapping', 'TopLevelKey1', 'SecondLevelKey1', defValue);
 
-/*
+new cdk.CfnOutput(stack, 'Output', { value: abc });
+
 new Bucket(stack, 'buck', {
-  bucketName: 'buck1',
+  //bucketName: 'ab1',
 });
-*/
+
+//stack.addTransform('AWS::LanguageExtensions');
 
 new IntegTest(app, 'CfnMappingTest', {
   testCases: [stack],
