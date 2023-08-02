@@ -2,31 +2,47 @@ import { toCloudFormation } from './util';
 import { CfnResource, Stack, RemovalPolicy } from '../lib';
 
 describe('removal policy', () => {
-  const removalPolicies = [
-    RemovalPolicy.RETAIN,
-    RemovalPolicy.DESTROY,
-    RemovalPolicy.SNAPSHOT,
-    RemovalPolicy.RETAIN_EXCEPT_ON_CREATE,
-  ];
-  removalPolicies.forEach((policy) => {
-    test(`should handle RemovalPolicy.${policy}`, () => {
-      const stack = new Stack();
+  test.each([
+    [RemovalPolicy.RETAIN, 'Retain'],
+    [RemovalPolicy.DESTROY, 'Delete'],
+    [RemovalPolicy.SNAPSHOT, 'Snapshot'],
+    [RemovalPolicy.RETAIN_EXCEPT_ON_CREATE, 'RetainExceptOnCreate'],
+  ])('should set correct DeletionPolicy for RemovalPolicy.%s', (removalPolicy: RemovalPolicy, deletionPolicy: string) => {
+    const stack = new Stack();
 
-      new CfnResource(stack, 'Resource', {
-        type: 'MOCK',
-        properties: {
-          RemovalPolicy: policy,
-        },
-      });
+    const resource = new CfnResource(stack, 'Resource', { type: 'MOCK' });
+    resource.applyRemovalPolicy(removalPolicy);
 
-      expect(toCloudFormation(stack)).toEqual({
-        Resources: {
-          Resource: {
-            Type: 'MOCK',
-            Properties: { RemovalPolicy: policy.valueOf() },
-          },
-        },
-      });
+    expect(toCloudFormation(stack)).toEqual({
+      Resources: {
+        Resource: expect.objectContaining({
+          Type: 'MOCK',
+          DeletionPolicy: deletionPolicy,
+        }),
+      },
+    });
+  });
+
+  test.each([
+    [RemovalPolicy.RETAIN, 'Retain'],
+    [RemovalPolicy.DESTROY, 'Delete'],
+    [RemovalPolicy.SNAPSHOT, 'Snapshot'],
+    [RemovalPolicy.RETAIN_EXCEPT_ON_CREATE, 'Retain'],
+  ])('should set correct UpdateReplacePolicy for RemovalPolicy.%s', (removalPolicy: RemovalPolicy, updateReplacePolicy: string) => {
+    const stack = new Stack();
+
+    const resource = new CfnResource(stack, 'Resource', { type: 'MOCK' });
+    resource.applyRemovalPolicy(removalPolicy, {
+      applyToUpdateReplacePolicy: true,
+    });
+
+    expect(toCloudFormation(stack)).toEqual({
+      Resources: {
+        Resource: expect.objectContaining({
+          Type: 'MOCK',
+          UpdateReplacePolicy: updateReplacePolicy,
+        }),
+      },
     });
   });
 });

@@ -50,14 +50,17 @@ export enum RemovalPolicy {
   SNAPSHOT = 'snapshot',
 
   /**
-   * RetainExceptOnCreate behaves like Retain for stack operations, except for the stack operation that initially created the resource.
-   * If the stack operation that created the resource is rolled back, CloudFormation deletes the resource. For all other stack operations,
-   * such as stack deletion, CloudFormation retains the resource and its contents. The result is that new, empty, and unused resources are deleted,
-   * while in-use resources and their data are retained.
+   * This uses the 'RetainExceptOnCreate' DeletionPolicy which behaves like Retain for stack operations,
+   * except for the stack operation that initially created the resource.
+   * When `applyToUpdateReplacePolicy` is set, this uses the 'Retain' UpdateReplacePolicy.
+   *
+   * If the stack operation that created the resource is rolled back, it will delete the resource.
+   * For all other stack operations, such as stack deletion, it retains the resource and its contents.
+   * The result is that new, empty, and unused resources are deleted, while in-use resources and their data are retained.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-deletionpolicy.html#aws-attribute-deletionpolicy-options
    */
-  RETAIN_EXCEPT_ON_CREATE = 'RetainExceptOnCreate',
+  RETAIN_EXCEPT_ON_CREATE= 'retain-except-on-create',
 }
 
 export interface RemovalPolicyOptions {
