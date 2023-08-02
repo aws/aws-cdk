@@ -1242,12 +1242,12 @@ const child = new sfn.StateMachine(this, 'ChildStateMachine', {
   definition: sfn.Chain.start(new sfn.Pass(this, 'PassState')),
 });
 
-const stateMachineVersion = new sfn.CfnStateMachineVersion(stack, 'MyStateMachineVersion', {
+const stateMachineVersion = new sfn.CfnStateMachineVersion(this, 'MyStateMachineVersion', {
   stateMachineRevisionId: child.stateMachineRevisionId,
   stateMachineArn: child.stateMachineArn,
 });
 
-const stateMachineAlias = new sfn.CfnStateMachineAlias(stack, 'MyStateMachineAlias', {
+const stateMachineAlias = new sfn.CfnStateMachineAlias(this, 'MyStateMachineAlias', {
   name: 'alias',
   routingConfiguration: [
     {
