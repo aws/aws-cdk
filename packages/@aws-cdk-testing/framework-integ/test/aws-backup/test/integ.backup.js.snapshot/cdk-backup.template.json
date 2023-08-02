@@ -3,16 +3,16 @@
   "TableCD117FA1": {
    "Type": "AWS::DynamoDB::Table",
    "Properties": {
-    "KeySchema": [
-     {
-      "AttributeName": "id",
-      "KeyType": "HASH"
-     }
-    ],
     "AttributeDefinitions": [
      {
       "AttributeName": "id",
       "AttributeType": "S"
+     }
+    ],
+    "KeySchema": [
+     {
+      "AttributeName": "id",
+      "KeyType": "HASH"
      }
     ],
     "ProvisionedThroughput": {
@@ -132,6 +132,9 @@
          }
         }
        ],
+       "RecoveryPointTags": {
+        "stage": "prod"
+       },
        "RuleName": "PlanRule3",
        "TargetBackupVault": {
         "Fn::GetAtt": [
