@@ -294,8 +294,9 @@ export interface ContainerDefinitionOptions {
   readonly readonlyRootFilesystem?: boolean;
 
   /**
-   * The user name to use inside the container.
+   * The user to use inside the container. This parameter maps to User in the Create a container section of the Docker Remote API and the --user option to docker run.
    *
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#ContainerDefinition-user
    * @default root
    */
   readonly user?: string;

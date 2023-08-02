@@ -1088,6 +1088,13 @@ export interface VpcProps {
    * @default true if '@aws-cdk/aws-ec2:restrictDefaultSecurityGroup' is enabled, false otherwise
    */
   readonly restrictDefaultSecurityGroup?: boolean;
+
+  /**
+   * If set to false then disable the creation of the default internet gateway
+   *
+   * @default true
+   */
+  readonly createInternetGateway?: boolean;
 }
 
 /**
@@ -1482,11 +1489,12 @@ export class Vpc extends VpcBase {
     // subnetConfiguration must be set before calling createSubnets
     this.createSubnets();
 
+    const createInternetGateway = props.createInternetGateway ?? true;
     const allowOutbound = this.subnetConfiguration.filter(
       subnet => (subnet.subnetType !== SubnetType.PRIVATE_ISOLATED && subnet.subnetType !== SubnetType.ISOLATED)).length > 0;
 
     // Create an Internet Gateway and attach it if necessary
-    if (allowOutbound) {
+    if (allowOutbound && createInternetGateway) {
       const igw = new CfnInternetGateway(this, 'IGW', {
       });
 

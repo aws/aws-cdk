@@ -77,6 +77,7 @@ new CfnOutput(stack, 'PingerResponse', {
 
 new integ.IntegTest(app, 'aws-cdk-eks-service-account-sdk-call', {
   testCases: [stack],
+  diffAssets: false, // otherwise this test will block every dependency upgrade PR
 });
 
 app.synth();

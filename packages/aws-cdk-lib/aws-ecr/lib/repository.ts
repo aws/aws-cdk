@@ -19,7 +19,7 @@ import {
   TokenComparison,
   CustomResource,
   CustomResourceProvider,
-  builtInCustomResourceProviderNodeRuntime,
+  CustomResourceProviderRuntime,
 } from '../../core';
 
 const AUTO_DELETE_IMAGES_RESOURCE_TYPE = 'Custom::ECRAutoDeleteImages';
@@ -860,9 +860,9 @@ export class Repository extends RepositoryBase {
   private enableAutoDeleteImages() {
     const firstTime = Stack.of(this).node.tryFindChild(`${AUTO_DELETE_IMAGES_RESOURCE_TYPE}CustomResourceProvider`) === undefined;
     const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_IMAGES_RESOURCE_TYPE, {
-      codeDirectory: path.join(__dirname, '..', '..', 'custom-resource-handlers', 'lib', 'aws-ecr', 'auto-delete-images-handler'),
+      codeDirectory: path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-ecr', 'auto-delete-images-handler'),
       useCfnResponseWrapper: false,
-      runtime: builtInCustomResourceProviderNodeRuntime(this),
+      runtime: CustomResourceProviderRuntime.NODEJS_18_X,
       description: `Lambda function for auto-deleting images in ${this.repositoryName} repository.`,
     });
 

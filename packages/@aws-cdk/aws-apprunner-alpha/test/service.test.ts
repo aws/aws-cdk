@@ -6,6 +6,7 @@ import * as ecr_assets from 'aws-cdk-lib/aws-ecr-assets';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
+import * as s3 from 'aws-cdk-lib/aws-s3';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from 'aws-cdk-lib';
 import * as apprunner from '../lib';
@@ -1233,6 +1234,27 @@ test('autoDeploymentsEnabled flag is NOT set', () => {
   });
 });
 
+test('serviceName is set', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  const serviceName = 'demo-service';
+  // WHEN
+  new apprunner.Service(stack, 'DemoService', {
+    serviceName: serviceName,
+    source: apprunner.Source.fromGitHub({
+      repositoryUrl: 'https://github.com/aws-containers/hello-app-runner',
+      branch: 'main',
+      configurationSource: apprunner.ConfigurationSourceType.REPOSITORY,
+      connection: apprunner.GitHubConnection.fromConnectionArn('MOCK'),
+    }),
+  });
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+    ServiceName: serviceName,
+  });
+});
+
 testDeprecated('Using both environmentVariables and environment should throw an error', () => {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'demo-stack');
@@ -1252,4 +1274,80 @@ testDeprecated('Using both environmentVariables and environment should throw an 
       }),
     });
   }).toThrow(/You cannot set both \'environmentVariables\' and \'environment\' properties./);
+});
+
+test('Service is grantable', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  // WHEN
+  const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', { bucketArn: 'arn:aws:s3:::my-bucket' });
+  const service = new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromEcrPublic({
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
+    instanceRole: new iam.Role(stack, 'InstanceRole', {
+      assumedBy: new iam.ServicePrincipal('tasks.apprunner.amazonaws.com'),
+    }),
+  });
+
+  bucket.grantRead(service);
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: [
+            's3:GetObject*',
+            's3:GetBucket*',
+            's3:List*',
+          ],
+          Resource: [
+            'arn:aws:s3:::my-bucket',
+            'arn:aws:s3:::my-bucket/*',
+          ],
+        },
+      ],
+    },
+    PolicyName: 'InstanceRoleDefaultPolicy1531605C',
+    Roles: [
+      { Ref: 'InstanceRole3CCE2F1D' },
+    ],
+  });
+});
+
+test('addToRolePolicy', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  // WHEN
+  const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', { bucketArn: 'arn:aws:s3:::my-bucket' });
+  const service = new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromEcrPublic({
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
+  });
+
+  service.addToRolePolicy(new iam.PolicyStatement({
+    effect: iam.Effect.ALLOW,
+    actions: ['s3:GetObject'],
+    resources: [bucket.bucketArn],
+  }));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 's3:GetObject',
+          Resource: 'arn:aws:s3:::my-bucket',
+        },
+      ],
+    },
+    PolicyName: 'DemoServiceInstanceRoleDefaultPolicy9600BEA1',
+    Roles: [
+      { Ref: 'DemoServiceInstanceRoleFCED1725' },
+    ],
+  });
 });

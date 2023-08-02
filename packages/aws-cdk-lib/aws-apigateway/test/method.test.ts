@@ -909,6 +909,38 @@ describe('method', () => {
 
   });
 
+  test('methodResponse should be passed from defaultMethodOptions', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigw.RestApi(stack, 'test-api', {
+      cloudWatchRole: false,
+      deploy: false,
+      defaultMethodOptions: {
+        requestParameters: { 'method.request.path.proxy': true },
+        methodResponses: [
+          {
+            statusCode: '200',
+          },
+        ],
+      },
+    });
+
+    // WHEN
+    new apigw.Method(stack, 'method-man', {
+      httpMethod: 'GET',
+      resource: api.root,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+      HttpMethod: 'GET',
+      MethodResponses: [{
+        StatusCode: '200',
+      }],
+    });
+
+  });
+
   describe('Metrics', () => {
     test('metric', () => {
       // GIVEN

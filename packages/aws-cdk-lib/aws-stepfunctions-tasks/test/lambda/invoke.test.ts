@@ -55,6 +55,7 @@ describe('LambdaInvoke', () => {
       Retry: [
         {
           ErrorEquals: [
+            'Lambda.ClientExecutionTimeoutException',
             'Lambda.ServiceException',
             'Lambda.AWSLambdaException',
             'Lambda.SdkClientException',
@@ -152,6 +153,7 @@ describe('LambdaInvoke', () => {
       Retry: [
         {
           ErrorEquals: [
+            'Lambda.ClientExecutionTimeoutException',
             'Lambda.ServiceException',
             'Lambda.AWSLambdaException',
             'Lambda.SdkClientException',
