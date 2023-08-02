@@ -1234,6 +1234,35 @@ This will add the payload `AWS_STEP_FUNCTIONS_STARTED_BY_EXECUTION_ID.$: $$.Exec
 `input`property for you, which will pass the execution ID from the context object to the
 execution input. It requires `input` to be an object or not be set at all.
 
+You can specify the ARN of a [state machine alias or version](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-cd-aliasing-versioning.html) 
+using the `stateMachineArn` property. This allows to start the execution of a specific state machine alias or version.
+
+```ts
+const child = new sfn.StateMachine(this, 'ChildStateMachine', {
+  definition: sfn.Chain.start(new sfn.Pass(this, 'PassState')),
+});
+
+const stateMachineVersion = new sfn.CfnStateMachineVersion(stack, 'MyStateMachineVersion', {
+  stateMachineRevisionId: child.stateMachineRevisionId,
+  stateMachineArn: child.stateMachineArn,
+});
+
+const stateMachineAlias = new sfn.CfnStateMachineAlias(stack, 'MyStateMachineAlias', {
+  name: 'alias',
+  routingConfiguration: [
+    {
+      stateMachineVersionArn: stateMachineVersion.attrArn,
+      weight: 100,
+    },
+  ],
+});
+
+const task = new tasks.StepFunctionsStartExecution(this, 'ChildTask', {
+  stateMachine: child,
+  stateMachineArn: stateMachineAlias.attrArn,
+});
+```
+
 ### Invoke Activity
 
 You can invoke a [Step Functions Activity](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-activities.html) which enables you to have
