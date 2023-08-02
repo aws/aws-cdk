@@ -198,7 +198,10 @@ describe('update', () => {
       PhysicalResourceId: physicalResourceId,
     });
     expect(mockExecuteStatement).not.toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `.+ ON ${tableName} FROM ${username}`,
+      Sql: expect.stringMatching(new RegExp(`REVOKE .+ ON ${tableName} FROM ${username}`)),
+    }));
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: expect.stringMatching(new RegExp(`GRANT .+ ON ${tableName} TO ${username}`)),
     }));
   });
 
@@ -221,7 +224,7 @@ describe('update', () => {
       PhysicalResourceId: physicalResourceId,
     });
     expect(mockExecuteStatement).not.toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `.+ ON ${tableName} FROM ${username}`,
+      Sql: expect.stringMatching(new RegExp(`.+ ON ${tableName} FROM ${username}`)),
     }));
   });
 });
