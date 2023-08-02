@@ -453,23 +453,21 @@ describe('certificates', () => {
     }).toThrow(/Distribution certificates must be in the us-east-1 region and the certificate you provided is in eu-west-1./);
   });
 
-  test('adding a certificate without a domain name throws', () => {
+  test('adding a certificate without a domain name is permitted', () => {
     const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
+    new Distribution(stack, 'Dist', {
+      defaultBehavior: { origin: defaultOrigin() },
+      certificate: certificate,
+    });
 
-    expect(() => {
-      new Distribution(stack, 'Dist1', {
-        defaultBehavior: { origin: defaultOrigin() },
-        certificate,
-      });
-    }).toThrow(/Must specify at least one domain name/);
-
-    expect(() => {
-      new Distribution(stack, 'Dist2', {
-        defaultBehavior: { origin: defaultOrigin() },
-        domainNames: [],
-        certificate,
-      });
-    }).toThrow(/Must specify at least one domain name/);
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        ViewerCertificate: {
+          AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
+        },
+      },
+    });
+  });
   });
 
   test('use the TLSv1.2_2021 security policy by default', () => {
