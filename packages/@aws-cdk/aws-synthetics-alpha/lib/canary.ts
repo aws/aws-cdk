@@ -433,6 +433,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
       Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_0,
       Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_1,
       Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_2,
+      Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_3,
     ];
     if (oldRuntimes.includes(runtime)) {
       if (!handler.match(/^[0-9A-Za-z_\\-]+\.handler*$/)) {
