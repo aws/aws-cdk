@@ -1,5 +1,4 @@
 import * as cdk from '../../core';
-import { TokenString } from '../../core/lib/private/encoding';
 import { HostedZone } from '../lib';
 import * as util from '../lib/util';
 
