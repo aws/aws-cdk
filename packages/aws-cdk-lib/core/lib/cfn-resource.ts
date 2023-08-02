@@ -133,7 +133,7 @@ export class CfnResource extends CfnRefElement {
         updateReplacePolicy = CfnDeletionPolicy.RETAIN;
         break;
 
-      case RemovalPolicy.RETAIN_EXISTING:
+      case RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE:
         deletionPolicy = CfnDeletionPolicy.RETAIN_EXCEPT_ON_CREATE;
         updateReplacePolicy = CfnDeletionPolicy.RETAIN;
         break;

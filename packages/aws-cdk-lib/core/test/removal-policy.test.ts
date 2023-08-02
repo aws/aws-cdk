@@ -6,7 +6,7 @@ describe('removal policy', () => {
     [RemovalPolicy.RETAIN, 'Retain'],
     [RemovalPolicy.DESTROY, 'Delete'],
     [RemovalPolicy.SNAPSHOT, 'Snapshot'],
-    [RemovalPolicy.RETAIN_EXCEPT_ON_CREATE, 'RetainExceptOnCreate'],
+    [RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE, 'RetainExceptOnCreate'],
   ])('should set correct DeletionPolicy for RemovalPolicy.%s', (removalPolicy: RemovalPolicy, deletionPolicy: string) => {
     const stack = new Stack();
 
@@ -27,7 +27,7 @@ describe('removal policy', () => {
     [RemovalPolicy.RETAIN, 'Retain'],
     [RemovalPolicy.DESTROY, 'Delete'],
     [RemovalPolicy.SNAPSHOT, 'Snapshot'],
-    [RemovalPolicy.RETAIN_EXCEPT_ON_CREATE, 'Retain'],
+    [RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE, 'Retain'],
   ])('should set correct UpdateReplacePolicy for RemovalPolicy.%s', (removalPolicy: RemovalPolicy, updateReplacePolicy: string) => {
     const stack = new Stack();
 
