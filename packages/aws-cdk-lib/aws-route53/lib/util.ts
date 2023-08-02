@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { IHostedZone } from './hosted-zone-ref';
 import { Stack } from '../../core';
+import { TokenString } from '../../core/lib/private/encoding';
 
 /**
  * Validates a zone name is valid by Route53 specifc naming rules,
@@ -39,12 +40,19 @@ class ValidationError extends Error {
  *
  * @returns <ul>
  *        <li>If +providedName+ ends with a +.+, use it as-is</li>
+ *        <li>If +providedName+ contains a token, use it as-is</li>
  *        <li>If +providedName+ ends with or equals +zoneName+, append a trailing +.+</li>
  *        <li>Otherwise, append +.+, +zoneName+ and a trailing +.+</li>
  *      </ul>
  */
 export function determineFullyQualifiedDomainName(providedName: string, hostedZone: IHostedZone): string {
   if (providedName.endsWith('.')) {
+    return providedName;
+  }
+
+  // Since we don't have a way to tell if a tokenized string is a FQDN,
+  // assume user has correctly provided it and return as is.
+  if (TokenString.forString(providedName).test()) {
     return providedName;
   }
 

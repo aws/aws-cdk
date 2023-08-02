@@ -1,4 +1,5 @@
 import * as cdk from '../../core';
+import { TokenString } from '../../core/lib/private/encoding';
 import { HostedZone } from '../lib';
 import * as util from '../lib/util';
 
@@ -66,5 +67,20 @@ describe('util', () => {
 
     // THEN
     expect(qualified).toEqual('test.domain.com.');
+  });
+
+  test('providedName with a token is left as is', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const providedName = cdk.Token.asString('test');
+    const qualified = util.determineFullyQualifiedDomainName(providedName, HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
+      hostedZoneId: 'fakeId',
+      zoneName: 'domain.com.',
+    }));
+
+    // THEN
+    expect(qualified).toEqual(providedName);
   });
 });
