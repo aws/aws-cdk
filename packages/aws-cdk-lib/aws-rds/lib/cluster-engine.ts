@@ -434,6 +434,8 @@ export class AuroraMysqlEngineVersion {
   public static readonly VER_3_02_3 = AuroraMysqlEngineVersion.builtIn_8_0('3.02.3');
   /** Version "8.0.mysql_aurora.3.03.0". */
   public static readonly VER_3_03_0 = AuroraMysqlEngineVersion.builtIn_8_0('3.03.0');
+  /** Version "8.0.mysql_aurora.3.03.1". */
+  public static readonly VER_3_03_1 = AuroraMysqlEngineVersion.builtIn_8_0('3.03.1');
 
   /**
    * Create a new AuroraMysqlEngineVersion with an arbitrary version.

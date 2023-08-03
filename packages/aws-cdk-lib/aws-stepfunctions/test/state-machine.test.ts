@@ -104,6 +104,27 @@ describe('State Machine', () => {
 
   }),
 
+  test('Instantiate Standard State Machine With Comment', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      stateMachineName: 'MyStateMachine',
+      definition: sfn.Chain.start(new sfn.Pass(stack, 'Pass')),
+      stateMachineType: sfn.StateMachineType.STANDARD,
+      comment: 'zorp',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+      StateMachineName: 'MyStateMachine',
+      StateMachineType: 'STANDARD',
+      DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}},"Comment":"zorp"}',
+    });
+
+  }),
+
   test('Instantiate Express State Machine', () => {
     // GIVEN
     const stack = new cdk.Stack();
