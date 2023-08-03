@@ -131,11 +131,11 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
   /**
    * Adds an event source to this function.
    *
-   * Event sources are implemented in the @aws-cdk/aws-lambda-event-sources module.
+   * Event sources are implemented in the aws-cdk-lib/aws-lambda-event-sources module.
    *
    * The following example adds an SQS Queue as an event source:
    * ```
-   * import { SqsEventSource } from '@aws-cdk/aws-lambda-event-sources';
+   * import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
    * myFunction.addEventSource(new SqsEventSource(myQueue));
    * ```
    */

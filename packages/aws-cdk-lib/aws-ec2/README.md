@@ -2,7 +2,7 @@
 
 
 
-The `@aws-cdk/aws-ec2` package contains primitives for setting up networking and
+The `aws-cdk-lib/aws-ec2` package contains primitives for setting up networking and
 instances.
 
 ```ts nofixture
