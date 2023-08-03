@@ -497,7 +497,7 @@ describe('log retention provider', () => {
         ServiceToken: 'token',
         RetentionInDays: '30',
         LogGroupName: 'group',
-        LogGroupRegion: 'us-east-1',
+        LogGroupRegion: 'eu-west-2',
       },
     };
 
@@ -505,14 +505,9 @@ describe('log retention provider', () => {
 
     await provider.handler(event, context);
 
-    // @todo assert region is called
-    // sinon.assert.calledWith(AWSSDK.CloudWatchLogs as any, {
-    //   apiVersion: '2014-03-28',
-    //   region: 'us-east-1',
-    // });
-
+    const calls = cloudwatchLogsMock.commandCalls(CreateLogGroupCommand, { logGroupName: 'group' });
+    expect(await calls[0].thisValue.config.region()).toBe('eu-west-2');
     expect(request.isDone()).toEqual(true);
-
   });
 
 });

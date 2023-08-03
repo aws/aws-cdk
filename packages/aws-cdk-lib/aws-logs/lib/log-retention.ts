@@ -60,8 +60,8 @@ export interface LogRetentionRetryOptions {
   /**
    * The base duration to use in the exponential backoff for operation retries.
    *
-   * @deprecated Unused since the upgrade to use AWS SDK v3 which uses a different retry strategy
-   * @default - none, not used
+   * @deprecated Unused since the upgrade to AWS SDK v3, which uses a different retry strategy
+   * @default - none, not used anymore
    */
   readonly base?: cdk.Duration;
 }
