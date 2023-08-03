@@ -102,7 +102,6 @@ export class LogRetention extends Construct {
         LogGroupRegion: props.logGroupRegion,
         SdkRetry: retryOptions ? {
           maxRetries: retryOptions.maxRetries,
-          base: retryOptions.base?.toMilliseconds(),
         } : undefined,
         RetentionInDays: props.retention === RetentionDays.INFINITE ? undefined : props.retention,
         RemovalPolicy: props.removalPolicy,

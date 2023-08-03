@@ -2,6 +2,19 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as Logs from '@aws-sdk/client-cloudwatch-logs';
 
+interface LogRetentionEvent extends Omit<AWSLambda.CloudFormationCustomResourceEvent, 'ResourceProperties'> {
+  ResourceProperties: {
+    ServiceToken: string;
+    LogGroupName: string;
+    LogGroupRegion?: string;
+    RetentionInDays?: string;
+    SdkRetry?: {
+      maxRetries?: string;
+    };
+    RemovalPolicy?: string
+  };
+}
+
 /**
  * Creates a log group and doesn't throw if it exists.
  */
@@ -67,7 +80,7 @@ async function setRetentionPolicy(
   });
 }
 
-export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) {
+export async function handler(event: LogRetentionEvent, context: AWSLambda.Context) {
   try {
     console.log(JSON.stringify({ ...event, ResponseURL: '...' }));
 
@@ -78,9 +91,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     const logGroupRegion = event.ResourceProperties.LogGroupRegion;
 
     // Parse to AWS SDK retry options
-    const retryOptions = event.ResourceProperties.SdkRetry;
-    // const retryOptions = parseRetryOptions(event.ResourceProperties.SdkRetry);
-    const withDelay = makeWithDelay(retryOptions.maxRetries);
+    const withDelay = makeWithDelay(parseIntOptional(event.ResourceProperties.SdkRetry?.maxRetries));
 
     const sdkConfig: Logs.CloudWatchLogsClientConfig = {
       logger: console,
@@ -91,7 +102,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     if (event.RequestType === 'Create' || event.RequestType === 'Update') {
       // Act on the target log group
       await createLogGroupSafe(logGroupName, client, withDelay);
-      await setRetentionPolicy(logGroupName, client, withDelay, parseInt(event.ResourceProperties.RetentionInDays, 10));
+      await setRetentionPolicy(logGroupName, client, withDelay, parseIntOptional(event.ResourceProperties.RetentionInDays));
 
       // Configure the Log Group for the Custom Resource function itself
       if (event.RequestType === 'Create') {
@@ -163,6 +174,14 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       }
     });
   }
+}
+
+function parseIntOptional(value?: string, base = 10): number | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  return parseInt(value, base);
 }
 
 function makeWithDelay(maxRetries: number = 10, delay: number = 100): (block: () => Promise<void>) => Promise<void> {

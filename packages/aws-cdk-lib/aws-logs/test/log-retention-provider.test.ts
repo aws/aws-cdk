@@ -6,6 +6,8 @@ import * as provider from '../lib/log-retention-provider';
 
 AWS.setSDK(require.resolve('aws-sdk'));
 
+type RequestType = 'Create' | 'Update' | 'Delete';
+
 const eventCommon = {
   ServiceToken: 'token',
   ResponseURL: 'https://localhost',
@@ -60,7 +62,7 @@ describe('log retention provider', () => {
 
     const event = {
       ...eventCommon,
-      RequestType: 'Create',
+      RequestType: 'Create' as RequestType,
       ResourceProperties: {
         ServiceToken: 'token',
         RetentionInDays: '30',
@@ -70,7 +72,7 @@ describe('log retention provider', () => {
 
     const request = createRequest('SUCCESS');
 
-    await provider.handler(event as AWSLambda.CloudFormationCustomResourceCreateEvent, context);
+    await provider.handler(event, context);
 
     sinon.assert.calledWith(createLogGroupFake, {
       logGroupName: 'group',
@@ -110,7 +112,7 @@ describe('log retention provider', () => {
 
     const event = {
       ...eventCommon,
-      RequestType: 'Update',
+      RequestType: 'Update' as RequestType,
       ResourceProperties: {
         ServiceToken: 'token',
         RetentionInDays: '365',
@@ -125,7 +127,7 @@ describe('log retention provider', () => {
 
     const request = createRequest('SUCCESS');
 
-    await provider.handler(event as AWSLambda.CloudFormationCustomResourceUpdateEvent, context);
+    await provider.handler(event, context);
 
     sinon.assert.calledWith(createLogGroupFake, {
       logGroupName: 'group',
@@ -156,7 +158,7 @@ describe('log retention provider', () => {
 
     const event = {
       ...eventCommon,
-      RequestType: 'Update',
+      RequestType: 'Update' as RequestType,
       PhysicalResourceId: 'group',
       ResourceProperties: {
         ServiceToken: 'token',
@@ -171,7 +173,7 @@ describe('log retention provider', () => {
 
     const request = createRequest('SUCCESS');
 
-    await provider.handler(event as AWSLambda.CloudFormationCustomResourceUpdateEvent, context);
+    await provider.handler(event, context);
 
     sinon.assert.calledWith(createLogGroupFake, {
       logGroupName: 'group',
@@ -196,7 +198,7 @@ describe('log retention provider', () => {
 
     const event = {
       ...eventCommon,
-      RequestType: 'Delete',
+      RequestType: 'Delete' as RequestType,
       PhysicalResourceId: 'group',
       ResourceProperties: {
         ServiceToken: 'token',
@@ -206,7 +208,7 @@ describe('log retention provider', () => {
 
     const request = createRequest('SUCCESS');
 
-    await provider.handler(event as AWSLambda.CloudFormationCustomResourceDeleteEvent, context);
+    await provider.handler(event, context);
 
     sinon.assert.notCalled(createLogGroupFake);
 
@@ -231,7 +233,7 @@ describe('log retention provider', () => {
 
     const event = {
       ...eventCommon,
-      RequestType: 'Delete',
+      RequestType: 'Delete' as RequestType,
       PhysicalResourceId: 'group',
       ResourceProperties: {
         ServiceToken: 'token',
@@ -242,7 +244,7 @@ describe('log retention provider', () => {
 
     const request = createRequest('SUCCESS');
 
-    await provider.handler(event as AWSLambda.CloudFormationCustomResourceDeleteEvent, context);
+    await provider.handler(event, context);
 
     sinon.assert.notCalled(createLogGroupFake);
 
@@ -265,7 +267,7 @@ describe('log retention provider', () => {
 
     const event = {
       ...eventCommon,
-      RequestType: 'Create',
+      RequestType: 'Create' as RequestType,
       ResourceProperties: {
         ServiceToken: 'token',
         RetentionInDays: '30',
@@ -275,7 +277,7 @@ describe('log retention provider', () => {
 
     const request = createRequest('FAILED');
 
-    await provider.handler(event as AWSLambda.CloudFormationCustomResourceCreateEvent, context);
+    await provider.handler(event, context);
 
     expect(request.isDone()).toEqual(true);
 
@@ -306,7 +308,7 @@ describe('log retention provider', () => {
 
     const event = {
       ...eventCommon,
-      RequestType: 'Create',
+      RequestType: 'Create' as RequestType,
       ResourceProperties: {
         ServiceToken: 'token',
         RetentionInDays: '30',
@@ -316,7 +318,7 @@ describe('log retention provider', () => {
 
     const request = createRequest('SUCCESS');
 
-    await provider.handler(event as AWSLambda.CloudFormationCustomResourceCreateEvent, context);
+    await provider.handler(event, context);
 
     expect(request.isDone()).toEqual(true);
 
@@ -347,7 +349,7 @@ describe('log retention provider', () => {
 
     const event = {
       ...eventCommon,
-      RequestType: 'Create',
+      RequestType: 'Create' as RequestType,
       ResourceProperties: {
         ServiceToken: 'token',
         RetentionInDays: '30',
@@ -357,7 +359,7 @@ describe('log retention provider', () => {
 
     const request = createRequest('SUCCESS');
 
-    await provider.handler(event as AWSLambda.CloudFormationCustomResourceCreateEvent, context);
+    await provider.handler(event, context);
 
     expect(request.isDone()).toEqual(true);
 
@@ -382,7 +384,7 @@ describe('log retention provider', () => {
 
     const event = {
       ...eventCommon,
-      RequestType: 'Create',
+      RequestType: 'Create' as RequestType,
       ResourceProperties: {
         ServiceToken: 'token',
         RetentionInDays: '30',
@@ -392,7 +394,7 @@ describe('log retention provider', () => {
 
     const request = createRequest('FAILED');
 
-    await provider.handler(event as AWSLambda.CloudFormationCustomResourceCreateEvent, context);
+    await provider.handler(event, context);
 
     expect(request.isDone()).toEqual(true);
 
@@ -423,7 +425,7 @@ describe('log retention provider', () => {
 
     const event = {
       ...eventCommon,
-      RequestType: 'Create',
+      RequestType: 'Create' as RequestType,
       ResourceProperties: {
         ServiceToken: 'token',
         RetentionInDays: '30',
@@ -433,7 +435,7 @@ describe('log retention provider', () => {
 
     const request = createRequest('SUCCESS');
 
-    await provider.handler(event as AWSLambda.CloudFormationCustomResourceCreateEvent, context);
+    await provider.handler(event, context);
 
     expect(request.isDone()).toEqual(true);
 
@@ -464,7 +466,7 @@ describe('log retention provider', () => {
 
     const event = {
       ...eventCommon,
-      RequestType: 'Create',
+      RequestType: 'Create' as RequestType,
       ResourceProperties: {
         ServiceToken: 'token',
         RetentionInDays: '30',
@@ -474,7 +476,7 @@ describe('log retention provider', () => {
 
     const request = createRequest('SUCCESS');
 
-    await provider.handler(event as AWSLambda.CloudFormationCustomResourceCreateEvent, context);
+    await provider.handler(event, context);
 
     expect(request.isDone()).toEqual(true);
 
@@ -499,7 +501,7 @@ describe('log retention provider', () => {
 
     const event = {
       ...eventCommon,
-      RequestType: 'Create',
+      RequestType: 'Create' as RequestType,
       ResourceProperties: {
         ServiceToken: 'token',
         RetentionInDays: '30',
@@ -509,7 +511,7 @@ describe('log retention provider', () => {
 
     const request = createRequest('FAILED');
 
-    await provider.handler(event as AWSLambda.CloudFormationCustomResourceCreateEvent, context);
+    await provider.handler(event, context);
 
     expect(request.isDone()).toEqual(true);
 
@@ -540,7 +542,7 @@ describe('log retention provider', () => {
 
     const event = {
       ...eventCommon,
-      RequestType: 'Create',
+      RequestType: 'Create' as RequestType,
       ResourceProperties: {
         ServiceToken: 'token',
         RetentionInDays: '0', // Setting this to 0 triggers the call to deleteRetentionPolicy
@@ -550,7 +552,7 @@ describe('log retention provider', () => {
 
     const request = createRequest('SUCCESS');
 
-    await provider.handler(event as AWSLambda.CloudFormationCustomResourceCreateEvent, context);
+    await provider.handler(event, context);
 
     expect(request.isDone()).toEqual(true);
 
@@ -575,7 +577,7 @@ describe('log retention provider', () => {
 
     const event = {
       ...eventCommon,
-      RequestType: 'Create',
+      RequestType: 'Create' as RequestType,
       ResourceProperties: {
         ServiceToken: 'token',
         RetentionInDays: '0', // Setting this to 0 triggers the call to deleteRetentionPolicy
@@ -585,7 +587,7 @@ describe('log retention provider', () => {
 
     const request = createRequest('FAILED');
 
-    await provider.handler(event as AWSLambda.CloudFormationCustomResourceCreateEvent, context);
+    await provider.handler(event, context);
 
     expect(request.isDone()).toEqual(true);
 
@@ -610,8 +612,8 @@ describe('log retention provider', () => {
         .put('/', (body: AWSLambda.CloudFormationCustomResourceResponse) => body.Data?.LogGroupName === 'group')
         .reply(200);
 
-      const opEvent = { ...event, RequestType: operation };
-      await provider.handler(opEvent as AWSLambda.CloudFormationCustomResourceCreateEvent, context);
+      const opEvent = { ...event, RequestType: operation as RequestType };
+      await provider.handler(opEvent, context);
 
       expect(request.isDone()).toEqual(true);
     }
@@ -629,7 +631,7 @@ describe('log retention provider', () => {
 
     const event = {
       ...eventCommon,
-      RequestType: 'Create',
+      RequestType: 'Create' as RequestType,
       ResourceProperties: {
         ServiceToken: 'token',
         RetentionInDays: '30',
@@ -643,7 +645,7 @@ describe('log retention provider', () => {
 
     const request = createRequest('SUCCESS');
 
-    await provider.handler(event as AWSLambda.CloudFormationCustomResourceCreateEvent, context);
+    await provider.handler(event, context);
 
     sinon.assert.calledWith(AWSSDK.CloudWatchLogs as any, {
       apiVersion: '2014-03-28',
@@ -665,7 +667,7 @@ describe('log retention provider', () => {
 
     const event = {
       ...eventCommon,
-      RequestType: 'Create',
+      RequestType: 'Create' as RequestType,
       ResourceProperties: {
         ServiceToken: 'token',
         RetentionInDays: '30',
@@ -676,7 +678,7 @@ describe('log retention provider', () => {
 
     const request = createRequest('SUCCESS');
 
-    await provider.handler(event as AWSLambda.CloudFormationCustomResourceCreateEvent, context);
+    await provider.handler(event, context);
 
     sinon.assert.calledWith(AWSSDK.CloudWatchLogs as any, {
       apiVersion: '2014-03-28',
