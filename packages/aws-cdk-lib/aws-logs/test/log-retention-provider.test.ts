@@ -26,7 +26,11 @@ const context = {
 
 function createRequest(type: string) {
   return nock('https://localhost')
-    .put('/', (body: AWSLambda.CloudFormationCustomResourceResponse) => body.Status === type && body.PhysicalResourceId === 'group')
+    .put('/', (body: AWSLambda.CloudFormationCustomResourceResponse) => (
+      body.Status === type
+      && body.PhysicalResourceId === 'group'
+      && !body.Reason?.includes('Nock')
+    ))
     .reply(200);
 }
 
@@ -468,7 +472,7 @@ describe('log retention provider', () => {
         RetentionInDays: '30',
         LogGroupName: 'group',
         SdkRetry: {
-          maxRetries: '0',
+          maxRetries: '1',
         },
       },
     };
