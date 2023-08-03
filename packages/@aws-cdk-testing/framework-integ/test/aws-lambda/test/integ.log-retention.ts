@@ -1,6 +1,7 @@
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as cdk from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 
@@ -27,4 +28,5 @@ new lambda.Function(stack, 'OneYear', {
   logRetention: logs.RetentionDays.ONE_YEAR,
 });
 
+new IntegTest(app, 'LambdaLogRetentionInteg', { testCases: [stack] });
 app.synth();

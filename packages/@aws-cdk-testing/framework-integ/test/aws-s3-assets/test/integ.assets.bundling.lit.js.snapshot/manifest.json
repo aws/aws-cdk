@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "33.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "cdk-integ-assets-bundling.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -65,6 +59,12 @@
         ]
       },
       "displayName": "cdk-integ-assets-bundling"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }
