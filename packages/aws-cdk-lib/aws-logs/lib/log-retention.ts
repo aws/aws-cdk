@@ -5,7 +5,6 @@ import * as iam from '../../aws-iam';
 import * as s3_assets from '../../aws-s3-assets';
 import * as cdk from '../../core';
 import { ArnFormat } from '../../core';
-import { Runtime } from '../../aws-lambda';
 
 /**
  * Construction properties for a LogRetention.
@@ -172,7 +171,7 @@ class LogRetentionFunction extends Construct implements cdk.ITaggable {
       type: 'AWS::Lambda::Function',
       properties: {
         Handler: 'index.handler',
-        Runtime: Runtime.NODEJS_18_X,
+        Runtime: 'nodejs18.x', // cannot use Runtime class here to prevent circular dependency
         Code: {
           S3Bucket: asset.s3BucketName,
           S3Key: asset.s3ObjectKey,
