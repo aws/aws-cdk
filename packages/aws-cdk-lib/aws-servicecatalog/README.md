@@ -24,7 +24,7 @@ enables organizations to create and manage catalogs of products for their end us
   - [Deploy with StackSets](#deploy-with-stacksets)
 
 
-The `@aws-cdk/aws-servicecatalog` package contains resources that enable users to automate governance and management of their AWS resources at scale.
+The `aws-cdk-lib/aws-servicecatalog` package contains resources that enable users to automate governance and management of their AWS resources at scale.
 
 ```ts nofixture
 import * as servicecatalog from 'aws-cdk-lib/aws-servicecatalog';

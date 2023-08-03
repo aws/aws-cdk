@@ -10,7 +10,7 @@ export interface LogRetentionRetryOptions extends logs.LogRetentionRetryOptions 
 /**
  * Construction properties for a LogRetention.
  *
- * @deprecated use `LogRetentionProps` from '@aws-cdk/aws-logs' instead
+ * @deprecated use `LogRetentionProps` from 'aws-cdk-lib/aws-logs' instead
  */
 export interface LogRetentionProps extends logs.LogRetentionProps {
 }
@@ -20,7 +20,7 @@ export interface LogRetentionProps extends logs.LogRetentionProps {
  * log group. The log group is created if it doesn't already exist. The policy
  * is removed when `retentionDays` is `undefined` or equal to `Infinity`.
  *
- * @deprecated use `LogRetention` from '@aws-cdk/aws-logs' instead
+ * @deprecated use `LogRetention` from 'aws-cdk-lib/aws-logs' instead
  */
 export class LogRetention extends logs.LogRetention {
   constructor(scope: Construct, id: string, props: LogRetentionProps) {

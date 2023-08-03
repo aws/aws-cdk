@@ -1100,7 +1100,7 @@ bucket.grantReadWrite(serviceAccount);
 
 Note that adding service accounts requires running `kubectl` commands against the cluster.
 This means you must also pass the `kubectlRoleArn` when importing the cluster.
-See [Using existing Clusters](https://github.com/aws/aws-cdk/tree/main/packages/@aws-cdk/aws-eks#using-existing-clusters).
+See [Using existing Clusters](https://github.com/aws/aws-cdk/tree/main/packages/aws-cdk-lib/aws-eks#using-existing-clusters).
 
 ## Applying Kubernetes Resources
 

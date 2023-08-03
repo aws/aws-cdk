@@ -1,7 +1,7 @@
 # Amazon OpenSearch Service Construct Library
 
 
-> Instead of this module, we recommend using the [@aws-cdk/aws-opensearchservice](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-opensearchservice-readme.html) module. See [Amazon OpenSearch Service FAQs](https://aws.amazon.com/opensearch-service/faqs/#Name_change) for details. See [Migrating to OpenSearch](#migrating-to-opensearch) for migration instructions.
+> Instead of this module, we recommend using the [aws-cdk-lib/aws-opensearchservice](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_opensearchservice-readme.html) module. See [Amazon OpenSearch Service FAQs](https://aws.amazon.com/opensearch-service/faqs/#Name_change) for details. See [Migrating to OpenSearch](#migrating-to-opensearch) for migration instructions.
 
 ## Quick start
 
@@ -342,13 +342,13 @@ new es.Domain(this, 'Domain', {
 
 ## Migrating to OpenSearch
 
-To migrate from this module (`@aws-cdk/aws-elasticsearch`) to the new `@aws-cdk/aws-opensearchservice` module, you must modify your CDK application to refer to the new module (including some associated changes) and then perform a CloudFormation resource deletion/import.
+To migrate from this module (`aws-cdk-lib/aws-elasticsearch`) to the new `aws-cdk-lib/aws-opensearchservice` module, you must modify your CDK application to refer to the new module (including some associated changes) and then perform a CloudFormation resource deletion/import.
 
 ### Necessary CDK Modifications
 
-Make the following modifications to your CDK application to migrate to the `@aws-cdk/aws-opensearchservice` module.
+Make the following modifications to your CDK application to migrate to the `aws-cdk-lib/aws-opensearchservice` module.
 
-- Rewrite module imports to use `'@aws-cdk/aws-opensearchservice` to `'@aws-cdk/aws-elasticsearch`.
+- Rewrite module imports to use `'aws-cdk-lib/aws-opensearchservice` to `'aws-cdk-lib/aws-elasticsearch`.
   For example:
 
   ```ts nofixture
@@ -435,7 +435,7 @@ Follow these steps to migrate your application without data loss:
 
 - Ensure that the [removal policy](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_core.RemovalPolicy.html) on your domains are set to `RemovalPolicy.RETAIN`. This is the default for the domain construct, so nothing is required unless you have specifically set the removal policy to some other value.
 - Remove the domain resource from your CloudFormation stacks by manually modifying the synthesized templates used to create the CloudFormation stacks. This may also involve modifying or deleting dependent resources, such as the custom resources that CDK creates to manage the domain's access policy or any other resource you have connected to the domain. You will need to search for references to each domain's logical ID to determine which other resources refer to it and replace or delete those references. Do not remove resources that are dependencies of the domain or you will have to recreate or import them before importing the domain. After modification, deploy the stacks through the AWS Management Console or using the AWS CLI.
-- Migrate your CDK application to use the new `@aws-cdk/aws-opensearchservice` module by applying the necessary modifications listed above. Synthesize your application and obtain the resulting stack templates.
+- Migrate your CDK application to use the new `aws-cdk-lib/aws-opensearchservice` module by applying the necessary modifications listed above. Synthesize your application and obtain the resulting stack templates.
 - Copy just the definition of the domain from the "migrated" templates to the corresponding "stripped" templates that you deployed above. [Import](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resource-import-existing-stack.html) the orphaned domains into your CloudFormation stacks using these templates.
 - Synthesize and deploy your CDK application to reconfigure/recreate the modified dependent resources. The CloudFormation stacks should now contain the same resources as existed prior to migration.
 - Proceed with development as normal!

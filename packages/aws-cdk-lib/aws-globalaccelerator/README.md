@@ -71,7 +71,7 @@ used is the same as the traffic came in on at the Listener, unless overridden.
 ## Types of Endpoints
 
 There are 4 types of Endpoints, and they can be found in the
-`@aws-cdk/aws-globalaccelerator-endpoints` package:
+`aws-cdk-lib/aws-globalaccelerator-endpoints` package:
 
 * Application Load Balancers
 * Network Load Balancers

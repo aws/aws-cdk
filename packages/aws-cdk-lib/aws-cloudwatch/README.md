@@ -284,7 +284,7 @@ Please note that it is **not possible** to:
 ### Alarm Actions
 
 To add actions to an alarm, use the integration classes from the
-`@aws-cdk/aws-cloudwatch-actions` package. For example, to post a message to
+`aws-cdk-lib/aws-cloudwatch-actions` package. For example, to post a message to
 an SNS topic when an alarm breaches, do the following:
 
 ```ts
