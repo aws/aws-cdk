@@ -1,0 +1,12 @@
+{
+  "version": "32.0.0",
+  "testCases": {
+    "CfnMappingFindInMapTest/DefaultTest": {
+      "stacks": [
+        "core-cfn-mapping-1"
+      ],
+      "assertionStack": "CfnMappingFindInMapTest/DefaultTest/DeployAssert",
+      "assertionStackName": "CfnMappingFindInMapTestDefaultTestDeployAssertEA32B10D"
+    }
+  }
+}

@@ -1,0 +1,120 @@
+{
+ "Transform": [
+  "AWS::LanguageExtensions"
+ ],
+ "Mappings": {
+  "Regularmapping": {
+   "TopLevelKey1": {
+    "SecondLevelKey1": "Yes",
+    "SecondLevelKey2": "No"
+   }
+  },
+  "Lazymapping": {
+   "TopLevelKey1": {
+    "SecondLevelKey1": "Yes",
+    "SecondLevelKey2": "No"
+   }
+  }
+ },
+ "Outputs": {
+  "Output0": {
+   "Value": {
+    "Fn::FindInMap": [
+     "Regularmapping",
+     "TopLevelKey1",
+     "SecondLevelKey1",
+     {
+      "DefaultValue": "foob"
+     }
+    ]
+   }
+  },
+  "Output1": {
+   "Value": {
+    "Fn::FindInMap": [
+     "Regularmapping",
+     "TopLevelKey1",
+     {
+      "Ref": "AWS::Region"
+     },
+     {
+      "DefaultValue": "foob"
+     }
+    ]
+   }
+  },
+  "Output2": {
+   "Value": {
+    "Fn::FindInMap": [
+     "Regularmapping",
+     "TopLevelKey1",
+     "SecondLevelKey3",
+     {
+      "DefaultValue": "foob"
+     }
+    ]
+   }
+  },
+  "Output3": {
+   "Value": "No"
+  },
+  "Output4": {
+   "Value": "bart"
+  },
+  "Output5": {
+   "Value": {
+    "Fn::FindInMap": [
+     "Lazymapping",
+     {
+      "Ref": "AWS::Region"
+     },
+     "SecondLevelKey2",
+     {
+      "DefaultValue": "bart"
+     }
+    ]
+   }
+  }
+ },
+ "Resources": {
+  "CfnMappingFindInMapBucket6F72FEE7": {
+   "Type": "AWS::S3::Bucket",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
