@@ -38,7 +38,7 @@ const ecsService = new ecs.Ec2Service(this, 'Service', {
 });
 ```
 
-For a set of constructs defining common ECS architectural patterns, see the `@aws-cdk/aws-ecs-patterns` package.
+For a set of constructs defining common ECS architectural patterns, see the `aws-cdk-lib/aws-ecs-patterns` package.
 
 ## Launch Types: AWS Fargate vs Amazon EC2 vs AWS ECS Anywhere
 
@@ -435,7 +435,7 @@ obtained from either DockerHub or from ECR repositories, built directly from a l
 - `ecs.ContainerImage.fromAsset('./image')`: build and upload an
   image directly from a `Dockerfile` in your source directory.
 - `ecs.ContainerImage.fromDockerImageAsset(asset)`: uses an existing
-  `@aws-cdk/aws-ecr-assets.DockerImageAsset` as a container image.
+  `aws-cdk-lib/aws-ecr-assets.DockerImageAsset` as a container image.
 - `ecs.ContainerImage.fromTarball(file)`: use an existing tarball.
 - `new ecs.TagParameterContainerImage(repository)`: use the given ECR repository as the image
   but a CloudFormation parameter as the tag.
@@ -912,7 +912,7 @@ See that section for details.
 ## Integration with CloudWatch Events
 
 To start an Amazon ECS task on an Amazon EC2-backed Cluster, instantiate an
-`@aws-cdk/aws-events-targets.EcsTask` instead of an `Ec2Service`:
+`aws-cdk-lib/aws-events-targets.EcsTask` instead of an `Ec2Service`:
 
 ```ts
 declare const cluster: ecs.Cluster;
