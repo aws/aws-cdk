@@ -74,7 +74,7 @@ export class PhysicalResourceId {
 
 /**
  * An AWS SDK call.
- * 
+ *
  * @example
  *
  *    // In AWS SDK for JavaScript v2
