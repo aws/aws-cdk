@@ -430,7 +430,7 @@
    "Type": "AWS::Neptune::DBClusterParameterGroup",
    "Properties": {
     "Description": "A nice parameter group",
-    "Family": "neptune1.2",
+    "Family": "neptune1",
     "Parameters": {
      "neptune_enable_audit_log": "1",
      "neptune_query_timeout": "100000"
@@ -630,7 +630,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4e8e5c56a47a5bc044b2978563737de53c8dc75096e0a773b319b23c4d8dad1d.zip"
+     "S3Key": "4763e20569cc1d6f7ae496bbfb0b3e9bc205a1811c78c9a6bc18d949d737c2a9.zip"
     },
     "Role": {
      "Fn::GetAtt": [

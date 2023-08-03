@@ -184,11 +184,11 @@ function parseIntOptional(value?: string, base = 10): number | undefined {
   return parseInt(value, base);
 }
 
-function makeWithDelay(maxRetries: number = 10, backoff: Backoff = {
-  baseDelay: 10,
-  maxJitter: 50,
-  maxDelay: 10 * 1000, // 10s
-}): (block: () => Promise<void>) => Promise<void> {
+function makeWithDelay(
+  maxRetries: number = 5,
+  delayBase: number = 100,
+  delayCap = 10 * 1000, // 10s
+): (block: () => Promise<void>) => Promise<void> {
   // If we try to update the log group, then due to the async nature of
   // Lambda logging there could be a race condition when the same log group is
   // already being created by the lambda execution. This can sometime result in
@@ -205,7 +205,7 @@ function makeWithDelay(maxRetries: number = 10, backoff: Backoff = {
         if (error instanceof Logs.OperationAbortedException || error.name === 'OperationAbortedException') {
           if (attempts < maxRetries ) {
             attempts++;
-            await new Promise(resolve => setTimeout(resolve, calculateDelay(attempts, backoff)));
+            await new Promise(resolve => setTimeout(resolve, calculateDelay(attempts, delayBase, delayCap)));
             continue;
           } else {
             // The log group is still being changed by another execution but we are out of retries
@@ -218,13 +218,6 @@ function makeWithDelay(maxRetries: number = 10, backoff: Backoff = {
   };
 }
 
-interface Backoff {
-  baseDelay: number;
-  maxJitter: number;
-  maxDelay: number;
-}
-
-function calculateDelay(round: number, backoff: Backoff): number {
-  const jitter = Math.floor(Math.random() * backoff.maxJitter);
-  return Math.min((2**round) * backoff.baseDelay + jitter, backoff.maxDelay);
+function calculateDelay(attempt: number, base: number, cap: number): number {
+  return Math.round(Math.random() * Math.min(cap, base * 2 ** attempt));
 }

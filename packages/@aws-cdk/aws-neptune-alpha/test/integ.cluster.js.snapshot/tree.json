@@ -713,7 +713,7 @@
                   "aws:cdk:cloudformation:type": "AWS::Neptune::DBClusterParameterGroup",
                   "aws:cdk:cloudformation:props": {
                     "description": "A nice parameter group",
-                    "family": "neptune1.2",
+                    "family": "neptune1",
                     "parameters": {
                       "neptune_enable_audit_log": "1",
                       "neptune_query_timeout": "100000"
