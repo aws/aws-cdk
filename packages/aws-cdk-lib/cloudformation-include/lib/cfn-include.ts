@@ -66,6 +66,14 @@ export interface CfnIncludeProps {
    * @default - will throw an error on detecting any cyclical references
    */
   readonly allowCyclicalReferences?: boolean;
+
+  /**
+   * Specifies which maps should be created as lazy mappings.
+   * Each mapping name passed will be created as a lazy mapping.
+   *
+   * @default - no mappings will be created as lazy
+   */
+  readonly lazyMappings?: string[];
 }
 
 /**
@@ -109,6 +117,7 @@ export class CfnInclude extends core.CfnElement {
   private readonly template: any;
   private readonly preserveLogicalIds: boolean;
   private readonly allowCyclicalReferences: boolean;
+  private readonly lazyMappings: string[];
   private logicalIdToPlaceholderMap: Map<string, string>;
 
   constructor(scope: Construct, id: string, props: CfnIncludeProps) {
@@ -132,10 +141,12 @@ export class CfnInclude extends core.CfnElement {
       }
     }
 
+    this.lazyMappings = props.lazyMappings ?? [];
+
     // instantiate the Mappings
     this.mappingsScope = new Construct(this, '$Mappings');
     for (const mappingName of Object.keys(this.template.Mappings || {})) {
-      this.createMapping(mappingName);
+      this.createMapping(mappingName, this.lazyMappings.includes(mappingName));
     }
 
     // instantiate all parameters
@@ -409,7 +420,7 @@ export class CfnInclude extends core.CfnElement {
     return ret;
   }
 
-  private createMapping(mappingName: string): void {
+  private createMapping(mappingName: string, lazy: boolean = false): void {
     const cfnParser = new cfn_parse.CfnParser({
       finder: {
         findCondition() { throw new Error('Referring to Conditions in Mapping definitions is not allowed'); },
@@ -421,6 +432,7 @@ export class CfnInclude extends core.CfnElement {
     });
     const cfnMapping = new core.CfnMapping(this.mappingsScope, mappingName, {
       mapping: cfnParser.parseValue(this.template.Mappings[mappingName]),
+      lazy: lazy,
     });
     this.mappings[mappingName] = cfnMapping;
     this.overrideLogicalIdIfNeeded(cfnMapping, mappingName);
