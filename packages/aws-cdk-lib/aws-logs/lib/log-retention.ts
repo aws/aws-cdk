@@ -54,7 +54,7 @@ export interface LogRetentionRetryOptions {
   /**
    * The maximum amount of retries.
    *
-   * @default 3 (AWS SDK default)
+   * @default 5
    */
   readonly maxRetries?: number;
   /**

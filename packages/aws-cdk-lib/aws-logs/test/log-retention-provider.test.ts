@@ -303,6 +303,7 @@ describe('log retention provider', () => {
         ServiceToken: 'token',
         RetentionInDays: '30',
         LogGroupName: 'group',
+        SdkRetry: { maxRetries: '3' },
       },
     };
 
@@ -372,6 +373,7 @@ describe('log retention provider', () => {
         ServiceToken: 'token',
         RetentionInDays: '30',
         LogGroupName: 'group',
+        SdkRetry: { maxRetries: '3' },
       },
     };
 
@@ -418,6 +420,7 @@ describe('log retention provider', () => {
         ServiceToken: 'token',
         RetentionInDays: '0', // Setting this to 0 triggers the call to deleteRetentionPolicy
         LogGroupName: 'group',
+        SdkRetry: { maxRetries: '3' },
       },
     };
 
@@ -471,9 +474,7 @@ describe('log retention provider', () => {
         ServiceToken: 'token',
         RetentionInDays: '30',
         LogGroupName: 'group',
-        SdkRetry: {
-          maxRetries: '1',
-        },
+        SdkRetry: { maxRetries: '3' },
       },
     };
 
