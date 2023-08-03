@@ -55,6 +55,18 @@ const directoryAsset = new Canary(stack, 'DirectoryAsset', {
   enableAutoDeleteLambdas: true,
 });
 
+const folderAsset = new Canary(stack, 'FolderAsset', {
+  test: Test.custom({
+    handler: 'folder/canary.functionName',
+    code: Code.fromAsset(path.join(__dirname, 'canaries')),
+  }),
+  runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_4_0,
+  environmentVariables: {
+    URL: api.url,
+  },
+  enableAutoDeleteLambdas: true,
+});
+
 const zipAsset = new Canary(stack, 'ZipAsset', {
   test: Test.custom({
     handler: 'canary.handler',
@@ -93,6 +105,7 @@ const test = new IntegTest(app, 'IntegCanaryTest', {
 [
   inlineAsset,
   directoryAsset,
+  folderAsset,
   zipAsset,
   puppeteer39,
   puppeteer40,
