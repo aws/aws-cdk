@@ -678,7 +678,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "FlowLogsTestStack/VPC"
+                            "value": "FlowLogsTestStack/VPC/FlowLogsS3"
                           }
                         ],
                         "trafficType": "ALL"
@@ -734,7 +734,13 @@
                             }
                           ],
                           "Version": "2012-10-17"
-                        }
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "FlowLogsTestStack/FlowLogsCW"
+                          }
+                        ]
                       }
                     },
                     "constructInfo": {
@@ -816,7 +822,13 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
                       "aws:cdk:cloudformation:props": {
-                        "retentionInDays": 731
+                        "retentionInDays": 731,
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "FlowLogsTestStack/FlowLogsCW"
+                          }
+                        ]
                       }
                     },
                     "constructInfo": {
@@ -851,6 +863,12 @@
                       "Ref": "VPCB9E5F0B4"
                     },
                     "resourceType": "VPC",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "FlowLogsTestStack/FlowLogsCW"
+                      }
+                    ],
                     "trafficType": "ALL"
                   }
                 },
@@ -898,7 +916,13 @@
                             }
                           ],
                           "Version": "2012-10-17"
-                        }
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "FlowLogsTestStack/FlowLogsAllFormatCW"
+                          }
+                        ]
                       }
                     },
                     "constructInfo": {
@@ -980,7 +1004,13 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
                       "aws:cdk:cloudformation:props": {
-                        "retentionInDays": 731
+                        "retentionInDays": 731,
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "FlowLogsTestStack/FlowLogsAllFormatCW"
+                          }
+                        ]
                       }
                     },
                     "constructInfo": {
@@ -1015,6 +1045,12 @@
                       "Ref": "VPCB9E5F0B4"
                     },
                     "resourceType": "VPC",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "FlowLogsTestStack/FlowLogsAllFormatCW"
+                      }
+                    ],
                     "trafficType": "ALL"
                   }
                 },

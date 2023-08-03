@@ -65,6 +65,7 @@ class TestStack extends Stack {
 
     new FlowLog(this, 'FlowLogsCW', {
       resourceType: FlowLogResourceType.fromVpc(vpc),
+      flowLogName: 'CustomFlowLogName',
     });
 
     vpc.addFlowLog('FlowLogsS3', {
