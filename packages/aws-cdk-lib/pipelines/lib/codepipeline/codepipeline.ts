@@ -131,7 +131,7 @@ export interface CodePipelineProps {
    * application stacks.
    *
    * A common way to use bundling assets in your application is by
-   * using the `@aws-cdk/aws-lambda-nodejs` library.
+   * using the `aws-cdk-lib/aws-lambda-nodejs` library.
    *
    * Configures privileged mode for the synth CodeBuild action.
    *

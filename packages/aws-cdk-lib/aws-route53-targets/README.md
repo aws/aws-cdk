@@ -178,4 +178,4 @@ new route53.ARecord(this, 'AliasRecord', {
 });
 ```
 
-See the documentation of `@aws-cdk/aws-route53` for more information.
+See the documentation of `aws-cdk-lib/aws-route53` for more information.

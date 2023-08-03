@@ -261,7 +261,7 @@ const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
 });
 ```
 
-The underlying `@aws-cdk/aws-codepipeline.Pipeline` construct will be produced
+The underlying `aws-cdk-lib/aws-codepipeline.Pipeline` construct will be produced
 when `app.synth()` is called. You can also force it to be produced
 earlier by calling `pipeline.buildPipeline()`. After you've called
 that method, you can inspect the constructs that were produced by
@@ -967,7 +967,7 @@ Docker can be used in 3 different places in the pipeline:
   images for your CodeBuild projects): Docker will run in the self-mutate project.
 - If you are using Docker to bundle file assets anywhere in your project (for
   example, if you are using such construct libraries as
-  `@aws-cdk/aws-lambda-nodejs`): Docker will run in the
+  `aws-cdk-lib/aws-lambda-nodejs`): Docker will run in the
   *synth* project.
 
 For the first case, you don't need to do anything special. For the other two cases,
@@ -1021,7 +1021,7 @@ pipeline.addWave('MyWave', {
 ### Using bundled file assets
 
 If you are using asset bundling anywhere (such as automatically done for you
-if you add a construct like `@aws-cdk/aws-lambda-nodejs`), you need to pass
+if you add a construct like `aws-cdk-lib/aws-lambda-nodejs`), you need to pass
 `dockerEnabledForSynth: true` to the pipeline. For example:
 
 ```ts
