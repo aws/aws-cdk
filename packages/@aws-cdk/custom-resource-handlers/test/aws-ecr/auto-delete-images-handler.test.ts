@@ -348,7 +348,10 @@ test('delete event where repo has many images does recurse appropriately', async
 
 test('does nothing when the repository does not exist', async () => {
   // GIVEN
-  mockECRClient.listImages.mockRejectedValue({ name: 'RepositoryNotFoundException' });
+  mockECRClient.listImages.mockImplementation(async () => {
+    const { RepositoryNotFoundException } = jest.requireActual('@aws-sdk/client-ecr');
+    return new RepositoryNotFoundException({ name: '', $metadata: {} });
+  });
 
   mockECRClient.describeRepositories.mockReturnValue({
     repositories: [
