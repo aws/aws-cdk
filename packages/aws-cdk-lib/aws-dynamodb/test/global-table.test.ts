@@ -25,6 +25,7 @@ describe('global table configuration', () => {
           AttributeType: 'S',
         },
       ],
+      BillingMode: 'PAY_PER_REQUEST',
       KeySchema: [
         {
           AttributeName: 'pk',
