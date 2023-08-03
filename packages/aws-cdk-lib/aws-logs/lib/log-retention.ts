@@ -5,7 +5,6 @@ import * as iam from '../../aws-iam';
 import * as s3_assets from '../../aws-s3-assets';
 import * as cdk from '../../core';
 import { ArnFormat } from '../../core';
-import { FactName } from '../../region-info';
 
 /**
  * Construction properties for a LogRetention.
@@ -55,13 +54,14 @@ export interface LogRetentionRetryOptions {
   /**
    * The maximum amount of retries.
    *
-   * @default 3 (AWS SDK default)
+   * @default 5
    */
   readonly maxRetries?: number;
   /**
    * The base duration to use in the exponential backoff for operation retries.
    *
-   * @default Duration.millis(100) (AWS SDK default)
+   * @deprecated Unused since the upgrade to AWS SDK v3, which uses a different retry strategy
+   * @default - none, not used anymore
    */
   readonly base?: cdk.Duration;
 }
@@ -102,7 +102,6 @@ export class LogRetention extends Construct {
         LogGroupRegion: props.logGroupRegion,
         SdkRetry: retryOptions ? {
           maxRetries: retryOptions.maxRetries,
-          base: retryOptions.base?.toMilliseconds(),
         } : undefined,
         RetentionInDays: props.retention === RetentionDays.INFINITE ? undefined : props.retention,
         RemovalPolicy: props.removalPolicy,
@@ -171,7 +170,7 @@ class LogRetentionFunction extends Construct implements cdk.ITaggable {
       type: 'AWS::Lambda::Function',
       properties: {
         Handler: 'index.handler',
-        Runtime: cdk.Stack.of(scope).regionalFact(FactName.DEFAULT_CR_NODE_VERSION, 'nodejs16.x'), // Equivalent to Runtime.NODEJS_16_X
+        Runtime: 'nodejs18.x', // cannot use Runtime class here to prevent circular dependency
         Code: {
           S3Bucket: asset.s3BucketName,
           S3Key: asset.s3ObjectKey,

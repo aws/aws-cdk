@@ -37,13 +37,13 @@
     "Code": {
      "ZipFile": "exports.handler = (event) => console.log(JSON.stringify(event));"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "OneWeekServiceRole05A6F9F8",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
     "Runtime": "nodejs14.x"
    },
    "DependsOn": [
@@ -132,20 +132,12 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Handler": "index.handler",
-    "Runtime": {
-     "Fn::FindInMap": [
-      "DefaultCrNodeVersionMap",
-      {
-       "Ref": "AWS::Region"
-      },
-      "value"
-     ]
-    },
+    "Runtime": "nodejs18.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "0f8a80f5f2310ea7e3295258fdbb79c43a1e8c0a11e863e63dc82832599412ed.zip"
+     "S3Key": "4763e20569cc1d6f7ae496bbfb0b3e9bc205a1811c78c9a6bc18d949d737c2a9.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -196,13 +188,13 @@
     "Code": {
      "ZipFile": "exports.handler = (event) => console.log(JSON.stringify(event));"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "OneMonthServiceRoleFBD1064F",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
     "Runtime": "nodejs14.x"
    },
    "DependsOn": [
@@ -269,13 +261,13 @@
     "Code": {
      "ZipFile": "exports.handler = (event) => console.log(JSON.stringify(event));"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "OneYearServiceRole24D47762",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
     "Runtime": "nodejs14.x"
    },
    "DependsOn": [
@@ -303,109 +295,6 @@
      ]
     },
     "RetentionInDays": 365
-   }
-  }
- },
- "Mappings": {
-  "DefaultCrNodeVersionMap": {
-   "af-south-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-east-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-northeast-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-northeast-2": {
-    "value": "nodejs16.x"
-   },
-   "ap-northeast-3": {
-    "value": "nodejs16.x"
-   },
-   "ap-south-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-south-2": {
-    "value": "nodejs16.x"
-   },
-   "ap-southeast-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-southeast-2": {
-    "value": "nodejs16.x"
-   },
-   "ap-southeast-3": {
-    "value": "nodejs16.x"
-   },
-   "ca-central-1": {
-    "value": "nodejs16.x"
-   },
-   "cn-north-1": {
-    "value": "nodejs16.x"
-   },
-   "cn-northwest-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-central-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-central-2": {
-    "value": "nodejs16.x"
-   },
-   "eu-north-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-south-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-south-2": {
-    "value": "nodejs16.x"
-   },
-   "eu-west-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-west-2": {
-    "value": "nodejs16.x"
-   },
-   "eu-west-3": {
-    "value": "nodejs16.x"
-   },
-   "me-central-1": {
-    "value": "nodejs16.x"
-   },
-   "me-south-1": {
-    "value": "nodejs16.x"
-   },
-   "sa-east-1": {
-    "value": "nodejs16.x"
-   },
-   "us-east-1": {
-    "value": "nodejs16.x"
-   },
-   "us-east-2": {
-    "value": "nodejs16.x"
-   },
-   "us-gov-east-1": {
-    "value": "nodejs16.x"
-   },
-   "us-gov-west-1": {
-    "value": "nodejs16.x"
-   },
-   "us-iso-east-1": {
-    "value": "nodejs14.x"
-   },
-   "us-iso-west-1": {
-    "value": "nodejs14.x"
-   },
-   "us-isob-east-1": {
-    "value": "nodejs14.x"
-   },
-   "us-west-1": {
-    "value": "nodejs16.x"
-   },
-   "us-west-2": {
-    "value": "nodejs16.x"
    }
   }
  },
