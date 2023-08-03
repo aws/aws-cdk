@@ -466,12 +466,12 @@ describe('custom resource provider', () => {
       expect(rt).toEqual(CustomResourceProviderRuntime.NODEJS_18_X);
     });
 
-    test('returns node14 for iso region', () => {
+    test('returns node18 for iso region', () => {
       const app = new App();
       const stack = new Stack(app, 'MyStack', { env: { region: 'us-iso-east-1' } });
 
       const rt = builtInCustomResourceProviderNodeRuntime(stack);
-      expect(rt).toEqual(CustomResourceProviderRuntime.NODEJS_14_X);
+      expect(rt).toEqual(CustomResourceProviderRuntime.NODEJS_18_X);
     });
   });
 });
