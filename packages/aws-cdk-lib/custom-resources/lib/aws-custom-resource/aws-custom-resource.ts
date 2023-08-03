@@ -74,6 +74,41 @@ export class PhysicalResourceId {
 
 /**
  * An AWS SDK call.
+ * 
+ * @example
+ *
+ *    // In AWS SDK for JavaScript v2
+ *    new cr.AwsCustomResource(this, 'GetParameterV2', {
+ *      onUpdate: { // will also be called for a CREATE event
+ *        service: 'SSM',
+ *        action: 'getParameter',
+ *        parameters: {
+ *          Name: 'my-parameter',
+ *          WithDecryption: true,
+ *        },
+ *        physicalResourceId: cr.PhysicalResourceId.fromResponse('Parameter.ARN'),
+ *      },
+ *      policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+ *        resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
+ *      }),
+ *    });
+ *
+ *    // In AWS SDK for JavaScript v3
+ *    new cr.AwsCustomResource(this, 'GetParameterV3', {
+ *      onUpdate: {
+ *        service: '@aws-sdk/client-ssm', // 'SSM' in v2
+ *        action: 'GetParameterCommand', // 'getParameter' in v2
+ *        parameters: {
+ *          Name: 'my-parameter',
+ *          WithDecryption: true,
+ *        },
+ *        physicalResourceId: cr.PhysicalResourceId.fromResponse('Parameter.ARN'),
+ *      },
+ *      policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+ *        resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
+ *      }),
+ *    });
+ *
  */
 export interface AwsSdkCall {
   /**
