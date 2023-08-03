@@ -619,7 +619,7 @@ export interface CommonProjectProps {
    * Only used if 'vpc' is supplied. If you have no PRIVATE_WITH_EGRESS subnets in the specified `vpc`, leaving this
    * undefined will require VPC endpoints to access AWS services.
    *
-   * @default - private subnets if any else public subnets
+   * @default - private subnets if available else public subnets
    */
   readonly subnetSelection?: ec2.SubnetSelection;
 
