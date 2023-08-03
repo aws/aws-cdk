@@ -233,8 +233,8 @@ Sometimes it is necessary to perform some form of _assertion_ against the deploy
 test succeeds. A good example of this is the `@aws-cdk/aws-stepfunctions-tasks` module which creates integrations between
 AWS StepFunctions and other AWS services. 
 
-If we look at the [integ.put-events.ts](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-stepfunctions-tasks/test/eventbridge/integ.put-events.ts)
-integration test we can see that we are creating an `@aws-cdk/aws-events.EventBus` along with a `@aws-cdk/aws-stepfunctions.StateMachine`
+If we look at the [integ.put-events.ts](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/eventbridge/integ.put-events.ts)
+integration test we can see that we are creating an `aws-cdk-lib/aws-events.EventBus` along with a `aws-cdk-lib/aws-stepfunctions.StateMachine`
 which will send an event to the `EventBus`. In a typical integration test we would just deploy the test and the fact that the
 infrastructure deployed successfully would be enough of a validation that the test succeeded. In this case though, we ideally
 want to validate that the _integration_ connecting `StepFunctions` to the `EventBus` has been setup correctly, and the only
