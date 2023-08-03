@@ -92,7 +92,7 @@ export class LogRetention extends Construct {
     }
 
     // Need to use a CfnResource here to prevent lerna dependency cycles
-    // @aws-cdk/aws-cloudformation -> @aws-cdk/aws-lambda -> @aws-cdk/aws-cloudformation
+    // aws-cdk-lib/aws-cloudformation -> aws-cdk-lib/aws-lambda -> aws-cdk-lib/aws-cloudformation
     const retryOptions = props.logRetentionRetryOptions;
     const resource = new cdk.CfnResource(this, 'Resource', {
       type: 'Custom::LogRetention',
@@ -122,7 +122,7 @@ export class LogRetention extends Construct {
 
   /**
    * Helper method to ensure that only one instance of LogRetentionFunction resources are in the stack mimicking the
-   * behaviour of @aws-cdk/aws-lambda's SingletonFunction to prevent circular dependencies
+   * behaviour of aws-cdk-lib/aws-lambda's SingletonFunction to prevent circular dependencies
    */
   private ensureSingletonLogRetentionFunction(props: LogRetentionProps) {
     const functionLogicalId = 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a';

@@ -380,7 +380,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "DependencyTestStack/VPC"
+      "Value": "DependencyTestStack/VPC/FlowLogS3"
      }
     ],
     "TrafficType": "ALL"
