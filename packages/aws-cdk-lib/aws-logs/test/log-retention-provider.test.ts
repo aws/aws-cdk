@@ -474,7 +474,9 @@ describe('log retention provider', () => {
         ServiceToken: 'token',
         RetentionInDays: '30',
         LogGroupName: 'group',
-        SdkRetry: { maxRetries: '3' },
+        SdkRetry: {
+          maxRetries: '1', // lower than 2
+        },
       },
     };
 
