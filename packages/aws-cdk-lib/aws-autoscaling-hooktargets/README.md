@@ -12,7 +12,7 @@ Lifecycle hooks can be activated in one of the following ways:
 * Send to an SQS queue
 
 For more information on using this library, see the README of the
-`@aws-cdk/aws-autoscaling` library.
+`aws-cdk-lib/aws-autoscaling` library.
 
 For more information about lifecycle hooks, see
 [Amazon EC2 AutoScaling Lifecycle hooks](https://docs.aws.amazon.com/autoscaling/ec2/userguide/lifecycle-hooks.html) in the Amazon EC2 User Guide.
