@@ -25,7 +25,6 @@ describe('global table configuration', () => {
           AttributeType: 'S',
         },
       ],
-      BillingMode: 'PAY_PER_REQUEST',
       KeySchema: [
         {
           AttributeName: 'pk',
@@ -211,6 +210,22 @@ describe('global table configuration', () => {
 
     // THEN
     Template.fromStack(stack).hasResource('AWS::DynamoDB::GlobalTable', { DeletionPolicy: CfnDeletionPolicy.DELETE });
+  });
+
+  test('with on demand billing', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+
+    // WHEN
+    new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      billing: Billing.onDemand(),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      BillingMode: 'PAY_PER_REQUEST',
+    });
   });
 
   test('with provisioned billing and fixed readCapacity', () => {
@@ -756,13 +771,176 @@ describe('replica table configuration', () => {
 
   test('can configure replica table with kinesis stream', () => {});
 
-  test('replica tables do not have global secondary indexes set when billing mode is PAY_PER_REQUEST', () => {});
-
   test('replica tables have all global secondary indexes when billing mode is PROVISIONED', () => {});
 
-  test('can configure read capacity on global secondary indexes on a per-replica basis', () => {});
+  test('can configure read capacity on global secondary indexes on a per-replica basis', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
 
-  test('can configure contributor insights on global secondary indexes on a per-replica basis', () => {});
+    // WHEN
+    new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      billing: Billing.provisioned({
+        readCapacity: Capacity.fixed(10),
+        writeCapacity: Capacity.autoscaled({ minCapacity: 1, maxCapacity: 10 }),
+      }),
+      globalSecondaryIndexes: [
+        {
+          indexName: 'gsi1',
+          partitionKey: { name: 'gsiPk1', type: AttributeType.STRING },
+          readCapacity: Capacity.fixed(5),
+        },
+        {
+          indexName: 'gsi2',
+          partitionKey: { name: 'gsiPk2', type: AttributeType.STRING },
+          readCapacity: Capacity.fixed(5),
+        },
+      ],
+      replicas: [
+        {
+          region: 'us-west-2',
+          globalSecondaryIndexOptions: {
+            gsi2: {
+              readCapacity: Capacity.fixed(25),
+            },
+          },
+        },
+        {
+          region: 'us-east-1',
+          globalSecondaryIndexOptions: {
+            gsi1: {
+              readCapacity: Capacity.autoscaled({ minCapacity: 5, maxCapacity: 10 }),
+            },
+          },
+        },
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: [
+        {
+          Region: 'us-west-2',
+          ReadProvisionedThroughputSettings: {
+            ReadCapacityUnits: 10,
+          },
+          GlobalSecondaryIndexes: [
+            {
+              IndexName: 'gsi2',
+              ReadProvisionedThroughputSettings: {
+                ReadCapacityUnits: 25,
+              },
+            },
+            {
+              IndexName: 'gsi1',
+              ReadProvisionedThroughputSettings: {
+                ReadCapacityUnits: 5,
+              },
+            },
+          ],
+        },
+        {
+          Region: 'us-east-1',
+          ReadProvisionedThroughputSettings: {
+            ReadCapacityUnits: 10,
+          },
+          GlobalSecondaryIndexes: [
+            {
+              IndexName: 'gsi1',
+              ReadProvisionedThroughputSettings: {
+                ReadCapacityAutoScalingSettings: {
+                  MinCapacity: 5,
+                  MaxCapacity: 10,
+                  TargetTrackingScalingPolicyConfiguration: {
+                    TargetValue: 70,
+                  },
+                },
+              },
+            },
+            {
+              IndexName: 'gsi2',
+              ReadProvisionedThroughputSettings: {
+                ReadCapacityUnits: 5,
+              },
+            },
+          ],
+        },
+      ],
+    });
+  });
+
+  test('can configure contributor insights on global secondary indexes on a per-replica basis', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+    // WHEN
+    new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      contributorInsights: true,
+      globalSecondaryIndexes: [
+        {
+          indexName: 'gsi1',
+          partitionKey: { name: 'gsiPk1', type: AttributeType.STRING },
+        },
+        {
+          indexName: 'gsi2',
+          partitionKey: { name: 'gsiPk2', type: AttributeType.STRING },
+        },
+      ],
+      replicas: [
+        {
+          region: 'us-west-2',
+          globalSecondaryIndexOptions: {
+            gsi2: {
+              contributorInsights: false,
+            },
+          },
+        },
+        {
+          region: 'us-east-1',
+          globalSecondaryIndexOptions: {
+            gsi1: {
+              contributorInsights: false,
+            },
+          },
+        },
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: [
+        {
+          Region: 'us-west-2',
+          ContributorInsightsSpecification: {
+            Enabled: true,
+          },
+          GlobalSecondaryIndexes: [
+            {
+              IndexName: 'gsi2',
+              ContributorInsightsSpecification: {
+                Enabled: false,
+              },
+            },
+          ],
+        },
+        {
+          Region: 'us-east-1',
+          ContributorInsightsSpecification: {
+            Enabled: true,
+          },
+          GlobalSecondaryIndexes: [
+            {
+              IndexName: 'gsi1',
+              ContributorInsightsSpecification: {
+                Enabled: false,
+              },
+            },
+          ],
+        },
+      ],
+    });
+  });
 
   test('can configure table class on a per-replica basis', () => {
     // GIVEN

@@ -568,7 +568,7 @@ export class GlobalTable extends GlobalTableBase {
       replicas: Lazy.any({ produce: () => this.replicaTables }),
       localSecondaryIndexes: Lazy.any({ produce: () => this.localSecondaryIndexes }, { omitEmptyArray: true }),
       globalSecondaryIndexes: Lazy.any({ produce: () => this.globalSecondaryIndexes }, { omitEmptyArray: true }),
-      billingMode: this.billingMode,
+      billingMode: props.billing?.mode,
       streamSpecification: { streamViewType: NEW_AND_OLD_IMAGES },
       writeProvisionedThroughputSettings: this.writeProvisioning,
       sseSpecification,
