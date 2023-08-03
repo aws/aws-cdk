@@ -233,6 +233,8 @@ export class Fn {
   /**
    * The intrinsic function ``Fn::FindInMap`` returns the value corresponding to
    * keys in a two-level map that is declared in the Mappings section.
+   * Prefer to use `CfnMapping.findInMap`.
+   * Warning: do not use with lazy maps.
    * @returns a token represented as a string
    */
   public static findInMap(mapName: string, topLevelKey: string, secondLevelKey: string, defaultValue?: string): string {
@@ -502,8 +504,29 @@ class FnFindInMap extends FnBase {
    * @param secondLevelKey The second-level key name, which is set to one of the keys from the list assigned to TopLevelKey.
    * @param defaultValue The value of the default value returned if either the key is not found in the map
    */
+
+  private readonly mapName: string;
+  private readonly topLevelKey: string;
+  private readonly secondLevelKey: string;
+  private readonly defaultValue?: string;
+
   constructor(mapName: string, topLevelKey: any, secondLevelKey: any, defaultValue?: string) {
     super('Fn::FindInMap', [mapName, topLevelKey, secondLevelKey, defaultValue !== undefined ? { DefaultValue: defaultValue } : undefined]);
+    this.mapName = mapName;
+    this.topLevelKey = topLevelKey;
+    this.secondLevelKey = secondLevelKey;
+    this.defaultValue = defaultValue;
+  }
+
+  public resolve(context: IResolveContext): any {
+    if (this.defaultValue !== undefined) {
+      Stack.of(context.scope).addTransform('AWS::LanguageExtensions');
+    }
+    return { 'Fn::FindInMap': [this.mapName, this.topLevelKey, this.secondLevelKey, this.defaultValue !== undefined ? { DefaultValue: this.defaultValue } : undefined] };
+  }
+
+  public toString() {
+    return Token.asString(this);
   }
 }
 

@@ -148,9 +148,6 @@ class CfnMappingEmbedder implements IResolvable {
     private readonly defaultValue?: string) { }
 
   public resolve(context: IResolveContext): string {
-    if (this.defaultValue !== undefined) {
-      Stack.of(context.scope).addTransform('AWS::LanguageExtensions'); // this has a push command, what if its pushed multiple times?
-    }
     const consumingStack = Stack.of(context.scope);
     if (consumingStack === Stack.of(this.cfnMapping)) {
       return Fn.findInMap(this.cfnMapping.logicalId, this.key1, this.key2, this.defaultValue);
