@@ -78,13 +78,13 @@
                     "code": {
                       "zipFile": "exports.handler = (event) => console.log(JSON.stringify(event));"
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "OneWeekServiceRole05A6F9F8",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
                     "runtime": "nodejs14.x"
                   }
                 },
@@ -265,15 +265,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.270"
-            }
-          },
-          "DefaultCrNodeVersionMap": {
-            "id": "DefaultCrNodeVersionMap",
-            "path": "aws-cdk-lambda-log-retention/DefaultCrNodeVersionMap",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
-              "version": "0.0.0"
+              "version": "10.2.69"
             }
           },
           "OneMonth": {
@@ -346,13 +338,13 @@
                     "code": {
                       "zipFile": "exports.handler = (event) => console.log(JSON.stringify(event));"
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "OneMonthServiceRoleFBD1064F",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
                     "runtime": "nodejs14.x"
                   }
                 },
@@ -463,13 +455,13 @@
                     "code": {
                       "zipFile": "exports.handler = (event) => console.log(JSON.stringify(event));"
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "OneYearServiceRole24D47762",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
                     "runtime": "nodejs14.x"
                   }
                 },
@@ -537,7 +529,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.2.69"
         }
       }
     },
