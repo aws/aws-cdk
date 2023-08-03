@@ -185,8 +185,8 @@ function parseIntOptional(value?: string, base = 10): number | undefined {
 }
 
 function makeWithDelay(maxRetries: number = 5, backoff: Backoff = {
-  baseDelay: 10,
-  maxJitter: 50,
+  baseDelay: 100,
+  maxJitter: 100,
   maxDelay: 10 * 1000, // 10s
 }): (block: () => Promise<void>) => Promise<void> {
   // If we try to update the log group, then due to the async nature of
