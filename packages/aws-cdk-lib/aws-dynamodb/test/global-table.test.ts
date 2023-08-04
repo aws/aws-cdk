@@ -615,7 +615,7 @@ describe('global table configuration', () => {
     // THEN
     expect(() => {
       Template.fromStack(stack);
-    }).toThrow('You must specify a KMS key ARN for each replica table when encryption type is CUSTOMER_MANAGED');
+    }).toThrow('No KMS key specified for region us-east-1');
   });
 });
 
@@ -656,10 +656,6 @@ describe('replica table configuration', () => {
       }),
       replicas: [
         {
-          region: 'us-west-2',
-          readCapacity: Capacity.fixed(15),
-        },
-        {
           region: 'us-east-2',
         },
       ],
@@ -675,7 +671,7 @@ describe('replica table configuration', () => {
         {
           Region: 'us-west-2',
           ReadProvisionedThroughputSettings: {
-            ReadCapacityUnits: 15,
+            ReadCapacityUnits: 10,
           },
         },
         {
@@ -749,11 +745,17 @@ describe('replica table configuration', () => {
         },
       ],
     });
-    globalTable.addReplica({ region: 'us-west-2', pointInTimeRecovery: false });
+    globalTable.addReplica({ region: 'us-east-1', pointInTimeRecovery: false });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
       Replicas: [
+        {
+          Region: 'us-west-2',
+          PointInTimeRecoverySpecification: {
+            PointInTimeRecoveryEnabled: true,
+          },
+        },
         {
           Region: 'us-east-2',
           PointInTimeRecoverySpecification: {
@@ -761,7 +763,7 @@ describe('replica table configuration', () => {
           },
         },
         {
-          Region: 'us-west-2',
+          Region: 'us-east-1',
           PointInTimeRecoverySpecification: {
             PointInTimeRecoveryEnabled: false,
           },
@@ -799,7 +801,7 @@ describe('replica table configuration', () => {
       ],
       replicas: [
         {
-          region: 'us-west-2',
+          region: 'us-east-2',
           globalSecondaryIndexOptions: {
             gsi2: {
               readCapacity: Capacity.fixed(25),
@@ -822,6 +824,26 @@ describe('replica table configuration', () => {
       Replicas: [
         {
           Region: 'us-west-2',
+          ReadProvisionedThroughputSettings: {
+            ReadCapacityUnits: 10,
+          },
+          GlobalSecondaryIndexes: [
+            {
+              IndexName: 'gsi1',
+              ReadProvisionedThroughputSettings: {
+                ReadCapacityUnits: 5,
+              },
+            },
+            {
+              IndexName: 'gsi2',
+              ReadProvisionedThroughputSettings: {
+                ReadCapacityUnits: 5,
+              },
+            },
+          ],
+        },
+        {
+          Region: 'us-east-2',
           ReadProvisionedThroughputSettings: {
             ReadCapacityUnits: 10,
           },
@@ -890,14 +912,6 @@ describe('replica table configuration', () => {
       ],
       replicas: [
         {
-          region: 'us-west-2',
-          globalSecondaryIndexOptions: {
-            gsi2: {
-              contributorInsights: false,
-            },
-          },
-        },
-        {
           region: 'us-east-1',
           globalSecondaryIndexOptions: {
             gsi1: {
@@ -916,14 +930,6 @@ describe('replica table configuration', () => {
           ContributorInsightsSpecification: {
             Enabled: true,
           },
-          GlobalSecondaryIndexes: [
-            {
-              IndexName: 'gsi2',
-              ContributorInsightsSpecification: {
-                Enabled: false,
-              },
-            },
-          ],
         },
         {
           Region: 'us-east-1',
@@ -953,7 +959,7 @@ describe('replica table configuration', () => {
       tableClass: TableClass.STANDARD_INFREQUENT_ACCESS,
       replicas: [
         {
-          region: 'us-west-2',
+          region: 'us-east-1',
           tableClass: TableClass.STANDARD,
         },
         {
@@ -967,6 +973,10 @@ describe('replica table configuration', () => {
       Replicas: [
         {
           Region: 'us-west-2',
+          TableClass: 'STANDARD_INFREQUENT_ACCESS',
+        },
+        {
+          Region: 'us-east-1',
           TableClass: 'STANDARD',
         },
         {
@@ -1002,6 +1012,18 @@ describe('replica table configuration', () => {
     expect(() => {
       globalTable.addReplica({ region: 'us-east-1' });
     }).toThrow('Duplicate replica region, us-east-1, is not allowed');
+  });
+
+  test('throws if adding replica region in deployment region', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+    expect(() => {
+      new GlobalTable(stack, 'GlobalTable', {
+        partitionKey: { name: 'pk', type: AttributeType.STRING },
+        replicas: [{ region: 'us-west-2' }],
+      });
+    }).toThrow('Replica tables cannot include the region where this stack is deployed');
   });
 
   test('throws if adding replica with tokenized region', () => {
@@ -2172,44 +2194,23 @@ describe('billing and capacity', () => {
   });
 });
 
-describe('encryption', () => {
-  test('throws if getting tableKey with dynamo owned key encryption', () => {
-    // GIVEN
-    const encryption = TableEncryptionV2.dynamoOwnedKey();
-
-    // WHEN / THEN
-    expect(() => {
-      encryption.tableKey;
-    }).toThrow('Table key is only configured when encryption type is CUSTOMER_MANAGED');
+test('replica', () => {
+  // GIVEN
+  const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+  const tableKey = new Key(stack, 'Key');
+  const globalTable = new GlobalTable(stack, 'GlobalTable', {
+    tableName: 'my-global-table',
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+    encryption: TableEncryptionV2.customerManagedKey(tableKey, { 'us-east-1': 'arn:aws:kms:us-east-1:586193817576:key/95fecd1f-91f1-4897-9ea1-84066e2c6a0f' }),
+    replicas: [
+      { region: 'us-east-1' },
+    ],
   });
 
-  test('throws if getting replicaKeyArns with dynamo owned key encryption', () => {
-    // GIVEN
-    const encryption = TableEncryptionV2.dynamoOwnedKey();
+  // WHEN
+  const replica2 = globalTable.replica('us-east-1');
 
-    // WHEN / THEN
-    expect(() => {
-      encryption.replicaKeyArns;
-    }).toThrow('Replica key ARNs are only configured when encryption type is CUSTOMER_MANAGED');
-  });
-
-  test('throws if getting tableKey with aws managed key encryption', () => {
-    // GIVEN
-    const encryption = TableEncryptionV2.awsManagedKey();
-
-    // WHEN / THEN
-    expect(() => {
-      encryption.tableKey;
-    }).toThrow('Table key is only configured when encryption type is CUSTOMER_MANAGED');
-  });
-
-  test('throws if getting replicaKeyArns with aws managed key encryption', () => {
-    // GIVEN
-    const encryption = TableEncryptionV2.awsManagedKey();
-
-    // WHEN / THEN
-    expect(() => {
-      encryption.replicaKeyArns;
-    }).toThrow('Replica key ARNs are only configured when encryption type is CUSTOMER_MANAGED');
-  });
+  console.log(replica2.encryptionKey);
+  console.log(replica2.tableArn);
+  console.log(replica2.tableName);
 });

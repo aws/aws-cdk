@@ -6,9 +6,9 @@ import { ReplicaProvider } from './replica-provider';
 import { EnableScalingProps, IScalableTableAttribute } from './scalable-attribute-api';
 import { ScalableTableAttribute } from './scalable-table-attribute';
 import {
-  Attribute, SchemaOptions, BillingMode, ProjectionType, ITable,
+  Attribute, SchemaOptions, BillingMode, ProjectionType, ITable, Operation,
   SecondaryIndexProps, TableClass, LocalSecondaryIndexProps, TableEncryption,
-  OperationsMetricOptions, Operation, SystemErrorsForOperationsMetricOptions,
+  SystemErrorsForOperationsMetricOptions, OperationsMetricOptions,
 } from './shared';
 import * as appscaling from '../../aws-applicationautoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
@@ -16,9 +16,9 @@ import * as iam from '../../aws-iam';
 import * as kinesis from '../../aws-kinesis';
 import * as kms from '../../aws-kms';
 import {
-  ArnFormat,
-  Aws, CfnCondition, CfnCustomResource, CfnResource, CustomResource, Duration,
-  Fn, Lazy, Names, RemovalPolicy, Resource, Stack, Token,
+  ArnFormat, Resource,
+  Aws, CfnCondition, CfnCustomResource, CfnResource, Duration,
+  Fn, Lazy, Names, RemovalPolicy, Stack, Token, CustomResource,
 } from '../../core';
 
 const HASH_KEY_TYPE = 'HASH';
@@ -291,7 +291,7 @@ export interface TableAttributes {
   readonly grantIndexPermissions?: boolean;
 }
 
-abstract class TableBase extends Resource implements ITable {
+export abstract class TableBase extends Resource implements ITable {
   /**
    * @attribute
    */
