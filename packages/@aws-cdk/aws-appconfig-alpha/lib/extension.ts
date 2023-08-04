@@ -518,7 +518,7 @@ export class Extension extends Resource implements IExtension {
   }
 
   private getExecutionRole(eventDestination: IEventDestination): iam.IRole {
-    this.executionRole = new iam.Role(this, `Role${getHash(eventDestination.toString())}`, {
+    this.executionRole = new iam.Role(this, `Role${getHash(eventDestination.extensionUri)}`, {
       roleName: PhysicalName.GENERATE_IF_NEEDED,
       assumedBy: new iam.ServicePrincipal('appconfig.amazonaws.com'),
       inlinePolicies: {

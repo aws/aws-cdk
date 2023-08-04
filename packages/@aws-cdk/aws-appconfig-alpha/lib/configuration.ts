@@ -839,7 +839,6 @@ export abstract class ConfigurationSource {
    * Defines configuration content from an AWS Secrets Manager secret.
    *
    * @param secret The secret where the configuration is stored
-   * @param key The KMS Key that the secret is encrypted with
    */
   public static fromSecret(secret: sm.ISecret): ConfigurationSource {
     return {
