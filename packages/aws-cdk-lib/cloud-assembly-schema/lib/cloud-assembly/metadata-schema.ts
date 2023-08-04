@@ -162,6 +162,13 @@ export interface ContainerImageAssetMetadataEntry extends BaseAssetMetadataEntry
   readonly buildArgs?: { [key: string]: string };
 
   /**
+   * SSH agent socket or keys to pass to the `docker build` command
+   *
+   * @default no ssh arg is passed
+   */
+  readonly buildSsh?: string;
+
+  /**
    * Build secrets to pass to the `docker build` command
    *
    * @default no build secrets are passed

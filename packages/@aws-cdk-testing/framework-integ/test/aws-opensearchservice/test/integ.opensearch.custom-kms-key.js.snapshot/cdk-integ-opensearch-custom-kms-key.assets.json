@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "33.0.0",
   "files": {
     "f5703cf7b56c39c576b7f8c03378239080baf3b390d0afe381f81bde5688e6eb": {
       "source": {
@@ -14,7 +14,7 @@
         }
       }
     },
-    "b2daeda7fce0722ceb742a09469c49f7fcd4fbdf39f8ac166e3346fda987c55a": {
+    "f78cf4fba8563779a826a0bf8fdff0e06f81fd80ca8d86a4d3fcb9024ee4c8ab": {
       "source": {
         "path": "cdk-integ-opensearch-custom-kms-key.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "b2daeda7fce0722ceb742a09469c49f7fcd4fbdf39f8ac166e3346fda987c55a.json",
+          "objectKey": "f78cf4fba8563779a826a0bf8fdff0e06f81fd80ca8d86a4d3fcb9024ee4c8ab.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

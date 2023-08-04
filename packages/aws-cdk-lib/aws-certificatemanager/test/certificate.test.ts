@@ -407,7 +407,7 @@ describe('Transparency logging settings', () => {
   });
 });
 
-describe('Certifcate Name setting', () => {
+describe('Certificate Name setting', () => {
   test('the Name tag is defaulted to path', () => {
     const stack = new Stack(undefined, 'TestStack');
 
