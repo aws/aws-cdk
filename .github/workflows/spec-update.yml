@@ -1,0 +1,90 @@
+name: AWS Service Spec Update
+
+on:
+  schedule:
+    # Every Monday at 13:37 UTC
+    - cron: 37 13 * * 1
+  workflow_dispatch: {}
+
+jobs:
+  update-spec:
+    # this workflow will always fail in forks; bail if this isn't running in the upstream
+    if: github.repository == 'aws/aws-cdk'
+    name: Update AWS Service Spec packages
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Check Out
+        uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "*"
+        env:
+          NODE_OPTIONS: "--max-old-space-size=8196 --experimental-worker ${NODE_OPTIONS:-}"
+
+      - name: Yarn Install
+        run: yarn install --frozen-lockfile
+      - name: Install ncu tool
+        run: npm -g install lerna npm-check-updates
+      - name: Run "ncu" for service spec packages
+        run: lerna exec --parallel ncu -- --upgrade --filter='@aws-cdk/aws-service-spec,@aws-cdk/service-spec-types' --target=latest
+
+      # This will ensure the current lockfile is up-to-date with the dependency specifications
+      - name: Install latest version & update lockfile
+        run: |-
+          yarn upgrade @aws-cdk/aws-service-spec @aws-cdk/service-spec-types
+
+      # Next, create and upload the changes as a patch file. This will later be downloaded to create a pull request
+      # Creating a pull request requires write permissions and it's best to keep write privileges isolated.
+      - name: Create Patch
+        run: |-
+          git add .
+          git diff --patch --staged > ${{ runner.temp }}/update-spec.patch
+      - name: Upload Patch
+        uses: actions/upload-artifact@v3
+        with:
+          name: update-spec.patch
+          path: ${{ runner.temp }}/update-spec.patch
+
+  pr:
+    name: Create Pull Request
+    needs: update-spec
+    permissions:
+      contents: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Out
+        uses: actions/checkout@v3
+
+      - name: Download patch
+        uses: actions/download-artifact@v3
+        with:
+          name: update-spec.patch
+          path: ${{ runner.temp }}
+
+      - name: Apply patch
+        run: '[ -s ${{ runner.temp }}/update-spec.patch ] && git apply ${{ runner.temp }}/update-spec.patch || echo "Empty patch. Skipping."'
+
+      - name: Make Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          # Git commit details
+          branch: automation/spec-update
+          author: aws-cdk-automation <aws-cdk-automation@users.noreply.github.com>
+          commit-message: |-
+            feat: update AWS Service Spec
+            AWS Service Spec packages to latest versions.
+          # Pull Request details
+          title: 'feat: update AWS Service Spec'
+          body: |-
+             AWS Service Spec packages to latest versions.
+          labels: contribution/core,dependencies,auto-approve,pr-linter/exempt-integ-test,pr-linter/exempt-readme,pr-linter/exempt-test
+          team-reviewers: aws-cdk-team
+          # Github prevents further Github actions to be run if the default Github token is used.
+          # Instead use a privileged token here, so further GH actions can be triggered on this PR.
+          token: ${{ secrets.PROJEN_GITHUB_TOKEN }}

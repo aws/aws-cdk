@@ -1088,6 +1088,13 @@ export interface VpcProps {
    * @default true if '@aws-cdk/aws-ec2:restrictDefaultSecurityGroup' is enabled, false otherwise
    */
   readonly restrictDefaultSecurityGroup?: boolean;
+
+  /**
+   * If set to false then disable the creation of the default internet gateway
+   *
+   * @default true
+   */
+  readonly createInternetGateway?: boolean;
 }
 
 /**
@@ -1451,13 +1458,11 @@ export class Vpc extends VpcBase {
 
     if (props.availabilityZones) {
       // If given AZs and stack AZs are both resolved, then validate their compatibility.
-      const resolvedStackAzs = stack.availabilityZones.filter(az => !Token.isUnresolved(az));
-      const areGivenAzsSubsetOfStack = resolvedStackAzs.length === 0 // stack AZs are tokenized, so we cannot validate it
-        || props.availabilityZones.every(
-          az => Token.isUnresolved(az) // given AZ is tokenized, such as in integ tests, so we cannot validate it
-            || resolvedStackAzs.includes(az));
+      const resolvedStackAzs = this.resolveStackAvailabilityZones(stack.availabilityZones);
+      const areGivenAzsSubsetOfStack = resolvedStackAzs.length === 0 ||
+        props.availabilityZones.every(az => Token.isUnresolved(az) ||resolvedStackAzs.includes(az));
       if (!areGivenAzsSubsetOfStack) {
-        throw new Error(`Given VPC 'availabilityZones' ${props.availabilityZones} must be a subset of the stack's availability zones ${stack.availabilityZones}`);
+        throw new Error(`Given VPC 'availabilityZones' ${props.availabilityZones} must be a subset of the stack's availability zones ${resolvedStackAzs}`);
       }
       this.availabilityZones = props.availabilityZones;
     } else {
@@ -1467,7 +1472,6 @@ export class Vpc extends VpcBase {
     for (let i = 0; props.reservedAzs && i < props.reservedAzs; i++) {
       this.availabilityZones.push(FAKE_AZ_NAME);
     }
-
 
     this.vpcId = this.resource.ref;
     this.vpcArn = Arn.format({
@@ -1485,11 +1489,12 @@ export class Vpc extends VpcBase {
     // subnetConfiguration must be set before calling createSubnets
     this.createSubnets();
 
+    const createInternetGateway = props.createInternetGateway ?? true;
     const allowOutbound = this.subnetConfiguration.filter(
       subnet => (subnet.subnetType !== SubnetType.PRIVATE_ISOLATED && subnet.subnetType !== SubnetType.ISOLATED)).length > 0;
 
     // Create an Internet Gateway and attach it if necessary
-    if (allowOutbound) {
+    if (allowOutbound && createInternetGateway) {
       const igw = new CfnInternetGateway(this, 'IGW', {
       });
 
@@ -1722,6 +1727,19 @@ export class Vpc extends VpcBase {
         Account: Stack.of(this).account,
       },
     });
+  }
+
+  /**
+   * Returns the list of resolved availability zones found in the provided stack availability
+   * zones.
+   *
+   * Note: A resolved availability zone refers to an availability zone that is not a token
+   * and is also not a dummy value.
+   */
+  private resolveStackAvailabilityZones(stackAvailabilityZones: string[]): string[] {
+    const dummyValues = ['dummy1a', 'dummy1b', 'dummy1c'];
+    // if an az is resolved and it is not a 'dummy' value, then add it to array as a resolved az
+    return stackAvailabilityZones.filter(az => !Token.isUnresolved(az) && !dummyValues.includes(az));
   }
 }
 

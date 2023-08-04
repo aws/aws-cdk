@@ -20,7 +20,7 @@ class EksClusterAlbControllerStack extends Stack {
       vpc,
       ...getClusterVersionConfig(this),
       albController: {
-        version: eks.AlbControllerVersion.V2_4_1,
+        version: eks.AlbControllerVersion.V2_5_1,
       },
     });
 
@@ -72,5 +72,7 @@ const app = new App();
 const stack = new EksClusterAlbControllerStack(app, 'aws-cdk-eks-cluster-alb-controller-test');
 new integ.IntegTest(app, 'aws-cdk-cluster-alb-controller', {
   testCases: [stack],
+  // Test includes assets that are updated weekly. If not disabled, the upgrade PR will fail.
+  diffAssets: false,
 });
 app.synth();

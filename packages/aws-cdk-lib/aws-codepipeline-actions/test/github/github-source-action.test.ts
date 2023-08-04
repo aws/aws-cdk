@@ -60,7 +60,6 @@ describe('Github source action', () => {
         ],
       });
 
-
     });
 
     test('always renders the customer-supplied namespace, even if none of the variables are used', () => {
@@ -111,7 +110,6 @@ describe('Github source action', () => {
         ],
       });
 
-
     });
 
     test('fails if a variable from an action without a namespace set that is not part of a pipeline is referenced', () => {
@@ -157,7 +155,6 @@ describe('Github source action', () => {
       expect(() => {
         App.of(stack)!.synth();
       }).toThrow(/Cannot reference variables of action 'Source2', as that action was never added to a pipeline/);
-
 
     });
 
@@ -205,7 +202,6 @@ describe('Github source action', () => {
       expect(() => {
         App.of(stack)!.synth();
       }).toThrow(/Cannot reference variables of action 'Source2', as that action was never added to a pipeline/);
-
 
     });
   });

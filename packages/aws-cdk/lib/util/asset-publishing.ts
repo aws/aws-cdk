@@ -54,6 +54,7 @@ export async function publishAssets(
     publishInParallel: options.parallel ?? true,
     buildAssets: options.buildAssets ?? true,
     publishAssets: true,
+    quiet: options.quiet,
   });
   await publisher.publish();
   if (publisher.hasFailures) {
@@ -109,7 +110,7 @@ export async function buildAssets(
   }
 }
 
-class PublishingAws implements cdk_assets.IAws {
+export class PublishingAws implements cdk_assets.IAws {
   private sdkCache: Map<String, ISDK> = new Map();
 
   constructor(
@@ -169,6 +170,7 @@ class PublishingAws implements cdk_assets.IAws {
       env, // region, name, account
       assumeRuleArn: options.assumeRoleArn,
       assumeRoleExternalId: options.assumeRoleExternalId,
+      quiet: options.quiet,
     });
 
     const maybeSdk = this.sdkCache.get(cacheKey);
@@ -179,14 +181,14 @@ class PublishingAws implements cdk_assets.IAws {
     const sdk = (await this.aws.forEnvironment(env, Mode.ForWriting, {
       assumeRoleArn: options.assumeRoleArn,
       assumeRoleExternalId: options.assumeRoleExternalId,
-    })).sdk;
+    }, options.quiet)).sdk;
     this.sdkCache.set(cacheKey, sdk);
 
     return sdk;
   }
 }
 
-const EVENT_TO_LOGGER: Record<cdk_assets.EventType, (x: string) => void> = {
+export const EVENT_TO_LOGGER: Record<cdk_assets.EventType, (x: string) => void> = {
   build: debug,
   cached: debug,
   check: debug,

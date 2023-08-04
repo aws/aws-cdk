@@ -59,7 +59,6 @@ describe('KafkaEventSource', () => {
         ],
       });
 
-
     });
     test('with secret', () => {
       // GIVEN
@@ -132,8 +131,47 @@ describe('KafkaEventSource', () => {
         ],
       });
 
-
     });
+
+    test('with filters', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+
+      // WHEN
+      fn.addEventSource(new sources.ManagedKafkaEventSource(
+        {
+          clusterArn,
+          topic: kafkaTopic,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          filters: [
+            lambda.FilterCriteria.filter({
+              orFilter: lambda.FilterRule.or('one', 'two'),
+              stringEquals: lambda.FilterRule.isEqual('test'),
+            }),
+            lambda.FilterCriteria.filter({
+              numericEquals: lambda.FilterRule.isEqual(1),
+            }),
+          ],
+        }));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        FilterCriteria: {
+          Filters: [
+            {
+              Pattern: '{"orFilter":["one","two"],"stringEquals":["test"]}',
+            },
+            {
+              Pattern: '{"numericEquals":[{"numeric":["=",1]}]}',
+            },
+          ],
+        },
+      });
+    });
+
   });
 
   describe('self-managed kafka', () => {
@@ -203,8 +241,49 @@ describe('KafkaEventSource', () => {
         ],
       });
 
-
     });
+
+    test('with filters', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const kafkaTopic = 'some-topic';
+      const secret = new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
+      const bootstrapServers = ['kafka-broker:9092'];
+
+      // WHEN
+      fn.addEventSource(new sources.SelfManagedKafkaEventSource(
+        {
+          bootstrapServers: bootstrapServers,
+          topic: kafkaTopic,
+          secret: secret,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          filters: [
+            lambda.FilterCriteria.filter({
+              orFilter: lambda.FilterRule.or('one', 'two'),
+              stringEquals: lambda.FilterRule.isEqual('test'),
+            }),
+            lambda.FilterCriteria.filter({
+              numericEquals: lambda.FilterRule.isEqual(1),
+            }),
+          ],
+        }));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        FilterCriteria: {
+          Filters: [
+            {
+              Pattern: '{"orFilter":["one","two"],"stringEquals":["test"]}',
+            },
+            {
+              Pattern: '{"numericEquals":[{"numeric":["=",1]}]}',
+            },
+          ],
+        },
+      });
+    });
+
     test('without vpc, secret must be set', () => {
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
@@ -219,7 +298,6 @@ describe('KafkaEventSource', () => {
             startingPosition: lambda.StartingPosition.TRIM_HORIZON,
           }));
       }).toThrow(/secret must be set/);
-
 
     });
 
@@ -279,7 +357,6 @@ describe('KafkaEventSource', () => {
             },
           ],
         });
-
 
       });
       test('with secret', () => {
@@ -369,7 +446,6 @@ describe('KafkaEventSource', () => {
           ],
         });
 
-
       });
       test('setting vpc requires vpcSubnets to be set', () => {
         const stack = new cdk.Stack();
@@ -392,7 +468,6 @@ describe('KafkaEventSource', () => {
             }));
         }).toThrow(/vpcSubnets must be set/);
 
-
       });
 
       test('setting vpc requires securityGroup to be set', () => {
@@ -414,7 +489,6 @@ describe('KafkaEventSource', () => {
               vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
             }));
         }).toThrow(/securityGroup must be set/);
-
 
       });
     });
@@ -669,7 +743,6 @@ describe('KafkaEventSource', () => {
       const clusterArn = 'some-arn';
       const kafkaTopic = 'some-topic';
       const consumerGroupId = 'my-consumer-group-id';
-
 
       const mskEventMapping = new sources.ManagedKafkaEventSource(
         {

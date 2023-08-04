@@ -29,6 +29,9 @@
         "lib/workers/extract/index.js"
       ],
       "externals": {
+        "optionalDependencies": [
+          "fsevents"
+        ],
         "dependencies": [
           "aws-cdk"
         ]
@@ -56,16 +59,17 @@
     "aws-cdk-lib": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^9.0.13",
-    "@types/jest": "^29.5.1",
+    "@types/jest": "^29.5.3",
     "@types/mock-fs": "^4.13.1",
     "@types/workerpool": "^6.4.0",
     "@types/yargs": "^15.0.15",
     "constructs": "^10.0.0",
     "mock-fs": "^4.14.0",
-    "jest": "^29.5.0",
+    "jest": "^29.6.2",
     "ts-node": "^10.9.1"
   },
   "dependencies": {
+    "chokidar": "^3.5.3",
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/cloudformation-diff": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",

@@ -3,6 +3,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as opensearch from 'aws-cdk-lib/aws-opensearchservice';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -37,6 +38,15 @@ class TestStack extends Stack {
           resources: ['*'],
         }),
       ],
+      capacity: {
+        multiAzWithStandbyEnabled: false,
+      },
+      offPeakWindowEnabled: true,
+      offPeakWindowStart: {
+        hours: 20,
+        minutes: 0,
+      },
+      enableAutoSoftwareUpdate: true,
     };
 
     // create 2 domains to ensure that Cloudwatch Log Group policy names dont conflict
@@ -46,5 +56,10 @@ class TestStack extends Stack {
 }
 
 const app = new App();
-new TestStack(app, 'cdk-integ-opensearch');
+const stack = new TestStack(app, 'cdk-integ-opensearch');
+
+new IntegTest(app, 'OpenSearchInteg', {
+  testCases: [stack],
+  diffAssets: true,
+});
 app.synth();

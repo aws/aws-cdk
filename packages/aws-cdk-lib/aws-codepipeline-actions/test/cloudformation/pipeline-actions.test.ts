@@ -106,7 +106,6 @@ describe('Pipeline Actions', () => {
         ],
       );
 
-
     });
   });
 
@@ -178,7 +177,6 @@ describe('Pipeline Actions', () => {
           },
         ],
       );
-
 
     });
   });

@@ -6,6 +6,7 @@ import * as ecr_assets from 'aws-cdk-lib/aws-ecr-assets';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
+import * as s3 from 'aws-cdk-lib/aws-s3';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from 'aws-cdk-lib';
 import * as apprunner from '../lib';
@@ -627,7 +628,6 @@ test('create a service with local assets(image repository type: ECR)', () => {
   });
 });
 
-
 test('create a service with github repository', () => {
   // GIVEN
   const app = new cdk.App();
@@ -781,7 +781,6 @@ test('create a service with github repository - buildCommand, environment and st
   });
 });
 
-
 test('import from service name', () => {
   // GIVEN
   const app = new cdk.App();
@@ -811,6 +810,24 @@ test('import from service attributes', () => {
   expect(svc).toHaveProperty('serviceUrl');
 });
 
+test('serviceName validation', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  // WHEN
+  const svc = new apprunner.Service(stack, 'CustomService', {
+    source: apprunner.Source.fromEcrPublic({
+      imageConfiguration: { port: 8000 },
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
+  });
+
+  // THEN
+  // the serviceName should not be the resource.ref
+  expect(svc.serviceName).not.toEqual((svc.node.defaultChild as cdk.CfnResource).ref);
+  // serviceName and serviceArn should be different
+  expect(svc.serviceName).not.toEqual(svc.serviceArn);
+});
 
 test('undefined imageConfiguration port is allowed', () => {
   // GIVEN
@@ -902,7 +919,7 @@ test('custom IAM access role and instance role are allowed', () => {
   });
 });
 
-test('cpu and memory properties are allowed', () => {
+test('cpu and memory properties as unit values are allowed', () => {
   // GIVEN
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'demo-stack');
@@ -928,7 +945,7 @@ test('cpu and memory properties are allowed', () => {
   });
 });
 
-test('custom cpu and memory units are allowed', () => {
+test('cpu and memory properties as numeric values are allowed', () => {
   // GIVEN
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'demo-stack');
@@ -937,14 +954,14 @@ test('custom cpu and memory units are allowed', () => {
     source: apprunner.Source.fromEcrPublic({
       imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
     }),
-    cpu: apprunner.Cpu.of('Some vCPU'),
-    memory: apprunner.Memory.of('Some GB'),
+    cpu: apprunner.Cpu.of('1024'),
+    memory: apprunner.Memory.of('3072'),
   });
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
     InstanceConfiguration: {
-      Cpu: 'Some vCPU',
-      Memory: 'Some GB',
+      Cpu: '1024',
+      Memory: '3072',
     },
     NetworkConfiguration: {
       EgressConfiguration: {
@@ -952,6 +969,70 @@ test('custom cpu and memory units are allowed', () => {
       },
     },
   });
+});
+
+test('invalid cpu property as unit value is not allowed', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  // WHEN
+  expect(() => {
+    new apprunner.Service(stack, 'DemoService', {
+      source: apprunner.Source.fromEcrPublic({
+        imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+      }),
+      cpu: apprunner.Cpu.of('1000 vCPU'),
+      memory: apprunner.Memory.of('3 GB'),
+    });
+  }).toThrow('CPU value is invalid');
+});
+
+test('invalid cpu property as numeric value is not allowed', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  // WHEN
+  expect(() => {
+    new apprunner.Service(stack, 'DemoService', {
+      source: apprunner.Source.fromEcrPublic({
+        imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+      }),
+      cpu: apprunner.Cpu.of('1'),
+      memory: apprunner.Memory.of('3 GB'),
+    });
+  }).toThrow('CPU value is invalid');
+});
+
+test('invalid memory property as unit value is not allowed', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  // WHEN
+  expect(() => {
+    new apprunner.Service(stack, 'DemoService', {
+      source: apprunner.Source.fromEcrPublic({
+        imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+      }),
+      cpu: apprunner.Cpu.of('1 vCPU'),
+      memory: apprunner.Memory.of('3000 GB'),
+    });
+  }).toThrow('Memory value is invalid');
+});
+
+test('invalid memory property as numeric value is not allowed', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  // WHEN
+  expect(() => {
+    new apprunner.Service(stack, 'DemoService', {
+      source: apprunner.Source.fromEcrPublic({
+        imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+      }),
+      cpu: apprunner.Cpu.of('1 vCPU'),
+      memory: apprunner.Memory.of('3'),
+    });
+  }).toThrow('Memory value is invalid');
 });
 
 test('environment variable with a prefix of AWSAPPRUNNER should throw an error', () => {
@@ -1153,6 +1234,27 @@ test('autoDeploymentsEnabled flag is NOT set', () => {
   });
 });
 
+test('serviceName is set', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  const serviceName = 'demo-service';
+  // WHEN
+  new apprunner.Service(stack, 'DemoService', {
+    serviceName: serviceName,
+    source: apprunner.Source.fromGitHub({
+      repositoryUrl: 'https://github.com/aws-containers/hello-app-runner',
+      branch: 'main',
+      configurationSource: apprunner.ConfigurationSourceType.REPOSITORY,
+      connection: apprunner.GitHubConnection.fromConnectionArn('MOCK'),
+    }),
+  });
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+    ServiceName: serviceName,
+  });
+});
+
 testDeprecated('Using both environmentVariables and environment should throw an error', () => {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'demo-stack');
@@ -1172,4 +1274,80 @@ testDeprecated('Using both environmentVariables and environment should throw an 
       }),
     });
   }).toThrow(/You cannot set both \'environmentVariables\' and \'environment\' properties./);
+});
+
+test('Service is grantable', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  // WHEN
+  const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', { bucketArn: 'arn:aws:s3:::my-bucket' });
+  const service = new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromEcrPublic({
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
+    instanceRole: new iam.Role(stack, 'InstanceRole', {
+      assumedBy: new iam.ServicePrincipal('tasks.apprunner.amazonaws.com'),
+    }),
+  });
+
+  bucket.grantRead(service);
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: [
+            's3:GetObject*',
+            's3:GetBucket*',
+            's3:List*',
+          ],
+          Resource: [
+            'arn:aws:s3:::my-bucket',
+            'arn:aws:s3:::my-bucket/*',
+          ],
+        },
+      ],
+    },
+    PolicyName: 'InstanceRoleDefaultPolicy1531605C',
+    Roles: [
+      { Ref: 'InstanceRole3CCE2F1D' },
+    ],
+  });
+});
+
+test('addToRolePolicy', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  // WHEN
+  const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', { bucketArn: 'arn:aws:s3:::my-bucket' });
+  const service = new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromEcrPublic({
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
+  });
+
+  service.addToRolePolicy(new iam.PolicyStatement({
+    effect: iam.Effect.ALLOW,
+    actions: ['s3:GetObject'],
+    resources: [bucket.bucketArn],
+  }));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 's3:GetObject',
+          Resource: 'arn:aws:s3:::my-bucket',
+        },
+      ],
+    },
+    PolicyName: 'DemoServiceInstanceRoleDefaultPolicy9600BEA1',
+    Roles: [
+      { Ref: 'DemoServiceInstanceRoleFCED1725' },
+    ],
+  });
 });

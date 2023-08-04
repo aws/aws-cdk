@@ -42,6 +42,14 @@ export interface RotationScheduleOptions {
    * @default Duration.days(30)
    */
   readonly automaticallyAfter?: Duration;
+
+  /**
+   * Specifies whether to rotate the secret immediately or wait until the next
+   * scheduled rotation window.
+   *
+   * @default true
+   */
+  readonly rotateImmediatelyOnUpdate?: boolean;
 }
 
 /**
@@ -132,6 +140,7 @@ export class RotationSchedule extends Resource {
       rotationLambdaArn: props.rotationLambda?.functionArn,
       hostedRotationLambda: props.hostedRotation?.bind(props.secret, this),
       rotationRules,
+      rotateImmediatelyOnUpdate: props.rotateImmediatelyOnUpdate,
     });
 
     // Prevent secrets deletions when rotation is in place

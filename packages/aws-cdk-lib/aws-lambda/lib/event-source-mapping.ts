@@ -235,7 +235,6 @@ export interface EventSourceMappingOptions {
    */
   readonly kafkaConsumerGroupId?: string
 
-
   /**
    * Specific settings like the authentication protocol or the VPC components to secure access to your event source.
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-eventsourcemapping-sourceaccessconfiguration.html
@@ -286,7 +285,7 @@ export interface IEventSourceMapping extends cdk.IResource {
  * Usually, you won't need to define the mapping yourself. This will usually be done by
  * event sources. For example, to add an SQS event source to a function:
  *
- *    import { SqsEventSource } from '@aws-cdk/aws-lambda-event-sources';
+ *    import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
  *    lambda.addEventSource(new SqsEventSource(sqs));
  *
  * The `SqsEventSource` class will automatically create the mapping, and will also

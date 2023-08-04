@@ -1,0 +1,159 @@
+{
+ "Resources": {
+  "lambdas3ServiceRoleC9EDE33A": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "lambdas342CE2BBD": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-default-resourcesmax-staging-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "deploy-time/68539effc3f7ad46fff9765606c2a01b7f7965833643ab37e62799f19a37f650.zip"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "lambdas3ServiceRoleC9EDE33A",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.10"
+   },
+   "DependsOn": [
+    "lambdas3ServiceRoleC9EDE33A"
+   ]
+  },
+  "lambdaecr1copyServiceRole2A9FAF5F": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "lambdaecr1copyD39CDE9B": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ImageUri": {
+      "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/default-resourcesmax/ecr-asset/1:16624c2a162b07c5cc0e2c59c484f638bac238ca558ccbdc2aa0e0535df3e622"
+     }
+    },
+    "PackageType": "Image",
+    "Role": {
+     "Fn::GetAtt": [
+      "lambdaecr1copyServiceRole2A9FAF5F",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "lambdaecr1copyServiceRole2A9FAF5F"
+   ]
+  },
+  "lambdaecrtwoServiceRole13E37F90": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "lambdaecrtwo03D31DB7": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ImageUri": {
+      "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/default-resourcesmax/ecr-asset-2:16624c2a162b07c5cc0e2c59c484f638bac238ca558ccbdc2aa0e0535df3e622"
+     }
+    },
+    "PackageType": "Image",
+    "Role": {
+     "Fn::GetAtt": [
+      "lambdaecrtwoServiceRole13E37F90",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "lambdaecrtwoServiceRole13E37F90"
+   ]
+  }
+ }
+}

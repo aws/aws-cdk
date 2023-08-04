@@ -1,5 +1,6 @@
 import { Template } from '../../../assertions';
 import * as autoscaling from '../../../aws-autoscaling';
+import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
 import * as cloudmap from '../../../aws-servicediscovery';
@@ -95,7 +96,6 @@ describe('external service', () => {
       ServiceName: 'bonjour',
     });
 
-
   });
 
   test('with cloudmap set on cluster, throw error', () => {
@@ -127,7 +127,6 @@ describe('external service', () => {
       })],
       serviceName: 'bonjour',
     })).toThrow('Cloud map integration is not supported for External service' );
-
 
   });
 
@@ -203,7 +202,39 @@ describe('external service', () => {
       ],
     });
 
+  });
 
+  test('with deployment alarms', () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    addDefaultCapacityProvider(cluster, stack, vpc);
+    const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef');
+
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      memoryLimitMiB: 512,
+    });
+
+    const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
+
+    new ecs.ExternalService(stack, 'ExternalService', {
+      cluster,
+      taskDefinition,
+      deploymentAlarms: {
+        alarmNames: [myAlarm.alarmName],
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      DeploymentConfiguration: {
+        Alarms: {
+          Enable: true,
+          Rollback: true,
+          AlarmNames: [myAlarm.alarmName],
+        },
+      },
+    });
   });
 
   test('throws when task definition is not External compatible', () => {
@@ -224,7 +255,6 @@ describe('external service', () => {
       cluster,
       taskDefinition,
     })).toThrow('Supplied TaskDefinition is not configured for compatibility with ECS Anywhere cluster');
-
 
   });
 
@@ -247,7 +277,6 @@ describe('external service', () => {
       minHealthyPercent: 100,
       maxHealthyPercent: 100,
     })).toThrow('Minimum healthy percent must be less than maximum healthy percent.');
-
 
   });
 
@@ -519,7 +548,6 @@ describe('external service', () => {
       container: container,
       containerPort: 8000,
     })).toThrow('Cloud map service association is not supported for an external service');
-
 
   });
 

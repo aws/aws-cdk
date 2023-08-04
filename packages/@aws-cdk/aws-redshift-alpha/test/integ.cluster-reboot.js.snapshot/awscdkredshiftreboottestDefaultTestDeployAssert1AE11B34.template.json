@@ -15,14 +15,24 @@
     "actualPath": "Clusters.0.ClusterParameterGroups.0.ParameterApplyStatus",
     "parameters": {
      "ClusterIdentifier": {
-      "Fn::ImportValue": "aws-cdk-redshift-cluster-reboot-integ:ExportsOutputRefClusterEB0386A796A0E3FE"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-redshift-cluster-reboot-integ:ExportsOutputRefClusterEB0386A796A0E3FE"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "true",
     "outputPaths": [
+     "Clusters.0.ClusterParameterGroups.0.ParameterGroupName",
      "Clusters.0.ClusterParameterGroups.0.ParameterApplyStatus"
     ],
-    "salt": "1682092967858"
+    "salt": "1689762587299"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -89,12 +99,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs18.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "36618132bd37b6b15f9987b57ad1fbf613f1ad937aec72381232b163ed9c44c4.zip"
+     "S3Key": "855b18ac2a744f847c78764c4effd335c5b424915174596732358882002a9b6e.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -120,12 +130,21 @@
     "expected": "{\"$ObjectLike\":{\"Parameters\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"ParameterName\":\"enable_user_activity_logging\",\"ParameterValue\":\"false\"}},{\"$ObjectLike\":{\"ParameterName\":\"use_fips_ssl\",\"ParameterValue\":\"true\"}}]}}}",
     "parameters": {
      "ParameterGroupName": {
-      "Fn::ImportValue": "aws-cdk-redshift-cluster-reboot-integ:ExportsOutputRefParameterGroup5E32DECBB33EA140"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-redshift-cluster-reboot-integ:ExportsOutputRefParameterGroup5E32DECBB33EA140"
+        },
+        "\""
+       ]
+      ]
      },
-     "Source": "user"
+     "Source": "\"user\""
     },
     "flattenResponse": "false",
-    "salt": "1682092967859"
+    "salt": "1689762587300"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -144,12 +163,21 @@
     "expected": "{\"$ObjectLike\":{\"Parameters\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"ParameterName\":\"auto_analyze\",\"ParameterValue\":\"true\"}},{\"$ObjectLike\":{\"ParameterName\":\"auto_mv\",\"ParameterValue\":\"true\"}},{\"$ObjectLike\":{\"ParameterName\":\"datestyle\",\"ParameterValue\":\"ISO, MDY\"}},{\"$ObjectLike\":{\"ParameterName\":\"enable_case_sensitive_identifier\",\"ParameterValue\":\"false\"}},{\"$ObjectLike\":{\"ParameterName\":\"extra_float_digits\",\"ParameterValue\":\"0\"}},{\"$ObjectLike\":{\"ParameterName\":\"max_concurrency_scaling_clusters\",\"ParameterValue\":\"1\"}},{\"$ObjectLike\":{\"ParameterName\":\"max_cursor_result_set_size\",\"ParameterValue\":\"default\"}},{\"$ObjectLike\":{\"ParameterName\":\"query_group\",\"ParameterValue\":\"default\"}},{\"$ObjectLike\":{\"ParameterName\":\"require_ssl\",\"ParameterValue\":\"false\"}},{\"$ObjectLike\":{\"ParameterName\":\"search_path\",\"ParameterValue\":\"$user, public\"}},{\"$ObjectLike\":{\"ParameterName\":\"statement_timeout\",\"ParameterValue\":\"0\"}},{\"$ObjectLike\":{\"ParameterName\":\"wlm_json_configuration\",\"ParameterValue\":\"[{\\\"auto_wlm\\\":true}]\"}}]}}}",
     "parameters": {
      "ParameterGroupName": {
-      "Fn::ImportValue": "aws-cdk-redshift-cluster-reboot-integ:ExportsOutputRefParameterGroup5E32DECBB33EA140"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-redshift-cluster-reboot-integ:ExportsOutputRefParameterGroup5E32DECBB33EA140"
+        },
+        "\""
+       ]
+      ]
      },
-     "Source": "engine-default"
+     "Source": "\"engine-default\""
     },
     "flattenResponse": "false",
-    "salt": "1682092967859"
+    "salt": "1689762587301"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

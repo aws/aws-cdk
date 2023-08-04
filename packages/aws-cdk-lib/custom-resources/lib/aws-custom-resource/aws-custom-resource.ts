@@ -11,7 +11,6 @@ import { Annotations } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { FactName } from '../../../region-info';
 
-
 /**
  * The lambda runtime used by default for aws-cdk vended custom resources. Can change
  * based on region.
@@ -19,10 +18,10 @@ import { FactName } from '../../../region-info';
 export function builtInCustomResourceNodeRuntime(scope: Construct): lambda.Runtime {
   // Runtime regional fact should always return a known runtime string that lambda.Runtime
   // can index off, but for type safety we also default it here.
-  const runtimeName = cdk.Stack.of(scope).regionalFact(FactName.DEFAULT_CR_NODE_VERSION, 'nodejs16.x');
+  const runtimeName = cdk.Stack.of(scope).regionalFact(FactName.DEFAULT_CR_NODE_VERSION, 'nodejs18.x');
   return runtimeName
     ? new lambda.Runtime(runtimeName, lambda.RuntimeFamily.NODEJS, { supportsInlineCode: true })
-    : lambda.Runtime.NODEJS_16_X;
+    : lambda.Runtime.NODEJS_18_X;
 }
 
 /**
@@ -429,9 +428,9 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
 
     const provider = new lambda.SingletonFunction(this, 'Provider', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'runtime'), {
-        exclude: ['*.ts'],
+        exclude: ['*.ts', 'aws-sdk-v3-handler.js'],
       }),
-      runtime: builtInCustomResourceNodeRuntime(scope),
+      runtime: lambda.Runtime.NODEJS_18_X,
       handler: 'index.handler',
       uuid: AwsCustomResource.PROVIDER_FUNCTION_UUID,
       lambdaPurpose: 'AWS',

@@ -4,11 +4,11 @@ import { StringDecoder } from 'string_decoder';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
 import { instanceMockFrom, MockCloudExecutable } from './util';
-import { CloudFormationDeployments } from '../lib/api/cloudformation-deployments';
+import { Deployments } from '../lib/api/deployments';
 import { CdkToolkit } from '../lib/cdk-toolkit';
 
 let cloudExecutable: MockCloudExecutable;
-let cloudFormation: jest.Mocked<CloudFormationDeployments>;
+let cloudFormation: jest.Mocked<Deployments>;
 let toolkit: CdkToolkit;
 
 describe('non-nested stacks', () => {
@@ -42,11 +42,11 @@ describe('non-nested stacks', () => {
       }],
     });
 
-    cloudFormation = instanceMockFrom(CloudFormationDeployments);
+    cloudFormation = instanceMockFrom(Deployments);
 
     toolkit = new CdkToolkit({
       cloudExecutable,
-      cloudFormation,
+      deployments: cloudFormation,
       configuration: cloudExecutable.configuration,
       sdkProvider: cloudExecutable.sdkProvider,
     });
@@ -81,6 +81,7 @@ describe('non-nested stacks', () => {
     expect(plainTextOutput).toContain('Stack A');
     expect(plainTextOutput).toContain('Stack B');
 
+    expect(buffer.data.trim()).toContain('✨  Number of stacks with differences: 2');
     expect(exitCode).toBe(0);
   });
 
@@ -96,6 +97,7 @@ describe('non-nested stacks', () => {
     });
 
     // THEN
+    expect(buffer.data.trim()).toContain('✨  Number of stacks with differences: 1');
     expect(exitCode).toBe(1);
   });
 
@@ -121,6 +123,7 @@ describe('non-nested stacks', () => {
     });
 
     // THEN
+    expect(buffer.data.trim()).toContain('✨  Number of stacks with differences: 1');
     expect(exitCode).toBe(1);
   });
 
@@ -144,11 +147,11 @@ describe('nested stacks', () => {
       }],
     });
 
-    cloudFormation = instanceMockFrom(CloudFormationDeployments);
+    cloudFormation = instanceMockFrom(Deployments);
 
     toolkit = new CdkToolkit({
       cloudExecutable,
-      cloudFormation,
+      deployments: cloudFormation,
       configuration: cloudExecutable.configuration,
       sdkProvider: cloudExecutable.sdkProvider,
     });
@@ -255,7 +258,10 @@ Resources
          └─ [~] .Properties:
              └─ [~] .Prop:
                  ├─ [-] old-value
-                 └─ [+] new-value`);
+                 └─ [+] new-value
+
+
+✨  Number of stacks with differences: 3`);
 
     expect(exitCode).toBe(0);
   });

@@ -100,7 +100,6 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
    */
   public abstract readonly logGroupName: string;
 
-
   private policy?: ResourcePolicy;
 
   /**
@@ -525,6 +524,13 @@ export interface SubscriptionFilterOptions {
    * Log events matching this pattern will be sent to the destination.
    */
   readonly filterPattern: IFilterPattern;
+
+  /**
+   * The name of the subscription filter.
+   *
+   * @default Automatically generated
+   */
+  readonly filterName?: string;
 }
 
 /**
@@ -585,4 +591,11 @@ export interface MetricFilterOptions {
    * @default - No unit attached to metrics.
    */
   readonly unit?: cloudwatch.Unit;
+
+  /**
+   * The name of the metric filter.
+   *
+   * @default - Cloudformation generated name.
+   */
+  readonly filterName?: string;
 }

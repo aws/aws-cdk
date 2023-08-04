@@ -3,13 +3,13 @@
 
 ---
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
+![cdk-constructs: Developer Preview](https://img.shields.io/badge/cdk--constructs-developer--preview-informational.svg?style=for-the-badge)
 
-> The APIs of higher level constructs in this module are experimental and under active development.
-> They are subject to non-backward compatible changes or removal in any future version. These are
-> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
-> announced in the release notes. This means that while you may use them, you may need to update
-> your source code when upgrading to a newer version of this package.
+> The APIs of higher level constructs in this module are in **developer preview** before they
+> become stable. We will only make breaking changes to address unforeseen API issues. Therefore,
+> these APIs are not subject to [Semantic Versioning](https://semver.org/), and breaking changes
+> will be announced in release notes. This means that while you may use them, you may need to
+> update your source code when upgrading to a newer version of this package.
 
 ---
 
@@ -202,6 +202,22 @@ new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2ComputeEnv', {
   minvCpus: 10,
   maxvCpus: 100,
 });
+```
+
+### Tagging Instances
+
+You can tag any instances launched by your managed EC2 ComputeEnvironments by using the CDK `Tags` API:
+
+```ts
+import { Tags } from 'aws-cdk-lib';
+
+declare const vpc: ec2.IVpc;
+
+const tagCE = new batch.ManagedEc2EcsComputeEnvironment(this, 'CEThatMakesTaggedInstnaces', {
+  vpc,
+});
+
+Tags.of(tagCE).add('super', 'salamander');
 ```
 
 Unmanaged `ComputeEnvironment`s do not support `maxvCpus` or `minvCpus` because you must provision and manage the instances yourself;
@@ -477,6 +493,29 @@ jobDefn.container.addVolume(batch.EcsVolume.efs({
   fileSystem: myFileSystem,
   containerPath: '/Volumes/myVolume',
 }));
+```
+
+### Secrets
+
+You can expose SecretsManager Secret ARNs or SSM Parameters to your container as environment variables.
+The following example defines the `MY_SECRET_ENV_VAR` environment variable that contains the
+ARN of the Secret defined by `mySecret`:
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+
+declare const mySecret: secretsmanager.ISecret;
+
+const jobDefn = new batch.EcsJobDefinition(this, 'JobDefn', {
+  container: new batch.EcsEc2ContainerDefinition(this, 'containerDefn', {
+    image: ecs.ContainerImage.fromRegistry('public.ecr.aws/amazonlinux/amazonlinux:latest'),
+    memory: cdk.Size.mebibytes(2048),
+    cpu: 256,
+    secrets: {
+      MY_SECRET_ENV_VAR: batch.Secret.fromSecretsManager(mySecret),
+    }
+  }),
+});
 ```
 
 ### Running Kubernetes Workflows

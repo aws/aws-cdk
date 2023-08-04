@@ -78,6 +78,25 @@ describe('vpc flow logs', () => {
 
   });
 
+  test('with flowLogName, adds Name tag with the name', () => {
+    const stack = getTestStack();
+
+    new FlowLog(stack, 'FlowLogs', {
+      resourceType: FlowLogResourceType.fromNetworkInterfaceId('eni-123455'),
+      flowLogName: 'CustomFlowLogName',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::FlowLog', {
+      Tags: [
+        {
+          Key: 'Name',
+          Value: 'CustomFlowLogName',
+        },
+      ],
+    });
+
+  });
+
   test('allows setting destination options', () => {
     const stack = getTestStack();
 
@@ -620,7 +639,6 @@ test('with custom log format set empty, it not creates with cloudwatch log desti
   });
 
 });
-
 
 function getTestStack(): Stack {
   return new Stack(undefined, 'TestStack', {

@@ -52,7 +52,7 @@
     "build+test+package": "yarn build+test && yarn package",
     "bundle": "esbuild --bundle lib/index.ts --target=node14 --platform=node --external:fsevents --minify-whitespace --outfile=lib/main.js",
     "compat": "cdk-compat",
-    "gen": "../../../packages/aws-cdk/generate.sh",
+    "gen": "./generate.sh",
     "lint": "cdk-lint",
     "package": "cdk-package",
     "pkglint": "pkglint -f",
@@ -68,8 +68,10 @@
   "cdk-build": {
     "post": [
       "yarn attribute",
-      "cp ../../../node_modules/vm2/lib/bridge.js ../../../node_modules/vm2/lib/setup-sandbox.js ./lib",
-      "yarn bundle"
+      "cp ../../aws-cdk/lib/vendor/noctilucent/index_bg.wasm ./lib/",
+      "mkdir -p ./lib/api/bootstrap/ && cp ../../aws-cdk/lib/api/bootstrap/bootstrap-template.yaml ./lib/api/bootstrap/",
+      "yarn bundle",
+      "node ./lib/main.js >/dev/null 2>/dev/null </dev/null"
     ],
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
@@ -88,10 +90,10 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "aws-cdk-lib": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^29.5.1",
+    "@types/jest": "^29.5.3",
     "aws-cdk": "0.0.0",
     "constructs": "^10.0.0",
-    "jest": "^29.5.0",
+    "jest": "^29.6.2",
     "ts-node": "^10.9.1"
   },
   "repository": {

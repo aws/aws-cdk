@@ -1,15 +1,16 @@
-
 import { Template } from 'aws-cdk-lib/assertions';
 import * as path from 'path';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as efs from 'aws-cdk-lib/aws-efs';
+import * as ssm from 'aws-cdk-lib/aws-ssm';
 import { ArnPrincipal, Role } from 'aws-cdk-lib/aws-iam';
 import * as logs from 'aws-cdk-lib/aws-logs';
-import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import { Size, Stack } from 'aws-cdk-lib';
-import { EcsContainerDefinitionProps, EcsEc2ContainerDefinition, EcsFargateContainerDefinition, EcsJobDefinition, EcsVolume, IEcsEc2ContainerDefinition, LinuxParameters, UlimitName } from '../lib';
+import * as cdk from 'aws-cdk-lib';
+import { EcsContainerDefinitionProps, EcsEc2ContainerDefinition, EcsFargateContainerDefinition, EcsJobDefinition, EcsVolume, IEcsEc2ContainerDefinition, LinuxParameters, Secret, UlimitName } from '../lib';
 import { CfnJobDefinitionProps } from 'aws-cdk-lib/aws-batch';
 import { capitalizePropertyNames } from './utils';
 import { DockerImageAsset } from 'aws-cdk-lib/aws-ecr-assets';
@@ -45,7 +46,15 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
   // GIVEN
   beforeEach(() => {
     stack = new Stack();
-    pascalCaseExpectedProps = capitalizePropertyNames(stack, defaultExpectedProps);
+    pascalCaseExpectedProps = capitalizePropertyNames(stack, {
+      ...defaultExpectedProps,
+      containerProperties: {
+        ...defaultExpectedProps.containerProperties,
+        executionRoleArn: {
+          'Fn::GetAtt': ['EcsContainerExecutionRole3B199293', 'Arn'],
+        } as any,
+      },
+    });
   });
 
   test('ecs container defaults', () => {
@@ -59,6 +68,58 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
       ...pascalCaseExpectedProps,
+      ContainerProperties: {
+        ExecutionRoleArn: {
+          'Fn::GetAtt': ['EcsContainerExecutionRole3B199293', 'Arn'],
+        },
+        ...pascalCaseExpectedProps.ContainerProperties,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: { Service: 'ecs-tasks.amazonaws.com' },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'logs:CreateLogStream',
+              'logs:PutLogEvents',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':logs:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':log-group:/aws/batch/job:*',
+                ],
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'EcsContainerExecutionRoleDefaultPolicy6F59CD37',
+      Roles: [{
+        Ref: 'EcsContainerExecutionRole3B199293',
+      }],
     });
   });
 
@@ -184,7 +245,7 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
     });
   });
 
-  test('respects logging and creates an execution role for EC2 and Fargate containers', () => {
+  test('respects logging', () => {
     // WHEN
     new EcsJobDefinition(stack, 'ECSJobDefn', {
       container: new ContainerDefinition(stack, 'EcsContainer', {
@@ -220,11 +281,13 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
-        Statement: [{
-          Action: 'sts:AssumeRole',
-          Effect: 'Allow',
-          Principal: { Service: 'ecs-tasks.amazonaws.com' },
-        }],
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: { Service: 'ecs-tasks.amazonaws.com' },
+          },
+        ],
         Version: '2012-10-17',
       },
     });
@@ -249,14 +312,14 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
     });
   });
 
-  test('respects secrets', () => {
+  test('respects secrets from secrestsmanager', () => {
     // WHEN
     new EcsJobDefinition(stack, 'ECSJobDefn', {
       container: new ContainerDefinition(stack, 'EcsContainer', {
         ...defaultContainerProps,
-        secrets: [
-          new Secret(stack, 'testSecret'),
-        ],
+        secrets: {
+          envName: Secret.fromSecretsManager(new secretsmanager.Secret(stack, 'testSecret')),
+        },
       }),
     });
 
@@ -267,60 +330,187 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
         ...pascalCaseExpectedProps.ContainerProperties,
         Secrets: [
           {
-            Name: {
+            Name: 'envName',
+            ValueFrom: { Ref: 'testSecretB96AD12C' },
+          },
+        ],
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+            Effect: 'Allow',
+            Resource: {
               'Fn::Join': [
-                '-',
-                [
-                  {
-                    'Fn::Select': [
-                      0,
-                      {
-                        'Fn::Split': [
-                          '-',
-                          {
-                            'Fn::Select': [
-                              6,
-                              {
-                                'Fn::Split': [
-                                  ':',
-                                  {
-                                    Ref: 'testSecretB96AD12C',
-                                  },
-                                ],
-                              },
-                            ],
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                  {
-                    'Fn::Select': [
-                      1,
-                      {
-                        'Fn::Split': [
-                          '-',
-                          {
-                            'Fn::Select': [
-                              6,
-                              {
-                                'Fn::Split': [
-                                  ':',
-                                  {
-                                    Ref: 'testSecretB96AD12C',
-                                  },
-                                ],
-                              },
-                            ],
-                          },
-                        ],
-                      },
-                    ],
-                  },
+                '', [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':logs:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':log-group:/aws/batch/job:*',
                 ],
               ],
             },
-            ValueFrom: { Ref: 'testSecretB96AD12C' },
+          },
+          {
+            Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
+            Effect: 'Allow',
+            Resource: { Ref: 'testSecretB96AD12C' },
+          },
+        ],
+      },
+    });
+  });
+
+  test('respects versioned secrets from secrestsmanager', () => {
+    // WHEN
+    new EcsJobDefinition(stack, 'ECSJobDefn', {
+      container: new ContainerDefinition(stack, 'EcsContainer', {
+        ...defaultContainerProps,
+        secrets: {
+          envName: Secret.fromSecretsManagerVersion(new secretsmanager.Secret(stack, 'testSecret'), {
+            versionId: 'versionID',
+            versionStage: 'stage',
+          }),
+        },
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ...pascalCaseExpectedProps,
+      ContainerProperties: {
+        ...pascalCaseExpectedProps.ContainerProperties,
+        Secrets: [
+          {
+            Name: 'envName',
+            ValueFrom: {
+              'Fn::Join': [
+                '', [
+                  { Ref: 'testSecretB96AD12C' },
+                  '::stage:versionID',
+                ],
+              ],
+            },
+          },
+        ],
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '', [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':logs:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':log-group:/aws/batch/job:*',
+                ],
+              ],
+            },
+          },
+          {
+            Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
+            Effect: 'Allow',
+            Resource: { Ref: 'testSecretB96AD12C' },
+          },
+        ],
+      },
+    });
+  });
+
+  test('respects secrets from ssm', () => {
+    // WHEN
+    new EcsJobDefinition(stack, 'ECSJobDefn', {
+      container: new ContainerDefinition(stack, 'EcsContainer', {
+        ...defaultContainerProps,
+        secrets: {
+          envName: Secret.fromSsmParameter(new ssm.StringParameter(stack, 'myParam', { stringValue: 'super secret' })),
+        },
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ...pascalCaseExpectedProps,
+      ContainerProperties: {
+        ...pascalCaseExpectedProps.ContainerProperties,
+        Secrets: [
+          {
+            Name: 'envName',
+            ValueFrom: {
+              'Fn::Join': [
+                '', [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':ssm:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':parameter/',
+                  { Ref: 'myParam03610B68' },
+                ],
+              ],
+            },
+          },
+        ],
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '', [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':logs:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':log-group:/aws/batch/job:*',
+                ],
+              ],
+            },
+          },
+          {
+            Action: ['ssm:DescribeParameters', 'ssm:GetParameters', 'ssm:GetParameter', 'ssm:GetParameterHistory'],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':ssm:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':parameter/',
+                  { Ref: 'myParam03610B68' },
+                ],
+
+              ],
+            },
           },
         ],
       },
@@ -328,7 +518,7 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
   });
 
   test('respects user', () => {
-    // WHEN
+  // WHEN
     new EcsJobDefinition(stack, 'ECSJobDefn', {
       container: new ContainerDefinition(stack, 'EcsContainer', {
         ...defaultContainerProps,
@@ -615,7 +805,15 @@ describe('EC2 containers', () => {
   // GIVEN
   beforeEach(() => {
     stack = new Stack();
-    pascalCaseExpectedProps = capitalizePropertyNames(stack, defaultExpectedProps);
+    pascalCaseExpectedProps = capitalizePropertyNames(stack, {
+      ...defaultExpectedProps,
+      containerProperties: {
+        ...defaultExpectedProps.containerProperties,
+        executionRoleArn: {
+          'Fn::GetAtt': ['EcsEc2ContainerExecutionRole90E18680', 'Arn'],
+        } as any,
+      },
+    });
   });
 
   test('respects addUlimit()', () => {
@@ -759,7 +957,15 @@ describe('Fargate containers', () => {
   // GIVEN
   beforeEach(() => {
     stack = new Stack();
-    pascalCaseExpectedProps = capitalizePropertyNames(stack, defaultExpectedProps);
+    pascalCaseExpectedProps = capitalizePropertyNames(stack, {
+      ...defaultExpectedProps,
+      containerProperties: {
+        ...defaultExpectedProps.containerProperties,
+        executionRoleArn: {
+          'Fn::GetAtt': ['EcsContainerExecutionRole3B199293', 'Arn'],
+        } as any,
+      },
+    });
   });
 
   test('create executionRole by default', () => {
@@ -791,5 +997,75 @@ describe('Fargate containers', () => {
         Version: '2012-10-17',
       },
     });
+  });
+
+  test('can set ephemeralStorageSize', () => {
+    // WHEN
+    new EcsJobDefinition(stack, 'ECSJobDefn', {
+      container: new EcsFargateContainerDefinition(stack, 'EcsFargateContainer', {
+        ...defaultContainerProps,
+        fargatePlatformVersion: ecs.FargatePlatformVersion.LATEST,
+        ephemeralStorageSize: Size.gibibytes(100),
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ...pascalCaseExpectedProps,
+      ContainerProperties: {
+        ...pascalCaseExpectedProps.ContainerProperties,
+        ExecutionRoleArn: {
+          'Fn::GetAtt': ['EcsFargateContainerExecutionRole3286EAFE', 'Arn'],
+        },
+        EphemeralStorage: {
+          SizeInGiB: Size.gibibytes(100).toGibibytes(),
+        },
+      },
+    });
+  });
+
+  test('can set ephemeralStorageSize as token', () => {
+    const ephemeralStorageValue: number = cdk.Token.asNumber(150);
+
+    // WHEN
+    new EcsJobDefinition(stack, 'ECSJobDefn', {
+      container: new EcsFargateContainerDefinition(stack, 'EcsFargateContainer', {
+        ...defaultContainerProps,
+        fargatePlatformVersion: ecs.FargatePlatformVersion.LATEST,
+        ephemeralStorageSize: Size.gibibytes(ephemeralStorageValue),
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ...pascalCaseExpectedProps,
+      ContainerProperties: {
+        ...pascalCaseExpectedProps.ContainerProperties,
+        ExecutionRoleArn: {
+          'Fn::GetAtt': ['EcsFargateContainerExecutionRole3286EAFE', 'Arn'],
+        },
+        EphemeralStorage: {
+          SizeInGiB: Size.gibibytes(150).toGibibytes(),
+        },
+      },
+    });
+  });
+
+  test('ephemeralStorageSize throws error when out of range', () => {
+    expect(() => new EcsJobDefinition(stack, 'ECSJobDefn', {
+      container: new EcsFargateContainerDefinition(stack, 'EcsFargateContainer', {
+        ...defaultContainerProps,
+        fargatePlatformVersion: ecs.FargatePlatformVersion.LATEST,
+        ephemeralStorageSize: Size.gibibytes(19),
+      }),
+    })).toThrow("ECS Fargate container 'EcsFargateContainer' specifies 'ephemeralStorageSize' at 19 < 21 GB");
+
+    expect(() => new EcsJobDefinition(stack, 'ECSJobDefn2', {
+      container: new EcsFargateContainerDefinition(stack, 'EcsFargateContainer2', {
+        ...defaultContainerProps,
+        fargatePlatformVersion: ecs.FargatePlatformVersion.LATEST,
+        ephemeralStorageSize: Size.gibibytes(201),
+      }),
+    })).toThrow("ECS Fargate container 'EcsFargateContainer2' specifies 'ephemeralStorageSize' at 201 > 200 GB");
   });
 });

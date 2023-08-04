@@ -1,7 +1,7 @@
 # AWS AppSync Construct Library
 
 
-The `@aws-cdk/aws-appsync` package contains constructs for building flexible
+The `aws-cdk-lib/aws-appsync` package contains constructs for building flexible
 APIs that use GraphQL.
 
 ```ts nofixture
@@ -220,8 +220,8 @@ const httpDs = api.addHttpDataSource(
     authorizationConfig: {
       signingRegion: 'us-east-1',
       signingServiceName: 'states',
-    }
-  }
+    },
+  },
 );
 
 httpDs.createResolver('MutationCallStepFunctionResolver', {
@@ -302,12 +302,14 @@ events. More information can be found
 CDK stack file `app-stack.ts`:
 
 ```ts
-const api = new appsync.GraphqlApi(stack, 'EventBridgeApi', {
+import * as events from 'aws-cdk-lib/aws-events';
+
+const api = new appsync.GraphqlApi(this, 'EventBridgeApi', {
   name: 'EventBridgeApi',
   schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.eventbridge.graphql')),
 });
 
-const bus = new events.EventBus(stack, 'DestinationEventBus', {});
+const bus = new events.EventBus(this, 'DestinationEventBus', {});
 
 const dataSource = api.addEventBridgeDataSource('NoneDS', bus);
 
@@ -462,6 +464,26 @@ importedApi.addDynamoDbDataSource('TableDataSource', table);
 If you don't specify `graphqlArn` in `fromXxxAttributes`, CDK will autogenerate
 the expected `arn` for the imported api, given the `apiId`. For creating data
 sources and resolvers, an `apiId` is sufficient.
+
+## Private APIs
+
+By default all AppSync GraphQL APIs are public and can be accessed from the internet. 
+For customers that want to limit access to be from their VPC, the optional API `visibility` property can be set to `Visibility.PRIVATE` 
+at creation time. To explicitly create a public API, the `visibility` property should be set to `Visibility.GLOBAL`. 
+If visibility is not set, the service will default to `GLOBAL`.
+
+CDK stack file `app-stack.ts`:
+
+```ts
+const api = new appsync.GraphqlApi(this, 'api', {
+  name: 'MyPrivateAPI',
+  schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.schema.graphql')),
+  visibility: appsync.Visibility.PRIVATE,
+});
+```
+
+See [documentation](https://docs.aws.amazon.com/appsync/latest/devguide/using-private-apis.html) 
+for more details about Private APIs 
 
 ## Authorization
 

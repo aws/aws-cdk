@@ -35,13 +35,7 @@ testDeprecated('creates CloudFormation Custom Resource', () => {
   });
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'index.certificateRequestHandler',
-    Runtime: {
-      'Fn::FindInMap': [
-        'DefaultCrNodeVersionMap',
-        { Ref: 'AWS::Region' },
-        'value',
-      ],
-    },
+    Runtime: 'nodejs18.x',
     Timeout: 900,
   });
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -243,7 +237,6 @@ testDeprecated('works with imported role', () => {
     Role: 'arn:aws:iam::account-id:role/role-name',
   });
 });
-
 
 testDeprecated('throws when domain name is longer than 64 characters', () => {
   const stack = new Stack();

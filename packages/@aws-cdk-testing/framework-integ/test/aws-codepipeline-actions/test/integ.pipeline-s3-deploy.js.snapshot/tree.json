@@ -8,6 +8,58 @@
         "id": "aws-cdk-codepipeline-s3-deploy",
         "path": "aws-cdk-codepipeline-s3-deploy",
         "children": {
+          "EnvVarEncryptKey": {
+            "id": "EnvVarEncryptKey",
+            "path": "aws-cdk-codepipeline-s3-deploy/EnvVarEncryptKey",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-codepipeline-s3-deploy/EnvVarEncryptKey/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::KMS::Key",
+                  "aws:cdk:cloudformation:props": {
+                    "description": "sample key",
+                    "keyPolicy": {
+                      "Statement": [
+                        {
+                          "Action": "kms:*",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":iam::",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  ":root"
+                                ]
+                              ]
+                            }
+                          },
+                          "Resource": "*"
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_kms.CfnKey",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_kms.Key",
+              "version": "0.0.0"
+            }
+          },
           "PipelineBucket": {
             "id": "PipelineBucket",
             "path": "aws-cdk-codepipeline-s3-deploy/PipelineBucket",
@@ -18,6 +70,21 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {
+                    "bucketEncryption": {
+                      "serverSideEncryptionConfiguration": [
+                        {
+                          "serverSideEncryptionByDefault": {
+                            "sseAlgorithm": "aws:kms",
+                            "kmsMasterKeyId": {
+                              "Fn::GetAtt": [
+                                "EnvVarEncryptKey1A7CABDB",
+                                "Arn"
+                              ]
+                            }
+                          }
+                        }
+                      ]
+                    },
                     "tags": [
                       {
                         "key": "aws-cdk:auto-delete-objects",
@@ -124,14 +191,6 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_s3.Bucket",
-              "version": "0.0.0"
-            }
-          },
-          "DefaultCrNodeVersionMap": {
-            "id": "DefaultCrNodeVersionMap",
-            "path": "aws-cdk-codepipeline-s3-deploy/DefaultCrNodeVersionMap",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
               "version": "0.0.0"
             }
           },
@@ -492,6 +551,22 @@
                                   ]
                                 },
                                 {
+                                  "Action": [
+                                    "kms:Decrypt",
+                                    "kms:DescribeKey",
+                                    "kms:Encrypt",
+                                    "kms:GenerateDataKey*",
+                                    "kms:ReEncrypt*"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "EnvVarEncryptKey1A7CABDB",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
                                   "Action": "sts:AssumeRole",
                                   "Effect": "Allow",
                                   "Resource": [
@@ -549,6 +624,27 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::CodePipeline::Pipeline",
                   "aws:cdk:cloudformation:props": {
+                    "artifactStore": {
+                      "type": "S3",
+                      "location": {
+                        "Ref": "PipelineBucketB967BD35"
+                      },
+                      "encryptionKey": {
+                        "type": "KMS",
+                        "id": {
+                          "Fn::GetAtt": [
+                            "EnvVarEncryptKey1A7CABDB",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    },
+                    "disableInboundStageTransitions": [
+                      {
+                        "reason": "Transition disabled",
+                        "stageName": "Disabled"
+                      }
+                    ],
                     "roleArn": {
                       "Fn::GetAtt": [
                         "PipelineRoleD68726F7",
@@ -611,7 +707,13 @@
                               "Extract": "false",
                               "ObjectKey": "key",
                               "CannedACL": "private",
-                              "CacheControl": "public, max-age=43200"
+                              "CacheControl": "public, max-age=43200",
+                              "KMSEncryptionKeyARN": {
+                                "Fn::GetAtt": [
+                                  "EnvVarEncryptKey1A7CABDB",
+                                  "Arn"
+                                ]
+                              }
                             },
                             "runOrder": 1,
                             "roleArn": {
@@ -654,18 +756,6 @@
                             }
                           }
                         ]
-                      }
-                    ],
-                    "artifactStore": {
-                      "type": "S3",
-                      "location": {
-                        "Ref": "PipelineBucketB967BD35"
-                      }
-                    },
-                    "disableInboundStageTransitions": [
-                      {
-                        "reason": "Transition disabled",
-                        "stageName": "Disabled"
                       }
                     ]
                   }
@@ -779,6 +869,22 @@
                                         },
                                         {
                                           "Action": [
+                                            "kms:Decrypt",
+                                            "kms:DescribeKey",
+                                            "kms:Encrypt",
+                                            "kms:GenerateDataKey*",
+                                            "kms:ReEncrypt*"
+                                          ],
+                                          "Effect": "Allow",
+                                          "Resource": {
+                                            "Fn::GetAtt": [
+                                              "EnvVarEncryptKey1A7CABDB",
+                                              "Arn"
+                                            ]
+                                          }
+                                        },
+                                        {
+                                          "Action": [
                                             "s3:Abort*",
                                             "s3:DeleteObject*",
                                             "s3:PutObject",
@@ -842,13 +948,13 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.2.55"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.2.55"
                 }
               },
               "Deploy": {
@@ -1007,6 +1113,22 @@
                                               ]
                                             }
                                           ]
+                                        },
+                                        {
+                                          "Action": [
+                                            "kms:Decrypt",
+                                            "kms:DescribeKey",
+                                            "kms:Encrypt",
+                                            "kms:GenerateDataKey*",
+                                            "kms:ReEncrypt*"
+                                          ],
+                                          "Effect": "Allow",
+                                          "Resource": {
+                                            "Fn::GetAtt": [
+                                              "EnvVarEncryptKey1A7CABDB",
+                                              "Arn"
+                                            ]
+                                          }
                                         }
                                       ],
                                       "Version": "2012-10-17"
@@ -1039,13 +1161,13 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.2.55"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.2.55"
                 }
               },
               "Disabled": {
@@ -1183,6 +1305,19 @@
                                               ]
                                             }
                                           ]
+                                        },
+                                        {
+                                          "Action": [
+                                            "kms:Decrypt",
+                                            "kms:DescribeKey"
+                                          ],
+                                          "Effect": "Allow",
+                                          "Resource": {
+                                            "Fn::GetAtt": [
+                                              "EnvVarEncryptKey1A7CABDB",
+                                              "Arn"
+                                            ]
+                                          }
                                         }
                                       ],
                                       "Version": "2012-10-17"
@@ -1215,13 +1350,13 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.2.55"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.2.55"
                 }
               }
             },
@@ -1234,6 +1369,14 @@
             "id": "Exports",
             "path": "aws-cdk-codepipeline-s3-deploy/Exports",
             "children": {
+              "Output{\"Ref\":\"DeployBucket67E2C076\"}": {
+                "id": "Output{\"Ref\":\"DeployBucket67E2C076\"}",
+                "path": "aws-cdk-codepipeline-s3-deploy/Exports/Output{\"Ref\":\"DeployBucket67E2C076\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
               "Output{\"Ref\":\"PipelineBucketB967BD35\"}": {
                 "id": "Output{\"Ref\":\"PipelineBucketB967BD35\"}",
                 "path": "aws-cdk-codepipeline-s3-deploy/Exports/Output{\"Ref\":\"PipelineBucketB967BD35\"}",
@@ -1249,19 +1392,11 @@
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
                 }
-              },
-              "Output{\"Ref\":\"DeployBucket67E2C076\"}": {
-                "id": "Output{\"Ref\":\"DeployBucket67E2C076\"}",
-                "path": "aws-cdk-codepipeline-s3-deploy/Exports/Output{\"Ref\":\"DeployBucket67E2C076\"}",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnOutput",
-                  "version": "0.0.0"
-                }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.270"
+              "version": "10.2.55"
             }
           },
           "BootstrapVersion": {
@@ -1299,27 +1434,27 @@
                 "path": "s3-deploy-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.2.55"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "s3-deploy-test/DefaultTest/DeployAssert",
                 "children": {
-                  "AwsApiCallS3putObject": {
-                    "id": "AwsApiCallS3putObject",
-                    "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallS3putObject",
+                  "AwsApiCallS3getObject132afe15f6b0866b1b0b18d4081f0330": {
+                    "id": "AwsApiCallS3getObject132afe15f6b0866b1b0b18d4081f0330",
+                    "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallS3getObject132afe15f6b0866b1b0b18d4081f0330",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallS3putObject/SdkProvider",
+                        "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallS3getObject132afe15f6b0866b1b0b18d4081f0330/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallS3putObject/SdkProvider/AssertionsProvider",
+                            "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallS3getObject132afe15f6b0866b1b0b18d4081f0330/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.270"
+                              "version": "10.2.55"
                             }
                           }
                         },
@@ -1330,11 +1465,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallS3putObject/Default",
+                        "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallS3getObject132afe15f6b0866b1b0b18d4081f0330/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallS3putObject/Default/Default",
+                            "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallS3getObject132afe15f6b0866b1b0b18d4081f0330/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -1383,23 +1518,23 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.2.55"
                     }
                   },
-                  "AwsApiCallCodePipelinegetPipelineState": {
-                    "id": "AwsApiCallCodePipelinegetPipelineState",
-                    "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState",
+                  "AwsApiCallS3putObjecte1b51fae535275287a7fd0b537ad2b3d": {
+                    "id": "AwsApiCallS3putObjecte1b51fae535275287a7fd0b537ad2b3d",
+                    "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallS3putObjecte1b51fae535275287a7fd0b537ad2b3d",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState/SdkProvider",
+                        "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallS3putObjecte1b51fae535275287a7fd0b537ad2b3d/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState/SdkProvider/AssertionsProvider",
+                            "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallS3putObjecte1b51fae535275287a7fd0b537ad2b3d/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.270"
+                              "version": "10.2.55"
                             }
                           }
                         },
@@ -1410,11 +1545,57 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState/Default",
+                        "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallS3putObjecte1b51fae535275287a7fd0b537ad2b3d/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState/Default/Default",
+                            "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallS3putObjecte1b51fae535275287a7fd0b537ad2b3d/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e": {
+                    "id": "AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e",
+                    "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.2.55"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -1428,23 +1609,23 @@
                       },
                       "WaitFor": {
                         "id": "WaitFor",
-                        "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState/WaitFor",
+                        "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor",
                         "children": {
                           "IsCompleteProvider": {
                             "id": "IsCompleteProvider",
-                            "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState/WaitFor/IsCompleteProvider",
+                            "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor/IsCompleteProvider",
                             "children": {
                               "AssertionsProvider": {
                                 "id": "AssertionsProvider",
-                                "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState/WaitFor/IsCompleteProvider/AssertionsProvider",
+                                "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor/IsCompleteProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.1.270"
+                                  "version": "10.2.55"
                                 }
                               },
                               "Invoke": {
                                 "id": "Invoke",
-                                "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState/WaitFor/IsCompleteProvider/Invoke",
+                                "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor/IsCompleteProvider/Invoke",
                                 "constructInfo": {
                                   "fqn": "aws-cdk-lib.CfnResource",
                                   "version": "0.0.0"
@@ -1458,19 +1639,19 @@
                           },
                           "TimeoutProvider": {
                             "id": "TimeoutProvider",
-                            "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState/WaitFor/TimeoutProvider",
+                            "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor/TimeoutProvider",
                             "children": {
                               "AssertionsProvider": {
                                 "id": "AssertionsProvider",
-                                "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState/WaitFor/TimeoutProvider/AssertionsProvider",
+                                "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor/TimeoutProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.1.270"
+                                  "version": "10.2.55"
                                 }
                               },
                               "Invoke": {
                                 "id": "Invoke",
-                                "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState/WaitFor/TimeoutProvider/Invoke",
+                                "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor/TimeoutProvider/Invoke",
                                 "constructInfo": {
                                   "fqn": "aws-cdk-lib.CfnResource",
                                   "version": "0.0.0"
@@ -1484,7 +1665,7 @@
                           },
                           "Role": {
                             "id": "Role",
-                            "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState/WaitFor/Role",
+                            "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor/Role",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -1492,7 +1673,7 @@
                           },
                           "Resource": {
                             "id": "Resource",
-                            "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState/WaitFor/Resource",
+                            "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor/Resource",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -1506,7 +1687,7 @@
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
-                        "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState/AssertionResults",
+                        "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/AssertionResults",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnOutput",
                           "version": "0.0.0"
@@ -1549,7 +1730,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.2.55"
                     }
                   },
                   "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a": {
@@ -1583,53 +1764,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
-                    }
-                  },
-                  "AwsApiCallS3getObject": {
-                    "id": "AwsApiCallS3getObject",
-                    "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallS3getObject",
-                    "children": {
-                      "SdkProvider": {
-                        "id": "SdkProvider",
-                        "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallS3getObject/SdkProvider",
-                        "children": {
-                          "AssertionsProvider": {
-                            "id": "AssertionsProvider",
-                            "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallS3getObject/SdkProvider/AssertionsProvider",
-                            "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.1.270"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "Default": {
-                        "id": "Default",
-                        "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallS3getObject/Default",
-                        "children": {
-                          "Default": {
-                            "id": "Default",
-                            "path": "s3-deploy-test/DefaultTest/DeployAssert/AwsApiCallS3getObject/Default/Default",
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.CfnResource",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.CustomResource",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
-                      "version": "0.0.0"
+                      "version": "10.2.55"
                     }
                   },
                   "BootstrapVersion": {
@@ -1671,7 +1806,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.2.55"
         }
       }
     },

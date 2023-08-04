@@ -86,7 +86,6 @@ export class LinuxGpuBuildImage implements IBindableBuildImage {
     return new LinuxGpuBuildImage(repositoryName, tag, account);
   }
 
-
   /**
    * Returns a GPU image running Linux from an ECR repository.
    *
@@ -143,8 +142,9 @@ export class LinuxGpuBuildImage implements IBindableBuildImage {
   public validate(buildEnvironment: BuildEnvironment): string[] {
     const ret = [];
     if (buildEnvironment.computeType &&
-        buildEnvironment.computeType !== ComputeType.LARGE) {
-      ret.push(`GPU images only support ComputeType '${ComputeType.LARGE}' - ` +
+        buildEnvironment.computeType !== ComputeType.LARGE &&
+        buildEnvironment.computeType !== ComputeType.SMALL) {
+      ret.push(`GPU images only support ComputeType '${ComputeType.LARGE}' and '${ComputeType.SMALL}' - ` +
         `'${buildEnvironment.computeType}' was given`);
     }
     return ret;

@@ -161,7 +161,6 @@ describe('bundling', () => {
 
   });
 
-
   test('throws in case of spawnSync error', () => {
     sinon.stub(child_process, 'spawnSync').returns({
       status: 0,
@@ -432,6 +431,39 @@ describe('bundling', () => {
     expect(spawnSyncStub.calledWith(dockerCmd, [
       'run', '--rm',
       '--network', 'host',
+      '-u', 'user:group',
+      '-v', '/host-path:/container-path:delegated',
+      '-w', '/working-directory',
+      'alpine',
+      'cool', 'command',
+    ], { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+  });
+
+  test('adding user provided platform', () => {
+    // GIVEN
+    sinon.stub(process, 'platform').value('darwin');
+    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+    const image = DockerImage.fromRegistry('alpine');
+
+    // GIVEN
+    image.run({
+      command: ['cool', 'command'],
+      platform: 'linux/amd64',
+      volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
+      workingDirectory: '/working-directory',
+      user: 'user:group',
+    });
+
+    expect(spawnSyncStub.calledWith(dockerCmd, [
+      'run', '--rm',
+      '--platform', 'linux/amd64',
       '-u', 'user:group',
       '-v', '/host-path:/container-path:delegated',
       '-w', '/working-directory',

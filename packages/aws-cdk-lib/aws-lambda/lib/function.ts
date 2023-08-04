@@ -1,5 +1,5 @@
 import { Construct, IConstruct } from 'constructs';
-import { AdotInstrumentationConfig } from './adot-layers';
+import { AdotInstrumentationConfig, AdotLambdaExecWrapper } from './adot-layers';
 import { AliasOptions, Alias } from './alias';
 import { Architecture } from './architecture';
 import { Code, CodeConfig } from './code';
@@ -15,7 +15,8 @@ import { Version, VersionOptions } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
 import { LayerVersion, ILayerVersion } from './layers';
 import { LogRetentionRetryOptions } from './log-retention';
-import { Runtime } from './runtime';
+import { ParamsAndSecretsLayerVersion } from './params-and-secrets-layers';
+import { Runtime, RuntimeFamily } from './runtime';
 import { RuntimeManagementMode } from './runtime-management';
 import { addAlias } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
@@ -259,6 +260,15 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default - No ADOT instrumentation
    */
   readonly adotInstrumentation?: AdotInstrumentationConfig;
+
+  /**
+   * Specify the configuration of Parameters and Secrets Extension
+   * @see https://docs.aws.amazon.com/secretsmanager/latest/userguide/retrieving-secrets_lambda.html
+   * @see https://docs.aws.amazon.com/systems-manager/latest/userguide/ps-integration-lambda-extensions.html
+   *
+   * @default - No Parameters and Secrets Extension
+   */
+  readonly paramsAndSecrets?: ParamsAndSecretsLayerVersion;
 
   /**
    * A list of layers to add to the function's execution environment. You can configure your Lambda function to pull in
@@ -920,6 +930,8 @@ export class Function extends FunctionBase {
     this.configureLambdaInsights(props);
 
     this.configureAdotInstrumentation(props);
+
+    this.configureParamsAndSecretsExtension(props);
   }
 
   /**
@@ -1154,8 +1166,27 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       throw new Error('Runtime go1.x is not supported by the ADOT Lambda Go SDK');
     }
 
+    // The Runtime is Python and Adot is set it requires a different EXEC_WRAPPER than the other code bases.
+    if (this.runtime.family === RuntimeFamily.PYTHON &&
+      props.adotInstrumentation.execWrapper.valueOf() !== AdotLambdaExecWrapper.INSTRUMENT_HANDLER) {
+      throw new Error('Python Adot Lambda layer requires AdotLambdaExecWrapper.INSTRUMENT_HANDLER');
+    }
+
     this.addLayers(LayerVersion.fromLayerVersionArn(this, 'AdotLayer', props.adotInstrumentation.layerVersion._bind(this).arn));
     this.addEnvironment('AWS_LAMBDA_EXEC_WRAPPER', props.adotInstrumentation.execWrapper);
+  }
+
+  /**
+   * Add a Parameters and Secrets Extension Lambda layer.
+   */
+  private configureParamsAndSecretsExtension(props: FunctionProps): void {
+    if (props.paramsAndSecrets === undefined) {
+      return;
+    }
+
+    const layerVersion = props.paramsAndSecrets._bind(this, this);
+    this.addLayers(LayerVersion.fromLayerVersionArn(this, 'ParamsAndSecretsLayer', layerVersion.arn));
+    Object.entries(layerVersion.environmentVars).forEach(([key, value]) => this.addEnvironment(key, value.toString()));
   }
 
   private renderLayers() {
@@ -1210,7 +1241,6 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       }
       return undefined;
     }
-
 
     if (props.securityGroup && props.allowAllOutbound !== undefined) {
       throw new Error('Configure \'allowAllOutbound\' directly on the supplied SecurityGroup.');

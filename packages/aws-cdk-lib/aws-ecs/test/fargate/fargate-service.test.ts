@@ -572,7 +572,6 @@ describe('fargate service', () => {
         });
       }).toThrow(/Supplied TaskDefinition is not configured for compatibility with Fargate/);
 
-
     });
 
     test('throws whith secret json field on unsupported platform version', () => {
@@ -634,30 +633,8 @@ describe('fargate service', () => {
           Type: 'EXTERNAL',
         },
         EnableECSManagedTags: false,
-        NetworkConfiguration: {
-          AwsvpcConfiguration: {
-            AssignPublicIp: 'DISABLED',
-            SecurityGroups: [
-              {
-                'Fn::GetAtt': [
-                  'FargateServiceSecurityGroup0A0E79CB',
-                  'GroupId',
-                ],
-              },
-            ],
-            Subnets: [
-              {
-                Ref: 'MyVpcPrivateSubnet1Subnet5057CF7E',
-              },
-              {
-                Ref: 'MyVpcPrivateSubnet2Subnet0040C983',
-              },
-            ],
-          },
-        },
       });
     });
-
 
     test('add warning to annotations if circuitBreaker is specified with a non-ECS DeploymentControllerType', () => {
       // GIVEN
@@ -954,6 +931,107 @@ describe('fargate service', () => {
         ],
         VpcId: {
           Ref: 'MyVpcF9F0CA6F',
+        },
+      });
+    });
+
+    test('with deployment alarms', () => {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
+
+      new ecs.FargateService(stack, 'ExternalService', {
+        cluster,
+        taskDefinition,
+        deploymentAlarms: {
+          alarmNames: [myAlarm.alarmName],
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        DeploymentConfiguration: {
+          Alarms: {
+            Enable: true,
+            Rollback: true,
+            AlarmNames: [myAlarm.alarmName],
+          },
+        },
+      });
+    });
+
+    test('no network configuration with external deployment controller', () => {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      new ecs.FargateService(stack, 'ExternalService', {
+        cluster,
+        taskDefinition,
+        deploymentController: {
+          type: ecs.DeploymentControllerType.EXTERNAL,
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        NetworkConfiguration: Match.absent(),
+      });
+    });
+
+    test('network configuration exists when explicitly specifying a deployment controller type other than EXTERNAL', () => {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      new ecs.FargateService(stack, 'ExternalService', {
+        cluster,
+        taskDefinition,
+        deploymentController: {
+          type: ecs.DeploymentControllerType.ECS,
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        NetworkConfiguration: {
+          AwsvpcConfiguration: {
+            AssignPublicIp: 'DISABLED',
+            SecurityGroups: [
+              {
+                'Fn::GetAtt': [
+                  'ExternalServiceSecurityGroup45E0A4FC',
+                  'GroupId',
+                ],
+              },
+            ],
+            Subnets: [
+              {
+                Ref: 'MyVpcPrivateSubnet1Subnet5057CF7E',
+              },
+              {
+                Ref: 'MyVpcPrivateSubnet2Subnet0040C983',
+              },
+            ],
+          },
         },
       });
     });

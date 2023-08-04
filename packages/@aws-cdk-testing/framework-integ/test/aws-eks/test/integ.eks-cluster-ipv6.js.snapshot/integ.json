@@ -1,0 +1,20 @@
+{
+  "version": "32.0.0",
+  "testCases": {
+    "aws-cdk-eks-cluster-ipv6/DefaultTest": {
+      "stacks": [
+        "aws-cdk-eks-cluster-ipv6-test"
+      ],
+      "diffAssets": true,
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": true
+          }
+        }
+      },
+      "assertionStack": "aws-cdk-eks-cluster-ipv6/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksclusteripv6DefaultTestDeployAssert2C014107"
+    }
+  }
+}
