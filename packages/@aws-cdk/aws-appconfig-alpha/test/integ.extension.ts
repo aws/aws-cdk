@@ -108,5 +108,12 @@ hostedConfig.node.addDependency(lambdaExtension, topicExtension, busExtension, q
 
 new IntegTest(app, 'appconfig-extension', {
   testCases: [stack],
-  allowDestroy: ['AWS::IAM::Role'],
+  allowDestroy: ['AWS::IAM::Role', 'AWS::AppConfig::ExtensionAssociation'],
+  cdkCommandOptions: {
+    destroy: {
+      args: {
+        force: true,
+      },
+    },
+  },
 });

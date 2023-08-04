@@ -195,4 +195,11 @@ new SourcedConfiguration(stack, 'MyConfigFromPipeline', {
 
 new IntegTest(app, 'appconfig-configuration', {
   testCases: [stack],
+  cdkCommandOptions: {
+    destroy: {
+      args: {
+        force: true,
+      },
+    },
+  },
 });

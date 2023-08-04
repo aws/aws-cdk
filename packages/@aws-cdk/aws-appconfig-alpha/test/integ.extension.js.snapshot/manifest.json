@@ -64,7 +64,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d378b2c49543a416896d401003244feb75f052c6d470985552dbc75414fe7165.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a8993d1c98d0866890f6277283fc84d0e858c2af84b04256776aae8e887d853b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -104,10 +104,10 @@
             "data": "MyApplicationMyEnv55DE3293"
           }
         ],
-        "/aws-appconfig-extension/MyLambdaExtension/RoleD07A2/Resource": [
+        "/aws-appconfig-extension/MyLambdaExtension/Role21B11/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaExtensionRoleD07A221884056"
+            "data": "MyLambdaExtensionRole21B11B01BFE1E"
           }
         ],
         "/aws-appconfig-extension/MyLambdaExtension/Resource": [
@@ -116,10 +116,10 @@
             "data": "MyLambdaExtensionAFA1476A"
           }
         ],
-        "/aws-appconfig-extension/AssociationResource152AD": [
+        "/aws-appconfig-extension/AssociationResource04BC8": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssociationResource152AD"
+            "data": "AssociationResource04BC8"
           }
         ],
         "/aws-appconfig-extension/MyQueue/Resource": [
@@ -128,10 +128,10 @@
             "data": "MyQueueE6CA6235"
           }
         ],
-        "/aws-appconfig-extension/MyQueueExtension/RoleC8ACA/Resource": [
+        "/aws-appconfig-extension/MyQueueExtension/Role23379/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyQueueExtensionRoleC8ACAC900B754"
+            "data": "MyQueueExtensionRole23379DF101217"
           }
         ],
         "/aws-appconfig-extension/MyQueueExtension/Resource": [
@@ -140,10 +140,10 @@
             "data": "MyQueueExtension872C5D27"
           }
         ],
-        "/aws-appconfig-extension/AssociationResourceB89D8": [
+        "/aws-appconfig-extension/AssociationResource8C060": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssociationResourceB89D8"
+            "data": "AssociationResource8C060"
           }
         ],
         "/aws-appconfig-extension/MyTopic/Resource": [
@@ -152,10 +152,10 @@
             "data": "MyTopic86869434"
           }
         ],
-        "/aws-appconfig-extension/MyTopicExtension/Role6C837/Resource": [
+        "/aws-appconfig-extension/MyTopicExtension/Role7BBBB/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyTopicExtensionRole6C837B9FAEFE3"
+            "data": "MyTopicExtensionRole7BBBB94DD4F3C"
           }
         ],
         "/aws-appconfig-extension/MyTopicExtension/Resource": [
@@ -164,10 +164,10 @@
             "data": "MyTopicExtension9B6DF691"
           }
         ],
-        "/aws-appconfig-extension/AssociationResource40A21": [
+        "/aws-appconfig-extension/AssociationResourceF202D": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssociationResource40A21"
+            "data": "AssociationResourceF202D"
           }
         ],
         "/aws-appconfig-extension/MyEventBusExtension/Resource": [
@@ -176,10 +176,10 @@
             "data": "MyEventBusExtensionADFE2273"
           }
         ],
-        "/aws-appconfig-extension/AssociationResource36A1B": [
+        "/aws-appconfig-extension/AssociationResource56867": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssociationResource36A1B"
+            "data": "AssociationResource56867"
           }
         ],
         "/aws-appconfig-extension/MyDeployStrategy/Resource": [

@@ -688,9 +688,9 @@
                   "version": "0.0.0"
                 }
               },
-              "Deployment13882": {
-                "id": "Deployment13882",
-                "path": "aws-appconfig-configuration/MyConfigFromParameter/Deployment13882",
+              "Deployment0C84B": {
+                "id": "Deployment0C84B",
+                "path": "aws-appconfig-configuration/MyConfigFromParameter/Deployment0C84B",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AppConfig::Deployment",
                   "aws:cdk:cloudformation:props": {
@@ -869,9 +869,9 @@
                   "version": "0.0.0"
                 }
               },
-              "Deployment106B4": {
-                "id": "Deployment106B4",
-                "path": "aws-appconfig-configuration/MyConfigFromDocument/Deployment106B4",
+              "Deployment1520E": {
+                "id": "Deployment1520E",
+                "path": "aws-appconfig-configuration/MyConfigFromDocument/Deployment1520E",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AppConfig::Deployment",
                   "aws:cdk:cloudformation:props": {

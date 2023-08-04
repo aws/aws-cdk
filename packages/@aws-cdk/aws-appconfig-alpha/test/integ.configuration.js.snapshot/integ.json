@@ -5,6 +5,13 @@
       "stacks": [
         "aws-appconfig-configuration"
       ],
+      "cdkCommandOptions": {
+        "destroy": {
+          "args": {
+            "force": true
+          }
+        }
+      },
       "assertionStack": "appconfig-configuration/DefaultTest/DeployAssert",
       "assertionStackName": "appconfigconfigurationDefaultTestDeployAssert6752CD38"
     }

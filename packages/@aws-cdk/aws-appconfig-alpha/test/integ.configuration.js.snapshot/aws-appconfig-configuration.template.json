@@ -349,7 +349,7 @@
     ]
    }
   },
-  "MyConfigFromParameterDeployment138825441D31F": {
+  "MyConfigFromParameterDeployment0C84B4B3BAD6B": {
    "Type": "AWS::AppConfig::Deployment",
    "Properties": {
     "ApplicationId": {
@@ -470,7 +470,7 @@
     }
    }
   },
-  "MyConfigFromDocumentDeployment106B49C91964E": {
+  "MyConfigFromDocumentDeployment1520EE7C916D3": {
    "Type": "AWS::AppConfig::Deployment",
    "Properties": {
     "ApplicationId": {

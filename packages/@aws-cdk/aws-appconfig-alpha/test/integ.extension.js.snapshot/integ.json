@@ -5,6 +5,17 @@
       "stacks": [
         "aws-appconfig-extension"
       ],
+      "allowDestroy": [
+        "AWS::IAM::Role",
+        "AWS::AppConfig::ExtensionAssociation"
+      ],
+      "cdkCommandOptions": {
+        "destroy": {
+          "args": {
+            "force": true
+          }
+        }
+      },
       "assertionStack": "aws-appconfig-extension/MyApplication/appconfig-extension/DefaultTest/DeployAssert",
       "assertionStackName": "awsappconfigextensionMyApplicationappconfigextensionDefaultTestDeployAssert64BA6C4E"
     }
