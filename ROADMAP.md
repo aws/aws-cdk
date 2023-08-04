@@ -1,48 +1,64 @@
 # AWS CDK Roadmap
 
-The [AWS CDK Roadmap] lets developers know about our upcoming features and priorities to help them plan how to best leverage the CDK and identify opportunities to contribute to the project. The roadmap provides a high-level view of our work in progress across the [aws-cdk], [aws-cdk-rfcs], and [jsii] repositories, and creates an opportunity for customers to engage in a conversation with AWS CDK engineers to give us direct feedback.
+The [AWS CDK Roadmap] lets developers know about our upcoming features and priorities to help them 
+plan how to best leverage the CDK and identify opportunities to contribute to the project. The roadmap 
+provides a high-level view of our work in progress across the [aws-cdk], [aws-cdk-rfcs], and [jsii] 
+repositories, and creates an opportunity for customers to engage in a conversation with AWS CDK engineers to 
+give us direct feedback.
 
-[AWS CDK Roadmap]: https://github.com/orgs/aws/projects/7
+[AWS CDK Roadmap]: https://github.com/orgs/aws/projects/88
 [aws-cdk]: https://github.com/aws/aws-cdk
 [aws-cdk-rfcs]: https://github.com/aws/aws-cdk-rfcs
 [jsii]: https://github.com/aws/jsii
 
-## Roadmap FAQs
+## Tenets
+The core values for CDK on how to prioritize work, keep engaged with the community and deliver what matters.
+1. **Be transparent**
 
+The AWS CDK team’s current work should be easily visible.
+
+2. **Listen to customers**
+
+Allow them to participate in design decisions and to vote on and propose new AWS CDK features. We will periodically re-prioritize the roadmap based on customer feedback.
+
+3. **Stay up-to-date**
+
+Be informed and incorporate best practices.
+
+4. **Provide the right level of detail**
+
+The overview should indicate all work in progress at a glance, while allowing a deep dive into the details via provided references.
+
+5. **Guide the community**
+
+Align on what can be worked on that is not currently handled by the team.
+Offer help and unblock contributors in their efforts.
+
+## Roadmap FAQs
 **Q: How do you manage the roadmap?**
 
-A: We know that our customers are making decisions and plans based on what we
-are developing, and we want to provide the information they need to be successful. Our roadmap management tenets are:
+A: CDK customers are making decisions and plans based on what we are developing. We strive to provide the 
+required information, when that is not sufficient, we take note of the feedback we receive and iterate on how 
+to bring improvements to our current processes and available information.
 
-* **Be transparent** with customers about the AWS CDK team’s work in progress
-* **Listen to customers,** allowing them to participate in design decisions and to vote on and propose new AWS CDK
-  features. We will periodically re-prioritize the roadmap based on customer feedback
-* **Stay up-to-date,** or we will lose customer trust
-* **Provide the right level of detail** so customers can easily see what we’re working on at a glance, without being
-  overwhelmed by minutiae
-* **Guide the community** on what AWS CDK constructs or features to contribute without the risk of conflicting with work
-  already in progress
+**Q: How do you mark work in progress?**
 
-**Q: What do the roadmap project board columns mean?**
+A: For the [aws-cdk] repository, any issue that is currently worked on will have the `CDK Construct Squad` project 
+listed, with the current status.
 
-A: There are four columns on the roadmap project board:
-
-* **Researching** - We’re thinking about it, but cannot commit if, or when, we will work on items in this list.
+* **Needs Review** - We’re thinking about it, but cannot commit if, or when, we will work on items in this list.
   This means we are still designing the feature and evaluating how it might work. This is the phase when we collect
   customer use cases and feedback on how they want to see something implemented. There is no firm commitment to deliver
-  functionality listed in the Researching column, and there might be situations that require us to move items from the
-  roadmap back to the backlog.
-* **We’re working on it** - In progress, but further out. We have made an implied commitment to work on items in this
-  bucket, they have some level of design spec’ed out, and a developer assigned to them. Items might linger in this
-  bucket as we work through the implementation details, or scope stuff out. Think several months out until a developer
-  preview release, give or take.
-* **Developer preview** - It’s available now as a release candidate. Items will spend extended periods of time in
-  developer preview as we conduct user acceptance testing and accumulate sufficient usage to declare the API stable and
-  ready for general availability. We will only make breaking changes to developer preview modules when we need to address unforeseen use cases or issues. Not all
-  features, such as enhancements to the CDK CLI, will have a developer preview phase. In these cases the tracking issue
-  is moved directly to the Shipped bucket when released.
-* **Shipped** - It’s available now, fully supported by AWS, and we guarantee the API is stable and safe to use in
-  production.
+  functionality listed in the Needs Review column, and there might be situations where we remove items from the Needs
+  Review column.
+* **Backlog** - We want to do this, but no one has picked it up yet. We have made an implied commitment to work on items
+  in this bucket, they have some level of design spec’ed out. Items might linger in this bucket as we work through the implementation details, or scope stuff out. Think several months out until a developer preview release, give or take.
+* **In Progress** - Someone on the CDK team is actively working on this. If all goes well, issues in this bucket should
+  be released in the coming weeks.
+* **In review** - It’s implementation is done and we are reviewing the code.
+* **Done** - It’s available now, fully supported by AWS.
+
+For the [aws-cdk-rfcs], the README file contains the overview and statuses. They can also be checked per RFC by selecting any of the relevant [issues](https://github.com/aws/aws-cdk-rfcs/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc) and seeing how far along is its `Workflow`.
 
 **Q: How do items on the roadmap move across the project board?**
 
@@ -71,7 +87,7 @@ A: We create a tracking issue for each CDK feature, AWS Construct Library module
 
 **Q: How can I provide feedback on the roadmap or ask for more information about a feature?**
 
-A: Please open an issue!
+A: Please open an issue! Or engage by 👍 existing ones.
 
 **Q: How can I request a feature be added to the roadmap?**
 
@@ -79,7 +95,7 @@ A: Please open an issue! Community submitted issues will be tagged “feature-re
 
 **Q: Can I “+1” tracking issues and feature requests?**
 
-A: We strongly encourage you to do so, as it helps us understand which issues will have the broadest impact. You can navigate to the issue details page and add a reaction. There are six types of reactions (thumbs up “+1”, thumbs down “-1”, confused, heart, watching, laugh, and hooray) you can use to help us decide which items will benefit you most.
+A: We strongly encourage you to do so, as it helps us understand which issues will have the broadest impact. You can navigate to the issue details page and add a reaction. There are six types of reactions (👍 +1, 👎 -1, 😕 confused, ❤️ heart, 👀 watching, 😄 smile, and 🎉 celebration) you can use to help us decide which items will benefit you most.
 
 **Q: Will you accept a pull request to the aws-cdk repo?**
 

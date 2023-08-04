@@ -120,6 +120,13 @@ export interface StateMachineProps {
   readonly timeout?: Duration;
 
   /**
+   * Comment that describes this state machine
+   *
+   * @default - No comment
+   */
+  readonly comment?: string;
+
+  /**
    * Type of the state machine
    *
    * @default StateMachineType.STANDARD
@@ -711,8 +718,9 @@ export class ChainDefinitionBody extends DefinitionBody {
     for (const statement of graph.policyStatements) {
       sfnPrincipal.addToPrincipalPolicy(statement);
     }
+    const graphJson = graph.toGraphJson();
     return {
-      definitionString: Stack.of(scope).toJsonString(graph.toGraphJson()),
+      definitionString: Stack.of(scope).toJsonString({ ...graphJson, Comment: sfnProps.comment }),
     };
   }
 }

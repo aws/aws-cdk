@@ -431,7 +431,7 @@ Path to data must be specified using a dot notation, e.g. to get the string valu
 of the `Title` attribute for the first item returned by `dynamodb.query` it should
 be `Items.0.Title.S`.
 
-To make sure that the newest API calls are available the latest AWS SDK v2 is installed
+To make sure that the newest API calls are available the latest AWS SDK v3 is installed
 in the Lambda function implementing the custom resource. The installation takes around 60
 seconds. If you prefer to optimize for speed, you can disable the installation by setting
 the `installLatestAwsSdk` prop to `false`.
@@ -648,35 +648,3 @@ const getParameter = new cr.AwsCustomResource(this, 'AssociateVPCWithHostedZone'
   }),
 });
 ```
-
-#### Using AWS SDK for JavaScript v3
-
-`AwsCustomResource` experimentally supports AWS SDK for JavaScript v3 (NODEJS_18_X or higher). In AWS SDK for JavaScript v3, packages are installed for each service. Therefore, specify the package name for `service`. Also, `action` specifies the XxxClient operations provided in the package. This example is the same as `SSM.getParameter` in v2.
-
-```ts
-import * as regionInfo from 'aws-cdk-lib/region-info';
-
-class MyFact implements regionInfo.IFact {
-  public readonly region = 'us-east-1';
-  public readonly name = regionInfo.FactName.DEFAULT_CR_NODE_VERSION;
-  public readonly value = lambda.Runtime.NODEJS_18_X.name;
-}
-
-// change custom resource default runtime
-regionInfo.Fact.register(new MyFact(), true);
-
-new cr.AwsCustomResource(this, 'GetParameter', {
-  resourceType: 'Custom::SSMParameter',
-  onUpdate: {
-    service: '@aws-sdk/client-ssm', // 'SSM' in v2
-    action: 'GetParameterCommand', // 'getParameter' in v2
-    parameters: {
-      Name: 'foo',
-      WithDecryption: true,
-    },
-    physicalResourceId: cr.PhysicalResourceId.fromResponse('Parameter.ARN'),
-  },
-});
-```
-
-If you are using `NODEJS_18_X` or higher, you can also use the existing AWS SDK for JavaScript v2 style.

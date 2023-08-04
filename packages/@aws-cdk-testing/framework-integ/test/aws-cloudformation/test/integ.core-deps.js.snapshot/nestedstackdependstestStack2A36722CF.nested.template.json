@@ -37,13 +37,13 @@
     "Code": {
      "ZipFile": "foo"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "Lambda2ServiceRole31A072E1",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
     "Runtime": "nodejs14.x"
    },
    "DependsOn": [

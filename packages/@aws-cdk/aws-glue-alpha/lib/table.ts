@@ -1,3 +1,4 @@
+import { CfnTable } from 'aws-cdk-lib/aws-glue';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
@@ -7,8 +8,8 @@ import { AwsCustomResource } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 import { DataFormat } from './data-format';
 import { IDatabase } from './database';
-import { CfnTable } from 'aws-cdk-lib/aws-glue';
 import { Column } from './schema';
+import { StorageParameter } from './storage-parameter';
 
 /**
  * Properties of a Partition Index.
@@ -181,6 +182,41 @@ export interface TableProps {
    * @default - The parameter is not defined
    */
   readonly enablePartitionFiltering?: boolean;
+
+  /**
+   * The user-supplied properties for the description of the physical storage of this table. These properties help describe the format of the data that is stored within the crawled data sources.
+   *
+   * The key/value pairs that are allowed to be submitted are not limited, however their functionality is not guaranteed.
+   *
+   * Some keys will be auto-populated by glue crawlers, however, you can override them by specifying the key and value in this property.
+   *
+   * @see https://docs.aws.amazon.com/glue/latest/dg/table-properties-crawler.html
+   *
+   * @see https://docs.aws.amazon.com/redshift/latest/dg/r_CREATE_EXTERNAL_TABLE.html#r_CREATE_EXTERNAL_TABLE-parameters - under _"TABLE PROPERTIES"_
+   *
+   * @example
+   *
+   *    declare const glueDatabase: glue.IDatabase;
+   *    const table = new glue.Table(this, 'Table', {
+   *      storageParameters: [
+   *          glue.StorageParameter.skipHeaderLineCount(1),
+   *          glue.StorageParameter.compressionType(glue.CompressionType.GZIP),
+   *          glue.StorageParameter.custom('foo', 'bar'), // Will have no effect
+   *          glue.StorageParameter.custom('separatorChar', ','), // Will describe the separator char used in the data
+   *          glue.StorageParameter.custom(glue.StorageParameters.WRITE_PARALLEL, 'off'),
+   *      ],
+   *      // ...
+   *      database: glueDatabase,
+   *      columns: [{
+   *          name: 'col1',
+   *          type: glue.Schema.STRING,
+   *      }],
+   *      dataFormat: glue.DataFormat.CSV,
+   *    });
+   *
+   * @default - The parameter is not defined
+   */
+  readonly storageParameters?: StorageParameter[];
 }
 
 /**
@@ -274,6 +310,11 @@ export class Table extends Resource implements ITable {
   public readonly partitionIndexes?: PartitionIndex[];
 
   /**
+   * The tables' storage descriptor properties.
+   */
+  public readonly storageParameters?: StorageParameter[];
+
+  /**
    * Partition indexes must be created one at a time. To avoid
    * race conditions, we store the resource and add dependencies
    * each time a new partition index is created.
@@ -295,6 +336,7 @@ export class Table extends Resource implements ITable {
     validateSchema(props.columns, props.partitionKeys);
     this.columns = props.columns;
     this.partitionKeys = props.partitionKeys;
+    this.storageParameters = props.storageParameters;
 
     this.compressed = props.compressed ?? false;
     const { bucket, encryption, encryptionKey } = createBucket(this, props);
@@ -328,6 +370,14 @@ export class Table extends Resource implements ITable {
           serdeInfo: {
             serializationLibrary: props.dataFormat.serializationLibrary.className,
           },
+          parameters: props.storageParameters ? props.storageParameters.reduce((acc, param) => {
+            if (param.key in acc) {
+              throw new Error(`Duplicate storage parameter key: ${param.key}`);
+            }
+            const key = param.key;
+            acc[key] = param.value;
+            return acc;
+          }, {} as { [key: string]: string }) : undefined,
         },
 
         tableType: 'EXTERNAL_TABLE',

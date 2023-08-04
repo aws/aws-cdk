@@ -20,6 +20,7 @@ const role = new iam.Role(stack, 'Role', {
 
 const stateMachine = new sfn.StateMachine(stack, 'StateMachine', {
   definition: wait,
+  comment: 'a super cool state machine',
 });
 
 stateMachine.grantRead(role);

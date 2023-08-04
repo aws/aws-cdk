@@ -614,7 +614,7 @@
                             "tags": [
                               {
                                 "key": "Name",
-                                "value": "FlowLogsFeatureFlag/VPC"
+                                "value": "FlowLogsFeatureFlag/VPC/FlowLogsS3"
                               }
                             ]
                           }
@@ -781,7 +781,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "FlowLogsFeatureFlag/VPC"
+                            "value": "FlowLogsFeatureFlag/VPC/FlowLogsS3"
                           }
                         ],
                         "trafficType": "ALL"
@@ -815,7 +815,7 @@
                             "tags": [
                               {
                                 "key": "Name",
-                                "value": "FlowLogsFeatureFlag/VPC"
+                                "value": "FlowLogsFeatureFlag/VPC/FlowLogsS3WithDestinationOptions"
                               }
                             ]
                           }
@@ -987,7 +987,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "FlowLogsFeatureFlag/VPC"
+                            "value": "FlowLogsFeatureFlag/VPC/FlowLogsS3WithDestinationOptions"
                           }
                         ],
                         "trafficType": "ALL"
@@ -1849,7 +1849,7 @@
                             "tags": [
                               {
                                 "key": "Name",
-                                "value": "FlowLogsTestStack/VPC"
+                                "value": "FlowLogsTestStack/VPC/FlowLogsS3"
                               }
                             ]
                           }
@@ -2016,7 +2016,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "FlowLogsTestStack/VPC"
+                            "value": "FlowLogsTestStack/VPC/FlowLogsS3"
                           }
                         ],
                         "trafficType": "ALL"
@@ -2065,7 +2065,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "FlowLogsTestStack/VPC"
+                            "value": "FlowLogsTestStack/VPC/FlowLogsS3KeyPrefix"
                           }
                         ],
                         "trafficType": "ALL"
@@ -2121,7 +2121,13 @@
                             }
                           ],
                           "Version": "2012-10-17"
-                        }
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "CustomFlowLogName"
+                          }
+                        ]
                       }
                     },
                     "constructInfo": {
@@ -2203,7 +2209,13 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
                       "aws:cdk:cloudformation:props": {
-                        "retentionInDays": 731
+                        "retentionInDays": 731,
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "CustomFlowLogName"
+                          }
+                        ]
                       }
                     },
                     "constructInfo": {
@@ -2237,6 +2249,12 @@
                       "Ref": "VPCB9E5F0B4"
                     },
                     "resourceType": "VPC",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "CustomFlowLogName"
+                      }
+                    ],
                     "trafficType": "ALL"
                   }
                 },
@@ -3168,7 +3186,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "DependencyTestStack/VPC"
+                            "value": "DependencyTestStack/VPC/FlowLogS3"
                           }
                         ],
                         "trafficType": "ALL"

@@ -6,7 +6,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 ## Email receiving
 
 Create a receipt rule set with rules and actions (actions can be found in the
-`@aws-cdk/aws-ses-actions` package):
+`aws-cdk-lib/aws-ses-actions` package):
 
 ```ts
 import * as s3 from 'aws-cdk-lib/aws-s3';

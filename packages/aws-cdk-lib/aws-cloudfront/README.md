@@ -16,7 +16,7 @@ for more complex use cases.
 ### Creating a distribution
 
 CloudFront distributions deliver your content from one or more origins; an origin is the location where you store the original version of your
-content. Origins can be created from S3 buckets or a custom origin (HTTP server). Constructs to define origins are in the `@aws-cdk/aws-cloudfront-origins` module.
+content. Origins can be created from S3 buckets or a custom origin (HTTP server). Constructs to define origins are in the `aws-cdk-lib/aws-cloudfront-origins` module.
 
 Each distribution has a default behavior which applies to all requests to that distribution, and routes requests to a primary origin.
 Additional behaviors may be specified for an origin with a given URL path pattern. Behaviors allow routing with multiple origins,

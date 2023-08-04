@@ -5,6 +5,8 @@ on:
   workflow_dispatch:
 jobs:
   close-stale-prs:
+    # this workflow will always fail in forks; bail if this isn't running in the upstream
+    if: github.repository == 'aws/aws-cdk'
     permissions:
       pull-requests: write
     runs-on: ubuntu-latest

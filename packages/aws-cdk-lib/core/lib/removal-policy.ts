@@ -48,6 +48,21 @@ export enum RemovalPolicy {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-deletionpolicy.html#aws-attribute-deletionpolicy-options
    */
   SNAPSHOT = 'snapshot',
+
+  /**
+   * Resource will be retained when they are requested to be deleted during a stack delete request
+   * or need to be replaced due to a stack update request.
+   * Resource are not retained, if the creation is rolled back.
+   *
+   * The result is that new, empty, and unused resources are deleted,
+   * while in-use resources and their data are retained.
+   *
+   * This uses the 'RetainExceptOnCreate' DeletionPolicy,
+   * and the 'Retain' UpdateReplacePolicy, when `applyToUpdateReplacePolicy` is set.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-deletionpolicy.html#aws-attribute-deletionpolicy-options
+   */
+  RETAIN_ON_UPDATE_OR_DELETE = 'retain-on-update-or-delete',
 }
 
 export interface RemovalPolicyOptions {

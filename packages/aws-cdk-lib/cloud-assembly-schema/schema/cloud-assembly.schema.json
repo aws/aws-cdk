@@ -216,6 +216,10 @@
                         "type": "string"
                     }
                 },
+                "buildSsh": {
+                    "description": "SSH agent socket or keys to pass to the `docker build` command (Default no ssh arg is passed)",
+                    "type": "string"
+                },
                 "buildSecrets": {
                     "description": "Build secrets to pass to the `docker build` command (Default no build secrets are passed)",
                     "type": "object",

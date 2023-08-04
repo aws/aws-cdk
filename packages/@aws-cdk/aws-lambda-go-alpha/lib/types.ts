@@ -15,7 +15,7 @@ export interface BundlingOptions extends DockerRunOptions {
   /**
    * A custom bundling Docker image.
    *
-   * @default - use the Docker image provided by @aws-cdk/aws-lambda-go
+   * @default - use the Docker image provided by @aws-cdk/aws-lambda-go-alpha
    */
   readonly dockerImage?: DockerImage;
 

@@ -76,7 +76,7 @@ For monorepos, the reference architecture becomes:
 
 All properties of `lambda.Function` can be used to customize the underlying `lambda.Function`.
 
-See also the [AWS Lambda construct library](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-lambda).
+See also the [AWS Lambda construct library](https://github.com/aws/aws-cdk/tree/main/packages/aws-cdk-lib/aws-lambda).
 
 The `NodejsFunction` construct automatically [reuses existing connections](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/node-reusing-connections.html)
 when working with the AWS SDK for JavaScript. Set the `awsSdkConnectionReuse` prop to `false` to disable it.
@@ -300,7 +300,7 @@ new nodejs.NodejsFunction(this, 'my-handler', {
 This image should have `esbuild` installed **globally**. If you plan to use `nodeModules` it
 should also have `npm`, `yarn` or `pnpm` depending on the lock file you're using.
 
-Use the [default image provided by `@aws-cdk/aws-lambda-nodejs`](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-lambda-nodejs/lib/Dockerfile)
+Use the [default image provided by `aws-cdk-lib/aws-lambda-nodejs`](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-lambda-nodejs/lib/Dockerfile)
 as a source of inspiration.
 
 You can set additional Docker options to configure the build environment:

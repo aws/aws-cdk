@@ -397,7 +397,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "FlowLogsTestStack/VPC"
+      "Value": "FlowLogsTestStack/VPC/FlowLogsS3"
      }
     ]
    },
@@ -535,7 +535,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "FlowLogsTestStack/VPC"
+      "Value": "FlowLogsTestStack/VPC/FlowLogsS3"
      }
     ],
     "TrafficType": "ALL"
@@ -569,7 +569,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "FlowLogsTestStack/VPC"
+      "Value": "FlowLogsTestStack/VPC/FlowLogsS3KeyPrefix"
      }
     ],
     "TrafficType": "ALL"
@@ -593,7 +593,13 @@
       }
      ],
      "Version": "2012-10-17"
-    }
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "FlowLogsTestStack/FlowLogsCW"
+     }
+    ]
    }
   },
   "FlowLogsCWIAMRoleDefaultPolicy943C8A20": {
@@ -639,7 +645,13 @@
   "FlowLogsCWLogGroup0398E8F8": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
-    "RetentionInDays": 731
+    "RetentionInDays": 731,
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "FlowLogsTestStack/FlowLogsCW"
+     }
+    ]
    },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
@@ -662,6 +674,12 @@
      "Ref": "VPCB9E5F0B4"
     },
     "ResourceType": "VPC",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "FlowLogsTestStack/FlowLogsCW"
+     }
+    ],
     "TrafficType": "ALL"
    }
   },
