@@ -265,6 +265,23 @@ const app = new App({
 });
 ```
 
+### Cross-account support
+
+By default, the created roles to upload the assets are only assumable by the owning account.
+To be able to have e.g. your pipeline in another account, you can trust other accounts manually.
+This is similar to calling the old bootstrap with the `--trust` flag.
+
+```ts
+import * as iam from 'aws-cdk-lib/aws-iam';
+
+const app = new App({
+  defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
+    appId: 'my-app-id',
+    additionalTrustedPrincipals: [new iam.AccountPrincipal('999999999999')],
+  }),
+});
+```
+
 ## Using a Custom Staging Stack per Environment
 
 If you want to customize some behavior that is not configurable via properties,
