@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { App, Stack, CfnResource, FileAssetPackaging, Token, Lazy, Duration } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
+import { AccountPrincipal } from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
 import { CloudAssembly } from 'aws-cdk-lib/cx-api';
@@ -545,6 +546,60 @@ describe(AppStagingSynthesizer, () => {
 
     // THEN
     expect(() => app.synth()).toThrowError(/Staging resource template cannot be greater than 51200 bytes/);
+  });
+
+  test('pass trusted principals', () => {
+    // GIVEN
+    app = new App({
+      defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
+        appId: APP_ID,
+        additionalTrustedPrincipals: [new AccountPrincipal('999999999999')],
+      }),
+    });
+    stack = new Stack(app, 'Stack', {
+      env: {
+        account: '000000000000',
+        region: 'us-east-1',
+      },
+    });
+
+    stack.synthesizer.addDockerImageAsset({
+      directoryName: '.',
+      sourceHash: 'abcdef',
+      assetName: 'abcdef',
+    });
+
+    // WHEN
+    const asm = app.synth();
+
+    // THEN
+    const crossAccountAssumeRolePolicyDocument = {
+      Statement: Match.arrayEquals([
+        Match.anyValue(),
+        {
+          Effect: 'Allow',
+          Principal: {
+            AWS: {
+              'Fn::Join': [
+                '',
+                Match.arrayWith([
+                  ':iam::999999999999:root',
+                ]),
+              ],
+            },
+          },
+          Action: 'sts:AssumeRole',
+        },
+      ]),
+    };
+    Template.fromJSON(getStagingResourceStack(asm).template).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: crossAccountAssumeRolePolicyDocument,
+      RoleName: 'cdk-appid-file-role-us-east-1',
+    });
+    Template.fromJSON(getStagingResourceStack(asm).template).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: crossAccountAssumeRolePolicyDocument,
+      RoleName: 'cdk-appid-image-role-us-east-1',
+    });
   });
 
   /**

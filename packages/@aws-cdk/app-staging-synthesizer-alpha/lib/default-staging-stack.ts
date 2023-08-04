@@ -121,6 +121,16 @@ export interface DefaultStagingStackOptions {
    * @default 'StagingStack'
    */
   readonly stagingStackNamePrefix?: string;
+
+  /**
+   * Specify trusted principals for e.g. cross-account usage.
+   * They will be added to the default principal.
+   * Both file-role and image-role will be modified.
+   * Will be ignored when custom roles are provided.
+   *
+   * @default - no additional principals will be trusted
+   */
+  readonly additionalTrustedPrincipals?: iam.IPrincipal[]
 }
 
 /**
@@ -238,6 +248,8 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
 
   private readonly deployRoleArn?: string;
 
+  private readonly additionalTrustedPrincipals: iam.IPrincipal[];
+
   constructor(scope: App, id: string, private readonly props: DefaultStagingStackProps) {
     super(scope, id, {
       ...props,
@@ -263,6 +275,8 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
     this.providedFileRole = props.fileAssetPublishingRole?._specialize(specializer);
     this.providedImageRole = props.imageAssetPublishingRole?._specialize(specializer);
     this.stagingRepos = {};
+
+    this.additionalTrustedPrincipals = props.additionalTrustedPrincipals ?? [];
   }
 
   private validateAppId(id: string) {
@@ -298,7 +312,10 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
     const roleName = this.fileRoleName;
     this.fileRole = new iam.Role(this, 'CdkFileRole', {
       roleName,
-      assumedBy: new iam.AccountPrincipal(this.account),
+      assumedBy: new iam.CompositePrincipal(
+        new iam.AccountPrincipal(this.account),
+        ...this.additionalTrustedPrincipals,
+      ),
     });
 
     this.fileRoleManifestArn = Stack.of(this).formatArn({
@@ -329,7 +346,10 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
     const roleName = this.imageRoleName;
     this.imageRole = new iam.Role(this, 'CdkImageRole', {
       roleName,
-      assumedBy: new iam.AccountPrincipal(this.account),
+      assumedBy: new iam.CompositePrincipal(
+        new iam.AccountPrincipal(this.account),
+        ...this.additionalTrustedPrincipals,
+      ),
     });
     this.imageRoleManifestArn = Stack.of(this).formatArn({
       partition: '${AWS::Partition}',
