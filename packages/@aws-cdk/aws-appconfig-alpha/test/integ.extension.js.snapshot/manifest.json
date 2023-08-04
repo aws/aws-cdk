@@ -64,7 +64,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1921c9cc1ad4a4296cdf4cd38e5d21794ed65a487d4f96914ca4fa4b6543be04.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1b3fd18c823d863a4f13c60e5b79b85a1c059750ecd97aef1f9ea43c85d23de0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -104,12 +104,6 @@
             "data": "MyApplicationMyEnv55DE3293"
           }
         ],
-        "/aws-appconfig-extension/MyLambdaExtension/RoleB28C9/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyLambdaExtensionRoleB28C90108CE62"
-          }
-        ],
         "/aws-appconfig-extension/MyLambdaExtension/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -128,12 +122,6 @@
             "data": "MyQueueE6CA6235"
           }
         ],
-        "/aws-appconfig-extension/MyQueueExtension/RoleB28C9/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyQueueExtensionRoleB28C9A21A83BA"
-          }
-        ],
         "/aws-appconfig-extension/MyQueueExtension/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -150,12 +138,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyTopic86869434"
-          }
-        ],
-        "/aws-appconfig-extension/MyTopicExtension/RoleB28C9/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyTopicExtensionRoleB28C9CF344943"
           }
         ],
         "/aws-appconfig-extension/MyTopicExtension/Resource": [

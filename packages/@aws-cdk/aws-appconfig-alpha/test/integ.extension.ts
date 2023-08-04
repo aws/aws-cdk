@@ -41,6 +41,7 @@ const lambdaExtension = new Extension(stack, 'MyLambdaExtension', {
         ActionPoint.ON_DEPLOYMENT_START,
       ],
       eventDestination: new LambdaDestination(lambda),
+      invokeWithoutExecutionRole: true,
     }),
   ],
 });
@@ -55,6 +56,7 @@ const queueExtension = new Extension(stack, 'MyQueueExtension', {
         ActionPoint.ON_DEPLOYMENT_START,
       ],
       eventDestination: new SqsDestination(queue),
+      invokeWithoutExecutionRole: true,
     }),
   ],
 });
@@ -69,6 +71,7 @@ const topicExtension = new Extension(stack, 'MyTopicExtension', {
         ActionPoint.ON_DEPLOYMENT_START,
       ],
       eventDestination: new SnsDestination(topic),
+      invokeWithoutExecutionRole: true,
     }),
   ],
 });
@@ -85,6 +88,7 @@ const busExtension = new Extension(stack, 'MyEventBusExtension', {
       eventDestination: new EventBridgeDestination(bus),
       description: 'My event bus action',
       name: 'MyEventBusPreHostedConfigVersionAction',
+      invokeWithoutExecutionRole: true,
     }),
   ],
   parameters: [
