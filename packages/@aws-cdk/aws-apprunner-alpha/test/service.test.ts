@@ -1350,4 +1350,39 @@ test('addToRolePolicy', () => {
       { Ref: 'DemoServiceInstanceRoleFCED1725' },
     ],
   });
+
+  test('AccessPolicy', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'demo-stack');
+    // WHEN
+    const service = new apprunner.Service(stack, 'DemoService', {
+      source: apprunner.Source.fromEcrPublic({
+        imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+      }),
+    });
+  
+    // THEN
+    // we should have an IAM role
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Actions: [
+              'ecr:GetDownloadUrlForLayer',
+              'ecr:BatchCheckLayerAvailability',
+              'ecr:BatchGetImage',
+              'ecr:DescribeImages',
+              'ecr:GetAuthorizationToken',
+            ],
+            Effect: 'Allow',
+            Principal: {
+              Service: 'build.apprunner.amazonaws.com',
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
 });

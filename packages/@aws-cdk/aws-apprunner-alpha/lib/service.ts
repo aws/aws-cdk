@@ -995,7 +995,7 @@ export class Service extends cdk.Resource implements iam.IGrantable {
   }
   public readonly grantPrincipal: iam.IPrincipal;
   private readonly props: ServiceProps;
-  private accessRole?: iam.IRole;
+  public accessRole?: iam.IRole;
   private instanceRole: iam.IRole;
   private source: SourceConfig;
 
@@ -1102,6 +1102,7 @@ export class Service extends cdk.Resource implements iam.IGrantable {
     // grant required privileges for the role
     if (this.source.ecrRepository && this.accessRole) {
       this.source.ecrRepository.grantPull(this.accessRole);
+      this.accessRole.
     }
 
     this.serviceArn = resource.attrServiceArn;
@@ -1166,8 +1167,12 @@ export class Service extends cdk.Resource implements iam.IGrantable {
     const accessRole = new iam.Role(this, 'AccessRole', {
       assumedBy: new iam.ServicePrincipal('build.apprunner.amazonaws.com'),
     });
+    // https://docs.aws.amazon.com/apprunner/latest/dg/security_iam_service-with-iam.html#security_iam_service-with-iam-roles
     accessRole.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['ecr:GetAuthorizationToken'],
+      actions: [
+        'ecr:DescribeImages',
+        'ecr:GetAuthorizationToken',
+      ],
       resources: ['*'],
     }));
     this.accessRole = accessRole;
