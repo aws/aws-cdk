@@ -974,7 +974,8 @@
     "name": "SagemakerEdge"
   },
   "amp": {
-    "name": "Amp"
+    "name": "Amp",
+    "cors": true
   },
   "greengrassv2": {
     "name": "GreengrassV2"
@@ -1295,5 +1296,37 @@
   },
   "osis": {
     "name": "OSIS"
+  },
+  "mediapackagev2": {
+    "name": "MediaPackageV2"
+  },
+  "paymentcryptography": {
+    "prefix": "payment-cryptography",
+    "name": "PaymentCryptography"
+  },
+  "paymentcryptographydata": {
+    "prefix": "payment-cryptography-data",
+    "name": "PaymentCryptographyData"
+  },
+  "codegurusecurity": {
+    "prefix": "codeguru-security",
+    "name": "CodeGuruSecurity"
+  },
+  "verifiedpermissions": {
+    "name": "VerifiedPermissions"
+  },
+  "appfabric": {
+    "name": "AppFabric"
+  },
+  "medicalimaging": {
+    "prefix": "medical-imaging",
+    "name": "MedicalImaging"
+  },
+  "entityresolution": {
+    "name": "EntityResolution"
+  },
+  "managedblockchainquery": {
+    "prefix": "managedblockchain-query",
+    "name": "ManagedBlockchainQuery"
   }
 }

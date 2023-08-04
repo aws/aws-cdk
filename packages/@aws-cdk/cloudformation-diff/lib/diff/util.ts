@@ -135,6 +135,18 @@ export function unionOf(lv: string[] | Set<string>, rv: string[] | Set<string>):
 }
 
 /**
+ * GetStackTemplate flattens any codepoint greater than "\u7f" to "?". This is
+ * true even for codepoints in the supplemental planes which are represented
+ * in JS as surrogate pairs, all the way up to "\u{10ffff}".
+ *
+ * This function implements the same mangling in order to provide diagnostic
+ * information in `cdk diff`.
+ */
+export function mangleLikeCloudFormation(payload: string) {
+  return payload.replace(/[\u{80}-\u{10ffff}]/gu, '?');
+}
+
+/**
  * A parseFloat implementation that does the right thing for
  * strings like '0.0.0'
  * (for which JavaScript's parseFloat() returns 0).

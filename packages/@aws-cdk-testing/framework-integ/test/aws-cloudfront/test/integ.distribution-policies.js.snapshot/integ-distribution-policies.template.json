@@ -24,12 +24,55 @@
     }
    }
   },
+  "CachePolicyWithRefD7C98251": {
+   "Type": "AWS::CloudFront::CachePolicy",
+   "Properties": {
+    "CachePolicyConfig": {
+     "DefaultTTL": {
+      "Ref": "DefaultTtlParam"
+     },
+     "MaxTTL": {
+      "Ref": "MaxTtlParam"
+     },
+     "MinTTL": {
+      "Ref": "MinTtlParam"
+     },
+     "Name": {
+      "Fn::Join": [
+       "",
+       [
+        "integdistributionpoliciesCachePolicyWithRef80C59B6E-",
+        {
+         "Ref": "AWS::Region"
+        }
+       ]
+      ]
+     },
+     "ParametersInCacheKeyAndForwardedToOrigin": {
+      "CookiesConfig": {
+       "CookieBehavior": "none"
+      },
+      "EnableAcceptEncodingBrotli": false,
+      "EnableAcceptEncodingGzip": false,
+      "HeadersConfig": {
+       "HeaderBehavior": "none"
+      },
+      "QueryStringsConfig": {
+       "QueryStringBehavior": "none"
+      }
+     }
+    }
+   }
+  },
   "OriginRequestPolicy3EFDB4FA": {
    "Type": "AWS::CloudFront::OriginRequestPolicy",
    "Properties": {
     "OriginRequestPolicyConfig": {
      "CookiesConfig": {
-      "CookieBehavior": "none"
+      "CookieBehavior": "whitelist",
+      "Cookies": [
+       "cookie1"
+      ]
      },
      "HeadersConfig": {
       "HeaderBehavior": "allViewerAndWhitelistCloudFront",
@@ -39,7 +82,10 @@
      },
      "Name": "ACustomOriginRequestPolicy",
      "QueryStringsConfig": {
-      "QueryStringBehavior": "none"
+      "QueryStringBehavior": "allExcept",
+      "QueryStrings": [
+       "querystringparam"
+      ]
      }
     }
    }
@@ -130,7 +176,7 @@
     "DistributionConfig": {
      "DefaultCacheBehavior": {
       "CachePolicyId": {
-       "Ref": "CachePolicy26D8A535"
+       "Ref": "CachePolicyWithRefD7C98251"
       },
       "Compress": true,
       "OriginRequestPolicyId": "b689b0a8-53d0-40ab-baf2-68738e2966ac",
@@ -157,6 +203,18 @@
   }
  },
  "Parameters": {
+  "MinTtlParam": {
+   "Type": "Number",
+   "Default": "1000"
+  },
+  "DefaultTtlParam": {
+   "Type": "Number",
+   "Default": "2000"
+  },
+  "MaxTtlParam": {
+   "Type": "Number",
+   "Default": "3000"
+  },
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
    "Default": "/cdk-bootstrap/hnb659fds/version",

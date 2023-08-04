@@ -143,6 +143,8 @@ export class CdkToolkit {
       }
     }
 
+    stream.write(format('\n✨  Number of stacks with differences: %s\n', diffs));
+
     return diffs && options.fail ? 1 : 0;
   }
 
@@ -359,7 +361,7 @@ export class CdkToolkit {
       const graphConcurrency: Concurrency = {
         'stack': concurrency,
         'asset-build': 1, // This will be CPU-bound/memory bound, mostly matters for Docker builds
-        'asset-publish': options.assetParallelism ? 8 : 1, // This will be I/O-bound, 8 in parallel seems reasonable
+        'asset-publish': (options.assetParallelism ?? true) ? 8 : 1, // This will be I/O-bound, 8 in parallel seems reasonable
       };
 
       await workGraph.doParallel(graphConcurrency, {

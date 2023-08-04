@@ -1,9 +1,10 @@
 {
-  "version": "31.0.0",
+  "version": "33.0.0",
   "testCases": {
     "integ-tests/DefaultTest": {
       "stacks": [
-        "synthesize-default-resources"
+        "synthesize-default-resources",
+        "StagingStack-default-resourcesmax-ACCOUNT-REGION"
       ],
       "assertionStack": "integ-tests/DefaultTest/DeployAssert",
       "assertionStackName": "integtestsDefaultTestDeployAssert44C8D370"

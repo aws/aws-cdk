@@ -32,6 +32,8 @@ new cdk.CustomResource(stack, 'CustomResourceNode14', {
 
 new integ.IntegTest(app, 'lambda-layer-node-proxy-agent-integ-test', {
   testCases: [stack],
+  // Test includes assets that are updated weekly. If not disabled, the upgrade PR will fail.
+  diffAssets: false,
   cdkCommandOptions: {
     deploy: {
       args: {

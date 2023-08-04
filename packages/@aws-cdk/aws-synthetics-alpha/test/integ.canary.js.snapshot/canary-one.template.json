@@ -112,18 +112,18 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "40aa87cdf43c4095cec18bc443965f22ab2f8c1ace47e482a0ba4e35d83b0cc9.zip"
+     "S3Key": "216218e507a977a1bb3592f29c1a62ab3e0a9eb25569109a395315638e154329.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
-    "Handler": "__entrypoint__.handler",
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x",
+    "Runtime": "nodejs18.x",
     "Description": {
      "Fn::Join": [
       "",
@@ -150,10 +150,10 @@
   "ApiGatewayDeploymentA26796E849bfdafc1a375345a13992f6e2987daf": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
+    "Description": "Automatically created by the RestApi construct",
     "RestApiId": {
      "Ref": "ApiGateway11E7F47B"
-    },
-    "Description": "Automatically created by the RestApi construct"
+    }
    },
    "DependsOn": [
     "ApiGatewayGET25EBFEA3"
@@ -162,11 +162,11 @@
   "ApiGatewayDeploymentStageprod1C6D5CD6": {
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
-    "RestApiId": {
-     "Ref": "ApiGateway11E7F47B"
-    },
     "DeploymentId": {
      "Ref": "ApiGatewayDeploymentA26796E849bfdafc1a375345a13992f6e2987daf"
+    },
+    "RestApiId": {
+     "Ref": "ApiGateway11E7F47B"
     },
     "StageName": "prod"
    }
@@ -174,17 +174,8 @@
   "ApiGatewayGET25EBFEA3": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "HttpMethod": "GET",
-    "ResourceId": {
-     "Fn::GetAtt": [
-      "ApiGateway11E7F47B",
-      "RootResourceId"
-     ]
-    },
-    "RestApiId": {
-     "Ref": "ApiGateway11E7F47B"
-    },
     "AuthorizationType": "NONE",
+    "HttpMethod": "GET",
     "Integration": {
      "IntegrationResponses": [
       {
@@ -201,7 +192,16 @@
      {
       "StatusCode": "200"
      }
-    ]
+    ],
+    "ResourceId": {
+     "Fn::GetAtt": [
+      "ApiGateway11E7F47B",
+      "RootResourceId"
+     ]
+    },
+    "RestApiId": {
+     "Ref": "ApiGateway11E7F47B"
+    }
    }
   },
   "InlineAssetServiceRole90EB5484": {
@@ -516,8 +516,9 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c33f4b91df43c8c958548ed571d6d05b4e3a4fa56a7e43aa5ba849f3d96d1699.zip"
+     "S3Key": "4914857a6c9238eb37ddc008b7f94fd44599625d49d95ee13c68e8e177dee7e9.zip"
     },
+    "DeleteLambdaResourcesOnCanaryDeletion": true,
     "ExecutionRoleArn": {
      "Fn::GetAtt": [
       "DirectoryAssetServiceRole6C204C16",
@@ -525,13 +526,6 @@
      ]
     },
     "Name": "canaryonedirect63ce4e",
-    "RuntimeVersion": "syn-nodejs-puppeteer-4.0",
-    "Schedule": {
-     "DurationInSeconds": "0",
-     "Expression": "rate(5 minutes)"
-    },
-    "StartCanaryAfterCreation": true,
-    "DeleteLambdaResourcesOnCanaryDeletion": true,
     "RunConfig": {
      "EnvironmentVariables": {
       "URL": {
@@ -559,7 +553,239 @@
        ]
       }
      }
+    },
+    "RuntimeVersion": "syn-nodejs-puppeteer-4.0",
+    "Schedule": {
+     "DurationInSeconds": "0",
+     "Expression": "rate(5 minutes)"
+    },
+    "StartCanaryAfterCreation": true
+   }
+  },
+  "FolderAssetArtifactsBucket4233584C": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "aws:kms"
+       }
+      }
+     ]
     }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "FolderAssetArtifactsBucketPolicy8A05616A": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "FolderAssetArtifactsBucket4233584C"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:*",
+       "Condition": {
+        "Bool": {
+         "aws:SecureTransport": "false"
+        }
+       },
+       "Effect": "Deny",
+       "Principal": {
+        "AWS": "*"
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "FolderAssetArtifactsBucket4233584C",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "FolderAssetArtifactsBucket4233584C",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "FolderAssetServiceRole87AE7EF1": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": "s3:ListAllMyBuckets",
+         "Effect": "Allow",
+         "Resource": "*"
+        },
+        {
+         "Action": "s3:GetBucketLocation",
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::GetAtt": [
+           "FolderAssetArtifactsBucket4233584C",
+           "Arn"
+          ]
+         }
+        },
+        {
+         "Action": "s3:PutObject",
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            {
+             "Fn::GetAtt": [
+              "FolderAssetArtifactsBucket4233584C",
+              "Arn"
+             ]
+            },
+            "/*"
+           ]
+          ]
+         }
+        },
+        {
+         "Action": "cloudwatch:PutMetricData",
+         "Condition": {
+          "StringEquals": {
+           "cloudwatch:namespace": "CloudWatchSynthetics"
+          }
+         },
+         "Effect": "Allow",
+         "Resource": "*"
+        },
+        {
+         "Action": [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+         ],
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":logs:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":log-group:/aws/lambda/cwsyn-*"
+           ]
+          ]
+         }
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "canaryPolicy"
+     }
+    ]
+   }
+  },
+  "FolderAssetDC62ADA6": {
+   "Type": "AWS::Synthetics::Canary",
+   "Properties": {
+    "ArtifactS3Location": {
+     "Fn::Join": [
+      "",
+      [
+       "s3://",
+       {
+        "Ref": "FolderAssetArtifactsBucket4233584C"
+       }
+      ]
+     ]
+    },
+    "Code": {
+     "Handler": "folder/canary.functionName",
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "4914857a6c9238eb37ddc008b7f94fd44599625d49d95ee13c68e8e177dee7e9.zip"
+    },
+    "DeleteLambdaResourcesOnCanaryDeletion": true,
+    "ExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "FolderAssetServiceRole87AE7EF1",
+      "Arn"
+     ]
+    },
+    "Name": "canaryonefolder927a83",
+    "RunConfig": {
+     "EnvironmentVariables": {
+      "URL": {
+       "Fn::Join": [
+        "",
+        [
+         "https://",
+         {
+          "Ref": "ApiGateway11E7F47B"
+         },
+         ".execute-api.",
+         {
+          "Ref": "AWS::Region"
+         },
+         ".",
+         {
+          "Ref": "AWS::URLSuffix"
+         },
+         "/",
+         {
+          "Ref": "ApiGatewayDeploymentStageprod1C6D5CD6"
+         },
+         "/"
+        ]
+       ]
+      }
+     }
+    },
+    "RuntimeVersion": "syn-nodejs-puppeteer-4.0",
+    "Schedule": {
+     "DurationInSeconds": "0",
+     "Expression": "rate(5 minutes)"
+    },
+    "StartCanaryAfterCreation": true
    }
   },
   "ZipAssetArtifactsBucket8D4ED76C": {
@@ -571,6 +797,14 @@
        "ServerSideEncryptionByDefault": {
         "SSEAlgorithm": "aws:kms"
        }
+      }
+     ]
+    },
+    "LifecycleConfiguration": {
+     "Rules": [
+      {
+       "ExpirationInDays": 30,
+       "Status": "Enabled"
       }
      ]
     }
@@ -939,7 +1173,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c33f4b91df43c8c958548ed571d6d05b4e3a4fa56a7e43aa5ba849f3d96d1699.zip"
+     "S3Key": "4914857a6c9238eb37ddc008b7f94fd44599625d49d95ee13c68e8e177dee7e9.zip"
     },
     "ExecutionRoleArn": {
      "Fn::GetAtt": [
@@ -948,12 +1182,6 @@
      ]
     },
     "Name": "canaryonesynnodec5378",
-    "RuntimeVersion": "syn-nodejs-puppeteer-3.9",
-    "Schedule": {
-     "DurationInSeconds": "0",
-     "Expression": "rate(5 minutes)"
-    },
-    "StartCanaryAfterCreation": true,
     "RunConfig": {
      "EnvironmentVariables": {
       "URL": {
@@ -981,7 +1209,13 @@
        ]
       }
      }
-    }
+    },
+    "RuntimeVersion": "syn-nodejs-puppeteer-3.9",
+    "Schedule": {
+     "DurationInSeconds": "0",
+     "Expression": "rate(5 minutes)"
+    },
+    "StartCanaryAfterCreation": true
    }
   },
   "SynNodejsPuppeteer40ArtifactsBucket30A9D9DC": {
@@ -1164,7 +1398,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c33f4b91df43c8c958548ed571d6d05b4e3a4fa56a7e43aa5ba849f3d96d1699.zip"
+     "S3Key": "4914857a6c9238eb37ddc008b7f94fd44599625d49d95ee13c68e8e177dee7e9.zip"
     },
     "ExecutionRoleArn": {
      "Fn::GetAtt": [
@@ -1173,12 +1407,6 @@
      ]
     },
     "Name": "canaryonesynnodc37fe2",
-    "RuntimeVersion": "syn-nodejs-puppeteer-4.0",
-    "Schedule": {
-     "DurationInSeconds": "0",
-     "Expression": "rate(5 minutes)"
-    },
-    "StartCanaryAfterCreation": true,
     "RunConfig": {
      "EnvironmentVariables": {
       "URL": {
@@ -1206,7 +1434,13 @@
        ]
       }
      }
-    }
+    },
+    "RuntimeVersion": "syn-nodejs-puppeteer-4.0",
+    "Schedule": {
+     "DurationInSeconds": "0",
+     "Expression": "rate(5 minutes)"
+    },
+    "StartCanaryAfterCreation": true
    }
   },
   "SynPythonSelenium13ArtifactsBucket084C41C8": {
@@ -1389,7 +1623,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c33f4b91df43c8c958548ed571d6d05b4e3a4fa56a7e43aa5ba849f3d96d1699.zip"
+     "S3Key": "4914857a6c9238eb37ddc008b7f94fd44599625d49d95ee13c68e8e177dee7e9.zip"
     },
     "ExecutionRoleArn": {
      "Fn::GetAtt": [
@@ -1398,12 +1632,6 @@
      ]
     },
     "Name": "canaryonesynpyt659e03",
-    "RuntimeVersion": "syn-python-selenium-1.3",
-    "Schedule": {
-     "DurationInSeconds": "0",
-     "Expression": "rate(5 minutes)"
-    },
-    "StartCanaryAfterCreation": true,
     "RunConfig": {
      "EnvironmentVariables": {
       "URL": {
@@ -1431,110 +1659,13 @@
        ]
       }
      }
-    }
-   }
-  }
- },
- "Mappings": {
-  "DefaultCrNodeVersionMap": {
-   "af-south-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-east-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-northeast-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-northeast-2": {
-    "value": "nodejs16.x"
-   },
-   "ap-northeast-3": {
-    "value": "nodejs16.x"
-   },
-   "ap-south-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-south-2": {
-    "value": "nodejs16.x"
-   },
-   "ap-southeast-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-southeast-2": {
-    "value": "nodejs16.x"
-   },
-   "ap-southeast-3": {
-    "value": "nodejs16.x"
-   },
-   "ca-central-1": {
-    "value": "nodejs16.x"
-   },
-   "cn-north-1": {
-    "value": "nodejs16.x"
-   },
-   "cn-northwest-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-central-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-central-2": {
-    "value": "nodejs16.x"
-   },
-   "eu-north-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-south-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-south-2": {
-    "value": "nodejs16.x"
-   },
-   "eu-west-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-west-2": {
-    "value": "nodejs16.x"
-   },
-   "eu-west-3": {
-    "value": "nodejs16.x"
-   },
-   "me-central-1": {
-    "value": "nodejs16.x"
-   },
-   "me-south-1": {
-    "value": "nodejs16.x"
-   },
-   "sa-east-1": {
-    "value": "nodejs16.x"
-   },
-   "us-east-1": {
-    "value": "nodejs16.x"
-   },
-   "us-east-2": {
-    "value": "nodejs16.x"
-   },
-   "us-gov-east-1": {
-    "value": "nodejs16.x"
-   },
-   "us-gov-west-1": {
-    "value": "nodejs16.x"
-   },
-   "us-iso-east-1": {
-    "value": "nodejs14.x"
-   },
-   "us-iso-west-1": {
-    "value": "nodejs14.x"
-   },
-   "us-isob-east-1": {
-    "value": "nodejs14.x"
-   },
-   "us-west-1": {
-    "value": "nodejs16.x"
-   },
-   "us-west-2": {
-    "value": "nodejs16.x"
+    },
+    "RuntimeVersion": "syn-python-selenium-1.3",
+    "Schedule": {
+     "DurationInSeconds": "0",
+     "Expression": "rate(5 minutes)"
+    },
+    "StartCanaryAfterCreation": true
    }
   }
  },
@@ -1579,6 +1710,14 @@
    },
    "Export": {
     "Name": "canary-one:ExportsOutputRefDirectoryAssetB49EFE5C6067345C"
+   }
+  },
+  "ExportsOutputRefFolderAssetDC62ADA64F8010C0": {
+   "Value": {
+    "Ref": "FolderAssetDC62ADA6"
+   },
+   "Export": {
+    "Name": "canary-one:ExportsOutputRefFolderAssetDC62ADA64F8010C0"
    }
   },
   "ExportsOutputRefZipAssetA028C65FBA619339": {

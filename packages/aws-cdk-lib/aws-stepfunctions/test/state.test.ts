@@ -1,7 +1,7 @@
 import { FakeTask } from './fake-task';
 import * as assert from '../../assertions';
 import * as cdk from '../../core';
-import { JsonPath, StateMachine } from '../lib';
+import { DefinitionBody, JsonPath, StateMachine } from '../lib';
 
 test('JsonPath.DISCARD can be used to discard a state\'s output', () => {
   // GIVEN
@@ -13,7 +13,7 @@ test('JsonPath.DISCARD can be used to discard a state\'s output', () => {
     resultPath: JsonPath.DISCARD,
   });
   new StateMachine(stack, 'state-machine', {
-    definition: task,
+    definitionBody: DefinitionBody.fromChainable(task),
   });
 
   // WHEN

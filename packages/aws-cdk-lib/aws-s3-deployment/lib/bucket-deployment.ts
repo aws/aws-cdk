@@ -1,7 +1,9 @@
+
+import * as fs from 'fs';
 import * as path from 'path';
 import { kebab as toKebabCase } from 'case';
 import { Construct } from 'constructs';
-import { ISource, SourceConfig } from './source';
+import { ISource, SourceConfig, Source } from './source';
 import * as cloudfront from '../../aws-cloudfront';
 import * as ec2 from '../../aws-ec2';
 import * as efs from '../../aws-efs';
@@ -85,7 +87,7 @@ export interface BucketDeploymentProps {
    * NOTICE: Configuring this to "false" might have operational implications. Please
    * visit to the package documentation referred below to make sure you fully understand those implications.
    *
-   * @see https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-s3-deployment#retain-on-delete
+   * @see https://github.com/aws/aws-cdk/tree/main/packages/aws-cdk-lib/aws-s3-deployment#retain-on-delete
    * @default true - when resource is deleted/updated, files are retained
    */
   readonly retainOnDelete?: boolean;
@@ -375,9 +377,9 @@ export class BucketDeployment extends Construct {
       serviceToken: handler.functionArn,
       resourceType: 'Custom::CDKBucketDeployment',
       properties: {
-        SourceBucketNames: cdk.Lazy.list({ produce: () => this.sources.map(source => source.bucket.bucketName) }),
-        SourceObjectKeys: cdk.Lazy.list({ produce: () => this.sources.map(source => source.zipObjectKey) }),
-        SourceMarkers: cdk.Lazy.any({
+        SourceBucketNames: cdk.Lazy.uncachedList({ produce: () => this.sources.map(source => source.bucket.bucketName) }),
+        SourceObjectKeys: cdk.Lazy.uncachedList({ produce: () => this.sources.map(source => source.zipObjectKey) }),
+        SourceMarkers: cdk.Lazy.uncachedAny({
           produce: () => {
             return this.sources.reduce((acc, source) => {
               if (source.markers) {
@@ -574,6 +576,63 @@ export class BucketDeployment extends Construct {
     const stack = cdk.Stack.of(scope);
     const uuid = `BucketDeploymentEFS-VPC-${fileSystemProps.vpc.node.addr}`;
     return stack.node.tryFindChild(uuid) as efs.FileSystem ?? new efs.FileSystem(scope, uuid, fileSystemProps);
+  }
+}
+
+export interface DeployTimeSubstitutedFileProps {
+  /**
+   * Path to the user's local file.
+   */
+  readonly source: string;
+
+  /**
+   * The S3 bucket to sync the contents of the zip file to.
+   */
+  readonly destinationBucket: s3.IBucket;
+
+  /**
+   * User-defined substitutions to make in the file.
+   * Placeholders in the user's local file must be specified with double curly
+   * brackets and spaces. For example, if you use the key 'xxxx' in the file,
+   * it must be written as: {{ xxxx }} to be recognized by the construct as a
+   * substitution.
+   */
+  readonly substitutions: { [key: string]: string };
+}
+
+/**
+ * `DeployTimeSubstitutedFile` is an extension of `BucketDeployment` that allows users to
+ * upload individual files and specify to make substitutions in the file.
+ */
+export class DeployTimeSubstitutedFile extends BucketDeployment {
+
+  public readonly objectKey: string;
+
+  constructor(scope: Construct, id: string, props: DeployTimeSubstitutedFileProps) {
+    if (!fs.existsSync(props.source)) {
+      throw new Error(`No file found at 'source' path ${props.source}`);
+    }
+    // Makes substitutions on the file
+    let fileData = fs.readFileSync(props.source, 'utf-8');
+    fileData = fileData.replace(/{{\s*(\w+)\s*}}/g, function(match, expr) {
+      return props.substitutions[expr] ?? match;
+    });
+
+    const objectKey = cdk.FileSystem.fingerprint(props.source);
+    const fileSource = Source.data(objectKey, fileData);
+    const fullBucketDeploymentProps: BucketDeploymentProps = {
+      prune: false,
+      extract: true,
+      ...props,
+      sources: [fileSource],
+    };
+    super(scope, id, fullBucketDeploymentProps);
+    // sets the object key
+    this.objectKey = objectKey;
+  }
+
+  public get bucket(): s3.IBucket {
+    return this.deployedBucket;
   }
 }
 

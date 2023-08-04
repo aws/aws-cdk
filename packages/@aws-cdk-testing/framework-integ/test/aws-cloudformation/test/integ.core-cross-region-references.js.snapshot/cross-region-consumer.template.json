@@ -3,22 +3,6 @@
   "IntegNestedNestedStackIntegNestedNestedStackResource168C5881": {
    "Type": "AWS::CloudFormation::Stack",
    "Properties": {
-    "TemplateURL": {
-     "Fn::Join": [
-      "",
-      [
-       "https://s3.us-east-2.",
-       {
-        "Ref": "AWS::URLSuffix"
-       },
-       "/",
-       {
-        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2"
-       },
-       "/e8a524074c21b1828365d86b0554b5a5282843ef099edb36de4091e50a8b4ac2.json"
-      ]
-     ]
-    },
     "Parameters": {
      "referencetocrossregionconsumerExportsReader5D0359E7cdkexportscrossregionconsumercrossregionproduceruseast1FnGetAttIntegQueue3A18718AQueueName8D8D3C9B": {
       "Fn::GetAtt": [
@@ -32,6 +16,22 @@
        "/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC1C9C99E"
       ]
      }
+    },
+    "TemplateURL": {
+     "Fn::Join": [
+      "",
+      [
+       "https://s3.us-east-2.",
+       {
+        "Ref": "AWS::URLSuffix"
+       },
+       "/",
+       {
+        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2"
+       },
+       "/c214380cadca2daa81ab0bb82f1c8a106e0a45724f6fa08a148c6907ab972035.json"
+      ]
+     ]
     }
    },
    "UpdateReplacePolicy": "Delete",
@@ -40,27 +40,27 @@
   "IntegParameter02A1817A4": {
    "Type": "AWS::SSM::Parameter",
    "Properties": {
+    "Name": "integ-parameter0",
     "Type": "String",
     "Value": {
      "Fn::GetAtt": [
       "ExportsReader8B249524",
       "/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegQueue3A18718AQueueName8D8D3C9B"
      ]
-    },
-    "Name": "integ-parameter0"
+    }
    }
   },
   "IntegParameter1EDBEF1C6": {
    "Type": "AWS::SSM::Parameter",
    "Properties": {
+    "Name": "integ-parameter1",
     "Type": "String",
     "Value": {
      "Fn::GetAtt": [
       "ExportsReader8B249524",
       "/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC1C9C99E"
      ]
-    },
-    "Name": "integ-parameter1"
+    }
    }
   },
   "ExportsReader8B249524": {
@@ -143,7 +143,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2"
      },
-     "S3Key": "4b6a500a9b63c31028b69751201d80225328cfb9df5c4a6abaac18e7d4c48a8c.zip"
+     "S3Key": "214c0a1c55832d2c26686c93062b90cfd4031cef0e1b5964eb2117b1dae7bb43.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -154,7 +154,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD"

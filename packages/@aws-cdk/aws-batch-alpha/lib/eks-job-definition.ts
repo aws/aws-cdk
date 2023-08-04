@@ -1,4 +1,4 @@
-import { ArnFormat, Lazy, Stack } from 'aws-cdk-lib';
+import { ArnFormat, Lazy, Stack } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnJobDefinition } from 'aws-cdk-lib/aws-batch';
 import { EksContainerDefinition, EmptyDirVolume, HostPathVolume, SecretPathVolume } from './eks-container-definition';
@@ -192,14 +192,13 @@ export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefini
                   };
                 }
                 if (SecretPathVolume.isSecretPathVolume(volume)) {
-                  /*return {
+                  return {
                     name: volume.name,
                     secret: {
                       optional: volume.optional,
                       secretName: volume.secretName,
                     },
                   };
-                  */
                 }
 
                 throw new Error('unknown volume type');

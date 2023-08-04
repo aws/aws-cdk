@@ -355,6 +355,37 @@ The value in `topic.topicArn` is a deploy-time value. It only gets resolved
 during deployment by placing a marker in the generated source file and
 substituting it when its deployed to the destination with the actual value.
 
+### Substitutions from Templated Files
+
+The `DeployTimeSubstitutedFile` construct allows you to specify substitutions
+to make from placeholders in a local file which will be resolved during deployment. This
+is especially useful in situations like creating an API from a spec file, where users might
+want to reference other CDK resources they have created.
+
+The syntax for template variables is `{{ variableName }}` in your local file. Then, you would 
+specify the substitutions in CDK like this:
+
+```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+
+declare const myLambdaFunction: lambda.Function;
+declare const destinationBucket: s3.Bucket;
+
+new s3deploy.DeployTimeSubstitutedFile(this, 'MyFile', {
+  source: 'my-file.yaml',
+  destinationBucket: destinationBucket,
+  substitutions: {
+    variableName: myLambdaFunction.functionName,
+  },
+});
+```
+
+Nested variables, like `{{ {{ foo }} }}` or `{{ foo {{ bar }} }}`, are not supported by this
+construct. In the first case of a single variable being is double nested `{{ {{ foo }} }}`, only 
+the `{{ foo }}` would be replaced by the substitution, and the extra brackets would remain in the file.
+In the second case of two nexted variables `{{ foo {{ bar }} }}`, only the `{{ bar }}` would be replaced
+in the file.
+
 ## Keep Files Zipped
 
 By default, files are zipped, then extracted into the destination bucket.
@@ -397,8 +428,8 @@ new cdk.CfnOutput(this, 'ObjectKey', {
 ## Development
 
 The custom resource is implemented in Python 3.9 in order to be able to leverage
-the AWS CLI for "aws s3 sync". The code is under [`lib/lambda`](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-s3-deployment/lib/lambda) and
-unit tests are under [`test/lambda`](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-s3-deployment/test/lambda).
+the AWS CLI for "aws s3 sync". The code is under [`lib/lambda`](https://github.com/aws/aws-cdk/tree/main/packages/aws-cdk-lib/aws-s3-deployment/lib/lambda) and
+unit tests are under [`test/lambda`](https://github.com/aws/aws-cdk/tree/main/packages/aws-cdk-lib/aws-s3-deployment/test/lambda).
 
 This package requires Python 3.9 during build time in order to create the custom
 resource Lambda bundle and test it. It also relies on a few bash scripts, so

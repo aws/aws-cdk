@@ -17,7 +17,7 @@
 
 This library contains integration classes to send data to any number of
 supported AWS Services. Instances of these classes should be passed to
-`TopicRule` defined in `@aws-cdk/aws-iot`.
+`TopicRule` defined in `aws-cdk-lib/aws-iot`.
 
 Currently supported are:
 
@@ -33,6 +33,7 @@ Currently supported are:
 - Publish messages on SNS topics
 - Write messages into columns of DynamoDB
 - Put messages IoT Events input
+- Send messages to HTTPS endpoints
 
 ## Republish a message to another MQTT topic
 
@@ -159,6 +160,24 @@ const topicRule = new iot.TopicRule(this, 'TopicRule', {
       metricValue: '${value}',
       metricTimestamp: '${timestamp}',
     }),
+  ],
+});
+```
+
+## Start Step Functions State Machine
+
+The code snippet below creates an AWS IoT Rule that starts a Step Functions State Machine 
+when it is triggered.
+
+```ts
+const stateMachine = new stepfunctions.StateMachine(this, 'SM', {
+  definitionBody: stepfunctions.DefinitionBody.fromChainable(new stepfunctions.Wait(this, 'Hello', { time: stepfunctions.WaitTime.duration(Duration.seconds(10)) })),
+});
+
+new iot.TopicRule(this, 'TopicRule', {
+  sql: iot.IotSql.fromStringAsVer20160323("SELECT * FROM 'device/+/data'"),
+  actions: [
+    new actions.StepFunctionsStateMachineAction(stateMachine),
   ],
 });
 ```
@@ -327,4 +346,29 @@ const topicRule = new iot.TopicRule(this, 'TopicRule', {
     }),
   ],
 });
+```
+
+## Send Messages to HTTPS Endpoints
+
+The code snippet below creates an AWS IoT Rule that sends messages
+to an HTTPS endpoint when it is triggered:
+
+```ts
+const topicRule = new iot.TopicRule(this, 'TopicRule', {
+    sql: iot.IotSql.fromStringAsVer20160323(
+      "SELECT topic(2) as device_id, year, month, day FROM 'device/+/data'",
+    ),
+  });
+
+  topicRule.addAction(
+    new actions.HttpsAction('https://example.com/endpoint', {
+      confirmationUrl: 'https://example.com',
+      headers: [
+        { key: 'key0', value: 'value0' },
+        { key: 'key1', value: 'value1' },
+      ],
+      auth: { serviceName: 'serviceName', signingRegion: 'us-east-1' },
+    }),
+  );
+}
 ```
