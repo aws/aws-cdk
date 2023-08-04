@@ -173,7 +173,7 @@ export class Method extends Resource {
    */
   public readonly api: IRestApi;
 
-  private methodResponses: MethodResponse[];
+  public readonly methodResponses: MethodResponse[];
 
   constructor(scope: Construct, id: string, props: MethodProps) {
     super(scope, id);

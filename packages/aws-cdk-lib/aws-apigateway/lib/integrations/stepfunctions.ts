@@ -117,7 +117,7 @@ class StepFunctionsExecutionIntegration extends AwsIntegration {
       action: 'StartSyncExecution',
       options: {
         credentialsRole: options.credentialsRole,
-        integrationResponses: integrationResponse(),
+        integrationResponses: options.integrationResponses ?? integrationResponse(),
         passthroughBehavior: PassthroughBehavior.NEVER,
         requestTemplates: requestTemplates(stateMachine, options),
         ...options,
@@ -157,8 +157,10 @@ class StepFunctionsExecutionIntegration extends AwsIntegration {
       deploymentToken = JSON.stringify({ stateMachineName });
     }
 
-    for (const methodResponse of METHOD_RESPONSES) {
-      method.addMethodResponse(methodResponse);
+    if (method.methodResponses.length === 0) {
+      for (const methodResponse of METHOD_RESPONSES) {
+        method.addMethodResponse(methodResponse);
+      }
     }
 
     return {

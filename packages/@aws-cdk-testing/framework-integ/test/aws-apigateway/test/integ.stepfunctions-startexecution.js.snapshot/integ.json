@@ -1,0 +1,12 @@
+{
+  "version": "33.0.0",
+  "testCases": {
+    "aws-apigateway-stepfunctions-startexecution/DefaultTest": {
+      "stacks": [
+        "aws-cdk-aws-apigateway-stepfunctions-startexecution"
+      ],
+      "assertionStack": "aws-apigateway-stepfunctions-startexecution/DefaultTest/DeployAssert",
+      "assertionStackName": "awsapigatewaystepfunctionsstartexecutionDefaultTestDeployAssert3A9ACD49"
+    }
+  }
+}
