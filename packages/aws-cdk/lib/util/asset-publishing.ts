@@ -54,6 +54,7 @@ export async function publishAssets(
     publishInParallel: options.parallel ?? true,
     buildAssets: options.buildAssets ?? true,
     publishAssets: true,
+    quiet: options.quiet,
   });
   await publisher.publish();
   if (publisher.hasFailures) {
