@@ -71,6 +71,21 @@ export class Topic extends TopicBase {
     return new Import(scope, id);
   }
 
+  /**
+   * Import an existing SNS topic provided the topic name
+   * @param scope The parent creating construct
+   * @param id The construct's name
+   * @param topicName The topic name (i.e. MyTopic)
+   */
+  public static fromTopicName(scope: Construct, id: string, topicName: string): ITopic {
+    const topicArn = Stack.of(scope).formatArn({
+      service: 'sns',
+      resource: topicName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+    return this.fromTopicArn(scope, id, topicArn);
+  }
+
   public readonly topicArn: string;
   public readonly topicName: string;
   public readonly fifo: boolean;

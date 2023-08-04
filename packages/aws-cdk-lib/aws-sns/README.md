@@ -21,6 +21,26 @@ const topic = new sns.Topic(this, 'Topic', {
 
 Note that FIFO topics require a topic name to be provided. The required `.fifo` suffix will be automatically generated and added to the topic name if it is not explicitly provided.
 
+## Import
+
+Any SNS topics that has been created outside the stack can be imported into your CDK stack.
+
+Topics can be imported by their ARN via the `Topic.fromTopicArn()` API or using the topic name via the `StateMachine.fromTopicName()` API.
+
+```ts
+const topic = sns.Topic.fromTopicArn(
+  this,
+  'ViaArnImportedStateMachine',
+  'arn:aws:sns:us-east-1:123456789012:my-topic'
+);
+
+const topic = sns.Topic.fromTopicName(
+  this,
+  'ViaResourceNameImportedStateMachine',
+  'my-topic'
+);
+```
+
 ## Subscriptions
 
 Various subscriptions can be added to the topic by calling the

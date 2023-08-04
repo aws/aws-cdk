@@ -349,6 +349,33 @@ describe('Topic', () => {
     expect(imported.fifo).toEqual(true);
   });
 
+  test('fromTopicName', () => {
+    // GIVEN
+    const stack2 = new cdk.Stack();
+
+    // WHEN
+    const imported = sns.Topic.fromTopicName(stack2, 'Imported', 'my_corporate_topic');
+
+    // THEN
+    expect(imported.topicName).toEqual('my_corporate_topic');
+    expect(imported.topicArn).toEqual('arn:aws:sns:*:123456789012:my_corporate_topic');
+    expect(imported.fifo).toEqual(false);
+
+  });
+
+  test('fromTopicName fifo', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const imported = sns.Topic.fromTopicName(stack, 'Imported', 'mytopic.fifo');
+
+    // THEN
+    expect(imported.topicName).toEqual('mytopic.fifo');
+    expect(imported.topicArn).toEqual('arn:aws:sns:*:123456789012:mytopic.fifo');
+    expect(imported.fifo).toEqual(true);
+  });
+
   test('test metrics', () => {
     // GIVEN
     const stack = new cdk.Stack();
