@@ -23,7 +23,7 @@ Currently supported are:
 * [Put an event on an EventBridge bus](#put-an-event-on-an-eventbridge-bus)
 * [Send an event to EventBridge API Destination](#invoke-an-api-destination)
 
-See the README of the `@aws-cdk/aws-events` library for more information on
+See the README of the `aws-cdk-lib/aws-events` library for more information on
 EventBridge.
 
 ## Event retry policy and using dead-letter queues
