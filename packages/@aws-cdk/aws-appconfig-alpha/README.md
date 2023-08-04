@@ -50,7 +50,7 @@ Deployment strategy with predefined values:
 
 ```ts
 new appconfig.DeploymentStrategy(this, 'MyDeploymentStrategy', {
-  rolloutStrategy: RolloutStrategy.CANARY_10_PERCENT_20_MINUTES,
+  rolloutStrategy: appconfig.RolloutStrategy.CANARY_10_PERCENT_20_MINUTES,
 });
 ```
 
@@ -58,7 +58,7 @@ Deployment strategy with custom values:
 
 ```ts
 new appconfig.DeploymentStrategy(this, 'MyDeploymentStrategy', {
-  rolloutStrategy: RolloutStrategy.linear(15, Duration.minutes(30), Duration.minutes(30)),
+  rolloutStrategy: appconfig.RolloutStrategy.linear(15, Duration.minutes(30), Duration.minutes(30)),
 });
 ```
 
@@ -75,7 +75,7 @@ declare const application: appconfig.Application;
 
 new appconfig.HostedConfiguration(this, 'MyHostedConfiguration', {
   application,
-  content: ConfigurationContent.fromInline('This is my configuration content.'),
+  content: appconfig.ConfigurationContent.fromInline('This is my configuration content.'),
 });
 ```
 
@@ -91,8 +91,8 @@ declare const application: appconfig.Application;
 
 new appconfig.HostedConfiguration(this, 'MyHostedConfiguration', {
   application,
-  content: ConfigurationContent.fromInline('This is my configuration content.'),
-  type: ConfigurationType.FEATURE_FLAGS,
+  content: appconfig.ConfigurationContent.fromInline('This is my configuration content.'),
+  type: appconfig.ConfigurationType.FEATURE_FLAGS,
 });
 ```
 
@@ -107,10 +107,10 @@ declare const fn: lambda.Function;
 
 new appconfig.HostedConfiguration(this, 'MyHostedConfiguration', {
   application,
-  content: ConfigurationContent.fromInline('This is my configuration content.'),
+  content: appconfig.ConfigurationContent.fromInline('This is my configuration content.'),
   validators: [
-    JsonSchemaValidator.fromAsset('schema.json'),
-    LambdaValidator.fromFunction(fn),
+    appconfig.JsonSchemaValidator.fromFile('schema.json'),
+    appconfig.LambdaValidator.fromFunction(fn),
   ],
 });
 ```
@@ -124,9 +124,9 @@ declare const application: appconfig.Application;
 
 new appconfig.HostedConfiguration(this, 'MyHostedConfiguration', {
   application,
-  content: ConfigurationContent.fromInline('This is my configuration content.'),
-  deploymentStrategy: new DeploymentStrategy(this, 'MyDeploymentStrategy', {
-    rolloutStrategy: RolloutStrategy.linear(15, Duration.minutes(30), Duration.minutes(15)),
+  content: appconfig.ConfigurationContent.fromInline('This is my configuration content.'),
+  deploymentStrategy: new appconfig.DeploymentStrategy(this, 'MyDeploymentStrategy', {
+    rolloutStrategy: appconfig.RolloutStrategy.linear(15, Duration.minutes(30), Duration.minutes(15)),
   }),
 });
 ```
@@ -141,7 +141,7 @@ declare const env: appconfig.Environment;
 
 new appconfig.HostedConfiguration(this, 'MyHostedConfiguration', {
   application,
-  content: ConfigurationContent.fromInline('This is my configuration content.'),
+  content: appconfig.ConfigurationContent.fromInline('This is my configuration content.'),
   deployTo: [env],
 });
 ```
@@ -163,7 +163,7 @@ const bucket = new s3.Bucket(this, 'MyBucket', {
 
 new appconfig.SourcedConfiguration(this, 'MySourcedConfiguration', {
   application,
-  location: ConfigurationSource.fromBucket(bucket, 'path/to/file.json'),
+  location: appconfig.ConfigurationSource.fromBucket(bucket, 'path/to/file.json'),
 });
 ```
 
@@ -174,12 +174,12 @@ declare const application: appconfig.Application;
 
 const bucket = new s3.Bucket(this, 'MyBucket', {
   versioned: true,
-  encryption: BucketEncryption.KMS,
+  encryption: s3.BucketEncryption.KMS,
 });
 
 new appconfig.SourcedConfiguration(this, 'MySourcedConfiguration', {
   application,
-  location: ConfigurationSource.fromBucket(bucket, 'path/to/file.json'),
+  location: appconfig.ConfigurationSource.fromBucket(bucket, 'path/to/file.json'),
 });
 ```
 
@@ -193,7 +193,7 @@ declare const secret: secrets.Secret;
 
 new appconfig.SourcedConfiguration(this, 'MySourcedConfiguration', {
   application,
-  location: ConfigurationSource.fromSecret(secret),
+  location: appconfig.ConfigurationSource.fromSecret(secret),
 });
 ```
 
@@ -207,7 +207,7 @@ declare const parameter: ssm.StringParameter;
 
 new appconfig.SourcedConfiguration(this, 'MySourcedConfiguration', {
   application,
-  location: ConfigurationSource.fromParameter(parameter),
+  location: appconfig.ConfigurationSource.fromParameter(parameter),
   versionNumber: '1',
 });
 ```
@@ -222,7 +222,7 @@ declare const document: ssm.CfnDocument;
 
 new appconfig.SourcedConfiguration(this, 'MySourcedConfiguration', {
   application,
-  location: ConfigurationSource.fromDocument(document),
+  location: appconfig.ConfigurationSource.fromCfnDocument(document),
 });
 ```
 
@@ -236,7 +236,7 @@ declare const pipeline: codepipeline.Pipeline;
 
 new appconfig.SourcedConfiguration(this, 'MySourcedConfiguration', {
   application,
-  location: ConfigurationSource.fromPipeline(pipeline),
+  location: appconfig.ConfigurationSource.fromPipeline(pipeline),
 });
 ```
 
@@ -250,8 +250,8 @@ declare const bucket: s3.Bucket;
 
 new appconfig.SourcedConfiguration(this, 'MySourcedConfiguration', {
   application,
-  location: ConfigurationSource.fromBucket(bucket, 'path/to/file.json'),
-  type: ConfigurationType.FEATURE_FLAGS,
+  location: appconfig.ConfigurationSource.fromBucket(bucket, 'path/to/file.json'),
+  type: appconfig.ConfigurationType.FEATURE_FLAGS,
   name: 'MyConfig',
   description: 'This is my sourced configuration from CDK.',
 });
@@ -266,10 +266,10 @@ declare const fn: lambda.Function;
 
 new appconfig.SourcedConfiguration(this, 'MySourcedConfiguration', {
   application,
-  location: ConfigurationSource.fromBucket(bucket, 'path/to/file.json'),
+  location: appconfig.ConfigurationSource.fromBucket(bucket, 'path/to/file.json'),
   validators: [
-    JsonSchemaValidator.fromAsset('schema.json'),
-    LambdaValidator.fromFunction(fn),
+    appconfig.JsonSchemaValidator.fromFile('schema.json'),
+    appconfig.LambdaValidator.fromFunction(fn),
   ],
 });
 ```
@@ -278,12 +278,13 @@ A sourced configuration with a deployment strategy:
 
 ```ts
 declare const application: appconfig.Application;
+declare const bucket: s3.Bucket;
 
 new appconfig.SourcedConfiguration(this, 'MySourcedConfiguration', {
   application,
-  location: ConfigurationSource.fromBucket(bucket, 'path/to/file.json'),
-  deploymentStrategy: new DeploymentStrategy(this, 'MyDeploymentStrategy', {
-    rolloutStrategy: RolloutStrategy.linear(15, Duration.minutes(30), Duration.minutes(15)),
+  location: appconfig.ConfigurationSource.fromBucket(bucket, 'path/to/file.json'),
+  deploymentStrategy: new appconfig.DeploymentStrategy(this, 'MyDeploymentStrategy', {
+    rolloutStrategy: appconfig.RolloutStrategy.linear(15, Duration.minutes(30), Duration.minutes(15)),
   }),
 });
 ```
@@ -299,7 +300,7 @@ declare const env: appconfig.Environment;
 
 new appconfig.SourcedConfiguration(this, 'MySourcedConfiguration', {
   application,
-  location: ConfigurationSource.fromBucket(bucket, 'path/to/file.json'),
+  location: appconfig.ConfigurationSource.fromBucket(bucket, 'path/to/file.json'),
   deployTo: [env],
 });
 ```
@@ -317,9 +318,7 @@ declare const alarm: cloudwatch.Alarm;
 new appconfig.Environment(this, 'MyEnvironment', {
   application,
   monitors: [
-    {
-      alarm,
-    }
+    {alarm},
   ]
 });
 ```
@@ -338,9 +337,9 @@ declare const fn: lambda.Function;
 
 new appconfig.Extension(this, 'MyExtension', {
   actions: [
-    new Action({
-      actionPoints: [ActionPoint.ON_DEPLOYMENT_START],
-      eventDestination: new LambdaDestination(fn),
+    new appconfig.Action({
+      actionPoints: [appconfig.ActionPoint.ON_DEPLOYMENT_START],
+      eventDestination: new appconfig.LambdaDestination(fn),
     }),
   ],
 });
@@ -353,14 +352,14 @@ declare const fn: lambda.Function;
 
 new appconfig.Extension(this, 'MyExtension', {
   actions: [
-    new Action({
-      actionPoints: [ActionPoint.ON_DEPLOYMENT_START],
-      eventDestination: new LambdaDestination(fn),
+    new appconfig.Action({
+      actionPoints: [appconfig.ActionPoint.ON_DEPLOYMENT_START],
+      eventDestination: new appconfig.LambdaDestination(fn),
     }),
   ],
   parameters: [
-    Parameter.required('testParam', 'true'),
-    Parameter.notRequired('testNotRequiredParam'),
+    appconfig.Parameter.required('testParam', 'true'),
+    appconfig.Parameter.notRequired('testNotRequiredParam'),
   ]
 });
 ```
@@ -375,9 +374,9 @@ declare const queue: sqs.Queue;
 
 new appconfig.Extension(this, 'MyExtension', {
   actions: [
-    new Action({
-      actionPoints: [ActionPoint.ON_DEPLOYMENT_START],
-      eventDestination: new SqsDestination(queue),
+    new appconfig.Action({
+      actionPoints: [appconfig.ActionPoint.ON_DEPLOYMENT_START],
+      eventDestination: new appconfig.SqsDestination(queue),
     }),
   ],
 });
@@ -392,9 +391,9 @@ declare const topic: sns.Topic;
 
 new appconfig.Extension(this, 'MyExtension', {
   actions: [
-    new Action({
-      actionPoints: [ActionPoint.ON_DEPLOYMENT_START],
-      eventDestination: new SnsDestination(topic),
+    new appconfig.Action({
+      actionPoints: [appconfig.ActionPoint.ON_DEPLOYMENT_START],
+      eventDestination: new appconfig.SnsDestination(topic),
     }),
   ],
 });
@@ -405,13 +404,13 @@ new appconfig.Extension(this, 'MyExtension', {
 Use the default event bus as the event destination for an extension.
 
 ```ts
-const bus = EventBus.fromEventBusName(this, 'MyEventBus', 'default');
+const bus = events.EventBus.fromEventBusName(this, 'MyEventBus', 'default');
 
 new appconfig.Extension(this, 'MyExtension', {
   actions: [
-    new Action({
-      actionPoints: [ActionPoint.ON_DEPLOYMENT_START],
-      eventDestination: new EventBridgeDestination(bus),
+    new appconfig.Action({
+      actionPoints: [appconfig.ActionPoint.ON_DEPLOYMENT_START],
+      eventDestination: new appconfig.EventBridgeDestination(bus),
     }),
   ],
 });
@@ -423,6 +422,7 @@ Adding an association to an AWS AppConfig application:
 
 ```ts
 declare const application: appconfig.Application;
+declare const extension: appconfig.Extension;
 declare const lambdaDestination: appconfig.LambdaDestination;
 
 application.addExtension(extension);
