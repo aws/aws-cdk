@@ -186,7 +186,7 @@ export class InsightType {
  * Cloud trail allows you to log events that happen in your AWS account
  * For example:
  *
- * import { CloudTrail } from '@aws-cdk/aws-cloudtrail'
+ * import { CloudTrail } from 'aws-cdk-lib/aws-cloudtrail'
  *
  * const cloudTrail = new CloudTrail(this, 'MyTrail');
  *
