@@ -518,7 +518,7 @@ export class Extension extends Resource implements IExtension {
   }
 
   private getExecutionRole(eventDestination: IEventDestination): iam.IRole {
-    this.executionRole = new iam.Role(this, `Role${getHash(eventDestination.extensionUri)}`, {
+    this.executionRole = new iam.Role(this, `Role${getHash(eventDestination.toString())}`, {
       roleName: PhysicalName.GENERATE_IF_NEEDED,
       assumedBy: new iam.ServicePrincipal('appconfig.amazonaws.com'),
       inlinePolicies: {
@@ -581,10 +581,12 @@ export interface IExtension extends IResource {
  */
 export class ExtensibleBase implements IExtensible {
   private resourceArn: string;
+  private resourceName?: string;
   private scope: Construct;
 
-  public constructor(scope: Construct, resourceArn: string) {
+  public constructor(scope: Construct, resourceArn: string, resourceName?: string) {
     this.resourceArn = resourceArn;
+    this.resourceName = resourceName;
     this.scope = scope;
   }
 
@@ -645,7 +647,7 @@ export class ExtensibleBase implements IExtensible {
   }
 
   private addExtensionAssociation(extension: IExtension, options?: ExtensionOptions) {
-    new CfnExtensionAssociation(this.scope, `AssociationResource${this.getExtensionAssociationHash(this.resourceArn, extension.extensionId)}`, {
+    new CfnExtensionAssociation(this.scope, `AssociationResource${this.getExtensionAssociationHash(extension)}`, {
       extensionIdentifier: extension.extensionId,
       resourceIdentifier: this.resourceArn,
       extensionVersionNumber: extension.extensionVersionNumber,
@@ -663,8 +665,9 @@ export class ExtensibleBase implements IExtensible {
     return getHash(combinedString);
   }
 
-  private getExtensionAssociationHash(resourceArn: string, extension: string) {
-    const combinedString = stringifyObjects(resourceArn, extension);
+  private getExtensionAssociationHash(extension: IExtension) {
+    const resourceIdentifier = this.resourceName ? this.resourceName : this.resourceArn;
+    const combinedString = stringifyObjects(resourceIdentifier, extension.name, extension.extensionVersionNumber);
     return getHash(combinedString);
   }
 }

@@ -251,7 +251,7 @@ export class Environment extends EnvironmentBase {
       resource: 'application',
       resourceName: `${this.applicationId}/environment/${this.environmentId}`,
     });
-    this.extensible = new ExtensibleBase(scope, this.environmentArn);
+    this.extensible = new ExtensibleBase(scope, this.environmentArn, this.name);
 
     this.application.addExistingEnvironment(this);
   }

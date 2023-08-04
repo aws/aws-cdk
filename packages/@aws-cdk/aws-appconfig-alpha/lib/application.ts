@@ -343,7 +343,7 @@ export class Application extends ApplicationBase {
       resourceName: this.applicationId,
     });
 
-    this.extensible = new ExtensibleBase(scope, this.applicationArn);
+    this.extensible = new ExtensibleBase(scope, this.applicationArn, this.name);
   }
 }
 

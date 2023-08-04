@@ -208,13 +208,13 @@
             "id": "MyLambdaExtension",
             "path": "aws-appconfig-extension/MyLambdaExtension",
             "children": {
-              "Role21B11": {
-                "id": "Role21B11",
-                "path": "aws-appconfig-extension/MyLambdaExtension/Role21B11",
+              "RoleB28C9": {
+                "id": "RoleB28C9",
+                "path": "aws-appconfig-extension/MyLambdaExtension/RoleB28C9",
                 "children": {
-                  "ImportRole21B11": {
-                    "id": "ImportRole21B11",
-                    "path": "aws-appconfig-extension/MyLambdaExtension/Role21B11/ImportRole21B11",
+                  "ImportRoleB28C9": {
+                    "id": "ImportRoleB28C9",
+                    "path": "aws-appconfig-extension/MyLambdaExtension/RoleB28C9/ImportRoleB28C9",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -222,7 +222,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-appconfig-extension/MyLambdaExtension/Role21B11/Resource",
+                    "path": "aws-appconfig-extension/MyLambdaExtension/RoleB28C9/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -292,7 +292,7 @@
                           },
                           "RoleArn": {
                             "Fn::GetAtt": [
-                              "MyLambdaExtensionRole21B11B01BFE1E",
+                              "MyLambdaExtensionRoleB28C90108CE62",
                               "Arn"
                             ]
                           }
@@ -309,7 +309,7 @@
                           },
                           "RoleArn": {
                             "Fn::GetAtt": [
-                              "MyLambdaExtensionRole21B11B01BFE1E",
+                              "MyLambdaExtensionRoleB28C90108CE62",
                               "Arn"
                             ]
                           }
@@ -330,9 +330,9 @@
               "version": "0.0.0"
             }
           },
-          "AssociationResource04BC8": {
-            "id": "AssociationResource04BC8",
-            "path": "aws-appconfig-extension/AssociationResource04BC8",
+          "AssociationResource3FA55": {
+            "id": "AssociationResource3FA55",
+            "path": "aws-appconfig-extension/AssociationResource3FA55",
             "attributes": {
               "aws:cdk:cloudformation:type": "AWS::AppConfig::ExtensionAssociation",
               "aws:cdk:cloudformation:props": {
@@ -404,13 +404,13 @@
             "id": "MyQueueExtension",
             "path": "aws-appconfig-extension/MyQueueExtension",
             "children": {
-              "Role23379": {
-                "id": "Role23379",
-                "path": "aws-appconfig-extension/MyQueueExtension/Role23379",
+              "RoleB28C9": {
+                "id": "RoleB28C9",
+                "path": "aws-appconfig-extension/MyQueueExtension/RoleB28C9",
                 "children": {
-                  "ImportRole23379": {
-                    "id": "ImportRole23379",
-                    "path": "aws-appconfig-extension/MyQueueExtension/Role23379/ImportRole23379",
+                  "ImportRoleB28C9": {
+                    "id": "ImportRoleB28C9",
+                    "path": "aws-appconfig-extension/MyQueueExtension/RoleB28C9/ImportRoleB28C9",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -418,7 +418,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-appconfig-extension/MyQueueExtension/Role23379/Resource",
+                    "path": "aws-appconfig-extension/MyQueueExtension/RoleB28C9/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -485,7 +485,7 @@
                           },
                           "RoleArn": {
                             "Fn::GetAtt": [
-                              "MyQueueExtensionRole23379DF101217",
+                              "MyQueueExtensionRoleB28C9A21A83BA",
                               "Arn"
                             ]
                           }
@@ -506,9 +506,9 @@
               "version": "0.0.0"
             }
           },
-          "AssociationResource8C060": {
-            "id": "AssociationResource8C060",
-            "path": "aws-appconfig-extension/AssociationResource8C060",
+          "AssociationResourceBAC86": {
+            "id": "AssociationResourceBAC86",
+            "path": "aws-appconfig-extension/AssociationResourceBAC86",
             "attributes": {
               "aws:cdk:cloudformation:type": "AWS::AppConfig::ExtensionAssociation",
               "aws:cdk:cloudformation:props": {
@@ -580,13 +580,13 @@
             "id": "MyTopicExtension",
             "path": "aws-appconfig-extension/MyTopicExtension",
             "children": {
-              "Role7BBBB": {
-                "id": "Role7BBBB",
-                "path": "aws-appconfig-extension/MyTopicExtension/Role7BBBB",
+              "RoleB28C9": {
+                "id": "RoleB28C9",
+                "path": "aws-appconfig-extension/MyTopicExtension/RoleB28C9",
                 "children": {
-                  "ImportRole7BBBB": {
-                    "id": "ImportRole7BBBB",
-                    "path": "aws-appconfig-extension/MyTopicExtension/Role7BBBB/ImportRole7BBBB",
+                  "ImportRoleB28C9": {
+                    "id": "ImportRoleB28C9",
+                    "path": "aws-appconfig-extension/MyTopicExtension/RoleB28C9/ImportRoleB28C9",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -594,7 +594,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-appconfig-extension/MyTopicExtension/Role7BBBB/Resource",
+                    "path": "aws-appconfig-extension/MyTopicExtension/RoleB28C9/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -655,7 +655,7 @@
                           },
                           "RoleArn": {
                             "Fn::GetAtt": [
-                              "MyTopicExtensionRole7BBBB94DD4F3C",
+                              "MyTopicExtensionRoleB28C9CF344943",
                               "Arn"
                             ]
                           }
@@ -676,9 +676,9 @@
               "version": "0.0.0"
             }
           },
-          "AssociationResourceF202D": {
-            "id": "AssociationResourceF202D",
-            "path": "aws-appconfig-extension/AssociationResourceF202D",
+          "AssociationResource7F3E1": {
+            "id": "AssociationResource7F3E1",
+            "path": "aws-appconfig-extension/AssociationResource7F3E1",
             "attributes": {
               "aws:cdk:cloudformation:type": "AWS::AppConfig::ExtensionAssociation",
               "aws:cdk:cloudformation:props": {
@@ -792,9 +792,9 @@
               "version": "0.0.0"
             }
           },
-          "AssociationResource56867": {
-            "id": "AssociationResource56867",
-            "path": "aws-appconfig-extension/AssociationResource56867",
+          "AssociationResource689DE": {
+            "id": "AssociationResource689DE",
+            "path": "aws-appconfig-extension/AssociationResource689DE",
             "attributes": {
               "aws:cdk:cloudformation:type": "AWS::AppConfig::ExtensionAssociation",
               "aws:cdk:cloudformation:props": {

@@ -65,7 +65,7 @@
     "Name": "awsappconfigextension-MyApplication-MyEnv-0FA5092F"
    }
   },
-  "MyLambdaExtensionRole21B11B01BFE1E": {
+  "MyLambdaExtensionRoleB28C90108CE62": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -120,7 +120,7 @@
        },
        "RoleArn": {
         "Fn::GetAtt": [
-         "MyLambdaExtensionRole21B11B01BFE1E",
+         "MyLambdaExtensionRoleB28C90108CE62",
          "Arn"
         ]
        }
@@ -137,7 +137,7 @@
        },
        "RoleArn": {
         "Fn::GetAtt": [
-         "MyLambdaExtensionRole21B11B01BFE1E",
+         "MyLambdaExtensionRoleB28C90108CE62",
          "Arn"
         ]
        }
@@ -147,7 +147,7 @@
     "Name": "awsappconfigextension-MyLambdaExtension-68C15290"
    }
   },
-  "AssociationResource04BC8": {
+  "AssociationResource3FA55": {
    "Type": "AWS::AppConfig::ExtensionAssociation",
    "Properties": {
     "ExtensionIdentifier": {
@@ -192,7 +192,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "MyQueueExtensionRole23379DF101217": {
+  "MyQueueExtensionRoleB28C9A21A83BA": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -244,7 +244,7 @@
        },
        "RoleArn": {
         "Fn::GetAtt": [
-         "MyQueueExtensionRole23379DF101217",
+         "MyQueueExtensionRoleB28C9A21A83BA",
          "Arn"
         ]
        }
@@ -254,7 +254,7 @@
     "Name": "awsappconfigextension-MyQueueExtension-EF6112FA"
    }
   },
-  "AssociationResource8C060": {
+  "AssociationResourceBAC86": {
    "Type": "AWS::AppConfig::ExtensionAssociation",
    "Properties": {
     "ExtensionIdentifier": {
@@ -297,7 +297,7 @@
   "MyTopic86869434": {
    "Type": "AWS::SNS::Topic"
   },
-  "MyTopicExtensionRole7BBBB94DD4F3C": {
+  "MyTopicExtensionRoleB28C9CF344943": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -343,7 +343,7 @@
        },
        "RoleArn": {
         "Fn::GetAtt": [
-         "MyTopicExtensionRole7BBBB94DD4F3C",
+         "MyTopicExtensionRoleB28C9CF344943",
          "Arn"
         ]
        }
@@ -353,7 +353,7 @@
     "Name": "awsappconfigextension-MyTopicExtension-37440DA2"
    }
   },
-  "AssociationResourceF202D": {
+  "AssociationResource7F3E1": {
    "Type": "AWS::AppConfig::ExtensionAssociation",
    "Properties": {
     "ExtensionIdentifier": {
@@ -435,7 +435,7 @@
     }
    }
   },
-  "AssociationResource56867": {
+  "AssociationResource689DE": {
    "Type": "AWS::AppConfig::ExtensionAssociation",
    "Properties": {
     "ExtensionIdentifier": {
@@ -500,11 +500,11 @@
    "DependsOn": [
     "MyEventBusExtensionADFE2273",
     "MyLambdaExtensionAFA1476A",
-    "MyLambdaExtensionRole21B11B01BFE1E",
+    "MyLambdaExtensionRoleB28C90108CE62",
     "MyQueueExtension872C5D27",
-    "MyQueueExtensionRole23379DF101217",
+    "MyQueueExtensionRoleB28C9A21A83BA",
     "MyTopicExtension9B6DF691",
-    "MyTopicExtensionRole7BBBB94DD4F3C"
+    "MyTopicExtensionRoleB28C9CF344943"
    ]
   },
   "HostedConfiguration257746B4": {
@@ -522,11 +522,11 @@
    "DependsOn": [
     "MyEventBusExtensionADFE2273",
     "MyLambdaExtensionAFA1476A",
-    "MyLambdaExtensionRole21B11B01BFE1E",
+    "MyLambdaExtensionRoleB28C90108CE62",
     "MyQueueExtension872C5D27",
-    "MyQueueExtensionRole23379DF101217",
+    "MyQueueExtensionRoleB28C9A21A83BA",
     "MyTopicExtension9B6DF691",
-    "MyTopicExtensionRole7BBBB94DD4F3C"
+    "MyTopicExtensionRoleB28C9CF344943"
    ],
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
@@ -553,11 +553,11 @@
    "DependsOn": [
     "MyEventBusExtensionADFE2273",
     "MyLambdaExtensionAFA1476A",
-    "MyLambdaExtensionRole21B11B01BFE1E",
+    "MyLambdaExtensionRoleB28C90108CE62",
     "MyQueueExtension872C5D27",
-    "MyQueueExtensionRole23379DF101217",
+    "MyQueueExtensionRoleB28C9A21A83BA",
     "MyTopicExtension9B6DF691",
-    "MyTopicExtensionRole7BBBB94DD4F3C"
+    "MyTopicExtensionRoleB28C9CF344943"
    ]
   }
  },

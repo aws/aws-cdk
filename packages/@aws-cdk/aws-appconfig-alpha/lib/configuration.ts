@@ -441,7 +441,7 @@ export class HostedConfiguration extends ConfigurationBase {
       resource: 'application',
       resourceName: `${this.applicationId}/configurationprofile/${this.configurationProfileId}`,
     });
-    this.extensible = new ExtensibleBase(scope, this.configurationProfileArn);
+    this.extensible = new ExtensibleBase(scope, this.configurationProfileArn, this.name);
 
     this.content = props.content.content;
     this.contentType = props.contentType || 'application/json';
@@ -593,7 +593,7 @@ export class SourcedConfiguration extends ConfigurationBase {
       resource: 'application',
       resourceName: `${this.applicationId}/configurationprofile/${this.configurationProfileId}`,
     });
-    this.extensible = new ExtensibleBase(scope, this.configurationProfileArn);
+    this.extensible = new ExtensibleBase(scope, this.configurationProfileArn, this.name);
 
     this.addExistingEnvironmentsToApplication();
     this.deployConfigToEnvironments();
@@ -703,6 +703,9 @@ export enum ValidatorType {
   LAMBDA = 'LAMBDA',
 }
 
+/**
+ * The configuration source type.
+ */
 export enum ConfigurationSourceType {
   S3 = 'S3',
   SECRETS_MANAGER = 'SECRETS_MANAGER',
@@ -728,11 +731,11 @@ export interface IValidator {
  */
 export abstract class JsonSchemaValidator implements IValidator {
   /**
-   * Defines a JSON Schema validator from an asset.
+   * Defines a JSON Schema validator from a file.
    *
    * @param path The path to the file that defines the validator
    */
-  public static fromAsset(path: string): JsonSchemaValidator {
+  public static fromFile(path: string): JsonSchemaValidator {
     return {
       content: fs.readFileSync(path).toString(),
       type: ValidatorType.JSON_SCHEMA,
@@ -786,7 +789,7 @@ export abstract class LambdaValidator implements IValidator {
  */
 export abstract class ConfigurationContent {
   /**
-   * Defines the hosted configuration content from an asset.
+   * Defines the hosted configuration content from a file.
    *
    * @param path The path to the file that defines configuration content
    */
