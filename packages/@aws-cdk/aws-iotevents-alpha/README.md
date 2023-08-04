@@ -27,7 +27,7 @@ The detector model need a reference to at least one AWS IoT Events input.
 AWS IoT Events inputs enable the detector to get MQTT payload values from IoT Core rules.
 
 You can define built-in actions to use a timer or set a variable, or send data to other AWS resources.
-See also [@aws-cdk/aws-iotevents-actions](https://docs.aws.amazon.com/cdk/api/v1/docs/aws-iotevents-actions-readme.html) for other actions.
+See also [@aws-cdk/aws-iotevents-actions-alpha](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-iotevents-actions-alpha-readme.html) for other actions.
 
 ```ts
 import * as iotevents from '@aws-cdk/aws-iotevents-alpha';

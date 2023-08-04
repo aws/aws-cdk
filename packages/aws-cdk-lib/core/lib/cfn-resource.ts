@@ -120,14 +120,22 @@ export class CfnResource extends CfnRefElement {
     policy = policy || options.default || RemovalPolicy.RETAIN;
 
     let deletionPolicy;
+    let updateReplacePolicy;
 
     switch (policy) {
       case RemovalPolicy.DESTROY:
         deletionPolicy = CfnDeletionPolicy.DELETE;
+        updateReplacePolicy = CfnDeletionPolicy.DELETE;
         break;
 
       case RemovalPolicy.RETAIN:
         deletionPolicy = CfnDeletionPolicy.RETAIN;
+        updateReplacePolicy = CfnDeletionPolicy.RETAIN;
+        break;
+
+      case RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE:
+        deletionPolicy = CfnDeletionPolicy.RETAIN_EXCEPT_ON_CREATE;
+        updateReplacePolicy = CfnDeletionPolicy.RETAIN;
         break;
 
       case RemovalPolicy.SNAPSHOT:
@@ -153,6 +161,7 @@ export class CfnResource extends CfnRefElement {
         }
 
         deletionPolicy = CfnDeletionPolicy.SNAPSHOT;
+        updateReplacePolicy = CfnDeletionPolicy.SNAPSHOT;
         break;
 
       default:
@@ -161,7 +170,7 @@ export class CfnResource extends CfnRefElement {
 
     this.cfnOptions.deletionPolicy = deletionPolicy;
     if (options.applyToUpdateReplacePolicy !== false) {
-      this.cfnOptions.updateReplacePolicy = deletionPolicy;
+      this.cfnOptions.updateReplacePolicy = updateReplacePolicy;
     }
   }
 

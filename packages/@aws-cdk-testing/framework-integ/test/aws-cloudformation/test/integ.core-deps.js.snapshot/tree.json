@@ -78,13 +78,13 @@
                     "code": {
                       "zipFile": "foo"
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "MyLambdaServiceRole4539ECB6",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
                     "runtime": "nodejs14.x"
                   }
                 },
@@ -223,15 +223,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.270"
-            }
-          },
-          "DefaultCrNodeVersionMap": {
-            "id": "DefaultCrNodeVersionMap",
-            "path": "replace-depends-on-test/DefaultCrNodeVersionMap",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
-              "version": "0.0.0"
+              "version": "10.2.69"
             }
           },
           "CustomPolicy": {
@@ -365,13 +357,13 @@
                         "code": {
                           "zipFile": "foo"
                         },
+                        "handler": "index.handler",
                         "role": {
                           "Fn::GetAtt": [
                             "Lambda1ServiceRoleF188C4B8",
                             "Arn"
                           ]
                         },
-                        "handler": "index.handler",
                         "runtime": "nodejs14.x"
                       }
                     },
@@ -418,7 +410,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/d80f241007964c163f30b1e491fb22d85422a376901bdf57f34ef94d71dcf4a2.json"
+                          "/57f11dc6fb9d3ccac29d4ad8b8178f3ac2a948e70ea4a263d57a6ca434063db6.json"
                         ]
                       ]
                     }
@@ -432,7 +424,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.270"
+              "version": "10.2.69"
             }
           },
           "Stack2": {
@@ -509,13 +501,13 @@
                         "code": {
                           "zipFile": "foo"
                         },
+                        "handler": "index.handler",
                         "role": {
                           "Fn::GetAtt": [
                             "Lambda2ServiceRole31A072E1",
                             "Arn"
                           ]
                         },
-                        "handler": "index.handler",
                         "runtime": "nodejs14.x"
                       }
                     },
@@ -562,7 +554,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/caff9f6719171b7d0611de54f70e0ef42e8e4f56432babf0d4beae6cb8bba431.json"
+                          "/fff0b43309271747c47c5081aa571319df11d2f90dd0948c6e87af23c257ee4e.json"
                         ]
                       ]
                     }
@@ -576,7 +568,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.270"
+              "version": "10.2.69"
             }
           },
           "BootstrapVersion": {
@@ -614,7 +606,7 @@
                 "path": "DependsOnTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.2.69"
                 }
               },
               "DeployAssert": {
@@ -660,7 +652,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.2.69"
         }
       }
     },

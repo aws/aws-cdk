@@ -22,6 +22,12 @@ interface BuildOptions {
   readonly outputs?: string[];
   readonly cacheFrom?: DockerCacheOption[];
   readonly cacheTo?: DockerCacheOption;
+  readonly quiet?: boolean;
+}
+
+interface PushOptions {
+  readonly tag: string;
+  readonly quiet?: boolean;
 }
 
 export interface DockerCredentialsConfig {
@@ -103,7 +109,10 @@ export class Docker {
       ...options.cacheTo ? ['--cache-to', this.cacheOptionToFlag(options.cacheTo)] : [],
       '.',
     ];
-    await this.execute(buildCommand, { cwd: options.directory });
+    await this.execute(buildCommand, {
+      cwd: options.directory,
+      quiet: options.quiet,
+    });
   }
 
   /**
@@ -130,8 +139,8 @@ export class Docker {
     await this.execute(['tag', sourceTag, targetTag]);
   }
 
-  public async push(tag: string) {
-    await this.execute(['push', tag]);
+  public async push(options: PushOptions) {
+    await this.execute(['push', options.tag], { quiet: options.quiet });
   }
 
   /**
