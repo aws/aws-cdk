@@ -35,7 +35,6 @@
    "Type": "AWS::AppSync::GraphQLApi",
    "Properties": {
     "AuthenticationType": "API_KEY",
-    "Name": "IntegLogRetention",
     "LogConfig": {
      "CloudWatchLogsRoleArn": {
       "Fn::GetAtt": [
@@ -44,7 +43,8 @@
       ]
      },
      "FieldLogLevel": "NONE"
-    }
+    },
+    "Name": "IntegLogRetention"
    }
   },
   "GraphqlApiSchema1B71CE4F": {
@@ -163,7 +163,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "0f8a80f5f2310ea7e3295258fdbb79c43a1e8c0a11e863e63dc82832599412ed.zip"
+     "S3Key": "2634e41ffbfed260b1049b081f0f568b46f60f03bf59422220562d71c9eb720e.zip"
     },
     "Role": {
      "Fn::GetAtt": [

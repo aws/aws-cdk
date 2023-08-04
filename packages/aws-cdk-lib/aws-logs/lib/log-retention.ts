@@ -55,13 +55,14 @@ export interface LogRetentionRetryOptions {
   /**
    * The maximum amount of retries.
    *
-   * @default 3 (AWS SDK default)
+   * @default 5
    */
   readonly maxRetries?: number;
   /**
    * The base duration to use in the exponential backoff for operation retries.
    *
-   * @default Duration.millis(100) (AWS SDK default)
+   * @deprecated Unused since the upgrade to AWS SDK v3, which uses a different retry strategy
+   * @default - none, not used anymore
    */
   readonly base?: cdk.Duration;
 }
@@ -92,7 +93,7 @@ export class LogRetention extends Construct {
     }
 
     // Need to use a CfnResource here to prevent lerna dependency cycles
-    // @aws-cdk/aws-cloudformation -> @aws-cdk/aws-lambda -> @aws-cdk/aws-cloudformation
+    // aws-cdk-lib/aws-cloudformation -> aws-cdk-lib/aws-lambda -> aws-cdk-lib/aws-cloudformation
     const retryOptions = props.logRetentionRetryOptions;
     const resource = new cdk.CfnResource(this, 'Resource', {
       type: 'Custom::LogRetention',
@@ -102,7 +103,6 @@ export class LogRetention extends Construct {
         LogGroupRegion: props.logGroupRegion,
         SdkRetry: retryOptions ? {
           maxRetries: retryOptions.maxRetries,
-          base: retryOptions.base?.toMilliseconds(),
         } : undefined,
         RetentionInDays: props.retention === RetentionDays.INFINITE ? undefined : props.retention,
         RemovalPolicy: props.removalPolicy,
@@ -123,7 +123,7 @@ export class LogRetention extends Construct {
 
   /**
    * Helper method to ensure that only one instance of LogRetentionFunction resources are in the stack mimicking the
-   * behaviour of @aws-cdk/aws-lambda's SingletonFunction to prevent circular dependencies
+   * behaviour of aws-cdk-lib/aws-lambda's SingletonFunction to prevent circular dependencies
    */
   private ensureSingletonLogRetentionFunction(props: LogRetentionProps) {
     const functionLogicalId = 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a';

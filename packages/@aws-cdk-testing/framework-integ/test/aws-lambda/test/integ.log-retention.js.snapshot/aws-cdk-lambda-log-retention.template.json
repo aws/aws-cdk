@@ -37,13 +37,13 @@
     "Code": {
      "ZipFile": "exports.handler = (event) => console.log(JSON.stringify(event));"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "OneWeekServiceRole05A6F9F8",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
     "Runtime": "nodejs14.x"
    },
    "DependsOn": [
@@ -137,7 +137,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "0f8a80f5f2310ea7e3295258fdbb79c43a1e8c0a11e863e63dc82832599412ed.zip"
+     "S3Key": "4763e20569cc1d6f7ae496bbfb0b3e9bc205a1811c78c9a6bc18d949d737c2a9.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -188,13 +188,13 @@
     "Code": {
      "ZipFile": "exports.handler = (event) => console.log(JSON.stringify(event));"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "OneMonthServiceRoleFBD1064F",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
     "Runtime": "nodejs14.x"
    },
    "DependsOn": [
@@ -261,13 +261,13 @@
     "Code": {
      "ZipFile": "exports.handler = (event) => console.log(JSON.stringify(event));"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "OneYearServiceRole24D47762",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
     "Runtime": "nodejs14.x"
    },
    "DependsOn": [
