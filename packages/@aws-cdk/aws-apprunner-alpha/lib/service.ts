@@ -1102,7 +1102,6 @@ export class Service extends cdk.Resource implements iam.IGrantable {
     // grant required privileges for the role
     if (this.source.ecrRepository && this.accessRole) {
       this.source.ecrRepository.grantPull(this.accessRole);
-      this.accessRole.
     }
 
     this.serviceArn = resource.attrServiceArn;
