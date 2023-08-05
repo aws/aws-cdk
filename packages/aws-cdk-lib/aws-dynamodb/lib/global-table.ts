@@ -304,13 +304,73 @@ export interface GlobalTableProps extends TableOptionsV2, SchemaOptions {
  * Attributes of a global table
  */
 export interface GlobalTableAttributes {
+  /**
+   * The ARN of the global table.
+   *
+   * Note: You must specify this or the `tableName`.
+   *
+   * @default - table arn generated using `tableName` and region of stack
+   */
   readonly tableArn?: string;
+
+  /**
+   * The name of the global table.
+   *
+   * Note: You must specify this or the `tableArn`.
+   *
+   * @default - table name retrieved from provided `tableArn`
+   */
   readonly tableName?: string;
+
+  /**
+   * The ID of the global table.
+   *
+   * @default - no table id
+   */
   readonly tableId?: string;
-  readonly tableStreamArn?: string;
+
+  /**
+   * The stream ARN of the global table.
+   *
+   * @default - no table stream ARN
+   */
+  readonly tableStreamArn?: string
+
+  /**
+   * KMS encryption key for the global table.
+   *
+   * @default - no KMS encryption key
+   */
   readonly encryptionKey?: IKey;
+
+  /**
+   * The name of the global indexes set for the global table.
+   *
+   * Note: You must set either this property or `localIndexes` if you want permissions
+   * to be granted for indexes as well as the global table itself.
+   *
+   * @default - no global indexes
+   */
   readonly globalIndexes?: string[];
+
+  /**
+   * The name of the local indexes set for the global table.
+   *
+   * Note: You must set either this property or `globalIndexes` if you want permissions
+   * to be granted for indexes as well as the global table itself.
+   *
+   * @default - no local indexes
+   */
   readonly localIndexes?: string[]
+
+  /**
+   * Whether or not to grant permissions for all indexes of the global table.
+   *
+   * Note: If false, permissions will only be granted to indexes when `globalIndexes`
+   * or `localIndexes` is specified.
+   *
+   * @default false
+   */
   readonly grantIndexPermissions?: boolean;
 }
 
@@ -603,6 +663,11 @@ export class GlobalTable extends TableBase {
     this._replicaTables.set(props.region, props);
   }
 
+  /**
+   * Retrieve the replica table configured in a specific region.
+   *
+   * @param region the region of the replica table
+   */
   public replica(region: string): ITable {
     if (Token.isUnresolved(region)) {
       throw new Error('Replica region must not be a token');
