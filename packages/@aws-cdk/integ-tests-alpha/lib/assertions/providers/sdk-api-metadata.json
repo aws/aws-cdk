@@ -263,7 +263,7 @@
     "cors": true
   },
   "iotdata": {
-    "prefix": "iot-data",
+    "prefix": "iot",
     "name": "IotData",
     "cors": true
   },

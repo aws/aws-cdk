@@ -1,18 +1,14 @@
-/**
- * Stack verification steps:
- * * aws sns subscribe --topic-arn "arn:aws:sns:<region>:<account>:test-stack-MyTopic86869434-10F6E3DMK3E5P" --protocol email --notification-endpoint <email-addr>
- * * confirm subscription from email
- * * echo '{"message": "hello world"}' > testfile.txt
- * * aws iot-data publish --topic device/mydevice/data --qos 1 --payload fileb://testfile.txt
- * * verify that an email was sent from the SNS
- * * rm testfile.txt
- */
+import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 import * as iot from '@aws-cdk/aws-iot-alpha';
 import * as sns from 'aws-cdk-lib/aws-sns';
+import { SqsSubscription } from 'aws-cdk-lib/aws-sns-subscriptions';
+import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as cdk from 'aws-cdk-lib';
 import * as actions from '../../lib';
 
 class TestStack extends cdk.Stack {
+  public readonly queue: sqs.IQueue;
+
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
@@ -24,9 +20,33 @@ class TestStack extends cdk.Stack {
 
     const snsTopic = new sns.Topic(this, 'MyTopic');
     topicRule.addAction(new actions.SnsTopicAction(snsTopic));
+
+    const queue = new sqs.Queue(this, 'MyQueue');
+    snsTopic.addSubscription(new SqsSubscription(queue));
+
+    this.queue = queue;
   }
 }
 
 const app = new cdk.App();
-new TestStack(app, 'sns-topic-action-test-stack');
-app.synth();
+const stack = new TestStack(app, 'sns-topic-action-test-stack');
+const integ = new IntegTest(app, 'sns-topic-action-test', {
+  testCases: [stack],
+  stackUpdateWorkflow: false,
+});
+
+const sqsPurgeCall = integ.assertions.awsApiCall('SQS', 'purgeQueue', {
+  QueueUrl: stack.queue.queueUrl,
+});
+const iotPublishCall = integ.assertions.awsApiCall('IotData', 'publish', {
+  topic: 'device/test-device-id/data',
+});
+const sqsReceiveCall = integ.assertions.awsApiCall('SQS', 'receiveMessage', {
+  QueueUrl: stack.queue.queueUrl,
+  WaitTimeSeconds: 20,
+});
+
+sqsPurgeCall
+  .next(iotPublishCall)
+  .next(sqsReceiveCall)
+  .assertAtPath('Messages.0.Body.Message.device_id', ExpectedResult.stringLikeRegexp('test-device-id'));

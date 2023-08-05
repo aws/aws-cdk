@@ -1,14 +1,13 @@
 {
-  "version": "21.0.0",
+  "version": "33.0.0",
   "testCases": {
-    "integ.sns-topic-action": {
+    "sns-topic-action-test/DefaultTest": {
       "stacks": [
         "sns-topic-action-test-stack"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "stackUpdateWorkflow": false,
+      "assertionStack": "sns-topic-action-test/DefaultTest/DeployAssert",
+      "assertionStackName": "snstopicactiontestDefaultTestDeployAssert7CEC369B"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }
