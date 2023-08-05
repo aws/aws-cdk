@@ -427,7 +427,7 @@ The following update policies are available:
 
 ## Allowing Connections
 
-See the documentation of the `@aws-cdk/aws-ec2` package for more information
+See the documentation of the `aws-cdk-lib/aws-ec2` package for more information
 about allowing connections between resources backed by instances.
 
 ## Max Instance Lifetime

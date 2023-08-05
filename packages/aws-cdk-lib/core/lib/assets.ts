@@ -203,6 +203,14 @@ export interface DockerImageAssetSource {
   readonly dockerBuildSecrets?: { [key: string]: string };
 
   /**
+   * SSH agent socket or keys to pass to the `docker buildx` command.
+   *
+   *
+   * @default - no ssh arg is passed
+   */
+  readonly dockerBuildSsh?: string;
+
+  /**
    * Docker target to build to
    *
    * Only allowed when `directoryName` is specified.

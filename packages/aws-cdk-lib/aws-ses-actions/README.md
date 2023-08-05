@@ -13,4 +13,4 @@ Currently supported are:
 * [SNS](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-action-sns.html)
 * [Stop](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-action-stop.html)
 
-See the README of `@aws-cdk/aws-ses` for more information.
+See the README of `aws-cdk-lib/aws-ses` for more information.

@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "33.0.0",
   "files": {
     "216218e507a977a1bb3592f29c1a62ab3e0a9eb25569109a395315638e154329": {
       "source": {
@@ -40,7 +40,7 @@
         }
       }
     },
-    "ee24909e182544909bcba67135a3de1467efe64641b17abade2766a535f56d43": {
+    "cbb4d57b32c99c4256c5c1f411f6e0944bb26dcfd09380ec02cfa06d8025bb8b": {
       "source": {
         "path": "cdk-s3-bucket-auto-delete-objects.template.json",
         "packaging": "file"
@@ -48,7 +48,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "ee24909e182544909bcba67135a3de1467efe64641b17abade2766a535f56d43.json",
+          "objectKey": "cbb4d57b32c99c4256c5c1f411f6e0944bb26dcfd09380ec02cfa06d8025bb8b.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
