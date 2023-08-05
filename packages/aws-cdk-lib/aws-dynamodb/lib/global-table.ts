@@ -315,48 +315,9 @@ export interface GlobalTableAttributes {
 }
 
 /**
- * An instance of a global table
- */
-export interface IGlobalTable extends ITable {
-  /**
-   * Get a replica table from the global table.
-   *
-   * @param region region of the replica table
-   */
-  replica(region: string): ITable;
-}
-
-/**
- * Base class for a global table
- */
-abstract class GlobalTableBase extends TableBase implements IGlobalTable {
-  /**
-   * @internal
-   */
-  protected readonly _replicaTables = new Map<string, ReplicaTableProps>();
-
-  /**
-   * Get a replica table from the global table.
-   *
-   * @param region region of the replica table
-   */
-  public replica(region: string): ITable {
-    if (Token.isUnresolved(region)) {
-      throw new Error();
-    }
-
-    if (region !== this.stack.region && !this._replicaTables.has(region)) {
-      throw new Error();
-    }
-
-    return GlobalTable.fromTableAttributes(this, `ReplicaTable-${region}`, {});
-  }
-}
-
-/**
  * A global table
  */
-export class GlobalTable extends GlobalTableBase {
+export class GlobalTable extends TableBase {
   /**
    * Creates a Global Table construct that represents an external global table via table name.
    *
@@ -364,7 +325,7 @@ export class GlobalTable extends GlobalTableBase {
    * @param id construct name
    * @param tableName the name of the global table
    */
-  public static fromTableName(scope: Construct, id: string, tableName: string): IGlobalTable {
+  public static fromTableName(scope: Construct, id: string, tableName: string): ITable {
     return GlobalTable.fromTableAttributes(scope, id, { tableName });
   }
 
@@ -375,7 +336,7 @@ export class GlobalTable extends GlobalTableBase {
    * @param id construct name
    * @param tableArn the ARN of the global table
    */
-  public static fromTableArn(scope: Construct, id: string, tableArn: string): IGlobalTable {
+  public static fromTableArn(scope: Construct, id: string, tableArn: string): ITable {
     return GlobalTable.fromTableAttributes(scope, id, { tableArn });
   }
 
@@ -386,8 +347,8 @@ export class GlobalTable extends GlobalTableBase {
    * @param id construct name
    * @param attrs the attributes representing the global table
    */
-  public static fromTableAttributes(scope: Construct, id: string, attrs: GlobalTableAttributes): IGlobalTable {
-    class Import extends GlobalTableBase {
+  public static fromTableAttributes(scope: Construct, id: string, attrs: GlobalTableAttributes): ITable {
+    class Import extends TableBase {
       public readonly tableArn: string;
       public readonly tableName: string;
       public readonly tableId?: string;
@@ -463,7 +424,6 @@ export class GlobalTable extends GlobalTableBase {
   private readonly partitionKey: Attribute;
   private readonly tableOptions: TableOptionsV2;
   private readonly encryption?: TableEncryptionV2;
-  protected readonly replicaKeyArns?: { [region: string]: string };
 
   private readonly readProvisioning?: CfnGlobalTable.ReadProvisionedThroughputSettingsProperty;
   private readonly writeProvisioning?: CfnGlobalTable.WriteProvisionedThroughputSettingsProperty;
@@ -471,6 +431,8 @@ export class GlobalTable extends GlobalTableBase {
   private readonly attributeDefinitions: CfnGlobalTable.AttributeDefinitionProperty[] = [];
   private readonly keySchema: CfnGlobalTable.KeySchemaProperty[] = [];
   private readonly nonKeyAttributes = new Set<string>();
+
+  private readonly _replicaTables = new Map<string, ReplicaTableProps>();
 
   private readonly _localSecondaryIndexes = new Map<string, CfnGlobalTable.LocalSecondaryIndexProperty>();
   private readonly _globalSecondaryIndexes = new Map<string, CfnGlobalTable.GlobalSecondaryIndexProperty>();
@@ -499,7 +461,6 @@ export class GlobalTable extends GlobalTableBase {
 
     this.encryption = props.encryption;
     this.encryptionKey = this.encryption?.tableKey;
-    this.replicaKeyArns = this.encryption?.replicaKeyArns;
 
     props.globalSecondaryIndexes?.forEach(gsi => this.addGlobalSecondaryIndex(gsi));
     props.localSecondaryIndexes?.forEach(lsi => this.addLocalSecondaryIndex(lsi));
@@ -640,6 +601,32 @@ export class GlobalTable extends GlobalTableBase {
       resourceName: this.tableName,
     }));
     this._replicaTables.set(props.region, props);
+  }
+
+  public replica(region: string): ITable {
+    if (Token.isUnresolved(region)) {
+      throw new Error('Replica region must not be a token');
+    }
+
+    if (Token.isUnresolved(this.stack.region)) {
+      throw new Error('Replica tables are not supported on a region agnostic stack');
+    }
+
+    if (region === this.stack.region) {
+      return GlobalTable.fromTableAttributes(this, `Replica${region}`, {
+        tableArn: this.tableArn,
+        encryptionKey: this.encryptionKey,
+      });
+    }
+
+    if (!this._replicaTables.has(region)) {
+      throw new Error(`Replica table in region ${region} not configured for global table`);
+    }
+
+    const tableArn = this.regionalArns.find(arn => arn.includes(region));
+    return GlobalTable.fromTableAttributes(this, `Replica${region}`, {
+      tableArn,
+    });
   }
 
   private configureLocalSecondaryIndex(props: LocalSecondaryIndexProps): CfnGlobalTable.LocalSecondaryIndexProperty {

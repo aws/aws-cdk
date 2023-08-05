@@ -2112,5 +2112,18 @@ describe('secondary indexes', () => {
 });
 
 test('replica', () => {
+  const stack = new Stack(undefined, 'Stack', { env: { region: 'us-east-1' } });
 
+  const tableKey = new Key(stack, 'Key');
+  const globalTable = new GlobalTable(stack, 'GlobalTable', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+    encryption: TableEncryptionV2.customerManagedKey(tableKey),
+    replicas: [{ region: 'us-west-2' }],
+  });
+
+  const replica = globalTable.replica('us-east-1');
+
+  console.log(replica.tableName);
+  console.log(replica.tableArn);
+  console.log(replica.encryptionKey);
 });
