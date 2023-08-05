@@ -1,22 +1,13 @@
 import { Construct } from 'constructs';
-import { DynamoDBMetrics } from './dynamodb-canned-metrics.generated';
 import { CfnGlobalTable } from './dynamodb.generated';
-import * as perms from './perms';
 import {
-  Operation,
+  TableBase,
   SecondaryIndexProps, SchemaOptions, TableClass, LocalSecondaryIndexProps,
   BillingMode, Attribute, ProjectionType, TableEncryption, ITable,
-  SystemErrorsForOperationsMetricOptions, OperationsMetricOptions,
 } from './shared';
-import {
-  Metric, MetricOptions, IMetric, MathExpression, MetricProps,
-} from '../../aws-cloudwatch';
-import { IGrantable, Grant } from '../../aws-iam';
 import { IStream } from '../../aws-kinesis';
-import { IKey, Key } from '../../aws-kms';
-import {
-  RemovalPolicy, Resource, Stack, Token, Lazy, ArnFormat, Aws,
-} from '../../core';
+import { IKey } from '../../aws-kms';
+import { RemovalPolicy, Stack, Token, Lazy, ArnFormat } from '../../core';
 
 /* eslint-disable no-console */
 
@@ -318,520 +309,47 @@ export interface GlobalTableAttributes {
   readonly tableId?: string;
   readonly tableStreamArn?: string;
   readonly encryptionKey?: IKey;
+  readonly globalIndexes?: string[];
+  readonly localIndexes?: string[]
+  readonly grantIndexPermissions?: boolean;
 }
 
 /**
- * Represents an instance of a global table
+ * An instance of a global table
  */
 export interface IGlobalTable extends ITable {
+  /**
+   * Get a replica table from the global table.
+   *
+   * @param region region of the replica table
+   */
   replica(region: string): ITable;
 }
 
 /**
  * Base class for a global table
  */
-abstract class GlobalTableBase extends Resource implements IGlobalTable {
-  /**
-   * The ARN of the replica table in the region that the global table is deployed to.
-   *
-   * @attribute
-   */
-  public abstract readonly tableArn: string;
-
-  /**
-   * The name of all replica tables in the global table.
-   *
-   * @attribute
-   */
-  public abstract readonly tableName: string;
-
-  /**
-   * The ID of the replica table in the region that the global table is deployed to.
-   *
-   * @attribute
-   */
-  public abstract readonly tableId?: string;
-
-  /**
-   * The ARN of the DynamoDB stream of the replica table in the region that the global
-   * table is deployed to.
-   *
-   * @attribute
-   */
-  public abstract readonly tableStreamArn?: string;
-
-  /**
-   * KMS encryption key for the table in the deployment region, if this table uses a customer
-   * managed encryption key.
-   */
-  public abstract readonly encryptionKey?: IKey;
-
-  protected abstract readonly replicaKeyArns?: { [region: string]: string };
-
+abstract class GlobalTableBase extends TableBase implements IGlobalTable {
   /**
    * @internal
    */
   protected readonly _replicaTables = new Map<string, ReplicaTableProps>();
 
-  protected abstract get hasIndex(): boolean;
-
+  /**
+   * Get a replica table from the global table.
+   *
+   * @param region region of the replica table
+   */
   public replica(region: string): ITable {
-    if (Token.isUnresolved(this.stack.region)) {
-      throw new Error('Replica tables are unavailable in a region agnostic stack');
-    }
-
     if (Token.isUnresolved(region)) {
-      throw new Error('Replica region must not be a token');
+      throw new Error();
     }
 
-    if (region === this.stack.region) {
-      throw new Error(`You cannot get a replica for the global table deployment region ${region}`);
+    if (region !== this.stack.region && !this._replicaTables.has(region)) {
+      throw new Error();
     }
 
-    if (!this._replicaTables.has(region)) {
-      throw new Error(`No replica table exists in region ${region} for this global table`);
-    }
-
-    const tableArn = this.stack.formatArn({
-      region,
-      service: 'dynamodb',
-      resource: 'table',
-      resourceName: this.tableName,
-    });
-    const encryptionKey = this.replicaKey(region);
-
-    return GlobalTable.fromTableAttributes(this, `ReplicaTable-${region}`, {
-      tableArn,
-      encryptionKey,
-    });
-  }
-
-  /**
-   * Adds an IAM policy statement associated with this table to an IAM
-   * principal's policy.
-   *
-   * If `encryptionKey` is present, appropriate grants to the key needs to be added
-   * separately using the `table.encryptionKey.grant*` methods.
-   *
-   * @param grantee The principal (no-op if undefined)
-   * @param actions The set of actions to allow (i.e. "dynamodb:PutItem", "dynamodb:GetItem", ...)
-   */
-  public grant(grantee: IGrantable, ...actions: string[]): Grant {
-    return Grant.addToPrincipal({
-      grantee,
-      actions,
-      resourceArns: [
-        this.tableArn,
-        Lazy.string({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
-      ],
-      scope: this,
-    });
-  }
-
-  /**
-   * Adds an IAM policy statement associated with this table's stream to an
-   * IAM principal's policy.
-   *
-   * If `encryptionKey` is present, appropriate grants to the key needs to be added
-   * separately using the `table.encryptionKey.grant*` methods.
-   *
-   * @param grantee The principal (no-op if undefined)
-   * @param actions The set of actions to allow (i.e. "dynamodb:DescribeStream", "dynamodb:GetRecords", ...)
-   */
-  public grantStream(grantee: IGrantable, ...actions: string[]): Grant {
-    if (!this.tableStreamArn) {
-      throw new Error(`DynamoDB Streams must be enabled on the table ${this.node.path}`);
-    }
-
-    return Grant.addToPrincipal({
-      grantee,
-      actions,
-      resourceArns: [this.tableStreamArn],
-      scope: this,
-    });
-  }
-
-  /**
-   * Permits an IAM principal all data read operations from this table:
-   * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan, DescribeTable.
-   *
-   * Appropriate grants will also be added to the customer-managed KMS key
-   * if one was configured.
-   *
-   * @param grantee The principal to grant access to
-   */
-  public grantReadData(grantee: IGrantable): Grant {
-    const tableActions = perms.READ_DATA_ACTIONS.concat(perms.DESCRIBE_TABLE);
-    return this.combinedGrant(grantee, { keyActions: perms.KEY_READ_ACTIONS, tableActions });
-  }
-
-  /**
-   * Permits an IAM Principal to list streams attached to current dynamodb table.
-   *
-   * @param grantee The principal (no-op if undefined)
-   */
-  public grantTableListStreams(grantee: IGrantable): Grant {
-    if (!this.tableStreamArn) {
-      throw new Error(`DynamoDB Streams must be enabled on the table ${this.node.path}`);
-    }
-
-    return Grant.addToPrincipal({
-      grantee,
-      actions: ['dynamodb:ListStreams'],
-      resourceArns: ['*'],
-    });
-  }
-
-  /**
-   * Permits an IAM principal all stream data read operations for this
-   * table's stream:
-   * DescribeStream, GetRecords, GetShardIterator, ListStreams.
-   *
-   * Appropriate grants will also be added to the customer-managed KMS key
-   * if one was configured.
-   *
-   * @param grantee The principal to grant access to
-   */
-  public grantStreamRead(grantee: IGrantable): Grant {
-    this.grantTableListStreams(grantee);
-    return this.combinedGrant(grantee, { keyActions: perms.KEY_READ_ACTIONS, streamActions: perms.READ_STREAM_DATA_ACTIONS });
-  }
-
-  /**
-   * Permits an IAM principal all data write operations to this table:
-   * BatchWriteItem, PutItem, UpdateItem, DeleteItem, DescribeTable.
-   *
-   * Appropriate grants will also be added to the customer-managed KMS key
-   * if one was configured.
-   *
-   * @param grantee The principal to grant access to
-   */
-  public grantWriteData(grantee: IGrantable): Grant {
-    const tableActions = perms.WRITE_DATA_ACTIONS.concat(perms.DESCRIBE_TABLE);
-    const keyActions = perms.KEY_READ_ACTIONS.concat(perms.KEY_WRITE_ACTIONS);
-    return this.combinedGrant(grantee, { keyActions, tableActions });
-  }
-
-  /**
-   * Permits an IAM principal to all data read/write operations to this table.
-   * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan,
-   * BatchWriteItem, PutItem, UpdateItem, DeleteItem, DescribeTable
-   *
-   * Appropriate grants will also be added to the customer-managed KMS key
-   * if one was configured.
-   *
-   * @param grantee The principal to grant access to
-   */
-  public grantReadWriteData(grantee: IGrantable): Grant {
-    const tableActions = perms.READ_DATA_ACTIONS.concat(perms.WRITE_DATA_ACTIONS).concat(perms.DESCRIBE_TABLE);
-    const keyActions = perms.KEY_READ_ACTIONS.concat(perms.KEY_WRITE_ACTIONS);
-    return this.combinedGrant(grantee, { keyActions, tableActions });
-  }
-
-  /**
-   * Permits all DynamoDB operations ("dynamodb:*") to an IAM principal.
-   *
-   * Appropriate grants will also be added to the customer-managed KMS key
-   * if one was configured.
-   *
-   * @param grantee The principal to grant access to
-   */
-  public grantFullAccess(grantee: IGrantable) {
-    const keyActions = perms.KEY_READ_ACTIONS.concat(perms.KEY_WRITE_ACTIONS);
-    return this.combinedGrant(grantee, { keyActions, tableActions: ['dynamodb:*'] });
-  }
-
-  /**
-   * Return the given named metric for this Table
-   *
-   * By default, the metric will be calculated as a sum over a period of 5 minutes.
-   * You can customize this by using the `statistic` and `period` properties.
-   */
-  public metric(metricName: string, props?: MetricOptions): Metric {
-    return new Metric({
-      namespace: 'AWS/DynamoDB',
-      metricName,
-      dimensionsMap: {
-        TableName: this.tableName,
-      },
-      ...props,
-    }).attachTo(this);
-  }
-
-  /**
-   * Metric for the consumed read capacity units this table
-   *
-   * By default, the metric will be calculated as a sum over a period of 5 minutes.
-   * You can customize this by using the `statistic` and `period` properties.
-   */
-  public metricConsumedReadCapacityUnits(props?: MetricOptions): Metric {
-    return this.cannedMetric(DynamoDBMetrics.consumedReadCapacityUnitsSum, props);
-  }
-
-  /**
-   * Metric for the consumed write capacity units this table
-   *
-   * By default, the metric will be calculated as a sum over a period of 5 minutes.
-   * You can customize this by using the `statistic` and `period` properties.
-   */
-  public metricConsumedWriteCapacityUnits(props?: MetricOptions): Metric {
-    return this.cannedMetric(DynamoDBMetrics.consumedWriteCapacityUnitsSum, props);
-  }
-
-  /**
-   * Metric for the system errors this table
-   *
-   * @deprecated use `metricSystemErrorsForOperations`.
-   */
-  public metricSystemErrors(props?: MetricOptions): Metric {
-    if (!props?.dimensions?.Operation && !props?.dimensionsMap?.Operation) {
-      // 'Operation' must be passed because its an operational metric.
-      throw new Error("'Operation' dimension must be passed for the 'SystemErrors' metric.");
-    }
-
-    const dimensionsMap = {
-      TableName: this.tableName,
-      ...props?.dimensions ?? {},
-      ...props?.dimensionsMap ?? {},
-    };
-
-    return this.metric('SystemErrors', { statistic: 'sum', ...props, dimensionsMap });
-  }
-
-  /**
-   * Metric for the user errors. Note that this metric reports user errors across all
-   * the tables in the account and region the table resides in.
-   *
-   * By default, the metric will be calculated as a sum over a period of 5 minutes.
-   * You can customize this by using the `statistic` and `period` properties.
-   */
-  public metricUserErrors(props?: MetricOptions): Metric {
-    if (props?.dimensions) {
-      throw new Error("'dimensions' is not supported for the 'UserErrors' metric");
-    }
-
-    // overriding 'dimensions' here because this metric is an account metric.
-    // see 'UserErrors' in https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/metrics-dimensions.html
-    return this.metric('UserErrors', { statistic: 'sum', ...props, dimensionsMap: {} });
-  }
-
-  /**
-   * Metric for the conditional check failed requests this table
-   *
-   * By default, the metric will be calculated as a sum over a period of 5 minutes.
-   * You can customize this by using the `statistic` and `period` properties.
-   */
-  public metricConditionalCheckFailedRequests(props?: MetricOptions): Metric {
-    return this.metric('ConditionalCheckFailedRequests', { statistic: 'sum', ...props });
-  }
-
-  /**
-   * How many requests are throttled on this table
-   *
-   * Default: sum over 5 minutes
-   *
-   * @deprecated Do not use this function. It returns an invalid metric. Use `metricThrottledRequestsForOperation` instead.
-   */
-  public metricThrottledRequests(props?: MetricOptions): Metric {
-    return this.metric('ThrottledRequests', { statistic: 'sum', ...props });
-  }
-
-  /**
-   * Metric for the successful request latency this table.
-   *
-   * By default, the metric will be calculated as an average over a period of 5 minutes.
-   * You can customize this by using the `statistic` and `period` properties.
-   */
-  public metricSuccessfulRequestLatency(props?: MetricOptions): Metric {
-    if (!props?.dimensions?.Operation && !props?.dimensionsMap?.Operation) {
-      throw new Error("'Operation' dimension must be passed for the 'SuccessfulRequestLatency' metric.");
-    }
-
-    const dimensionsMap = {
-      TableName: this.tableName,
-      Operation: props.dimensionsMap?.Operation ?? props.dimensions?.Operation,
-    };
-
-    return new Metric({
-      ...DynamoDBMetrics.successfulRequestLatencyAverage(dimensionsMap),
-      ...props,
-      dimensionsMap,
-    }).attachTo(this);
-  }
-
-  /**
-   * How many requests are throttled on this table, for the given operation
-   *
-   * Default: sum over 5 minutes
-   */
-  public metricThrottledRequestsForOperation(operation: string, props?: MetricOptions): Metric {
-    return new Metric({
-      ...DynamoDBMetrics.throttledRequestsSum({ Operation: operation, TableName: this.tableName }),
-      ...props,
-    }).attachTo(this);
-  }
-
-  /**
-   * How many requests are throttled on this table.
-   *
-   * This will sum errors across all possible operations.
-   * Note that by default, each individual metric will be calculated as a sum over a period of 5 minutes.
-   * You can customize this by using the `statistic` and `period` properties.
-   */
-  public metricThrottledRequestsForOperations(props?: OperationsMetricOptions): IMetric {
-    return this.sumMetricsForOperations('ThrottledRequests', 'Sum of throttled requests across all operations', props);
-  }
-
-  /**
-   * Metric for the system errors this table.
-   *
-   * This will sum errors across all possible operations.
-   * Note that by default, each individual metric will be calculated as a sum over a period of 5 minutes.
-   * You can customize this by using the `statistic` and `period` properties.
-   */
-  public metricSystemErrorsForOperations(props?: SystemErrorsForOperationsMetricOptions): IMetric {
-    return this.sumMetricsForOperations('SystemErrors', 'Sum of errors across all operations', props);
-  }
-
-  private replicaKey(region: string) {
-    if (!this.replicaKeyArns) {
-      return undefined;
-    }
-
-    if (!this.replicaKeyArns.hasOwnProperty(region)) {
-      throw new Error(`No KMS key ARN provided for replica table in region ${region}`);
-    }
-
-    const keyArn = this.replicaKeyArns[region];
-    return Key.fromKeyArn(this, `ReplicaKey-${region}`, keyArn);
-  }
-
-  /**
-   * Create a math expression for operations.
-   *
-   * @param metricName The metric name.
-   * @param expressionLabel Label for expression
-   * @param props operation list
-   */
-  private sumMetricsForOperations(metricName: string, expressionLabel: string, props?: OperationsMetricOptions): IMetric {
-    if (props?.dimensions?.Operation) {
-      throw new Error("The Operation dimension is not supported. Use the 'operations' property.");
-    }
-
-    const operations = props?.operations ?? Object.values(Operation);
-
-    const values = this.createMetricsForOperations(metricName, operations, { statistic: 'sum', ...props });
-
-    const sum = new MathExpression({
-      expression: `${Object.keys(values).join(' + ')}`,
-      usingMetrics: { ...values },
-      color: props?.color,
-      label: expressionLabel,
-      period: props?.period,
-    });
-
-    return sum;
-  }
-
-  /**
-   * Create a map of metrics that can be used in a math expression.
-   *
-   * Using the return value of this function as the `usingMetrics` property in `cloudwatch.MathExpression` allows you to
-   * use the keys of this map as metric names inside you expression.
-   *
-   * @param metricName The metric name.
-   * @param operations The list of operations to create metrics for.
-   * @param props Properties for the individual metrics.
-   * @param metricNameMapper Mapper function to allow controlling the individual metric name per operation.
-   */
-  private createMetricsForOperations(metricName: string, operations: Operation[],
-    props?: MetricOptions, metricNameMapper?: (op: Operation) => string): Record<string, IMetric> {
-
-    const metrics: Record<string, IMetric> = {};
-
-    const mapper = metricNameMapper ?? (op => op.toLowerCase());
-
-    if (props?.dimensions?.Operation) {
-      throw new Error('Invalid properties. Operation dimension is not supported when calculating operational metrics');
-    }
-
-    for (const operation of operations) {
-
-      const metric = this.metric(metricName, {
-        ...props,
-        dimensionsMap: {
-          TableName: this.tableName,
-          Operation: operation,
-          ...props?.dimensions,
-        },
-      });
-
-      const operationMetricName = mapper(operation);
-      const firstChar = operationMetricName.charAt(0);
-
-      if (firstChar === firstChar.toUpperCase()) {
-        // https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/using-metric-math.html#metric-math-syntax
-        throw new Error(`Mapper generated an illegal operation metric name: ${operationMetricName}. Must start with a lowercase letter`);
-      }
-
-      metrics[operationMetricName] = metric;
-    }
-
-    return metrics;
-  }
-
-  /**
-   * Adds an IAM policy statement associated with this table to an IAM
-   * principal's policy.
-   * @param grantee The principal (no-op if undefined)
-   * @param opts Options for keyActions, tableActions and streamActions
-   */
-  private combinedGrant(
-    grantee: IGrantable,
-    opts: { keyActions?: string[], tableActions?: string[], streamActions?: string[] },
-  ): Grant {
-    if (this.encryptionKey && opts.keyActions) {
-      this.encryptionKey.grant(grantee, ...opts.keyActions);
-    }
-
-    if (opts.tableActions) {
-      const resources = [
-        this.tableArn,
-        Lazy.string({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
-      ];
-      const ret = Grant.addToPrincipal({
-        grantee,
-        actions: opts.tableActions,
-        resourceArns: resources,
-        scope: this,
-      });
-      return ret;
-    }
-
-    if (opts.streamActions) {
-      if (!this.tableStreamArn) {
-        throw new Error(`DynamoDB Streams must be enabled on the table ${this.node.path}`);
-      }
-      const resources = [this.tableStreamArn];
-      const ret = Grant.addToPrincipal({
-        grantee,
-        actions: opts.streamActions,
-        resourceArns: resources,
-        scope: this,
-      });
-      return ret;
-    }
-
-    throw new Error(`Unexpected 'action', ${opts.tableActions || opts.streamActions}`);
-  }
-
-  private cannedMetric(
-    fn: (dims: { TableName: string }) => MetricProps,
-    props?: MetricOptions): Metric {
-    return new Metric({
-      ...fn({ TableName: this.tableName }),
-      ...props,
-    }).attachTo(this);
+    return GlobalTable.fromTableAttributes(this, `ReplicaTable-${region}`, {});
   }
 }
 
@@ -875,8 +393,9 @@ export class GlobalTable extends GlobalTableBase {
       public readonly tableId?: string;
       public readonly tableStreamArn?: string;
       public readonly encryptionKey?: IKey;
-      protected readonly replicaKeyArns?: { [region: string]: string };
-      protected readonly hasIndex = true; // placeholder for now
+      protected readonly hasIndex = (attrs.grantIndexPermissions ?? false) ||
+        (attrs.globalIndexes ?? []).length > 0 ||
+        (attrs.localIndexes ?? []).length > 0;
 
       public constructor(tableArn: string, tableName: string, tableId?: string, tableStreamArn?: string) {
         super(scope, id);
@@ -884,6 +403,7 @@ export class GlobalTable extends GlobalTableBase {
         this.tableName = tableName;
         this.tableId = tableId;
         this.tableStreamArn = tableStreamArn;
+        this.encryptionKey = attrs.encryptionKey;
       }
     }
 
@@ -909,7 +429,7 @@ export class GlobalTable extends GlobalTableBase {
       tableArn = attrs.tableArn;
       const resourceName = stack.splitArn(tableArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
       if (!resourceName) {
-        throw new Error('Invalid table ARN');
+        throw new Error('ARN for Global Table must be in the form ...');
       }
       tableName = resourceName;
     }
@@ -965,8 +485,8 @@ export class GlobalTable extends GlobalTableBase {
     if (props.billing) {
       this.billingMode = props.billing.mode;
       if (this.billingMode === BillingMode.PROVISIONED) {
-        this.readProvisioning = this.configureReadProvisioning(props.billing.readCapacity);
-        this.writeProvisioning = this.configureWriteProvisioning(props.billing.writeCapacity);
+        this.readProvisioning = props.billing._renderReadCapacity();
+        this.writeProvisioning = props.billing._renderWriteCapacity();
       }
     } else {
       this.billingMode = BillingMode.PAY_PER_REQUEST;
@@ -1039,14 +559,10 @@ export class GlobalTable extends GlobalTableBase {
   private get replicaTables() {
     const replicaTables: CfnGlobalTable.ReplicaSpecificationProperty[] = [];
 
-    if (!this._replicaTables.has(this.stack.region)) {
-      const replicaTable = this.configureReplicaTable({ region: this.stack.region });
-      replicaTables.push(replicaTable);
-    }
-
     for (const replicaTable of this._replicaTables.values()) {
       replicaTables.push(this.configureReplicaTable(replicaTable));
     }
+    replicaTables.push(this.configureReplicaTable({ region: this.stack.region }));
 
     return replicaTables;
   }
@@ -1117,6 +633,12 @@ export class GlobalTable extends GlobalTableBase {
       throw new Error(`Duplicate replica region, ${props.region}, is not allowed`);
     }
 
+    this.regionalArns.push(this.stack.formatArn({
+      region: props.region,
+      resource: 'table',
+      service: 'dynamodb',
+      resourceName: this.tableName,
+    }));
     this._replicaTables.set(props.region, props);
   }
 
@@ -1140,7 +662,7 @@ export class GlobalTable extends GlobalTableBase {
     }
 
     const writeProvisionedThroughputSettings = props.writeCapacity
-      ? this.configureWriteProvisioning(props.writeCapacity)
+      ? props.writeCapacity._renderWriteCapacity()
       : this.writeProvisioning;
 
     return {
@@ -1171,7 +693,7 @@ export class GlobalTable extends GlobalTableBase {
         const readCapacity = replicaGsiOptions.readCapacity ?? this.globalSecondaryIndexReadCapacitys.get(indexName);
 
         const readProvisionedThroughputSettings = readCapacity
-          ? this.configureReadProvisioning(readCapacity)
+          ? readCapacity._renderReadCapacity()
           : undefined;
 
         globalSecondaryIndexes.push({
@@ -1193,7 +715,7 @@ export class GlobalTable extends GlobalTableBase {
 
         const readCapacity = this.globalSecondaryIndexReadCapacitys.get(gsi.indexName);
         const readProvisionedThroughputSettings = readCapacity
-          ? this.configureReadProvisioning(readCapacity)
+          ? readCapacity._renderReadCapacity()
           : undefined;
 
         globalSecondaryIndexes.push({
@@ -1214,7 +736,7 @@ export class GlobalTable extends GlobalTableBase {
     const pointInTimeRecovery = props.pointInTimeRecovery ?? this.tableOptions.pointInTimeRecovery;
     const contributorInsights = props.contributorInsights ?? this.tableOptions.contributorInsights;
     const readProvisionedThroughputSettings = props.readCapacity
-      ? this.configureReadProvisioning(props.readCapacity)
+      ? props.readCapacity._renderReadCapacity()
       : this.readProvisioning;
 
     return {
@@ -1233,38 +755,6 @@ export class GlobalTable extends GlobalTableBase {
       pointInTimeRecoverySpecification: pointInTimeRecovery !== undefined
         ? { pointInTimeRecoveryEnabled: pointInTimeRecovery }
         : undefined,
-    };
-  }
-
-  private configureReadProvisioning(readCapacity: Capacity): CfnGlobalTable.ReadProvisionedThroughputSettingsProperty {
-    if (readCapacity.mode === CapacityMode.FIXED) {
-      return { readCapacityUnits: readCapacity.units };
-    }
-
-    return {
-      readCapacityAutoScalingSettings: {
-        minCapacity: readCapacity.minCapacity,
-        maxCapacity: readCapacity.maxCapacity,
-        targetTrackingScalingPolicyConfiguration: {
-          targetValue: readCapacity.targetUtilizationPercent,
-        },
-      },
-    };
-  }
-
-  private configureWriteProvisioning(writeCapacity: Capacity): CfnGlobalTable.WriteProvisionedThroughputSettingsProperty {
-    if (writeCapacity.mode === CapacityMode.FIXED) {
-      throw new Error(`Write capacity must be configured using ${CapacityMode.AUTOSCALED} capacity mode`);
-    }
-
-    return {
-      writeCapacityAutoScalingSettings: {
-        minCapacity: writeCapacity.minCapacity,
-        maxCapacity: writeCapacity.maxCapacity,
-        targetTrackingScalingPolicyConfiguration: {
-          targetValue: writeCapacity.targetUtilizationPercent,
-        },
-      },
     };
   }
 
@@ -1335,14 +825,22 @@ export class GlobalTable extends GlobalTableBase {
  * Used to configure how you are charged for read and write throughput and how you
  * manage capacity for a global table and its replicas
  */
-export class Billing {
+export abstract class Billing {
   /**
    * Configure on-demand billing.
    *
    * Note: This will set the billing mode to PAY_PER_REQUEST.
    */
-  public static onDemand() {
-    return new Billing(BillingMode.PAY_PER_REQUEST, undefined, undefined);
+  public static onDemand(): Billing {
+    return new (class extends Billing {
+      public _renderReadCapacity() {
+        throw new Error(`Read capacity is not configured when billing mode is ${BillingMode.PAY_PER_REQUEST}`);
+      }
+
+      public _renderWriteCapacity() {
+        throw new Error(`Write capacity is not configured when billing mode is ${BillingMode.PROVISIONED}`);
+      }
+    }) (BillingMode.PAY_PER_REQUEST);
   }
 
   /**
@@ -1350,46 +848,52 @@ export class Billing {
    *
    * Note: This will set the billing mode to PROVISIONED.
    */
-  public static provisioned(props: ThroughputProps) {
-    return new Billing(BillingMode.PROVISIONED, props.readCapacity, props.writeCapacity);
+  public static provisioned(props: ThroughputProps): Billing {
+    return new (class extends Billing {
+      public _renderReadCapacity() {
+        return props.readCapacity._renderReadCapacity();
+      }
+
+      public _renderWriteCapacity() {
+        return props.writeCapacity._renderWriteCapacity();
+      }
+    }) (BillingMode.PROVISIONED);
   }
 
-  public readonly mode: string;
-  private readonly _readCapacity?: Capacity;
-  private readonly _writeCapacity?: Capacity;
+  private constructor(public readonly mode: string) {}
 
-  public get readCapacity() {
-    if (!this._readCapacity) {
-      throw new Error(`readCapacity is not configured when billing mode is ${BillingMode.PAY_PER_REQUEST}`);
-    }
-    return this._readCapacity;
-  }
+  /**
+   * @internal
+   */
+  public abstract _renderReadCapacity(): any;
 
-  public get writeCapacity() {
-    if (!this._writeCapacity) {
-      throw new Error(`writeCapacity is not configured when billing mode is ${BillingMode.PAY_PER_REQUEST}`);
-    }
-    return this._writeCapacity;
-  }
-
-  private constructor(mode: string, readCapacity: Capacity | undefined, writeCapacity: Capacity | undefined) {
-    this.mode = mode;
-    this._readCapacity = readCapacity;
-    this._writeCapacity = writeCapacity;
-  }
+  /**
+   * @internal
+   */
+  public abstract _renderWriteCapacity(): any;
 }
 
 /**
  * Used to configure read and write capacity for a global table and its replicas
  */
-export class Capacity {
+export abstract class Capacity {
   /**
    * Configure fixed capacity.
    *
    * Note: This will set the capacity mode to FIXED.
    */
-  public static fixed(units: number) {
-    return new Capacity(CapacityMode.FIXED, { units });
+  public static fixed(units: number): Capacity {
+    return new (class extends Capacity {
+      public _renderReadCapacity() {
+        return {
+          readCapacityUnits: units,
+        } satisfies CfnGlobalTable.ReadProvisionedThroughputSettingsProperty;
+      }
+
+      public _renderWriteCapacity() {
+        throw new Error();
+      }
+    }) (CapacityMode.FIXED);
   }
 
   /**
@@ -1397,60 +901,42 @@ export class Capacity {
    *
    * Note: This will set the capacity mode to AUTOSCALED.
    */
-  public static autoscaled(options: AutoscaledCapacityOptions) {
-    return new Capacity(CapacityMode.AUTOSCALED, { ...options });
-  }
-
-  public readonly mode: string;
-  private readonly _units?: number;
-  private readonly _minCapacity?: number;
-  private readonly _maxCapacity?: number;
-  private readonly _targetUtilizationPercent?: number;
-
-  public get units() {
-    if (this._units === undefined) {
-      throw new Error(`Capacity units are not configured when capacity mode is ${CapacityMode.AUTOSCALED}`);
-    }
-    return this._units;
-  }
-
-  public get minCapacity() {
-    if (this._minCapacity === undefined) {
-      throw new Error(`Minimum capacity is not configured when capacity mode is ${CapacityMode.FIXED}`);
-    }
-    return this._minCapacity;
-  }
-
-  public get maxCapacity() {
-    if (this._maxCapacity === undefined) {
-      throw new Error(`Maximum capacity is not configured when capacity mode is ${CapacityMode.FIXED}`);
-    }
-    return this._maxCapacity;
-  }
-
-  public get targetUtilizationPercent() {
-    if (this.mode === CapacityMode.FIXED) {
-      throw new Error(`Target utilization percent is not configured when capacity mode is ${CapacityMode.FIXED}`);
-    }
-    return this._targetUtilizationPercent ?? DEFAULT_TARGET_UTILIZATION;
-  }
-
-  private constructor(mode: string, options: CapacityOptions) {
-    if (options.minCapacity && options.maxCapacity) {
-      if (options.minCapacity > options.maxCapacity) {
-        throw new Error(`Min capacity: ${options.minCapacity} must be less than or equal to max capacity: ${options.maxCapacity}`);
+  public static autoscaled(options: AutoscaledCapacityOptions): Capacity {
+    return new (class extends Capacity {
+      public _renderReadCapacity() {
+        return {
+          readCapacityAutoScalingSettings: this.renderAutoscaledCapacity(options),
+        } satisfies CfnGlobalTable.ReadProvisionedThroughputSettingsProperty;
       }
-    }
 
-    if (options.targetUtilizationPercent && (options.targetUtilizationPercent < 20 || options.targetUtilizationPercent > 90)) {
-      throw new Error(`Target utilization percent must be between 20 and 90, inclusive. Provided: ${options.targetUtilizationPercent}`);
-    }
+      public _renderWriteCapacity() {
+        return {
+          writeCapacityAutoScalingSettings: this.renderAutoscaledCapacity(options),
+        } satisfies CfnGlobalTable.WriteProvisionedThroughputSettingsProperty;
+      }
+    }) (CapacityMode.AUTOSCALED);
+  }
 
-    this.mode = mode;
-    this._units = options.units;
-    this._minCapacity = options.minCapacity;
-    this._maxCapacity = options.maxCapacity;
-    this._targetUtilizationPercent = options.targetUtilizationPercent;
+  private constructor(public readonly mode: string) {}
+
+  /**
+   * @internal
+   */
+  public abstract _renderReadCapacity(): any;
+
+  /**
+   * @internal
+   */
+  public abstract _renderWriteCapacity(): any;
+
+  private renderAutoscaledCapacity(options: AutoscaledCapacityOptions) {
+    return {
+      minCapacity: options.minCapacity,
+      maxCapacity: options.maxCapacity,
+      targetTrackingScalingPolicyConfiguration: {
+        targetValue: options.targetUtilizationPercent ?? DEFAULT_TARGET_UTILIZATION,
+      },
+    };
   }
 }
 

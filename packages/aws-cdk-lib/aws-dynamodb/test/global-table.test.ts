@@ -394,6 +394,12 @@ describe('global table configuration', () => {
       },
       Replicas: [
         {
+          Region: 'us-east-1',
+          SSESpecification: {
+            KMSMasterKeyId: 'arn:aws:kms:us-east-1:586193817576:key/95fecd1f-91f1-4897-9ea1-84066e2c6a0f',
+          },
+        },
+        {
           Region: 'us-west-2',
           SSESpecification: {
             KMSMasterKeyId: {
@@ -402,12 +408,6 @@ describe('global table configuration', () => {
                 'Arn',
               ],
             },
-          },
-        },
-        {
-          Region: 'us-east-1',
-          SSESpecification: {
-            KMSMasterKeyId: 'arn:aws:kms:us-east-1:586193817576:key/95fecd1f-91f1-4897-9ea1-84066e2c6a0f',
           },
         },
       ],
@@ -550,7 +550,7 @@ describe('global table configuration', () => {
           ReadProvisionedThroughputSettings: {
             ReadCapacityUnits: 10,
           },
-          Region: 'us-west-2',
+          Region: 'us-east-1',
           TableClass: 'STANDARD_INFREQUENT_ACCESS',
         },
         {
@@ -575,7 +575,7 @@ describe('global table configuration', () => {
           ReadProvisionedThroughputSettings: {
             ReadCapacityUnits: 10,
           },
-          Region: 'us-east-1',
+          Region: 'us-west-2',
           TableClass: 'STANDARD_INFREQUENT_ACCESS',
         },
       ],
@@ -634,10 +634,10 @@ describe('replica table configuration', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
       Replicas: [
         {
-          Region: 'us-west-2',
+          Region: 'us-east-1',
         },
         {
-          Region: 'us-east-1',
+          Region: 'us-west-2',
         },
       ],
     });
@@ -669,12 +669,6 @@ describe('replica table configuration', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
       Replicas: [
         {
-          Region: 'us-west-2',
-          ReadProvisionedThroughputSettings: {
-            ReadCapacityUnits: 10,
-          },
-        },
-        {
           Region: 'us-east-2',
           ReadProvisionedThroughputSettings: {
             ReadCapacityUnits: 10,
@@ -690,6 +684,12 @@ describe('replica table configuration', () => {
                 TargetValue: 70,
               },
             },
+          },
+        },
+        {
+          Region: 'us-west-2',
+          ReadProvisionedThroughputSettings: {
+            ReadCapacityUnits: 10,
           },
         },
       ],
@@ -716,15 +716,15 @@ describe('replica table configuration', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
       Replicas: [
         {
-          Region: 'us-west-2',
-          ContributorInsightsSpecification: {
-            Enabled: true,
-          },
-        },
-        {
           Region: 'us-east-2',
           ContributorInsightsSpecification: {
             Enabled: false,
+          },
+        },
+        {
+          Region: 'us-west-2',
+          ContributorInsightsSpecification: {
+            Enabled: true,
           },
         },
       ],
@@ -751,12 +751,6 @@ describe('replica table configuration', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
       Replicas: [
         {
-          Region: 'us-west-2',
-          PointInTimeRecoverySpecification: {
-            PointInTimeRecoveryEnabled: true,
-          },
-        },
-        {
           Region: 'us-east-2',
           PointInTimeRecoverySpecification: {
             PointInTimeRecoveryEnabled: true,
@@ -766,6 +760,12 @@ describe('replica table configuration', () => {
           Region: 'us-east-1',
           PointInTimeRecoverySpecification: {
             PointInTimeRecoveryEnabled: false,
+          },
+        },
+        {
+          Region: 'us-west-2',
+          PointInTimeRecoverySpecification: {
+            PointInTimeRecoveryEnabled: true,
           },
         },
       ],
@@ -823,26 +823,6 @@ describe('replica table configuration', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
       Replicas: [
         {
-          Region: 'us-west-2',
-          ReadProvisionedThroughputSettings: {
-            ReadCapacityUnits: 10,
-          },
-          GlobalSecondaryIndexes: [
-            {
-              IndexName: 'gsi1',
-              ReadProvisionedThroughputSettings: {
-                ReadCapacityUnits: 5,
-              },
-            },
-            {
-              IndexName: 'gsi2',
-              ReadProvisionedThroughputSettings: {
-                ReadCapacityUnits: 5,
-              },
-            },
-          ],
-        },
-        {
           Region: 'us-east-2',
           ReadProvisionedThroughputSettings: {
             ReadCapacityUnits: 10,
@@ -878,6 +858,26 @@ describe('replica table configuration', () => {
                     TargetValue: 70,
                   },
                 },
+              },
+            },
+            {
+              IndexName: 'gsi2',
+              ReadProvisionedThroughputSettings: {
+                ReadCapacityUnits: 5,
+              },
+            },
+          ],
+        },
+        {
+          Region: 'us-west-2',
+          ReadProvisionedThroughputSettings: {
+            ReadCapacityUnits: 10,
+          },
+          GlobalSecondaryIndexes: [
+            {
+              IndexName: 'gsi1',
+              ReadProvisionedThroughputSettings: {
+                ReadCapacityUnits: 5,
               },
             },
             {
@@ -926,12 +926,6 @@ describe('replica table configuration', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
       Replicas: [
         {
-          Region: 'us-west-2',
-          ContributorInsightsSpecification: {
-            Enabled: true,
-          },
-        },
-        {
           Region: 'us-east-1',
           ContributorInsightsSpecification: {
             Enabled: true,
@@ -944,6 +938,12 @@ describe('replica table configuration', () => {
               },
             },
           ],
+        },
+        {
+          Region: 'us-west-2',
+          ContributorInsightsSpecification: {
+            Enabled: true,
+          },
         },
       ],
     });
@@ -972,15 +972,15 @@ describe('replica table configuration', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
       Replicas: [
         {
-          Region: 'us-west-2',
-          TableClass: 'STANDARD_INFREQUENT_ACCESS',
-        },
-        {
           Region: 'us-east-1',
           TableClass: 'STANDARD',
         },
         {
           Region: 'us-east-2',
+          TableClass: 'STANDARD_INFREQUENT_ACCESS',
+        },
+        {
+          Region: 'us-west-2',
           TableClass: 'STANDARD_INFREQUENT_ACCESS',
         },
       ],
@@ -2111,106 +2111,6 @@ describe('secondary indexes', () => {
   });
 });
 
-describe('billing and capacity', () => {
-  test('throws if getting units when capacity mode is autoscaled', () => {
-    // GIVEN
-    const capacity = Capacity.autoscaled({ minCapacity: 1, maxCapacity: 10 });
-
-    // WHEN / THEN
-    expect(() => {
-      capacity.units;
-    }).toThrow('Capacity units are not configured when capacity mode is AUTOSCALED');
-  });
-
-  test('throws if minCapacity is greater than maxCapacity for autoscaled capacity mode', () => {
-    // GIVEN / WHEN / THEN
-    expect(() => {
-      Capacity.autoscaled({ minCapacity: 10, maxCapacity: 5 });
-    }).toThrow('Min capacity: 10 must be less than or equal to max capacity: 5');
-  });
-
-  test('throws if targetUtilizationPercent is < 20', () => {
-    // GIVEN / WHEN / THEN
-    expect(() => {
-      Capacity.autoscaled({ minCapacity: 1, maxCapacity: 10, targetUtilizationPercent: 19 });
-    }).toThrow('Target utilization percent must be between 20 and 90, inclusive. Provided: 19');
-  });
-
-  test('throws if targetUtilizationPercent is > 90', () => {
-    // GIVEN / WHEN / THEN
-    expect(() => {
-      Capacity.autoscaled({ minCapacity: 1, maxCapacity: 10, targetUtilizationPercent: 91 });
-    }).toThrow('Target utilization percent must be between 20 and 90, inclusive. Provided: 91');
-  });
-
-  test('throws if getting minCapacity when capacity mode is FIXED', () => {
-    // GIVEN
-    const capacity = Capacity.fixed(10);
-
-    // WHEN / THEN
-    expect(() => {
-      capacity.minCapacity;
-    }).toThrow('Minimum capacity is not configured when capacity mode is FIXED');
-  });
-
-  test('throws if getting maxCapacity when capacity mode is FIXED', () => {
-    // GIVEN
-    const capacity = Capacity.fixed(10);
-
-    // WHEN / THEN
-    expect(() => {
-      capacity.maxCapacity;
-    }).toThrow('Maximum capacity is not configured when capacity mode is FIXED');
-  });
-
-  test('throws if getting targetUtilizationPercent when capacity mode is FIXED', () => {
-    // GIVEN
-    const capacity = Capacity.fixed(10);
-
-    // WHEN / THEN
-    expect(() => {
-      capacity.targetUtilizationPercent;
-    }).toThrow('Target utilization percent is not configured when capacity mode is FIXED');
-  });
-
-  test('throws if getting readCapacity when billing mode is PAY_PER_REQUEST', () => {
-    // GIVEN
-    const billing = Billing.onDemand();
-
-    // WHEN / THEN
-    expect(() => {
-      billing.readCapacity;
-    }).toThrow('readCapacity is not configured when billing mode is PAY_PER_REQUEST');
-  });
-
-  test('throws if getting writeCapacity when billing mode is PAY_PER_REQUEST', () => {
-    // GIVEN
-    const billing = Billing.onDemand();
-
-    // WHEN / THEN
-    expect(() => {
-      billing.writeCapacity;
-    }).toThrow('writeCapacity is not configured when billing mode is PAY_PER_REQUEST');
-  });
-});
-
 test('replica', () => {
-  // GIVEN
-  const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
-  const tableKey = new Key(stack, 'Key');
-  const globalTable = new GlobalTable(stack, 'GlobalTable', {
-    tableName: 'my-global-table',
-    partitionKey: { name: 'pk', type: AttributeType.STRING },
-    encryption: TableEncryptionV2.customerManagedKey(tableKey, { 'us-east-1': 'arn:aws:kms:us-east-1:586193817576:key/95fecd1f-91f1-4897-9ea1-84066e2c6a0f' }),
-    replicas: [
-      { region: 'us-east-1' },
-    ],
-  });
 
-  // WHEN
-  const replica2 = globalTable.replica('us-east-1');
-
-  console.log(replica2.encryptionKey);
-  console.log(replica2.tableArn);
-  console.log(replica2.tableName);
 });
