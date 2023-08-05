@@ -1199,6 +1199,59 @@ describe('instance', () => {
     });
   });
 
+  test('createGrant - creates IAM policy and enables IAM auth on instance with secret credentials without passing dbUser', () => {
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      vpc,
+      engine: rds.DatabaseInstanceEngine.postgres({
+        version: rds.PostgresEngineVersion.VER_14,
+      }),
+      credentials: rds.Credentials.fromGeneratedSecret('dbuser'),
+    });
+    const role = new Role(stack, 'DBRole', {
+      assumedBy: new AccountPrincipal(stack.account),
+    });
+    instance.grantConnect(role);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [{
+          Effect: 'Allow',
+          Action: 'rds-db:connect',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':rds-db:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':dbuser:',
+                {
+                  'Fn::GetAtt': [
+                    'InstanceC1063A87',
+                    'DbiResourceId',
+                  ],
+                },
+                '/{{resolve:secretsmanager:',
+                { Ref: 'InstanceSecretAttachment83BEE581' },
+                ':SecretString:username::}}',
+              ],
+            ],
+          },
+        }],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
   test('createGrant - throws if IAM auth disabled', () => {
     const instance = new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),

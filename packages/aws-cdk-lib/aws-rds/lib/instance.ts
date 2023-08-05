@@ -1070,9 +1070,8 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
    * Grant the given identity connection access to the database.
    *
    * @param grantee the Principal to grant the permissions to
-   * @param dbUser the name of the database user to allow connecting as to the db instance
-   *
-   * @default the default user, obtained from the Secret
+   * @param dbUser the name of the database user to allow connecting as to the db instance,
+   * or the default database user, obtained from the Secret, if not specified
    */
   public grantConnect(grantee: iam.IGrantable, dbUser?: string): iam.Grant {
     if (!dbUser) {
@@ -1080,7 +1079,7 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
         throw new Error('A secret or dbUser is required to grantConnect()');
       }
 
-      dbUser = this.secret.secretValueFromJson('username').toString();
+      dbUser = this.secret.secretValueFromJson('username').unsafeUnwrap();
     }
 
     return super.grantConnect(grantee, dbUser);
