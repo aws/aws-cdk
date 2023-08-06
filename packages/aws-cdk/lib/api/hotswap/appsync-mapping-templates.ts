@@ -3,7 +3,9 @@ import { ISDK } from '../aws-auth';
 import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
 
 export async function isHotswappableAppSyncChange(
-  logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+  logicalId: string,
+  change: HotswappableChangeCandidate,
+  evaluateCfnTemplate: EvaluateCloudFormationTemplate,
 ): Promise<ChangeHotswapResult> {
   const isResolver = change.newValue.Type === 'AWS::AppSync::Resolver';
   const isFunction = change.newValue.Type === 'AWS::AppSync::FunctionConfiguration';
@@ -23,7 +25,7 @@ export async function isHotswappableAppSyncChange(
     return ret;
   }
 
-  const classifiedChanges = classifyChanges(change, ['RequestMappingTemplate', 'ResponseMappingTemplate']);
+  const classifiedChanges = classifyChanges(change, ['RequestMappingTemplate', 'ResponseMappingTemplate', 'Code']);
   classifiedChanges.reportNonHotswappablePropertyChanges(ret);
 
   const namesOfHotswappableChanges = Object.keys(classifiedChanges.hotswappableProps);
@@ -47,11 +49,20 @@ export async function isHotswappableAppSyncChange(
           return;
         }
 
+        // copy the old properties
         const sdkProperties: { [name: string]: any } = {
           ...change.oldValue.Properties,
-          requestMappingTemplate: change.newValue.Properties?.RequestMappingTemplate,
-          responseMappingTemplate: change.newValue.Properties?.ResponseMappingTemplate,
         };
+
+        // if the code is set, make sure the `functionVersion` is not set
+        // otherwhise, this is a mapping template change
+        if (change.newValue.Properties?.Code) {
+          delete sdkProperties.functionVersion;
+          sdkProperties.code = change.newValue.Properties?.Code;
+        } else {
+          sdkProperties.requestMappingTemplate = change.newValue.Properties?.RequestMappingTemplate;
+          sdkProperties.responseMappingTemplate = change.newValue.Properties?.ResponseMappingTemplate;
+        }
         const evaluatedResourceProperties = await evaluateCfnTemplate.evaluateCfnExpression(sdkProperties);
         const sdkRequestObject = transformObjectKeys(evaluatedResourceProperties, lowerCaseFirstCharacter);
 
@@ -59,11 +70,14 @@ export async function isHotswappableAppSyncChange(
           await sdk.appsync().updateResolver(sdkRequestObject).promise();
         } else {
           const { functions } = await sdk.appsync().listFunctions({ apiId: sdkRequestObject.apiId }).promise();
-          const { functionId } = functions?.find(fn => fn.name === physicalName) ?? {};
-          await sdk.appsync().updateFunction({
-            ...sdkRequestObject,
-            functionId: functionId!,
-          }).promise();
+          const { functionId } = functions?.find((fn) => fn.name === physicalName) ?? {};
+          await sdk
+            .appsync()
+            .updateFunction({
+              ...sdkRequestObject,
+              functionId: functionId!,
+            })
+            .promise();
         }
       },
     });

@@ -106,7 +106,7 @@ export class AppsyncFunction extends Resource implements IAppsyncFunction {
         produce: () => Fn.select(3, Fn.split('/', attrs.functionArn)),
       });
       public readonly functionArn = attrs.functionArn;
-      constructor (s: Construct, i: string) {
+      constructor(s: Construct, i: string) {
         super(s, i);
       }
     }
@@ -161,7 +161,8 @@ export class AppsyncFunction extends Resource implements IAppsyncFunction {
       runtime: props.runtime?.toProperties(),
       codeS3Location: code?.s3Location,
       code: code?.inlineCode,
-      functionVersion: '2018-05-29',
+      // function Version should not be set when Code is provided
+      functionVersion: !props.code ? '2018-05-29' : undefined,
       requestMappingTemplate: props.requestMappingTemplate?.renderTemplate(),
       responseMappingTemplate: props.responseMappingTemplate?.renderTemplate(),
     });
