@@ -6,7 +6,7 @@ import {
   BillingMode, Attribute, ProjectionType, TableEncryption, ITable,
 } from './shared';
 import { IStream } from '../../aws-kinesis';
-import { IKey } from '../../aws-kms';
+import { IKey, Key } from '../../aws-kms';
 import { RemovalPolicy, Stack, Token, Lazy, ArnFormat } from '../../core';
 
 /* eslint-disable no-console */
@@ -252,7 +252,7 @@ export interface GlobalTableProps extends TableOptionsV2, SchemaOptions {
    * The billing mode and the associated read and write capacity settings for all replica
    * tables in the global table.
    *
-   * Note: Read capacity is configurable on a per-replica basis.
+   * Note: Read capacity is configurable on a per-replica basis when billing mode is provisioned.
    *
    * @default Billing.onDemand()
    */
@@ -272,9 +272,11 @@ export interface GlobalTableProps extends TableOptionsV2, SchemaOptions {
   /**
    * Global secondary indexes to define on all replica tables in the global table.
    *
-   * Note: Global secondary indexes can be configured on a per-replica basis. Tables only
-   * support a maximum of 20 global secondary indexes. You can only create or delete one
-   * global secondary index in a single stack operation.
+   * Note: Contributor insights can be configured on a per-replica basis. Read capacity
+   * is also configurable on a per-replica basis if the billing mode is provisioned.
+   *
+   * Tables only support a maximum of 20 global secondary indexes. You can only create or
+   * delete one global secondary index in a single stack operation.
    *
    * @default - no global secondary indexes
    */
@@ -298,6 +300,18 @@ export interface GlobalTableProps extends TableOptionsV2, SchemaOptions {
    * @default TableEncryptionV2.dynamoOwnedKey()
    */
   readonly encryption?: TableEncryptionV2;
+}
+
+export interface IGlobalTable extends ITable {
+  /**
+   *
+   * @param region
+   */
+  replica(region: string): ITable;
+}
+
+abstract class GlobalTableBase extends TableBase implements IGlobalTable {
+  public abstract replica(region: string): ITable;
 }
 
 /**
@@ -344,6 +358,16 @@ export interface GlobalTableAttributes {
   readonly encryptionKey?: IKey;
 
   /**
+   *
+   */
+  readonly replicaRegions?: string[];
+
+  /**
+   *
+   */
+  readonly replicaKeyArns?: { [region: string]: string };
+
+  /**
    * The name of the global indexes set for the global table.
    *
    * Note: You must set either this property or `localIndexes` if you want permissions
@@ -377,7 +401,7 @@ export interface GlobalTableAttributes {
 /**
  * A global table
  */
-export class GlobalTable extends TableBase {
+export class GlobalTable extends GlobalTableBase {
   /**
    * Creates a Global Table construct that represents an external global table via table name.
    *
@@ -385,7 +409,7 @@ export class GlobalTable extends TableBase {
    * @param id construct name
    * @param tableName the name of the global table
    */
-  public static fromTableName(scope: Construct, id: string, tableName: string): ITable {
+  public static fromTableName(scope: Construct, id: string, tableName: string): IGlobalTable {
     return GlobalTable.fromTableAttributes(scope, id, { tableName });
   }
 
@@ -396,7 +420,7 @@ export class GlobalTable extends TableBase {
    * @param id construct name
    * @param tableArn the ARN of the global table
    */
-  public static fromTableArn(scope: Construct, id: string, tableArn: string): ITable {
+  public static fromTableArn(scope: Construct, id: string, tableArn: string): IGlobalTable {
     return GlobalTable.fromTableAttributes(scope, id, { tableArn });
   }
 
@@ -407,13 +431,16 @@ export class GlobalTable extends TableBase {
    * @param id construct name
    * @param attrs the attributes representing the global table
    */
-  public static fromTableAttributes(scope: Construct, id: string, attrs: GlobalTableAttributes): ITable {
-    class Import extends TableBase {
+  public static fromTableAttributes(scope: Construct, id: string, attrs: GlobalTableAttributes): IGlobalTable {
+    class Import extends GlobalTableBase {
       public readonly tableArn: string;
       public readonly tableName: string;
       public readonly tableId?: string;
       public readonly tableStreamArn?: string;
       public readonly encryptionKey?: IKey;
+
+      private readonly deploymentRegion?: string;
+      private readonly replicaRegions: string[];
       protected readonly hasIndex = (attrs.grantIndexPermissions ?? false) ||
         (attrs.globalIndexes ?? []).length > 0 ||
         (attrs.localIndexes ?? []).length > 0;
@@ -425,6 +452,36 @@ export class GlobalTable extends TableBase {
         this.tableId = tableId;
         this.tableStreamArn = tableStreamArn;
         this.encryptionKey = attrs.encryptionKey;
+        this.replicaRegions = attrs.replicaRegions ? [...attrs.replicaRegions] : [];
+        this.deploymentRegion = this.stack.splitArn(this.tableArn, ArnFormat.SLASH_RESOURCE_NAME).region;
+      }
+
+      public replica(region: string): ITable {
+        if (this.deploymentRegion === undefined || Token.isUnresolved(this.deploymentRegion)) {
+          throw new Error('Global table deployment region could not be deduced from tableArn or stack region');
+        }
+
+        if (region === this.deploymentRegion) {
+          return GlobalTable.fromTableAttributes(this, `Replica${region}`, {
+            tableArn: this.tableArn,
+            tableStreamArn: this.tableName,
+            encryptionKey: this.encryptionKey,
+          });
+        }
+
+        if (!this.replicaRegions.includes(region)) {
+          throw new Error(`No replica table exists in region ${region} for this global table`);
+        }
+
+        const tableArn = this.tableArn.replace(this.deploymentRegion, region);
+        const encryptionKey = attrs.replicaKeyArns && attrs.replicaKeyArns.hasOwnProperty(region)
+          ? Key.fromKeyArn(this, `ReplicaKey${region}`, attrs.replicaKeyArns[region])
+          : undefined;
+
+        return GlobalTable.fromTableAttributes(this, `Replica${region}`, {
+          tableArn,
+          encryptionKey,
+        });
       }
     }
 
@@ -452,6 +509,7 @@ export class GlobalTable extends TableBase {
       if (!resourceName) {
         throw new Error('ARN for Global Table must be in the form ...');
       }
+
       tableName = resourceName;
     }
 
@@ -501,8 +559,11 @@ export class GlobalTable extends TableBase {
   public constructor(scope: Construct, id: string, props: GlobalTableProps) {
     super(scope, id, { physicalName: props.tableName });
 
-    this.partitionKey = props.partitionKey;
     this.tableOptions = props;
+    this.partitionKey = props.partitionKey;
+
+    this.encryption = props.encryption;
+    this.encryptionKey = this.encryption?.tableKey;
 
     if (props.billing) {
       this.billingMode = props.billing.mode;
@@ -518,13 +579,6 @@ export class GlobalTable extends TableBase {
     if (props.sortKey) {
       this.addKey(props.sortKey, RANGE_KEY_TYPE);
     }
-
-    this.encryption = props.encryption;
-    this.encryptionKey = this.encryption?.tableKey;
-
-    props.globalSecondaryIndexes?.forEach(gsi => this.addGlobalSecondaryIndex(gsi));
-    props.localSecondaryIndexes?.forEach(lsi => this.addLocalSecondaryIndex(lsi));
-    props.replicas?.forEach(replica => this.addReplica(replica));
 
     const resource = new CfnGlobalTable(scope, 'Resource', {
       tableName: this.physicalName,
@@ -551,6 +605,10 @@ export class GlobalTable extends TableBase {
     this.tableName = this.getResourceNameAttribute(resource.ref);
     this.tableId = resource.attrTableId;
     this.tableStreamArn = resource.attrStreamArn;
+
+    props.globalSecondaryIndexes?.forEach(gsi => this.addGlobalSecondaryIndex(gsi));
+    props.localSecondaryIndexes?.forEach(lsi => this.addLocalSecondaryIndex(lsi));
+    props.replicas?.forEach(replica => this.addReplica(replica));
 
     if (props.tableName) {
       this.node.addMetadata('aws:cdk:hasPhysicalName', this.tableName);
@@ -654,6 +712,7 @@ export class GlobalTable extends TableBase {
       throw new Error(`Duplicate replica region, ${props.region}, is not allowed`);
     }
 
+    // used for ITable grants
     this.regionalArns.push(this.stack.formatArn({
       region: props.region,
       resource: 'table',
@@ -669,17 +728,18 @@ export class GlobalTable extends TableBase {
    * @param region the region of the replica table
    */
   public replica(region: string): ITable {
-    if (Token.isUnresolved(region)) {
-      throw new Error('Replica region must not be a token');
-    }
-
     if (Token.isUnresolved(this.stack.region)) {
       throw new Error('Replica tables are not supported on a region agnostic stack');
+    }
+
+    if (Token.isUnresolved(region)) {
+      throw new Error('Replica region must not be a token');
     }
 
     if (region === this.stack.region) {
       return GlobalTable.fromTableAttributes(this, `Replica${region}`, {
         tableArn: this.tableArn,
+        tableStreamArn: this.tableStreamArn,
         encryptionKey: this.encryptionKey,
       });
     }
@@ -689,8 +749,13 @@ export class GlobalTable extends TableBase {
     }
 
     const tableArn = this.regionalArns.find(arn => arn.includes(region));
+    const encryptionKey = this.encryption?.replicaKeyArns && this.encryption.replicaKeyArns.hasOwnProperty(region)
+      ? Key.fromKeyArn(this, `ReplicaKey${region}`, this.encryption.replicaKeyArns[region])
+      : undefined;
+
     return GlobalTable.fromTableAttributes(this, `Replica${region}`, {
       tableArn,
+      encryptionKey,
     });
   }
 
@@ -943,7 +1008,7 @@ export abstract class Capacity {
       }
 
       public _renderWriteCapacity() {
-        throw new Error();
+        throw new Error(`You cannot configure ${CapacityMode.FIXED} capacity mode for write capacity`);
       }
     }) (CapacityMode.FIXED);
   }
