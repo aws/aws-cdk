@@ -1,7 +1,7 @@
 import * as AWS from 'aws-sdk';
 import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, lowerCaseFirstCharacter, reportNonHotswappableChange, transformObjectKeys } from './common';
 import { ISDK } from '../aws-auth';
-import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
+import { CfnEvaluationException, EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
 
 export async function isHotswappableEcsServiceChange(
   logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
@@ -98,8 +98,11 @@ export async function isHotswappableEcsServiceChange(
           if (describeTaskDefinitionResponse.taskDefinition === undefined) {
             throw new Error(`Could not find TaskDefinition ${taskDefinitionResource.family}`);
           }
-          mergeTaskDefinitions(lowercasedTaskDef, describeTaskDefinitionResponse);
-          lowercasedTaskDef = describeTaskDefinitionResponse.taskDefinition;
+          const merged = mergeTaskDefinitions(lowercasedTaskDef, describeTaskDefinitionResponse);
+          if (merged === undefined) {
+            throw new Error('Failed to merge the task definition. Please try deploying without hotswap first.');
+          }
+          lowercasedTaskDef = merged.taskDefinition;
         }
 
         const registerTaskDefResponse = await sdk.ecs().registerTaskDefinition(lowercasedTaskDef).promise();
@@ -191,12 +194,15 @@ export async function isHotswappableEcsServiceChange(
 
 function mergeTaskDefinitions(patch: {containerDefinitions: {[key:string]: any}[]}, target: AWS.ECS.DescribeTaskDefinitionResponse) {
   const src = patch.containerDefinitions;
+  // deep copy target to avoid side effects. The response of AWS API is in JSON format, so safe to use JSON.stringify.
+  target = JSON.parse(JSON.stringify(target));
   const dst = target.taskDefinition?.containerDefinitions;
   if (dst === undefined) {
     return;
   }
   // schema: https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html
   for (const i in src) {
+    if (dst[i] === undefined) return;
     for (const key of Object.keys(src[i])) {
       (dst[i] as any)[key] = src[i][key];
     }
@@ -220,18 +226,39 @@ function mergeTaskDefinitions(patch: {containerDefinitions: {[key:string]: any}[
   if (target.tags !== undefined && target.tags.length > 0) {
     // the tags field is in a different location in describeTaskDefinition response, moving it as intended for registerTaskDefinition request.
     (target.taskDefinition as any).tags = target.tags;
+    delete target.tags;
   }
+
+  return target;
 }
 
 interface EcsService {
   readonly serviceArn: string;
 }
 
+type TaskDefinitionChange = {
+  /**
+   * A new task definition that should be deployed.
+   * If hotswappableWithMerge equals true, this only contains diffs that should be merged with the currently deployed task definition.
+   */
+  taskDefinition: any;
+
+  /**
+   * A family for this task definition
+   */
+  family: string;
+
+  /**
+   * true if the change can be hotswapped by merging with the currently deployed task definition
+   */
+  hotswappableWithMerge: boolean
+};
+
 async function prepareTaskDefinitionChange(
   evaluateCfnTemplate: EvaluateCloudFormationTemplate,
   logicalId: string,
   change: HotswappableChangeCandidate,
-): Promise<undefined | { taskDefinition: any; family: string; hotswappableWithMerge: boolean }> {
+): Promise<undefined | TaskDefinitionChange> {
   const taskDefinitionResource: { [name: string]: any } = {
     ...change.oldValue.Properties,
     ContainerDefinitions: change.newValue.Properties?.ContainerDefinitions,
@@ -262,6 +289,9 @@ async function prepareTaskDefinitionChange(
       Family: undefined,
     });
   } catch (e) {
+    if (!(e instanceof CfnEvaluationException)) {
+      throw e;
+    }
     const result = await deepCompareContainerDefinitions(
       evaluateCfnTemplate,
       change.oldValue.Properties?.ContainerDefinitions ?? [],
@@ -287,9 +317,12 @@ async function prepareTaskDefinitionChange(
   };
 }
 
-// return false if the new container definitions cannot be hotswapped
-// i.e. there are changes containing unsupported tokens or additions/removals of properties
-// If not, we return the properties that should be updated (they will be merged with the deployed task definition later)
+/**
+ * return false if the new container definitions cannot be hotswapped
+ * i.e. there are changes containing unsupported tokens or additions/removals of properties
+ *
+ * Otherwise we return the properties that should be updated (they will be merged with the deployed task definition later)
+ */
 async function deepCompareContainerDefinitions(evaluateCfnTemplate: EvaluateCloudFormationTemplate, oldDefinition: any[], newDefinition: any[]) {
   const result: any[] = [];
   // schema: https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html
@@ -306,6 +339,7 @@ async function deepCompareContainerDefinitions(evaluateCfnTemplate: EvaluateClou
       // one or more fields are added or removed
       return false;
     }
+    // We don't recurse properties to keep the update logic simple. It should still cover most hotswap use cases.
     for (const key of Object.keys(prev)) {
       // compare two properties first
       if (deepCompareObject(prev[key], next[key])) {
@@ -316,6 +350,9 @@ async function deepCompareContainerDefinitions(evaluateCfnTemplate: EvaluateClou
       try {
         result[i][key] = await evaluateCfnTemplate.evaluateCfnExpression(next[key]);
       } catch (e) {
+        if (!(e instanceof CfnEvaluationException)) {
+          throw e;
+        }
         // Give up hotswap if the diff contains unsupported expression
         return false;
       }
@@ -325,8 +362,10 @@ async function deepCompareContainerDefinitions(evaluateCfnTemplate: EvaluateClou
   return result;
 }
 
-// return true when two objects are identical
-function deepCompareObject(lhs: object, rhs: object) {
+/**
+ * return true when two objects are identical
+ */
+function deepCompareObject(lhs: any, rhs: any): boolean {
   if (typeof lhs !== 'object') {
     return lhs === rhs;
   }
