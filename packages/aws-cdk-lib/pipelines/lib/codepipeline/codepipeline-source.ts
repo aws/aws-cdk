@@ -253,7 +253,7 @@ class GitHubSource extends CodePipelineSource {
   private readonly authentication: SecretValue;
 
   constructor(repoString: string, readonly branch: string, readonly props: GitHubSourceOptions) {
-    super(repoString);
+    super(props.actionName ?? repoString);
 
     const parts = repoString.split('/');
     if (Token.isUnresolved(repoString) || parts.length !== 2) {
@@ -312,7 +312,7 @@ export interface S3SourceOptions {
 
 class S3Source extends CodePipelineSource {
   constructor(readonly bucket: IBucket, private readonly objectKey: string, readonly props: S3SourceOptions) {
-    super(Node.of(bucket).addr);
+    super(props.actionName ?? Node.of(bucket).addr);
 
     this.configurePrimaryOutput(new FileSet('Source', this));
   }
@@ -353,7 +353,7 @@ export interface ECRSourceOptions {
 
 class ECRSource extends CodePipelineSource {
   constructor(readonly repository: IRepository, readonly props: ECRSourceOptions) {
-    super(Node.of(repository).addr);
+    super(props.actionName ?? Node.of(repository).addr);
 
     this.configurePrimaryOutput(new FileSet('Source', this));
   }
@@ -422,7 +422,7 @@ class CodeStarConnectionSource extends CodePipelineSource {
   private readonly repo: string;
 
   constructor(repoString: string, readonly branch: string, readonly props: ConnectionSourceOptions) {
-    super(repoString);
+    super(props.actionName ?? repoString);
 
     const parts = repoString.split('/');
     if (Token.isUnresolved(repoString) || parts.length !== 2) {
@@ -491,7 +491,7 @@ export interface CodeCommitSourceOptions {
 
 class CodeCommitSource extends CodePipelineSource {
   constructor(private readonly repository: codecommit.IRepository, private readonly branch: string, private readonly props: CodeCommitSourceOptions) {
-    super(Token.isUnresolved(repository.repositoryName)
+    super(props.actionName ?? Token.isUnresolved(repository.repositoryName)
       ? Node.of(repository).addr
       : repository.repositoryName);
 
