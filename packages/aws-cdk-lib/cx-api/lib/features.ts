@@ -858,7 +858,7 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       If this flag is not set, \`efs.FileSystem\` will allow all anonymous clients
       that can access over the network.`,
-    introducedIn: { v2: 'V2·NEXT' },
+    introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'You can pass `allowAnonymousAccess: true` so allow anonymous clients access.',
   },
