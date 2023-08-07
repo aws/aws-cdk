@@ -1058,7 +1058,10 @@ declare const regionTable: CfnMapping;
 regionTable.findInMap(Aws.REGION, 'regionName');
 ```
 
-An optional default value can also be passed to `findInMap`. If either key is not found in the map and the mapping is lazy, `findInMap` will return the default value. If the mapping is not lazy or either key is an unresolved token, the call to `findInMap` will return a token that resolves to `{ "Fn::FindInMap": [ "MapName", "TopLevelKey", "SecondLevelKey", { "DefaultValue": "DefaultValue" } ] }`. Note that the `AWS::LanguageExtentions` transform is added to enable the default value functionality.
+An optional default value can also be passed to `findInMap`. If either key is not found in the map and the mapping is lazy, `findInMap` will return the default value and not render the mapping.
+If the mapping is not lazy or either key is an unresolved token, the call to `findInMap` will return a token that resolves to 
+`{ "Fn::FindInMap": [ "MapName", "TopLevelKey", "SecondLevelKey", { "DefaultValue": "DefaultValue" } ] }`, and the mapping will be rendered.
+Note that the `AWS::LanguageExtentions` transform is added to enable the default value functionality.
 
 For example, the following code will again not produce anything in the "Mappings" section. The
 call to `findInMap` will be able to resolve the value during synthesis and simply return

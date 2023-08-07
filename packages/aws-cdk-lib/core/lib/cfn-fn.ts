@@ -233,8 +233,8 @@ export class Fn {
   /**
    * The intrinsic function ``Fn::FindInMap`` returns the value corresponding to
    * keys in a two-level map that is declared in the Mappings section.
-   * Prefer to use `CfnMapping.findInMap`.
-   * Warning: do not use with lazy maps.
+   * Warning: do not use with lazy mappings as this function will not guarentee a lazy mapping to render in the template.
+   * Prefer to use `CfnMapping.findInMap` in general.
    * @returns a token represented as a string
    */
   public static findInMap(mapName: string, topLevelKey: string, secondLevelKey: string, defaultValue?: string): string {
