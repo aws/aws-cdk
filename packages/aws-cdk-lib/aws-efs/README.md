@@ -106,7 +106,8 @@ const role = new iam.Role(this, 'Role', {
 fileSystem.grant(role, 'elasticfilesystem:Backup');
 ```
 
-APIs for clients also include `.grantRead()`, `.grantReadWrite()`, and `.grantRootAccess()`. Using these APIs grants access to clients. Also, by default, the file system policy is updated to only allow access to clients using IAM authentication and deny access to anonymous clients.
+APIs for clients also include `.grantRead()`, `.grantReadWrite()`, and `.grantRootAccess()`. Using these APIs grants access to clients.
+Also, by default, the file system policy is updated to only allow access to clients using IAM authentication and deny access to anonymous clients.
 
 ```ts fixture=with-filesystem-instance
 const role = new iam.Role(this, 'ClientRole', {
