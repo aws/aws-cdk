@@ -22,6 +22,7 @@
                       "dedicatedMasterEnabled": false,
                       "instanceCount": 1,
                       "instanceType": "r5.large.search",
+                      "multiAzWithStandbyEnabled": true,
                       "zoneAwarenessEnabled": false
                     },
                     "domainEndpointOptions": {
@@ -91,7 +92,7 @@
                 "path": "Integ/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "version": "10.2.69"
                 }
               },
               "DeployAssert": {
@@ -137,7 +138,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.55"
+          "version": "10.2.69"
         }
       }
     },
