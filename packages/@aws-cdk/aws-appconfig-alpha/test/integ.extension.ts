@@ -105,7 +105,10 @@ const hostedConfig = new HostedConfiguration(stack, 'HostedConfiguration', {
   content: ConfigurationContent.fromInline('This is my configuration content'),
   deployTo: [env],
   deploymentStrategy: new DeploymentStrategy(stack, 'MyDeployStrategy', {
-    rolloutStrategy: RolloutStrategy.linear(100, Duration.minutes(0)),
+    rolloutStrategy: RolloutStrategy.linear({
+      growthFactor: 100,
+      deploymentDuration: Duration.minutes(0),
+    }),
   }),
 });
 hostedConfig.node.addDependency(lambdaExtension, topicExtension, busExtension, queueExtension);

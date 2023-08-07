@@ -28,7 +28,10 @@ describe('configuration', () => {
       content: ConfigurationContent.fromInline('This is my content'),
       application: app,
       deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
-        rolloutStrategy: RolloutStrategy.linear(15, cdk.Duration.minutes(30)),
+        rolloutStrategy: RolloutStrategy.linear({
+          growthFactor: 15,
+          deploymentDuration: cdk.Duration.minutes(30),
+        }),
       }),
     });
 
@@ -84,7 +87,10 @@ describe('configuration', () => {
       content: ConfigurationContent.fromInline('This is my content'),
       application: app,
       deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
-        rolloutStrategy: RolloutStrategy.linear(15, cdk.Duration.minutes(30)),
+        rolloutStrategy: RolloutStrategy.linear({
+          growthFactor: 15,
+          deploymentDuration: cdk.Duration.minutes(30),
+        }),
       }),
     });
 
@@ -120,7 +126,10 @@ describe('configuration', () => {
       application: app,
       deployTo: [env],
       deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
-        rolloutStrategy: RolloutStrategy.linear(15, cdk.Duration.minutes(30)),
+        rolloutStrategy: RolloutStrategy.linear({
+          growthFactor: 15,
+          deploymentDuration: cdk.Duration.minutes(30),
+        }),
       }),
     });
 
@@ -174,7 +183,10 @@ describe('configuration', () => {
       application: app,
       deployTo: [env1],
       deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy1', {
-        rolloutStrategy: RolloutStrategy.linear(15, cdk.Duration.minutes(30)),
+        rolloutStrategy: RolloutStrategy.linear({
+          growthFactor: 15,
+          deploymentDuration: cdk.Duration.minutes(30),
+        }),
       }),
     });
     new SourcedConfiguration(stack, 'MySourcedConfig', {
@@ -183,7 +195,10 @@ describe('configuration', () => {
       application: app,
       deployTo: [env2],
       deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy2', {
-        rolloutStrategy: RolloutStrategy.linear(15, cdk.Duration.minutes(30)),
+        rolloutStrategy: RolloutStrategy.linear({
+          growthFactor: 15,
+          deploymentDuration: cdk.Duration.minutes(30),
+        }),
       }),
     });
 
@@ -313,7 +328,10 @@ describe('configuration', () => {
       deploymentKey: key,
       application: app,
       deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
-        rolloutStrategy: RolloutStrategy.linear(15, cdk.Duration.minutes(30)),
+        rolloutStrategy: RolloutStrategy.linear({
+          growthFactor: 15,
+          deploymentDuration: cdk.Duration.minutes(30),
+        }),
       }),
     });
 
@@ -342,7 +360,10 @@ describe('configuration', () => {
       application: app,
       content: ConfigurationContent.fromInline('This is my content'),
       deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
-        rolloutStrategy: RolloutStrategy.linear(15, cdk.Duration.minutes(30)),
+        rolloutStrategy: RolloutStrategy.linear({
+          growthFactor: 15,
+          deploymentDuration: cdk.Duration.minutes(30),
+        }),
       }),
     });
 
@@ -405,7 +426,10 @@ describe('configuration', () => {
       application: app,
       content: ConfigurationContent.fromInline('This is my content'),
       deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
-        rolloutStrategy: RolloutStrategy.linear(15, cdk.Duration.minutes(30)),
+        rolloutStrategy: RolloutStrategy.linear({
+          growthFactor: 15,
+          deploymentDuration: cdk.Duration.minutes(30),
+        }),
       }),
     });
 
@@ -438,7 +462,10 @@ describe('configuration', () => {
       type: ConfigurationType.FEATURE_FLAGS,
       content: ConfigurationContent.fromInline('This is my content'),
       deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
-        rolloutStrategy: RolloutStrategy.linear(15, cdk.Duration.minutes(30)),
+        rolloutStrategy: RolloutStrategy.linear({
+          growthFactor: 15,
+          deploymentDuration: cdk.Duration.minutes(30),
+        }),
       }),
     });
 
@@ -472,7 +499,10 @@ describe('configuration', () => {
       content: ConfigurationContent.fromInline('This is my content'),
       description: 'This is my description',
       deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
-        rolloutStrategy: RolloutStrategy.linear(15, cdk.Duration.minutes(30)),
+        rolloutStrategy: RolloutStrategy.linear({
+          growthFactor: 15,
+          deploymentDuration: cdk.Duration.minutes(30),
+        }),
       }),
     });
 
@@ -512,7 +542,10 @@ describe('configuration', () => {
         },
       ],
       deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
-        rolloutStrategy: RolloutStrategy.linear(15, cdk.Duration.minutes(30)),
+        rolloutStrategy: RolloutStrategy.linear({
+          growthFactor: 15,
+          deploymentDuration: cdk.Duration.minutes(30),
+        }),
       }),
     });
 
@@ -684,7 +717,10 @@ describe('configuration', () => {
       ],
       content: ConfigurationContent.fromInline('This is my content'),
       deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
-        rolloutStrategy: RolloutStrategy.linear(15, cdk.Duration.minutes(30)),
+        rolloutStrategy: RolloutStrategy.linear({
+          growthFactor: 15,
+          deploymentDuration: cdk.Duration.minutes(30),
+        }),
       }),
     });
 
@@ -727,7 +763,10 @@ describe('configuration', () => {
       versionNumber: '1',
       application: app,
       deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
-        rolloutStrategy: RolloutStrategy.linear(15, cdk.Duration.minutes(30)),
+        rolloutStrategy: RolloutStrategy.linear({
+          growthFactor: 15,
+          deploymentDuration: cdk.Duration.minutes(30),
+        }),
       }),
     });
 
@@ -804,7 +843,10 @@ describe('configuration', () => {
       versionNumber: '1',
       application: app,
       deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
-        rolloutStrategy: RolloutStrategy.linear(15, cdk.Duration.minutes(30)),
+        rolloutStrategy: RolloutStrategy.linear({
+          growthFactor: 15,
+          deploymentDuration: cdk.Duration.minutes(30),
+        }),
       }),
     });
 
@@ -868,7 +910,10 @@ describe('configuration', () => {
       versionNumber: '1',
       application: app,
       deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
-        rolloutStrategy: RolloutStrategy.linear(15, cdk.Duration.minutes(30)),
+        rolloutStrategy: RolloutStrategy.linear({
+          growthFactor: 15,
+          deploymentDuration: cdk.Duration.minutes(30),
+        }),
       }),
     });
 
@@ -980,7 +1025,10 @@ describe('configuration', () => {
       location: ConfigurationSource.fromPipeline(pipeline),
       application: app,
       deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
-        rolloutStrategy: RolloutStrategy.linear(15, cdk.Duration.minutes(30)),
+        rolloutStrategy: RolloutStrategy.linear({
+          growthFactor: 15,
+          deploymentDuration: cdk.Duration.minutes(30),
+        }),
       }),
     });
 
@@ -1021,7 +1069,10 @@ describe('configuration', () => {
       versionNumber: '1',
       application: app,
       deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
-        rolloutStrategy: RolloutStrategy.linear(15, cdk.Duration.minutes(30)),
+        rolloutStrategy: RolloutStrategy.linear({
+          growthFactor: 15,
+          deploymentDuration: cdk.Duration.minutes(30),
+        }),
       }),
     });
 
@@ -1069,7 +1120,10 @@ describe('configuration', () => {
       versionNumber: '1',
       application: app,
       deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
-        rolloutStrategy: RolloutStrategy.linear(15, cdk.Duration.minutes(30)),
+        rolloutStrategy: RolloutStrategy.linear({
+          growthFactor: 15,
+          deploymentDuration: cdk.Duration.minutes(30),
+        }),
       }),
     });
 

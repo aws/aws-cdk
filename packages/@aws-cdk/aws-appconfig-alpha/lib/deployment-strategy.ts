@@ -176,47 +176,81 @@ export enum PredefinedDeploymentStrategyId {
   ALL_AT_ONCE = 'AppConfig.AllAtOnce',
 }
 
+export interface RolloutStrategyProps {
+  /**
+   * The growth factor of the deployment strategy. This defines
+   * the percentage of targets to receive a deployed configuration
+   * during each interval.
+   */
+  readonly growthFactor: number;
+
+  /**
+   * The deployment duration of the deployment strategy. This defines
+   * the total amount of time for a deployment to last.
+   */
+  readonly deploymentDuration: Duration;
+
+  /**
+   * The final bake time of the deployment strategy.
+   *
+   * This setting specifies the amount of time AWS AppConfig monitors for Amazon
+   * CloudWatch alarms after the configuration has been deployed to
+   * 100% of its targets, before considering the deployment to be complete.
+   * If an alarm is triggered during this time, AWS AppConfig rolls back
+   * the deployment.
+   *
+   * @default Duration.minutes(0)
+   */
+  readonly finalBakeTime?: Duration;
+}
+
 /**
  * Defines the rollout strategy for a deployment strategy and includes the growth factor,
- * deployment duration, and growth type. The growth factor defines the percentage of targets
- * to receive a deployed configuration during each interval. The deployment duration defines
- * the total amount of time for a deployment to last. The growth type defines the algorithm
- * used to define how percentage grows over time. The growth type can be modeled as either
- * GrowthType.LINEAR or GrowthType.EXPONENTIAL.
+ * deployment duration, growth type, and optionally final bake time.
  */
 export abstract class RolloutStrategy {
-  public static readonly CANARY_10_PERCENT_20_MINUTES = RolloutStrategy.exponential(10, Duration.minutes(20), Duration.minutes(10));
-  public static readonly LINEAR_50_PERCENT_EVERY_30_SECONDS = RolloutStrategy.linear(50, Duration.minutes(1), Duration.minutes(1));
-  public static readonly LINEAR_20_PERCENT_EVERY_6_MINUTES = RolloutStrategy.linear(20, Duration.minutes(30), Duration.minutes(30));
-  public static readonly ALL_AT_ONCE = RolloutStrategy.linear(100, Duration.minutes(0), Duration.minutes(10));
+  public static readonly CANARY_10_PERCENT_20_MINUTES = RolloutStrategy.exponential({
+    growthFactor: 10,
+    deploymentDuration: Duration.minutes(20),
+    finalBakeTime: Duration.minutes(10),
+  });
+  public static readonly LINEAR_50_PERCENT_EVERY_30_SECONDS = RolloutStrategy.linear({
+    growthFactor: 50,
+    deploymentDuration: Duration.minutes(1),
+    finalBakeTime: Duration.minutes(1),
+  });
+  public static readonly LINEAR_20_PERCENT_EVERY_6_MINUTES = RolloutStrategy.linear({
+    growthFactor: 20,
+    deploymentDuration: Duration.minutes(30),
+    finalBakeTime: Duration.minutes(30),
+  });
+  public static readonly ALL_AT_ONCE = RolloutStrategy.linear({
+    growthFactor: 100,
+    deploymentDuration: Duration.minutes(0),
+    finalBakeTime: Duration.minutes(10),
+  });
 
   /**
    * @returns A linear rollout strategy.
-   *
-   * @param growthFactor The growth factor of the strategy
-   * @param deploymentDuration The duration of the deployment
    */
-  public static linear(growthFactor: number, deploymentDuration: Duration, finalBakeTime?: Duration): RolloutStrategy {
+  public static linear(props: RolloutStrategyProps): RolloutStrategy {
     return {
-      growthFactor,
-      deploymentDuration,
+      growthFactor: props.growthFactor,
+      deploymentDuration: props.deploymentDuration,
       growthType: GrowthType.LINEAR,
-      finalBakeTime,
+      finalBakeTime: props.finalBakeTime,
     };
   }
 
   /**
    * @returns An exponential rollout strategy.
-   *
-   * @param growthFactor The growth factor of the strategy
-   * @param deploymentDuration The duration of the deployment
    */
-  public static exponential(growthFactor: number, deploymentDuration: Duration, finalBakeTime?: Duration): RolloutStrategy {
+  public static exponential(props: RolloutStrategyProps): RolloutStrategy {
     return {
-      growthFactor,
-      deploymentDuration,
+      growthFactor: props.growthFactor,
+      deploymentDuration: props.deploymentDuration,
       growthType: GrowthType.EXPONENTIAL,
-      finalBakeTime,
+      finalBakeTime: props.finalBakeTime,
     };
   }
 

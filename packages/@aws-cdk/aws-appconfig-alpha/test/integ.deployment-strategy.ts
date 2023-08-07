@@ -8,7 +8,10 @@ const stack = new Stack(app, 'aws-appconfig-deployment-strategy');
 
 // create basic deployment strategy
 new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
-  rolloutStrategy: RolloutStrategy.linear(15, Duration.minutes(5)),
+  rolloutStrategy: RolloutStrategy.linear({
+    growthFactor: 15,
+    deploymentDuration: Duration.minutes(5),
+  }),
 });
 
 new IntegTest(app, 'appconfig-deployment-strategy', {

@@ -58,7 +58,11 @@ Deployment strategy with custom values:
 
 ```ts
 new appconfig.DeploymentStrategy(this, 'MyDeploymentStrategy', {
-  rolloutStrategy: appconfig.RolloutStrategy.linear(15, Duration.minutes(30), Duration.minutes(30)),
+  rolloutStrategy: appconfig.RolloutStrategy.linear({
+    growthFactor: 20,
+    deploymentDuration: Duration.minutes(30),
+    finalBakeTime: Duration.minutes(30),
+  }),
 });
 ```
 
@@ -126,7 +130,11 @@ new appconfig.HostedConfiguration(this, 'MyHostedConfiguration', {
   application,
   content: appconfig.ConfigurationContent.fromInline('This is my configuration content.'),
   deploymentStrategy: new appconfig.DeploymentStrategy(this, 'MyDeploymentStrategy', {
-    rolloutStrategy: appconfig.RolloutStrategy.linear(15, Duration.minutes(30), Duration.minutes(15)),
+    rolloutStrategy: appconfig.RolloutStrategy.linear({
+      growthFactor: 15,
+      deploymentDuration: Duration.minutes(30),
+      finalBakeTime: Duration.minutes(15),
+    }),
   }),
 });
 ```
@@ -284,7 +292,11 @@ new appconfig.SourcedConfiguration(this, 'MySourcedConfiguration', {
   application,
   location: appconfig.ConfigurationSource.fromBucket(bucket, 'path/to/file.json'),
   deploymentStrategy: new appconfig.DeploymentStrategy(this, 'MyDeploymentStrategy', {
-    rolloutStrategy: appconfig.RolloutStrategy.linear(15, Duration.minutes(30), Duration.minutes(15)),
+    rolloutStrategy: appconfig.RolloutStrategy.linear({
+      growthFactor: 15,
+      deploymentDuration: Duration.minutes(30),
+      finalBakeTime: Duration.minutes(15),
+    }),
   }),
 });
 ```

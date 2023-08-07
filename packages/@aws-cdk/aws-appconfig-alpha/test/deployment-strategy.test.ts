@@ -7,7 +7,10 @@ describe('deployment strategy', () => {
   test('default deployment strategy', () => {
     const stack = new cdk.Stack();
     new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
-      rolloutStrategy: RolloutStrategy.linear(10, cdk.Duration.minutes(10)),
+      rolloutStrategy: RolloutStrategy.linear({
+        growthFactor: 10,
+        deploymentDuration: cdk.Duration.minutes(10),
+      }),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::DeploymentStrategy', {
@@ -15,6 +18,7 @@ describe('deployment strategy', () => {
       DeploymentDurationInMinutes: 10,
       GrowthFactor: 10,
       ReplicateTo: 'NONE',
+      GrowthType: 'LINEAR',
     });
   });
 
@@ -22,7 +26,10 @@ describe('deployment strategy', () => {
     const stack = new cdk.Stack();
     new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
       name: 'TestDeploymentStrategy',
-      rolloutStrategy: RolloutStrategy.linear(10, cdk.Duration.minutes(10)),
+      rolloutStrategy: RolloutStrategy.linear({
+        growthFactor: 10,
+        deploymentDuration: cdk.Duration.minutes(10),
+      }),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::DeploymentStrategy', {
@@ -30,6 +37,7 @@ describe('deployment strategy', () => {
       DeploymentDurationInMinutes: 10,
       GrowthFactor: 10,
       ReplicateTo: 'NONE',
+      GrowthType: 'LINEAR',
     });
   });
 
@@ -37,7 +45,10 @@ describe('deployment strategy', () => {
     const stack = new cdk.Stack();
     new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
       name: 'TestDeploymentStrategy',
-      rolloutStrategy: RolloutStrategy.linear(10, cdk.Duration.seconds(120)),
+      rolloutStrategy: RolloutStrategy.linear({
+        growthFactor: 10,
+        deploymentDuration: cdk.Duration.seconds(120),
+      }),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::DeploymentStrategy', {
@@ -45,6 +56,7 @@ describe('deployment strategy', () => {
       DeploymentDurationInMinutes: 2,
       GrowthFactor: 10,
       ReplicateTo: 'NONE',
+      GrowthType: 'LINEAR',
     });
   });
 
@@ -52,7 +64,10 @@ describe('deployment strategy', () => {
     const stack = new cdk.Stack();
     new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
       name: 'TestDeploymentStrategy',
-      rolloutStrategy: RolloutStrategy.linear(10, cdk.Duration.minutes(10)),
+      rolloutStrategy: RolloutStrategy.linear({
+        growthFactor: 10,
+        deploymentDuration: cdk.Duration.minutes(10),
+      }),
       description: 'This is my description',
     });
 
@@ -62,6 +77,7 @@ describe('deployment strategy', () => {
       GrowthFactor: 10,
       ReplicateTo: 'NONE',
       Description: 'This is my description',
+      GrowthType: 'LINEAR',
     });
   });
 
@@ -69,7 +85,11 @@ describe('deployment strategy', () => {
     const stack = new cdk.Stack();
     new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
       name: 'TestDeploymentStrategy',
-      rolloutStrategy: RolloutStrategy.linear(10, cdk.Duration.minutes(10), cdk.Duration.minutes(30)),
+      rolloutStrategy: RolloutStrategy.linear({
+        growthFactor: 10,
+        deploymentDuration: cdk.Duration.minutes(10),
+        finalBakeTime: cdk.Duration.minutes(30),
+      }),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::DeploymentStrategy', {
@@ -78,6 +98,7 @@ describe('deployment strategy', () => {
       GrowthFactor: 10,
       ReplicateTo: 'NONE',
       FinalBakeTimeInMinutes: 30,
+      GrowthType: 'LINEAR',
     });
   });
 
@@ -85,7 +106,10 @@ describe('deployment strategy', () => {
     const stack = new cdk.Stack();
     new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
       name: 'TestDeploymentStrategy',
-      rolloutStrategy: RolloutStrategy.exponential(10, cdk.Duration.minutes(10)),
+      rolloutStrategy: RolloutStrategy.exponential({
+        growthFactor: 10,
+        deploymentDuration: cdk.Duration.minutes(10),
+      }),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::DeploymentStrategy', {
@@ -101,7 +125,10 @@ describe('deployment strategy', () => {
     const stack = new cdk.Stack();
     new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
       name: 'TestDeploymentStrategy',
-      rolloutStrategy: RolloutStrategy.linear(10, cdk.Duration.minutes(10)),
+      rolloutStrategy: RolloutStrategy.linear({
+        growthFactor: 10,
+        deploymentDuration: cdk.Duration.minutes(10),
+      }),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::DeploymentStrategy', {
@@ -109,6 +136,7 @@ describe('deployment strategy', () => {
       DeploymentDurationInMinutes: 10,
       GrowthFactor: 10,
       ReplicateTo: 'NONE',
+      GrowthType: 'LINEAR',
     });
   });
 
@@ -202,6 +230,7 @@ describe('deployment strategy', () => {
       GrowthFactor: 100,
       FinalBakeTimeInMinutes: 10,
       ReplicateTo: 'NONE',
+      GrowthType: 'LINEAR',
     });
   });
 
@@ -217,6 +246,7 @@ describe('deployment strategy', () => {
       GrowthFactor: 100,
       FinalBakeTimeInMinutes: 10,
       ReplicateTo: 'NONE',
+      GrowthType: 'LINEAR',
     });
   });
 
@@ -232,6 +262,7 @@ describe('deployment strategy', () => {
       GrowthFactor: 10,
       FinalBakeTimeInMinutes: 10,
       ReplicateTo: 'NONE',
+      GrowthType: 'EXPONENTIAL',
     });
   });
 
@@ -247,6 +278,7 @@ describe('deployment strategy', () => {
       GrowthFactor: 50,
       FinalBakeTimeInMinutes: 1,
       ReplicateTo: 'NONE',
+      GrowthType: 'LINEAR',
     });
   });
 });

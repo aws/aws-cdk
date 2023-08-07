@@ -42,7 +42,10 @@ const appConfigApp = new Application(stack, 'MyAppConfig', {
 });
 
 const deploymentStrategy = new DeploymentStrategy(stack, 'MyDeployStrategy', {
-  rolloutStrategy: RolloutStrategy.linear(100, Duration.minutes(0)),
+  rolloutStrategy: RolloutStrategy.linear({
+    growthFactor: 100,
+    deploymentDuration: Duration.minutes(0),
+  }),
 });
 
 // create basic config profile and add config version
