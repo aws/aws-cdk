@@ -524,10 +524,6 @@ class FnFindInMap extends FnBase {
     }
     return { 'Fn::FindInMap': [this.mapName, this.topLevelKey, this.secondLevelKey, this.defaultValue !== undefined ? { DefaultValue: this.defaultValue } : undefined] };
   }
-
-  public toString() {
-    return Token.asString(this);
-  }
 }
 
 /**
