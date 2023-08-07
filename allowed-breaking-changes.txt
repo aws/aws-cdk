@@ -164,3 +164,12 @@ removed:aws-cdk-lib.triggers.TriggerProps.timeout
 change-return-type:aws-cdk-lib.aws_ec2.SecurityGroup.determineRuleScope
 # broken only in non-JS/TS, where that was not previously usable
 strengthened:aws-cdk-lib.aws_s3_deployment.BucketDeploymentProps
+
+# Fix for non-working property
+# loadBalancerName is used to idenitfy a Classic Load Balancer
+# However TaskSet only works with modern Application or Network LBs
+removed:aws-cdk-lib.aws_ecs.CfnTaskSet.LoadBalancerProperty.loadBalancerName
+
+# Introduction of a new feature
+# Previously only BlueGreenUpdatePolicy could be set, now BlueGreenUpdatePolicy or new RollingUpdatePolicy can be provided
+weakened:aws-cdk-lib.aws_sagemaker.CfnEndpoint.DeploymentConfigProperty

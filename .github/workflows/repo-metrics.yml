@@ -10,6 +10,8 @@ permissions:
 
 jobs:
   build:
+    # this workflow will always fail in forks; bail if this isn't running in the upstream
+    if: github.repository == 'aws/aws-cdk'
     name: metrics
     runs-on: ubuntu-latest
 

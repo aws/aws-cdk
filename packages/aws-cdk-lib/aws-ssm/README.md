@@ -105,7 +105,7 @@ You can create either `ssm.StringParameter` or `ssm.StringListParameter`s in
 a CDK app. These are public (not secret) values. Parameters of type
 *SecureString* cannot be created directly from a CDK application; if you want
 to provision secrets automatically, use Secrets Manager Secrets (see the
-`@aws-cdk/aws-secretsmanager` package).
+`aws-cdk-lib/aws-secretsmanager` package).
 
 ```ts
 new ssm.StringParameter(this, 'Parameter', {
