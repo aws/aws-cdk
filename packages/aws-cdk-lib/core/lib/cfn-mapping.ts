@@ -63,7 +63,8 @@ export class CfnMapping extends CfnRefElement {
   }
 
   /**
-   * @returns A reference to a value in the map based on the two keys. If mapping is lazy, the value from the map or default value is returned instead of the reference.
+   * @returns A reference to a value in the map based on the two keys.
+   *          If mapping is lazy, the value from the map or default value is returned instead of the reference and the mapping is not rendered in the template.
    */
   public findInMap(key1: string, key2: string, defaultValue?: string): string {
     let fullyResolved = false;
