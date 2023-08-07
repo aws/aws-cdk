@@ -38,6 +38,18 @@ export class SqsSubscription implements sns.ITopicSubscription {
     }
     const snsServicePrincipal = new iam.ServicePrincipal('sns.amazonaws.com');
 
+    // if the queue is encrypted by AWS managed KMS key (alias/aws/sqs),
+    // throw error message
+    if (this.queue.encryptionType === sqs.QueueEncryption.KMS_MANAGED) {
+      throw new Error('SQS queue encrypted by AWS managed KMS key cannot be used as SNS subscription');
+    }
+
+    // if the dead-letter queue is encrypted by AWS managed KMS key (alias/aws/sqs),
+    // throw error message
+    if (this.props.deadLetterQueue && this.props.deadLetterQueue.encryptionType === sqs.QueueEncryption.KMS_MANAGED) {
+      throw new Error('SQS queue encrypted by AWS managed KMS key cannot be used as dead-letter queue');
+    }
+
     // add a statement to the queue resource policy which allows this topic
     // to send messages to the queue.
     const queuePolicyDependable = this.queue.addToResourcePolicy(new iam.PolicyStatement({

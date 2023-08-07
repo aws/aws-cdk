@@ -111,6 +111,26 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
   }
 
   /**
+   * Validates the placement constraints to make sure they are supported.
+   * Currently, only 'memberOf' is a valid constraint for an Ec2TaskDefinition.
+   */
+  private static validatePlacementConstraints(constraints?: PlacementConstraint[]) {
+    // List of valid constraints https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-taskdefinition-taskdefinitionplacementconstraint.html#cfn-ecs-taskdefinition-taskdefinitionplacementconstraint-type
+    const validConstraints = new Set(['memberOf']);
+
+    // Check if any of the placement constraints are not valid
+    const invalidConstraints = constraints?.filter(constraint => {
+      return constraint.toJson().some(constraintProperty => !validConstraints.has(constraintProperty.type));
+    }) ?? [];
+
+    if (invalidConstraints.length > 0) {
+      const invalidConstraintTypes = invalidConstraints.map(
+        constraint => constraint.toJson().map(constraintProperty => constraintProperty.type)).flat();
+      throw new Error(`Invalid placement constraint(s): ${invalidConstraintTypes.join(', ')}. Only 'memberOf' is currently supported in the Ec2TaskDefinition class.`);
+    }
+  }
+
+  /**
    * Constructs a new instance of the Ec2TaskDefinition class.
    */
   constructor(scope: Construct, id: string, props: Ec2TaskDefinitionProps = {}) {
@@ -122,5 +142,8 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
       pidMode: props.pidMode,
       inferenceAccelerators: props.inferenceAccelerators,
     });
+
+    // Validate the placement constraints
+    Ec2TaskDefinition.validatePlacementConstraints(props.placementConstraints ?? []);
   }
 }

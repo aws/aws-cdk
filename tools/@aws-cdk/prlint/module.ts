@@ -1,6 +1,6 @@
+import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as glob from 'glob';
-import * as path from 'path';
 
 let awsCdkLibPath: string;
 const modules: string[] = [];
@@ -9,7 +9,7 @@ const awsCdkLibModules: string[] = [];
 export function findModulePath(fuzz: string): string {
   discoverModules();
 
-  const regex = new RegExp(`[-_/]${fuzz}($|-alpha)`)
+  const regex = new RegExp(`[-_/]${fuzz}($|-alpha)`);
   const matched = [
     ...modules.filter(m => regex.test(m)),
     ...(awsCdkLibModules.some(m => regex.test(m)) ? [awsCdkLibPath] : []),
@@ -32,7 +32,7 @@ function discoverModules() {
       throw new Error('env REPO_ROOT must be set');
     }
     const repoRoot = process.env.REPO_ROOT;
-    const lernaConfig = require(path.join(repoRoot, 'lerna.json'));
+    const lernaConfig = require(path.join(repoRoot, 'lerna.json')); // eslint-disable-line @typescript-eslint/no-require-imports
     const searchPaths: string[] = lernaConfig.packages;
     awsCdkLibPath = path.join(repoRoot, 'packages', 'aws-cdk-lib');
     searchPaths.forEach(p => {
@@ -67,6 +67,6 @@ export function moduleStability(loc: string): 'stable' | 'experimental' | undefi
   if (!fs.existsSync(path.join(loc, 'package.json'))) {
     throw new Error(`unexpected: no package.json found at location "${loc}"`);
   }
-  const pkgjson = require(path.join(loc, 'package.json'));
+  const pkgjson = require(path.join(loc, 'package.json')); // eslint-disable-line @typescript-eslint/no-require-imports
   return pkgjson.stability;
 }
