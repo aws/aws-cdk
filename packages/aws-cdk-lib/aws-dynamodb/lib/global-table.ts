@@ -10,7 +10,7 @@ import { IMetric, MathExpression, Metric, MetricOptions, MetricProps } from '../
 import { Grant, IGrantable } from '../../aws-iam';
 import { IStream } from '../../aws-kinesis';
 import { IKey, Key } from '../../aws-kms';
-import { Aws, Lazy, RemovalPolicy, Resource, Token } from '../../core';
+import { ArnFormat, Aws, Lazy, RemovalPolicy, Resource, Stack, Token } from '../../core';
 
 const HASH_KEY_TYPE = 'HASH';
 const RANGE_KEY_TYPE = 'RANGE';
@@ -744,6 +744,89 @@ export interface GlobalTableAttributes {
  */
 export class GlobalTable extends GlobalTableBase {
   /**
+   * Creates a Global Table construct that represents an external Global Table via table name.
+   *
+   * @param scope the parent creating construct (usually `this`)
+   * @param id the construct's name
+   * @param tableName the Global Table's name
+   */
+  public static fromTableName(scope: Construct, id: string, tableName: string): ITable {
+    return GlobalTable.fromTableAttributes(scope, id, { tableName });
+  }
+
+  /**
+   * Creates a Global Table construct that represents an external Global Table via table ARN.
+   *
+   * @param scope the parent creating construct (usually `this`)
+   * @param id the construct's name
+   * @param tableArn the Global Table's ARN
+   */
+  public static fromTableArn(scope: Construct, id: string, tableArn: string): ITable {
+    return GlobalTable.fromTableAttributes(scope, id, { tableArn });
+  }
+
+  /**
+   * Creates a Global Table that represents an external Global Table.
+   *
+   * @param scope the parent creating construct (usually `this`)
+   * @param id the construct's name
+   * @param attrs attributes of the Global Table
+   */
+  public static fromTableAttributes(scope: Construct, id: string, attrs: GlobalTableAttributes): ITable {
+    class Import extends GlobalTableBase {
+      public readonly tableArn: string;
+      public readonly tableName: string;
+      public readonly tableId?: string;
+      public readonly tableStreamArn?: string;
+      public readonly encryptionKey?: IKey;
+
+      protected readonly streamArnForGrants?: string;
+      protected readonly hasIndex = (attrs.grantIndexPermissions ?? false) ||
+        (attrs.globalIndexes ?? []).length > 0 ||
+        (attrs.localIndexes ?? []).length > 0;
+
+      public constructor(tableArn: string, tableName: string, tableId?: string, tableStreamArn?: string) {
+        super(scope, id);
+        this.tableArn = tableArn;
+        this.tableName = tableName;
+        this.tableId = tableId;
+        this.tableStreamArn = tableStreamArn;
+        this.encryptionKey = attrs.encryptionKey;
+        this.streamArnForGrants = tableStreamArn;
+      }
+    }
+
+    let tableName: string;
+    let tableArn: string;
+    const stack = Stack.of(scope);
+    if (!attrs.tableArn) {
+      if (!attrs.tableName) {
+        throw new Error('At least one of tableArn or tableName must be provided');
+      }
+
+      tableName = attrs.tableName;
+      tableArn = stack.formatArn({
+        service: 'dynamodb',
+        resource: 'table',
+        resourceName: tableName,
+      });
+    } else {
+      if (attrs.tableName) {
+        throw new Error('Only one of tableArn or tableName can be provided, but not both');
+      }
+
+      tableArn = attrs.tableArn;
+      const resourceName = stack.splitArn(tableArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
+      if (!resourceName) {
+        throw new Error('Table ARN must be of the form: arn:<partition>:dynamodb:<region>:<account>:table/<table-name>');
+      }
+      tableName = resourceName;
+    }
+
+    return new Import(tableArn, tableName, attrs.tableId, attrs.tableStreamArn);
+  }
+
+  /**
    * @attribute
    */
   public readonly tableArn: string;
@@ -919,6 +1002,43 @@ export class GlobalTable extends GlobalTableBase {
     this.validateLocalSecondaryIndex(props);
     const localSecondaryIndex = this.configureLocalSecondaryIndex(props);
     this._localSecondaryIndexes.set(props.indexName, localSecondaryIndex);
+  }
+
+  /**
+   * Retrieve a Replica Table from the Global Table.
+   *
+   * Note: Replica Tables are not supported in a region agnostic stack. You can work with the
+   * Replica Table in the Global Table deployment region via this Global Table.
+   *
+   * @param region the region of the Replica Table
+   */
+  public replica(region: string): ITable {
+    if (Token.isUnresolved(this.stack.region)) {
+      throw new Error('Replica Tables are not supported in a region agnostic stack');
+    }
+
+    if (Token.isUnresolved(region)) {
+      throw new Error('Provided `region` cannot be a token');
+    }
+
+    if (region === this.stack.region) {
+      return GlobalTable.fromTableAttributes(this, `ReplicaTable${region}`, {
+        tableArn: this.tableArn,
+        encryptionKey: this.encryptionKey,
+        tableStreamArn: this.tableStreamArn,
+        grantIndexPermissions: this.hasIndex,
+      });
+    }
+
+    if (!this._replicaTables.has(region)) {
+      throw new Error(`Global Table does not have a Replica Table in region ${region}`);
+    }
+
+    return GlobalTable.fromTableAttributes(this, `ReplicaTable${region}`, {
+      tableName: this.tableName,
+      encryptionKey: this.replicaKeys[region],
+      grantIndexPermissions: this.hasIndex,
+    });
   }
 
   private configureReplicaTable(props: ReplicaTableProps): CfnGlobalTable.ReplicaSpecificationProperty {

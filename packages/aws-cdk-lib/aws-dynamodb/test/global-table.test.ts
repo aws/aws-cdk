@@ -588,7 +588,7 @@ describe('global table configuration', () => {
           writeCapacity: Capacity.fixed(10),
         }),
       });
-    }).toThrow('You cannot configure FIXED capacity mode for write capacity');
+    }).toThrow("You cannot configure 'writeCapacity' with FIXED capacity mode");
   });
 });
 
@@ -798,7 +798,7 @@ describe('replicas', () => {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
         replicas: [{ region: 'us-east-1' }],
       });
-    }).toThrow('Replica tables are not supported in a region agnostic stack');
+    }).toThrow('Replica Tables are not supported in a region agnostic stack');
   });
 
   test('throws if replica region is a token', () => {
@@ -811,7 +811,7 @@ describe('replicas', () => {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
         replicas: [{ region: Lazy.string({ produce: () => 'us-east-1' }) }],
       });
-    }).toThrow('Replica table region must not be a token');
+    }).toThrow('Replica Table region must not be token');
   });
 
   test('throws if adding replica in deployment region', () => {
@@ -824,7 +824,7 @@ describe('replicas', () => {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
         replicas: [{ region: 'us-west-2' }],
       });
-    }).toThrow('You cannot add a replica table in global table deployment region');
+    }).toThrow('A Replica Table in Global Table deployment region is configured by default and cannot be added explicitly');
   });
 
   test('throws if adding duplicate replica table', () => {
@@ -838,7 +838,7 @@ describe('replicas', () => {
     // WHEN / THEN
     expect(() => {
       globalTable.addReplica({ region: 'us-east-1' });
-    }).toThrow('Duplicate replica region, us-east-1, is not allowed');
+    }).toThrow('Duplicate Relica Table region, us-east-1, is not allowed');
   });
 
   test('throws if configuring read capacity when billing mode is on-demand', () => {
@@ -851,7 +851,7 @@ describe('replicas', () => {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
         replicas: [{ region: 'us-east-1', readCapacity: Capacity.fixed(10) }],
       });
-    }).toThrow('You cannot configure read capacity on replicas when global table billing mode is PAY_PER_REQUEST');
+    }).toThrow("You cannot configure 'readCapacity' on a Replica Table when billing mode is PAY_PER_REQUEST");
   });
 
   test('throws if replica key arn is missing for encryption with customer managed key', () => {
@@ -870,7 +870,7 @@ describe('replicas', () => {
     // WHEN / THEN
     expect(() => {
       Template.fromStack(stack);
-    }).toThrow('No KMS key specified for region us-east-2');
+    }).toThrow("KMS key for us-east-2 was not found in 'replicaKeyArns'");
   });
 });
 
@@ -1483,7 +1483,7 @@ describe('secondary indexes', () => {
           },
         ],
       });
-    }).toThrow('You cannot configure read or write capacity on a global secondary index if the billing mode is PAY_PER_REQUEST');
+    }).toThrow("You cannot configure 'readCapacity' or 'writeCapacity' on a global secondary index when the billing mode is PAY_PER_REQUEST");
   });
 
   test('throws if write capacity is configured and global table billing mode is on-demand', () => {
@@ -1502,7 +1502,7 @@ describe('secondary indexes', () => {
           },
         ],
       });
-    }).toThrow('You cannot configure read or write capacity on a global secondary index if the billing mode is PAY_PER_REQUEST');
+    }).toThrow("You cannot configure 'readCapacity' or 'writeCapacity' on a global secondary index when the billing mode is PAY_PER_REQUEST");
   });
 
   test('throws if number of global secondary indexes is greater than 20', () => {
@@ -1523,7 +1523,7 @@ describe('secondary indexes', () => {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
         globalSecondaryIndexes,
       });
-    }).toThrow('A table can only support a maximum of 20 global secondary indexes');
+    }).toThrow('You may not provide more than 20 global secondary indexes to a Global Table');
   });
 
   test('throws if number of local secondary indexes is greater than 5', () => {
@@ -1544,7 +1544,7 @@ describe('secondary indexes', () => {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
         localSecondaryIndexes,
       });
-    }).toThrow('A table can only support a maximum of 5 local secondary indexes');
+    }).toThrow('You may not provide more than 5 local secondary indexes to a Global Table');
   });
 });
 
@@ -1570,7 +1570,7 @@ test('grants', () => {
     ],
   });
 
-  globalTable.grantStreamRead(user);
+  globalTable.grantFullAccess(user);
 
   /* eslint-disable no-console */
   console.log(globalTable.tableStreamArn);

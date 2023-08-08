@@ -60,7 +60,7 @@ export abstract class Capacity {
       }
 
       public _renderWriteCapacity() {
-        throw new Error(`You cannot configure write capacity with ${CapacityMode.FIXED} capacity mode`);
+        throw new Error(`You cannot configure 'writeCapacity' with ${CapacityMode.FIXED} capacity mode`);
       }
     }) (CapacityMode.FIXED);
   }
