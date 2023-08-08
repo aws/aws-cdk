@@ -259,11 +259,11 @@ abstract class GlobalTableBase extends Resource implements ITable {
    */
   public abstract readonly encryptionKey?: IKey;
 
-  protected abstract readonly streamArnForGrants?: string;
-
   protected readonly replicaKeys: { [region: string]: IKey } = {};
 
   protected readonly replicaArns: string[] = [];
+
+  protected readonly streamArns: string[] = [];
 
   protected abstract get hasIndex(): boolean;
 
@@ -300,14 +300,14 @@ abstract class GlobalTableBase extends Resource implements ITable {
    * @param actions the set of actions to allow (i.e., 'dynamodb:DescribeStream', 'dynamodb:GetRecords', etc.)
    */
   public grantStream(grantee: IGrantable, ...actions: string[]): Grant {
-    if (!this.streamArnForGrants) {
-      throw new Error(`No stream ARN found on the table ${this.node.path}`);
+    if (this.streamArns.length === 0) {
+      throw new Error(`No stream ARNs found on the table ${this.node.path}`);
     }
 
     return Grant.addToPrincipal({
       grantee,
       actions,
-      resourceArns: [this.streamArnForGrants],
+      resourceArns: this.streamArns,
     });
   }
 
@@ -336,14 +336,14 @@ abstract class GlobalTableBase extends Resource implements ITable {
    * @param grantee the principal to grant access to
    */
   public grantTableListStreams(grantee: IGrantable): Grant {
-    if (!this.streamArnForGrants) {
-      throw new Error(`No stream ARN found on the table ${this.node.path}`);
+    if (this.streamArns.length == 0) {
+      throw new Error(`No stream ARNs found on the table ${this.node.path}`);
     }
 
     return Grant.addToPrincipal({
       grantee,
       actions: ['dynamodb:ListStreams'],
-      resourceArns: [this.streamArnForGrants],
+      resourceArns: this.streamArns,
     });
   }
 
@@ -642,14 +642,14 @@ abstract class GlobalTableBase extends Resource implements ITable {
     }
 
     if (options.streamActions) {
-      if (!this.streamArnForGrants) {
-        throw new Error(`No stream ARN found on the table ${this.node.path}`);
+      if (this.streamArns.length === 0) {
+        throw new Error(`No stream ARNs found on the table ${this.node.path}`);
       }
 
       return Grant.addToPrincipal({
         grantee,
         actions: options.streamActions,
-        resourceArns: [this.streamArnForGrants],
+        resourceArns: this.streamArns,
         scope: this,
       });
     }
@@ -780,7 +780,6 @@ export class GlobalTable extends GlobalTableBase {
       public readonly tableStreamArn?: string;
       public readonly encryptionKey?: IKey;
 
-      protected readonly streamArnForGrants?: string;
       protected readonly hasIndex = (attrs.grantIndexPermissions ?? false) ||
         (attrs.globalIndexes ?? []).length > 0 ||
         (attrs.localIndexes ?? []).length > 0;
@@ -792,7 +791,7 @@ export class GlobalTable extends GlobalTableBase {
         this.tableId = tableId;
         this.tableStreamArn = tableStreamArn;
         this.encryptionKey = attrs.encryptionKey;
-        this.streamArnForGrants = tableStreamArn;
+        this.tableStreamArn && this.streamArns.push(this.tableStreamArn);
       }
     }
 
@@ -847,8 +846,6 @@ export class GlobalTable extends GlobalTableBase {
   public readonly tableId?: string;
 
   public readonly encryptionKey?: IKey;
-
-  protected readonly streamArnForGrants?: string;
 
   private readonly billingMode: string;
   private readonly partitionKey: Attribute;
@@ -916,12 +913,7 @@ export class GlobalTable extends GlobalTableBase {
     this.tableId = resource.attrTableId;
     this.tableStreamArn = resource.attrStreamArn;
 
-    // grants for streams will apply to all replicas
-    this.streamArnForGrants = this.stack.formatArn({
-      service: 'dynamodb',
-      resource: 'table',
-      resourceName: `${this.tableName}/stream/*`,
-    });
+    this.streamArns.push(this.tableStreamArn);
 
     props.replicas?.forEach(replica => this.addReplica(replica));
 
@@ -972,6 +964,7 @@ export class GlobalTable extends GlobalTableBase {
    */
   public addReplica(props: ReplicaTableProps) {
     this.validateReplica(props);
+
     const replicaArn = this.stack.formatArn({
       region: props.region,
       resource: 'table',
@@ -979,6 +972,10 @@ export class GlobalTable extends GlobalTableBase {
       resourceName: this.tableName,
     });
     this.replicaArns.push(replicaArn);
+
+    const tableStreamArn = `${replicaArn}/stream/*`;
+    this.streamArns.push(tableStreamArn);
+
     this._replicaTables.set(props.region, props);
   }
 
@@ -1034,10 +1031,12 @@ export class GlobalTable extends GlobalTableBase {
       throw new Error(`Global Table does not have a Replica Table in region ${region}`);
     }
 
+    const tableStreamArn = this.streamArns.find(streamArn => streamArn.includes(region));
     return GlobalTable.fromTableAttributes(this, `ReplicaTable${region}`, {
       tableName: this.tableName,
       encryptionKey: this.replicaKeys[region],
       grantIndexPermissions: this.hasIndex,
+      tableStreamArn,
     });
   }
 
