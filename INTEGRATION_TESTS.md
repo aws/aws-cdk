@@ -49,8 +49,8 @@ an integration test for the new feature can ensure that it works and avoid unnec
 
 **3. Involves configuring resource types across services (i.e. integrations)**
 For example, you are adding functionality that allows for service x to integrate with service y.
-A good example of this is the [aws-stepfunctions-tasks](./packages/@aws-cdk/aws-stepfunctions-tasks) or
-[aws-apigatewayv2-integrations](./packages/@aws-cdk/aws-apigatewayv2-integrations) modules. Both of these
+A good example of this is the [aws-stepfunctions-tasks](./packages/aws-cdk-lib/aws-stepfunctions-tasks) or
+[aws-apigatewayv2-integrations-alpha](./packages/@aws-cdk/aws-apigatewayv2-integrations-alpha) modules. Both of these
 have L2 constructs that provide functionality to integrate services.
 
 Sometimes these integrations involve configuring/formatting json/vtl or some other type of data.
@@ -82,8 +82,8 @@ Lambda Function would look like this:
 
 _integ.lambda.ts_
 ```ts
-import * as iam from '@aws-cdk/aws-iam';
-import * as cdk from '@aws-cdk/core';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as cdk from 'aws-cdk-lib/core';
 import * as lambda from '../lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 
@@ -230,11 +230,11 @@ to deploy the Lambda Function _and_ then rerun the assertions to ensure that the
 ### Assertions
 
 Sometimes it is necessary to perform some form of _assertion_ against the deployed infrastructure to validate that the
-test succeeds. A good example of this is the `@aws-cdk/aws-stepfunctions-tasks` module which creates integrations between
+test succeeds. A good example of this is the `aws-cdk-lib/aws-stepfunctions-tasks` module which creates integrations between
 AWS StepFunctions and other AWS services. 
 
-If we look at the [integ.put-events.ts](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-stepfunctions-tasks/test/eventbridge/integ.put-events.ts)
-integration test we can see that we are creating an `@aws-cdk/aws-events.EventBus` along with a `@aws-cdk/aws-stepfunctions.StateMachine`
+If we look at the [integ.put-events.ts](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/eventbridge/integ.put-events.ts)
+integration test we can see that we are creating an `aws-cdk-lib/aws-events.EventBus` along with a `aws-cdk-lib/aws-stepfunctions.StateMachine`
 which will send an event to the `EventBus`. In a typical integration test we would just deploy the test and the fact that the
 infrastructure deployed successfully would be enough of a validation that the test succeeded. In this case though, we ideally
 want to validate that the _integration_ connecting `StepFunctions` to the `EventBus` has been setup correctly, and the only
@@ -269,8 +269,8 @@ Not every test requires an assertion. We typically do not need to assert CloudFo
 with Encryption, we do not need to assert that Encryption is set on the bucket. We can trust that the CloudFormation behavior works.
 Some things you should look for in deciding if the test needs an assertion:
 
-- Integrations between services (i.e. integration libraries like `@aws-cdk/aws-lambda-destinations`, `@aws-cdk/aws-stepfunctions-tasks`, etc)
-- Anything that bundles or deploys custom code (i.e. does a Lambda function bundled with `@aws-cdk/aws-lambda-nodejs` still invoke or did we break bundling behavior)
+- Integrations between services (i.e. integration libraries like `aws-cdk-lib/aws-lambda-destinations`, `aws-cdk-lib/aws-stepfunctions-tasks`, etc)
+- Anything that bundles or deploys custom code (i.e. does a Lambda function bundled with `aws-cdk-lib/aws-lambda-nodejs` still invoke or did we break bundling behavior)
 - IAM/Networking connections.
   - This one is a bit of a judgement call. Most things do not need assertions, but sometimes we handle complicated configurations involving IAM permissions or
     Networking access.

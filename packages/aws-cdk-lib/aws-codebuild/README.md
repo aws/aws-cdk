@@ -605,7 +605,7 @@ by events via an event rule.
 
 ### Using Project as an event target
 
-The `@aws-cdk/aws-events-targets.CodeBuildProject` allows using an AWS CodeBuild
+The `aws-cdk-lib/aws-events-targets.CodeBuildProject` allows using an AWS CodeBuild
 project as a AWS CloudWatch event rule target:
 
 ```ts

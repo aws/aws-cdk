@@ -361,7 +361,7 @@ If you need to run commands to setup proxies, mirrors, etc you can supply them u
 
 #### Sources
 
-Any of the regular sources from the [`@aws-cdk/aws-codepipeline-actions`](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-codepipeline-actions-readme.html#github) module can be used.
+Any of the regular sources from the [`aws-cdk-lib/aws-codepipeline-actions`](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-codepipeline-actions-readme.html#github) module can be used.
 
 #### Synths
 
@@ -730,8 +730,8 @@ create an SNS Topic, subscribe your own email address, and pass it in via
 `securityNotificationTopic`:
 
 ```ts
-import * as sns from '@aws-cdk/aws-sns';
-import * as subscriptions from '@aws-cdk/aws-sns-subscriptions';
+import * as sns from 'aws-cdk-lib/aws-sns';
+import * as subscriptions from 'aws-cdk-lib/aws-sns-subscriptions';
 
 const topic = new sns.Topic(this, 'SecurityChangesTopic');
 topic.addSubscription(new subscriptions.EmailSubscription('test@email.com'));

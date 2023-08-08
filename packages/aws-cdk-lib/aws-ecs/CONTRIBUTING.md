@@ -4,16 +4,11 @@ Hiya! Thanks for your interest in contributing to the ECS modules! The [ECS
 Developer Experience](https://github.com/orgs/aws/teams/aws-ecs-devx) team
 currently owns the following construct libraries:
 
-- [@aws-cdk/aws-ecs](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-ecs):
+- [@aws-cdk/aws-ecs](https://github.com/aws/aws-cdk/tree/main/packages/aws-cdk-lib/aws-ecs):
   the main construct library for AWS ECS
-- [@aws-cdk/aws-ecs-patterns](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-ecs-patterns):
+- [@aws-cdk/aws-ecs-patterns](https://github.com/aws/aws-cdk/tree/main/packages/aws-cdk-lib/aws-ecs-patterns):
   a set of simplified, higher-level constructs based on common container-based
 application architectures. Great for first-time container developers!
-- [@aws-cdk-containers/ecs-service-extensions](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk-containers/ecs-service-extensions):
-  a set of ECS constructs that promote best practices for container
-infrastructure by using composable add-ons, such as load balancers and sidecar
-containers used for tracing and metric logging. More suitable for advanced
-container configuration.
 
 ## Find something to work on
 
