@@ -1,0 +1,12 @@
+{
+  "version": "33.0.0",
+  "testCases": {
+    "aws-glue-job-python-shell-integ-test/DefaultTest": {
+      "stacks": [
+        "aws-glue-job-python-shell"
+      ],
+      "assertionStack": "aws-glue-job-python-shell-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "awsgluejobpythonshellintegtestDefaultTestDeployAssert453D25B7"
+    }
+  }
+}

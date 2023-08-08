@@ -54,6 +54,8 @@ Flags come in three types:
 | [@aws-cdk/aws-ec2:restrictDefaultSecurityGroup](#aws-cdkaws-ec2restrictdefaultsecuritygroup) | Restrict access to the VPC default security group | 2.78.0 | (default) |
 | [@aws-cdk/aws-kms:aliasNameRef](#aws-cdkaws-kmsaliasnameref) | KMS Alias name and keyArn will have implicit reference to KMS Key | 2.83.0 | (fix) |
 | [@aws-cdk/core:includePrefixInUniqueNameGeneration](#aws-cdkcoreincludeprefixinuniquenamegeneration) | Include the stack prefix in the stack name generation process | 2.84.0 | (fix) |
+| [@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig](#aws-cdkaws-autoscalinggeneratelaunchtemplateinsteadoflaunchconfig) | Generate a launch template when creating an AutoScalingGroup | 2.88.0 | (fix) |
+| [@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby](#aws-cdkaws-opensearchserviceenableopensearchmultiazwithstandby) | Enables support for Multi-AZ with Standby deployment for opensearch domains | 2.88.0 | (default) |
 
 <!-- END table -->
 
@@ -98,7 +100,9 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ec2:restrictDefaultSecurityGroup": true,
     "@aws-cdk/aws-apigateway:requestValidatorUniqueId": true,
     "@aws-cdk/aws-kms:aliasNameRef": true,
-    "@aws-cdk/core:includePrefixInUniqueNameGeneration": true
+    "@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig": true,
+    "@aws-cdk/core:includePrefixInUniqueNameGeneration": true,
+    "@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby": true
   }
 }
 ```
@@ -1006,6 +1010,46 @@ is not viable in some productive setups.
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.84.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig
+
+*Generate a launch template when creating an AutoScalingGroup* (fix)
+
+Enable this flag to allow AutoScalingGroups to generate a launch template when being created.
+Launch configurations have been deprecated and cannot be created in AWS Accounts created after
+December 31, 2023. Existing 'AutoScalingGroup' properties used for creating a launch configuration
+will now create an equivalent 'launchTemplate'. Alternatively, users can provide an explicit 
+'launchTemplate' or 'mixedInstancesPolicy'. When this flag is enabled a 'launchTemplate' will 
+attempt to set user data according to the OS of the machine image if explicit user data is not
+provided.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.88.0 | `false` | `true` |
+
+**Compatibility with old behavior:** 
+      If backwards compatibility needs to be maintained due to an existing autoscaling group
+      using a launch config, set this flag to false.
+    
+
+
+### @aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby
+
+*Enables support for Multi-AZ with Standby deployment for opensearch domains* (default)
+
+If this is set, an opensearch domain will automatically be created with 
+multi-az with standby enabled.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.88.0 | `false` | `true` |
+
+**Compatibility with old behavior:** Pass `capacity.multiAzWithStandbyEnabled: false` to `Domain` construct to restore the old behavior.
 
 
 <!-- END details -->

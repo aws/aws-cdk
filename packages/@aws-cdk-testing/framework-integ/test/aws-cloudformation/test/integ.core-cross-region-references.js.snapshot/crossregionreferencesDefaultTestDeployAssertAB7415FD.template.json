@@ -12,10 +12,10 @@
     "service": "CloudFormation",
     "api": "deleteStack",
     "parameters": {
-     "StackName": "cross-region-producer"
+     "StackName": "\"cross-region-producer\""
     },
     "flattenResponse": "false",
-    "salt": "1688619612773"
+    "salt": "1689763071718"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -87,7 +87,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "86e6ecbc86f6febc745cde7ce633979efa869d6d493b12f2c9d8641d70caa7c2.zip"
+     "S3Key": "31dc77c600dd475c9b26f5702fabd7508d84bec599ba5b973691d69745c7b775.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -115,10 +115,10 @@
      "Ref": "AwsApiCallCloudFormationdescribeStackse9f2151ae7c85063016d04dca4a05a09WaitForFE8EC68F"
     },
     "parameters": {
-     "StackName": "cross-region-producer"
+     "StackName": "\"cross-region-producer\""
     },
     "flattenResponse": "false",
-    "salt": "1688619612773"
+    "salt": "1689763071718"
    },
    "DependsOn": [
     "AwsApiCallCloudFormationdeleteStacke9f2151ae7c85063016d04dca4a05a09"
@@ -302,7 +302,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "86e6ecbc86f6febc745cde7ce633979efa869d6d493b12f2c9d8641d70caa7c2.zip"
+     "S3Key": "31dc77c600dd475c9b26f5702fabd7508d84bec599ba5b973691d69745c7b775.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -344,7 +344,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "86e6ecbc86f6febc745cde7ce633979efa869d6d493b12f2c9d8641d70caa7c2.zip"
+     "S3Key": "31dc77c600dd475c9b26f5702fabd7508d84bec599ba5b973691d69745c7b775.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",

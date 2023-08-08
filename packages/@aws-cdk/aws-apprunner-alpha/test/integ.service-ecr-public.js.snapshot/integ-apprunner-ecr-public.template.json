@@ -14,7 +14,14 @@
       "ImageRepositoryType": "ECR_PUBLIC"
      }
     },
-    "InstanceConfiguration": {},
+    "InstanceConfiguration": {
+      "InstanceRoleArn": {
+        "Fn::GetAtt": [
+          "Service1InstanceRole8CBC81F1",
+          "Arn"
+        ]
+      }
+    },
     "NetworkConfiguration": {
      "EgressConfiguration": {
       "EgressType": "DEFAULT"
@@ -22,7 +29,24 @@
     },
     "ServiceName": "service1"
    }
-  }
+  },
+  "Service1InstanceRole8CBC81F1": {
+    "Type": "AWS::IAM::Role",
+    "Properties": {
+     "AssumeRolePolicyDocument": {
+      "Statement": [
+       {
+        "Action": "sts:AssumeRole",
+        "Effect": "Allow",
+        "Principal": {
+         "Service": "tasks.apprunner.amazonaws.com"
+        }
+       }
+      ],
+      "Version": "2012-10-17"
+     }
+    }
+   }
  },
  "Outputs": {
   "URL1": {

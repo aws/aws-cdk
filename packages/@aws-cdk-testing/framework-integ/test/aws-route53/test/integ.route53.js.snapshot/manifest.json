@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "32.0.0",
   "artifacts": {
     "aws-cdk-route53-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f9c954c8023429cbccaf7169883a3b5bb6ecd00c97f9931179eb65a405f68dd4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1e880e43b77aa38d085edaa0d9718a0b2d38584b11562fbbfc3c259c42b9d8b1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -159,6 +159,36 @@
             "data": "ACCC8ACD5"
           }
         ],
+        "/aws-cdk-route53-integ/GeoLocationContinent/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GeoLocationContinentAEA331ED"
+          }
+        ],
+        "/aws-cdk-route53-integ/GeoLocationCountry/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GeoLocationCountry523431F6"
+          }
+        ],
+        "/aws-cdk-route53-integ/GeoLocationSubDividion/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GeoLocationSubDividion2CB12CFC"
+          }
+        ],
+        "/aws-cdk-route53-integ/GeoLocationSubDividionUA/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GeoLocationSubDividionUA778564B1"
+          }
+        ],
+        "/aws-cdk-route53-integ/GeoLocationDefault/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GeoLocationDefaultF2DE9058"
+          }
+        ],
         "/aws-cdk-route53-integ/CaaAmazon/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -193,6 +223,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "GeoLocationSubDividionUSA98E93D0": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GeoLocationSubDividionUSA98E93D0",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

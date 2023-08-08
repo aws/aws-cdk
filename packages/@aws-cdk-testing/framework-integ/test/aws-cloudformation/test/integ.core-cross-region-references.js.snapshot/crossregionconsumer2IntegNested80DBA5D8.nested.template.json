@@ -3,21 +3,21 @@
   "IntegNestedParameter04B9B8A01": {
    "Type": "AWS::SSM::Parameter",
    "Properties": {
+    "Name": "integ-nested-parameter0",
     "Type": "String",
     "Value": {
      "Ref": "referencetocrossregionconsumer2ExportsReader29C6F905cdkexportscrossregionconsumer2crossregionproduceruseast1FnGetAttIntegQueue3A18718AQueueName8D8D3C9B"
-    },
-    "Name": "integ-nested-parameter0"
+    }
    }
   },
   "IntegNestedParameter1DE6274D4": {
    "Type": "AWS::SSM::Parameter",
    "Properties": {
+    "Name": "integ-nested-parameter1",
     "Type": "String",
     "Value": {
      "Ref": "referencetocrossregionconsumer2ExportsReader29C6F905cdkexportscrossregionconsumer2crossregionproduceruseast1FnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC1C9C99E"
-    },
-    "Name": "integ-nested-parameter1"
+    }
    }
   }
  },

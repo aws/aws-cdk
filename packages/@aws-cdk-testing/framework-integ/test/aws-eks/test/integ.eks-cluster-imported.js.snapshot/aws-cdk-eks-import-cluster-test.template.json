@@ -1067,7 +1067,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/d49a28b4a2bdf4c01ccd1d3b6850da410d69e434e5ebb1c0e4a6a79c58999709.json"
+       "/12c92c6a62f2ed0ae0e3e93b996b0ed3972dab29419c5be7988263414ee75c48.json"
       ]
      ]
     }
@@ -1117,7 +1117,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/bb48ed13f0eca488ce3f5d4f6dc253477544aaee9844f55e6742966db334fba7.json"
+       "/0801db69bb84b9d8bd2fb0aff85da82aaca59934d3c0bcb5b7427518e0095746.json"
       ]
      ]
     }
@@ -1209,7 +1209,7 @@
       "Outputs.awscdkeksimportclustertestawscdkawseksKubectlProviderframeworkonEvent301ACD4FArn"
      ]
     },
-    "Manifest": "[{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"name\":\"hello-kubernetes\",\"labels\":{\"aws.cdk.eks/prune-c8a0a5fce98cac6b5f687bcc725725618b782f0c92\":\"\"}},\"spec\":{\"type\":\"LoadBalancer\",\"ports\":[{\"port\":80,\"targetPort\":8080}],\"selector\":{\"app\":\"hello-kubernetes\"}}},{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"name\":\"hello-kubernetes\",\"labels\":{\"aws.cdk.eks/prune-c8a0a5fce98cac6b5f687bcc725725618b782f0c92\":\"\"}},\"spec\":{\"replicas\":1,\"selector\":{\"matchLabels\":{\"app\":\"hello-kubernetes\"}},\"template\":{\"metadata\":{\"labels\":{\"app\":\"hello-kubernetes\"}},\"spec\":{\"containers\":[{\"name\":\"hello-kubernetes\",\"image\":\"paulbouwer/hello-kubernetes:1.5\",\"ports\":[{\"containerPort\":8080}]}]}}}}]",
+    "Manifest": "[{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"name\":\"hello-kubernetes\",\"labels\":{\"aws.cdk.eks/prune-c8a0a5fce98cac6b5f687bcc725725618b782f0c92\":\"\"}},\"spec\":{\"ports\":[{\"port\":80,\"targetPort\":8080}],\"selector\":{\"app\":\"hello-kubernetes\"}}},{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"name\":\"hello-kubernetes\",\"labels\":{\"aws.cdk.eks/prune-c8a0a5fce98cac6b5f687bcc725725618b782f0c92\":\"\"}},\"spec\":{\"replicas\":1,\"selector\":{\"matchLabels\":{\"app\":\"hello-kubernetes\"}},\"template\":{\"metadata\":{\"labels\":{\"app\":\"hello-kubernetes\"}},\"spec\":{\"containers\":[{\"name\":\"hello-kubernetes\",\"image\":\"paulbouwer/hello-kubernetes:1.5\",\"ports\":[{\"containerPort\":8080}]}]}}}}]",
     "ClusterName": {
      "Ref": "Cluster9EE0221C"
     },
@@ -1244,6 +1244,7 @@
     },
     "Release": "mportclustertestimportedclusterchartdashboard428d91dc",
     "Chart": "kubernetes-dashboard",
+    "Version": "6.0.8",
     "Namespace": "default",
     "Repository": "https://kubernetes.github.io/dashboard/",
     "CreateNamespace": true
@@ -1356,10 +1357,12 @@
       "Arn"
      ]
     },
-    "Release": "rtclustertestimportedclusterchartnginxingress47a466aa",
+    "Release": "nginx-ingress",
     "Chart": "nginx-ingress",
+    "Version": "0.17.1",
     "Wait": true,
     "Timeout": "900s",
+    "Values": "{\"controller\":{\"service\":{\"create\":false}}}",
     "Namespace": "nginx",
     "Repository": "https://helm.nginx.com/stable"
    },
