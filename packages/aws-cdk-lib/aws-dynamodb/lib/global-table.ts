@@ -899,7 +899,7 @@ export class GlobalTable extends GlobalTableBase {
       localSecondaryIndexes: Lazy.any({ produce: () => this.localSecondaryIndexes }, { omitEmptyArray: true }),
       billingMode: this.billingMode,
       writeProvisionedThroughputSettings: this.writeProvisioning,
-      streamSpecification: { streamViewType: NEW_AND_OLD_IMAGES },
+      streamSpecification: Lazy.any({ produce: () => this.renderStreamSpecification() }),
       sseSpecification: this.encryption?._renderSseSpecification(),
       timeToLiveSpecification: props.timeToLiveAttribute
         ? { attributeName: props.timeToLiveAttribute, enabled: true }
@@ -1173,6 +1173,10 @@ export class GlobalTable extends GlobalTableBase {
     if (!existingAttributeDef) {
       this.attributeDefinitions.push({ attributeName: name, attributeType: type });
     }
+  }
+
+  private renderStreamSpecification(): CfnGlobalTable.StreamSpecificationProperty | undefined {
+    return this._replicaTables.size > 0 ? { streamViewType: NEW_AND_OLD_IMAGES } : undefined;
   }
 
   private validateIndexName(indexName: string) {

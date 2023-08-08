@@ -34,9 +34,6 @@ describe('global table configuration', () => {
           },
         },
       ],
-      StreamSpecification: {
-        StreamViewType: 'NEW_AND_OLD_IMAGES',
-      },
     });
     Template.fromStack(stack).hasResource('AWS::DynamoDB::GlobalTable', { DeletionPolicy: CfnDeletionPolicy.RETAIN });
   });
@@ -461,6 +458,9 @@ describe('global table configuration', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      StreamSpecification: {
+        StreamViewType: 'NEW_AND_OLD_IMAGES',
+      },
       Replicas: [
         { Region: 'us-east-1' },
         { Region: 'us-west-2' },
