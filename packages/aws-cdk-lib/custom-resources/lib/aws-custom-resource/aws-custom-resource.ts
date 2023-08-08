@@ -74,15 +74,13 @@ export class PhysicalResourceId {
 
 /**
  * An AWS SDK call.
- * The `AwsCustomResource` uses the AWS SDK for JavaScript v3 by default.
- * Services, actions and parameters can be found in the [API documentation](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/).
  *
  * @example
  *
  *    new cr.AwsCustomResource(this, 'GetParameterCustomResource', {
  *      onUpdate: { // will also be called for a CREATE event
- *        service: '@aws-sdk/client-ssm', // 'SSM' in SDKv2
- *        action: 'GetParameterCommand', // 'getParameter' in SDKv2
+ *        service: 'SSM',
+ *        action: 'getParameter',
  *        parameters: {
  *          Name: 'my-parameter',
  *          WithDecryption: true,
