@@ -22,10 +22,6 @@ export abstract class TableEncryptionV2 {
       public _renderReplicaSseSpecification(_scope: Construct, _region: string) {
         return undefined;
       }
-
-      public _renderReplicaKeys(_scope: Construct) {
-        return {};
-      }
     }) (TableEncryption.DEFAULT);
   }
 
@@ -43,10 +39,6 @@ export abstract class TableEncryptionV2 {
 
       public _renderReplicaSseSpecification(_scope: Construct, _region: string) {
         return undefined;
-      }
-
-      public _renderReplicaKeys(_scope: Construct) {
-        return {};
       }
     }) (TableEncryption.AWS_MANAGED);
   }
