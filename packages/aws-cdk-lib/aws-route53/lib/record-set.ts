@@ -290,7 +290,7 @@ export class RecordSet extends Resource implements IRecordSet {
       // Delete existing record before creating the new one
       const provider = CustomResourceProvider.getOrCreateProvider(this, DELETE_EXISTING_RECORD_SET_RESOURCE_TYPE, {
         codeDirectory: path.join(__dirname, 'delete-existing-record-set-handler'),
-        runtime: CustomResourceProviderRuntime.NODEJS_16_X,
+        runtime: CustomResourceProviderRuntime.NODEJS_18_X,
         policyStatements: [{ // IAM permissions for all providers
           Effect: 'Allow',
           Action: 'route53:GetChange',
@@ -795,7 +795,7 @@ export class CrossAccountZoneDelegationRecord extends Construct {
 
     const provider = CustomResourceProvider.getOrCreateProvider(this, CROSS_ACCOUNT_ZONE_DELEGATION_RESOURCE_TYPE, {
       codeDirectory: path.join(__dirname, 'cross-account-zone-delegation-handler'),
-      runtime: CustomResourceProviderRuntime.NODEJS_18_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_16_X,
     });
 
     const role = iam.Role.fromRoleArn(this, 'cross-account-zone-delegation-handler-role', provider.roleArn);
