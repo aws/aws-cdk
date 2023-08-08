@@ -1101,29 +1101,22 @@ export class GlobalTable extends GlobalTableBase {
 
     for (const gsi of this._globalSecondaryIndexes.values()) {
       const indexName = gsi.indexName;
+      let contributorInsights = this.tableOptions.contributorInsights;
+      let readCapacity = this.globalSecondaryIndexReadCapacitys.get(indexName);
+
       if (indexNamesFromOptions.includes(indexName)) {
         const indexOptions = options[indexName];
-
-        const contributorInsights = indexOptions.contributorInsights ?? this.tableOptions.contributorInsights;
-        const readCapacity = indexOptions.readCapacity ?? this.globalSecondaryIndexReadCapacitys.get(indexName);
-
-        replicaGlobalSecondaryIndexes.push({
-          indexName,
-          readProvisionedThroughputSettings: readCapacity?._renderReadCapacity(),
-          contributorInsightsSpecification: contributorInsights !== undefined
-            ? { enabled: contributorInsights }
-            : undefined,
-        });
-      } else {
-        const readCapacity = this.globalSecondaryIndexReadCapacitys.get(indexName);
-        replicaGlobalSecondaryIndexes.push({
-          indexName,
-          readProvisionedThroughputSettings: readCapacity?._renderReadCapacity(),
-          contributorInsightsSpecification: this.tableOptions.contributorInsights
-            ? { enabled: this.tableOptions.contributorInsights }
-            : undefined,
-        });
+        contributorInsights = indexOptions.contributorInsights;
+        readCapacity = indexOptions.readCapacity;
       }
+
+      replicaGlobalSecondaryIndexes.push({
+        indexName,
+        readProvisionedThroughputSettings: readCapacity?._renderReadCapacity(),
+        contributorInsightsSpecification: contributorInsights !== undefined
+          ? { enabled: contributorInsights }
+          : undefined,
+      });
     }
 
     return replicaGlobalSecondaryIndexes.length > 0 ? replicaGlobalSecondaryIndexes : undefined;
