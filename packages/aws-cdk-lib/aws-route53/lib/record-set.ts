@@ -290,7 +290,7 @@ export class RecordSet extends Resource implements IRecordSet {
       // Delete existing record before creating the new one
       const provider = CustomResourceProvider.getOrCreateProvider(this, DELETE_EXISTING_RECORD_SET_RESOURCE_TYPE, {
         codeDirectory: path.join(__dirname, 'delete-existing-record-set-handler'),
-        runtime: CustomResourceProviderRuntime.NODEJS_18_X,
+        runtime: CustomResourceProviderRuntime.NODEJS_16_X,
         policyStatements: [{ // IAM permissions for all providers
           Effect: 'Allow',
           Action: 'route53:GetChange',
