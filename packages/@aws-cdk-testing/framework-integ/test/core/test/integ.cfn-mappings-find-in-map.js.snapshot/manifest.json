@@ -1,27 +1,27 @@
 {
-  "version": "33.0.0",
+  "version": "32.0.0",
   "artifacts": {
-    "aws-cdk-route53-cross-account-integ.assets": {
+    "core-cfn-mapping-1.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-route53-cross-account-integ.assets.json",
+        "file": "core-cfn-mapping-1.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-route53-cross-account-integ": {
+    "core-cfn-mapping-1": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-cdk-route53-cross-account-integ.template.json",
+        "templateFile": "core-cfn-mapping-1.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3222f491727b0389ac87f972f2443b490ff3cee14d24c28f1527c3f085cab460.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/175902e9c94a814a5739a092426ef29b46a5098db6118c5c464b507fa4e867e5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-route53-cross-account-integ.assets"
+          "core-cfn-mapping-1.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -30,97 +30,91 @@
         }
       },
       "dependencies": [
-        "aws-cdk-route53-cross-account-integ.assets"
+        "core-cfn-mapping-1.assets"
       ],
       "metadata": {
-        "/aws-cdk-route53-cross-account-integ/ParentHostedZone/Resource": [
+        "/core-cfn-mapping-1/Regular mapping": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ParentHostedZoneC2BD86E1"
+            "data": "Regularmapping"
           }
         ],
-        "/aws-cdk-route53-cross-account-integ/ParentHostedZone/CrossAccountZoneDelegationRole/Resource": [
+        "/core-cfn-mapping-1/Lazy mapping": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ParentHostedZoneCrossAccountZoneDelegationRole95B1C36E"
+            "data": "Lazymapping"
           }
         ],
-        "/aws-cdk-route53-cross-account-integ/ChildHostedZoneWithZoneId/Resource": [
+        "/core-cfn-mapping-1/Output0": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ChildHostedZoneWithZoneId729259E6"
+            "data": "Output0"
           }
         ],
-        "/aws-cdk-route53-cross-account-integ/DelegationWithZoneId/cross-account-zone-delegation-handler-role/Policyawscdkroute53crossaccountintegDelegationWithZoneIdcrossaccountzonedelegationhandlerrole5AE6C473/Resource": [
+        "/core-cfn-mapping-1/Output1": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DelegationWithZoneIdcrossaccountzonedelegationhandlerrolePolicyawscdkroute53crossaccountintegDelegationWithZoneIdcrossaccountzonedelegationhandlerrole5AE6C47314C14718"
+            "data": "Output1"
           }
         ],
-        "/aws-cdk-route53-cross-account-integ/DelegationWithZoneId/CrossAccountZoneDelegationCustomResource/Default": [
+        "/core-cfn-mapping-1/Output2": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DelegationWithZoneIdCrossAccountZoneDelegationCustomResourceFFD766E7"
+            "data": "Output2"
           }
         ],
-        "/aws-cdk-route53-cross-account-integ/Custom::CrossAccountZoneDelegationCustomResourceProvider/Role": [
+        "/core-cfn-mapping-1/Output3": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CustomCrossAccountZoneDelegationCustomResourceProviderRoleED64687B"
+            "data": "Output3"
           }
         ],
-        "/aws-cdk-route53-cross-account-integ/Custom::CrossAccountZoneDelegationCustomResourceProvider/Handler": [
+        "/core-cfn-mapping-1/Output4": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CustomCrossAccountZoneDelegationCustomResourceProviderHandler44A84265"
+            "data": "Output4"
           }
         ],
-        "/aws-cdk-route53-cross-account-integ/ChildHostedZoneWithZoneName/Resource": [
+        "/core-cfn-mapping-1/Output5": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ChildHostedZoneWithZoneNameBC2C15F6"
+            "data": "Output5"
           }
         ],
-        "/aws-cdk-route53-cross-account-integ/DelegationWithZoneName/cross-account-zone-delegation-handler-role/Policyawscdkroute53crossaccountintegDelegationWithZoneNamecrossaccountzonedelegationhandlerroleC2880782/Resource": [
+        "/core-cfn-mapping-1/CfnMappingFindInMapBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DelegationWithZoneNamecrossaccountzonedelegationhandlerrolePolicyawscdkroute53crossaccountintegDelegationWithZoneNamecrossaccountzonedelegationhandlerroleC28807823206B47A"
+            "data": "CfnMappingFindInMapBucket6F72FEE7"
           }
         ],
-        "/aws-cdk-route53-cross-account-integ/DelegationWithZoneName/CrossAccountZoneDelegationCustomResource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DelegationWithZoneNameCrossAccountZoneDelegationCustomResourceA1A1C94A"
-          }
-        ],
-        "/aws-cdk-route53-cross-account-integ/BootstrapVersion": [
+        "/core-cfn-mapping-1/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-route53-cross-account-integ/CheckBootstrapVersion": [
+        "/core-cfn-mapping-1/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-route53-cross-account-integ"
+      "displayName": "core-cfn-mapping-1"
     },
-    "Route53CrossAccountIntegDefaultTestDeployAssertF1D808C9.assets": {
+    "CfnMappingFindInMapTestDefaultTestDeployAssertEA32B10D.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "Route53CrossAccountIntegDefaultTestDeployAssertF1D808C9.assets.json",
+        "file": "CfnMappingFindInMapTestDefaultTestDeployAssertEA32B10D.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "Route53CrossAccountIntegDefaultTestDeployAssertF1D808C9": {
+    "CfnMappingFindInMapTestDefaultTestDeployAssertEA32B10D": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "Route53CrossAccountIntegDefaultTestDeployAssertF1D808C9.template.json",
+        "templateFile": "CfnMappingFindInMapTestDefaultTestDeployAssertEA32B10D.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -128,7 +122,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "Route53CrossAccountIntegDefaultTestDeployAssertF1D808C9.assets"
+          "CfnMappingFindInMapTestDefaultTestDeployAssertEA32B10D.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -137,23 +131,23 @@
         }
       },
       "dependencies": [
-        "Route53CrossAccountIntegDefaultTestDeployAssertF1D808C9.assets"
+        "CfnMappingFindInMapTestDefaultTestDeployAssertEA32B10D.assets"
       ],
       "metadata": {
-        "/Route53CrossAccountInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/CfnMappingFindInMapTest/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/Route53CrossAccountInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/CfnMappingFindInMapTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "Route53CrossAccountInteg/DefaultTest/DeployAssert"
+      "displayName": "CfnMappingFindInMapTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
