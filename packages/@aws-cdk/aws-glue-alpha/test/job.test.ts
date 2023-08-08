@@ -647,6 +647,59 @@ describe('Job', () => {
           });
         });
 
+        it('should grant the role read/write permissions spark ui bucket prefixed folder', () => {
+          Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+            PolicyDocument: {
+              Statement: [
+                {
+                  Action: [
+                    's3:GetObject*',
+                    's3:GetBucket*',
+                    's3:List*',
+                    's3:DeleteObject*',
+                    's3:PutObject',
+                    's3:PutObjectLegalHold',
+                    's3:PutObjectRetention',
+                    's3:PutObjectTagging',
+                    's3:PutObjectVersionTagging',
+                    's3:Abort*',
+                  ],
+                  Effect: 'Allow',
+                  Resource: [
+                    {
+                      'Fn::GetAtt': [
+                        'JobSparkUIBucket8E6A0139',
+                        'Arn',
+                      ],
+                    },
+                    {
+                      'Fn::Join': [
+                        '',
+                        [
+                          {
+                            'Fn::GetAtt': [
+                              'JobSparkUIBucket8E6A0139',
+                            ],
+                          },
+                          '/some/path/*',
+                        ],
+                      ],
+                    },
+                  ],
+                },
+                codeBucketAccessStatement,
+              ],
+              Version: '2012-10-17',
+            },
+            PolicyName: 'JobServiceRoleDefaultPolicy03F68F9D',
+            Roles: [
+              {
+                Ref: 'JobServiceRole4F432993',
+              },
+            ],
+          });
+        });
+
         test('should set spark arguments on the job', () => {
           Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
             DefaultArguments: {

@@ -805,7 +805,7 @@ export class Job extends JobBase {
     }
 
     const bucket = props.bucket ?? new s3.Bucket(this, 'SparkUIBucket');
-    bucket.grantReadWrite(role);
+    bucket.grantReadWrite(role, props.prefix?.concat('*'));
     const args = {
       '--enable-spark-ui': 'true',
       '--spark-event-logs-path': bucket.s3UrlForObject(props.prefix),
