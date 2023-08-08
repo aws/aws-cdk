@@ -36,7 +36,7 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
    * The runtime environment. Only runtimes of the Node.js family are
    * supported.
    *
-   * @default Runtime.NODEJS_14_X
+   * @default Runtime.NODEJS_18_X
    */
   readonly runtime?: lambda.Runtime;
 
