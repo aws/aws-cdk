@@ -1,6 +1,5 @@
 import { BillingMode } from '@aws-sdk/client-dynamodb';
 import { Match, Template } from '../../assertions';
-import { User } from '../../aws-iam';
 import { Stream } from '../../aws-kinesis';
 import { Key } from '../../aws-kms';
 import { CfnDeletionPolicy, Lazy, RemovalPolicy, Stack } from '../../core';
@@ -1546,32 +1545,4 @@ describe('secondary indexes', () => {
       });
     }).toThrow('You may not provide more than 5 local secondary indexes to a Global Table');
   });
-});
-
-test('grants', () => {
-  const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
-  const user = new User(stack, 'User');
-  const encryptionKey = new Key(stack, 'Key');
-  const replicaKeyArns = {
-    'us-east-1': 'arn:aws:kms:us-east-1:586193817576:key/95fecd1f-91f1-4897-9ea1-84066e2c6a0f',
-    'us-east-2': 'arn:aws:kms:us-east-2:586193817576:key/95fecd1f-91f1-4897-9ea1-84066e2c6a0f',
-    'us-west-1': 'arn:aws:kms:us-west-1:586193817576:key/95fecd1f-91f1-4897-9ea1-84066e2c6a0f',
-  };
-
-  const globalTable = new GlobalTable(stack, 'GlobalTable', {
-    partitionKey: { name: 'pk', type: AttributeType.STRING },
-    encryption: TableEncryptionV2.customerManagedKey(encryptionKey, replicaKeyArns),
-    replicas: [{ region: 'us-east-1' }, { region: 'us-east-2' }, { region: 'us-west-1' }],
-    globalSecondaryIndexes: [
-      {
-        indexName: 'gsi',
-        partitionKey: { name: 'gsiPk', type: AttributeType.STRING },
-      },
-    ],
-  });
-
-  globalTable.grantFullAccess(user);
-
-  /* eslint-disable no-console */
-  console.log(JSON.stringify(Template.fromStack(stack), null, 4));
 });
