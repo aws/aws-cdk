@@ -851,7 +851,7 @@ describe('replicas', () => {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
         replicas: [{ region: 'us-east-1', readCapacity: Capacity.fixed(10) }],
       });
-    }).toThrow("You cannot configure 'readCapacity' on a Replica Table when billing mode is PAY_PER_REQUEST");
+    }).toThrow("You cannot provide 'readCapacity' on a Replica Table when the billing mode is PAY_PER_REQUEST");
   });
 
   test('throws if replica key arn is missing for encryption with customer managed key', () => {
@@ -1573,6 +1573,5 @@ test('grants', () => {
   globalTable.grantFullAccess(user);
 
   /* eslint-disable no-console */
-  console.log(globalTable.tableStreamArn);
   console.log(JSON.stringify(Template.fromStack(stack), null, 4));
 });
