@@ -122,21 +122,19 @@ export async function isHotswappableEcsServiceChange(
           'registeredBy',
         ].forEach(key=> delete (target.taskDefinition as any)[key]);
 
+        // the tags field is in a different location in describeTaskDefinition response,
+        // moving it as intended for registerTaskDefinition request.
         if (target.tags !== undefined && target.tags.length > 0) {
-          // the tags field is in a different location in describeTaskDefinition response, moving it as intended for registerTaskDefinition request.
           (target.taskDefinition as any).tags = target.tags;
           delete target.tags;
         }
 
+        // We first uppercase the task definition to properly merge it with the one from CloudFormation template.
         const upperCasedTaskDef = transformObjectKeys(target.taskDefinition, upperCaseFirstCharacter, excludeFromTransform);
+        // merge evaluatable diff from CloudFormation template.
         const updatedTaskDef = applyPropertyUpdates(changes.updates, upperCasedTaskDef);
+        // lowercase the merged task definition to use it in AWS SDK.
         const lowercasedTaskDef = transformObjectKeys(updatedTaskDef, lowerCaseFirstCharacter, excludeFromTransform);
-
-        // The SDK requires more properties here than its worth doing explicit typing for
-        // instead, just use all the old values in the diff to fill them in implicitly
-
-        // eslint-disable-next-line no-console
-        console.log(lowercasedTaskDef);
 
         const registerTaskDefResponse = await sdk.ecs().registerTaskDefinition(lowercasedTaskDef).promise();
         const taskDefRevArn = registerTaskDefResponse.taskDefinition?.taskDefinitionArn;
@@ -174,6 +172,12 @@ export async function isHotswappableEcsServiceChange(
             return Promise.all(clusterUpdates.map(serviceUpdate => serviceUpdate.promise));
           }),
         );
+
+        if (taskDefRevArn !== undefined) {
+          // Make the task definition registered by hotswap INACTIVE immediately.
+          // This is to prevent describeTaskDefinition API from returning a drifted task definition.
+          await sdk.ecs().deregisterTaskDefinition({ taskDefinition: taskDefRevArn }).promise();
+        }
 
         // Step 3 - wait for the service deployments triggered in Step 2 to finish
         // configure a custom Waiter

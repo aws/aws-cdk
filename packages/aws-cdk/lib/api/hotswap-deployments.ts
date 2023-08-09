@@ -387,9 +387,9 @@ export function detectChangedProps(next: any, prev: any): ChangedProps[] {
 }
 
 function detectAdditions(next: any, prev: any, keys: string[] = []): ChangedProps[] {
-  const changedProps: ChangedProps[] = [];
   // Compare each value of two objects, detect additions (added or modified properties)
   // If we encounter CFn intrinsic (key.startsWith('Fn::') || key == 'Ref'), stop recursion
+
   if (typeof next !== 'object') {
     if (next !== prev) {
       // there is an addition or change to the property
@@ -398,24 +398,27 @@ function detectAdditions(next: any, prev: any, keys: string[] = []): ChangedProp
       return [];
     }
   }
+
   if (typeof prev !== 'object') {
     // there is an addition or change to the property
     return [{ key: new Array(...keys), type: 'added' }];
   }
 
-  // If the lhs is an object but also a CFn intrinsic, don't recurse further.
-  const lastKey = keys.length > 0 ? keys[keys.length - 1] : '';
-  if (lastKey.startsWith('Fn::') || lastKey == 'Ref') {
+  // If the next is a CFn intrinsic, don't recurse further.
+  // We take the first key with [0] because a CfnIntrinsic object only has one key, e.g. { 'Ref': 'SomeResource' }
+  const childKeys = Object.keys(next);
+  if (childKeys.length === 1 && (childKeys[0].startsWith('Fn::') || childKeys[0] === 'Ref')) {
     if (!deepCompareObject(prev, next)) {
       // there is an addition or change to the property
-      return [{ key: new Array(...keys.slice(0, -1)), type: 'added' }];
+      return [{ key: new Array(...keys), type: 'added' }];
     } else {
       return [];
     }
   }
 
+  const changedProps: ChangedProps[] = [];
   // compare children
-  for (const key of Object.keys(next)) {
+  for (const key of childKeys) {
     keys.push(key);
     changedProps.push(...detectAdditions((next as any)[key], (prev as any)[key], keys));
     keys.pop();
@@ -427,25 +430,26 @@ function detectRemovals(next: any, prev: any, keys: string[] = []): ChangedProps
   // Compare each value of two objects, detect removed properties
   // To do this, find any keys that exist only in prev object.
   // If we encounter CFn intrinsic (key.startsWith('Fn::') || key == 'Ref'), stop recursion
-  const changedProps: ChangedProps[] = [];
   if (next === undefined) {
     return [{ key: new Array(...keys), type: 'removed' }];
   }
 
   if (typeof prev !== 'object' || typeof next !== 'object') {
-    // either prev or next is not an object, then the property is modified but not removed
+    // either prev or next is not an object nor undefined, then the property is not removed
     return [];
   }
 
-  // If the prev is an object but also a CFn intrinsic, don't recurse further.
-  const lastKey = keys.length > 0 ? keys[keys.length - 1] : '';
-  if (lastKey.startsWith('Fn::') || lastKey == 'Ref') {
-    // next is not undefined here, so the property is at least not removed
+  // If the next is a CFn intrinsic, don't recurse further.
+  // We take the first key with [0] because a CfnIntrinsic object only has one key, e.g. { 'Ref': 'SomeResource' }
+  const childKeys = Object.keys(prev);
+  if (childKeys.length === 1 && (childKeys[0].startsWith('Fn::') || childKeys[0] === 'Ref')) {
+    // next is not undefined here, so it is at least not removed
     return [];
   }
 
+  const changedProps: ChangedProps[] = [];
   // compare children
-  for (const key of Object.keys(prev)) {
+  for (const key of childKeys) {
     keys.push(key);
     changedProps.push(...detectRemovals((next as any)[key], (prev as any)[key], keys));
     keys.pop();
@@ -529,9 +533,17 @@ function getPropertyFromKey(key: string[], obj: object) {
 
 function overwriteProperty(key: string[], newValue: any, target: object) {
   for (const next of key.slice(0, -1)) {
-    target = (target as any)?.[next];
+    if (next in target) {
+      target = (target as any)[next];
+    } else if (Array.isArray(target)) {
+      // When an element is added to an array, we need to explicitly allocate the new element.
+      target = {};
+      (target as any)[next] = {};
+    } else {
+      // This is an unexpected condition. Perhaps the deployed task definition is modified outside of CFn.
+      return false;
+    }
   }
-  if (target === undefined) return false;
   if (newValue === undefined) {
     delete (target as any)[key[key.length - 1]];
   } else {
