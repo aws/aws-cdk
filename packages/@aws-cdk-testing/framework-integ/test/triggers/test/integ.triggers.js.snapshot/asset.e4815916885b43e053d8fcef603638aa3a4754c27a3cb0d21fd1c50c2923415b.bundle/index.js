@@ -1,4 +1,3 @@
-"use strict";
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -55,12 +54,12 @@ var Matcher, MatchResult;
 var init_matcher = __esm({
   "../../aws-cdk-lib/assertions/lib/matcher.ts"() {
     "use strict";
-    Matcher = class {
+    Matcher = class _Matcher {
       /**
        * Check whether the provided object is a subtype of the `IMatcher`.
        */
       static isMatcher(x) {
-        return x && x instanceof Matcher;
+        return x && x instanceof _Matcher;
       }
     };
     MatchResult = class {
@@ -195,7 +194,7 @@ ${indents.join("")}`));
             emit(`!! ${fail.message}
 `);
           }
-          scrapSet == null ? void 0 : scrapSet.delete(path);
+          scrapSet?.delete(path);
         }
         function recurse(r) {
           const remainingFailures = new Set(Array.from(r.failuresHere.keys()).filter((x) => x !== ""));
@@ -381,12 +380,10 @@ var init_sparse_matrix = __esm({
         this.matrix = /* @__PURE__ */ new Map();
       }
       get(row, col) {
-        var _a;
-        return (_a = this.matrix.get(row)) == null ? void 0 : _a.get(col);
+        return this.matrix.get(row)?.get(col);
       }
       row(row) {
-        var _a;
-        return Array.from(((_a = this.matrix.get(row)) == null ? void 0 : _a.entries()) ?? []);
+        return Array.from(this.matrix.get(row)?.entries() ?? []);
       }
       set(row, col, value) {
         let r = this.matrix.get(row);
@@ -816,6 +813,7 @@ var require_helpers_internal = __commonJS({
 // ../../../node_modules/tslib/tslib.es6.mjs
 var tslib_es6_exports = {};
 __export(tslib_es6_exports, {
+  __addDisposableResource: () => __addDisposableResource,
   __assign: () => __assign,
   __asyncDelegator: () => __asyncDelegator,
   __asyncGenerator: () => __asyncGenerator,
@@ -827,6 +825,7 @@ __export(tslib_es6_exports, {
   __classPrivateFieldSet: () => __classPrivateFieldSet,
   __createBinding: () => __createBinding,
   __decorate: () => __decorate,
+  __disposeResources: () => __disposeResources,
   __esDecorate: () => __esDecorate,
   __exportStar: () => __exportStar,
   __extends: () => __extends,
@@ -1229,7 +1228,54 @@ function __classPrivateFieldIn(state, receiver) {
     throw new TypeError("Cannot use 'in' operator on non-object");
   return typeof state === "function" ? receiver === state : state.has(receiver);
 }
-var extendStatics, __assign, __createBinding, __setModuleDefault, tslib_es6_default;
+function __addDisposableResource(env, value, async) {
+  if (value !== null && value !== void 0) {
+    if (typeof value !== "object" && typeof value !== "function")
+      throw new TypeError("Object expected.");
+    var dispose;
+    if (async) {
+      if (!Symbol.asyncDispose)
+        throw new TypeError("Symbol.asyncDispose is not defined.");
+      dispose = value[Symbol.asyncDispose];
+    }
+    if (dispose === void 0) {
+      if (!Symbol.dispose)
+        throw new TypeError("Symbol.dispose is not defined.");
+      dispose = value[Symbol.dispose];
+    }
+    if (typeof dispose !== "function")
+      throw new TypeError("Object not disposable.");
+    env.stack.push({ value, dispose, async });
+  } else if (async) {
+    env.stack.push({ async: true });
+  }
+  return value;
+}
+function __disposeResources(env) {
+  function fail(e) {
+    env.error = env.hasError ? new _SuppressedError(e, env.error, "An error was suppressed during disposal.") : e;
+    env.hasError = true;
+  }
+  function next() {
+    while (env.stack.length) {
+      var rec = env.stack.pop();
+      try {
+        var result = rec.dispose && rec.dispose.call(rec.value);
+        if (rec.async)
+          return Promise.resolve(result).then(next, function(e) {
+            fail(e);
+            return next();
+          });
+      } catch (e) {
+        fail(e);
+      }
+    }
+    if (env.hasError)
+      throw env.error;
+  }
+  return next();
+}
+var extendStatics, __assign, __createBinding, __setModuleDefault, _SuppressedError, tslib_es6_default;
 var init_tslib_es6 = __esm({
   "../../../node_modules/tslib/tslib.es6.mjs"() {
     extendStatics = function(d, b) {
@@ -1274,6 +1320,10 @@ var init_tslib_es6 = __esm({
     } : function(o, v) {
       o["default"] = v;
     };
+    _SuppressedError = typeof SuppressedError === "function" ? SuppressedError : function(error, suppressed, message) {
+      var e = new Error(message);
+      return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
+    };
     tslib_es6_default = {
       __extends,
       __assign,
@@ -1299,7 +1349,9 @@ var init_tslib_es6 = __esm({
       __importDefault,
       __classPrivateFieldGet,
       __classPrivateFieldSet,
-      __classPrivateFieldIn
+      __classPrivateFieldIn,
+      __addDisposableResource,
+      __disposeResources
     };
   }
 });
@@ -1323,6 +1375,14 @@ var require_auth = __commonJS({
       HttpAuthLocation2["HEADER"] = "header";
       HttpAuthLocation2["QUERY"] = "query";
     })(HttpAuthLocation = exports.HttpAuthLocation || (exports.HttpAuthLocation = {}));
+  }
+});
+
+// ../../../node_modules/@smithy/types/dist-cjs/blob/blob-payload-input-types.js
+var require_blob_payload_input_types = __commonJS({
+  "../../../node_modules/@smithy/types/dist-cjs/blob/blob-payload-input-types.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
   }
 });
 
@@ -1599,6 +1659,30 @@ var require_stream = __commonJS({
   }
 });
 
+// ../../../node_modules/@smithy/types/dist-cjs/streaming-payload/streaming-blob-common-types.js
+var require_streaming_blob_common_types = __commonJS({
+  "../../../node_modules/@smithy/types/dist-cjs/streaming-payload/streaming-blob-common-types.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// ../../../node_modules/@smithy/types/dist-cjs/streaming-payload/streaming-blob-payload-input-types.js
+var require_streaming_blob_payload_input_types = __commonJS({
+  "../../../node_modules/@smithy/types/dist-cjs/streaming-payload/streaming-blob-payload-input-types.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// ../../../node_modules/@smithy/types/dist-cjs/streaming-payload/streaming-blob-payload-output-types.js
+var require_streaming_blob_payload_output_types = __commonJS({
+  "../../../node_modules/@smithy/types/dist-cjs/streaming-payload/streaming-blob-payload-output-types.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // ../../../node_modules/@smithy/types/dist-cjs/transfer.js
 var require_transfer = __commonJS({
   "../../../node_modules/@smithy/types/dist-cjs/transfer.js"(exports) {
@@ -1611,6 +1695,22 @@ var require_transfer = __commonJS({
       RequestHandlerProtocol2["HTTP_1_0"] = "http/1.0";
       RequestHandlerProtocol2["TDS_8_0"] = "tds/8.0";
     })(RequestHandlerProtocol = exports.RequestHandlerProtocol || (exports.RequestHandlerProtocol = {}));
+  }
+});
+
+// ../../../node_modules/@smithy/types/dist-cjs/transform/client-payload-blob-type-narrow.js
+var require_client_payload_blob_type_narrow = __commonJS({
+  "../../../node_modules/@smithy/types/dist-cjs/transform/client-payload-blob-type-narrow.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// ../../../node_modules/@smithy/types/dist-cjs/transform/type-transform.js
+var require_type_transform = __commonJS({
+  "../../../node_modules/@smithy/types/dist-cjs/transform/type-transform.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
   }
 });
 
@@ -1646,6 +1746,7 @@ var require_dist_cjs = __commonJS({
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     tslib_1.__exportStar(require_abort(), exports);
     tslib_1.__exportStar(require_auth(), exports);
+    tslib_1.__exportStar(require_blob_payload_input_types(), exports);
     tslib_1.__exportStar(require_checksum(), exports);
     tslib_1.__exportStar(require_client(), exports);
     tslib_1.__exportStar(require_command(), exports);
@@ -1667,7 +1768,12 @@ var require_dist_cjs = __commonJS({
     tslib_1.__exportStar(require_shapes(), exports);
     tslib_1.__exportStar(require_signature(), exports);
     tslib_1.__exportStar(require_stream(), exports);
+    tslib_1.__exportStar(require_streaming_blob_common_types(), exports);
+    tslib_1.__exportStar(require_streaming_blob_payload_input_types(), exports);
+    tslib_1.__exportStar(require_streaming_blob_payload_output_types(), exports);
     tslib_1.__exportStar(require_transfer(), exports);
+    tslib_1.__exportStar(require_client_payload_blob_type_narrow(), exports);
+    tslib_1.__exportStar(require_type_transform(), exports);
     tslib_1.__exportStar(require_uri(), exports);
     tslib_1.__exportStar(require_util(), exports);
     tslib_1.__exportStar(require_waiter(), exports);
@@ -1750,7 +1856,7 @@ var require_httpRequest = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.HttpRequest = void 0;
-    var HttpRequest = class {
+    var HttpRequest = class _HttpRequest {
       constructor(options) {
         this.method = options.method || "GET";
         this.hostname = options.hostname || "localhost";
@@ -1771,7 +1877,7 @@ var require_httpRequest = __commonJS({
         return "method" in req && "protocol" in req && "hostname" in req && "path" in req && typeof req["query"] === "object" && typeof req["headers"] === "object";
       }
       clone() {
-        const cloned = new HttpRequest({
+        const cloned = new _HttpRequest({
           ...this,
           headers: { ...this.headers }
         });
@@ -2011,12 +2117,12 @@ var require_ProviderError = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ProviderError = void 0;
-    var ProviderError = class extends Error {
+    var ProviderError = class _ProviderError extends Error {
       constructor(message, tryNextLink = true) {
         super(message);
         this.tryNextLink = tryNextLink;
         this.name = "ProviderError";
-        Object.setPrototypeOf(this, ProviderError.prototype);
+        Object.setPrototypeOf(this, _ProviderError.prototype);
       }
       static from(error, tryNextLink = true) {
         return Object.assign(new this(error.message, tryNextLink), error);
@@ -2033,12 +2139,12 @@ var require_CredentialsProviderError = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.CredentialsProviderError = void 0;
     var ProviderError_1 = require_ProviderError();
-    var CredentialsProviderError = class extends ProviderError_1.ProviderError {
+    var CredentialsProviderError = class _CredentialsProviderError extends ProviderError_1.ProviderError {
       constructor(message, tryNextLink = true) {
         super(message, tryNextLink);
         this.tryNextLink = tryNextLink;
         this.name = "CredentialsProviderError";
-        Object.setPrototypeOf(this, CredentialsProviderError.prototype);
+        Object.setPrototypeOf(this, _CredentialsProviderError.prototype);
       }
     };
     exports.CredentialsProviderError = CredentialsProviderError;
@@ -2052,12 +2158,12 @@ var require_TokenProviderError = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.TokenProviderError = void 0;
     var ProviderError_1 = require_ProviderError();
-    var TokenProviderError = class extends ProviderError_1.ProviderError {
+    var TokenProviderError = class _TokenProviderError extends ProviderError_1.ProviderError {
       constructor(message, tryNextLink = true) {
         super(message, tryNextLink);
         this.tryNextLink = tryNextLink;
         this.name = "TokenProviderError";
-        Object.setPrototypeOf(this, TokenProviderError.prototype);
+        Object.setPrototypeOf(this, _TokenProviderError.prototype);
       }
     };
     exports.TokenProviderError = TokenProviderError;
@@ -3114,7 +3220,7 @@ var require_Int64 = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Int64 = void 0;
     var util_hex_encoding_1 = require_dist_cjs8();
-    var Int64 = class {
+    var Int64 = class _Int64 {
       constructor(bytes) {
         this.bytes = bytes;
         if (bytes.byteLength !== 8) {
@@ -3132,7 +3238,7 @@ var require_Int64 = __commonJS({
         if (number < 0) {
           negate(bytes);
         }
-        return new Int64(bytes);
+        return new _Int64(bytes);
       }
       valueOf() {
         const bytes = this.bytes.slice(0);
@@ -4777,6 +4883,18 @@ var require_partition = __commonJS({
   }
 });
 
+// ../../../node_modules/@aws-sdk/util-endpoints/dist-cjs/lib/isIpAddress.js
+var require_isIpAddress = __commonJS({
+  "../../../node_modules/@aws-sdk/util-endpoints/dist-cjs/lib/isIpAddress.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.isIpAddress = void 0;
+    var IP_V4_REGEX = new RegExp(`^(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]\\d|\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]\\d|\\d)){3}$`);
+    var isIpAddress = (value) => IP_V4_REGEX.test(value) || value.startsWith("[") && value.endsWith("]");
+    exports.isIpAddress = isIpAddress;
+  }
+});
+
 // ../../../node_modules/@aws-sdk/util-endpoints/dist-cjs/debug/debugId.js
 var require_debugId = __commonJS({
   "../../../node_modules/@aws-sdk/util-endpoints/dist-cjs/debug/debugId.js"(exports) {
@@ -4888,18 +5006,6 @@ var require_types2 = __commonJS({
     tslib_1.__exportStar(require_RuleSetObject2(), exports);
     tslib_1.__exportStar(require_TreeRuleObject2(), exports);
     tslib_1.__exportStar(require_shared2(), exports);
-  }
-});
-
-// ../../../node_modules/@aws-sdk/util-endpoints/dist-cjs/lib/isIpAddress.js
-var require_isIpAddress = __commonJS({
-  "../../../node_modules/@aws-sdk/util-endpoints/dist-cjs/lib/isIpAddress.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.isIpAddress = void 0;
-    var IP_V4_REGEX = new RegExp(`^(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]\\d|\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]\\d|\\d)){3}$`);
-    var isIpAddress = (value) => IP_V4_REGEX.test(value) || value.startsWith("[") && value.endsWith("]");
-    exports.isIpAddress = isIpAddress;
   }
 });
 
@@ -5099,11 +5205,10 @@ var require_auth2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.HttpAuthLocation = void 0;
-    var HttpAuthLocation;
-    (function(HttpAuthLocation2) {
-      HttpAuthLocation2["HEADER"] = "header";
-      HttpAuthLocation2["QUERY"] = "query";
-    })(HttpAuthLocation = exports.HttpAuthLocation || (exports.HttpAuthLocation = {}));
+    var types_1 = require_dist_cjs();
+    Object.defineProperty(exports, "HttpAuthLocation", { enumerable: true, get: function() {
+      return types_1.HttpAuthLocation;
+    } });
   }
 });
 
@@ -5139,39 +5244,11 @@ var require_command2 = __commonJS({
   }
 });
 
-// ../../../node_modules/@aws-sdk/types/dist-cjs/connection/config.js
-var require_config2 = __commonJS({
-  "../../../node_modules/@aws-sdk/types/dist-cjs/connection/config.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@aws-sdk/types/dist-cjs/connection/manager.js
-var require_manager2 = __commonJS({
-  "../../../node_modules/@aws-sdk/types/dist-cjs/connection/manager.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@aws-sdk/types/dist-cjs/connection/pool.js
-var require_pool2 = __commonJS({
-  "../../../node_modules/@aws-sdk/types/dist-cjs/connection/pool.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@aws-sdk/types/dist-cjs/connection/index.js
+// ../../../node_modules/@aws-sdk/types/dist-cjs/connection.js
 var require_connection2 = __commonJS({
-  "../../../node_modules/@aws-sdk/types/dist-cjs/connection/index.js"(exports) {
+  "../../../node_modules/@aws-sdk/types/dist-cjs/connection.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_config2(), exports);
-    tslib_1.__exportStar(require_manager2(), exports);
-    tslib_1.__exportStar(require_pool2(), exports);
   }
 });
 
@@ -5219,11 +5296,10 @@ var require_endpoint2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.EndpointURLScheme = void 0;
-    var EndpointURLScheme;
-    (function(EndpointURLScheme2) {
-      EndpointURLScheme2["HTTP"] = "http";
-      EndpointURLScheme2["HTTPS"] = "https";
-    })(EndpointURLScheme = exports.EndpointURLScheme || (exports.EndpointURLScheme = {}));
+    var types_1 = require_dist_cjs();
+    Object.defineProperty(exports, "EndpointURLScheme", { enumerable: true, get: function() {
+      return types_1.EndpointURLScheme;
+    } });
   }
 });
 
@@ -5399,12 +5475,10 @@ var require_transfer2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.RequestHandlerProtocol = void 0;
-    var RequestHandlerProtocol;
-    (function(RequestHandlerProtocol2) {
-      RequestHandlerProtocol2["HTTP_0_9"] = "http/0.9";
-      RequestHandlerProtocol2["HTTP_1_0"] = "http/1.0";
-      RequestHandlerProtocol2["TDS_8_0"] = "tds/8.0";
-    })(RequestHandlerProtocol = exports.RequestHandlerProtocol || (exports.RequestHandlerProtocol = {}));
+    var types_1 = require_dist_cjs();
+    Object.defineProperty(exports, "RequestHandlerProtocol", { enumerable: true, get: function() {
+      return types_1.RequestHandlerProtocol;
+    } });
   }
 });
 
@@ -6022,6 +6096,7 @@ var require_dist_cjs18 = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     tslib_1.__exportStar(require_partition(), exports);
+    tslib_1.__exportStar(require_isIpAddress(), exports);
     tslib_1.__exportStar(require_resolveEndpoint(), exports);
     tslib_1.__exportStar(require_types2(), exports);
   }
@@ -6285,7 +6360,7 @@ var require_endpointsConfig = __commonJS({
 });
 
 // ../../../node_modules/@smithy/config-resolver/dist-cjs/regionConfig/config.js
-var require_config3 = __commonJS({
+var require_config2 = __commonJS({
   "../../../node_modules/@smithy/config-resolver/dist-cjs/regionConfig/config.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -6369,7 +6444,7 @@ var require_regionConfig = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_config3(), exports);
+    tslib_1.__exportStar(require_config2(), exports);
     tslib_1.__exportStar(require_resolveRegionConfig(), exports);
   }
 });
@@ -6994,7 +7069,7 @@ var require_dist_cjs26 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/util-retry/dist-cjs/config.js
-var require_config4 = __commonJS({
+var require_config3 = __commonJS({
   "../../../node_modules/@smithy/util-retry/dist-cjs/config.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -7039,7 +7114,7 @@ var require_constants3 = __commonJS({
       "TooManyRequestsException",
       "TransactionInProgressException"
     ];
-    exports.TRANSIENT_ERROR_CODES = ["AbortError", "TimeoutError", "RequestTimeout", "RequestTimeoutException"];
+    exports.TRANSIENT_ERROR_CODES = ["TimeoutError", "RequestTimeout", "RequestTimeoutException"];
     exports.TRANSIENT_ERROR_STATUS_CODES = [500, 502, 503, 504];
     exports.NODEJS_TIMEOUT_ERROR_CODES = ["ECONNRESET", "ECONNREFUSED", "EPIPE", "ETIMEDOUT"];
   }
@@ -7259,7 +7334,7 @@ var require_StandardRetryStrategy = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.StandardRetryStrategy = void 0;
-    var config_1 = require_config4();
+    var config_1 = require_config3();
     var constants_1 = require_constants4();
     var defaultRetryBackoffStrategy_1 = require_defaultRetryBackoffStrategy();
     var defaultRetryToken_1 = require_defaultRetryToken();
@@ -7330,7 +7405,7 @@ var require_AdaptiveRetryStrategy = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.AdaptiveRetryStrategy = void 0;
-    var config_1 = require_config4();
+    var config_1 = require_config3();
     var DefaultRateLimiter_1 = require_DefaultRateLimiter();
     var StandardRetryStrategy_1 = require_StandardRetryStrategy();
     var AdaptiveRetryStrategy = class {
@@ -7403,7 +7478,7 @@ var require_dist_cjs28 = __commonJS({
     tslib_1.__exportStar(require_ConfiguredRetryStrategy(), exports);
     tslib_1.__exportStar(require_DefaultRateLimiter(), exports);
     tslib_1.__exportStar(require_StandardRetryStrategy(), exports);
-    tslib_1.__exportStar(require_config4(), exports);
+    tslib_1.__exportStar(require_config3(), exports);
     tslib_1.__exportStar(require_constants4(), exports);
     tslib_1.__exportStar(require_types4(), exports);
   }
@@ -8544,7 +8619,7 @@ var require_Uint8ArrayBlobAdapter = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Uint8ArrayBlobAdapter = void 0;
     var transforms_1 = require_transforms();
-    var Uint8ArrayBlobAdapter = class extends Uint8Array {
+    var Uint8ArrayBlobAdapter = class _Uint8ArrayBlobAdapter extends Uint8Array {
       static fromString(source, encoding = "utf-8") {
         switch (typeof source) {
           case "string":
@@ -8554,7 +8629,7 @@ var require_Uint8ArrayBlobAdapter = __commonJS({
         }
       }
       static mutate(source) {
-        Object.setPrototypeOf(source, Uint8ArrayBlobAdapter.prototype);
+        Object.setPrototypeOf(source, _Uint8ArrayBlobAdapter.prototype);
         return source;
       }
       transformToString(encoding = "utf-8") {
@@ -9852,10 +9927,10 @@ var require_exceptions = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.decorateServiceException = exports.ServiceException = void 0;
-    var ServiceException = class extends Error {
+    var ServiceException = class _ServiceException extends Error {
       constructor(options) {
         super(options.message);
-        Object.setPrototypeOf(this, ServiceException.prototype);
+        Object.setPrototypeOf(this, _ServiceException.prototype);
         this.name = options.name;
         this.$fault = options.$fault;
         this.$metadata = options.$metadata;
@@ -10035,7 +10110,7 @@ var require_lazy_json = __commonJS({
       }
     });
     Object.setPrototypeOf(exports.StringWrapper, String);
-    var LazyJsonString = class extends exports.StringWrapper {
+    var LazyJsonString = class _LazyJsonString extends exports.StringWrapper {
       deserializeJSON() {
         return JSON.parse(super.toString());
       }
@@ -10043,12 +10118,12 @@ var require_lazy_json = __commonJS({
         return super.toString();
       }
       static fromObject(object) {
-        if (object instanceof LazyJsonString) {
+        if (object instanceof _LazyJsonString) {
           return object;
         } else if (object instanceof String || typeof object === "string") {
-          return new LazyJsonString(object);
+          return new _LazyJsonString(object);
         }
-        return new LazyJsonString(JSON.stringify(object));
+        return new _LazyJsonString(JSON.stringify(object));
       }
     };
     exports.LazyJsonString = LazyJsonString;
@@ -10318,7 +10393,7 @@ var require_package = __commonJS({
     module2.exports = {
       name: "@aws-sdk/client-sfn",
       description: "AWS SDK for JavaScript Sfn Client for Node.js, Browser and React Native",
-      version: "3.363.0",
+      version: "3.378.0",
       scripts: {
         build: "concurrently 'yarn:build:cjs' 'yarn:build:es' 'yarn:build:types'",
         "build:cjs": "tsc -p tsconfig.cjs.json",
@@ -10338,44 +10413,43 @@ var require_package = __commonJS({
       dependencies: {
         "@aws-crypto/sha256-browser": "3.0.0",
         "@aws-crypto/sha256-js": "3.0.0",
-        "@aws-sdk/client-sts": "3.363.0",
-        "@aws-sdk/credential-provider-node": "3.363.0",
-        "@aws-sdk/middleware-host-header": "3.363.0",
-        "@aws-sdk/middleware-logger": "3.363.0",
-        "@aws-sdk/middleware-recursion-detection": "3.363.0",
-        "@aws-sdk/middleware-signing": "3.363.0",
-        "@aws-sdk/middleware-user-agent": "3.363.0",
-        "@aws-sdk/types": "3.357.0",
-        "@aws-sdk/util-endpoints": "3.357.0",
-        "@aws-sdk/util-user-agent-browser": "3.363.0",
-        "@aws-sdk/util-user-agent-node": "3.363.0",
-        "@smithy/config-resolver": "^1.0.1",
-        "@smithy/fetch-http-handler": "^1.0.1",
-        "@smithy/hash-node": "^1.0.1",
-        "@smithy/invalid-dependency": "^1.0.1",
-        "@smithy/middleware-content-length": "^1.0.1",
-        "@smithy/middleware-endpoint": "^1.0.1",
-        "@smithy/middleware-retry": "^1.0.2",
-        "@smithy/middleware-serde": "^1.0.1",
-        "@smithy/middleware-stack": "^1.0.1",
-        "@smithy/node-config-provider": "^1.0.1",
-        "@smithy/node-http-handler": "^1.0.2",
-        "@smithy/protocol-http": "^1.0.1",
-        "@smithy/smithy-client": "^1.0.3",
-        "@smithy/types": "^1.0.0",
-        "@smithy/url-parser": "^1.0.1",
-        "@smithy/util-base64": "^1.0.1",
-        "@smithy/util-body-length-browser": "^1.0.1",
-        "@smithy/util-body-length-node": "^1.0.1",
-        "@smithy/util-defaults-mode-browser": "^1.0.1",
-        "@smithy/util-defaults-mode-node": "^1.0.1",
-        "@smithy/util-retry": "^1.0.2",
-        "@smithy/util-utf8": "^1.0.1",
+        "@aws-sdk/client-sts": "3.378.0",
+        "@aws-sdk/credential-provider-node": "3.378.0",
+        "@aws-sdk/middleware-host-header": "3.378.0",
+        "@aws-sdk/middleware-logger": "3.378.0",
+        "@aws-sdk/middleware-recursion-detection": "3.378.0",
+        "@aws-sdk/middleware-signing": "3.378.0",
+        "@aws-sdk/middleware-user-agent": "3.378.0",
+        "@aws-sdk/types": "3.378.0",
+        "@aws-sdk/util-endpoints": "3.378.0",
+        "@aws-sdk/util-user-agent-browser": "3.378.0",
+        "@aws-sdk/util-user-agent-node": "3.378.0",
+        "@smithy/config-resolver": "^2.0.1",
+        "@smithy/fetch-http-handler": "^2.0.1",
+        "@smithy/hash-node": "^2.0.1",
+        "@smithy/invalid-dependency": "^2.0.1",
+        "@smithy/middleware-content-length": "^2.0.1",
+        "@smithy/middleware-endpoint": "^2.0.1",
+        "@smithy/middleware-retry": "^2.0.1",
+        "@smithy/middleware-serde": "^2.0.1",
+        "@smithy/middleware-stack": "^2.0.0",
+        "@smithy/node-config-provider": "^2.0.1",
+        "@smithy/node-http-handler": "^2.0.1",
+        "@smithy/protocol-http": "^2.0.1",
+        "@smithy/smithy-client": "^2.0.1",
+        "@smithy/types": "^2.0.2",
+        "@smithy/url-parser": "^2.0.1",
+        "@smithy/util-base64": "^2.0.0",
+        "@smithy/util-body-length-browser": "^2.0.0",
+        "@smithy/util-body-length-node": "^2.0.0",
+        "@smithy/util-defaults-mode-browser": "^2.0.1",
+        "@smithy/util-defaults-mode-node": "^2.0.1",
+        "@smithy/util-retry": "^2.0.0",
+        "@smithy/util-utf8": "^2.0.0",
         tslib: "^2.5.0"
       },
       devDependencies: {
-        "@aws-sdk/service-client-documentation-generator": "3.310.0",
-        "@smithy/service-client-documentation-generator": "^1.0.1",
+        "@smithy/service-client-documentation-generator": "^2.0.0",
         "@tsconfig/node14": "1.0.3",
         "@types/node": "^14.14.31",
         concurrently: "7.0.0",
@@ -10458,7 +10532,7 @@ var require_package2 = __commonJS({
     module2.exports = {
       name: "@aws-sdk/client-sts",
       description: "AWS SDK for JavaScript Sts Client for Node.js, Browser and React Native",
-      version: "3.363.0",
+      version: "3.378.0",
       scripts: {
         build: "concurrently 'yarn:build:cjs' 'yarn:build:es' 'yarn:build:types'",
         "build:cjs": "tsc -p tsconfig.cjs.json",
@@ -10480,45 +10554,44 @@ var require_package2 = __commonJS({
       dependencies: {
         "@aws-crypto/sha256-browser": "3.0.0",
         "@aws-crypto/sha256-js": "3.0.0",
-        "@aws-sdk/credential-provider-node": "3.363.0",
-        "@aws-sdk/middleware-host-header": "3.363.0",
-        "@aws-sdk/middleware-logger": "3.363.0",
-        "@aws-sdk/middleware-recursion-detection": "3.363.0",
-        "@aws-sdk/middleware-sdk-sts": "3.363.0",
-        "@aws-sdk/middleware-signing": "3.363.0",
-        "@aws-sdk/middleware-user-agent": "3.363.0",
-        "@aws-sdk/types": "3.357.0",
-        "@aws-sdk/util-endpoints": "3.357.0",
-        "@aws-sdk/util-user-agent-browser": "3.363.0",
-        "@aws-sdk/util-user-agent-node": "3.363.0",
-        "@smithy/config-resolver": "^1.0.1",
-        "@smithy/fetch-http-handler": "^1.0.1",
-        "@smithy/hash-node": "^1.0.1",
-        "@smithy/invalid-dependency": "^1.0.1",
-        "@smithy/middleware-content-length": "^1.0.1",
-        "@smithy/middleware-endpoint": "^1.0.1",
-        "@smithy/middleware-retry": "^1.0.1",
-        "@smithy/middleware-serde": "^1.0.1",
-        "@smithy/middleware-stack": "^1.0.1",
-        "@smithy/node-config-provider": "^1.0.1",
-        "@smithy/node-http-handler": "^1.0.1",
-        "@smithy/protocol-http": "^1.1.0",
-        "@smithy/smithy-client": "^1.0.2",
-        "@smithy/types": "^1.1.0",
-        "@smithy/url-parser": "^1.0.1",
-        "@smithy/util-base64": "^1.0.1",
-        "@smithy/util-body-length-browser": "^1.0.1",
-        "@smithy/util-body-length-node": "^1.0.1",
-        "@smithy/util-defaults-mode-browser": "^1.0.1",
-        "@smithy/util-defaults-mode-node": "^1.0.1",
-        "@smithy/util-retry": "^1.0.1",
-        "@smithy/util-utf8": "^1.0.1",
+        "@aws-sdk/credential-provider-node": "3.378.0",
+        "@aws-sdk/middleware-host-header": "3.378.0",
+        "@aws-sdk/middleware-logger": "3.378.0",
+        "@aws-sdk/middleware-recursion-detection": "3.378.0",
+        "@aws-sdk/middleware-sdk-sts": "3.378.0",
+        "@aws-sdk/middleware-signing": "3.378.0",
+        "@aws-sdk/middleware-user-agent": "3.378.0",
+        "@aws-sdk/types": "3.378.0",
+        "@aws-sdk/util-endpoints": "3.378.0",
+        "@aws-sdk/util-user-agent-browser": "3.378.0",
+        "@aws-sdk/util-user-agent-node": "3.378.0",
+        "@smithy/config-resolver": "^2.0.1",
+        "@smithy/fetch-http-handler": "^2.0.1",
+        "@smithy/hash-node": "^2.0.1",
+        "@smithy/invalid-dependency": "^2.0.1",
+        "@smithy/middleware-content-length": "^2.0.1",
+        "@smithy/middleware-endpoint": "^2.0.1",
+        "@smithy/middleware-retry": "^2.0.1",
+        "@smithy/middleware-serde": "^2.0.1",
+        "@smithy/middleware-stack": "^2.0.0",
+        "@smithy/node-config-provider": "^2.0.1",
+        "@smithy/node-http-handler": "^2.0.1",
+        "@smithy/protocol-http": "^2.0.1",
+        "@smithy/smithy-client": "^2.0.1",
+        "@smithy/types": "^2.0.2",
+        "@smithy/url-parser": "^2.0.1",
+        "@smithy/util-base64": "^2.0.0",
+        "@smithy/util-body-length-browser": "^2.0.0",
+        "@smithy/util-body-length-node": "^2.0.0",
+        "@smithy/util-defaults-mode-browser": "^2.0.1",
+        "@smithy/util-defaults-mode-node": "^2.0.1",
+        "@smithy/util-retry": "^2.0.0",
+        "@smithy/util-utf8": "^2.0.0",
         "fast-xml-parser": "4.2.5",
         tslib: "^2.5.0"
       },
       devDependencies: {
-        "@aws-sdk/service-client-documentation-generator": "3.310.0",
-        "@smithy/service-client-documentation-generator": "^1.0.1",
+        "@smithy/service-client-documentation-generator": "^2.0.0",
         "@tsconfig/node14": "1.0.3",
         "@types/node": "^14.14.31",
         concurrently: "7.0.0",
@@ -10571,10 +10644,10 @@ var require_STSServiceException = __commonJS({
     Object.defineProperty(exports, "__ServiceException", { enumerable: true, get: function() {
       return smithy_client_1.ServiceException;
     } });
-    var STSServiceException = class extends smithy_client_1.ServiceException {
+    var STSServiceException = class _STSServiceException extends smithy_client_1.ServiceException {
       constructor(options) {
         super(options);
-        Object.setPrototypeOf(this, STSServiceException.prototype);
+        Object.setPrototypeOf(this, _STSServiceException.prototype);
       }
     };
     exports.STSServiceException = STSServiceException;
@@ -10589,7 +10662,7 @@ var require_models_0 = __commonJS({
     exports.GetSessionTokenResponseFilterSensitiveLog = exports.GetFederationTokenResponseFilterSensitiveLog = exports.AssumeRoleWithWebIdentityResponseFilterSensitiveLog = exports.AssumeRoleWithWebIdentityRequestFilterSensitiveLog = exports.AssumeRoleWithSAMLResponseFilterSensitiveLog = exports.AssumeRoleWithSAMLRequestFilterSensitiveLog = exports.AssumeRoleResponseFilterSensitiveLog = exports.CredentialsFilterSensitiveLog = exports.InvalidAuthorizationMessageException = exports.IDPCommunicationErrorException = exports.InvalidIdentityTokenException = exports.IDPRejectedClaimException = exports.RegionDisabledException = exports.PackedPolicyTooLargeException = exports.MalformedPolicyDocumentException = exports.ExpiredTokenException = void 0;
     var smithy_client_1 = require_dist_cjs35();
     var STSServiceException_1 = require_STSServiceException();
-    var ExpiredTokenException = class extends STSServiceException_1.STSServiceException {
+    var ExpiredTokenException = class _ExpiredTokenException extends STSServiceException_1.STSServiceException {
       constructor(opts) {
         super({
           name: "ExpiredTokenException",
@@ -10598,11 +10671,11 @@ var require_models_0 = __commonJS({
         });
         this.name = "ExpiredTokenException";
         this.$fault = "client";
-        Object.setPrototypeOf(this, ExpiredTokenException.prototype);
+        Object.setPrototypeOf(this, _ExpiredTokenException.prototype);
       }
     };
     exports.ExpiredTokenException = ExpiredTokenException;
-    var MalformedPolicyDocumentException = class extends STSServiceException_1.STSServiceException {
+    var MalformedPolicyDocumentException = class _MalformedPolicyDocumentException extends STSServiceException_1.STSServiceException {
       constructor(opts) {
         super({
           name: "MalformedPolicyDocumentException",
@@ -10611,11 +10684,11 @@ var require_models_0 = __commonJS({
         });
         this.name = "MalformedPolicyDocumentException";
         this.$fault = "client";
-        Object.setPrototypeOf(this, MalformedPolicyDocumentException.prototype);
+        Object.setPrototypeOf(this, _MalformedPolicyDocumentException.prototype);
       }
     };
     exports.MalformedPolicyDocumentException = MalformedPolicyDocumentException;
-    var PackedPolicyTooLargeException = class extends STSServiceException_1.STSServiceException {
+    var PackedPolicyTooLargeException = class _PackedPolicyTooLargeException extends STSServiceException_1.STSServiceException {
       constructor(opts) {
         super({
           name: "PackedPolicyTooLargeException",
@@ -10624,11 +10697,11 @@ var require_models_0 = __commonJS({
         });
         this.name = "PackedPolicyTooLargeException";
         this.$fault = "client";
-        Object.setPrototypeOf(this, PackedPolicyTooLargeException.prototype);
+        Object.setPrototypeOf(this, _PackedPolicyTooLargeException.prototype);
       }
     };
     exports.PackedPolicyTooLargeException = PackedPolicyTooLargeException;
-    var RegionDisabledException = class extends STSServiceException_1.STSServiceException {
+    var RegionDisabledException = class _RegionDisabledException extends STSServiceException_1.STSServiceException {
       constructor(opts) {
         super({
           name: "RegionDisabledException",
@@ -10637,11 +10710,11 @@ var require_models_0 = __commonJS({
         });
         this.name = "RegionDisabledException";
         this.$fault = "client";
-        Object.setPrototypeOf(this, RegionDisabledException.prototype);
+        Object.setPrototypeOf(this, _RegionDisabledException.prototype);
       }
     };
     exports.RegionDisabledException = RegionDisabledException;
-    var IDPRejectedClaimException = class extends STSServiceException_1.STSServiceException {
+    var IDPRejectedClaimException = class _IDPRejectedClaimException extends STSServiceException_1.STSServiceException {
       constructor(opts) {
         super({
           name: "IDPRejectedClaimException",
@@ -10650,11 +10723,11 @@ var require_models_0 = __commonJS({
         });
         this.name = "IDPRejectedClaimException";
         this.$fault = "client";
-        Object.setPrototypeOf(this, IDPRejectedClaimException.prototype);
+        Object.setPrototypeOf(this, _IDPRejectedClaimException.prototype);
       }
     };
     exports.IDPRejectedClaimException = IDPRejectedClaimException;
-    var InvalidIdentityTokenException = class extends STSServiceException_1.STSServiceException {
+    var InvalidIdentityTokenException = class _InvalidIdentityTokenException extends STSServiceException_1.STSServiceException {
       constructor(opts) {
         super({
           name: "InvalidIdentityTokenException",
@@ -10663,11 +10736,11 @@ var require_models_0 = __commonJS({
         });
         this.name = "InvalidIdentityTokenException";
         this.$fault = "client";
-        Object.setPrototypeOf(this, InvalidIdentityTokenException.prototype);
+        Object.setPrototypeOf(this, _InvalidIdentityTokenException.prototype);
       }
     };
     exports.InvalidIdentityTokenException = InvalidIdentityTokenException;
-    var IDPCommunicationErrorException = class extends STSServiceException_1.STSServiceException {
+    var IDPCommunicationErrorException = class _IDPCommunicationErrorException extends STSServiceException_1.STSServiceException {
       constructor(opts) {
         super({
           name: "IDPCommunicationErrorException",
@@ -10676,11 +10749,11 @@ var require_models_0 = __commonJS({
         });
         this.name = "IDPCommunicationErrorException";
         this.$fault = "client";
-        Object.setPrototypeOf(this, IDPCommunicationErrorException.prototype);
+        Object.setPrototypeOf(this, _IDPCommunicationErrorException.prototype);
       }
     };
     exports.IDPCommunicationErrorException = IDPCommunicationErrorException;
-    var InvalidAuthorizationMessageException = class extends STSServiceException_1.STSServiceException {
+    var InvalidAuthorizationMessageException = class _InvalidAuthorizationMessageException extends STSServiceException_1.STSServiceException {
       constructor(opts) {
         super({
           name: "InvalidAuthorizationMessageException",
@@ -10689,7 +10762,7 @@ var require_models_0 = __commonJS({
         });
         this.name = "InvalidAuthorizationMessageException";
         this.$fault = "client";
-        Object.setPrototypeOf(this, InvalidAuthorizationMessageException.prototype);
+        Object.setPrototypeOf(this, _InvalidAuthorizationMessageException.prototype);
       }
     };
     exports.InvalidAuthorizationMessageException = InvalidAuthorizationMessageException;
@@ -12887,7 +12960,6 @@ var require_Aws_query = __commonJS({
       return (0, smithy_client_1.decorateServiceException)(exception, body);
     };
     var se_AssumeRoleRequest = (input, context) => {
-      var _a, _b, _c;
       const entries = {};
       if (input.RoleArn != null) {
         entries["RoleArn"] = input.RoleArn;
@@ -12897,7 +12969,7 @@ var require_Aws_query = __commonJS({
       }
       if (input.PolicyArns != null) {
         const memberEntries = se_policyDescriptorListType(input.PolicyArns, context);
-        if (((_a = input.PolicyArns) == null ? void 0 : _a.length) === 0) {
+        if (input.PolicyArns?.length === 0) {
           entries.PolicyArns = [];
         }
         Object.entries(memberEntries).forEach(([key, value]) => {
@@ -12913,7 +12985,7 @@ var require_Aws_query = __commonJS({
       }
       if (input.Tags != null) {
         const memberEntries = se_tagListType(input.Tags, context);
-        if (((_b = input.Tags) == null ? void 0 : _b.length) === 0) {
+        if (input.Tags?.length === 0) {
           entries.Tags = [];
         }
         Object.entries(memberEntries).forEach(([key, value]) => {
@@ -12923,7 +12995,7 @@ var require_Aws_query = __commonJS({
       }
       if (input.TransitiveTagKeys != null) {
         const memberEntries = se_tagKeyListType(input.TransitiveTagKeys, context);
-        if (((_c = input.TransitiveTagKeys) == null ? void 0 : _c.length) === 0) {
+        if (input.TransitiveTagKeys?.length === 0) {
           entries.TransitiveTagKeys = [];
         }
         Object.entries(memberEntries).forEach(([key, value]) => {
@@ -12943,10 +13015,19 @@ var require_Aws_query = __commonJS({
       if (input.SourceIdentity != null) {
         entries["SourceIdentity"] = input.SourceIdentity;
       }
+      if (input.ProvidedContexts != null) {
+        const memberEntries = se_ProvidedContextsListType(input.ProvidedContexts, context);
+        if (input.ProvidedContexts?.length === 0) {
+          entries.ProvidedContexts = [];
+        }
+        Object.entries(memberEntries).forEach(([key, value]) => {
+          const loc = `ProvidedContexts.${key}`;
+          entries[loc] = value;
+        });
+      }
       return entries;
     };
     var se_AssumeRoleWithSAMLRequest = (input, context) => {
-      var _a;
       const entries = {};
       if (input.RoleArn != null) {
         entries["RoleArn"] = input.RoleArn;
@@ -12959,7 +13040,7 @@ var require_Aws_query = __commonJS({
       }
       if (input.PolicyArns != null) {
         const memberEntries = se_policyDescriptorListType(input.PolicyArns, context);
-        if (((_a = input.PolicyArns) == null ? void 0 : _a.length) === 0) {
+        if (input.PolicyArns?.length === 0) {
           entries.PolicyArns = [];
         }
         Object.entries(memberEntries).forEach(([key, value]) => {
@@ -12976,7 +13057,6 @@ var require_Aws_query = __commonJS({
       return entries;
     };
     var se_AssumeRoleWithWebIdentityRequest = (input, context) => {
-      var _a;
       const entries = {};
       if (input.RoleArn != null) {
         entries["RoleArn"] = input.RoleArn;
@@ -12992,7 +13072,7 @@ var require_Aws_query = __commonJS({
       }
       if (input.PolicyArns != null) {
         const memberEntries = se_policyDescriptorListType(input.PolicyArns, context);
-        if (((_a = input.PolicyArns) == null ? void 0 : _a.length) === 0) {
+        if (input.PolicyArns?.length === 0) {
           entries.PolicyArns = [];
         }
         Object.entries(memberEntries).forEach(([key, value]) => {
@@ -13027,7 +13107,6 @@ var require_Aws_query = __commonJS({
       return entries;
     };
     var se_GetFederationTokenRequest = (input, context) => {
-      var _a, _b;
       const entries = {};
       if (input.Name != null) {
         entries["Name"] = input.Name;
@@ -13037,7 +13116,7 @@ var require_Aws_query = __commonJS({
       }
       if (input.PolicyArns != null) {
         const memberEntries = se_policyDescriptorListType(input.PolicyArns, context);
-        if (((_a = input.PolicyArns) == null ? void 0 : _a.length) === 0) {
+        if (input.PolicyArns?.length === 0) {
           entries.PolicyArns = [];
         }
         Object.entries(memberEntries).forEach(([key, value]) => {
@@ -13050,7 +13129,7 @@ var require_Aws_query = __commonJS({
       }
       if (input.Tags != null) {
         const memberEntries = se_tagListType(input.Tags, context);
-        if (((_b = input.Tags) == null ? void 0 : _b.length) === 0) {
+        if (input.Tags?.length === 0) {
           entries.Tags = [];
         }
         Object.entries(memberEntries).forEach(([key, value]) => {
@@ -13092,6 +13171,31 @@ var require_Aws_query = __commonJS({
       const entries = {};
       if (input.arn != null) {
         entries["arn"] = input.arn;
+      }
+      return entries;
+    };
+    var se_ProvidedContext = (input, context) => {
+      const entries = {};
+      if (input.ProviderArn != null) {
+        entries["ProviderArn"] = input.ProviderArn;
+      }
+      if (input.ContextAssertion != null) {
+        entries["ContextAssertion"] = input.ContextAssertion;
+      }
+      return entries;
+    };
+    var se_ProvidedContextsListType = (input, context) => {
+      const entries = {};
+      let counter = 1;
+      for (const entry of input) {
+        if (entry === null) {
+          continue;
+        }
+        const memberEntries = se_ProvidedContext(entry, context);
+        Object.entries(memberEntries).forEach(([key, value]) => {
+          entries[`member.${counter}.${key}`] = value;
+        });
+        counter++;
       }
       return entries;
     };
@@ -13406,8 +13510,7 @@ var require_Aws_query = __commonJS({
     };
     var buildFormUrlencodedString = (formEntries) => Object.entries(formEntries).map(([key, value]) => (0, smithy_client_1.extendedEncodeURIComponent)(key) + "=" + (0, smithy_client_1.extendedEncodeURIComponent)(value)).join("&");
     var loadQueryErrorCode = (output, data) => {
-      var _a;
-      if (((_a = data.Error) == null ? void 0 : _a.Code) !== void 0) {
+      if (data.Error?.Code !== void 0) {
         return data.Error.Code;
       }
       if (output.statusCode == 404) {
@@ -13432,7 +13535,7 @@ var require_AssumeRoleCommand = __commonJS({
     } });
     var models_0_1 = require_models_0();
     var Aws_query_1 = require_Aws_query();
-    var AssumeRoleCommand = class extends smithy_client_1.Command {
+    var AssumeRoleCommand = class _AssumeRoleCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseGlobalEndpoint: { type: "builtInParams", name: "useGlobalEndpoint" },
@@ -13448,7 +13551,7 @@ var require_AssumeRoleCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, AssumeRoleCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _AssumeRoleCommand.getEndpointParameterInstructions()));
         this.middlewareStack.use((0, middleware_signing_1.getAwsAuthPlugin)(configuration));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
@@ -13489,7 +13592,7 @@ var require_AssumeRoleWithWebIdentityCommand = __commonJS({
     } });
     var models_0_1 = require_models_0();
     var Aws_query_1 = require_Aws_query();
-    var AssumeRoleWithWebIdentityCommand = class extends smithy_client_1.Command {
+    var AssumeRoleWithWebIdentityCommand = class _AssumeRoleWithWebIdentityCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseGlobalEndpoint: { type: "builtInParams", name: "useGlobalEndpoint" },
@@ -13505,7 +13608,7 @@ var require_AssumeRoleWithWebIdentityCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, AssumeRoleWithWebIdentityCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _AssumeRoleWithWebIdentityCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "STSClient";
@@ -14700,7 +14803,7 @@ var require_package3 = __commonJS({
     module2.exports = {
       name: "@aws-sdk/client-sso",
       description: "AWS SDK for JavaScript Sso Client for Node.js, Browser and React Native",
-      version: "3.363.0",
+      version: "3.378.0",
       scripts: {
         build: "concurrently 'yarn:build:cjs' 'yarn:build:es' 'yarn:build:types'",
         "build:cjs": "tsc -p tsconfig.cjs.json",
@@ -14720,41 +14823,40 @@ var require_package3 = __commonJS({
       dependencies: {
         "@aws-crypto/sha256-browser": "3.0.0",
         "@aws-crypto/sha256-js": "3.0.0",
-        "@aws-sdk/middleware-host-header": "3.363.0",
-        "@aws-sdk/middleware-logger": "3.363.0",
-        "@aws-sdk/middleware-recursion-detection": "3.363.0",
-        "@aws-sdk/middleware-user-agent": "3.363.0",
-        "@aws-sdk/types": "3.357.0",
-        "@aws-sdk/util-endpoints": "3.357.0",
-        "@aws-sdk/util-user-agent-browser": "3.363.0",
-        "@aws-sdk/util-user-agent-node": "3.363.0",
-        "@smithy/config-resolver": "^1.0.1",
-        "@smithy/fetch-http-handler": "^1.0.1",
-        "@smithy/hash-node": "^1.0.1",
-        "@smithy/invalid-dependency": "^1.0.1",
-        "@smithy/middleware-content-length": "^1.0.1",
-        "@smithy/middleware-endpoint": "^1.0.1",
-        "@smithy/middleware-retry": "^1.0.2",
-        "@smithy/middleware-serde": "^1.0.1",
-        "@smithy/middleware-stack": "^1.0.1",
-        "@smithy/node-config-provider": "^1.0.1",
-        "@smithy/node-http-handler": "^1.0.2",
-        "@smithy/protocol-http": "^1.0.1",
-        "@smithy/smithy-client": "^1.0.3",
-        "@smithy/types": "^1.0.0",
-        "@smithy/url-parser": "^1.0.1",
-        "@smithy/util-base64": "^1.0.1",
-        "@smithy/util-body-length-browser": "^1.0.1",
-        "@smithy/util-body-length-node": "^1.0.1",
-        "@smithy/util-defaults-mode-browser": "^1.0.1",
-        "@smithy/util-defaults-mode-node": "^1.0.1",
-        "@smithy/util-retry": "^1.0.2",
-        "@smithy/util-utf8": "^1.0.1",
+        "@aws-sdk/middleware-host-header": "3.378.0",
+        "@aws-sdk/middleware-logger": "3.378.0",
+        "@aws-sdk/middleware-recursion-detection": "3.378.0",
+        "@aws-sdk/middleware-user-agent": "3.378.0",
+        "@aws-sdk/types": "3.378.0",
+        "@aws-sdk/util-endpoints": "3.378.0",
+        "@aws-sdk/util-user-agent-browser": "3.378.0",
+        "@aws-sdk/util-user-agent-node": "3.378.0",
+        "@smithy/config-resolver": "^2.0.1",
+        "@smithy/fetch-http-handler": "^2.0.1",
+        "@smithy/hash-node": "^2.0.1",
+        "@smithy/invalid-dependency": "^2.0.1",
+        "@smithy/middleware-content-length": "^2.0.1",
+        "@smithy/middleware-endpoint": "^2.0.1",
+        "@smithy/middleware-retry": "^2.0.1",
+        "@smithy/middleware-serde": "^2.0.1",
+        "@smithy/middleware-stack": "^2.0.0",
+        "@smithy/node-config-provider": "^2.0.1",
+        "@smithy/node-http-handler": "^2.0.1",
+        "@smithy/protocol-http": "^2.0.1",
+        "@smithy/smithy-client": "^2.0.1",
+        "@smithy/types": "^2.0.2",
+        "@smithy/url-parser": "^2.0.1",
+        "@smithy/util-base64": "^2.0.0",
+        "@smithy/util-body-length-browser": "^2.0.0",
+        "@smithy/util-body-length-node": "^2.0.0",
+        "@smithy/util-defaults-mode-browser": "^2.0.1",
+        "@smithy/util-defaults-mode-node": "^2.0.1",
+        "@smithy/util-retry": "^2.0.0",
+        "@smithy/util-utf8": "^2.0.0",
         tslib: "^2.5.0"
       },
       devDependencies: {
-        "@aws-sdk/service-client-documentation-generator": "3.310.0",
-        "@smithy/service-client-documentation-generator": "^1.0.1",
+        "@smithy/service-client-documentation-generator": "^2.0.0",
         "@tsconfig/node14": "1.0.3",
         "@types/node": "^14.14.31",
         concurrently: "7.0.0",
@@ -15006,15 +15108,15 @@ var require_runtimeConfig_shared = __commonJS({
     var endpointResolver_1 = require_endpointResolver();
     var getRuntimeConfig = (config) => ({
       apiVersion: "2019-06-10",
-      base64Decoder: (config == null ? void 0 : config.base64Decoder) ?? util_base64_1.fromBase64,
-      base64Encoder: (config == null ? void 0 : config.base64Encoder) ?? util_base64_1.toBase64,
-      disableHostPrefix: (config == null ? void 0 : config.disableHostPrefix) ?? false,
-      endpointProvider: (config == null ? void 0 : config.endpointProvider) ?? endpointResolver_1.defaultEndpointResolver,
-      logger: (config == null ? void 0 : config.logger) ?? new smithy_client_1.NoOpLogger(),
-      serviceId: (config == null ? void 0 : config.serviceId) ?? "SSO",
-      urlParser: (config == null ? void 0 : config.urlParser) ?? url_parser_1.parseUrl,
-      utf8Decoder: (config == null ? void 0 : config.utf8Decoder) ?? util_utf8_1.fromUtf8,
-      utf8Encoder: (config == null ? void 0 : config.utf8Encoder) ?? util_utf8_1.toUtf8
+      base64Decoder: config?.base64Decoder ?? util_base64_1.fromBase64,
+      base64Encoder: config?.base64Encoder ?? util_base64_1.toBase64,
+      disableHostPrefix: config?.disableHostPrefix ?? false,
+      endpointProvider: config?.endpointProvider ?? endpointResolver_1.defaultEndpointResolver,
+      logger: config?.logger ?? new smithy_client_1.NoOpLogger(),
+      serviceId: config?.serviceId ?? "SSO",
+      urlParser: config?.urlParser ?? url_parser_1.parseUrl,
+      utf8Decoder: config?.utf8Decoder ?? util_utf8_1.fromUtf8,
+      utf8Encoder: config?.utf8Encoder ?? util_utf8_1.toUtf8
     });
     exports.getRuntimeConfig = getRuntimeConfig;
   }
@@ -15156,19 +15258,19 @@ var require_runtimeConfig = __commonJS({
         ...config,
         runtime: "node",
         defaultsMode,
-        bodyLengthChecker: (config == null ? void 0 : config.bodyLengthChecker) ?? util_body_length_node_1.calculateBodyLength,
-        defaultUserAgentProvider: (config == null ? void 0 : config.defaultUserAgentProvider) ?? (0, util_user_agent_node_1.defaultUserAgent)({ serviceId: clientSharedValues.serviceId, clientVersion: package_json_1.default.version }),
-        maxAttempts: (config == null ? void 0 : config.maxAttempts) ?? (0, node_config_provider_1.loadConfig)(middleware_retry_1.NODE_MAX_ATTEMPT_CONFIG_OPTIONS),
-        region: (config == null ? void 0 : config.region) ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_REGION_CONFIG_OPTIONS, config_resolver_1.NODE_REGION_CONFIG_FILE_OPTIONS),
-        requestHandler: (config == null ? void 0 : config.requestHandler) ?? new node_http_handler_1.NodeHttpHandler(defaultConfigProvider),
-        retryMode: (config == null ? void 0 : config.retryMode) ?? (0, node_config_provider_1.loadConfig)({
+        bodyLengthChecker: config?.bodyLengthChecker ?? util_body_length_node_1.calculateBodyLength,
+        defaultUserAgentProvider: config?.defaultUserAgentProvider ?? (0, util_user_agent_node_1.defaultUserAgent)({ serviceId: clientSharedValues.serviceId, clientVersion: package_json_1.default.version }),
+        maxAttempts: config?.maxAttempts ?? (0, node_config_provider_1.loadConfig)(middleware_retry_1.NODE_MAX_ATTEMPT_CONFIG_OPTIONS),
+        region: config?.region ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_REGION_CONFIG_OPTIONS, config_resolver_1.NODE_REGION_CONFIG_FILE_OPTIONS),
+        requestHandler: config?.requestHandler ?? new node_http_handler_1.NodeHttpHandler(defaultConfigProvider),
+        retryMode: config?.retryMode ?? (0, node_config_provider_1.loadConfig)({
           ...middleware_retry_1.NODE_RETRY_MODE_CONFIG_OPTIONS,
           default: async () => (await defaultConfigProvider()).retryMode || util_retry_1.DEFAULT_RETRY_MODE
         }),
-        sha256: (config == null ? void 0 : config.sha256) ?? hash_node_1.Hash.bind(null, "sha256"),
-        streamCollector: (config == null ? void 0 : config.streamCollector) ?? node_http_handler_1.streamCollector,
-        useDualstackEndpoint: (config == null ? void 0 : config.useDualstackEndpoint) ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_USE_DUALSTACK_ENDPOINT_CONFIG_OPTIONS),
-        useFipsEndpoint: (config == null ? void 0 : config.useFipsEndpoint) ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_USE_FIPS_ENDPOINT_CONFIG_OPTIONS)
+        sha256: config?.sha256 ?? hash_node_1.Hash.bind(null, "sha256"),
+        streamCollector: config?.streamCollector ?? node_http_handler_1.streamCollector,
+        useDualstackEndpoint: config?.useDualstackEndpoint ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_USE_DUALSTACK_ENDPOINT_CONFIG_OPTIONS),
+        useFipsEndpoint: config?.useFipsEndpoint ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_USE_FIPS_ENDPOINT_CONFIG_OPTIONS)
       };
     };
     exports.getRuntimeConfig = getRuntimeConfig;
@@ -15231,10 +15333,10 @@ var require_SSOServiceException = __commonJS({
     Object.defineProperty(exports, "__ServiceException", { enumerable: true, get: function() {
       return smithy_client_1.ServiceException;
     } });
-    var SSOServiceException = class extends smithy_client_1.ServiceException {
+    var SSOServiceException = class _SSOServiceException extends smithy_client_1.ServiceException {
       constructor(options) {
         super(options);
-        Object.setPrototypeOf(this, SSOServiceException.prototype);
+        Object.setPrototypeOf(this, _SSOServiceException.prototype);
       }
     };
     exports.SSOServiceException = SSOServiceException;
@@ -15249,7 +15351,7 @@ var require_models_02 = __commonJS({
     exports.LogoutRequestFilterSensitiveLog = exports.ListAccountsRequestFilterSensitiveLog = exports.ListAccountRolesRequestFilterSensitiveLog = exports.GetRoleCredentialsResponseFilterSensitiveLog = exports.RoleCredentialsFilterSensitiveLog = exports.GetRoleCredentialsRequestFilterSensitiveLog = exports.UnauthorizedException = exports.TooManyRequestsException = exports.ResourceNotFoundException = exports.InvalidRequestException = void 0;
     var smithy_client_1 = require_dist_cjs35();
     var SSOServiceException_1 = require_SSOServiceException();
-    var InvalidRequestException = class extends SSOServiceException_1.SSOServiceException {
+    var InvalidRequestException = class _InvalidRequestException extends SSOServiceException_1.SSOServiceException {
       constructor(opts) {
         super({
           name: "InvalidRequestException",
@@ -15258,11 +15360,11 @@ var require_models_02 = __commonJS({
         });
         this.name = "InvalidRequestException";
         this.$fault = "client";
-        Object.setPrototypeOf(this, InvalidRequestException.prototype);
+        Object.setPrototypeOf(this, _InvalidRequestException.prototype);
       }
     };
     exports.InvalidRequestException = InvalidRequestException;
-    var ResourceNotFoundException = class extends SSOServiceException_1.SSOServiceException {
+    var ResourceNotFoundException = class _ResourceNotFoundException extends SSOServiceException_1.SSOServiceException {
       constructor(opts) {
         super({
           name: "ResourceNotFoundException",
@@ -15271,11 +15373,11 @@ var require_models_02 = __commonJS({
         });
         this.name = "ResourceNotFoundException";
         this.$fault = "client";
-        Object.setPrototypeOf(this, ResourceNotFoundException.prototype);
+        Object.setPrototypeOf(this, _ResourceNotFoundException.prototype);
       }
     };
     exports.ResourceNotFoundException = ResourceNotFoundException;
-    var TooManyRequestsException = class extends SSOServiceException_1.SSOServiceException {
+    var TooManyRequestsException = class _TooManyRequestsException extends SSOServiceException_1.SSOServiceException {
       constructor(opts) {
         super({
           name: "TooManyRequestsException",
@@ -15284,11 +15386,11 @@ var require_models_02 = __commonJS({
         });
         this.name = "TooManyRequestsException";
         this.$fault = "client";
-        Object.setPrototypeOf(this, TooManyRequestsException.prototype);
+        Object.setPrototypeOf(this, _TooManyRequestsException.prototype);
       }
     };
     exports.TooManyRequestsException = TooManyRequestsException;
-    var UnauthorizedException = class extends SSOServiceException_1.SSOServiceException {
+    var UnauthorizedException = class _UnauthorizedException extends SSOServiceException_1.SSOServiceException {
       constructor(opts) {
         super({
           name: "UnauthorizedException",
@@ -15297,7 +15399,7 @@ var require_models_02 = __commonJS({
         });
         this.name = "UnauthorizedException";
         this.$fault = "client";
-        Object.setPrototypeOf(this, UnauthorizedException.prototype);
+        Object.setPrototypeOf(this, _UnauthorizedException.prototype);
       }
     };
     exports.UnauthorizedException = UnauthorizedException;
@@ -15350,7 +15452,7 @@ var require_Aws_restJson1 = __commonJS({
       const headers = (0, smithy_client_1.map)({}, isSerializableHeaderValue, {
         "x-amz-sso_bearer_token": input.accessToken
       });
-      const resolvedPath = `${(basePath == null ? void 0 : basePath.endsWith("/")) ? basePath.slice(0, -1) : basePath || ""}/federation/credentials`;
+      const resolvedPath = `${basePath?.endsWith("/") ? basePath.slice(0, -1) : basePath || ""}/federation/credentials`;
       const query = (0, smithy_client_1.map)({
         role_name: [, (0, smithy_client_1.expectNonNull)(input.roleName, `roleName`)],
         account_id: [, (0, smithy_client_1.expectNonNull)(input.accountId, `accountId`)]
@@ -15373,7 +15475,7 @@ var require_Aws_restJson1 = __commonJS({
       const headers = (0, smithy_client_1.map)({}, isSerializableHeaderValue, {
         "x-amz-sso_bearer_token": input.accessToken
       });
-      const resolvedPath = `${(basePath == null ? void 0 : basePath.endsWith("/")) ? basePath.slice(0, -1) : basePath || ""}/assignment/roles`;
+      const resolvedPath = `${basePath?.endsWith("/") ? basePath.slice(0, -1) : basePath || ""}/assignment/roles`;
       const query = (0, smithy_client_1.map)({
         next_token: [, input.nextToken],
         max_result: [() => input.maxResults !== void 0, () => input.maxResults.toString()],
@@ -15397,7 +15499,7 @@ var require_Aws_restJson1 = __commonJS({
       const headers = (0, smithy_client_1.map)({}, isSerializableHeaderValue, {
         "x-amz-sso_bearer_token": input.accessToken
       });
-      const resolvedPath = `${(basePath == null ? void 0 : basePath.endsWith("/")) ? basePath.slice(0, -1) : basePath || ""}/assignment/accounts`;
+      const resolvedPath = `${basePath?.endsWith("/") ? basePath.slice(0, -1) : basePath || ""}/assignment/accounts`;
       const query = (0, smithy_client_1.map)({
         next_token: [, input.nextToken],
         max_result: [() => input.maxResults !== void 0, () => input.maxResults.toString()]
@@ -15420,7 +15522,7 @@ var require_Aws_restJson1 = __commonJS({
       const headers = (0, smithy_client_1.map)({}, isSerializableHeaderValue, {
         "x-amz-sso_bearer_token": input.accessToken
       });
-      const resolvedPath = `${(basePath == null ? void 0 : basePath.endsWith("/")) ? basePath.slice(0, -1) : basePath || ""}/logout`;
+      const resolvedPath = `${basePath?.endsWith("/") ? basePath.slice(0, -1) : basePath || ""}/logout`;
       let body;
       return new protocol_http_1.HttpRequest({
         protocol,
@@ -15718,7 +15820,7 @@ var require_GetRoleCredentialsCommand = __commonJS({
     } });
     var models_0_1 = require_models_02();
     var Aws_restJson1_1 = require_Aws_restJson1();
-    var GetRoleCredentialsCommand = class extends smithy_client_1.Command {
+    var GetRoleCredentialsCommand = class _GetRoleCredentialsCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
@@ -15733,7 +15835,7 @@ var require_GetRoleCredentialsCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, GetRoleCredentialsCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _GetRoleCredentialsCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "SSOClient";
@@ -15773,7 +15875,7 @@ var require_ListAccountRolesCommand = __commonJS({
     } });
     var models_0_1 = require_models_02();
     var Aws_restJson1_1 = require_Aws_restJson1();
-    var ListAccountRolesCommand = class extends smithy_client_1.Command {
+    var ListAccountRolesCommand = class _ListAccountRolesCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
@@ -15788,7 +15890,7 @@ var require_ListAccountRolesCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, ListAccountRolesCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _ListAccountRolesCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "SSOClient";
@@ -15828,7 +15930,7 @@ var require_ListAccountsCommand = __commonJS({
     } });
     var models_0_1 = require_models_02();
     var Aws_restJson1_1 = require_Aws_restJson1();
-    var ListAccountsCommand = class extends smithy_client_1.Command {
+    var ListAccountsCommand = class _ListAccountsCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
@@ -15843,7 +15945,7 @@ var require_ListAccountsCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, ListAccountsCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _ListAccountsCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "SSOClient";
@@ -15883,7 +15985,7 @@ var require_LogoutCommand = __commonJS({
     } });
     var models_0_1 = require_models_02();
     var Aws_restJson1_1 = require_Aws_restJson1();
-    var LogoutCommand = class extends smithy_client_1.Command {
+    var LogoutCommand = class _LogoutCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
@@ -15898,7 +16000,7 @@ var require_LogoutCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, LogoutCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _LogoutCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "SSOClient";
@@ -16114,7 +16216,7 @@ var require_package4 = __commonJS({
     module2.exports = {
       name: "@aws-sdk/client-sso-oidc",
       description: "AWS SDK for JavaScript Sso Oidc Client for Node.js, Browser and React Native",
-      version: "3.363.0",
+      version: "3.378.0",
       scripts: {
         build: "concurrently 'yarn:build:cjs' 'yarn:build:es' 'yarn:build:types'",
         "build:cjs": "tsc -p tsconfig.cjs.json",
@@ -16134,41 +16236,40 @@ var require_package4 = __commonJS({
       dependencies: {
         "@aws-crypto/sha256-browser": "3.0.0",
         "@aws-crypto/sha256-js": "3.0.0",
-        "@aws-sdk/middleware-host-header": "3.363.0",
-        "@aws-sdk/middleware-logger": "3.363.0",
-        "@aws-sdk/middleware-recursion-detection": "3.363.0",
-        "@aws-sdk/middleware-user-agent": "3.363.0",
-        "@aws-sdk/types": "3.357.0",
-        "@aws-sdk/util-endpoints": "3.357.0",
-        "@aws-sdk/util-user-agent-browser": "3.363.0",
-        "@aws-sdk/util-user-agent-node": "3.363.0",
-        "@smithy/config-resolver": "^1.0.1",
-        "@smithy/fetch-http-handler": "^1.0.1",
-        "@smithy/hash-node": "^1.0.1",
-        "@smithy/invalid-dependency": "^1.0.1",
-        "@smithy/middleware-content-length": "^1.0.1",
-        "@smithy/middleware-endpoint": "^1.0.1",
-        "@smithy/middleware-retry": "^1.0.2",
-        "@smithy/middleware-serde": "^1.0.1",
-        "@smithy/middleware-stack": "^1.0.1",
-        "@smithy/node-config-provider": "^1.0.1",
-        "@smithy/node-http-handler": "^1.0.2",
-        "@smithy/protocol-http": "^1.0.1",
-        "@smithy/smithy-client": "^1.0.3",
-        "@smithy/types": "^1.0.0",
-        "@smithy/url-parser": "^1.0.1",
-        "@smithy/util-base64": "^1.0.1",
-        "@smithy/util-body-length-browser": "^1.0.1",
-        "@smithy/util-body-length-node": "^1.0.1",
-        "@smithy/util-defaults-mode-browser": "^1.0.1",
-        "@smithy/util-defaults-mode-node": "^1.0.1",
-        "@smithy/util-retry": "^1.0.2",
-        "@smithy/util-utf8": "^1.0.1",
+        "@aws-sdk/middleware-host-header": "3.378.0",
+        "@aws-sdk/middleware-logger": "3.378.0",
+        "@aws-sdk/middleware-recursion-detection": "3.378.0",
+        "@aws-sdk/middleware-user-agent": "3.378.0",
+        "@aws-sdk/types": "3.378.0",
+        "@aws-sdk/util-endpoints": "3.378.0",
+        "@aws-sdk/util-user-agent-browser": "3.378.0",
+        "@aws-sdk/util-user-agent-node": "3.378.0",
+        "@smithy/config-resolver": "^2.0.1",
+        "@smithy/fetch-http-handler": "^2.0.1",
+        "@smithy/hash-node": "^2.0.1",
+        "@smithy/invalid-dependency": "^2.0.1",
+        "@smithy/middleware-content-length": "^2.0.1",
+        "@smithy/middleware-endpoint": "^2.0.1",
+        "@smithy/middleware-retry": "^2.0.1",
+        "@smithy/middleware-serde": "^2.0.1",
+        "@smithy/middleware-stack": "^2.0.0",
+        "@smithy/node-config-provider": "^2.0.1",
+        "@smithy/node-http-handler": "^2.0.1",
+        "@smithy/protocol-http": "^2.0.1",
+        "@smithy/smithy-client": "^2.0.1",
+        "@smithy/types": "^2.0.2",
+        "@smithy/url-parser": "^2.0.1",
+        "@smithy/util-base64": "^2.0.0",
+        "@smithy/util-body-length-browser": "^2.0.0",
+        "@smithy/util-body-length-node": "^2.0.0",
+        "@smithy/util-defaults-mode-browser": "^2.0.1",
+        "@smithy/util-defaults-mode-node": "^2.0.1",
+        "@smithy/util-retry": "^2.0.0",
+        "@smithy/util-utf8": "^2.0.0",
         tslib: "^2.5.0"
       },
       devDependencies: {
-        "@aws-sdk/service-client-documentation-generator": "3.310.0",
-        "@smithy/service-client-documentation-generator": "^1.0.1",
+        "@smithy/service-client-documentation-generator": "^2.0.0",
         "@tsconfig/node14": "1.0.3",
         "@types/node": "^14.14.31",
         concurrently: "7.0.0",
@@ -16272,15 +16373,15 @@ var require_runtimeConfig_shared2 = __commonJS({
     var endpointResolver_1 = require_endpointResolver2();
     var getRuntimeConfig = (config) => ({
       apiVersion: "2019-06-10",
-      base64Decoder: (config == null ? void 0 : config.base64Decoder) ?? util_base64_1.fromBase64,
-      base64Encoder: (config == null ? void 0 : config.base64Encoder) ?? util_base64_1.toBase64,
-      disableHostPrefix: (config == null ? void 0 : config.disableHostPrefix) ?? false,
-      endpointProvider: (config == null ? void 0 : config.endpointProvider) ?? endpointResolver_1.defaultEndpointResolver,
-      logger: (config == null ? void 0 : config.logger) ?? new smithy_client_1.NoOpLogger(),
-      serviceId: (config == null ? void 0 : config.serviceId) ?? "SSO OIDC",
-      urlParser: (config == null ? void 0 : config.urlParser) ?? url_parser_1.parseUrl,
-      utf8Decoder: (config == null ? void 0 : config.utf8Decoder) ?? util_utf8_1.fromUtf8,
-      utf8Encoder: (config == null ? void 0 : config.utf8Encoder) ?? util_utf8_1.toUtf8
+      base64Decoder: config?.base64Decoder ?? util_base64_1.fromBase64,
+      base64Encoder: config?.base64Encoder ?? util_base64_1.toBase64,
+      disableHostPrefix: config?.disableHostPrefix ?? false,
+      endpointProvider: config?.endpointProvider ?? endpointResolver_1.defaultEndpointResolver,
+      logger: config?.logger ?? new smithy_client_1.NoOpLogger(),
+      serviceId: config?.serviceId ?? "SSO OIDC",
+      urlParser: config?.urlParser ?? url_parser_1.parseUrl,
+      utf8Decoder: config?.utf8Decoder ?? util_utf8_1.fromUtf8,
+      utf8Encoder: config?.utf8Encoder ?? util_utf8_1.toUtf8
     });
     exports.getRuntimeConfig = getRuntimeConfig;
   }
@@ -16316,19 +16417,19 @@ var require_runtimeConfig2 = __commonJS({
         ...config,
         runtime: "node",
         defaultsMode,
-        bodyLengthChecker: (config == null ? void 0 : config.bodyLengthChecker) ?? util_body_length_node_1.calculateBodyLength,
-        defaultUserAgentProvider: (config == null ? void 0 : config.defaultUserAgentProvider) ?? (0, util_user_agent_node_1.defaultUserAgent)({ serviceId: clientSharedValues.serviceId, clientVersion: package_json_1.default.version }),
-        maxAttempts: (config == null ? void 0 : config.maxAttempts) ?? (0, node_config_provider_1.loadConfig)(middleware_retry_1.NODE_MAX_ATTEMPT_CONFIG_OPTIONS),
-        region: (config == null ? void 0 : config.region) ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_REGION_CONFIG_OPTIONS, config_resolver_1.NODE_REGION_CONFIG_FILE_OPTIONS),
-        requestHandler: (config == null ? void 0 : config.requestHandler) ?? new node_http_handler_1.NodeHttpHandler(defaultConfigProvider),
-        retryMode: (config == null ? void 0 : config.retryMode) ?? (0, node_config_provider_1.loadConfig)({
+        bodyLengthChecker: config?.bodyLengthChecker ?? util_body_length_node_1.calculateBodyLength,
+        defaultUserAgentProvider: config?.defaultUserAgentProvider ?? (0, util_user_agent_node_1.defaultUserAgent)({ serviceId: clientSharedValues.serviceId, clientVersion: package_json_1.default.version }),
+        maxAttempts: config?.maxAttempts ?? (0, node_config_provider_1.loadConfig)(middleware_retry_1.NODE_MAX_ATTEMPT_CONFIG_OPTIONS),
+        region: config?.region ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_REGION_CONFIG_OPTIONS, config_resolver_1.NODE_REGION_CONFIG_FILE_OPTIONS),
+        requestHandler: config?.requestHandler ?? new node_http_handler_1.NodeHttpHandler(defaultConfigProvider),
+        retryMode: config?.retryMode ?? (0, node_config_provider_1.loadConfig)({
           ...middleware_retry_1.NODE_RETRY_MODE_CONFIG_OPTIONS,
           default: async () => (await defaultConfigProvider()).retryMode || util_retry_1.DEFAULT_RETRY_MODE
         }),
-        sha256: (config == null ? void 0 : config.sha256) ?? hash_node_1.Hash.bind(null, "sha256"),
-        streamCollector: (config == null ? void 0 : config.streamCollector) ?? node_http_handler_1.streamCollector,
-        useDualstackEndpoint: (config == null ? void 0 : config.useDualstackEndpoint) ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_USE_DUALSTACK_ENDPOINT_CONFIG_OPTIONS),
-        useFipsEndpoint: (config == null ? void 0 : config.useFipsEndpoint) ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_USE_FIPS_ENDPOINT_CONFIG_OPTIONS)
+        sha256: config?.sha256 ?? hash_node_1.Hash.bind(null, "sha256"),
+        streamCollector: config?.streamCollector ?? node_http_handler_1.streamCollector,
+        useDualstackEndpoint: config?.useDualstackEndpoint ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_USE_DUALSTACK_ENDPOINT_CONFIG_OPTIONS),
+        useFipsEndpoint: config?.useFipsEndpoint ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_USE_FIPS_ENDPOINT_CONFIG_OPTIONS)
       };
     };
     exports.getRuntimeConfig = getRuntimeConfig;
@@ -16391,10 +16492,10 @@ var require_SSOOIDCServiceException = __commonJS({
     Object.defineProperty(exports, "__ServiceException", { enumerable: true, get: function() {
       return smithy_client_1.ServiceException;
     } });
-    var SSOOIDCServiceException = class extends smithy_client_1.ServiceException {
+    var SSOOIDCServiceException = class _SSOOIDCServiceException extends smithy_client_1.ServiceException {
       constructor(options) {
         super(options);
-        Object.setPrototypeOf(this, SSOOIDCServiceException.prototype);
+        Object.setPrototypeOf(this, _SSOOIDCServiceException.prototype);
       }
     };
     exports.SSOOIDCServiceException = SSOOIDCServiceException;
@@ -16408,7 +16509,7 @@ var require_models_03 = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.InvalidClientMetadataException = exports.UnsupportedGrantTypeException = exports.UnauthorizedClientException = exports.SlowDownException = exports.InvalidScopeException = exports.InvalidRequestException = exports.InvalidGrantException = exports.InvalidClientException = exports.InternalServerException = exports.ExpiredTokenException = exports.AuthorizationPendingException = exports.AccessDeniedException = void 0;
     var SSOOIDCServiceException_1 = require_SSOOIDCServiceException();
-    var AccessDeniedException = class extends SSOOIDCServiceException_1.SSOOIDCServiceException {
+    var AccessDeniedException = class _AccessDeniedException extends SSOOIDCServiceException_1.SSOOIDCServiceException {
       constructor(opts) {
         super({
           name: "AccessDeniedException",
@@ -16417,13 +16518,13 @@ var require_models_03 = __commonJS({
         });
         this.name = "AccessDeniedException";
         this.$fault = "client";
-        Object.setPrototypeOf(this, AccessDeniedException.prototype);
+        Object.setPrototypeOf(this, _AccessDeniedException.prototype);
         this.error = opts.error;
         this.error_description = opts.error_description;
       }
     };
     exports.AccessDeniedException = AccessDeniedException;
-    var AuthorizationPendingException = class extends SSOOIDCServiceException_1.SSOOIDCServiceException {
+    var AuthorizationPendingException = class _AuthorizationPendingException extends SSOOIDCServiceException_1.SSOOIDCServiceException {
       constructor(opts) {
         super({
           name: "AuthorizationPendingException",
@@ -16432,13 +16533,13 @@ var require_models_03 = __commonJS({
         });
         this.name = "AuthorizationPendingException";
         this.$fault = "client";
-        Object.setPrototypeOf(this, AuthorizationPendingException.prototype);
+        Object.setPrototypeOf(this, _AuthorizationPendingException.prototype);
         this.error = opts.error;
         this.error_description = opts.error_description;
       }
     };
     exports.AuthorizationPendingException = AuthorizationPendingException;
-    var ExpiredTokenException = class extends SSOOIDCServiceException_1.SSOOIDCServiceException {
+    var ExpiredTokenException = class _ExpiredTokenException extends SSOOIDCServiceException_1.SSOOIDCServiceException {
       constructor(opts) {
         super({
           name: "ExpiredTokenException",
@@ -16447,13 +16548,13 @@ var require_models_03 = __commonJS({
         });
         this.name = "ExpiredTokenException";
         this.$fault = "client";
-        Object.setPrototypeOf(this, ExpiredTokenException.prototype);
+        Object.setPrototypeOf(this, _ExpiredTokenException.prototype);
         this.error = opts.error;
         this.error_description = opts.error_description;
       }
     };
     exports.ExpiredTokenException = ExpiredTokenException;
-    var InternalServerException = class extends SSOOIDCServiceException_1.SSOOIDCServiceException {
+    var InternalServerException = class _InternalServerException extends SSOOIDCServiceException_1.SSOOIDCServiceException {
       constructor(opts) {
         super({
           name: "InternalServerException",
@@ -16462,13 +16563,13 @@ var require_models_03 = __commonJS({
         });
         this.name = "InternalServerException";
         this.$fault = "server";
-        Object.setPrototypeOf(this, InternalServerException.prototype);
+        Object.setPrototypeOf(this, _InternalServerException.prototype);
         this.error = opts.error;
         this.error_description = opts.error_description;
       }
     };
     exports.InternalServerException = InternalServerException;
-    var InvalidClientException = class extends SSOOIDCServiceException_1.SSOOIDCServiceException {
+    var InvalidClientException = class _InvalidClientException extends SSOOIDCServiceException_1.SSOOIDCServiceException {
       constructor(opts) {
         super({
           name: "InvalidClientException",
@@ -16477,13 +16578,13 @@ var require_models_03 = __commonJS({
         });
         this.name = "InvalidClientException";
         this.$fault = "client";
-        Object.setPrototypeOf(this, InvalidClientException.prototype);
+        Object.setPrototypeOf(this, _InvalidClientException.prototype);
         this.error = opts.error;
         this.error_description = opts.error_description;
       }
     };
     exports.InvalidClientException = InvalidClientException;
-    var InvalidGrantException = class extends SSOOIDCServiceException_1.SSOOIDCServiceException {
+    var InvalidGrantException = class _InvalidGrantException extends SSOOIDCServiceException_1.SSOOIDCServiceException {
       constructor(opts) {
         super({
           name: "InvalidGrantException",
@@ -16492,13 +16593,13 @@ var require_models_03 = __commonJS({
         });
         this.name = "InvalidGrantException";
         this.$fault = "client";
-        Object.setPrototypeOf(this, InvalidGrantException.prototype);
+        Object.setPrototypeOf(this, _InvalidGrantException.prototype);
         this.error = opts.error;
         this.error_description = opts.error_description;
       }
     };
     exports.InvalidGrantException = InvalidGrantException;
-    var InvalidRequestException = class extends SSOOIDCServiceException_1.SSOOIDCServiceException {
+    var InvalidRequestException = class _InvalidRequestException extends SSOOIDCServiceException_1.SSOOIDCServiceException {
       constructor(opts) {
         super({
           name: "InvalidRequestException",
@@ -16507,13 +16608,13 @@ var require_models_03 = __commonJS({
         });
         this.name = "InvalidRequestException";
         this.$fault = "client";
-        Object.setPrototypeOf(this, InvalidRequestException.prototype);
+        Object.setPrototypeOf(this, _InvalidRequestException.prototype);
         this.error = opts.error;
         this.error_description = opts.error_description;
       }
     };
     exports.InvalidRequestException = InvalidRequestException;
-    var InvalidScopeException = class extends SSOOIDCServiceException_1.SSOOIDCServiceException {
+    var InvalidScopeException = class _InvalidScopeException extends SSOOIDCServiceException_1.SSOOIDCServiceException {
       constructor(opts) {
         super({
           name: "InvalidScopeException",
@@ -16522,13 +16623,13 @@ var require_models_03 = __commonJS({
         });
         this.name = "InvalidScopeException";
         this.$fault = "client";
-        Object.setPrototypeOf(this, InvalidScopeException.prototype);
+        Object.setPrototypeOf(this, _InvalidScopeException.prototype);
         this.error = opts.error;
         this.error_description = opts.error_description;
       }
     };
     exports.InvalidScopeException = InvalidScopeException;
-    var SlowDownException = class extends SSOOIDCServiceException_1.SSOOIDCServiceException {
+    var SlowDownException = class _SlowDownException extends SSOOIDCServiceException_1.SSOOIDCServiceException {
       constructor(opts) {
         super({
           name: "SlowDownException",
@@ -16537,13 +16638,13 @@ var require_models_03 = __commonJS({
         });
         this.name = "SlowDownException";
         this.$fault = "client";
-        Object.setPrototypeOf(this, SlowDownException.prototype);
+        Object.setPrototypeOf(this, _SlowDownException.prototype);
         this.error = opts.error;
         this.error_description = opts.error_description;
       }
     };
     exports.SlowDownException = SlowDownException;
-    var UnauthorizedClientException = class extends SSOOIDCServiceException_1.SSOOIDCServiceException {
+    var UnauthorizedClientException = class _UnauthorizedClientException extends SSOOIDCServiceException_1.SSOOIDCServiceException {
       constructor(opts) {
         super({
           name: "UnauthorizedClientException",
@@ -16552,13 +16653,13 @@ var require_models_03 = __commonJS({
         });
         this.name = "UnauthorizedClientException";
         this.$fault = "client";
-        Object.setPrototypeOf(this, UnauthorizedClientException.prototype);
+        Object.setPrototypeOf(this, _UnauthorizedClientException.prototype);
         this.error = opts.error;
         this.error_description = opts.error_description;
       }
     };
     exports.UnauthorizedClientException = UnauthorizedClientException;
-    var UnsupportedGrantTypeException = class extends SSOOIDCServiceException_1.SSOOIDCServiceException {
+    var UnsupportedGrantTypeException = class _UnsupportedGrantTypeException extends SSOOIDCServiceException_1.SSOOIDCServiceException {
       constructor(opts) {
         super({
           name: "UnsupportedGrantTypeException",
@@ -16567,13 +16668,13 @@ var require_models_03 = __commonJS({
         });
         this.name = "UnsupportedGrantTypeException";
         this.$fault = "client";
-        Object.setPrototypeOf(this, UnsupportedGrantTypeException.prototype);
+        Object.setPrototypeOf(this, _UnsupportedGrantTypeException.prototype);
         this.error = opts.error;
         this.error_description = opts.error_description;
       }
     };
     exports.UnsupportedGrantTypeException = UnsupportedGrantTypeException;
-    var InvalidClientMetadataException = class extends SSOOIDCServiceException_1.SSOOIDCServiceException {
+    var InvalidClientMetadataException = class _InvalidClientMetadataException extends SSOOIDCServiceException_1.SSOOIDCServiceException {
       constructor(opts) {
         super({
           name: "InvalidClientMetadataException",
@@ -16582,7 +16683,7 @@ var require_models_03 = __commonJS({
         });
         this.name = "InvalidClientMetadataException";
         this.$fault = "client";
-        Object.setPrototypeOf(this, InvalidClientMetadataException.prototype);
+        Object.setPrototypeOf(this, _InvalidClientMetadataException.prototype);
         this.error = opts.error;
         this.error_description = opts.error_description;
       }
@@ -16606,7 +16707,7 @@ var require_Aws_restJson12 = __commonJS({
       const headers = {
         "content-type": "application/json"
       };
-      const resolvedPath = `${(basePath == null ? void 0 : basePath.endsWith("/")) ? basePath.slice(0, -1) : basePath || ""}/token`;
+      const resolvedPath = `${basePath?.endsWith("/") ? basePath.slice(0, -1) : basePath || ""}/token`;
       let body;
       body = JSON.stringify((0, smithy_client_1.take)(input, {
         clientId: [],
@@ -16634,7 +16735,7 @@ var require_Aws_restJson12 = __commonJS({
       const headers = {
         "content-type": "application/json"
       };
-      const resolvedPath = `${(basePath == null ? void 0 : basePath.endsWith("/")) ? basePath.slice(0, -1) : basePath || ""}/client/register`;
+      const resolvedPath = `${basePath?.endsWith("/") ? basePath.slice(0, -1) : basePath || ""}/client/register`;
       let body;
       body = JSON.stringify((0, smithy_client_1.take)(input, {
         clientName: [],
@@ -16657,7 +16758,7 @@ var require_Aws_restJson12 = __commonJS({
       const headers = {
         "content-type": "application/json"
       };
-      const resolvedPath = `${(basePath == null ? void 0 : basePath.endsWith("/")) ? basePath.slice(0, -1) : basePath || ""}/device_authorization`;
+      const resolvedPath = `${basePath?.endsWith("/") ? basePath.slice(0, -1) : basePath || ""}/device_authorization`;
       let body;
       body = JSON.stringify((0, smithy_client_1.take)(input, {
         clientId: [],
@@ -17074,7 +17175,7 @@ var require_CreateTokenCommand = __commonJS({
       return smithy_client_1.Command;
     } });
     var Aws_restJson1_1 = require_Aws_restJson12();
-    var CreateTokenCommand = class extends smithy_client_1.Command {
+    var CreateTokenCommand = class _CreateTokenCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
@@ -17089,7 +17190,7 @@ var require_CreateTokenCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, CreateTokenCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _CreateTokenCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "SSOOIDCClient";
@@ -17128,7 +17229,7 @@ var require_RegisterClientCommand = __commonJS({
       return smithy_client_1.Command;
     } });
     var Aws_restJson1_1 = require_Aws_restJson12();
-    var RegisterClientCommand = class extends smithy_client_1.Command {
+    var RegisterClientCommand = class _RegisterClientCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
@@ -17143,7 +17244,7 @@ var require_RegisterClientCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, RegisterClientCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _RegisterClientCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "SSOOIDCClient";
@@ -17182,7 +17283,7 @@ var require_StartDeviceAuthorizationCommand = __commonJS({
       return smithy_client_1.Command;
     } });
     var Aws_restJson1_1 = require_Aws_restJson12();
-    var StartDeviceAuthorizationCommand = class extends smithy_client_1.Command {
+    var StartDeviceAuthorizationCommand = class _StartDeviceAuthorizationCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
@@ -17197,7 +17298,7 @@ var require_StartDeviceAuthorizationCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, StartDeviceAuthorizationCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _StartDeviceAuthorizationCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "SSOOIDCClient";
@@ -17994,15 +18095,15 @@ var require_runtimeConfig_shared3 = __commonJS({
     var endpointResolver_1 = require_endpointResolver3();
     var getRuntimeConfig = (config) => ({
       apiVersion: "2011-06-15",
-      base64Decoder: (config == null ? void 0 : config.base64Decoder) ?? util_base64_1.fromBase64,
-      base64Encoder: (config == null ? void 0 : config.base64Encoder) ?? util_base64_1.toBase64,
-      disableHostPrefix: (config == null ? void 0 : config.disableHostPrefix) ?? false,
-      endpointProvider: (config == null ? void 0 : config.endpointProvider) ?? endpointResolver_1.defaultEndpointResolver,
-      logger: (config == null ? void 0 : config.logger) ?? new smithy_client_1.NoOpLogger(),
-      serviceId: (config == null ? void 0 : config.serviceId) ?? "STS",
-      urlParser: (config == null ? void 0 : config.urlParser) ?? url_parser_1.parseUrl,
-      utf8Decoder: (config == null ? void 0 : config.utf8Decoder) ?? util_utf8_1.fromUtf8,
-      utf8Encoder: (config == null ? void 0 : config.utf8Encoder) ?? util_utf8_1.toUtf8
+      base64Decoder: config?.base64Decoder ?? util_base64_1.fromBase64,
+      base64Encoder: config?.base64Encoder ?? util_base64_1.toBase64,
+      disableHostPrefix: config?.disableHostPrefix ?? false,
+      endpointProvider: config?.endpointProvider ?? endpointResolver_1.defaultEndpointResolver,
+      logger: config?.logger ?? new smithy_client_1.NoOpLogger(),
+      serviceId: config?.serviceId ?? "STS",
+      urlParser: config?.urlParser ?? url_parser_1.parseUrl,
+      utf8Decoder: config?.utf8Decoder ?? util_utf8_1.fromUtf8,
+      utf8Encoder: config?.utf8Encoder ?? util_utf8_1.toUtf8
     });
     exports.getRuntimeConfig = getRuntimeConfig;
   }
@@ -18040,20 +18141,20 @@ var require_runtimeConfig3 = __commonJS({
         ...config,
         runtime: "node",
         defaultsMode,
-        bodyLengthChecker: (config == null ? void 0 : config.bodyLengthChecker) ?? util_body_length_node_1.calculateBodyLength,
-        credentialDefaultProvider: (config == null ? void 0 : config.credentialDefaultProvider) ?? (0, defaultStsRoleAssumers_1.decorateDefaultCredentialProvider)(credential_provider_node_1.defaultProvider),
-        defaultUserAgentProvider: (config == null ? void 0 : config.defaultUserAgentProvider) ?? (0, util_user_agent_node_1.defaultUserAgent)({ serviceId: clientSharedValues.serviceId, clientVersion: package_json_1.default.version }),
-        maxAttempts: (config == null ? void 0 : config.maxAttempts) ?? (0, node_config_provider_1.loadConfig)(middleware_retry_1.NODE_MAX_ATTEMPT_CONFIG_OPTIONS),
-        region: (config == null ? void 0 : config.region) ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_REGION_CONFIG_OPTIONS, config_resolver_1.NODE_REGION_CONFIG_FILE_OPTIONS),
-        requestHandler: (config == null ? void 0 : config.requestHandler) ?? new node_http_handler_1.NodeHttpHandler(defaultConfigProvider),
-        retryMode: (config == null ? void 0 : config.retryMode) ?? (0, node_config_provider_1.loadConfig)({
+        bodyLengthChecker: config?.bodyLengthChecker ?? util_body_length_node_1.calculateBodyLength,
+        credentialDefaultProvider: config?.credentialDefaultProvider ?? (0, defaultStsRoleAssumers_1.decorateDefaultCredentialProvider)(credential_provider_node_1.defaultProvider),
+        defaultUserAgentProvider: config?.defaultUserAgentProvider ?? (0, util_user_agent_node_1.defaultUserAgent)({ serviceId: clientSharedValues.serviceId, clientVersion: package_json_1.default.version }),
+        maxAttempts: config?.maxAttempts ?? (0, node_config_provider_1.loadConfig)(middleware_retry_1.NODE_MAX_ATTEMPT_CONFIG_OPTIONS),
+        region: config?.region ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_REGION_CONFIG_OPTIONS, config_resolver_1.NODE_REGION_CONFIG_FILE_OPTIONS),
+        requestHandler: config?.requestHandler ?? new node_http_handler_1.NodeHttpHandler(defaultConfigProvider),
+        retryMode: config?.retryMode ?? (0, node_config_provider_1.loadConfig)({
           ...middleware_retry_1.NODE_RETRY_MODE_CONFIG_OPTIONS,
           default: async () => (await defaultConfigProvider()).retryMode || util_retry_1.DEFAULT_RETRY_MODE
         }),
-        sha256: (config == null ? void 0 : config.sha256) ?? hash_node_1.Hash.bind(null, "sha256"),
-        streamCollector: (config == null ? void 0 : config.streamCollector) ?? node_http_handler_1.streamCollector,
-        useDualstackEndpoint: (config == null ? void 0 : config.useDualstackEndpoint) ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_USE_DUALSTACK_ENDPOINT_CONFIG_OPTIONS),
-        useFipsEndpoint: (config == null ? void 0 : config.useFipsEndpoint) ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_USE_FIPS_ENDPOINT_CONFIG_OPTIONS)
+        sha256: config?.sha256 ?? hash_node_1.Hash.bind(null, "sha256"),
+        streamCollector: config?.streamCollector ?? node_http_handler_1.streamCollector,
+        useDualstackEndpoint: config?.useDualstackEndpoint ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_USE_DUALSTACK_ENDPOINT_CONFIG_OPTIONS),
+        useFipsEndpoint: config?.useFipsEndpoint ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_USE_FIPS_ENDPOINT_CONFIG_OPTIONS)
       };
     };
     exports.getRuntimeConfig = getRuntimeConfig;
@@ -18081,7 +18182,7 @@ var require_STSClient = __commonJS({
     } });
     var EndpointParameters_1 = require_EndpointParameters2();
     var runtimeConfig_1 = require_runtimeConfig3();
-    var STSClient = class extends smithy_client_1.Client {
+    var STSClient = class _STSClient extends smithy_client_1.Client {
       constructor(configuration) {
         const _config_0 = (0, runtimeConfig_1.getRuntimeConfig)(configuration);
         const _config_1 = (0, EndpointParameters_1.resolveClientEndpointParameters)(_config_0);
@@ -18089,7 +18190,7 @@ var require_STSClient = __commonJS({
         const _config_3 = (0, middleware_endpoint_1.resolveEndpointConfig)(_config_2);
         const _config_4 = (0, middleware_retry_1.resolveRetryConfig)(_config_3);
         const _config_5 = (0, middleware_host_header_1.resolveHostHeaderConfig)(_config_4);
-        const _config_6 = (0, middleware_sdk_sts_1.resolveStsAuthConfig)(_config_5, { stsClientCtor: STSClient });
+        const _config_6 = (0, middleware_sdk_sts_1.resolveStsAuthConfig)(_config_5, { stsClientCtor: _STSClient });
         const _config_7 = (0, middleware_user_agent_1.resolveUserAgentConfig)(_config_6);
         super(_config_7);
         this.config = _config_7;
@@ -18122,7 +18223,7 @@ var require_AssumeRoleWithSAMLCommand = __commonJS({
     } });
     var models_0_1 = require_models_0();
     var Aws_query_1 = require_Aws_query();
-    var AssumeRoleWithSAMLCommand = class extends smithy_client_1.Command {
+    var AssumeRoleWithSAMLCommand = class _AssumeRoleWithSAMLCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseGlobalEndpoint: { type: "builtInParams", name: "useGlobalEndpoint" },
@@ -18138,7 +18239,7 @@ var require_AssumeRoleWithSAMLCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, AssumeRoleWithSAMLCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _AssumeRoleWithSAMLCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "STSClient";
@@ -18178,7 +18279,7 @@ var require_DecodeAuthorizationMessageCommand = __commonJS({
       return smithy_client_1.Command;
     } });
     var Aws_query_1 = require_Aws_query();
-    var DecodeAuthorizationMessageCommand = class extends smithy_client_1.Command {
+    var DecodeAuthorizationMessageCommand = class _DecodeAuthorizationMessageCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseGlobalEndpoint: { type: "builtInParams", name: "useGlobalEndpoint" },
@@ -18194,7 +18295,7 @@ var require_DecodeAuthorizationMessageCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, DecodeAuthorizationMessageCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _DecodeAuthorizationMessageCommand.getEndpointParameterInstructions()));
         this.middlewareStack.use((0, middleware_signing_1.getAwsAuthPlugin)(configuration));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
@@ -18235,7 +18336,7 @@ var require_GetAccessKeyInfoCommand = __commonJS({
       return smithy_client_1.Command;
     } });
     var Aws_query_1 = require_Aws_query();
-    var GetAccessKeyInfoCommand = class extends smithy_client_1.Command {
+    var GetAccessKeyInfoCommand = class _GetAccessKeyInfoCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseGlobalEndpoint: { type: "builtInParams", name: "useGlobalEndpoint" },
@@ -18251,7 +18352,7 @@ var require_GetAccessKeyInfoCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, GetAccessKeyInfoCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _GetAccessKeyInfoCommand.getEndpointParameterInstructions()));
         this.middlewareStack.use((0, middleware_signing_1.getAwsAuthPlugin)(configuration));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
@@ -18292,7 +18393,7 @@ var require_GetCallerIdentityCommand = __commonJS({
       return smithy_client_1.Command;
     } });
     var Aws_query_1 = require_Aws_query();
-    var GetCallerIdentityCommand = class extends smithy_client_1.Command {
+    var GetCallerIdentityCommand = class _GetCallerIdentityCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseGlobalEndpoint: { type: "builtInParams", name: "useGlobalEndpoint" },
@@ -18308,7 +18409,7 @@ var require_GetCallerIdentityCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, GetCallerIdentityCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _GetCallerIdentityCommand.getEndpointParameterInstructions()));
         this.middlewareStack.use((0, middleware_signing_1.getAwsAuthPlugin)(configuration));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
@@ -18350,7 +18451,7 @@ var require_GetFederationTokenCommand = __commonJS({
     } });
     var models_0_1 = require_models_0();
     var Aws_query_1 = require_Aws_query();
-    var GetFederationTokenCommand = class extends smithy_client_1.Command {
+    var GetFederationTokenCommand = class _GetFederationTokenCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseGlobalEndpoint: { type: "builtInParams", name: "useGlobalEndpoint" },
@@ -18366,7 +18467,7 @@ var require_GetFederationTokenCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, GetFederationTokenCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _GetFederationTokenCommand.getEndpointParameterInstructions()));
         this.middlewareStack.use((0, middleware_signing_1.getAwsAuthPlugin)(configuration));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
@@ -18408,7 +18509,7 @@ var require_GetSessionTokenCommand = __commonJS({
     } });
     var models_0_1 = require_models_0();
     var Aws_query_1 = require_Aws_query();
-    var GetSessionTokenCommand = class extends smithy_client_1.Command {
+    var GetSessionTokenCommand = class _GetSessionTokenCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseGlobalEndpoint: { type: "builtInParams", name: "useGlobalEndpoint" },
@@ -18424,7 +18525,7 @@ var require_GetSessionTokenCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, GetSessionTokenCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _GetSessionTokenCommand.getEndpointParameterInstructions()));
         this.middlewareStack.use((0, middleware_signing_1.getAwsAuthPlugin)(configuration));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
@@ -18627,15 +18728,15 @@ var require_runtimeConfig_shared4 = __commonJS({
     var endpointResolver_1 = require_endpointResolver4();
     var getRuntimeConfig = (config) => ({
       apiVersion: "2016-11-23",
-      base64Decoder: (config == null ? void 0 : config.base64Decoder) ?? util_base64_1.fromBase64,
-      base64Encoder: (config == null ? void 0 : config.base64Encoder) ?? util_base64_1.toBase64,
-      disableHostPrefix: (config == null ? void 0 : config.disableHostPrefix) ?? false,
-      endpointProvider: (config == null ? void 0 : config.endpointProvider) ?? endpointResolver_1.defaultEndpointResolver,
-      logger: (config == null ? void 0 : config.logger) ?? new smithy_client_1.NoOpLogger(),
-      serviceId: (config == null ? void 0 : config.serviceId) ?? "SFN",
-      urlParser: (config == null ? void 0 : config.urlParser) ?? url_parser_1.parseUrl,
-      utf8Decoder: (config == null ? void 0 : config.utf8Decoder) ?? util_utf8_1.fromUtf8,
-      utf8Encoder: (config == null ? void 0 : config.utf8Encoder) ?? util_utf8_1.toUtf8
+      base64Decoder: config?.base64Decoder ?? util_base64_1.fromBase64,
+      base64Encoder: config?.base64Encoder ?? util_base64_1.toBase64,
+      disableHostPrefix: config?.disableHostPrefix ?? false,
+      endpointProvider: config?.endpointProvider ?? endpointResolver_1.defaultEndpointResolver,
+      logger: config?.logger ?? new smithy_client_1.NoOpLogger(),
+      serviceId: config?.serviceId ?? "SFN",
+      urlParser: config?.urlParser ?? url_parser_1.parseUrl,
+      utf8Decoder: config?.utf8Decoder ?? util_utf8_1.fromUtf8,
+      utf8Encoder: config?.utf8Encoder ?? util_utf8_1.toUtf8
     });
     exports.getRuntimeConfig = getRuntimeConfig;
   }
@@ -18673,20 +18774,20 @@ var require_runtimeConfig4 = __commonJS({
         ...config,
         runtime: "node",
         defaultsMode,
-        bodyLengthChecker: (config == null ? void 0 : config.bodyLengthChecker) ?? util_body_length_node_1.calculateBodyLength,
-        credentialDefaultProvider: (config == null ? void 0 : config.credentialDefaultProvider) ?? (0, client_sts_1.decorateDefaultCredentialProvider)(credential_provider_node_1.defaultProvider),
-        defaultUserAgentProvider: (config == null ? void 0 : config.defaultUserAgentProvider) ?? (0, util_user_agent_node_1.defaultUserAgent)({ serviceId: clientSharedValues.serviceId, clientVersion: package_json_1.default.version }),
-        maxAttempts: (config == null ? void 0 : config.maxAttempts) ?? (0, node_config_provider_1.loadConfig)(middleware_retry_1.NODE_MAX_ATTEMPT_CONFIG_OPTIONS),
-        region: (config == null ? void 0 : config.region) ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_REGION_CONFIG_OPTIONS, config_resolver_1.NODE_REGION_CONFIG_FILE_OPTIONS),
-        requestHandler: (config == null ? void 0 : config.requestHandler) ?? new node_http_handler_1.NodeHttpHandler(defaultConfigProvider),
-        retryMode: (config == null ? void 0 : config.retryMode) ?? (0, node_config_provider_1.loadConfig)({
+        bodyLengthChecker: config?.bodyLengthChecker ?? util_body_length_node_1.calculateBodyLength,
+        credentialDefaultProvider: config?.credentialDefaultProvider ?? (0, client_sts_1.decorateDefaultCredentialProvider)(credential_provider_node_1.defaultProvider),
+        defaultUserAgentProvider: config?.defaultUserAgentProvider ?? (0, util_user_agent_node_1.defaultUserAgent)({ serviceId: clientSharedValues.serviceId, clientVersion: package_json_1.default.version }),
+        maxAttempts: config?.maxAttempts ?? (0, node_config_provider_1.loadConfig)(middleware_retry_1.NODE_MAX_ATTEMPT_CONFIG_OPTIONS),
+        region: config?.region ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_REGION_CONFIG_OPTIONS, config_resolver_1.NODE_REGION_CONFIG_FILE_OPTIONS),
+        requestHandler: config?.requestHandler ?? new node_http_handler_1.NodeHttpHandler(defaultConfigProvider),
+        retryMode: config?.retryMode ?? (0, node_config_provider_1.loadConfig)({
           ...middleware_retry_1.NODE_RETRY_MODE_CONFIG_OPTIONS,
           default: async () => (await defaultConfigProvider()).retryMode || util_retry_1.DEFAULT_RETRY_MODE
         }),
-        sha256: (config == null ? void 0 : config.sha256) ?? hash_node_1.Hash.bind(null, "sha256"),
-        streamCollector: (config == null ? void 0 : config.streamCollector) ?? node_http_handler_1.streamCollector,
-        useDualstackEndpoint: (config == null ? void 0 : config.useDualstackEndpoint) ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_USE_DUALSTACK_ENDPOINT_CONFIG_OPTIONS),
-        useFipsEndpoint: (config == null ? void 0 : config.useFipsEndpoint) ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_USE_FIPS_ENDPOINT_CONFIG_OPTIONS)
+        sha256: config?.sha256 ?? hash_node_1.Hash.bind(null, "sha256"),
+        streamCollector: config?.streamCollector ?? node_http_handler_1.streamCollector,
+        useDualstackEndpoint: config?.useDualstackEndpoint ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_USE_DUALSTACK_ENDPOINT_CONFIG_OPTIONS),
+        useFipsEndpoint: config?.useFipsEndpoint ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_USE_FIPS_ENDPOINT_CONFIG_OPTIONS)
       };
     };
     exports.getRuntimeConfig = getRuntimeConfig;
@@ -18752,10 +18853,10 @@ var require_SFNServiceException = __commonJS({
     Object.defineProperty(exports, "__ServiceException", { enumerable: true, get: function() {
       return smithy_client_1.ServiceException;
     } });
-    var SFNServiceException = class extends smithy_client_1.ServiceException {
+    var SFNServiceException = class _SFNServiceException extends smithy_client_1.ServiceException {
       constructor(options) {
         super(options);
-        Object.setPrototypeOf(this, SFNServiceException.prototype);
+        Object.setPrototypeOf(this, _SFNServiceException.prototype);
       }
     };
     exports.SFNServiceException = SFNServiceException;
@@ -18771,7 +18872,7 @@ var require_models_04 = __commonJS({
     exports.UpdateStateMachineAliasInputFilterSensitiveLog = exports.UpdateStateMachineInputFilterSensitiveLog = exports.StopExecutionInputFilterSensitiveLog = exports.StartSyncExecutionOutputFilterSensitiveLog = exports.StartSyncExecutionInputFilterSensitiveLog = exports.StartExecutionInputFilterSensitiveLog = exports.SendTaskSuccessInputFilterSensitiveLog = exports.SendTaskFailureInputFilterSensitiveLog = exports.PublishStateMachineVersionInputFilterSensitiveLog = exports.GetExecutionHistoryOutputFilterSensitiveLog = exports.HistoryEventFilterSensitiveLog = exports.TaskTimedOutEventDetailsFilterSensitiveLog = exports.TaskSucceededEventDetailsFilterSensitiveLog = exports.TaskSubmittedEventDetailsFilterSensitiveLog = exports.TaskSubmitFailedEventDetailsFilterSensitiveLog = exports.TaskStartFailedEventDetailsFilterSensitiveLog = exports.TaskScheduledEventDetailsFilterSensitiveLog = exports.TaskFailedEventDetailsFilterSensitiveLog = exports.StateExitedEventDetailsFilterSensitiveLog = exports.StateEnteredEventDetailsFilterSensitiveLog = exports.MapRunFailedEventDetailsFilterSensitiveLog = exports.LambdaFunctionTimedOutEventDetailsFilterSensitiveLog = exports.LambdaFunctionSucceededEventDetailsFilterSensitiveLog = exports.LambdaFunctionStartFailedEventDetailsFilterSensitiveLog = exports.LambdaFunctionScheduleFailedEventDetailsFilterSensitiveLog = exports.LambdaFunctionScheduledEventDetailsFilterSensitiveLog = exports.LambdaFunctionFailedEventDetailsFilterSensitiveLog = exports.ExecutionTimedOutEventDetailsFilterSensitiveLog = exports.ExecutionSucceededEventDetailsFilterSensitiveLog = void 0;
     var smithy_client_1 = require_dist_cjs35();
     var SFNServiceException_1 = require_SFNServiceException();
-    var ActivityDoesNotExist = class extends SFNServiceException_1.SFNServiceException {
+    var ActivityDoesNotExist = class _ActivityDoesNotExist extends SFNServiceException_1.SFNServiceException {
       constructor(opts) {
         super({
           name: "ActivityDoesNotExist",
@@ -18780,11 +18881,11 @@ var require_models_04 = __commonJS({
         });
         this.name = "ActivityDoesNotExist";
         this.$fault = "client";
-        Object.setPrototypeOf(this, ActivityDoesNotExist.prototype);
+        Object.setPrototypeOf(this, _ActivityDoesNotExist.prototype);
       }
     };
     exports.ActivityDoesNotExist = ActivityDoesNotExist;
-    var ActivityLimitExceeded = class extends SFNServiceException_1.SFNServiceException {
+    var ActivityLimitExceeded = class _ActivityLimitExceeded extends SFNServiceException_1.SFNServiceException {
       constructor(opts) {
         super({
           name: "ActivityLimitExceeded",
@@ -18793,11 +18894,11 @@ var require_models_04 = __commonJS({
         });
         this.name = "ActivityLimitExceeded";
         this.$fault = "client";
-        Object.setPrototypeOf(this, ActivityLimitExceeded.prototype);
+        Object.setPrototypeOf(this, _ActivityLimitExceeded.prototype);
       }
     };
     exports.ActivityLimitExceeded = ActivityLimitExceeded;
-    var ActivityWorkerLimitExceeded = class extends SFNServiceException_1.SFNServiceException {
+    var ActivityWorkerLimitExceeded = class _ActivityWorkerLimitExceeded extends SFNServiceException_1.SFNServiceException {
       constructor(opts) {
         super({
           name: "ActivityWorkerLimitExceeded",
@@ -18806,11 +18907,11 @@ var require_models_04 = __commonJS({
         });
         this.name = "ActivityWorkerLimitExceeded";
         this.$fault = "client";
-        Object.setPrototypeOf(this, ActivityWorkerLimitExceeded.prototype);
+        Object.setPrototypeOf(this, _ActivityWorkerLimitExceeded.prototype);
       }
     };
     exports.ActivityWorkerLimitExceeded = ActivityWorkerLimitExceeded;
-    var InvalidName = class extends SFNServiceException_1.SFNServiceException {
+    var InvalidName = class _InvalidName extends SFNServiceException_1.SFNServiceException {
       constructor(opts) {
         super({
           name: "InvalidName",
@@ -18819,11 +18920,11 @@ var require_models_04 = __commonJS({
         });
         this.name = "InvalidName";
         this.$fault = "client";
-        Object.setPrototypeOf(this, InvalidName.prototype);
+        Object.setPrototypeOf(this, _InvalidName.prototype);
       }
     };
     exports.InvalidName = InvalidName;
-    var TooManyTags = class extends SFNServiceException_1.SFNServiceException {
+    var TooManyTags = class _TooManyTags extends SFNServiceException_1.SFNServiceException {
       constructor(opts) {
         super({
           name: "TooManyTags",
@@ -18832,12 +18933,12 @@ var require_models_04 = __commonJS({
         });
         this.name = "TooManyTags";
         this.$fault = "client";
-        Object.setPrototypeOf(this, TooManyTags.prototype);
+        Object.setPrototypeOf(this, _TooManyTags.prototype);
         this.resourceName = opts.resourceName;
       }
     };
     exports.TooManyTags = TooManyTags;
-    var ConflictException = class extends SFNServiceException_1.SFNServiceException {
+    var ConflictException = class _ConflictException extends SFNServiceException_1.SFNServiceException {
       constructor(opts) {
         super({
           name: "ConflictException",
@@ -18846,7 +18947,7 @@ var require_models_04 = __commonJS({
         });
         this.name = "ConflictException";
         this.$fault = "client";
-        Object.setPrototypeOf(this, ConflictException.prototype);
+        Object.setPrototypeOf(this, _ConflictException.prototype);
       }
     };
     exports.ConflictException = ConflictException;
@@ -18860,7 +18961,7 @@ var require_models_04 = __commonJS({
       EXPRESS: "EXPRESS",
       STANDARD: "STANDARD"
     };
-    var InvalidArn = class extends SFNServiceException_1.SFNServiceException {
+    var InvalidArn = class _InvalidArn extends SFNServiceException_1.SFNServiceException {
       constructor(opts) {
         super({
           name: "InvalidArn",
@@ -18869,11 +18970,11 @@ var require_models_04 = __commonJS({
         });
         this.name = "InvalidArn";
         this.$fault = "client";
-        Object.setPrototypeOf(this, InvalidArn.prototype);
+        Object.setPrototypeOf(this, _InvalidArn.prototype);
       }
     };
     exports.InvalidArn = InvalidArn;
-    var InvalidDefinition = class extends SFNServiceException_1.SFNServiceException {
+    var InvalidDefinition = class _InvalidDefinition extends SFNServiceException_1.SFNServiceException {
       constructor(opts) {
         super({
           name: "InvalidDefinition",
@@ -18882,11 +18983,11 @@ var require_models_04 = __commonJS({
         });
         this.name = "InvalidDefinition";
         this.$fault = "client";
-        Object.setPrototypeOf(this, InvalidDefinition.prototype);
+        Object.setPrototypeOf(this, _InvalidDefinition.prototype);
       }
     };
     exports.InvalidDefinition = InvalidDefinition;
-    var InvalidLoggingConfiguration = class extends SFNServiceException_1.SFNServiceException {
+    var InvalidLoggingConfiguration = class _InvalidLoggingConfiguration extends SFNServiceException_1.SFNServiceException {
       constructor(opts) {
         super({
           name: "InvalidLoggingConfiguration",
@@ -18895,11 +18996,11 @@ var require_models_04 = __commonJS({
         });
         this.name = "InvalidLoggingConfiguration";
         this.$fault = "client";
-        Object.setPrototypeOf(this, InvalidLoggingConfiguration.prototype);
+        Object.setPrototypeOf(this, _InvalidLoggingConfiguration.prototype);
       }
     };
     exports.InvalidLoggingConfiguration = InvalidLoggingConfiguration;
-    var InvalidTracingConfiguration = class extends SFNServiceException_1.SFNServiceException {
+    var InvalidTracingConfiguration = class _InvalidTracingConfiguration extends SFNServiceException_1.SFNServiceException {
       constructor(opts) {
         super({
           name: "InvalidTracingConfiguration",
@@ -18908,11 +19009,11 @@ var require_models_04 = __commonJS({
         });
         this.name = "InvalidTracingConfiguration";
         this.$fault = "client";
-        Object.setPrototypeOf(this, InvalidTracingConfiguration.prototype);
+        Object.setPrototypeOf(this, _InvalidTracingConfiguration.prototype);
       }
     };
     exports.InvalidTracingConfiguration = InvalidTracingConfiguration;
-    var StateMachineAlreadyExists = class extends SFNServiceException_1.SFNServiceException {
+    var StateMachineAlreadyExists = class _StateMachineAlreadyExists extends SFNServiceException_1.SFNServiceException {
       constructor(opts) {
         super({
           name: "StateMachineAlreadyExists",
@@ -18921,11 +19022,11 @@ var require_models_04 = __commonJS({
         });
         this.name = "StateMachineAlreadyExists";
         this.$fault = "client";
-        Object.setPrototypeOf(this, StateMachineAlreadyExists.prototype);
+        Object.setPrototypeOf(this, _StateMachineAlreadyExists.prototype);
       }
     };
     exports.StateMachineAlreadyExists = StateMachineAlreadyExists;
-    var StateMachineDeleting = class extends SFNServiceException_1.SFNServiceException {
+    var StateMachineDeleting = class _StateMachineDeleting extends SFNServiceException_1.SFNServiceException {
       constructor(opts) {
         super({
           name: "StateMachineDeleting",
@@ -18934,11 +19035,11 @@ var require_models_04 = __commonJS({
         });
         this.name = "StateMachineDeleting";
         this.$fault = "client";
-        Object.setPrototypeOf(this, StateMachineDeleting.prototype);
+        Object.setPrototypeOf(this, _StateMachineDeleting.prototype);
       }
     };
     exports.StateMachineDeleting = StateMachineDeleting;
-    var StateMachineLimitExceeded = class extends SFNServiceException_1.SFNServiceException {
+    var StateMachineLimitExceeded = class _StateMachineLimitExceeded extends SFNServiceException_1.SFNServiceException {
       constructor(opts) {
         super({
           name: "StateMachineLimitExceeded",
@@ -18947,11 +19048,11 @@ var require_models_04 = __commonJS({
         });
         this.name = "StateMachineLimitExceeded";
         this.$fault = "client";
-        Object.setPrototypeOf(this, StateMachineLimitExceeded.prototype);
+        Object.setPrototypeOf(this, _StateMachineLimitExceeded.prototype);
       }
     };
     exports.StateMachineLimitExceeded = StateMachineLimitExceeded;
-    var StateMachineTypeNotSupported = class extends SFNServiceException_1.SFNServiceException {
+    var StateMachineTypeNotSupported = class _StateMachineTypeNotSupported extends SFNServiceException_1.SFNServiceException {
       constructor(opts) {
         super({
           name: "StateMachineTypeNotSupported",
@@ -18960,7 +19061,7 @@ var require_models_04 = __commonJS({
         });
         this.name = "StateMachineTypeNotSupported";
         this.$fault = "client";
-        Object.setPrototypeOf(this, StateMachineTypeNotSupported.prototype);
+        Object.setPrototypeOf(this, _StateMachineTypeNotSupported.prototype);
       }
     };
     exports.StateMachineTypeNotSupported = StateMachineTypeNotSupported;
@@ -18970,7 +19071,7 @@ var require_models_04 = __commonJS({
       INVALID_ROUTING_CONFIGURATION: "INVALID_ROUTING_CONFIGURATION",
       MISSING_REQUIRED_PARAMETER: "MISSING_REQUIRED_PARAMETER"
     };
-    var ValidationException = class extends SFNServiceException_1.SFNServiceException {
+    var ValidationException = class _ValidationException extends SFNServiceException_1.SFNServiceException {
       constructor(opts) {
         super({
           name: "ValidationException",
@@ -18979,12 +19080,12 @@ var require_models_04 = __commonJS({
         });
         this.name = "ValidationException";
         this.$fault = "client";
-        Object.setPrototypeOf(this, ValidationException.prototype);
+        Object.setPrototypeOf(this, _ValidationException.prototype);
         this.reason = opts.reason;
       }
     };
     exports.ValidationException = ValidationException;
-    var ResourceNotFound = class extends SFNServiceException_1.SFNServiceException {
+    var ResourceNotFound = class _ResourceNotFound extends SFNServiceException_1.SFNServiceException {
       constructor(opts) {
         super({
           name: "ResourceNotFound",
@@ -18993,12 +19094,12 @@ var require_models_04 = __commonJS({
         });
         this.name = "ResourceNotFound";
         this.$fault = "client";
-        Object.setPrototypeOf(this, ResourceNotFound.prototype);
+        Object.setPrototypeOf(this, _ResourceNotFound.prototype);
         this.resourceName = opts.resourceName;
       }
     };
     exports.ResourceNotFound = ResourceNotFound;
-    var ServiceQuotaExceededException = class extends SFNServiceException_1.SFNServiceException {
+    var ServiceQuotaExceededException = class _ServiceQuotaExceededException extends SFNServiceException_1.SFNServiceException {
       constructor(opts) {
         super({
           name: "ServiceQuotaExceededException",
@@ -19007,7 +19108,7 @@ var require_models_04 = __commonJS({
         });
         this.name = "ServiceQuotaExceededException";
         this.$fault = "client";
-        Object.setPrototypeOf(this, ServiceQuotaExceededException.prototype);
+        Object.setPrototypeOf(this, _ServiceQuotaExceededException.prototype);
       }
     };
     exports.ServiceQuotaExceededException = ServiceQuotaExceededException;
@@ -19018,7 +19119,7 @@ var require_models_04 = __commonJS({
       SUCCEEDED: "SUCCEEDED",
       TIMED_OUT: "TIMED_OUT"
     };
-    var ExecutionDoesNotExist = class extends SFNServiceException_1.SFNServiceException {
+    var ExecutionDoesNotExist = class _ExecutionDoesNotExist extends SFNServiceException_1.SFNServiceException {
       constructor(opts) {
         super({
           name: "ExecutionDoesNotExist",
@@ -19027,7 +19128,7 @@ var require_models_04 = __commonJS({
         });
         this.name = "ExecutionDoesNotExist";
         this.$fault = "client";
-        Object.setPrototypeOf(this, ExecutionDoesNotExist.prototype);
+        Object.setPrototypeOf(this, _ExecutionDoesNotExist.prototype);
       }
     };
     exports.ExecutionDoesNotExist = ExecutionDoesNotExist;
@@ -19041,7 +19142,7 @@ var require_models_04 = __commonJS({
       ACTIVE: "ACTIVE",
       DELETING: "DELETING"
     };
-    var StateMachineDoesNotExist = class extends SFNServiceException_1.SFNServiceException {
+    var StateMachineDoesNotExist = class _StateMachineDoesNotExist extends SFNServiceException_1.SFNServiceException {
       constructor(opts) {
         super({
           name: "StateMachineDoesNotExist",
@@ -19050,7 +19151,7 @@ var require_models_04 = __commonJS({
         });
         this.name = "StateMachineDoesNotExist";
         this.$fault = "client";
-        Object.setPrototypeOf(this, StateMachineDoesNotExist.prototype);
+        Object.setPrototypeOf(this, _StateMachineDoesNotExist.prototype);
       }
     };
     exports.StateMachineDoesNotExist = StateMachineDoesNotExist;
@@ -19115,7 +19216,7 @@ var require_models_04 = __commonJS({
       WaitStateEntered: "WaitStateEntered",
       WaitStateExited: "WaitStateExited"
     };
-    var InvalidToken = class extends SFNServiceException_1.SFNServiceException {
+    var InvalidToken = class _InvalidToken extends SFNServiceException_1.SFNServiceException {
       constructor(opts) {
         super({
           name: "InvalidToken",
@@ -19124,11 +19225,11 @@ var require_models_04 = __commonJS({
         });
         this.name = "InvalidToken";
         this.$fault = "client";
-        Object.setPrototypeOf(this, InvalidToken.prototype);
+        Object.setPrototypeOf(this, _InvalidToken.prototype);
       }
     };
     exports.InvalidToken = InvalidToken;
-    var TaskDoesNotExist = class extends SFNServiceException_1.SFNServiceException {
+    var TaskDoesNotExist = class _TaskDoesNotExist extends SFNServiceException_1.SFNServiceException {
       constructor(opts) {
         super({
           name: "TaskDoesNotExist",
@@ -19137,11 +19238,11 @@ var require_models_04 = __commonJS({
         });
         this.name = "TaskDoesNotExist";
         this.$fault = "client";
-        Object.setPrototypeOf(this, TaskDoesNotExist.prototype);
+        Object.setPrototypeOf(this, _TaskDoesNotExist.prototype);
       }
     };
     exports.TaskDoesNotExist = TaskDoesNotExist;
-    var TaskTimedOut = class extends SFNServiceException_1.SFNServiceException {
+    var TaskTimedOut = class _TaskTimedOut extends SFNServiceException_1.SFNServiceException {
       constructor(opts) {
         super({
           name: "TaskTimedOut",
@@ -19150,11 +19251,11 @@ var require_models_04 = __commonJS({
         });
         this.name = "TaskTimedOut";
         this.$fault = "client";
-        Object.setPrototypeOf(this, TaskTimedOut.prototype);
+        Object.setPrototypeOf(this, _TaskTimedOut.prototype);
       }
     };
     exports.TaskTimedOut = TaskTimedOut;
-    var InvalidOutput = class extends SFNServiceException_1.SFNServiceException {
+    var InvalidOutput = class _InvalidOutput extends SFNServiceException_1.SFNServiceException {
       constructor(opts) {
         super({
           name: "InvalidOutput",
@@ -19163,11 +19264,11 @@ var require_models_04 = __commonJS({
         });
         this.name = "InvalidOutput";
         this.$fault = "client";
-        Object.setPrototypeOf(this, InvalidOutput.prototype);
+        Object.setPrototypeOf(this, _InvalidOutput.prototype);
       }
     };
     exports.InvalidOutput = InvalidOutput;
-    var ExecutionAlreadyExists = class extends SFNServiceException_1.SFNServiceException {
+    var ExecutionAlreadyExists = class _ExecutionAlreadyExists extends SFNServiceException_1.SFNServiceException {
       constructor(opts) {
         super({
           name: "ExecutionAlreadyExists",
@@ -19176,11 +19277,11 @@ var require_models_04 = __commonJS({
         });
         this.name = "ExecutionAlreadyExists";
         this.$fault = "client";
-        Object.setPrototypeOf(this, ExecutionAlreadyExists.prototype);
+        Object.setPrototypeOf(this, _ExecutionAlreadyExists.prototype);
       }
     };
     exports.ExecutionAlreadyExists = ExecutionAlreadyExists;
-    var ExecutionLimitExceeded = class extends SFNServiceException_1.SFNServiceException {
+    var ExecutionLimitExceeded = class _ExecutionLimitExceeded extends SFNServiceException_1.SFNServiceException {
       constructor(opts) {
         super({
           name: "ExecutionLimitExceeded",
@@ -19189,11 +19290,11 @@ var require_models_04 = __commonJS({
         });
         this.name = "ExecutionLimitExceeded";
         this.$fault = "client";
-        Object.setPrototypeOf(this, ExecutionLimitExceeded.prototype);
+        Object.setPrototypeOf(this, _ExecutionLimitExceeded.prototype);
       }
     };
     exports.ExecutionLimitExceeded = ExecutionLimitExceeded;
-    var InvalidExecutionInput = class extends SFNServiceException_1.SFNServiceException {
+    var InvalidExecutionInput = class _InvalidExecutionInput extends SFNServiceException_1.SFNServiceException {
       constructor(opts) {
         super({
           name: "InvalidExecutionInput",
@@ -19202,7 +19303,7 @@ var require_models_04 = __commonJS({
         });
         this.name = "InvalidExecutionInput";
         this.$fault = "client";
-        Object.setPrototypeOf(this, InvalidExecutionInput.prototype);
+        Object.setPrototypeOf(this, _InvalidExecutionInput.prototype);
       }
     };
     exports.InvalidExecutionInput = InvalidExecutionInput;
@@ -19211,7 +19312,7 @@ var require_models_04 = __commonJS({
       SUCCEEDED: "SUCCEEDED",
       TIMED_OUT: "TIMED_OUT"
     };
-    var MissingRequiredParameter = class extends SFNServiceException_1.SFNServiceException {
+    var MissingRequiredParameter = class _MissingRequiredParameter extends SFNServiceException_1.SFNServiceException {
       constructor(opts) {
         super({
           name: "MissingRequiredParameter",
@@ -19220,7 +19321,7 @@ var require_models_04 = __commonJS({
         });
         this.name = "MissingRequiredParameter";
         this.$fault = "client";
-        Object.setPrototypeOf(this, MissingRequiredParameter.prototype);
+        Object.setPrototypeOf(this, _MissingRequiredParameter.prototype);
       }
     };
     exports.MissingRequiredParameter = MissingRequiredParameter;
@@ -21869,7 +21970,7 @@ var require_CreateActivityCommand = __commonJS({
       return smithy_client_1.Command;
     } });
     var Aws_json1_0_1 = require_Aws_json1_0();
-    var CreateActivityCommand = class extends smithy_client_1.Command {
+    var CreateActivityCommand = class _CreateActivityCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
@@ -21884,7 +21985,7 @@ var require_CreateActivityCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, CreateActivityCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _CreateActivityCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "SFNClient";
@@ -21924,7 +22025,7 @@ var require_CreateStateMachineAliasCommand = __commonJS({
     } });
     var models_0_1 = require_models_04();
     var Aws_json1_0_1 = require_Aws_json1_0();
-    var CreateStateMachineAliasCommand = class extends smithy_client_1.Command {
+    var CreateStateMachineAliasCommand = class _CreateStateMachineAliasCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
@@ -21939,7 +22040,7 @@ var require_CreateStateMachineAliasCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, CreateStateMachineAliasCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _CreateStateMachineAliasCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "SFNClient";
@@ -21979,7 +22080,7 @@ var require_CreateStateMachineCommand = __commonJS({
     } });
     var models_0_1 = require_models_04();
     var Aws_json1_0_1 = require_Aws_json1_0();
-    var CreateStateMachineCommand = class extends smithy_client_1.Command {
+    var CreateStateMachineCommand = class _CreateStateMachineCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
@@ -21994,7 +22095,7 @@ var require_CreateStateMachineCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, CreateStateMachineCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _CreateStateMachineCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "SFNClient";
@@ -22033,7 +22134,7 @@ var require_DeleteActivityCommand = __commonJS({
       return smithy_client_1.Command;
     } });
     var Aws_json1_0_1 = require_Aws_json1_0();
-    var DeleteActivityCommand = class extends smithy_client_1.Command {
+    var DeleteActivityCommand = class _DeleteActivityCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
@@ -22048,7 +22149,7 @@ var require_DeleteActivityCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, DeleteActivityCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _DeleteActivityCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "SFNClient";
@@ -22087,7 +22188,7 @@ var require_DeleteStateMachineAliasCommand = __commonJS({
       return smithy_client_1.Command;
     } });
     var Aws_json1_0_1 = require_Aws_json1_0();
-    var DeleteStateMachineAliasCommand = class extends smithy_client_1.Command {
+    var DeleteStateMachineAliasCommand = class _DeleteStateMachineAliasCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
@@ -22102,7 +22203,7 @@ var require_DeleteStateMachineAliasCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, DeleteStateMachineAliasCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _DeleteStateMachineAliasCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "SFNClient";
@@ -22141,7 +22242,7 @@ var require_DeleteStateMachineCommand = __commonJS({
       return smithy_client_1.Command;
     } });
     var Aws_json1_0_1 = require_Aws_json1_0();
-    var DeleteStateMachineCommand = class extends smithy_client_1.Command {
+    var DeleteStateMachineCommand = class _DeleteStateMachineCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
@@ -22156,7 +22257,7 @@ var require_DeleteStateMachineCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, DeleteStateMachineCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _DeleteStateMachineCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "SFNClient";
@@ -22195,7 +22296,7 @@ var require_DeleteStateMachineVersionCommand = __commonJS({
       return smithy_client_1.Command;
     } });
     var Aws_json1_0_1 = require_Aws_json1_0();
-    var DeleteStateMachineVersionCommand = class extends smithy_client_1.Command {
+    var DeleteStateMachineVersionCommand = class _DeleteStateMachineVersionCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
@@ -22210,7 +22311,7 @@ var require_DeleteStateMachineVersionCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, DeleteStateMachineVersionCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _DeleteStateMachineVersionCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "SFNClient";
@@ -22249,7 +22350,7 @@ var require_DescribeActivityCommand = __commonJS({
       return smithy_client_1.Command;
     } });
     var Aws_json1_0_1 = require_Aws_json1_0();
-    var DescribeActivityCommand = class extends smithy_client_1.Command {
+    var DescribeActivityCommand = class _DescribeActivityCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
@@ -22264,7 +22365,7 @@ var require_DescribeActivityCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, DescribeActivityCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _DescribeActivityCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "SFNClient";
@@ -22304,7 +22405,7 @@ var require_DescribeExecutionCommand = __commonJS({
     } });
     var models_0_1 = require_models_04();
     var Aws_json1_0_1 = require_Aws_json1_0();
-    var DescribeExecutionCommand = class extends smithy_client_1.Command {
+    var DescribeExecutionCommand = class _DescribeExecutionCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
@@ -22319,7 +22420,7 @@ var require_DescribeExecutionCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, DescribeExecutionCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _DescribeExecutionCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "SFNClient";
@@ -22358,7 +22459,7 @@ var require_DescribeMapRunCommand = __commonJS({
       return smithy_client_1.Command;
     } });
     var Aws_json1_0_1 = require_Aws_json1_0();
-    var DescribeMapRunCommand = class extends smithy_client_1.Command {
+    var DescribeMapRunCommand = class _DescribeMapRunCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
@@ -22373,7 +22474,7 @@ var require_DescribeMapRunCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, DescribeMapRunCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _DescribeMapRunCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "SFNClient";
@@ -22413,7 +22514,7 @@ var require_DescribeStateMachineAliasCommand = __commonJS({
     } });
     var models_0_1 = require_models_04();
     var Aws_json1_0_1 = require_Aws_json1_0();
-    var DescribeStateMachineAliasCommand = class extends smithy_client_1.Command {
+    var DescribeStateMachineAliasCommand = class _DescribeStateMachineAliasCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
@@ -22428,7 +22529,7 @@ var require_DescribeStateMachineAliasCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, DescribeStateMachineAliasCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _DescribeStateMachineAliasCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "SFNClient";
@@ -22468,7 +22569,7 @@ var require_DescribeStateMachineCommand = __commonJS({
     } });
     var models_0_1 = require_models_04();
     var Aws_json1_0_1 = require_Aws_json1_0();
-    var DescribeStateMachineCommand = class extends smithy_client_1.Command {
+    var DescribeStateMachineCommand = class _DescribeStateMachineCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
@@ -22483,7 +22584,7 @@ var require_DescribeStateMachineCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, DescribeStateMachineCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _DescribeStateMachineCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "SFNClient";
@@ -22523,7 +22624,7 @@ var require_DescribeStateMachineForExecutionCommand = __commonJS({
     } });
     var models_0_1 = require_models_04();
     var Aws_json1_0_1 = require_Aws_json1_0();
-    var DescribeStateMachineForExecutionCommand = class extends smithy_client_1.Command {
+    var DescribeStateMachineForExecutionCommand = class _DescribeStateMachineForExecutionCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
@@ -22538,7 +22639,7 @@ var require_DescribeStateMachineForExecutionCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, DescribeStateMachineForExecutionCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _DescribeStateMachineForExecutionCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "SFNClient";
@@ -22578,7 +22679,7 @@ var require_GetActivityTaskCommand = __commonJS({
     } });
     var models_0_1 = require_models_04();
     var Aws_json1_0_1 = require_Aws_json1_0();
-    var GetActivityTaskCommand = class extends smithy_client_1.Command {
+    var GetActivityTaskCommand = class _GetActivityTaskCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
@@ -22593,7 +22694,7 @@ var require_GetActivityTaskCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, GetActivityTaskCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _GetActivityTaskCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "SFNClient";
@@ -22633,7 +22734,7 @@ var require_GetExecutionHistoryCommand = __commonJS({
     } });
     var models_0_1 = require_models_04();
     var Aws_json1_0_1 = require_Aws_json1_0();
-    var GetExecutionHistoryCommand = class extends smithy_client_1.Command {
+    var GetExecutionHistoryCommand = class _GetExecutionHistoryCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
@@ -22648,7 +22749,7 @@ var require_GetExecutionHistoryCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, GetExecutionHistoryCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _GetExecutionHistoryCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "SFNClient";
@@ -22687,7 +22788,7 @@ var require_ListActivitiesCommand = __commonJS({
       return smithy_client_1.Command;
     } });
     var Aws_json1_0_1 = require_Aws_json1_0();
-    var ListActivitiesCommand = class extends smithy_client_1.Command {
+    var ListActivitiesCommand = class _ListActivitiesCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
@@ -22702,7 +22803,7 @@ var require_ListActivitiesCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, ListActivitiesCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _ListActivitiesCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "SFNClient";
@@ -22741,7 +22842,7 @@ var require_ListExecutionsCommand = __commonJS({
       return smithy_client_1.Command;
     } });
     var Aws_json1_0_1 = require_Aws_json1_0();
-    var ListExecutionsCommand = class extends smithy_client_1.Command {
+    var ListExecutionsCommand = class _ListExecutionsCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
@@ -22756,7 +22857,7 @@ var require_ListExecutionsCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, ListExecutionsCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _ListExecutionsCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "SFNClient";
@@ -22795,7 +22896,7 @@ var require_ListMapRunsCommand = __commonJS({
       return smithy_client_1.Command;
     } });
     var Aws_json1_0_1 = require_Aws_json1_0();
-    var ListMapRunsCommand = class extends smithy_client_1.Command {
+    var ListMapRunsCommand = class _ListMapRunsCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
@@ -22810,7 +22911,7 @@ var require_ListMapRunsCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, ListMapRunsCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _ListMapRunsCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "SFNClient";
@@ -22849,7 +22950,7 @@ var require_ListStateMachineAliasesCommand = __commonJS({
       return smithy_client_1.Command;
     } });
     var Aws_json1_0_1 = require_Aws_json1_0();
-    var ListStateMachineAliasesCommand = class extends smithy_client_1.Command {
+    var ListStateMachineAliasesCommand = class _ListStateMachineAliasesCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
@@ -22864,7 +22965,7 @@ var require_ListStateMachineAliasesCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, ListStateMachineAliasesCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _ListStateMachineAliasesCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "SFNClient";
@@ -22903,7 +23004,7 @@ var require_ListStateMachinesCommand = __commonJS({
       return smithy_client_1.Command;
     } });
     var Aws_json1_0_1 = require_Aws_json1_0();
-    var ListStateMachinesCommand = class extends smithy_client_1.Command {
+    var ListStateMachinesCommand = class _ListStateMachinesCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
@@ -22918,7 +23019,7 @@ var require_ListStateMachinesCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, ListStateMachinesCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _ListStateMachinesCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "SFNClient";
@@ -22957,7 +23058,7 @@ var require_ListStateMachineVersionsCommand = __commonJS({
       return smithy_client_1.Command;
     } });
     var Aws_json1_0_1 = require_Aws_json1_0();
-    var ListStateMachineVersionsCommand = class extends smithy_client_1.Command {
+    var ListStateMachineVersionsCommand = class _ListStateMachineVersionsCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
@@ -22972,7 +23073,7 @@ var require_ListStateMachineVersionsCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, ListStateMachineVersionsCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _ListStateMachineVersionsCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "SFNClient";
@@ -23011,7 +23112,7 @@ var require_ListTagsForResourceCommand = __commonJS({
       return smithy_client_1.Command;
     } });
     var Aws_json1_0_1 = require_Aws_json1_0();
-    var ListTagsForResourceCommand = class extends smithy_client_1.Command {
+    var ListTagsForResourceCommand = class _ListTagsForResourceCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
@@ -23026,7 +23127,7 @@ var require_ListTagsForResourceCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, ListTagsForResourceCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _ListTagsForResourceCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "SFNClient";
@@ -23066,7 +23167,7 @@ var require_PublishStateMachineVersionCommand = __commonJS({
     } });
     var models_0_1 = require_models_04();
     var Aws_json1_0_1 = require_Aws_json1_0();
-    var PublishStateMachineVersionCommand = class extends smithy_client_1.Command {
+    var PublishStateMachineVersionCommand = class _PublishStateMachineVersionCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
@@ -23081,7 +23182,7 @@ var require_PublishStateMachineVersionCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, PublishStateMachineVersionCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _PublishStateMachineVersionCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "SFNClient";
@@ -23121,7 +23222,7 @@ var require_SendTaskFailureCommand = __commonJS({
     } });
     var models_0_1 = require_models_04();
     var Aws_json1_0_1 = require_Aws_json1_0();
-    var SendTaskFailureCommand = class extends smithy_client_1.Command {
+    var SendTaskFailureCommand = class _SendTaskFailureCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
@@ -23136,7 +23237,7 @@ var require_SendTaskFailureCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, SendTaskFailureCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _SendTaskFailureCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "SFNClient";
@@ -23175,7 +23276,7 @@ var require_SendTaskHeartbeatCommand = __commonJS({
       return smithy_client_1.Command;
     } });
     var Aws_json1_0_1 = require_Aws_json1_0();
-    var SendTaskHeartbeatCommand = class extends smithy_client_1.Command {
+    var SendTaskHeartbeatCommand = class _SendTaskHeartbeatCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
@@ -23190,7 +23291,7 @@ var require_SendTaskHeartbeatCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, SendTaskHeartbeatCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _SendTaskHeartbeatCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "SFNClient";
@@ -23230,7 +23331,7 @@ var require_SendTaskSuccessCommand = __commonJS({
     } });
     var models_0_1 = require_models_04();
     var Aws_json1_0_1 = require_Aws_json1_0();
-    var SendTaskSuccessCommand = class extends smithy_client_1.Command {
+    var SendTaskSuccessCommand = class _SendTaskSuccessCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
@@ -23245,7 +23346,7 @@ var require_SendTaskSuccessCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, SendTaskSuccessCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _SendTaskSuccessCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "SFNClient";
@@ -23285,7 +23386,7 @@ var require_StartExecutionCommand = __commonJS({
     } });
     var models_0_1 = require_models_04();
     var Aws_json1_0_1 = require_Aws_json1_0();
-    var StartExecutionCommand = class extends smithy_client_1.Command {
+    var StartExecutionCommand = class _StartExecutionCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
@@ -23300,7 +23401,7 @@ var require_StartExecutionCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, StartExecutionCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _StartExecutionCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "SFNClient";
@@ -23340,7 +23441,7 @@ var require_StartSyncExecutionCommand = __commonJS({
     } });
     var models_0_1 = require_models_04();
     var Aws_json1_0_1 = require_Aws_json1_0();
-    var StartSyncExecutionCommand = class extends smithy_client_1.Command {
+    var StartSyncExecutionCommand = class _StartSyncExecutionCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
@@ -23355,7 +23456,7 @@ var require_StartSyncExecutionCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, StartSyncExecutionCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _StartSyncExecutionCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "SFNClient";
@@ -23395,7 +23496,7 @@ var require_StopExecutionCommand = __commonJS({
     } });
     var models_0_1 = require_models_04();
     var Aws_json1_0_1 = require_Aws_json1_0();
-    var StopExecutionCommand = class extends smithy_client_1.Command {
+    var StopExecutionCommand = class _StopExecutionCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
@@ -23410,7 +23511,7 @@ var require_StopExecutionCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, StopExecutionCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _StopExecutionCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "SFNClient";
@@ -23449,7 +23550,7 @@ var require_TagResourceCommand = __commonJS({
       return smithy_client_1.Command;
     } });
     var Aws_json1_0_1 = require_Aws_json1_0();
-    var TagResourceCommand = class extends smithy_client_1.Command {
+    var TagResourceCommand = class _TagResourceCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
@@ -23464,7 +23565,7 @@ var require_TagResourceCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, TagResourceCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _TagResourceCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "SFNClient";
@@ -23503,7 +23604,7 @@ var require_UntagResourceCommand = __commonJS({
       return smithy_client_1.Command;
     } });
     var Aws_json1_0_1 = require_Aws_json1_0();
-    var UntagResourceCommand = class extends smithy_client_1.Command {
+    var UntagResourceCommand = class _UntagResourceCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
@@ -23518,7 +23619,7 @@ var require_UntagResourceCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, UntagResourceCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _UntagResourceCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "SFNClient";
@@ -23557,7 +23658,7 @@ var require_UpdateMapRunCommand = __commonJS({
       return smithy_client_1.Command;
     } });
     var Aws_json1_0_1 = require_Aws_json1_0();
-    var UpdateMapRunCommand = class extends smithy_client_1.Command {
+    var UpdateMapRunCommand = class _UpdateMapRunCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
@@ -23572,7 +23673,7 @@ var require_UpdateMapRunCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, UpdateMapRunCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _UpdateMapRunCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "SFNClient";
@@ -23612,7 +23713,7 @@ var require_UpdateStateMachineAliasCommand = __commonJS({
     } });
     var models_0_1 = require_models_04();
     var Aws_json1_0_1 = require_Aws_json1_0();
-    var UpdateStateMachineAliasCommand = class extends smithy_client_1.Command {
+    var UpdateStateMachineAliasCommand = class _UpdateStateMachineAliasCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
@@ -23627,7 +23728,7 @@ var require_UpdateStateMachineAliasCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, UpdateStateMachineAliasCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _UpdateStateMachineAliasCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "SFNClient";
@@ -23667,7 +23768,7 @@ var require_UpdateStateMachineCommand = __commonJS({
     } });
     var models_0_1 = require_models_04();
     var Aws_json1_0_1 = require_Aws_json1_0();
-    var UpdateStateMachineCommand = class extends smithy_client_1.Command {
+    var UpdateStateMachineCommand = class _UpdateStateMachineCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
         return {
           UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
@@ -23682,7 +23783,7 @@ var require_UpdateStateMachineCommand = __commonJS({
       }
       resolveMiddleware(clientStack, configuration, options) {
         this.middlewareStack.use((0, middleware_serde_1.getSerdePlugin)(configuration, this.serialize, this.deserialize));
-        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, UpdateStateMachineCommand.getEndpointParameterInstructions()));
+        this.middlewareStack.use((0, middleware_endpoint_1.getEndpointPlugin)(configuration, _UpdateStateMachineCommand.getEndpointParameterInstructions()));
         const stack = clientStack.concat(this.middlewareStack);
         const { logger } = configuration;
         const clientName = "SFNClient";
@@ -25905,9 +26006,9 @@ var require_safer = __commonJS({
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/lib/bom-handling.js
+// ../../../node_modules/iconv-lite/lib/bom-handling.js
 var require_bom_handling = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/lib/bom-handling.js"(exports) {
+  "../../../node_modules/iconv-lite/lib/bom-handling.js"(exports) {
     "use strict";
     var BOMChar = "\uFEFF";
     exports.PrependBOM = PrependBOMWrapper;
@@ -25949,9 +26050,9 @@ var require_bom_handling = __commonJS({
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/internal.js
+// ../../../node_modules/iconv-lite/encodings/internal.js
 var require_internal = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/internal.js"(exports, module2) {
+  "../../../node_modules/iconv-lite/encodings/internal.js"(exports, module2) {
     "use strict";
     var Buffer2 = require_safer().Buffer;
     module2.exports = {
@@ -26101,9 +26202,9 @@ var require_internal = __commonJS({
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/utf32.js
+// ../../../node_modules/iconv-lite/encodings/utf32.js
 var require_utf32 = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/utf32.js"(exports) {
+  "../../../node_modules/iconv-lite/encodings/utf32.js"(exports) {
     "use strict";
     var Buffer2 = require_safer().Buffer;
     exports._utf32 = Utf32Codec;
@@ -26326,9 +26427,9 @@ var require_utf32 = __commonJS({
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/utf16.js
+// ../../../node_modules/iconv-lite/encodings/utf16.js
 var require_utf16 = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/utf16.js"(exports) {
+  "../../../node_modules/iconv-lite/encodings/utf16.js"(exports) {
     "use strict";
     var Buffer2 = require_safer().Buffer;
     exports.utf16be = Utf16BECodec;
@@ -26466,9 +26567,9 @@ var require_utf16 = __commonJS({
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/utf7.js
+// ../../../node_modules/iconv-lite/encodings/utf7.js
 var require_utf7 = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/utf7.js"(exports) {
+  "../../../node_modules/iconv-lite/encodings/utf7.js"(exports) {
     "use strict";
     var Buffer2 = require_safer().Buffer;
     exports.utf7 = Utf7Codec;
@@ -26667,9 +26768,9 @@ var require_utf7 = __commonJS({
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/sbcs-codec.js
+// ../../../node_modules/iconv-lite/encodings/sbcs-codec.js
 var require_sbcs_codec = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/sbcs-codec.js"(exports) {
+  "../../../node_modules/iconv-lite/encodings/sbcs-codec.js"(exports) {
     "use strict";
     var Buffer2 = require_safer().Buffer;
     exports._sbcs = SBCSCodec;
@@ -26723,9 +26824,9 @@ var require_sbcs_codec = __commonJS({
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/sbcs-data.js
+// ../../../node_modules/iconv-lite/encodings/sbcs-data.js
 var require_sbcs_data = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/sbcs-data.js"(exports, module2) {
+  "../../../node_modules/iconv-lite/encodings/sbcs-data.js"(exports, module2) {
     "use strict";
     module2.exports = {
       // Not supported by iconv, not sure why.
@@ -26876,9 +26977,9 @@ var require_sbcs_data = __commonJS({
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/sbcs-data-generated.js
+// ../../../node_modules/iconv-lite/encodings/sbcs-data-generated.js
 var require_sbcs_data_generated = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/sbcs-data-generated.js"(exports, module2) {
+  "../../../node_modules/iconv-lite/encodings/sbcs-data-generated.js"(exports, module2) {
     "use strict";
     module2.exports = {
       "437": "cp437",
@@ -27331,9 +27432,9 @@ var require_sbcs_data_generated = __commonJS({
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/dbcs-codec.js
+// ../../../node_modules/iconv-lite/encodings/dbcs-codec.js
 var require_dbcs_codec = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/dbcs-codec.js"(exports) {
+  "../../../node_modules/iconv-lite/encodings/dbcs-codec.js"(exports) {
     "use strict";
     var Buffer2 = require_safer().Buffer;
     exports._dbcs = DBCSCodec;
@@ -27752,9 +27853,9 @@ var require_dbcs_codec = __commonJS({
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/shiftjis.json
+// ../../../node_modules/iconv-lite/encodings/tables/shiftjis.json
 var require_shiftjis = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/shiftjis.json"(exports, module2) {
+  "../../../node_modules/iconv-lite/encodings/tables/shiftjis.json"(exports, module2) {
     module2.exports = [
       ["0", "\0", 128],
       ["a1", "\uFF61", 62],
@@ -27883,9 +27984,9 @@ var require_shiftjis = __commonJS({
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/eucjp.json
+// ../../../node_modules/iconv-lite/encodings/tables/eucjp.json
 var require_eucjp = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/eucjp.json"(exports, module2) {
+  "../../../node_modules/iconv-lite/encodings/tables/eucjp.json"(exports, module2) {
     module2.exports = [
       ["0", "\0", 127],
       ["8ea1", "\uFF61", 62],
@@ -28071,9 +28172,9 @@ var require_eucjp = __commonJS({
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/cp936.json
+// ../../../node_modules/iconv-lite/encodings/tables/cp936.json
 var require_cp936 = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/cp936.json"(exports, module2) {
+  "../../../node_modules/iconv-lite/encodings/tables/cp936.json"(exports, module2) {
     module2.exports = [
       ["0", "\0", 127, "\u20AC"],
       ["8140", "\u4E02\u4E04\u4E05\u4E06\u4E0F\u4E12\u4E17\u4E1F\u4E20\u4E21\u4E23\u4E26\u4E29\u4E2E\u4E2F\u4E31\u4E33\u4E35\u4E37\u4E3C\u4E40\u4E41\u4E42\u4E44\u4E46\u4E4A\u4E51\u4E55\u4E57\u4E5A\u4E5B\u4E62\u4E63\u4E64\u4E65\u4E67\u4E68\u4E6A", 5, "\u4E72\u4E74", 9, "\u4E7F", 6, "\u4E87\u4E8A"],
@@ -28341,9 +28442,9 @@ var require_cp936 = __commonJS({
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/gbk-added.json
+// ../../../node_modules/iconv-lite/encodings/tables/gbk-added.json
 var require_gbk_added = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/gbk-added.json"(exports, module2) {
+  "../../../node_modules/iconv-lite/encodings/tables/gbk-added.json"(exports, module2) {
     module2.exports = [
       ["a140", "\uE4C6", 62],
       ["a180", "\uE505", 32],
@@ -28403,16 +28504,16 @@ var require_gbk_added = __commonJS({
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/gb18030-ranges.json
+// ../../../node_modules/iconv-lite/encodings/tables/gb18030-ranges.json
 var require_gb18030_ranges = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/gb18030-ranges.json"(exports, module2) {
+  "../../../node_modules/iconv-lite/encodings/tables/gb18030-ranges.json"(exports, module2) {
     module2.exports = { uChars: [128, 165, 169, 178, 184, 216, 226, 235, 238, 244, 248, 251, 253, 258, 276, 284, 300, 325, 329, 334, 364, 463, 465, 467, 469, 471, 473, 475, 477, 506, 594, 610, 712, 716, 730, 930, 938, 962, 970, 1026, 1104, 1106, 8209, 8215, 8218, 8222, 8231, 8241, 8244, 8246, 8252, 8365, 8452, 8454, 8458, 8471, 8482, 8556, 8570, 8596, 8602, 8713, 8720, 8722, 8726, 8731, 8737, 8740, 8742, 8748, 8751, 8760, 8766, 8777, 8781, 8787, 8802, 8808, 8816, 8854, 8858, 8870, 8896, 8979, 9322, 9372, 9548, 9588, 9616, 9622, 9634, 9652, 9662, 9672, 9676, 9680, 9702, 9735, 9738, 9793, 9795, 11906, 11909, 11913, 11917, 11928, 11944, 11947, 11951, 11956, 11960, 11964, 11979, 12284, 12292, 12312, 12319, 12330, 12351, 12436, 12447, 12535, 12543, 12586, 12842, 12850, 12964, 13200, 13215, 13218, 13253, 13263, 13267, 13270, 13384, 13428, 13727, 13839, 13851, 14617, 14703, 14801, 14816, 14964, 15183, 15471, 15585, 16471, 16736, 17208, 17325, 17330, 17374, 17623, 17997, 18018, 18212, 18218, 18301, 18318, 18760, 18811, 18814, 18820, 18823, 18844, 18848, 18872, 19576, 19620, 19738, 19887, 40870, 59244, 59336, 59367, 59413, 59417, 59423, 59431, 59437, 59443, 59452, 59460, 59478, 59493, 63789, 63866, 63894, 63976, 63986, 64016, 64018, 64021, 64025, 64034, 64037, 64042, 65074, 65093, 65107, 65112, 65127, 65132, 65375, 65510, 65536], gbChars: [0, 36, 38, 45, 50, 81, 89, 95, 96, 100, 103, 104, 105, 109, 126, 133, 148, 172, 175, 179, 208, 306, 307, 308, 309, 310, 311, 312, 313, 341, 428, 443, 544, 545, 558, 741, 742, 749, 750, 805, 819, 820, 7922, 7924, 7925, 7927, 7934, 7943, 7944, 7945, 7950, 8062, 8148, 8149, 8152, 8164, 8174, 8236, 8240, 8262, 8264, 8374, 8380, 8381, 8384, 8388, 8390, 8392, 8393, 8394, 8396, 8401, 8406, 8416, 8419, 8424, 8437, 8439, 8445, 8482, 8485, 8496, 8521, 8603, 8936, 8946, 9046, 9050, 9063, 9066, 9076, 9092, 9100, 9108, 9111, 9113, 9131, 9162, 9164, 9218, 9219, 11329, 11331, 11334, 11336, 11346, 11361, 11363, 11366, 11370, 11372, 11375, 11389, 11682, 11686, 11687, 11692, 11694, 11714, 11716, 11723, 11725, 11730, 11736, 11982, 11989, 12102, 12336, 12348, 12350, 12384, 12393, 12395, 12397, 12510, 12553, 12851, 12962, 12973, 13738, 13823, 13919, 13933, 14080, 14298, 14585, 14698, 15583, 15847, 16318, 16434, 16438, 16481, 16729, 17102, 17122, 17315, 17320, 17402, 17418, 17859, 17909, 17911, 17915, 17916, 17936, 17939, 17961, 18664, 18703, 18814, 18962, 19043, 33469, 33470, 33471, 33484, 33485, 33490, 33497, 33501, 33505, 33513, 33520, 33536, 33550, 37845, 37921, 37948, 38029, 38038, 38064, 38065, 38066, 38069, 38075, 38076, 38078, 39108, 39109, 39113, 39114, 39115, 39116, 39265, 39394, 189e3] };
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/cp949.json
+// ../../../node_modules/iconv-lite/encodings/tables/cp949.json
 var require_cp949 = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/cp949.json"(exports, module2) {
+  "../../../node_modules/iconv-lite/encodings/tables/cp949.json"(exports, module2) {
     module2.exports = [
       ["0", "\0", 127],
       ["8141", "\uAC02\uAC03\uAC05\uAC06\uAC0B", 4, "\uAC18\uAC1E\uAC1F\uAC21\uAC22\uAC23\uAC25", 6, "\uAC2E\uAC32\uAC33\uAC34"],
@@ -28689,9 +28790,9 @@ var require_cp949 = __commonJS({
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/cp950.json
+// ../../../node_modules/iconv-lite/encodings/tables/cp950.json
 var require_cp950 = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/cp950.json"(exports, module2) {
+  "../../../node_modules/iconv-lite/encodings/tables/cp950.json"(exports, module2) {
     module2.exports = [
       ["0", "\0", 127],
       ["a140", "\u3000\uFF0C\u3001\u3002\uFF0E\u2027\uFF1B\uFF1A\uFF1F\uFF01\uFE30\u2026\u2025\uFE50\uFE51\uFE52\xB7\uFE54\uFE55\uFE56\uFE57\uFF5C\u2013\uFE31\u2014\uFE33\u2574\uFE34\uFE4F\uFF08\uFF09\uFE35\uFE36\uFF5B\uFF5D\uFE37\uFE38\u3014\u3015\uFE39\uFE3A\u3010\u3011\uFE3B\uFE3C\u300A\u300B\uFE3D\uFE3E\u3008\u3009\uFE3F\uFE40\u300C\u300D\uFE41\uFE42\u300E\u300F\uFE43\uFE44\uFE59\uFE5A"],
@@ -28872,9 +28973,9 @@ var require_cp950 = __commonJS({
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/big5-added.json
+// ../../../node_modules/iconv-lite/encodings/tables/big5-added.json
 var require_big5_added = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/big5-added.json"(exports, module2) {
+  "../../../node_modules/iconv-lite/encodings/tables/big5-added.json"(exports, module2) {
     module2.exports = [
       ["8740", "\u43F0\u4C32\u4603\u45A6\u4578\u{27267}\u4D77\u45B3\u{27CB1}\u4CE2\u{27CC5}\u3B95\u4736\u4744\u4C47\u4C40\u{242BF}\u{23617}\u{27352}\u{26E8B}\u{270D2}\u4C57\u{2A351}\u474F\u45DA\u4C85\u{27C6C}\u4D07\u4AA4\u46A1\u{26B23}\u7225\u{25A54}\u{21A63}\u{23E06}\u{23F61}\u664D\u56FB"],
       ["8767", "\u7D95\u591D\u{28BB9}\u3DF4\u9734\u{27BEF}\u5BDB\u{21D5E}\u5AA4\u3625\u{29EB0}\u5AD1\u5BB7\u5CFC\u676E\u8593\u{29945}\u7461\u749D\u3875\u{21D53}\u{2369E}\u{26021}\u3EEC"],
@@ -29000,9 +29101,9 @@ var require_big5_added = __commonJS({
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/dbcs-data.js
+// ../../../node_modules/iconv-lite/encodings/dbcs-data.js
 var require_dbcs_data = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/dbcs-data.js"(exports, module2) {
+  "../../../node_modules/iconv-lite/encodings/dbcs-data.js"(exports, module2) {
     "use strict";
     module2.exports = {
       // == Japanese/ShiftJIS ====================================================
@@ -29247,9 +29348,9 @@ var require_dbcs_data = __commonJS({
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/index.js
+// ../../../node_modules/iconv-lite/encodings/index.js
 var require_encodings = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/index.js"(exports, module2) {
+  "../../../node_modules/iconv-lite/encodings/index.js"(exports, module2) {
     "use strict";
     var modules = [
       require_internal(),
@@ -29274,9 +29375,9 @@ var require_encodings = __commonJS({
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/lib/streams.js
+// ../../../node_modules/iconv-lite/lib/streams.js
 var require_streams = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/lib/streams.js"(exports, module2) {
+  "../../../node_modules/iconv-lite/lib/streams.js"(exports, module2) {
     "use strict";
     var Buffer2 = require_safer().Buffer;
     module2.exports = function(stream_module) {
@@ -29373,9 +29474,9 @@ var require_streams = __commonJS({
   }
 });
 
-// ../../../node_modules/encoding/node_modules/iconv-lite/lib/index.js
+// ../../../node_modules/iconv-lite/lib/index.js
 var require_lib3 = __commonJS({
-  "../../../node_modules/encoding/node_modules/iconv-lite/lib/index.js"(exports, module2) {
+  "../../../node_modules/iconv-lite/lib/index.js"(exports, module2) {
     "use strict";
     var Buffer2 = require_safer().Buffer;
     var bomHandling = require_bom_handling();
@@ -29390,7 +29491,7 @@ var require_lib3 = __commonJS({
       var trail = encoder.end();
       return trail && trail.length > 0 ? Buffer2.concat([res, trail]) : res;
     };
-    iconv.decode = function decode2(buf, encoding, options) {
+    iconv.decode = function decode(buf, encoding, options) {
       if (typeof buf === "string") {
         if (!iconv.skipDecodeWarning) {
           console.error("Iconv-lite warning: decode()-ing strings is deprecated. Refer to https://github.com/ashtuchkin/iconv-lite/wiki/Use-Buffers-when-decoding");
@@ -29558,7 +29659,7 @@ var require_lib4 = __commonJS({
     var Readable = Stream.Readable;
     var BUFFER = Symbol("buffer");
     var TYPE = Symbol("type");
-    var Blob = class {
+    var Blob = class _Blob {
       constructor() {
         this[TYPE] = "";
         const blobParts = arguments[0];
@@ -29577,7 +29678,7 @@ var require_lib4 = __commonJS({
               buffer = Buffer.from(element.buffer, element.byteOffset, element.byteLength);
             } else if (element instanceof ArrayBuffer) {
               buffer = Buffer.from(element);
-            } else if (element instanceof Blob) {
+            } else if (element instanceof _Blob) {
               buffer = element[BUFFER];
             } else {
               buffer = Buffer.from(typeof element === "string" ? element : String(element));
@@ -29639,7 +29740,7 @@ var require_lib4 = __commonJS({
         const span = Math.max(relativeEnd - relativeStart, 0);
         const buffer = this[BUFFER];
         const slicedBuffer = buffer.slice(relativeStart, relativeStart + span);
-        const blob = new Blob([], { type: arguments[2] });
+        const blob = new _Blob([], { type: arguments[2] });
         blob[BUFFER] = slicedBuffer;
         return blob;
       }
@@ -30016,7 +30117,7 @@ var require_lib4 = __commonJS({
       return void 0;
     }
     var MAP = Symbol("map");
-    var Headers = class {
+    var Headers = class _Headers {
       /**
        * Headers class
        *
@@ -30026,7 +30127,7 @@ var require_lib4 = __commonJS({
       constructor() {
         let init = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : void 0;
         this[MAP] = /* @__PURE__ */ Object.create(null);
-        if (init instanceof Headers) {
+        if (init instanceof _Headers) {
           const rawHeaders = init.raw();
           const headerNames = Object.keys(rawHeaders);
           for (const headerName of headerNames) {
@@ -30295,7 +30396,7 @@ var require_lib4 = __commonJS({
     }
     var INTERNALS$1 = Symbol("Response internals");
     var STATUS_CODES = http.STATUS_CODES;
-    var Response2 = class {
+    var Response2 = class _Response {
       constructor() {
         let body = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : null;
         let opts = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
@@ -30343,7 +30444,7 @@ var require_lib4 = __commonJS({
        * @return  Response
        */
       clone() {
-        return new Response2(clone(this), {
+        return new _Response(clone(this), {
           url: this.url,
           status: this.status,
           statusText: this.statusText,
@@ -30387,7 +30488,7 @@ var require_lib4 = __commonJS({
       const proto = signal && typeof signal === "object" && Object.getPrototypeOf(signal);
       return !!(proto && proto.constructor.name === "AbortSignal");
     }
-    var Request = class {
+    var Request = class _Request {
       constructor(input) {
         let init = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
         let parsedURL;
@@ -30457,7 +30558,7 @@ var require_lib4 = __commonJS({
        * @return  Request
        */
       clone() {
-        return new Request(this);
+        return new _Request(this);
       }
     };
     Body.mixIn(Request.prototype);
@@ -30758,7 +30859,7 @@ var require_lib4 = __commonJS({
         const headers = response.headers;
         if (headers["transfer-encoding"] === "chunked" && !headers["content-length"]) {
           response.once("close", function(hadError) {
-            const hasDataListener = socket.listenerCount("data") > 0;
+            const hasDataListener = socket && socket.listenerCount("data") > 0;
             if (hasDataListener && !hadError) {
               const err = new Error("Premature close");
               err.code = "ERR_STREAM_PREMATURE_CLOSE";
@@ -30790,6 +30891,523 @@ var require_lib4 = __commonJS({
   }
 });
 
+// ../sdk-v2-to-v3-adapter/lib/client-names.ts
+var CLIENT_NAMES;
+var init_client_names = __esm({
+  "../sdk-v2-to-v3-adapter/lib/client-names.ts"() {
+    "use strict";
+    CLIENT_NAMES = [
+      "ACM",
+      "ACMPCA",
+      "APIGateway",
+      "ARCZonalShift",
+      "AccessAnalyzer",
+      "Account",
+      "AlexaForBusiness",
+      "Amp",
+      "Amplify",
+      "AmplifyBackend",
+      "AmplifyUIBuilder",
+      "ApiGatewayManagementApi",
+      "ApiGatewayV2",
+      "AppConfig",
+      "AppConfigData",
+      "AppIntegrations",
+      "AppMesh",
+      "AppRunner",
+      "AppStream",
+      "AppSync",
+      "Appflow",
+      "ApplicationAutoScaling",
+      "ApplicationCostProfiler",
+      "ApplicationInsights",
+      "Athena",
+      "AuditManager",
+      "AugmentedAIRuntime",
+      "AutoScaling",
+      "AutoScalingPlans",
+      "Backup",
+      "BackupGateway",
+      "BackupStorage",
+      "Batch",
+      "Billingconductor",
+      "Braket",
+      "Budgets",
+      "CUR",
+      "Chime",
+      "ChimeSDKIdentity",
+      "ChimeSDKMediaPipelines",
+      "ChimeSDKMeetings",
+      "ChimeSDKMessaging",
+      "ChimeSDKVoice",
+      "Cloud9",
+      "CloudControl",
+      "CloudDirectory",
+      "CloudFormation",
+      "CloudFront",
+      "CloudHSM",
+      "CloudHSMV2",
+      "CloudSearch",
+      "CloudSearchDomain",
+      "CloudTrail",
+      "CloudWatch",
+      "CloudWatchEvents",
+      "CloudWatchLogs",
+      "CodeArtifact",
+      "CodeBuild",
+      "CodeCatalyst",
+      "CodeCommit",
+      "CodeDeploy",
+      "CodeGuruProfiler",
+      "CodeGuruReviewer",
+      "CodePipeline",
+      "CodeStar",
+      "CodeStarNotifications",
+      "CodeStarconnections",
+      "CognitoIdentity",
+      "CognitoIdentityServiceProvider",
+      "CognitoSync",
+      "Comprehend",
+      "ComprehendMedical",
+      "ComputeOptimizer",
+      "ConfigService",
+      "Connect",
+      "ConnectCampaigns",
+      "ConnectCases",
+      "ConnectContactLens",
+      "ConnectParticipant",
+      "ControlTower",
+      "CostExplorer",
+      "CustomerProfiles",
+      "DAX",
+      "DLM",
+      "DMS",
+      "DataBrew",
+      "DataExchange",
+      "DataPipeline",
+      "DataSync",
+      "Detective",
+      "DevOpsGuru",
+      "DeviceFarm",
+      "DirectConnect",
+      "DirectoryService",
+      "Discovery",
+      "DocDB",
+      "DocDBElastic",
+      "Drs",
+      "DynamoDB",
+      "DynamoDBStreams",
+      "EBS",
+      "EC2",
+      "EC2InstanceConnect",
+      "ECR",
+      "ECRPUBLIC",
+      "ECS",
+      "EFS",
+      "EKS",
+      "ELB",
+      "ELBv2",
+      "EMR",
+      "EMRServerless",
+      "EMRcontainers",
+      "ES",
+      "ElastiCache",
+      "ElasticBeanstalk",
+      "ElasticInference",
+      "ElasticTranscoder",
+      "EventBridge",
+      "Evidently",
+      "FMS",
+      "FSx",
+      "Finspace",
+      "Finspacedata",
+      "Firehose",
+      "Fis",
+      "ForecastQueryService",
+      "ForecastService",
+      "FraudDetector",
+      "GameLift",
+      "GameSparks",
+      "Glacier",
+      "GlobalAccelerator",
+      "Glue",
+      "Grafana",
+      "Greengrass",
+      "GreengrassV2",
+      "GroundStation",
+      "GuardDuty",
+      "Health",
+      "HealthLake",
+      "Honeycode",
+      "IAM",
+      "IVS",
+      "IdentityStore",
+      "Imagebuilder",
+      "Inspector",
+      "Inspector2",
+      "IoT1ClickDevicesService",
+      "IoT1ClickProjects",
+      "IoTAnalytics",
+      "IoTEvents",
+      "IoTEventsData",
+      "IoTFleetHub",
+      "IoTFleetWise",
+      "IoTJobsDataPlane",
+      "IoTRoboRunner",
+      "IoTSecureTunneling",
+      "IoTSiteWise",
+      "IoTThingsGraph",
+      "IoTTwinMaker",
+      "IoTWireless",
+      "Iot",
+      "IotData",
+      "IotDeviceAdvisor",
+      "Ivschat",
+      "KMS",
+      "Kafka",
+      "KafkaConnect",
+      "Kendra",
+      "Keyspaces",
+      "Kinesis",
+      "KinesisAnalytics",
+      "KinesisAnalyticsV2",
+      "KinesisVideo",
+      "KinesisVideoArchivedMedia",
+      "KinesisVideoMedia",
+      "KinesisVideoSignalingChannels",
+      "KinesisVideoWebRTCStorage",
+      "LakeFormation",
+      "Lambda",
+      "LexModelBuildingService",
+      "LexModelsV2",
+      "LexRuntime",
+      "LexRuntimeV2",
+      "LicenseManager",
+      "LicenseManagerLinuxSubscriptions",
+      "LicenseManagerUserSubscriptions",
+      "Lightsail",
+      "Location",
+      "LookoutEquipment",
+      "LookoutMetrics",
+      "LookoutVision",
+      "M2",
+      "MQ",
+      "MTurk",
+      "MWAA",
+      "MachineLearning",
+      "Macie",
+      "Macie2",
+      "ManagedBlockchain",
+      "MarketplaceCatalog",
+      "MarketplaceCommerceAnalytics",
+      "MarketplaceEntitlementService",
+      "MarketplaceMetering",
+      "MediaConnect",
+      "MediaConvert",
+      "MediaLive",
+      "MediaPackage",
+      "MediaPackageVod",
+      "MediaStore",
+      "MediaStoreData",
+      "MediaTailor",
+      "MemoryDB",
+      "Mgn",
+      "MigrationHub",
+      "MigrationHubConfig",
+      "MigrationHubOrchestrator",
+      "MigrationHubRefactorSpaces",
+      "MigrationHubStrategy",
+      "Mobile",
+      "Neptune",
+      "NetworkFirewall",
+      "NetworkManager",
+      "Nimble",
+      "OAM",
+      "Omics",
+      "OpenSearch",
+      "OpenSearchServerless",
+      "OpsWorks",
+      "OpsWorksCM",
+      "Organizations",
+      "Outposts",
+      "PI",
+      "Panorama",
+      "Personalize",
+      "PersonalizeEvents",
+      "PersonalizeRuntime",
+      "Pinpoint",
+      "PinpointEmail",
+      "PinpointSMSVoice",
+      "PinpointSMSVoiceV2",
+      "Pipes",
+      "Polly",
+      "Pricing",
+      "PrivateNetworks",
+      "Proton",
+      "QLDB",
+      "QLDBSession",
+      "QuickSight",
+      "RAM",
+      "RDS",
+      "RDSDataService",
+      "RUM",
+      "Rbin",
+      "Redshift",
+      "RedshiftData",
+      "RedshiftServerless",
+      "Rekognition",
+      "Resiliencehub",
+      "ResourceExplorer2",
+      "ResourceGroups",
+      "ResourceGroupsTaggingAPI",
+      "RoboMaker",
+      "RolesAnywhere",
+      "Route53",
+      "Route53Domains",
+      "Route53RecoveryCluster",
+      "Route53RecoveryControlConfig",
+      "Route53RecoveryReadiness",
+      "Route53Resolver",
+      "S3",
+      "S3Control",
+      "S3Outposts",
+      "SES",
+      "SESV2",
+      "SMS",
+      "SNS",
+      "SQS",
+      "SSM",
+      "SSMContacts",
+      "SSMIncidents",
+      "SSO",
+      "SSOAdmin",
+      "SSOOIDC",
+      "STS",
+      "SWF",
+      "SageMaker",
+      "SageMakerFeatureStoreRuntime",
+      "SageMakerGeospatial",
+      "SageMakerMetrics",
+      "SageMakerRuntime",
+      "SagemakerEdge",
+      "SavingsPlans",
+      "Scheduler",
+      "Schemas",
+      "SecretsManager",
+      "SecurityHub",
+      "SecurityLake",
+      "ServerlessApplicationRepository",
+      "ServiceCatalog",
+      "ServiceCatalogAppRegistry",
+      "ServiceDiscovery",
+      "ServiceQuotas",
+      "Shield",
+      "Signer",
+      "SimSpaceWeaver",
+      "SnowDeviceManagement",
+      "Snowball",
+      "SsmSap",
+      "StepFunctions",
+      "StorageGateway",
+      "Support",
+      "SupportApp",
+      "Synthetics",
+      "Textract",
+      "TimestreamQuery",
+      "TimestreamWrite",
+      "TranscribeService",
+      "Transfer",
+      "Translate",
+      "VoiceID",
+      "WAF",
+      "WAFRegional",
+      "WAFV2",
+      "WellArchitected",
+      "Wisdom",
+      "WorkDocs",
+      "WorkLink",
+      "WorkMail",
+      "WorkMailMessageFlow",
+      "WorkSpaces",
+      "WorkSpacesWeb",
+      "XRay"
+    ];
+  }
+});
+
+// ../sdk-v2-to-v3-adapter/lib/client-package-names-map.ts
+var CLIENT_PACKAGE_NAMES_MAP;
+var init_client_package_names_map = __esm({
+  "../sdk-v2-to-v3-adapter/lib/client-package-names-map.ts"() {
+    "use strict";
+    init_client_names();
+    CLIENT_PACKAGE_NAMES_MAP = {
+      ...CLIENT_NAMES.reduce(
+        (acc, name) => ({
+          ...acc,
+          [name]: `client-${name.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase()}`.replace("-chime-sdk", "-chime-sdk-").replace("client-amplify-", "client-amplify").replace("client-cloud-", "client-cloud").replace("client-code-", "client-code").replace("client-connect-", "client-connect").replace("client-data-", "client-data").replace("client-io-t", "client-iot-").replace("client-iot-fleet-", "client-iotfleet").replace("client-lookout-", "client-lookout").replace("client-media-", "client-media").replace("client-migration-hub-", "client-migrationhub").replace("client-pinpoint-sms", "client-pinpoint-sms-").replace("client-route53", "client-route53-").replace("client-sage-maker", "client-sagemaker").replace("client-security-", "client-security").replace("client-work-", "client-work")
+        }),
+        {}
+      ),
+      AccessAnalyzer: "client-accessanalyzer",
+      ACMPCA: "client-acm-pca",
+      APIGateway: "client-api-gateway",
+      ApiGatewayManagementApi: "client-apigatewaymanagementapi",
+      ApiGatewayV2: "client-apigatewayv2",
+      AppConfig: "client-appconfig",
+      AppConfigData: "client-appconfigdata",
+      AppIntegrations: "client-appintegrations",
+      AppRunner: "client-apprunner",
+      AppStream: "client-appstream",
+      AppSync: "client-appsync",
+      ApplicationCostProfiler: "client-applicationcostprofiler",
+      ARCZonalShift: "client-arc-zonal-shift",
+      AugmentedAIRuntime: "client-sage-maker-a2iruntime",
+      AuditManager: "client-auditmanager",
+      BackupStorage: "client-backupstorage",
+      CUR: "client-cost-and-usage-report-service",
+      CloudHSMV2: "client-cloudhsm-v2",
+      CodeGuruProfiler: "client-codeguruprofiler",
+      CodeStarconnections: "client-codestar-connections",
+      CognitoIdentityServiceProvider: "client-cognito-identity-provider",
+      ComprehendMedical: "client-comprehendmedical",
+      ConnectContactLens: "client-connect-contact-lens",
+      ControlTower: "client-controltower",
+      DMS: "client-database-migration-service",
+      DataPipeline: "client-data-pipeline",
+      Discovery: "client-application-discovery-service",
+      DevOpsGuru: "client-devops-guru",
+      DynamoDB: "client-dynamodb",
+      DynamoDBStreams: "client-dynamodb-streams",
+      DocDB: "client-docdb",
+      DocDBElastic: "client-docdb-elastic",
+      EC2InstanceConnect: "client-ec2-instance-connect",
+      ECRPUBLIC: "client-ecr-public",
+      ELB: "client-elastic-load-balancing",
+      ELBv2: "client-elastic-load-balancing-v2",
+      ElastiCache: "client-elasticache",
+      EMRcontainers: "client-emr-containers",
+      EMRServerless: "client-emr-serverless",
+      ES: "client-elasticsearch-service",
+      EventBridge: "client-eventbridge",
+      Finspacedata: "client-finspace-data",
+      ForecastQueryService: "client-forecastquery",
+      ForecastService: "client-forecast",
+      FraudDetector: "client-frauddetector",
+      GameLift: "client-gamelift",
+      GameSparks: "client-gamesparks",
+      GreengrassV2: "client-greengrassv2",
+      GroundStation: "client-groundstation",
+      GuardDuty: "client-guardduty",
+      HealthLake: "client-healthlake",
+      IdentityStore: "client-identitystore",
+      IoTAnalytics: "client-iotanalytics",
+      IotData: "client-iot-data-plane",
+      IotDeviceAdvisor: "client-iotdeviceadvisor",
+      IoTSecureTunneling: "client-iotsecuretunneling",
+      IoTSiteWise: "client-iotsitewise",
+      IoTThingsGraph: "client-iotthingsgraph",
+      IoTTwinMaker: "client-iottwinmaker",
+      IoTRoboRunner: "client-iot-roborunner",
+      KafkaConnect: "client-kafkaconnect",
+      KinesisVideoSignalingChannels: "client-kinesis-video-signaling",
+      KinesisVideoWebRTCStorage: "client-kinesis-video-webrtc-storage",
+      LakeFormation: "client-lakeformation",
+      LexRuntime: "client-lex-runtime-service",
+      ManagedBlockchain: "client-managedblockchain",
+      MigrationHubConfig: "client-migrationhub-config",
+      MigrationHubRefactorSpaces: "client-migration-hub-refactor-spaces",
+      NetworkManager: "client-networkmanager",
+      OpenSearch: "client-opensearch",
+      OpenSearchServerless: "client-opensearchserverless",
+      OpsWorks: "client-opsworks",
+      OpsWorksCM: "client-opsworkscm",
+      PrivateNetworks: "client-privatenetworks",
+      QLDBSession: "client-qldb-session",
+      QuickSight: "client-quicksight",
+      ResourceExplorer2: "client-resource-explorer-2",
+      RDSDataService: "client-rds-data",
+      RoboMaker: "client-robomaker",
+      RolesAnywhere: "client-rolesanywhere",
+      Route53: "client-route-53",
+      Route53Domains: "client-route-53-domains",
+      Route53Resolver: "client-route53resolver",
+      S3Control: "client-s3-control",
+      SageMakerFeatureStoreRuntime: "client-sagemaker-featurestore-runtime",
+      SavingsPlans: "client-savingsplans",
+      SecurityHub: "client-securityhub",
+      ServerlessApplicationRepository: "client-serverlessapplicationrepository",
+      ServiceCatalogAppRegistry: "client-service-catalog-appregistry",
+      ServiceDiscovery: "client-servicediscovery",
+      SimSpaceWeaver: "client-simspaceweaver",
+      SSMContacts: "client-ssm-contacts",
+      SSMIncidents: "client-ssm-incidents",
+      SSOAdmin: "client-sso-admin",
+      SSOOIDC: "client-sso-oidc",
+      StepFunctions: "client-sfn",
+      TranscribeService: "client-transcribe",
+      WAFRegional: "client-waf-regional",
+      WellArchitected: "client-wellarchitected",
+      WorkMailMessageFlow: "client-workmailmessageflow"
+    };
+  }
+});
+
+// ../sdk-v2-to-v3-adapter/lib/get-v3-client-package-name.ts
+var get_v3_client_package_name_exports = {};
+__export(get_v3_client_package_name_exports, {
+  getV3ClientPackageName: () => getV3ClientPackageName
+});
+var getV3ClientPackageName;
+var init_get_v3_client_package_name = __esm({
+  "../sdk-v2-to-v3-adapter/lib/get-v3-client-package-name.ts"() {
+    "use strict";
+    init_client_package_names_map();
+    getV3ClientPackageName = (clientName) => {
+      if (clientName in CLIENT_PACKAGE_NAMES_MAP) {
+        return `@aws-sdk/${CLIENT_PACKAGE_NAMES_MAP[clientName]}`;
+      }
+      throw new Error(`Client '${clientName}' is either deprecated or newly added. Please consider using the v3 package format (@aws-sdk/client-xxx).`);
+    };
+  }
+});
+
+// ../sdk-v2-to-v3-adapter/lib/find-client-constructor.ts
+var find_client_constructor_exports = {};
+__export(find_client_constructor_exports, {
+  findV3ClientConstructor: () => findV3ClientConstructor
+});
+function findV3ClientConstructor(pkg) {
+  const [_clientName, ServiceClient] = Object.entries(pkg).find(
+    ([name]) => {
+      return name.endsWith("Client") && name !== "__Client";
+    }
+  );
+  return ServiceClient;
+}
+var init_find_client_constructor = __esm({
+  "../sdk-v2-to-v3-adapter/lib/find-client-constructor.ts"() {
+    "use strict";
+  }
+});
+
+// ../sdk-v2-to-v3-adapter/lib/index.js
+var require_lib5 = __commonJS({
+  "../sdk-v2-to-v3-adapter/lib/index.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.findV3ClientConstructor = exports.getV3ClientPackageName = void 0;
+    var get_v3_client_package_name_1 = (init_get_v3_client_package_name(), __toCommonJS(get_v3_client_package_name_exports));
+    Object.defineProperty(exports, "getV3ClientPackageName", { enumerable: true, get: function() {
+      return get_v3_client_package_name_1.getV3ClientPackageName;
+    } });
+    var find_client_constructor_1 = (init_find_client_constructor(), __toCommonJS(find_client_constructor_exports));
+    Object.defineProperty(exports, "findV3ClientConstructor", { enumerable: true, get: function() {
+      return find_client_constructor_1.findV3ClientConstructor;
+    } });
+  }
+});
+
 // lib/assertions/providers/lambda-handler/index.ts
 var lambda_handler_exports = {};
 __export(lambda_handler_exports, {
@@ -30810,7 +31428,6 @@ var CustomResourceHandler = class {
   constructor(event, context) {
     this.event = event;
     this.context = context;
-    this.timedOut = false;
     this.timeout = setTimeout(async () => {
       await this.respond({
         status: "FAILED",
@@ -30822,6 +31439,9 @@ var CustomResourceHandler = class {
     this.event = event;
     this.physicalResourceId = extractPhysicalResourceId(event);
   }
+  physicalResourceId;
+  timeout;
+  timedOut = false;
   /**
    * Handles executing the custom resource event. If `stateMachineArn` is present
    * in the props then trigger the waiter statemachine
@@ -30955,6 +31575,7 @@ var AssertionHandler = class extends CustomResourceHandler {
   }
 };
 var MatchCreator = class {
+  parsedObj;
   constructor(obj) {
     this.parsedObj = {
       matcher: obj
@@ -31081,18 +31702,26 @@ var HttpHandler = class extends CustomResourceHandler {
   }
 };
 
+// lib/assertions/providers/lambda-handler/sdk.ts
+var import_sdk_v2_to_v3_adapter = __toESM(require_lib5());
+
 // lib/assertions/providers/lambda-handler/utils.ts
-function decode(object) {
-  return JSON.parse(JSON.stringify(object), (_k, v) => {
-    switch (v) {
-      case "TRUE:BOOLEAN":
-        return true;
-      case "FALSE:BOOLEAN":
-        return false;
-      default:
-        return v;
+function parseJsonPayload(payload) {
+  try {
+    const buffer = Buffer.from(payload);
+    return JSON.parse(new TextDecoder().decode(buffer));
+  } catch {
+    return payload;
+  }
+}
+function decodeParameters(obj) {
+  return Object.fromEntries(Object.entries(obj).map(([key, value]) => {
+    try {
+      return [key, JSON.parse(value)];
+    } catch {
+      return [key, value];
     }
-  });
+  }));
 }
 
 // lib/assertions/providers/lambda-handler/sdk.ts
@@ -31110,21 +31739,51 @@ function flatten(object) {
     }(object)
   );
 }
-function getServiceClient(service) {
-  const clientPackageName = `@aws-sdk/client-${service.toLowerCase()}`;
+function getServicePackage(service) {
+  const packageName = (0, import_sdk_v2_to_v3_adapter.getV3ClientPackageName)(service);
   try {
-    const pkg = require(clientPackageName);
-    return new pkg[service]({});
+    const pkg = require(packageName);
+    return {
+      service,
+      pkg,
+      packageName
+    };
   } catch (e) {
-    throw Error(`Service ${service} client package with name '${clientPackageName}' does not exist.`);
+    throw Error(`Service ${service} client package with name '${packageName}' does not exist.`);
   }
+}
+function getServiceClient(sdkPkg) {
+  try {
+    const ServiceClient = (0, import_sdk_v2_to_v3_adapter.findV3ClientConstructor)(sdkPkg.pkg);
+    return new ServiceClient({});
+  } catch (e) {
+    console.error(e);
+    throw Error(`No client constructor found within package: ${sdkPkg.packageName}`);
+  }
+}
+function getSdkCommand(sdkPkg, api) {
+  const commandName = api.endsWith("Command") ? api : `${api}Command`;
+  const command = Object.entries(sdkPkg.pkg).find(
+    ([name]) => name.toLowerCase() === commandName.toLowerCase()
+  )?.[1];
+  if (!command) {
+    throw new Error(`Unable to find command named: ${commandName} for api: ${api} in service package`);
+  }
+  return command;
 }
 var AwsApiCallHandler = class extends CustomResourceHandler {
   async processEvent(request2) {
-    const client = getServiceClient(request2.service);
-    const response = await client[request2.api](request2.parameters && decode(request2.parameters));
+    const sdkPkg = getServicePackage(request2.service);
+    const client = getServiceClient(sdkPkg);
+    const Command = getSdkCommand(sdkPkg, request2.api);
+    const commandInput = (request2.parameters && decodeParameters(request2.parameters)) ?? {};
+    console.log(`SDK request to ${sdkPkg.service}.${request2.api} with parameters ${JSON.stringify(commandInput)}`);
+    const response = await client.send(new Command(commandInput));
+    if (response.Payload) {
+      response.Payload = parseJsonPayload(response.Payload);
+    }
     console.log(`SDK response received ${JSON.stringify(response)}`);
-    delete response.ResponseMetadata;
+    delete response.$metadata;
     const respond = {
       apiCallResponse: response
     };
@@ -31252,7 +31911,7 @@ async function isComplete(event, context) {
           }
         }, context);
         const assertionResult = await assertion.handleIsComplete();
-        if (!(assertionResult == null ? void 0 : assertionResult.failed)) {
+        if (!assertionResult?.failed) {
           await provider.respond({
             status: "SUCCESS",
             reason: "OK",
