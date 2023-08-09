@@ -377,9 +377,26 @@ function logNonHotswappableChanges(nonHotswappableChanges: NonHotswappableChange
   print(''); // newline
 }
 
-type ChangedProps = { key: string[]; type: 'removed' | 'added'; value?: any };
+type ChangedProps = {
+  /**
+   * Array to specify the property from an object.
+   * e.g. Given this object `{ 'a': { 'b': 1 } }`, the key array for the element `1` will be `['a', 'b']`
+   */
+  key: string[];
 
-export function detectChangedProps(next: any, prev: any): ChangedProps[] {
+  /**
+   * Whether the property is added (also modified) or removed.
+   */
+  type: 'removed' | 'added';
+
+  /**
+   * evaluated value of the property.
+   * undefined if type == 'removed'
+   */
+  value?: any
+};
+
+function detectChangedProps(next: any, prev: any): ChangedProps[] {
   const changedProps: ChangedProps[] = [];
   changedProps.push(...detectAdditions(next, prev));
   changedProps.push(...detectRemovals(next, prev));
