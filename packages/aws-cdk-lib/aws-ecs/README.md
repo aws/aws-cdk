@@ -358,7 +358,7 @@ declare const taskDefinition: ecs.TaskDefinition;
 taskDefinition.addContainer("WebContainer", {
   image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   memoryLimitMiB: 1024,
-  portMappings: [{ containerPort: 3000 }],
+  portMappings: [{ containerPort: 3000 }, { containerPortRange: '3000-4000' }],
 });
 ```
 
