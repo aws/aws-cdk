@@ -1,7 +1,8 @@
 import * as AWS from 'aws-sdk';
-import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, lowerCaseFirstCharacter, reportNonHotswappableChange, transformObjectKeys } from './common';
+import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, lowerCaseFirstCharacter, reportNonHotswappableChange, transformObjectKeys, upperCaseFirstCharacter } from './common';
 import { ISDK } from '../aws-auth';
-import { CfnEvaluationException, EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
+import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
+import { applyPropertyUpdates, hotswappableProperties } from '../hotswap-deployments';
 
 export async function isHotswappableEcsServiceChange(
   logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
@@ -16,7 +17,8 @@ export async function isHotswappableEcsServiceChange(
   // We only allow a change in the ContainerDefinitions of the TaskDefinition for now -
   // it contains the image and environment variables, so seems like a safe bet for now.
   // We might revisit this decision in the future though!
-  const classifiedChanges = classifyChanges(change, ['ContainerDefinitions']);
+  const propertiesToHotswap = ['ContainerDefinitions'];
+  const classifiedChanges = classifyChanges(change, propertiesToHotswap);
   classifiedChanges.reportNonHotswappablePropertyChanges(ret);
 
   // find all ECS Services that reference the TaskDefinition that changed
@@ -45,11 +47,40 @@ export async function isHotswappableEcsServiceChange(
 
   const namesOfHotswappableChanges = Object.keys(classifiedChanges.hotswappableProps);
   if (namesOfHotswappableChanges.length > 0) {
-    const taskDefinitionResource = await prepareTaskDefinitionChange(evaluateCfnTemplate, logicalId, change);
-    if (taskDefinitionResource === undefined) {
-      reportNonHotswappableChange(ret, change, undefined, 'Found unsupported changes to the task definition', false);
+    const familyName = await getFamilyName(evaluateCfnTemplate, logicalId, change);
+    if (familyName === undefined) {
+      reportNonHotswappableChange(ret, change, undefined, 'Failed to determine family name of the task definition', false);
       return ret;
     }
+
+    // Don't transform the properties that take arbitrary string as keys i.e. { "string" : "string" }
+    // https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_RegisterTaskDefinition.html#API_RegisterTaskDefinition_RequestSyntax
+    const excludeFromTransform = {
+      ContainerDefinitions: {
+        DockerLabels: true,
+        FirelensConfiguration: {
+          Options: true,
+        },
+        LogConfiguration: {
+          Options: true,
+        },
+      },
+      Volumes: {
+        DockerVolumeConfiguration: {
+          DriverOpts: true,
+          Labels: true,
+        },
+      },
+    } as const;
+
+    const changes = await hotswappableProperties(evaluateCfnTemplate, change, propertiesToHotswap);
+    if (changes.unevaluatableUpdates.length > 0) {
+      reportNonHotswappableChange(ret, change, undefined, `Found changes that cannot be evaluated locally in the task definition - ${
+        changes.unevaluatableUpdates.map(p => p.key.join('.')).join(', ')
+      }`, false);
+      return ret;
+    }
+
     ret.push({
       hotswappable: true,
       resourceType: change.newValue.Type,
@@ -57,53 +88,55 @@ export async function isHotswappableEcsServiceChange(
       service: 'ecs-service',
       resourceNames: [
         ...ecsServicesReferencingTaskDef.map(ecsService => `ECS Service '${ecsService.serviceArn.split('/')[2]}'`),
-        `ECS Task Definition '${taskDefinitionResource.family}'`,
+        `ECS Task Definition '${familyName}'`,
       ],
       apply: async (sdk: ISDK) => {
         // Step 1 - update the changed TaskDefinition, creating a new TaskDefinition Revision
         // we need to lowercase the evaluated TaskDef from CloudFormation,
         // as the AWS SDK uses lowercase property names for these
 
+        // get the latest task definition of the family
+        const target = await sdk
+          .ecs()
+          .describeTaskDefinition({
+            taskDefinition: familyName,
+            include: ['TAGS'],
+          })
+          .promise();
+        if (target.taskDefinition === undefined) {
+          throw new Error(`Could not find a task definition: ${familyName}`);
+        }
+
+        // The describeTaskDefinition response contains several keys that must not exist in a registerTaskDefinition request.
+        // We remove these keys here, comparing these two structs:
+        // https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_RegisterTaskDefinition.html#API_RegisterTaskDefinition_RequestSyntax
+        // https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_DescribeTaskDefinition.html#API_DescribeTaskDefinition_ResponseSyntax
+        [
+          'compatibilities',
+          'taskDefinitionArn',
+          'revision',
+          'status',
+          'requiresAttributes',
+          'compatibilities',
+          'registeredAt',
+          'registeredBy',
+        ].forEach(key=> delete (target.taskDefinition as any)[key]);
+
+        if (target.tags !== undefined && target.tags.length > 0) {
+          // the tags field is in a different location in describeTaskDefinition response, moving it as intended for registerTaskDefinition request.
+          (target.taskDefinition as any).tags = target.tags;
+          delete target.tags;
+        }
+
+        const upperCasedTaskDef = transformObjectKeys(target.taskDefinition, upperCaseFirstCharacter, excludeFromTransform);
+        const updatedTaskDef = applyPropertyUpdates(changes.updates, upperCasedTaskDef);
+        const lowercasedTaskDef = transformObjectKeys(updatedTaskDef, lowerCaseFirstCharacter, excludeFromTransform);
+
         // The SDK requires more properties here than its worth doing explicit typing for
         // instead, just use all the old values in the diff to fill them in implicitly
-        let lowercasedTaskDef = transformObjectKeys(taskDefinitionResource.taskDefinition, lowerCaseFirstCharacter, {
-          // Don't transform the properties that take arbitrary string as keys i.e. { "string" : "string" }
-          // https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_RegisterTaskDefinition.html#API_RegisterTaskDefinition_RequestSyntax
-          ContainerDefinitions: {
-            DockerLabels: true,
-            FirelensConfiguration: {
-              Options: true,
-            },
-            LogConfiguration: {
-              Options: true,
-            },
-          },
-          Volumes: {
-            DockerVolumeConfiguration: {
-              DriverOpts: true,
-              Labels: true,
-            },
-          },
-        });
 
-        if (taskDefinitionResource.hotswappableWithMerge) {
-          // get the latest task definition of the family
-          const describeTaskDefinitionResponse = await sdk
-            .ecs()
-            .describeTaskDefinition({
-              taskDefinition: taskDefinitionResource.family,
-              include: ['TAGS'],
-            })
-            .promise();
-          if (describeTaskDefinitionResponse.taskDefinition === undefined) {
-            throw new Error(`Could not find TaskDefinition ${taskDefinitionResource.family}`);
-          }
-          const merged = mergeTaskDefinitions(lowercasedTaskDef, describeTaskDefinitionResponse);
-          if (merged === undefined) {
-            throw new Error('Failed to merge the task definition. Please try deploying without hotswap first.');
-          }
-          lowercasedTaskDef = merged.taskDefinition;
-        }
+        // eslint-disable-next-line no-console
+        console.log(lowercasedTaskDef);
 
         const registerTaskDefResponse = await sdk.ecs().registerTaskDefinition(lowercasedTaskDef).promise();
         const taskDefRevArn = registerTaskDefResponse.taskDefinition?.taskDefinitionArn;
@@ -192,78 +225,19 @@ export async function isHotswappableEcsServiceChange(
   return ret;
 }
 
-function mergeTaskDefinitions(patch: {containerDefinitions: {[key:string]: any}[]}, target: AWS.ECS.DescribeTaskDefinitionResponse) {
-  const src = patch.containerDefinitions;
-  // deep copy target to avoid side effects. The response of AWS API is in JSON format, so safe to use JSON.stringify.
-  target = JSON.parse(JSON.stringify(target));
-  const dst = target.taskDefinition?.containerDefinitions;
-  if (dst === undefined) {
-    return;
-  }
-  // schema: https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html
-  for (const i in src) {
-    if (dst[i] === undefined) return;
-    for (const key of Object.keys(src[i])) {
-      (dst[i] as any)[key] = src[i][key];
-    }
-  }
-
-  // The describeTaskDefinition response contains several keys that must not exist in a registerTaskDefinition request.
-  // We remove these keys here, comparing these two structs:
-  // https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_RegisterTaskDefinition.html#API_RegisterTaskDefinition_RequestSyntax
-  // https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_DescribeTaskDefinition.html#API_DescribeTaskDefinition_ResponseSyntax
-  [
-    'compatibilities',
-    'taskDefinitionArn',
-    'revision',
-    'status',
-    'requiresAttributes',
-    'compatibilities',
-    'registeredAt',
-    'registeredBy',
-  ].forEach(key=> delete (target.taskDefinition as any)[key]);
-
-  if (target.tags !== undefined && target.tags.length > 0) {
-    // the tags field is in a different location in describeTaskDefinition response, moving it as intended for registerTaskDefinition request.
-    (target.taskDefinition as any).tags = target.tags;
-    delete target.tags;
-  }
-
-  return target;
-}
-
 interface EcsService {
   readonly serviceArn: string;
 }
 
-type TaskDefinitionChange = {
-  /**
-   * A new task definition that should be deployed.
-   * If hotswappableWithMerge equals true, this only contains diffs that should be merged with the currently deployed task definition.
-   */
-  taskDefinition: any;
-
-  /**
-   * A family for this task definition
-   */
-  family: string;
-
-  /**
-   * true if the change can be hotswapped by merging with the currently deployed task definition
-   */
-  hotswappableWithMerge: boolean
-};
-
-async function prepareTaskDefinitionChange(
+async function getFamilyName(
   evaluateCfnTemplate: EvaluateCloudFormationTemplate,
   logicalId: string,
-  change: HotswappableChangeCandidate,
-): Promise<undefined | TaskDefinitionChange> {
+  change: HotswappableChangeCandidate) {
   const taskDefinitionResource: { [name: string]: any } = {
     ...change.oldValue.Properties,
     ContainerDefinitions: change.newValue.Properties?.ContainerDefinitions,
   };
-  // first, let's get the name of the family
+    // first, let's get the name of the family
   const familyNameOrArn = await evaluateCfnTemplate.establishResourcePhysicalName(logicalId, taskDefinitionResource?.Family);
   if (!familyNameOrArn) {
     // if the Family property has not been provided, and we can't find it in the current Stack,
@@ -274,111 +248,12 @@ async function prepareTaskDefinitionChange(
   // remove it if needed
   const familyNameOrArnParts = familyNameOrArn.split(':');
   const family = familyNameOrArnParts.length > 1
-    // familyNameOrArn is actually an ARN, of the format 'arn:aws:ecs:region:account:task-definition/<family-name>:<revision-nr>'
-    // so, take the 6th element, at index 5, and split it on '/'
+  // familyNameOrArn is actually an ARN, of the format 'arn:aws:ecs:region:account:task-definition/<family-name>:<revision-nr>'
+  // so, take the 6th element, at index 5, and split it on '/'
     ? familyNameOrArnParts[5].split('/')[1]
-    // otherwise, familyNameOrArn is just the simple name evaluated from the CloudFormation template
+  // otherwise, familyNameOrArn is just the simple name evaluated from the CloudFormation template
     : familyNameOrArn;
-  // then, let's evaluate the body of the remainder of the TaskDef (without the Family property)
+    // then, let's evaluate the body of the remainder of the TaskDef (without the Family property)
 
-  let evaluated;
-  let hotswappableWithMerge = false;
-  try {
-    evaluated = await evaluateCfnTemplate.evaluateCfnExpression({
-      ...(taskDefinitionResource ?? {}),
-      Family: undefined,
-    });
-  } catch (e) {
-    if (!(e instanceof CfnEvaluationException)) {
-      throw e;
-    }
-    const result = await deepCompareContainerDefinitions(
-      evaluateCfnTemplate,
-      change.oldValue.Properties?.ContainerDefinitions ?? [],
-      change.newValue.Properties?.ContainerDefinitions ?? []);
-    if (result === false) {
-      throw e;
-    } else {
-      evaluated = {
-        // return a partial definition that should be merged with the current definition
-        ContainerDefinitions: result,
-      };
-      hotswappableWithMerge = true;
-    }
-  }
-
-  return {
-    taskDefinition: {
-      ...evaluated,
-      Family: family,
-    },
-    family,
-    hotswappableWithMerge,
-  };
-}
-
-/**
- * return false if the new container definitions cannot be hotswapped
- * i.e. there are changes containing unsupported tokens or additions/removals of properties
- *
- * Otherwise we return the properties that should be updated (they will be merged with the deployed task definition later)
- */
-async function deepCompareContainerDefinitions(evaluateCfnTemplate: EvaluateCloudFormationTemplate, oldDefinition: any[], newDefinition: any[]) {
-  const result: any[] = [];
-  // schema: https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html
-  if (oldDefinition.length !== newDefinition.length) {
-    // one or more containers are added or removed
-    return false;
-  }
-  for (const i in oldDefinition) {
-    result.push({});
-    const prev = oldDefinition[i];
-    const next = newDefinition[i];
-
-    if (!deepCompareObject(Object.keys(prev), Object.keys(next))) {
-      // one or more fields are added or removed
-      return false;
-    }
-    // We don't recurse properties to keep the update logic simple. It should still cover most hotswap use cases.
-    for (const key of Object.keys(prev)) {
-      // compare two properties first
-      if (deepCompareObject(prev[key], next[key])) {
-        // if there is no difference, skip the field
-        continue;
-      }
-      // if there is any diff found, check if it can be evaluated without raising an error
-      try {
-        result[i][key] = await evaluateCfnTemplate.evaluateCfnExpression(next[key]);
-      } catch (e) {
-        if (!(e instanceof CfnEvaluationException)) {
-          throw e;
-        }
-        // Give up hotswap if the diff contains unsupported expression
-        return false;
-      }
-    }
-  }
-
-  return result;
-}
-
-/**
- * return true when two objects are identical
- */
-function deepCompareObject(lhs: any, rhs: any): boolean {
-  if (typeof lhs !== 'object') {
-    return lhs === rhs;
-  }
-  if (typeof rhs !== 'object') {
-    return false;
-  }
-  if (Object.keys(lhs).length != Object.keys(rhs).length) {
-    return false;
-  }
-  for (const key of Object.keys(lhs)) {
-    if (!deepCompareObject((lhs as any)[key], (rhs as any)[key])) {
-      return false;
-    }
-  }
-  return true;
+  return family;
 }

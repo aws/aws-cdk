@@ -135,6 +135,13 @@ export function lowerCaseFirstCharacter(str: string): string {
   return str.length > 0 ? `${str[0].toLowerCase()}${str.slice(1)}` : str;
 }
 
+/**
+ * This function upper cases the first character of the string provided.
+ */
+export function upperCaseFirstCharacter(str: string): string {
+  return str.length > 0 ? `${str[0].toUpperCase()}${str.slice(1)}` : str;
+}
+
 export type PropDiffs = Record<string, cfn_diff.PropertyDifference<any>>;
 
 export class ClassifiedChanges {

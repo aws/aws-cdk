@@ -3,7 +3,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import { ISDK, Mode, SdkProvider } from './aws-auth';
 import { DeployStackResult } from './deploy-stack';
-import { EvaluateCloudFormationTemplate, LazyListStackResources } from './evaluate-cloudformation-template';
+import { CfnEvaluationException, EvaluateCloudFormationTemplate, LazyListStackResources } from './evaluate-cloudformation-template';
 import { isHotswappableAppSyncChange } from './hotswap/appsync-mapping-templates';
 import { isHotswappableCodeBuildProjectChange } from './hotswap/code-build-projects';
 import { ICON, ChangeHotswapResult, HotswapMode, HotswappableChange, NonHotswappableChange, HotswappableChangeCandidate, ClassifiedResourceChanges, reportNonHotswappableChange } from './hotswap/common';
@@ -375,4 +375,181 @@ function logNonHotswappableChanges(nonHotswappableChanges: NonHotswappableChange
   }
 
   print(''); // newline
+}
+
+type ChangedProps = { key: string[]; type: 'removed' | 'added'; value?: any };
+
+export function detectChangedProps(next: any, prev: any): ChangedProps[] {
+  const changedProps: ChangedProps[] = [];
+  changedProps.push(...detectAdditions(next, prev));
+  changedProps.push(...detectRemovals(next, prev));
+  return changedProps;
+}
+
+function detectAdditions(next: any, prev: any, keys: string[] = []): ChangedProps[] {
+  const changedProps: ChangedProps[] = [];
+  // Compare each value of two objects, detect additions (added or modified properties)
+  // If we encounter CFn intrinsic (key.startsWith('Fn::') || key == 'Ref'), stop recursion
+  if (typeof next !== 'object') {
+    if (next !== prev) {
+      // there is an addition or change to the property
+      return [{ key: new Array(...keys), type: 'added' }];
+    } else {
+      return [];
+    }
+  }
+  if (typeof prev !== 'object') {
+    // there is an addition or change to the property
+    return [{ key: new Array(...keys), type: 'added' }];
+  }
+
+  // If the lhs is an object but also a CFn intrinsic, don't recurse further.
+  const lastKey = keys.length > 0 ? keys[keys.length - 1] : '';
+  if (lastKey.startsWith('Fn::') || lastKey == 'Ref') {
+    if (!deepCompareObject(prev, next)) {
+      // there is an addition or change to the property
+      return [{ key: new Array(...keys.slice(0, -1)), type: 'added' }];
+    } else {
+      return [];
+    }
+  }
+
+  // compare children
+  for (const key of Object.keys(next)) {
+    keys.push(key);
+    changedProps.push(...detectAdditions((next as any)[key], (prev as any)[key], keys));
+    keys.pop();
+  }
+  return changedProps;
+}
+
+function detectRemovals(next: any, prev: any, keys: string[] = []): ChangedProps[] {
+  // Compare each value of two objects, detect removed properties
+  // To do this, find any keys that exist only in prev object.
+  // If we encounter CFn intrinsic (key.startsWith('Fn::') || key == 'Ref'), stop recursion
+  const changedProps: ChangedProps[] = [];
+  if (next === undefined) {
+    return [{ key: new Array(...keys), type: 'removed' }];
+  }
+
+  if (typeof prev !== 'object' || typeof next !== 'object') {
+    // either prev or next is not an object, then the property is modified but not removed
+    return [];
+  }
+
+  // If the prev is an object but also a CFn intrinsic, don't recurse further.
+  const lastKey = keys.length > 0 ? keys[keys.length - 1] : '';
+  if (lastKey.startsWith('Fn::') || lastKey == 'Ref') {
+    // next is not undefined here, so the property is at least not removed
+    return [];
+  }
+
+  // compare children
+  for (const key of Object.keys(prev)) {
+    keys.push(key);
+    changedProps.push(...detectRemovals((next as any)[key], (prev as any)[key], keys));
+    keys.pop();
+  }
+  return changedProps;
+}
+
+/**
+ * return true when two objects are identical
+ */
+function deepCompareObject(lhs: any, rhs: any): boolean {
+  if (typeof lhs !== 'object') {
+    return lhs === rhs;
+  }
+  if (typeof rhs !== 'object') {
+    return false;
+  }
+  if (Object.keys(lhs).length != Object.keys(rhs).length) {
+    return false;
+  }
+  for (const key of Object.keys(lhs)) {
+    if (!deepCompareObject((lhs as any)[key], (rhs as any)[key])) {
+      return false;
+    }
+  }
+  return true;
+}
+
+interface HotswappablePropertyUpdates {
+  readonly updates: ChangedProps[];
+  readonly unevaluatableUpdates: ChangedProps[];
+}
+
+/**
+ * Diff each property of the changes, and check if each diff can be actually hotswapped (i.e. evaluated by EvaluateCloudFormationTemplate.)
+ * If any diff cannot be evaluated, they are reported by unevaluatableUpdates.
+ * This method works on more granular level than HotswappableChangeCandidate.propertyUpdates.
+ */
+export async function hotswappableProperties(
+  evaluate: EvaluateCloudFormationTemplate,
+  change: HotswappableChangeCandidate,
+  PropertiesToInclude: string[],
+  transform?: (obj: any) => any,
+): Promise<HotswappablePropertyUpdates> {
+  transform = transform ?? ((obj: any) => obj);
+  const prev = transform(change.oldValue.Properties!);
+  const next = transform(change.newValue.Properties!);
+  const changedProps = detectChangedProps(next, prev).filter(
+    prop => PropertiesToInclude.includes(prop.key[0]),
+  );
+  const evaluatedUpdates = await Promise.all(
+    changedProps
+      .filter((prop) => prop.type === 'added')
+      .map(async (prop) => {
+        const val = getPropertyFromKey(prop.key, next);
+        try {
+          const evaluated = await evaluate.evaluateCfnExpression(val);
+          return {
+            ...prop,
+            value: evaluated,
+          };
+        } catch (e) {
+          if (e instanceof CfnEvaluationException) {
+            return prop;
+          }
+          throw e;
+        }
+      }));
+  const unevaluatableUpdates = evaluatedUpdates.filter(update => update.value === undefined);
+  evaluatedUpdates.push(...changedProps.filter(prop => prop.type == 'removed'));
+
+  return {
+    updates: evaluatedUpdates,
+    unevaluatableUpdates,
+  };
+}
+
+function getPropertyFromKey(key: string[], obj: object) {
+  return key.reduce((prev, cur) => (prev as any)?.[cur], obj);
+}
+
+function overwriteProperty(key: string[], newValue: any, target: object) {
+  for (const next of key.slice(0, -1)) {
+    target = (target as any)?.[next];
+  }
+  if (target === undefined) return false;
+  if (newValue === undefined) {
+    delete (target as any)[key[key.length - 1]];
+  } else {
+    (target as any)[key[key.length - 1]] = newValue;
+  }
+  return true;
+}
+
+/**
+ * Take the old template and property updates, and synthesize a new template.
+ */
+export function applyPropertyUpdates(patches: ChangedProps[], target: any) {
+  target = JSON.parse(JSON.stringify(target));
+  for (const patch of patches) {
+    const res = overwriteProperty(patch.key, patch.value, target);
+    if (!res) {
+      throw new Error(`failed to applying patch to ${patch.key.join('.')}. Please try deploying without hotswap first.`);
+    }
+  }
+  return target;
 }
