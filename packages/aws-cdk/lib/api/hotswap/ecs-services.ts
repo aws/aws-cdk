@@ -53,26 +53,6 @@ export async function isHotswappableEcsServiceChange(
       return ret;
     }
 
-    // Don't transform the properties that take arbitrary string as keys i.e. { "string" : "string" }
-    // https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_RegisterTaskDefinition.html#API_RegisterTaskDefinition_RequestSyntax
-    const excludeFromTransform = {
-      ContainerDefinitions: {
-        DockerLabels: true,
-        FirelensConfiguration: {
-          Options: true,
-        },
-        LogConfiguration: {
-          Options: true,
-        },
-      },
-      Volumes: {
-        DockerVolumeConfiguration: {
-          DriverOpts: true,
-          Labels: true,
-        },
-      },
-    } as const;
-
     const changes = await evaluatableProperties(evaluateCfnTemplate, change, propertiesToHotswap);
     if (changes.unevaluatableUpdates.length > 0) {
       reportNonHotswappableChange(ret, change, undefined, `Found changes that cannot be evaluated locally in the task definition - ${
@@ -129,6 +109,25 @@ export async function isHotswappableEcsServiceChange(
           delete target.tags;
         }
 
+        // Don't transform the properties that take arbitrary string as keys i.e. { "string" : "string" }
+        // https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_RegisterTaskDefinition.html#API_RegisterTaskDefinition_RequestSyntax
+        const excludeFromTransform = {
+          ContainerDefinitions: {
+            DockerLabels: true,
+            FirelensConfiguration: {
+              Options: true,
+            },
+            LogConfiguration: {
+              Options: true,
+            },
+          },
+          Volumes: {
+            DockerVolumeConfiguration: {
+              DriverOpts: true,
+              Labels: true,
+            },
+          },
+        } as const;
         // We first uppercase the task definition to properly merge it with the one from CloudFormation template.
         const upperCasedTaskDef = transformObjectKeys(target.taskDefinition, upperCaseFirstCharacter, excludeFromTransform);
         // merge evaluatable diff from CloudFormation template.

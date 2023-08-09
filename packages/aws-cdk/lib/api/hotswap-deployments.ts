@@ -502,18 +502,18 @@ interface EvaluatedPropertyUpdates {
  * Diff each property of the changes, and check if each diff can be actually hotswapped (i.e. evaluated by EvaluateCloudFormationTemplate.)
  * If any diff cannot be evaluated, they are reported by unevaluatableUpdates.
  * This method works on more granular level than HotswappableChangeCandidate.propertyUpdates.
+ *
+ * If propertiesToInclude is specified, we only compare properties that are under keys in the argument.
  */
 export async function evaluatableProperties(
   evaluate: EvaluateCloudFormationTemplate,
   change: HotswappableChangeCandidate,
-  PropertiesToInclude: string[],
-  transform?: (obj: any) => any,
+  propertiesToInclude?: string[],
 ): Promise<EvaluatedPropertyUpdates> {
-  transform = transform ?? ((obj: any) => obj);
-  const prev = transform(change.oldValue.Properties!);
-  const next = transform(change.newValue.Properties!);
+  const prev = change.oldValue.Properties!;
+  const next = change.newValue.Properties!;
   const changedProps = detectChangedProps(next, prev).filter(
-    prop => PropertiesToInclude.includes(prop.key[0]),
+    prop => propertiesToInclude?.includes(prop.key[0]) ?? true,
   );
   const evaluatedUpdates = await Promise.all(
     changedProps
