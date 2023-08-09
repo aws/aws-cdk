@@ -1,3 +1,4 @@
+"use strict";
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -657,11 +658,11 @@ async function loadAwsSdk(packageName, installLatestAwsSdk) {
   let awsSdk;
   try {
     if (!installedSdk[packageName] && installLatestAwsSdk === "true") {
-      installLatestSdk(packageName);
       try {
+        installLatestSdk(packageName);
         awsSdk = require(`/tmp/node_modules/${packageName}`);
       } catch (e) {
-        console.log(`Failed to install latest AWS SDK v3. Falling back to pr-installed version. Error: ${e}`);
+        console.log(`Failed to install latest AWS SDK v3. Falling back to pre-installed version. Error: ${e}`);
         return require(packageName);
       }
     } else if (installedSdk[packageName]) {

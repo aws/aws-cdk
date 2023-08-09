@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallEventBridgeputEventseef6aa50fb0a328198838479aae512db": {
+  "AwsApiCallEventBridgeputEvents39818e69f203dff4bd6f6dd222264fc4": {
    "Type": "Custom::DeployAssert@SdkCallEventBridgeputEvents",
    "Properties": {
     "ServiceToken": {
@@ -12,10 +12,10 @@
     "service": "EventBridge",
     "api": "putEvents",
     "parameters": {
-     "Entries": "[{\"Detail\":\"{\\\"date\\\":\\\"abc1691101107797\\\"}\",\"DetailType\":\"cdk-integ-custom-rule\",\"Source\":\"cdk-integ\"}]"
+     "Entries": "[{\"Detail\":\"{\\\"date\\\":\\\"abc1691622006011\\\"}\",\"DetailType\":\"cdk-integ-custom-rule\",\"Source\":\"cdk-integ\"}]"
     },
     "flattenResponse": "false",
-    "salt": "1691101107817"
+    "salt": "1691622006016"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -99,7 +99,7 @@
     }
    }
   },
-  "AwsApiCallCloudWatchLogsfilterLogEventscab635205ba433f1f0da3cb2523632dc": {
+  "AwsApiCallCloudWatchLogsfilterLogEvents5d4dcdaa13ce3e1ce832b08806ab1426": {
    "Type": "Custom::DeployAssert@SdkCallCloudWatchLogsfilterLogEvents",
    "Properties": {
     "ServiceToken": {
@@ -110,7 +110,7 @@
     },
     "service": "CloudWatchLogs",
     "api": "filterLogEvents",
-    "expected": "{\"$StringLike\":\"abc1691101107797\"}",
+    "expected": "{\"$StringLike\":\"abc1691622006011\"}",
     "actualPath": "events.0.message",
     "parameters": {
      "logGroupName": {
@@ -125,27 +125,27 @@
        ]
       ]
      },
-     "startTime": "1691101107797",
+     "startTime": "1691622006011",
      "limit": "1"
     },
     "flattenResponse": "true",
     "outputPaths": [
      "events.0.message"
     ],
-    "salt": "1691101107818"
+    "salt": "1691622006017"
    },
    "DependsOn": [
-    "AwsApiCallEventBridgeputEventseef6aa50fb0a328198838479aae512db"
+    "AwsApiCallEventBridgeputEvents39818e69f203dff4bd6f6dd222264fc4"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallCloudWatchLogsfilterLogEventscab635205ba433f1f0da3cb2523632dc": {
+  "AssertionResultsAwsApiCallCloudWatchLogsfilterLogEvents5d4dcdaa13ce3e1ce832b08806ab1426": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallCloudWatchLogsfilterLogEventscab635205ba433f1f0da3cb2523632dc",
+     "AwsApiCallCloudWatchLogsfilterLogEvents5d4dcdaa13ce3e1ce832b08806ab1426",
      "assertion"
     ]
    }
