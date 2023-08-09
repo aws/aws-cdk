@@ -405,7 +405,6 @@ function detectAdditions(next: any, prev: any, keys: string[] = []): ChangedProp
   }
 
   // If the next is a CFn intrinsic, don't recurse further.
-  // We take the first key with [0] because a CfnIntrinsic object only has one key, e.g. { 'Ref': 'SomeResource' }
   const childKeys = Object.keys(next);
   if (childKeys.length === 1 && (childKeys[0].startsWith('Fn::') || childKeys[0] === 'Ref')) {
     if (!deepCompareObject(prev, next)) {
@@ -439,8 +438,7 @@ function detectRemovals(next: any, prev: any, keys: string[] = []): ChangedProps
     return [];
   }
 
-  // If the next is a CFn intrinsic, don't recurse further.
-  // We take the first key with [0] because a CfnIntrinsic object only has one key, e.g. { 'Ref': 'SomeResource' }
+  // If the prev is a CFn intrinsic, don't recurse further.
   const childKeys = Object.keys(prev);
   if (childKeys.length === 1 && (childKeys[0].startsWith('Fn::') || childKeys[0] === 'Ref')) {
     // next is not undefined here, so it is at least not removed
@@ -478,7 +476,7 @@ function deepCompareObject(lhs: any, rhs: any): boolean {
   return true;
 }
 
-interface HotswappablePropertyUpdates {
+interface EvaluatedPropertyUpdates {
   readonly updates: ChangedProps[];
   readonly unevaluatableUpdates: ChangedProps[];
 }
@@ -488,12 +486,12 @@ interface HotswappablePropertyUpdates {
  * If any diff cannot be evaluated, they are reported by unevaluatableUpdates.
  * This method works on more granular level than HotswappableChangeCandidate.propertyUpdates.
  */
-export async function hotswappableProperties(
+export async function evaluatableProperties(
   evaluate: EvaluateCloudFormationTemplate,
   change: HotswappableChangeCandidate,
   PropertiesToInclude: string[],
   transform?: (obj: any) => any,
-): Promise<HotswappablePropertyUpdates> {
+): Promise<EvaluatedPropertyUpdates> {
   transform = transform ?? ((obj: any) => obj);
   const prev = transform(change.oldValue.Properties!);
   const next = transform(change.newValue.Properties!);
@@ -536,7 +534,7 @@ function overwriteProperty(key: string[], newValue: any, target: object) {
     if (next in target) {
       target = (target as any)[next];
     } else if (Array.isArray(target)) {
-      // When an element is added to an array, we need to explicitly allocate the new element.
+      // When an element is added to an array, we need explicitly allocate the new element.
       target = {};
       (target as any)[next] = {};
     } else {

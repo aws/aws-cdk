@@ -2,7 +2,7 @@ import * as AWS from 'aws-sdk';
 import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, lowerCaseFirstCharacter, reportNonHotswappableChange, transformObjectKeys, upperCaseFirstCharacter } from './common';
 import { ISDK } from '../aws-auth';
 import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
-import { applyPropertyUpdates, hotswappableProperties } from '../hotswap-deployments';
+import { applyPropertyUpdates, evaluatableProperties } from '../hotswap-deployments';
 
 export async function isHotswappableEcsServiceChange(
   logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
@@ -73,7 +73,7 @@ export async function isHotswappableEcsServiceChange(
       },
     } as const;
 
-    const changes = await hotswappableProperties(evaluateCfnTemplate, change, propertiesToHotswap);
+    const changes = await evaluatableProperties(evaluateCfnTemplate, change, propertiesToHotswap);
     if (changes.unevaluatableUpdates.length > 0) {
       reportNonHotswappableChange(ret, change, undefined, `Found changes that cannot be evaluated locally in the task definition - ${
         changes.unevaluatableUpdates.map(p => p.key.join('.')).join(', ')
