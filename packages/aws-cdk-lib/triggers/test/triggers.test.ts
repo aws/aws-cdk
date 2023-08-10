@@ -109,6 +109,7 @@ test('minimal trigger', () => {
   template.hasResourceProperties('AWS::Lambda::Function', {});
   template.hasResourceProperties('Custom::Trigger', {
     HandlerArn: { Ref: 'MyFunctionCurrentVersion197490AF2e4e06d52af2bb609d8c23243d665966' },
+    ExecuteOnHandlerChange: true,
   });
 });
 
@@ -126,6 +127,7 @@ test('trigger with optional properties', () => {
     handler: func,
     timeout: Duration.minutes(10),
     invocationType: triggers.InvocationType.EVENT,
+    executeOnHandlerChange: false,
   });
 
   // THEN
@@ -135,5 +137,6 @@ test('trigger with optional properties', () => {
     HandlerArn: { Ref: 'MyFunctionCurrentVersion197490AF2e4e06d52af2bb609d8c23243d665966' },
     Timeout: '600000',
     InvocationType: 'Event',
+    ExecuteOnHandlerChange: false,
   });
 });

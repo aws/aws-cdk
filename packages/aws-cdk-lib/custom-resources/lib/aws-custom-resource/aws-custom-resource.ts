@@ -74,6 +74,24 @@ export class PhysicalResourceId {
 
 /**
  * An AWS SDK call.
+ *
+ * @example
+ *
+ *    new cr.AwsCustomResource(this, 'GetParameterCustomResource', {
+ *      onUpdate: { // will also be called for a CREATE event
+ *        service: 'SSM',
+ *        action: 'getParameter',
+ *        parameters: {
+ *          Name: 'my-parameter',
+ *          WithDecryption: true,
+ *        },
+ *        physicalResourceId: cr.PhysicalResourceId.fromResponse('Parameter.ARN'),
+ *      },
+ *      policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+ *        resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
+ *      }),
+ *    });
+ *
  */
 export interface AwsSdkCall {
   /**

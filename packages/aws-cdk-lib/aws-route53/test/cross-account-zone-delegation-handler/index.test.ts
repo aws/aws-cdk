@@ -1,42 +1,31 @@
 import { handler } from '../../lib/cross-account-zone-delegation-handler';
 
-const mockAssumeRole = jest.fn();
-const mockChangeResourceRecordSets = jest.fn();
-const mockListHostedZonesByName = jest.fn();
-
 const mockStsClient = {
-  assumeRole: mockAssumeRole,
+  assumeRole: jest.fn().mockReturnThis(),
+  promise: jest.fn(),
 };
-
 const mockRoute53Client = {
-  changeResourceRecordSets: mockChangeResourceRecordSets,
-  listHostedZonesByName: mockListHostedZonesByName,
+  changeResourceRecordSets: jest.fn().mockReturnThis(),
+  listHostedZonesByName: jest.fn().mockReturnThis(),
+  promise: jest.fn(),
 };
 
-jest.mock('@aws-sdk/client-sts', () => {
+jest.mock('aws-sdk', () => {
   return {
-    STS: jest.fn().mockImplementation(() => {
-      return mockStsClient;;
-    }),
-  };
-});
-
-jest.mock('@aws-sdk/client-route-53', () => {
-  return {
-    Route53: jest.fn().mockImplementation(() => {
-      return mockRoute53Client;
-    }),
+    ...(jest.requireActual('aws-sdk') as any),
+    STS: jest.fn(() => mockStsClient),
+    Route53: jest.fn(() => mockRoute53Client),
   };
 });
 
 beforeEach(() => {
-  mockStsClient.assumeRole.mockClear();
-  mockRoute53Client.changeResourceRecordSets.mockClear();
-  mockRoute53Client.listHostedZonesByName.mockClear();
+  mockStsClient.assumeRole.mockReturnThis();
+  mockRoute53Client.changeResourceRecordSets.mockReturnThis();
+  mockRoute53Client.listHostedZonesByName.mockReturnThis();
 });
 
-afterAll(() => {
-  jest.resetAllMocks();
+afterEach(() => {
+  jest.clearAllMocks();
 });
 
 test('throws error if both ParentZoneId and ParentZoneName are not provided', async () => {
@@ -50,10 +39,27 @@ test('throws error if both ParentZoneId and ParentZoneName are not provided', as
   await expect(invokeHandler(event)).rejects.toThrow(/One of ParentZoneId or ParentZoneName must be specified/);
 });
 
+test('throws error if getting credentials fails', async () => {
+  // GIVEN
+  mockStsClient.promise.mockResolvedValueOnce({ Credentials: undefined });
+
+  // WHEN
+  const event= getCfnEvent();
+
+  // THEN
+  await expect(invokeHandler(event)).rejects.toThrow(/Error getting assume role credentials/);
+
+  expect(mockStsClient.assumeRole).toHaveBeenCalledTimes(1);
+  expect(mockStsClient.assumeRole).toHaveBeenCalledWith({
+    RoleArn: 'roleArn',
+    RoleSessionName: expect.any(String),
+  });
+});
+
 test('calls create resource record set with Upsert for Create event', async () => {
   // GIVEN
-  mockStsClient.assumeRole.mockResolvedValueOnce({ Credentials: { AccessKeyId: 'K', SecretAccessKey: 'S', SessionToken: 'T' } });
-  mockRoute53Client.changeResourceRecordSets.mockResolvedValueOnce({});
+  mockStsClient.promise.mockResolvedValueOnce({ Credentials: { AccessKeyId: 'K', SecretAccessKey: 'S', SessionToken: 'T' } });
+  mockRoute53Client.promise.mockResolvedValueOnce({});
 
   // WHEN
   const event= getCfnEvent();
@@ -79,8 +85,8 @@ test('calls create resource record set with Upsert for Create event', async () =
 
 test('calls create resource record set with DELETE for Delete event', async () => {
   // GIVEN
-  mockStsClient.assumeRole.mockResolvedValueOnce({ Credentials: { AccessKeyId: 'K', SecretAccessKey: 'S', SessionToken: 'T' } });
-  mockRoute53Client.changeResourceRecordSets.mockResolvedValueOnce({});
+  mockStsClient.promise.mockResolvedValueOnce({ Credentials: { AccessKeyId: 'K', SecretAccessKey: 'S', SessionToken: 'T' } });
+  mockRoute53Client.promise.mockResolvedValueOnce({});
 
   // WHEN
   const event= getCfnEvent({ RequestType: 'Delete' });
@@ -109,9 +115,9 @@ test('calls listHostedZonesByName to get zoneId if ParentZoneId is not provided'
   const parentZoneName = 'some.zone';
   const parentZoneId = 'zone-id';
 
-  mockStsClient.assumeRole.mockResolvedValueOnce({ Credentials: { AccessKeyId: 'K', SecretAccessKey: 'S', SessionToken: 'T' } });
-  mockRoute53Client.listHostedZonesByName.mockResolvedValueOnce({ HostedZones: [{ Name: `${parentZoneName}.`, Id: parentZoneId }] });
-  mockRoute53Client.changeResourceRecordSets.mockResolvedValueOnce({});
+  mockStsClient.promise.mockResolvedValueOnce({ Credentials: { AccessKeyId: 'K', SecretAccessKey: 'S', SessionToken: 'T' } });
+  mockRoute53Client.promise.mockResolvedValueOnce({ HostedZones: [{ Name: `${parentZoneName}.`, Id: parentZoneId }] });
+  mockRoute53Client.promise.mockResolvedValueOnce({});
 
   // WHEN
   const event = getCfnEvent({}, {
@@ -146,8 +152,8 @@ test('throws if more than one HostedZones are returnd for the provided ParentHos
   const parentZoneName = 'some.zone';
   const parentZoneId = 'zone-id';
 
-  mockStsClient.assumeRole.mockResolvedValueOnce({ Credentials: { AccessKeyId: 'K', SecretAccessKey: 'S', SessionToken: 'T' } });
-  mockRoute53Client.listHostedZonesByName.mockResolvedValueOnce({
+  mockStsClient.promise.mockResolvedValueOnce({ Credentials: { AccessKeyId: 'K', SecretAccessKey: 'S', SessionToken: 'T' } });
+  mockRoute53Client.promise.mockResolvedValueOnce({
     HostedZones: [
       { Name: `${parentZoneName}.`, Id: parentZoneId },
       { Name: `${parentZoneName}.`, Id: parentZoneId },

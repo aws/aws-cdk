@@ -9,7 +9,7 @@ module.exports = {
   coverageThreshold: {
     global: {
       // Pretty bad but we disabled snapshots
-      branches: 40,
+      branches: 30,
     },
   },
 };
