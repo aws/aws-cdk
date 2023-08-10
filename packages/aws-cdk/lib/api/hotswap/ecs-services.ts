@@ -52,6 +52,11 @@ export async function isHotswappableEcsServiceChange(
       reportNonHotswappableChange(ret, change, undefined, 'Failed to determine family name of the task definition', false);
       return ret;
     }
+    const oldTaskDefinitionArn = await evaluateCfnTemplate.findPhysicalNameFor(logicalId);
+    if (oldTaskDefinitionArn === undefined) {
+      reportNonHotswappableChange(ret, change, undefined, 'Failed to determine ARN of the task definition', false);
+      return ret;
+    }
 
     const changes = await evaluatableProperties(evaluateCfnTemplate, change, propertiesToHotswap);
     if (changes.unevaluatableUpdates.length > 0) {
@@ -75,16 +80,16 @@ export async function isHotswappableEcsServiceChange(
         // we need to lowercase the evaluated TaskDef from CloudFormation,
         // as the AWS SDK uses lowercase property names for these
 
-        // get the latest task definition of the family
+        // get the task definition of the family and revision corresponding to the old CFn template
         const target = await sdk
           .ecs()
           .describeTaskDefinition({
-            taskDefinition: familyName,
+            taskDefinition: oldTaskDefinitionArn,
             include: ['TAGS'],
           })
           .promise();
         if (target.taskDefinition === undefined) {
-          throw new Error(`Could not find a task definition: ${familyName}`);
+          throw new Error(`Could not find a task definition: ${oldTaskDefinitionArn}. Try deploying without hotswap first.`);
         }
 
         // The describeTaskDefinition response contains several keys that must not exist in a registerTaskDefinition request.
@@ -171,12 +176,6 @@ export async function isHotswappableEcsServiceChange(
             return Promise.all(clusterUpdates.map(serviceUpdate => serviceUpdate.promise));
           }),
         );
-
-        if (taskDefRevArn !== undefined) {
-          // Make the task definition registered by hotswap INACTIVE immediately.
-          // This is to prevent describeTaskDefinition API from returning a drifted task definition.
-          await sdk.ecs().deregisterTaskDefinition({ taskDefinition: taskDefRevArn }).promise();
-        }
 
         // Step 3 - wait for the service deployments triggered in Step 2 to finish
         // configure a custom Waiter
