@@ -110,7 +110,7 @@ new glue.Job(this, 'RayJob', {
 Enable Spark UI setting the `sparkUI` property.
 
 ```ts
-new glue.Job(stack, 'EnableSparkUI', {
+new glue.Job(this, 'EnableSparkUI', {
   jobName: 'EtlJobWithSparkUIPrefix',
   sparkUI: {
     enabled: true,
