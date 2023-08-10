@@ -1,10 +1,9 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 
-
-import * as AWS_EC2 from "@aws-sdk/client-ec2";
+import * as AWS_EC2 from '@aws-sdk/client-ec2';
 
 const {
-  EC2
+  EC2,
 } = AWS_EC2;
 
 const ec2 = new EC2();
