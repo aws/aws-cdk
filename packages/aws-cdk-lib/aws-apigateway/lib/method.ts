@@ -173,7 +173,7 @@ export class Method extends Resource {
    */
   public readonly api: IRestApi;
 
-  public readonly methodResponses: MethodResponse[];
+  private readonly methodResponses: MethodResponse[];
 
   constructor(scope: Construct, id: string, props: MethodProps) {
     super(scope, id);
@@ -242,6 +242,22 @@ export class Method extends Resource {
         },
       });
     }
+
+    this.node.addValidation({
+      validate: () => {
+        const responses = this.methodResponses;
+
+        // Validate that all method response codes are unique
+        const counts: Record<string, number> = {};
+        for (const resp of responses) {
+          counts[resp.statusCode] = (counts[resp.statusCode] ?? 0) + 1;
+        }
+        const dupes = Object.entries(counts).filter(([_, n]) => n > 1).map(([c, _]) => c);
+        return dupes.map((code) =>
+          `${counts[code]} methodResponses for code ${code}: ${this.methodResponses.filter((r) => r.statusCode === code).map((x) => JSON.stringify(x)).join(', ')}`,
+        );
+      },
+    });
   }
 
   /**
@@ -322,12 +338,8 @@ export class Method extends Resource {
       let responseModels: {[contentType: string]: string} | undefined;
 
       if (mr.responseModels) {
-        responseModels = {};
-        for (const contentType in mr.responseModels) {
-          if (mr.responseModels.hasOwnProperty(contentType)) {
-            responseModels[contentType] = mr.responseModels[contentType].modelId;
-          }
-        }
+        responseModels = Object.fromEntries(Object.entries(mr.responseModels)
+          .map(([contentType, rm]) => [contentType, rm.modelId]));
       }
 
       const methodResponseProp = {

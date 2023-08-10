@@ -157,10 +157,8 @@ class StepFunctionsExecutionIntegration extends AwsIntegration {
       deploymentToken = JSON.stringify({ stateMachineName });
     }
 
-    if (method.methodResponses.length === 0) {
-      for (const methodResponse of METHOD_RESPONSES) {
-        method.addMethodResponse(methodResponse);
-      }
+    for (const methodResponse of METHOD_RESPONSES) {
+      method.addMethodResponse(methodResponse);
     }
 
     return {
