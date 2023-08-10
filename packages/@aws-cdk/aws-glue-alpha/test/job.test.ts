@@ -642,7 +642,6 @@ describe('Job', () => {
           'Prefix must not end with \'/\'',
         ].join(EOL);
         it('fails if path is mis-formatted', () => {
-          //sparkUIBucket = s3.Bucket.fromBucketName(stack, 'BucketId', sparkUIBucketName);
           expect(() => new glue.Job(stack, 'BadPrefixJob', {
             ...defaultProps,
             sparkUI: {
@@ -666,7 +665,6 @@ describe('Job', () => {
         });
 
         it('should grant the role read/write permissions spark ui bucket prefixed folder', () => {
-          //console.dir(Template.fromStack(stack).findResources('AWS::IAM::Policy'), { depth: null });
           Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
             PolicyDocument: {
               Statement: [
@@ -707,38 +705,6 @@ describe('Job', () => {
                     },
                   ],
                 },
-                /*
-                {
-                  Action: [
-                    's3:GetObject*',
-                    's3:GetBucket*',
-                    's3:List*',
-                  ],
-                  Effect: 'Allow',
-                  Resource: [
-                    {
-                      'Fn::Join': [
-                        '',
-                        [
-                          'arn:',
-                          { Ref: 'AWS::Partition' },
-                          ':s3:::bucketname',
-                        ],
-                      ],
-                    },
-                    {
-                      'Fn::Join': [
-                        '',
-                        [
-                          'arn:',
-                          { Ref: 'AWS::Partition' },
-                          ':s3:::bucketname/script',
-                        ],
-                      ],
-                    },
-                  ],
-                },
-                */
                 codeBucketAccessStatement,
               ],
               Version: '2012-10-17',
