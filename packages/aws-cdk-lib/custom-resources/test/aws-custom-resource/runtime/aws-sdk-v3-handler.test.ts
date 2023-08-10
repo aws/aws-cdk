@@ -11,6 +11,20 @@ import { handler, forceSdkInstallation } from '../../../lib/aws-custom-resource/
 // 5s timeout
 jest.setTimeout(60_000);
 
+const mockExecSync = jest.fn();
+jest.mock('child_process', () => {
+  return jest.fn().mockImplementation(() => {
+    return {
+      ...(jest.requireActual('child_process')),
+      execSync: mockExecSync,
+    };
+  });
+});
+
+beforeEach(() => {
+  mockExecSync.mockReset();
+});
+
 /* eslint-disable no-console */
 console.log = jest.fn();
 
@@ -39,9 +53,6 @@ afterEach(() => {
   s3MockClient.reset();
   nock.cleanAll();
 });
-
-/* eslint-disable no-console */
-console.log = jest.fn();
 
 jest.mock('@aws-sdk/credential-providers', () => {
   return {
@@ -483,6 +494,42 @@ test('installs the latest SDK', async () => {
 
   // clean up aws-sdk install
   await fs.remove(tmpPath);
+});
+
+test('falls back to installed sdk if installation fails', async () => {
+  mockExecSync.mockImplementation(() => {
+    throw new Error('Install failed');
+  });
+
+  s3MockClient.on(S3.GetObjectCommand).resolves({});
+
+  const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
+    ...eventCommon,
+    RequestType: 'Create',
+    ResourceProperties: {
+      ServiceToken: 'token',
+      Create: JSON.stringify({
+        service: '@aws-sdk/client-s3',
+        action: 'GetObjectCommand',
+        parameters: {
+          Bucket: 'my-bucket',
+          Key: 'key',
+        },
+        physicalResourceId: PhysicalResourceId.of('id'),
+      } as AwsSdkCall),
+      InstallLatestAwsSdk: 'true',
+    },
+  };
+
+  const request = createRequest(body =>
+    body.Status === 'SUCCESS',
+  );
+
+  // Reset to 'false' so that the next run will reinstall aws-sdk
+  forceSdkInstallation();
+  await handler(event, {} as AWSLambda.Context);
+
+  expect(request.isDone()).toBeTruthy();
 });
 
 test('SDK credentials are not persisted across subsequent invocations', async () => {

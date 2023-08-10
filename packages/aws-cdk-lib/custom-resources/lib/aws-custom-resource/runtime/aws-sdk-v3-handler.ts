@@ -43,12 +43,12 @@ async function loadAwsSdk(
   let awsSdk: AwsSdk;
   try {
     if (!installedSdk[packageName] && installLatestAwsSdk === 'true') {
-      installLatestSdk(packageName);
       try {
+        installLatestSdk(packageName);
         // MUST use require here. Dynamic import() do not support importing from directories
         awsSdk = require(`/tmp/node_modules/${packageName}`);
       } catch (e) {
-        console.log(`Failed to install latest AWS SDK v3. Falling back to pr-installed version. Error: ${e}`);
+        console.log(`Failed to install latest AWS SDK v3. Falling back to pre-installed version. Error: ${e}`);
         // MUST use require as dynamic import() does not support importing from directories
         return require(packageName); // Fallback to pre-installed version
       }
