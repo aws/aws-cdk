@@ -1,3 +1,4 @@
+import { EOL } from 'os';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -389,8 +390,9 @@ export interface SparkUIProps {
 
   /**
    * The path inside the bucket (objects prefix) where the Glue job stores the logs.
+   * Use format `'/foo/bar'`
    *
-   * @default '/' - the logs will be written at the root of the bucket
+   * @default - the logs will be written at the root of the bucket
    */
   readonly prefix?: string;
 }
@@ -804,8 +806,9 @@ export class Job extends JobBase {
       throw new Error('Spark UI is not available for JobType.RAY jobs');
     }
 
+    this.validatePrefix(props.prefix);
     const bucket = props.bucket ?? new s3.Bucket(this, 'SparkUIBucket');
-    bucket.grantReadWrite(role, props.prefix?.concat('*'));
+    bucket.grantReadWrite(role, this.cleanPrefixForGrant(props.prefix));
     const args = {
       '--enable-spark-ui': 'true',
       '--spark-event-logs-path': bucket.s3UrlForObject(props.prefix),
@@ -818,6 +821,31 @@ export class Job extends JobBase {
       },
       args,
     };
+  }
+
+  private validatePrefix(prefix?: string): void {
+    if (!prefix || cdk.Token.isUnresolved(prefix)) {
+      // skip validation if prefix is not specified or is a token
+      return;
+    }
+
+    const errors: string[] = [];
+
+    if (!prefix.startsWith('/')) {
+      errors.push('Prefix must begin with \'/\'');
+    }
+
+    if (prefix.endsWith('/')) {
+      errors.push('Prefix must not end with \'/\'');
+    }
+
+    if (errors.length > 0) {
+      throw new Error(`Invalid prefix format (value: ${prefix})${EOL}${errors.join(EOL)}`);
+    }
+  }
+
+  private cleanPrefixForGrant(prefix?: string): string | undefined {
+    return prefix !== undefined ? prefix.slice(1) + '/*' : undefined;
   }
 
   private setupContinuousLogging(role: iam.IRole, props: ContinuousLoggingProps) {

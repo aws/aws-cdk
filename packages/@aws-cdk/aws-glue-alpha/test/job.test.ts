@@ -1,3 +1,4 @@
+import { EOL } from 'os';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as events from 'aws-cdk-lib/aws-events';
@@ -632,8 +633,26 @@ describe('Job', () => {
 
       describe('with bucket and path provided', () => {
         const sparkUIBucketName = 'sparkbucketname';
-        const prefix = 'some/path/';
+        const prefix = '/foob/bart';
+        const badPrefix = 'foob/bart/';
         let sparkUIBucket: s3.IBucket;
+
+        const expectedErrors = [
+          `Invalid prefix format (value: ${badPrefix})`,
+          'Prefix must begin with \'/\'',
+          'Prefix must not end with \'/\'',
+        ].join(EOL);
+        it('fails if path is mis-formatted', () => {
+          //sparkUIBucket = s3.Bucket.fromBucketName(stack, 'BucketId', sparkUIBucketName);
+          expect(() => new glue.Job(stack, 'BadPrefixJob', {
+            ...defaultProps,
+            sparkUI: {
+              enabled: true,
+              bucket: sparkUIBucket,
+              prefix: badPrefix,
+            },
+          })).toThrow(expectedErrors);
+        });
 
         beforeEach(() => {
           sparkUIBucket = s3.Bucket.fromBucketName(stack, 'BucketId', sparkUIBucketName);
@@ -642,14 +661,92 @@ describe('Job', () => {
             sparkUI: {
               enabled: true,
               bucket: sparkUIBucket,
-              prefix,
+              prefix: prefix,
             },
           });
         });
 
         it('should grant the role read/write permissions spark ui bucket prefixed folder', () => {
+          //console.dir(Template.fromStack(stack).findResources('AWS::IAM::Policy'), { depth: null });
           Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
             PolicyDocument: {
+              Statement: [
+                {
+                  Action: [
+                    's3:GetObject*',
+                    's3:GetBucket*',
+                    's3:List*',
+                    's3:DeleteObject*',
+                    's3:PutObject',
+                    's3:PutObjectLegalHold',
+                    's3:PutObjectRetention',
+                    's3:PutObjectTagging',
+                    's3:PutObjectVersionTagging',
+                    's3:Abort*',
+                  ],
+                  Effect: 'Allow',
+                  Resource: [
+                    {
+                      'Fn::Join': [
+                        '',
+                        [
+                          'arn:',
+                          { Ref: 'AWS::Partition' },
+                          ':s3:::sparkbucketname',
+                        ],
+                      ],
+                    },
+                    {
+                      'Fn::Join': [
+                        '',
+                        [
+                          'arn:',
+                          { Ref: 'AWS::Partition' },
+                          `:s3:::sparkbucketname${prefix}/*`,
+                        ],
+                      ],
+                    },
+                  ],
+                },
+                /*
+                {
+                  Action: [
+                    's3:GetObject*',
+                    's3:GetBucket*',
+                    's3:List*',
+                  ],
+                  Effect: 'Allow',
+                  Resource: [
+                    {
+                      'Fn::Join': [
+                        '',
+                        [
+                          'arn:',
+                          { Ref: 'AWS::Partition' },
+                          ':s3:::bucketname',
+                        ],
+                      ],
+                    },
+                    {
+                      'Fn::Join': [
+                        '',
+                        [
+                          'arn:',
+                          { Ref: 'AWS::Partition' },
+                          ':s3:::bucketname/script',
+                        ],
+                      ],
+                    },
+                  ],
+                },
+                */
+                codeBucketAccessStatement,
+              ],
+              Version: '2012-10-17',
+            },
+            PolicyName: 'JobServiceRoleDefaultPolicy03F68F9D',
+            Roles: [{ Ref: 'JobServiceRole4F432993' }],
+            /*PolicyDocument: {
               Statement: [
                 {
                   Action: [
@@ -679,9 +776,10 @@ describe('Job', () => {
                           {
                             'Fn::GetAtt': [
                               'JobSparkUIBucket8E6A0139',
+                              'Arn',
                             ],
                           },
-                          '/some/path/*',
+                          `${prefix}/*`,
                         ],
                       ],
                     },
@@ -696,15 +794,15 @@ describe('Job', () => {
               {
                 Ref: 'JobServiceRole4F432993',
               },
-            ],
+            ], */
           });
         });
 
-        test('should set spark arguments on the job', () => {
+        it('should set spark arguments on the job', () => {
           Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
             DefaultArguments: {
               '--enable-spark-ui': 'true',
-              '--spark-event-logs-path': `s3://${sparkUIBucketName}/${prefix}`,
+              '--spark-event-logs-path': `s3://${sparkUIBucketName}${prefix}`,
             },
           });
         });
