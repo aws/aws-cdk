@@ -66,7 +66,31 @@ describe('container definition', () => {
         });
 
         // THEN
-        expect(() => portMap.validate()).toThrow('Cannot set "hostPort" or "containerPort" while using the port range for the container.');
+        expect(() => portMap.validate()).toThrow('Cannot set "containerPort" and "containerPortRange" at the same time.');
+      });
+
+      describe('throws when PortMapping.hostPort is set to a different port than the container port', () => {
+        test('when network mode is AwsVpc', () => {
+          // GIVEN
+          const portMap = new ecs.PortMap(ecs.NetworkMode.AWS_VPC, {
+            containerPort: 8080,
+            hostPort: 8081,
+          });
+
+          // THEN
+          expect(() => portMap.validate()).toThrow('The host port must be left out or must be the same as the container port for AwsVpc or Host network mode.');
+        });
+
+        test('when network mode is Host', () => {
+          // GIVEN
+          const portMap = new ecs.PortMap(ecs.NetworkMode.HOST, {
+            containerPort: 8080,
+            hostPort: 8081,
+          });
+
+          // THEN
+          expect(() => portMap.validate()).toThrow('The host port must be left out or must be the same as the container port for AwsVpc or Host network mode.');
+        });
       });
 
       test('throws when PortMapping.containerPortRange is used along with PortMapping.hostPort', () => {
@@ -77,7 +101,7 @@ describe('container definition', () => {
         });
 
         // THEN
-        expect(() => portMap.validate()).toThrow('Cannot set "hostPort" or "containerPort" while using the port range for the container.');
+        expect(() => portMap.validate()).toThrow('Cannot set "hostPort" while using a port range for the container.');
       });
 
       describe('throws when PortMapping.containerPortRange is used with an unsupported network mode', () => {

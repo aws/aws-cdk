@@ -1172,18 +1172,25 @@ export class PortMap {
     if (!this.isvalidPortName()) {
       throw new Error('Port mapping name cannot be an empty string.');
     }
-    if (!this.isValidPorts()) {
-      const pm = this.portmapping;
-      throw new Error(`Host port (${pm.hostPort}) must be left out or equal to container port ${pm.containerPort} for network mode ${this.networkmode}`);
-    }
 
     if (this.portmapping.containerPort === undefined && this.portmapping.containerPortRange === undefined) {
       throw new Error('Either "containerPort" or "containerPortRange" must be set.');
     }
 
+    if (this.portmapping.containerPort !== undefined && this.portmapping.containerPortRange !== undefined) {
+      throw new Error('Cannot set "containerPort" and "containerPortRange" at the same time.');
+    }
+
+    if (this.portmapping.containerPort !== undefined) {
+      if ((this.networkmode === NetworkMode.AWS_VPC || this.networkmode === NetworkMode.HOST)
+          && this.portmapping.hostPort !== undefined && this.portmapping.hostPort !== this.portmapping.containerPort) {
+        throw new Error('The host port must be left out or must be the same as the container port for AwsVpc or Host network mode.');
+      }
+    }
+
     if (this.portmapping.containerPortRange !== undefined) {
-      if (this.portmapping.hostPort !== undefined || this.portmapping.containerPort !== undefined) {
-        throw new Error('Cannot set "hostPort" or "containerPort" while using the port range for the container.');
+      if (this.portmapping.hostPort !== undefined) {
+        throw new Error('Cannot set "hostPort" while using a port range for the container.');
       }
 
       if (this.networkmode !== NetworkMode.BRIDGE && this.networkmode !== NetworkMode.AWS_VPC) {
@@ -1196,16 +1203,6 @@ export class PortMap {
     if (this.portmapping.name === '') {
       return false;
     }
-    return true;
-  }
-
-  private isValidPorts() :boolean {
-    const isAwsVpcMode = this.networkmode == NetworkMode.AWS_VPC;
-    const isHostMode = this.networkmode == NetworkMode.HOST;
-    if (!isAwsVpcMode && !isHostMode) return true;
-    const hostPort = this.portmapping.hostPort;
-    const containerPort = this.portmapping.containerPort;
-    if (containerPort !== hostPort && hostPort !== undefined ) return false;
     return true;
   }
 
