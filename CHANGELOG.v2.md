@@ -22,11 +22,6 @@ All notable changes to this project will be documented in this file. See [standa
 * **triggers:** executed on update even when executeOnHandlerChange is false ([#26676](https://github.com/aws/aws-cdk/issues/26676)) ([ed3aaf7](https://github.com/aws/aws-cdk/commit/ed3aaf7826884d3fdafd667fe7816fc57772632c)), closes [#25939](https://github.com/aws/aws-cdk/issues/25939)
 * broken cross-region reference in aws-route53 ([#26666](https://github.com/aws/aws-cdk/issues/26666)) ([ec61b09](https://github.com/aws/aws-cdk/commit/ec61b09f6f3f49ace109ec150064fb948635eee1))
 
-
-### Reverts
-
-* "chore(ground-station): Scaffold AWS Ground Station alpha" ([#26704](https://github.com/aws/aws-cdk/issues/26704)) ([b551af0](https://github.com/aws/aws-cdk/commit/b551af001b0f88764086d526e0e04ed78b364e5b))
-
 ## [2.90.0](https://github.com/aws/aws-cdk/compare/v2.89.0...v2.90.0) (2023-08-04)
 
 
