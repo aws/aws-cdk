@@ -11,7 +11,10 @@ const ec2 = new EC2();
 /**
  * The default security group ingress rule. This can be used to both revoke and authorize the rules
  */
-function ingressRuleParams(groupId: string, account: string): AWS_EC2.RevokeSecurityGroupIngressCommandInput | AWS_EC2.AuthorizeSecurityGroupIngressCommandInput {
+function ingressRuleParams(
+  groupId: string,
+  account: string,
+): AWS_EC2.RevokeSecurityGroupIngressCommandInput | AWS_EC2.AuthorizeSecurityGroupIngressCommandInput {
   return {
     GroupId: groupId,
     IpPermissions: [{
