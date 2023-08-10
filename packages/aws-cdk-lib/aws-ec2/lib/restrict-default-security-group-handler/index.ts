@@ -1,12 +1,18 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { EC2 } from 'aws-sdk';
+
+
+import * as AWS_EC2 from "@aws-sdk/client-ec2";
+
+const {
+  EC2
+} = AWS_EC2;
 
 const ec2 = new EC2();
 
 /**
  * The default security group ingress rule. This can be used to both revoke and authorize the rules
  */
-function ingressRuleParams(groupId: string, account: string): EC2.RevokeSecurityGroupIngressRequest | EC2.AuthorizeSecurityGroupIngressRequest {
+function ingressRuleParams(groupId: string, account: string): AWS_EC2.RevokeSecurityGroupIngressCommandInput | AWS_EC2.AuthorizeSecurityGroupIngressCommandInput {
   return {
     GroupId: groupId,
     IpPermissions: [{
@@ -22,7 +28,7 @@ function ingressRuleParams(groupId: string, account: string): EC2.RevokeSecurity
 /**
  * The default security group egress rule. This can be used to both revoke and authorize the rules
  */
-function egressRuleParams(groupId: string): EC2.RevokeSecurityGroupEgressRequest | EC2.AuthorizeSecurityGroupEgressRequest {
+function egressRuleParams(groupId: string): AWS_EC2.RevokeSecurityGroupEgressCommandInput | AWS_EC2.AuthorizeSecurityGroupEgressCommandInput {
   return {
     GroupId: groupId,
     IpPermissions: [{
@@ -67,8 +73,8 @@ async function onUpdate(event: AWSLambda.CloudFormationCustomResourceUpdateEvent
  * Revoke both ingress and egress rules
  */
 async function revokeRules(groupId: string, account: string): Promise<void> {
-  await ec2.revokeSecurityGroupEgress(egressRuleParams(groupId)).promise();
-  await ec2.revokeSecurityGroupIngress(ingressRuleParams(groupId, account)).promise();
+  await ec2.revokeSecurityGroupEgress(egressRuleParams(groupId));
+  await ec2.revokeSecurityGroupIngress(ingressRuleParams(groupId, account));
   return;
 }
 
@@ -76,7 +82,7 @@ async function revokeRules(groupId: string, account: string): Promise<void> {
  * Authorize both ingress and egress rules
  */
 async function authorizeRules(groupId: string, account: string): Promise<void> {
-  await ec2.authorizeSecurityGroupIngress(ingressRuleParams(groupId, account)).promise();
-  await ec2.authorizeSecurityGroupEgress(egressRuleParams(groupId)).promise();
+  await ec2.authorizeSecurityGroupIngress(ingressRuleParams(groupId, account));
+  await ec2.authorizeSecurityGroupEgress(egressRuleParams(groupId));
   return;
 }

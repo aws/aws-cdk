@@ -1417,9 +1417,7 @@ describe('volume', () => {
           availabilityZone: 'us-east-1a',
           size: cdk.Size.gibibytes(min - 1),
           volumeType,
-          ...iops
-            ? { iops }
-            : {},
+          ...(iops ? { iops } : {}),
         });
       }).toThrow(/volumes must be between/);
       expect(() => {
@@ -1427,9 +1425,7 @@ describe('volume', () => {
           availabilityZone: 'us-east-1a',
           size: cdk.Size.gibibytes(min),
           volumeType,
-          ...iops
-            ? { iops }
-            : {},
+          ...(iops ? { iops } : {}),
         });
       }).not.toThrow();
       expect(() => {
@@ -1437,9 +1433,7 @@ describe('volume', () => {
           availabilityZone: 'us-east-1a',
           size: cdk.Size.gibibytes(max),
           volumeType,
-          ...iops
-            ? { iops }
-            : {},
+          ...(iops ? { iops } : {}),
         });
       }).not.toThrow();
       expect(() => {
@@ -1447,9 +1441,7 @@ describe('volume', () => {
           availabilityZone: 'us-east-1a',
           size: cdk.Size.gibibytes(max + 1),
           volumeType,
-          ...iops
-            ? { iops }
-            : {},
+          ...(iops ? { iops } : {}),
         });
       }).toThrow(/volumes must be between/);
     }
@@ -1480,7 +1472,7 @@ describe('volume', () => {
         availabilityZone: 'us-east-1a',
         size: cdk.Size.gibibytes(125),
         volumeType,
-        ...iops ? { iops }: {},
+        ...(iops ? { iops } : {}),
         throughput: 125,
       });
     }).toThrow(/throughput property requires volumeType: EbsDeviceVolumeType.GP3/);

@@ -174,10 +174,10 @@ export interface InitCommandOptions {
 export abstract class InitCommandWaitDuration {
   /** Wait for a specified duration after a command. */
   public static of(duration: Duration): InitCommandWaitDuration {
-    return new class extends InitCommandWaitDuration {
+    return new (class extends InitCommandWaitDuration {
       /** @internal */
       public _render() { return duration.toSeconds(); }
-    }();
+    })();
   }
 
   /** Do not wait for this command. */
@@ -330,7 +330,7 @@ export abstract class InitFile extends InitElement {
     if (!content) {
       throw new Error(`InitFile ${fileName}: cannot create empty file. Please supply at least one character of content.`);
     }
-    return new class extends InitFile {
+    return new (class extends InitFile {
       protected _doBind(bindOptions: InitBindOptions) {
         return {
           config: this._standardConfig(options, bindOptions.platform, {
@@ -339,7 +339,7 @@ export abstract class InitFile extends InitElement {
           }),
         };
       }
-    }(fileName, options);
+    })(fileName, options);
   }
 
   /**
@@ -359,7 +359,7 @@ export abstract class InitFile extends InitElement {
    * May contain tokens.
    */
   public static fromObject(fileName: string, obj: Record<string, any>, options: InitFileOptions = {}): InitFile {
-    return new class extends InitFile {
+    return new (class extends InitFile {
       protected _doBind(bindOptions: InitBindOptions) {
         return {
           config: this._standardConfig(options, bindOptions.platform, {
@@ -367,7 +367,7 @@ export abstract class InitFile extends InitElement {
           }),
         };
       }
-    }(fileName, options);
+    })(fileName, options);
   }
 
   /**
@@ -388,7 +388,7 @@ export abstract class InitFile extends InitElement {
    * Download from a URL at instance startup time
    */
   public static fromUrl(fileName: string, url: string, options: InitFileOptions = {}): InitFile {
-    return new class extends InitFile {
+    return new (class extends InitFile {
       protected _doBind(bindOptions: InitBindOptions) {
         return {
           config: this._standardConfig(options, bindOptions.platform, {
@@ -396,14 +396,14 @@ export abstract class InitFile extends InitElement {
           }),
         };
       }
-    }(fileName, options);
+    })(fileName, options);
   }
 
   /**
    * Download a file from an S3 bucket at instance startup time
    */
   public static fromS3Object(fileName: string, bucket: s3.IBucket, key: string, options: InitFileOptions = {}): InitFile {
-    return new class extends InitFile {
+    return new (class extends InitFile {
       protected _doBind(bindOptions: InitBindOptions) {
         bucket.grantRead(bindOptions.instanceRole, key);
         return {
@@ -413,7 +413,7 @@ export abstract class InitFile extends InitElement {
           authentication: standardS3Auth(bindOptions.instanceRole, bucket.bucketName),
         };
       }
-    }(fileName, options);
+    })(fileName, options);
   }
 
   /**
@@ -422,7 +422,7 @@ export abstract class InitFile extends InitElement {
    * This is appropriate for files that are too large to embed into the template.
    */
   public static fromAsset(targetFileName: string, path: string, options: InitFileAssetOptions = {}): InitFile {
-    return new class extends InitFile {
+    return new (class extends InitFile {
       protected _doBind(bindOptions: InitBindOptions) {
         const asset = new s3_assets.Asset(bindOptions.scope, `${targetFileName}Asset`, {
           path,
@@ -438,14 +438,14 @@ export abstract class InitFile extends InitElement {
           assetHash: asset.assetHash,
         };
       }
-    }(targetFileName, options);
+    })(targetFileName, options);
   }
 
   /**
    * Use a file from an asset at instance startup time
    */
   public static fromExistingAsset(targetFileName: string, asset: s3_assets.Asset, options: InitFileOptions = {}): InitFile {
-    return new class extends InitFile {
+    return new (class extends InitFile {
       protected _doBind(bindOptions: InitBindOptions) {
         asset.grantRead(bindOptions.instanceRole);
         return {
@@ -456,7 +456,7 @@ export abstract class InitFile extends InitElement {
           assetHash: asset.assetHash,
         };
       }
-    }(targetFileName, options);
+    })(targetFileName, options);
   }
 
   public readonly elementType = InitElementType.FILE.toString();
@@ -923,7 +923,7 @@ export abstract class InitSource extends InitElement {
    * Extract an archive stored in an S3 bucket into the given directory
    */
   public static fromS3Object(targetDirectory: string, bucket: s3.IBucket, key: string, options: InitSourceOptions = {}): InitSource {
-    return new class extends InitSource {
+    return new (class extends InitSource {
       protected _doBind(bindOptions: InitBindOptions) {
         bucket.grantRead(bindOptions.instanceRole, key);
 
@@ -932,14 +932,14 @@ export abstract class InitSource extends InitElement {
           authentication: standardS3Auth(bindOptions.instanceRole, bucket.bucketName),
         };
       }
-    }(targetDirectory, options.serviceRestartHandles);
+    })(targetDirectory, options.serviceRestartHandles);
   }
 
   /**
    * Create an InitSource from an asset created from the given path.
    */
   public static fromAsset(targetDirectory: string, path: string, options: InitSourceAssetOptions = {}): InitSource {
-    return new class extends InitSource {
+    return new (class extends InitSource {
       protected _doBind(bindOptions: InitBindOptions) {
         const asset = new s3_assets.Asset(bindOptions.scope, `${targetDirectory}Asset`, {
           path,
@@ -953,14 +953,14 @@ export abstract class InitSource extends InitElement {
           assetHash: asset.assetHash,
         };
       }
-    }(targetDirectory, options.serviceRestartHandles);
+    })(targetDirectory, options.serviceRestartHandles);
   }
 
   /**
    * Extract a directory from an existing directory asset.
    */
   public static fromExistingAsset(targetDirectory: string, asset: s3_assets.Asset, options: InitSourceOptions = {}): InitSource {
-    return new class extends InitSource {
+    return new (class extends InitSource {
       protected _doBind(bindOptions: InitBindOptions) {
         asset.grantRead(bindOptions.instanceRole);
 
@@ -970,7 +970,7 @@ export abstract class InitSource extends InitElement {
           assetHash: asset.assetHash,
         };
       }
-    }(targetDirectory, options.serviceRestartHandles);
+    })(targetDirectory, options.serviceRestartHandles);
   }
 
   public readonly elementType = InitElementType.SOURCE.toString();

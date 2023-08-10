@@ -308,7 +308,7 @@ function deepMerge(target?: Record<string, any>, src?: Record<string, any>) {
         throw new Error(`Trying to merge array [${value}] into a non-array '${target[key]}'`);
       }
       target[key] = Array.from(new Set([
-        ...target[key] ?? [],
+        ...(target[key] ?? []),
         ...value,
       ]));
       continue;
