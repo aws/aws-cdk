@@ -72,8 +72,7 @@
      "Ref": "MyTriggerFunctionCurrentVersion61957CE160cd5b4c06c4d00191dc10a647ea0777"
     },
     "InvocationType": "RequestResponse",
-    "Timeout": "120000",
-    "ExecuteOnHandlerChange": true
+    "Timeout": "120000"
    },
    "DependsOn": [
     "Topic269377B75"
@@ -238,7 +237,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "237e4a416773a5765262a8b9c70210bd35dfd48ae5a364b19e35f260026b5139.zip"
+     "S3Key": "bcb8f5f1cebce365c4a0bf886b9820908bb469b121d65ef42809ae9798fb9232.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -335,8 +334,7 @@
      "Ref": "MyLambdaFunctionCurrentVersion4FAB80EC75f2df347bcc21ea05f818cb68778d9f"
     },
     "InvocationType": "Event",
-    "Timeout": "60000",
-    "ExecuteOnHandlerChange": true
+    "Timeout": "60000"
    },
    "DependsOn": [
     "Topic198E71B3E",
@@ -458,8 +456,7 @@
      "Ref": "MyAssertionLambdaFunctionCurrentVersionF4FA4C80f14c7075b9f4d7c63066e881d45e211c"
     },
     "InvocationType": "RequestResponse",
-    "Timeout": "60000",
-    "ExecuteOnHandlerChange": true
+    "Timeout": "60000"
    },
    "DependsOn": [
     "TestQueue6F0069AA"
@@ -530,8 +527,7 @@
      "Ref": "MySecondFunctionCurrentVersion7D497B5D173a4bb1f758991022ea97d651403362"
     },
     "InvocationType": "RequestResponse",
-    "Timeout": "120000",
-    "ExecuteOnHandlerChange": true
+    "Timeout": "120000"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -557,8 +553,7 @@
      "Ref": "MyLambdaFunctionCurrentVersion4FAB80EC75f2df347bcc21ea05f818cb68778d9f"
     },
     "InvocationType": "RequestResponse",
-    "Timeout": "120000",
-    "ExecuteOnHandlerChange": true
+    "Timeout": "120000"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
