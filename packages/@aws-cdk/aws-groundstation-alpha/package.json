@@ -1,28 +1,28 @@
 {
-  "name": "@aws-cdk/aws-amplify-alpha",
+  "name": "@aws-cdk/aws-groundstation-alpha",
   "version": "0.0.0",
   "private": false,
-  "description": "The CDK Construct Library for AWS::Amplify",
+  "description": "The CDK Construct Library for AWS::GroundStation",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
     "targets": {
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Amplify.Alpha",
-        "packageId": "Amazon.CDK.AWS.Amplify.Alpha",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
-      },
       "java": {
-        "package": "software.amazon.awscdk.services.amplify.alpha",
+        "package": "software.amazon.awscdk.services.groundstation.alpha",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "amplify-alpha"
+          "artifactId": "groundstation-alpha"
         }
       },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.GroundStation.Alpha",
+        "packageId": "Amazon.CDK.AWS.GroundStation.Alpha",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
+      },
       "python": {
-        "distName": "aws-cdk.aws-amplify-alpha",
-        "module": "aws_cdk.aws_amplify_alpha",
+        "distName": "aws-cdk.aws-groundstation-alpha",
+        "module": "aws_cdk.aws_groundstation_alpha",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 2"
@@ -30,7 +30,7 @@
       },
       "go": {
         "moduleName": "github.com/aws/aws-cdk-go",
-        "packageName": "awscdkamplifyalpha"
+        "packageName": "awscdkgroundstationalpha"
       }
     },
     "projectReferences": true,
@@ -45,20 +45,19 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "packages/@aws-cdk/aws-amplify-alpha"
+    "directory": "packages/@aws-cdk/aws-groundstation-alpha"
   },
-  "homepage": "https://github.com/aws/aws-cdk",
   "scripts": {
     "build": "cdk-build",
-    "integ": "integ-runner",
+    "watch": "cdk-watch",
     "lint": "cdk-lint",
+    "test": "cdk-test",
+    "integ": "integ-runner",
+    "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
-    "pkglint": "pkglint -f",
-    "test": "cdk-test",
-    "watch": "cdk-watch",
-    "build+test": "yarn build && yarn test",
     "build+test+package": "yarn build+test && yarn package",
+    "build+test": "yarn build && yarn test",
     "compat": "cdk-compat",
     "rosetta:extract": "yarn --silent jsii-rosetta extract",
     "build+extract": "yarn build && yarn rosetta:extract",
@@ -73,8 +72,7 @@
     "aws",
     "cdk",
     "constructs",
-    "AWS::Amplify",
-    "aws-amplify"
+    "groundstation"
   ],
   "author": {
     "name": "Amazon Web Services",
@@ -86,14 +84,14 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@aws-sdk/client-amplify": "^3.387.0",
-    "@aws-sdk/client-s3": "^3.387.0",
-    "@aws-sdk/s3-request-presigner": "^3.387.0",
+    "@aws-cdk/integ-tests-alpha": "0.0.0",
     "@types/jest": "^29.5.3",
     "aws-cdk-lib": "0.0.0",
-    "constructs": "^10.0.0"
+    "constructs": "^10.0.0",
+    "jest": "^29.6.2"
   },
   "dependencies": {},
+  "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "aws-cdk-lib": "^0.0.0",
     "constructs": "^10.0.0"
