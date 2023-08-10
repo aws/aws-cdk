@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/929460a722e73cd7034cb20e2cde77d82d87a18e744b3b5df9d9231c0b0db1d9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8f97fd9b1a73fc82d3d713d2ec98a62352239a247b96bc7c4698f031d359a9ec.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -43,6 +43,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Domain66AC69E0"
+          }
+        ],
+        "/cdk-integ-elasticsearch-unsignedbasicauth/Domain/ESAccessPolicy": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version."
           }
         ],
         "/cdk-integ-elasticsearch-unsignedbasicauth/Domain/ESAccessPolicy/Resource/Default": [
