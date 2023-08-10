@@ -651,6 +651,18 @@ integTest('cdk diff --security-only --fail exits when security changes are prese
   await expect(fixture.cdk(['diff', '--security-only', '--fail', fixture.fullStackName(stackName)])).rejects.toThrow('exited with error');
 }));
 
+integTest('cdk diff --quiet does not print \'There were no differences\' message for stacks which have no differences', withDefaultFixture(async (fixture) => {
+  // GIVEN
+  await fixture.cdkDeploy('test-1');
+
+  // WHEN
+  const diff = await fixture.cdk(['diff', '--quiet', fixture.fullStackName('test-1')]);
+
+  // THEN
+  expect(diff).not.toContain('Stack test-1');
+  expect(diff).not.toContain('There were no differences');
+}));
+
 integTest('deploy stack with docker asset', withDefaultFixture(async (fixture) => {
   await fixture.cdkDeploy('docker');
 }));
