@@ -1,8 +1,7 @@
 import * as AWS from 'aws-sdk';
-import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, lowerCaseFirstCharacter, reportNonHotswappableChange, transformObjectKeys, upperCaseFirstCharacter } from './common';
+import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, lowerCaseFirstCharacter, reportNonHotswappableChange, transformObjectKeys, upperCaseFirstCharacter, applyPropertyUpdates, evaluatableProperties } from './common';
 import { ISDK } from '../aws-auth';
 import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
-import { applyPropertyUpdates, evaluatableProperties } from '../hotswap-deployments';
 
 export async function isHotswappableEcsServiceChange(
   logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
