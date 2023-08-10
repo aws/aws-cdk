@@ -5,12 +5,15 @@ import { DynamoDBMetrics } from './dynamodb-canned-metrics.generated';
 import { CfnGlobalTable } from './dynamodb.generated';
 import { TableEncryptionV2 } from './encryption';
 import * as perms from './perms';
-import { ITable, Attribute, TableClass, LocalSecondaryIndexProps, SecondaryIndexProps, OperationsMetricOptions, Operation, SystemErrorsForOperationsMetricOptions, BillingMode, ProjectionType } from './shared';
+import {
+  ITable, Attribute, TableClass, LocalSecondaryIndexProps, SecondaryIndexProps, OperationsMetricOptions,
+  Operation, SystemErrorsForOperationsMetricOptions, BillingMode, ProjectionType,
+} from './shared';
 import { IMetric, MathExpression, Metric, MetricOptions, MetricProps } from '../../aws-cloudwatch';
 import { Grant, IGrantable } from '../../aws-iam';
 import { IStream } from '../../aws-kinesis';
 import { IKey, Key } from '../../aws-kms';
-import { ArnFormat, Aws, Lazy, RemovalPolicy, Resource, Stack, Token } from '../../core';
+import { ArnFormat, Aws, Lazy, PhysicalName, RemovalPolicy, Resource, Stack, Token } from '../../core';
 
 const HASH_KEY_TYPE = 'HASH';
 const RANGE_KEY_TYPE = 'RANGE';
@@ -859,14 +862,14 @@ export class GlobalTable extends GlobalTableBase {
   private readonly readProvisioning?: CfnGlobalTable.ReadProvisionedThroughputSettingsProperty;
   private readonly writeProvisioning?: CfnGlobalTable.WriteProvisionedThroughputSettingsProperty;
 
-  private readonly _replicaTables = new Map<string, ReplicaTableProps>();
+  private readonly replicaTables = new Map<string, ReplicaTableProps>();
 
-  private readonly _globalSecondaryIndexes = new Map<string, CfnGlobalTable.GlobalSecondaryIndexProperty>();
-  private readonly _localSecondaryIndexes = new Map<string, CfnGlobalTable.LocalSecondaryIndexProperty>();
+  private readonly globalSecondaryIndexes = new Map<string, CfnGlobalTable.GlobalSecondaryIndexProperty>();
+  private readonly localSecondaryIndexes = new Map<string, CfnGlobalTable.LocalSecondaryIndexProperty>();
   private readonly globalSecondaryIndexReadCapacitys = new Map<string, Capacity>();
 
   public constructor(scope: Construct, id: string, props: GlobalTableProps) {
-    super(scope, id, { physicalName: props.tableName });
+    super(scope, id, { physicalName: props.tableName ?? PhysicalName.GENERATE_IF_NEEDED });
 
     this.tableOptions = props;
     this.partitionKey = props.partitionKey;
@@ -891,9 +894,9 @@ export class GlobalTable extends GlobalTableBase {
       tableName: this.physicalName,
       keySchema: this.keySchema,
       attributeDefinitions: Lazy.any({ produce: () => this.attributeDefinitions }),
-      replicas: Lazy.any({ produce: () => this.replicaTables }),
-      globalSecondaryIndexes: Lazy.any({ produce: () => this.globalSecondaryIndexes }, { omitEmptyArray: true }),
-      localSecondaryIndexes: Lazy.any({ produce: () => this.localSecondaryIndexes }, { omitEmptyArray: true }),
+      replicas: Lazy.any({ produce: () => this.renderReplicaTables() }),
+      globalSecondaryIndexes: Lazy.any({ produce: () => this.renderGlobalIndexes() }, { omitEmptyArray: true }),
+      localSecondaryIndexes: Lazy.any({ produce: () => this.renderLocalIndexes() }, { omitEmptyArray: true }),
       billingMode: this.billingMode,
       writeProvisionedThroughputSettings: this.writeProvisioning,
       streamSpecification: Lazy.any({ produce: () => this.renderStreamSpecification() }),
@@ -922,41 +925,6 @@ export class GlobalTable extends GlobalTableBase {
     }
   }
 
-  private get replicaTables() {
-    const replicaTables: CfnGlobalTable.ReplicaSpecificationProperty[] = [];
-
-    for (const replicaTable of this._replicaTables.values()) {
-      replicaTables.push(this.configureReplicaTable(replicaTable));
-    }
-    replicaTables.push(this.configureReplicaTable({ region: this.stack.region }));
-
-    return replicaTables;
-  }
-
-  private get globalSecondaryIndexes() {
-    const globalSecondaryIndexes: CfnGlobalTable.GlobalSecondaryIndexProperty[] = [];
-
-    for (const globalSecondaryIndex of this._globalSecondaryIndexes.values()) {
-      globalSecondaryIndexes.push(globalSecondaryIndex);
-    }
-
-    return globalSecondaryIndexes;
-  }
-
-  private get localSecondaryIndexes() {
-    const localSecondaryIndexes: CfnGlobalTable.LocalSecondaryIndexProperty[] = [];
-
-    for (const localSecondaryIndex of this._localSecondaryIndexes.values()) {
-      localSecondaryIndexes.push(localSecondaryIndex);
-    }
-
-    return localSecondaryIndexes;
-  }
-
-  protected get hasIndex() {
-    return this._globalSecondaryIndexes.size + this._localSecondaryIndexes.size > 0;
-  }
-
   /**
    * Add a Replica Table to the Global Table.
    *
@@ -973,10 +941,10 @@ export class GlobalTable extends GlobalTableBase {
     });
     this.replicaArns.push(replicaArn);
 
-    const tableStreamArn = `${replicaArn}/stream/*`;
-    this.streamArns.push(tableStreamArn);
+    const replicaStreamArn = `${replicaArn}/stream/*`;
+    this.streamArns.push(replicaStreamArn);
 
-    this._replicaTables.set(props.region, props);
+    this.replicaTables.set(props.region, props);
   }
 
   /**
@@ -987,7 +955,7 @@ export class GlobalTable extends GlobalTableBase {
   public addGlobalSecondaryIndex(props: GlobalSecondaryIndexPropsV2) {
     this.validateGlobalSecondaryIndex(props);
     const globalSecondaryIndex = this.configureGlobalSecondaryIndex(props);
-    this._globalSecondaryIndexes.set(props.indexName, globalSecondaryIndex);
+    this.globalSecondaryIndexes.set(props.indexName, globalSecondaryIndex);
   }
 
   /**
@@ -998,7 +966,7 @@ export class GlobalTable extends GlobalTableBase {
   public addLocalSecondaryIndex(props: LocalSecondaryIndexProps) {
     this.validateLocalSecondaryIndex(props);
     const localSecondaryIndex = this.configureLocalSecondaryIndex(props);
-    this._localSecondaryIndexes.set(props.indexName, localSecondaryIndex);
+    this.localSecondaryIndexes.set(props.indexName, localSecondaryIndex);
   }
 
   /**
@@ -1027,7 +995,7 @@ export class GlobalTable extends GlobalTableBase {
       });
     }
 
-    if (!this._replicaTables.has(region)) {
+    if (!this.replicaTables.has(region)) {
       throw new Error(`Global Table does not have a Replica Table in region ${region}`);
     }
 
@@ -1098,7 +1066,7 @@ export class GlobalTable extends GlobalTableBase {
     const replicaGlobalSecondaryIndexes: CfnGlobalTable.ReplicaGlobalSecondaryIndexSpecificationProperty[] = [];
     const indexNamesFromOptions = Object.keys(options);
 
-    for (const gsi of this._globalSecondaryIndexes.values()) {
+    for (const gsi of this.globalSecondaryIndexes.values()) {
       const indexName = gsi.indexName;
       let contributorInsights = this.tableOptions.contributorInsights;
       let readCapacity = this.globalSecondaryIndexReadCapacitys.get(indexName);
@@ -1156,6 +1124,41 @@ export class GlobalTable extends GlobalTableBase {
     }
   }
 
+  private renderReplicaTables() {
+    const replicaTables: CfnGlobalTable.ReplicaSpecificationProperty[] = [];
+
+    for (const replicaTable of this.replicaTables.values()) {
+      replicaTables.push(this.configureReplicaTable(replicaTable));
+    }
+    replicaTables.push(this.configureReplicaTable({ region: this.stack.region }));
+
+    return replicaTables;
+  }
+
+  private renderGlobalIndexes() {
+    const globalSecondaryIndexes: CfnGlobalTable.GlobalSecondaryIndexProperty[] = [];
+
+    for (const globalSecondaryIndex of this.globalSecondaryIndexes.values()) {
+      globalSecondaryIndexes.push(globalSecondaryIndex);
+    }
+
+    return globalSecondaryIndexes;
+  }
+
+  private renderLocalIndexes() {
+    const localSecondaryIndexes: CfnGlobalTable.LocalSecondaryIndexProperty[] = [];
+
+    for (const localSecondaryIndex of this.localSecondaryIndexes.values()) {
+      localSecondaryIndexes.push(localSecondaryIndex);
+    }
+
+    return localSecondaryIndexes;
+  }
+
+  private renderStreamSpecification(): CfnGlobalTable.StreamSpecificationProperty | undefined {
+    return this.replicaTables.size > 0 ? { streamViewType: NEW_AND_OLD_IMAGES } : undefined;
+  }
+
   private addKey(key: Attribute, keyType: string) {
     this.addAttributeDefinition(key);
     this.keySchema.push({ attributeName: key.name, keyType });
@@ -1174,12 +1177,12 @@ export class GlobalTable extends GlobalTableBase {
     }
   }
 
-  private renderStreamSpecification(): CfnGlobalTable.StreamSpecificationProperty | undefined {
-    return this._replicaTables.size > 0 ? { streamViewType: NEW_AND_OLD_IMAGES } : undefined;
+  protected get hasIndex() {
+    return this.globalSecondaryIndexes.size + this.localSecondaryIndexes.size > 0;
   }
 
   private validateIndexName(indexName: string) {
-    if (this._globalSecondaryIndexes.has(indexName) || this._globalSecondaryIndexes.has(indexName)) {
+    if (this.globalSecondaryIndexes.has(indexName) || this.localSecondaryIndexes.has(indexName)) {
       throw new Error(`Duplicate secondary index name, ${indexName}, is not allowed`);
     }
   }
@@ -1196,7 +1199,7 @@ export class GlobalTable extends GlobalTableBase {
 
   private validateReplicaIndexOptions(options: { [indexName: string]: ReplicaGlobalSecondaryIndexOptions }) {
     for (const indexName of Object.keys(options)) {
-      if (!this._globalSecondaryIndexes.has(indexName)) {
+      if (!this.globalSecondaryIndexes.has(indexName)) {
         throw new Error(`Cannot configure replica global secondary index, ${indexName}, because it is not defined on the global table`);
       }
 
@@ -1221,7 +1224,7 @@ export class GlobalTable extends GlobalTableBase {
       throw new Error('A Replica Table in Global Table deployment region is configured by default and cannot be added explicitly');
     }
 
-    if (this._replicaTables.has(props.region)) {
+    if (this.replicaTables.has(props.region)) {
       throw new Error(`Duplicate Relica Table region, ${props.region}, is not allowed`);
     }
 
@@ -1233,7 +1236,7 @@ export class GlobalTable extends GlobalTableBase {
   private validateGlobalSecondaryIndex(props: GlobalSecondaryIndexPropsV2) {
     this.validateIndexName(props.indexName);
 
-    if (this._globalSecondaryIndexes.size === MAX_GSI_COUNT) {
+    if (this.globalSecondaryIndexes.size === MAX_GSI_COUNT) {
       throw new Error(`You may not provide more than ${MAX_GSI_COUNT} global secondary indexes to a Global Table`);
     }
 
@@ -1249,7 +1252,7 @@ export class GlobalTable extends GlobalTableBase {
   private validateLocalSecondaryIndex(props: LocalSecondaryIndexProps) {
     this.validateIndexName(props.indexName);
 
-    if (this._localSecondaryIndexes.size === MAX_LSI_COUNT) {
+    if (this.localSecondaryIndexes.size === MAX_LSI_COUNT) {
       throw new Error(`You may not provide more than ${MAX_LSI_COUNT} local secondary indexes to a Global Table`);
     }
   }
