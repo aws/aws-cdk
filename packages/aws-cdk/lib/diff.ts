@@ -11,6 +11,7 @@ import { print, warning } from './logging';
  * @param newTemplate the new/target state of the stack.
  * @param strict      do not filter out AWS::CDK::Metadata
  * @param context     lines of context to use in arbitrary JSON diff
+ * @param quiet       silences \'There were no differences\' messages
  *
  * @returns the count of differences that were rendered.
  */
@@ -19,6 +20,7 @@ export function printStackDiff(
   newTemplate: cxapi.CloudFormationStackArtifact,
   strict: boolean,
   context: number,
+  quiet: boolean,
   stream?: cfnDiff.FormatStream): number {
 
   let diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template);
@@ -49,7 +51,7 @@ export function printStackDiff(
       ...logicalIdMapFromTemplate(oldTemplate),
       ...buildLogicalToPathMap(newTemplate),
     }, context);
-  } else {
+  } else if (!quiet) {
     print(chalk.green('There were no differences'));
   }
   if (filteredChangesCount > 0) {
