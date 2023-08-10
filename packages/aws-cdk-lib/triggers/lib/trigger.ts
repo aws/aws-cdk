@@ -114,7 +114,6 @@ export class Trigger extends Construct implements ITrigger {
   constructor(scope: Construct, id: string, props: TriggerProps) {
     super(scope, id);
 
-    const handlerArn = this.determineHandlerArn(props);
     const provider = CustomResourceProvider.getOrCreateProvider(this, 'AWSCDK.TriggerCustomResourceProvider', {
       runtime: CustomResourceProviderRuntime.NODEJS_18_X,
       codeDirectory: join(__dirname, 'lambda'),
@@ -130,9 +129,10 @@ export class Trigger extends Construct implements ITrigger {
       resourceType: 'Custom::Trigger',
       serviceToken: provider.serviceToken,
       properties: {
-        HandlerArn: handlerArn,
+        HandlerArn: props.handler.currentVersion.functionArn,
         InvocationType: props.invocationType ?? 'RequestResponse',
         Timeout: props.timeout?.toMilliseconds().toString() ?? Duration.minutes(2).toMilliseconds().toString(),
+        ExecuteOnHandlerChange: props.executeOnHandlerChange ?? true,
       },
     });
 
@@ -148,15 +148,6 @@ export class Trigger extends Construct implements ITrigger {
     for (const s of scopes) {
       Node.of(s).addDependency(this);
     }
-  }
-
-  private determineHandlerArn(props: TriggerProps) {
-    return props.handler.currentVersion.functionArn;
-    // const executeOnHandlerChange = props.executeOnHandlerChange ?? true;
-    // if (executeOnHandlerChange) {
-    // }
-
-    // return props.handler.functionArn;
   }
 }
 
