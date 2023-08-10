@@ -1217,7 +1217,7 @@ export class GlobalTable extends GlobalTableBase {
     }
 
     if (Token.isUnresolved(props.region)) {
-      throw new Error('Replica Table region must not be token');
+      throw new Error('Replica Table region must not be a token');
     }
 
     if (props.region === this.stack.region) {
