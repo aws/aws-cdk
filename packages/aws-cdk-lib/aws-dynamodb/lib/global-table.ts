@@ -999,9 +999,11 @@ export class GlobalTable extends GlobalTableBase {
       throw new Error(`Global Table does not have a Replica Table in region ${region}`);
     }
 
+    const tableArn = this.replicaArns.find(replicaArn => replicaArn.includes(region));
     const tableStreamArn = this.streamArns.find(streamArn => streamArn.includes(region));
+
     return GlobalTable.fromTableAttributes(this, `ReplicaTable${region}`, {
-      tableName: this.tableName,
+      tableArn,
       encryptionKey: this.replicaKeys[region],
       grantIndexPermissions: this.hasIndex,
       tableStreamArn,
