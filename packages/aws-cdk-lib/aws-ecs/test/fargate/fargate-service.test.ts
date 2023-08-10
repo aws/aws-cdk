@@ -1692,7 +1692,7 @@ describe('fargate service', () => {
 
         // THEN
         Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
-          Port: 8001,
+          Port: 80,
           Protocol: 'HTTP',
         });
       });
@@ -1731,7 +1731,7 @@ describe('fargate service', () => {
 
         // THEN
         Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
-          Port: 8000,
+          Port: 80,
           Protocol: 'HTTP',
         });
       });
@@ -1768,7 +1768,7 @@ describe('fargate service', () => {
 
         // THEN
         Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
-          Port: 8001,
+          Port: 80,
           Protocol: 'HTTP',
         });
       });
@@ -1808,7 +1808,7 @@ describe('fargate service', () => {
 
         // THEN
         Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
-          Port: 8000,
+          Port: 80,
           Protocol: 'HTTP',
         });
       });
