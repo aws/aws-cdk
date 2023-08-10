@@ -150,6 +150,7 @@
     "@aws-sdk/client-codepipeline": "^3.387.0",
     "@aws-sdk/client-cloudwatch-logs": "^3.387.0",
     "@aws-sdk/client-dynamodb": "^3.387.0",
+    "@aws-sdk/client-ec2": "^3.387.0",
     "@aws-sdk/client-ecr": "^3.387.0",
     "@aws-sdk/client-eks": "^3.387.0",
     "@aws-sdk/client-iam": "^3.387.0",
