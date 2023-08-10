@@ -227,7 +227,7 @@ export const CLOUDWATCH_LAMBDA_INSIGHTS_ARNS: { [key: string]: any } = {
       // US East (Ohio)
       'us-east-2': 'arn:aws:lambda:us-east-2:580247275435:layer:LambdaInsightsExtension-Arm64:7',
       // US West (N. California)
-      'us-west-1': 'arn:aws:lambda:us-west-1:580247275435:layer:LambdaInsightsExtension-Arm64:5',
+      'us-west-1': 'arn:aws:lambda:us-west-1:580247275435:layer:LambdaInsightsExtension-Arm64:3',
       // US West (Oregon)
       'us-west-2': 'arn:aws:lambda:us-west-2:580247275435:layer:LambdaInsightsExtension-Arm64:5',
       // Africa (Cape Town)
