@@ -245,7 +245,7 @@ export class Bundling implements cdk.BundlingOptions {
         osCommand.copy(lockFilePath, pathJoin(options.outputDir, this.packageManager.lockFile)),
         osCommand.changeDirectory(options.outputDir),
         this.packageManager.installCommand.join(' '),
-        isPnpm ? osCommand.remove(pathJoin(options.outputDir, 'node_modules', '.modules.yaml')) + ' -f' : '', // Remove '.modules.yaml' file which changes on each deployment
+        isPnpm ? osCommand.remove(pathJoin(options.outputDir, 'node_modules', '.modules.yaml'), true) : '', // Remove '.modules.yaml' file which changes on each deployment
       ]);
     }
 
@@ -349,12 +349,13 @@ class OsCommand {
     return `cd "${dir}"`;
   }
 
-  public remove(filePath: string): string {
+  public remove(filePath: string, force: boolean = false): string {
     if (this.osPlatform === 'win32') {
       return `del "${filePath}"`;
     }
 
-    return `rm "${filePath}"`;
+    const opts = force ? ['-f'] : [];
+    return `rm ${opts.join(' ')} "${filePath}"`;
   }
 }
 

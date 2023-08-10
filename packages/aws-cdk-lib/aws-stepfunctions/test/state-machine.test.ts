@@ -104,6 +104,27 @@ describe('State Machine', () => {
 
   }),
 
+  test('Instantiate Standard State Machine With Comment', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      stateMachineName: 'MyStateMachine',
+      definition: sfn.Chain.start(new sfn.Pass(stack, 'Pass')),
+      stateMachineType: sfn.StateMachineType.STANDARD,
+      comment: 'zorp',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+      StateMachineName: 'MyStateMachine',
+      StateMachineType: 'STANDARD',
+      DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}},"Comment":"zorp"}',
+    });
+
+  }),
+
   test('Instantiate Express State Machine', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -577,6 +598,28 @@ describe('State Machine', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::StepFunctions::StateMachine', {
       DeletionPolicy: 'Retain',
+    });
+  });
+
+  test('stateMachineRevisionId property uses attribute reference', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const stateMachine = new sfn.StateMachine(stack, 'MyStateMachine', {
+      stateMachineName: 'MyStateMachine',
+      definitionBody: sfn.DefinitionBody.fromChainable(new sfn.Pass(stack, 'Pass')),
+    });
+
+    new sfn.CfnStateMachineVersion(stack, 'MyStateMachineVersion', {
+      stateMachineRevisionId: stateMachine.stateMachineRevisionId,
+      stateMachineArn: stateMachine.stateMachineArn,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachineVersion', {
+      StateMachineArn: { Ref: 'MyStateMachine6C968CA5' },
+      StateMachineRevisionId: { 'Fn::GetAtt': ['MyStateMachine6C968CA5', 'StateMachineRevisionId'] },
     });
   });
 });

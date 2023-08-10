@@ -439,7 +439,7 @@ function parseHttpOptions(options: SdkHttpOptions) {
   // request.
   //
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const ProxyAgent = require('proxy-agent');
+  const { ProxyAgent } = require('proxy-agent');
   config.httpOptions.agent = new ProxyAgent(options.proxyAddress);
 
   return config;

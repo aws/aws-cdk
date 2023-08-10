@@ -17,7 +17,7 @@
 
 This library contains integration classes to send data to any number of
 supported AWS Services. Instances of these classes should be passed to
-`TopicRule` defined in `@aws-cdk/aws-iot`.
+`TopicRule` defined in `aws-cdk-lib/aws-iot`.
 
 Currently supported are:
 

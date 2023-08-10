@@ -1,6 +1,6 @@
 /*eslint-disable no-console*/
 /* eslint-disable import/no-extraneous-dependencies */
-import { SSM } from '@aws-sdk/client-ssm';
+import { InvalidResourceId, SSM } from '@aws-sdk/client-ssm';
 import { ExportReaderCRProps, CrossRegionExports } from '../types';
 
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
@@ -74,12 +74,10 @@ async function removeTags(ssm: SSM, parameters: string[], keyName: string): Prom
         ResourceId: name,
       });
     } catch (e: any) {
-      switch (e.code) {
-        // if the parameter doesn't exist then there is nothing to release
-        case 'InvalidResourceId':
-          return;
-        default:
-          throw new Error(`Error releasing import ${name}: ${e}`);
+      if (e instanceof InvalidResourceId) {
+        return;
+      } else {
+        throw new Error(`Error releasing import ${name}: ${e}`);
       }
     }
   }));

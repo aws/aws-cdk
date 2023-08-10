@@ -1142,6 +1142,17 @@ describe('Job', () => {
         })).toThrow('maxCapacity cannot be used when GlueVersion 2.0 or later');
       });
 
+      test('maxCapacity with Python Shell jobs validation', () => {
+        expect(() => new glue.Job(stack, 'Job', {
+          executable: glue.JobExecutable.pythonShell({
+            glueVersion: glue.GlueVersion.V2_0,
+            pythonVersion: glue.PythonVersion.THREE,
+            script,
+          }),
+          maxCapacity: 10,
+        })).toThrow(/maxCapacity value must be either 0.0625 or 1 for JobType.PYTHON_SHELL jobs/);
+      });
+
       test('workerType without workerCount should throw', () => {
         expect(() => new glue.Job(stack, 'Job', {
           executable: glue.JobExecutable.pythonEtl({

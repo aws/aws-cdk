@@ -45,7 +45,7 @@ export class TypeDefinitionStruct extends StructType {
   }
 
   public build() {
-    const cfnMapping = new CloudFormationMapping(this.module);
+    const cfnMapping = new CloudFormationMapping(this.module, this.converter);
 
     const decider = new TypeDefinitionDecider(this.resource, this.typeDefinition, this.converter);
 

@@ -38,7 +38,7 @@ export interface CrossAccountDestinationProps {
  *
  * Consumers will hardly ever need to use this class. Instead, directly
  * subscribe a Kinesis stream using the integration class in the
- * `@aws-cdk/aws-logs-destinations` package; if necessary, a
+ * `aws-cdk-lib/aws-logs-destinations` package; if necessary, a
  * `CrossAccountDestination` will be created automatically.
  *
  * @resource AWS::Logs::Destination

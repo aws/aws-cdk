@@ -721,11 +721,20 @@ export class Job extends JobBase {
       }
     }
 
-    if (props.maxCapacity !== undefined && (props.workerType && props.workerCount !== undefined)) {
+    let maxCapacity = props.maxCapacity;
+    if (maxCapacity !== undefined && (props.workerType && props.workerCount !== undefined)) {
       throw new Error('maxCapacity cannot be used when setting workerType and workerCount');
     }
-    if (props.maxCapacity !== undefined && ![GlueVersion.V0_9, GlueVersion.V1_0].includes(executable.glueVersion)) {
-      throw new Error('maxCapacity cannot be used when GlueVersion 2.0 or later');
+    if (executable.type !== JobType.PYTHON_SHELL) {
+      if (maxCapacity !== undefined && ![GlueVersion.V0_9, GlueVersion.V1_0].includes(executable.glueVersion)) {
+        throw new Error('maxCapacity cannot be used when GlueVersion 2.0 or later');
+      }
+    } else {
+      // max capacity validation for python shell jobs (defaults to 0.0625)
+      maxCapacity = maxCapacity ?? 0.0625;
+      if (maxCapacity !== 0.0625 && maxCapacity !== 1) {
+        throw new Error(`maxCapacity value must be either 0.0625 or 1 for JobType.PYTHON_SHELL jobs, received ${maxCapacity}`);
+      }
     }
     if ((!props.workerType && props.workerCount !== undefined) || (props.workerType && props.workerCount === undefined)) {
       throw new Error('Both workerType and workerCount must be set');
