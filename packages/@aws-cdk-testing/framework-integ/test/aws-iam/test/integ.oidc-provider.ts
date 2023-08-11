@@ -36,6 +36,5 @@ new CfnOutput(stack, 'ThumbprintsThumbprints', {
 
 new IntegTest(app, 'iodc-provider-test', {
   testCases: [stack],
+  diffAssets: true,
 });
-
-app.synth();

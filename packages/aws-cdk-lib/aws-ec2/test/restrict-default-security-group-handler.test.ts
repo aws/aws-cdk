@@ -1,52 +1,12 @@
-let mockRevokeSecurityGroupEgress: jest.Mock;
-let mockAuthorizeSecurityGroupEgress: jest.Mock;
-let mockRevokeSecurityGroupIngress: jest.Mock;
-let mockAuthorizeSecurityGroupIngress: jest.Mock;
-
+import 'aws-sdk-client-mock-jest';
+import { AuthorizeSecurityGroupEgressCommand, AuthorizeSecurityGroupIngressCommand, EC2, RevokeSecurityGroupEgressCommand, RevokeSecurityGroupIngressCommand } from '@aws-sdk/client-ec2';
+import { mockClient } from 'aws-sdk-client-mock';
 import { handler } from '../lib/restrict-default-security-group-handler';
 
-jest.mock('aws-sdk', () => {
-  return {
-    EC2: jest.fn(() => {
-      return {
-        revokeSecurityGroupEgress: jest.fn((params) => {
-          return {
-            promise: () => mockRevokeSecurityGroupEgress(params),
-          };
-        }),
-        revokeSecurityGroupIngress: jest.fn((params) => {
-          return {
-            promise: () => mockRevokeSecurityGroupIngress(params),
-          };
-        }),
-        authorizeSecurityGroupIngress: jest.fn((params) => {
-          return {
-            promise: () => mockAuthorizeSecurityGroupIngress(params),
-          };
-        }),
-        authorizeSecurityGroupEgress: jest.fn((params) => {
-          return {
-            promise: () => mockAuthorizeSecurityGroupEgress(params),
-          };
-        }),
-      };
-    }),
-  };
-});
+const mockEc2Client = mockClient(EC2);
 
 beforeEach(() => {
-  mockRevokeSecurityGroupEgress = jest.fn().mockReturnThis();
-  mockRevokeSecurityGroupIngress = jest.fn().mockReturnThis();
-  mockAuthorizeSecurityGroupEgress = jest.fn().mockReturnThis();
-  mockAuthorizeSecurityGroupIngress = jest.fn().mockReturnThis();
-});
-
-afterEach(() => {
-  jest.clearAllMocks();
-});
-
-afterAll(() => {
-  jest.restoreAllMocks();
+  mockEc2Client.reset();
 });
 
 test('revokes rules on create event', async () => {
@@ -64,9 +24,9 @@ test('revokes rules on create event', async () => {
   await invokeHandler(event);
 
   // THEN
-  expect(mockRevokeSecurityGroupEgress).toHaveBeenCalledTimes(1);
-  expect(mockRevokeSecurityGroupIngress).toHaveBeenCalledTimes(1);
-  expect(mockRevokeSecurityGroupEgress).toHaveBeenCalledWith({
+  expect(mockEc2Client).toHaveReceivedCommandTimes(RevokeSecurityGroupEgressCommand, 1);
+  expect(mockEc2Client).toHaveReceivedCommandTimes(RevokeSecurityGroupIngressCommand, 1);
+  expect(mockEc2Client).toHaveReceivedCommandWith(RevokeSecurityGroupEgressCommand, {
     GroupId: 'sg-abc123',
     IpPermissions: [{
       IpRanges: [{
@@ -75,7 +35,7 @@ test('revokes rules on create event', async () => {
       IpProtocol: '-1',
     }],
   });
-  expect(mockRevokeSecurityGroupIngress).toHaveBeenCalledWith({
+  expect(mockEc2Client).toHaveReceivedCommandWith(RevokeSecurityGroupIngressCommand, {
     GroupId: 'sg-abc123',
     IpPermissions: [{
       UserIdGroupPairs: [{
@@ -102,11 +62,11 @@ test('authorizes rules on delete event', async () => {
   await invokeHandler(event);
 
   // THEN
-  expect(mockRevokeSecurityGroupEgress).toHaveBeenCalledTimes(0);
-  expect(mockRevokeSecurityGroupIngress).toHaveBeenCalledTimes(0);
-  expect(mockAuthorizeSecurityGroupEgress).toHaveBeenCalledTimes(1);
-  expect(mockAuthorizeSecurityGroupIngress).toHaveBeenCalledTimes(1);
-  expect(mockAuthorizeSecurityGroupIngress).toHaveBeenCalledWith({
+  expect(mockEc2Client).toHaveReceivedCommandTimes(RevokeSecurityGroupEgressCommand, 0);
+  expect(mockEc2Client).toHaveReceivedCommandTimes(RevokeSecurityGroupIngressCommand, 0);
+  expect(mockEc2Client).toHaveReceivedCommandTimes(AuthorizeSecurityGroupEgressCommand, 1);
+  expect(mockEc2Client).toHaveReceivedCommandTimes(AuthorizeSecurityGroupIngressCommand, 1);
+  expect(mockEc2Client).toHaveReceivedCommandWith(AuthorizeSecurityGroupIngressCommand, {
     GroupId: 'sg-abc123',
     IpPermissions: [{
       UserIdGroupPairs: [{
@@ -116,7 +76,7 @@ test('authorizes rules on delete event', async () => {
       IpProtocol: '-1',
     }],
   });
-  expect(mockAuthorizeSecurityGroupEgress).toHaveBeenCalledWith({
+  expect(mockEc2Client).toHaveReceivedCommandWith(AuthorizeSecurityGroupEgressCommand, {
     GroupId: 'sg-abc123',
     IpPermissions: [{
       IpRanges: [{
@@ -147,10 +107,10 @@ test('update event with no change', async () => {
   await invokeHandler(event);
 
   // THEN
-  expect(mockRevokeSecurityGroupEgress).toHaveBeenCalledTimes(0);
-  expect(mockRevokeSecurityGroupIngress).toHaveBeenCalledTimes(0);
-  expect(mockAuthorizeSecurityGroupEgress).toHaveBeenCalledTimes(0);
-  expect(mockAuthorizeSecurityGroupIngress).toHaveBeenCalledTimes(0);
+  expect(mockEc2Client).toHaveReceivedCommandTimes(RevokeSecurityGroupEgressCommand, 0);
+  expect(mockEc2Client).toHaveReceivedCommandTimes(RevokeSecurityGroupIngressCommand, 0);
+  expect(mockEc2Client).toHaveReceivedCommandTimes(AuthorizeSecurityGroupEgressCommand, 0);
+  expect(mockEc2Client).toHaveReceivedCommandTimes(AuthorizeSecurityGroupIngressCommand, 0);
 });
 
 test('update event with security group change', async () => {
@@ -173,11 +133,11 @@ test('update event with security group change', async () => {
   await invokeHandler(event);
 
   // THEN
-  expect(mockRevokeSecurityGroupEgress).toHaveBeenCalledTimes(1);
-  expect(mockRevokeSecurityGroupIngress).toHaveBeenCalledTimes(1);
-  expect(mockAuthorizeSecurityGroupEgress).toHaveBeenCalledTimes(1);
-  expect(mockAuthorizeSecurityGroupIngress).toHaveBeenCalledTimes(1);
-  expect(mockRevokeSecurityGroupIngress).toHaveBeenCalledWith({
+  expect(mockEc2Client).toHaveReceivedCommandTimes(RevokeSecurityGroupEgressCommand, 1);
+  expect(mockEc2Client).toHaveReceivedCommandTimes(RevokeSecurityGroupIngressCommand, 1);
+  expect(mockEc2Client).toHaveReceivedCommandTimes(AuthorizeSecurityGroupEgressCommand, 1);
+  expect(mockEc2Client).toHaveReceivedCommandTimes(AuthorizeSecurityGroupIngressCommand, 1);
+  expect(mockEc2Client).toHaveReceivedCommandWith(RevokeSecurityGroupIngressCommand, {
     GroupId: 'sg-abc123',
     IpPermissions: [{
       UserIdGroupPairs: [{
@@ -187,7 +147,7 @@ test('update event with security group change', async () => {
       IpProtocol: '-1',
     }],
   });
-  expect(mockRevokeSecurityGroupEgress).toHaveBeenCalledWith({
+  expect(mockEc2Client).toHaveReceivedCommandWith(RevokeSecurityGroupEgressCommand, {
     GroupId: 'sg-abc123',
     IpPermissions: [{
       IpRanges: [{
@@ -196,7 +156,7 @@ test('update event with security group change', async () => {
       IpProtocol: '-1',
     }],
   });
-  expect(mockAuthorizeSecurityGroupEgress).toHaveBeenCalledWith({
+  expect(mockEc2Client).toHaveReceivedCommandWith(AuthorizeSecurityGroupEgressCommand, {
     GroupId: 'sg-xyz123',
     IpPermissions: [{
       IpRanges: [{
@@ -205,7 +165,7 @@ test('update event with security group change', async () => {
       IpProtocol: '-1',
     }],
   });
-  expect(mockAuthorizeSecurityGroupIngress).toHaveBeenCalledWith({
+  expect(mockEc2Client).toHaveReceivedCommandWith(AuthorizeSecurityGroupIngressCommand, {
     GroupId: 'sg-xyz123',
     IpPermissions: [{
       UserIdGroupPairs: [{
