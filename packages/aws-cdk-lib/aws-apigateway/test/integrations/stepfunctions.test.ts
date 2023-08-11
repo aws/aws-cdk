@@ -398,7 +398,7 @@ describe('StepFunctionsIntegration', () => {
           statusCode: '200',
         },
       ],
-      addDefaultMethodResponses: false,
+      useDefaultMethodResponses: false,
     };
 
     const integ = apigw.StepFunctionsIntegration.startExecution(stateMachine, integrationOptions);

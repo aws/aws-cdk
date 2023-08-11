@@ -87,12 +87,14 @@ export interface StepFunctionsExecutionIntegrationOptions extends IntegrationOpt
   /**
    * Add method responses for 200, 400 and 500 automatically
    *
-   * By default, this integration will add method responses for the 200, 400 and
-   * 500 status codes. 200 maps to the default empty model, and 400 and 500 map
-   * to the default error model.
+   * This integration produces 200, 400 and 500 statusCodes.
+   *
+   * By default, this integration will add method responses for these status
+   * codes.  200 maps to the default empty model, and 400 and 500 map to the
+   * default error model.
    *
    * Set this property to `false` and add your own method responses if you want
-   * to customize them in some way.
+   * to customize them in some way. You must add method responses for all
    *
    * @default true
    */
@@ -125,7 +127,7 @@ export class StepFunctionsIntegration {
 
 class StepFunctionsExecutionIntegration extends AwsIntegration {
   private readonly stateMachine: sfn.IStateMachine;
-  private readonly addDefaultMethodResponses: boolean;
+  private readonly useDefaultMethodResponses: boolean;
 
   constructor(stateMachine: sfn.IStateMachine, options: StepFunctionsExecutionIntegrationOptions = {}) {
     super({
@@ -141,7 +143,7 @@ class StepFunctionsExecutionIntegration extends AwsIntegration {
     });
 
     this.stateMachine = stateMachine;
-    this.addDefaultMethodResponses = options.addDefaultMethodResponses ?? true;
+    this.useDefaultMethodResponses = options.useDefaultMethodResponses ?? true;
   }
 
   public bind(method: Method): IntegrationConfig {
@@ -174,7 +176,7 @@ class StepFunctionsExecutionIntegration extends AwsIntegration {
       deploymentToken = JSON.stringify({ stateMachineName });
     }
 
-    if (this.addDefaultMethodResponses) {
+    if (this.useDefaultMethodResponses) {
       for (const methodResponse of METHOD_RESPONSES) {
         method.addMethodResponse(methodResponse);
       }

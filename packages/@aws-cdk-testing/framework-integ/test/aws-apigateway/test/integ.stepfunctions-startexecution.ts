@@ -16,7 +16,7 @@ const stateMachine: sfn.IStateMachine = new sfn.StateMachine(stack, 'StateMachin
   stateMachineType: sfn.StateMachineType.EXPRESS,
 });
 
-const methodOptions = {
+const methodOptions: apigw.MethodOptions = {
   methodResponses: [
     {
       statusCode: '200',
@@ -27,15 +27,16 @@ const methodOptions = {
   ],
 };
 
-const integrationOptions = {
+const integrationOptions: apigw.StepFunctionsExecutionIntegrationOptions = {
   integrationResponses: [
     {
+      statusCode: '200',
       responseParameters: {
         'method.response.header.Access-Control-Allow-Origin': "'*'",
       },
-      statusCode: '200',
     },
   ],
+  useDefaultMethodResponses: false,
 };
 
 const integ = apigw.StepFunctionsIntegration.startExecution(stateMachine, integrationOptions);
