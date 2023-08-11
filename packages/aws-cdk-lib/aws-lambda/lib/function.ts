@@ -1320,7 +1320,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       throw new Error('SnapStart is currently not supported using more than 512 MiB Ephemeral Storage');
     }
 
-    return SnapStartConfig.ON_PUBLISHED_VERSIONS;
+    return SnapStartConfig.ON_PUBLISHED_VERSIONS.snapConfig;
   }
 
   private isQueue(deadLetterQueue: sqs.IQueue | sns.ITopic): deadLetterQueue is sqs.IQueue {

@@ -3251,7 +3251,7 @@ test('function using SnapStart', () => {
   const stack = new cdk.Stack();
   //WHEN
   new lambda.Function(stack, 'MyLambda', {
-    code: lambda.Code.fromAsset('test/handler.zip'),
+    code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
     handler: 'example.Handler::handleRequest',
     runtime: lambda.Runtime.JAVA_11,
     snapStart: lambda.SnapStartConfig.ON_PUBLISHED_VERSIONS,
