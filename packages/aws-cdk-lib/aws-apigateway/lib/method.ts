@@ -281,8 +281,9 @@ export class Method extends Resource {
   /**
    * Add a method response to this method
    *
-   * If a method response for the same status code already exists, the `responseModels`
-   * and `responseParameters` maps will be merged.
+   * You should only add one method reponse for every status code. The API allows it
+   * for historical reasons, but will add a warning if this happens. If you do, your Method
+   * will nondeterministically use one of the responses, and ignore the rest.
    */
   public addMethodResponse(methodResponse: MethodResponse): void {
     const mr = this.methodResponses.find((mr) => mr.statusCode === methodResponse.statusCode);
