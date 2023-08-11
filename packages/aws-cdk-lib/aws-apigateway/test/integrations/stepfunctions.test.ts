@@ -413,6 +413,9 @@ describe('StepFunctionsIntegration', () => {
           ResponseParameters: {
             'method.response.header.Access-Control-Allow-Origin': true,
           },
+          ResponseModels: {
+            'application/json': 'Empty',
+          },
           StatusCode: '200',
         },
       ],
@@ -434,6 +437,9 @@ describe('StepFunctionsIntegration', () => {
         {
           ResponseParameters: {
             'method.response.header.Access-Control-Allow-Origin': true,
+          },
+          ResponseModels: {
+            'application/json': 'Empty',
           },
           StatusCode: '200',
         },
