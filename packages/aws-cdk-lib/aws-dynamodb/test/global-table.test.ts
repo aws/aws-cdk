@@ -6,8 +6,7 @@ import { Key } from '../../aws-kms';
 import { CfnDeletionPolicy, Lazy, RemovalPolicy, Stack, StackProps, App } from '../../core';
 import {
   AttributeType, Billing, Capacity, GlobalSecondaryIndexPropsV2, GlobalTable,
-  ITable,
-  LocalSecondaryIndexProps, ProjectionType, TableClass, TableEncryptionV2,
+  ITable, LocalSecondaryIndexProps, ProjectionType, TableClass, TableEncryptionV2,
 } from '../lib';
 
 /* eslint-disable no-console */
@@ -515,7 +514,7 @@ describe('global table', () => {
 
   test('with encryption via customer managed key', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'Stack');
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
     const tableKey = new Key(stack, 'Key');
 
     // WHEN
@@ -2782,7 +2781,244 @@ describe('grants', () => {
         },
       ],
     });
+  });
 
+  test('grantReadWriteData on global table', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const user = new User(stack, 'User');
+    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      replicas: [
+        { region: 'us-east-1' },
+        { region: 'us-east-2' },
+      ],
+    });
+
+    // WHEN
+    globalTable.grantReadWriteData(user);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'dynamodb:BatchGetItem',
+              'dynamodb:GetRecords',
+              'dynamodb:GetShardIterator',
+              'dynamodb:Query',
+              'dynamodb:GetItem',
+              'dynamodb:Scan',
+              'dynamodb:ConditionCheckItem',
+              'dynamodb:BatchWriteItem',
+              'dynamodb:PutItem',
+              'dynamodb:UpdateItem',
+              'dynamodb:DeleteItem',
+              'dynamodb:DescribeTable',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  'Resource',
+                  'Arn',
+                ],
+              },
+              {
+                Ref: 'AWS::NoValue',
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:us-east-1:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/',
+                    {
+                      Ref: 'Resource',
+                    },
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:us-east-2:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/',
+                    {
+                      Ref: 'Resource',
+                    },
+                  ],
+                ],
+              },
+            ],
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'UserDefaultPolicy1F97781E',
+      Users: [
+        {
+          Ref: 'User00B015A1',
+        },
+      ],
+    });
+  });
+
+  test('grantReadWriteData on global table with customer managed keys', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const user = new User(stack, 'User');
+    const replicaKeyArns = {
+      'us-east-1': 'arn:aws:kms:us-east-1:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
+      'us-east-2': 'arn:aws:kms:us-east-2:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
+    };
+    const tableKey = new Key(stack, 'Key');
+    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      encryption: TableEncryptionV2.customerManagedKey(tableKey, replicaKeyArns),
+      replicas: [
+        { region: 'us-east-1' },
+        { region: 'us-east-2' },
+      ],
+    });
+
+    // WHEN
+    globalTable.grantReadWriteData(user);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'kms:Decrypt',
+              'kms:DescribeKey',
+              'kms:Encrypt',
+              'kms:ReEncrypt*',
+              'kms:GenerateDataKey*',
+            ],
+            Effect: 'Allow',
+            Resource: 'arn:aws:kms:us-east-1:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
+          },
+          {
+            Action: [
+              'kms:Decrypt',
+              'kms:DescribeKey',
+              'kms:Encrypt',
+              'kms:ReEncrypt*',
+              'kms:GenerateDataKey*',
+            ],
+            Effect: 'Allow',
+            Resource: 'arn:aws:kms:us-east-2:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
+          },
+          {
+            Action: [
+              'kms:Decrypt',
+              'kms:DescribeKey',
+              'kms:Encrypt',
+              'kms:ReEncrypt*',
+              'kms:GenerateDataKey*',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'Key961B73FD',
+                'Arn',
+              ],
+            },
+          },
+          {
+            Action: [
+              'dynamodb:BatchGetItem',
+              'dynamodb:GetRecords',
+              'dynamodb:GetShardIterator',
+              'dynamodb:Query',
+              'dynamodb:GetItem',
+              'dynamodb:Scan',
+              'dynamodb:ConditionCheckItem',
+              'dynamodb:BatchWriteItem',
+              'dynamodb:PutItem',
+              'dynamodb:UpdateItem',
+              'dynamodb:DeleteItem',
+              'dynamodb:DescribeTable',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  'Resource',
+                  'Arn',
+                ],
+              },
+              {
+                Ref: 'AWS::NoValue',
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:us-east-1:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/',
+                    {
+                      Ref: 'Resource',
+                    },
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:us-east-2:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/',
+                    {
+                      Ref: 'Resource',
+                    },
+                  ],
+                ],
+              },
+            ],
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'UserDefaultPolicy1F97781E',
+      Users: [
+        {
+          Ref: 'User00B015A1',
+        },
+      ],
+    });
   });
 
   test('grants for individual replica only has replica arn and replica key', () => {

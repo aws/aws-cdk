@@ -60,7 +60,11 @@ export abstract class TableEncryptionV2 {
 
       public _renderReplicaSseSpecification(scope: Construct, replicaRegion: string) {
         const stackRegion = Stack.of(scope).region;
-        if (!Token.isUnresolved(stackRegion) && replicaKeyArns.hasOwnProperty(stackRegion)) {
+        if (Token.isUnresolved(stackRegion)) {
+          throw new Error('Replica SSE specification cannot be rendered in a region agnostic stack');
+        }
+
+        if (replicaKeyArns.hasOwnProperty(stackRegion)) {
           throw new Error(`KMS key for deployment region ${stackRegion} cannot be defined in 'replicaKeyArns'`);
         }
 

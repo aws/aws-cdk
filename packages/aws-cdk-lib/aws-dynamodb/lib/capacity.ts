@@ -86,8 +86,12 @@ export abstract class Capacity {
       }
 
       private renderAutoscaledCapacity() {
+        if (options.minCapacity > options.maxCapacity) {
+          throw new Error('`minCapacity` must be less than or equal to `maxCapacity`');
+        }
+
         if (options.targetUtilizationPercent !== undefined && (options.targetUtilizationPercent < 20 || options.targetUtilizationPercent > 90)) {
-          throw new Error(`targetUtilizationPercent ${options.targetUtilizationPercent} cannot be less than 20 or greater than 90`);
+          throw new Error('`targetUtilizationPercent` cannot be less than 20 or greater than 90');
         }
 
         return {
