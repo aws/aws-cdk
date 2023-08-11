@@ -291,15 +291,20 @@ export interface SAMLOptionsProperty {
   readonly idpMetadataContent: string;
 
   /**
-   * The SAML master user name, which is stored in the domain's internal user database.
+   * The SAML master username, which is stored in the domain's internal user database.
    * This SAML user receives full permission in OpenSearch Dashboards/Kibana.
    * Creating a new master username does not delete any existing master usernames.
+   *
+   * @default - No master user name is configured
    */
   readonly masterUserName?: string;
 
   /**
    * The backend role that the SAML master user is mapped to.
    * Any users with this backend role receives full permission in OpenSearch Dashboards/Kibana.
+   * To use a SAML master backend role, configure the `rolesKey` property.
+   *
+   * @default - The master user is not mapped to a backend role
    */
   readonly masterBackendRole?: string;
 
@@ -365,6 +370,9 @@ export interface AdvancedSecurityOptions {
 
   /**
    * Container for information about the SAML configuration for OpenSearch Dashboards.
+   * If set, `samlAuthenticationEnabled` will be enabled.
+   *
+   * @default - no SAML authentication options
    */
   readonly samlAuthenticationOptions?: SAMLOptionsProperty;
 }
@@ -1759,10 +1767,10 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
           },
           samlOptions: samlAuthenticationEnabled ? {
             enabled: true,
-            idp: {
-              entityId: props.fineGrainedAccessControl!.samlAuthenticationOptions!.idpEntityId,
-              metadataContent: props.fineGrainedAccessControl!.samlAuthenticationOptions!.idpMetadataContent,
-            },
+            idp: props.fineGrainedAccessControl && props.fineGrainedAccessControl.samlAuthenticationOptions ? {
+              entityId: props.fineGrainedAccessControl.samlAuthenticationOptions.idpEntityId,
+              metadataContent: props.fineGrainedAccessControl.samlAuthenticationOptions.idpMetadataContent,
+            } : undefined,
             masterUserName: props.fineGrainedAccessControl?.samlAuthenticationOptions?.masterUserName,
             masterBackendRole: props.fineGrainedAccessControl?.samlAuthenticationOptions?.masterBackendRole,
             rolesKey: props.fineGrainedAccessControl?.samlAuthenticationOptions?.rolesKey ?? 'roles',
