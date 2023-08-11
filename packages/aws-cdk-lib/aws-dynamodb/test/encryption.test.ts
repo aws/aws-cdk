@@ -116,12 +116,15 @@ describe('customer managed keys', () => {
 
   test('can get the table key', () => {
     // WHEN / THEN
-    expect(encryption.tableKey).not.toBeUndefined();
+    expect(encryption.tableKey?.keyArn).toEqual(tableKey.keyArn);
   });
 
   test('can get replica key ARNs', () => {
     // WHEN / THEN
-    expect(encryption.replicaKeyArns).not.toBeUndefined();
+    expect(encryption.replicaKeyArns).toEqual({
+      'us-east-1': 'arn:aws:kms:us-east-1:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
+      'us-east-2': 'arn:aws:kms:us-east-2:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
+    });
   });
 
   test('render replica SSE specification throws in region agnostic stack', () => {
