@@ -86,9 +86,9 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@aws-sdk/client-amplify": "^3.370.0",
-    "@aws-sdk/client-s3": "^3.370.0",
-    "@aws-sdk/s3-request-presigner": "^3.370.0",
+    "@aws-sdk/client-amplify": "^3.387.0",
+    "@aws-sdk/client-s3": "^3.387.0",
+    "@aws-sdk/s3-request-presigner": "^3.387.0",
     "@types/jest": "^29.5.3",
     "aws-cdk-lib": "0.0.0",
     "constructs": "^10.0.0"

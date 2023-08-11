@@ -1,13 +1,13 @@
+import { execSync } from 'child_process';
 import * as path from 'path';
 import { Octokit } from '@octokit/rest';
+import { Endpoints } from '@octokit/types';
 import { StatusEvent } from '@octokit/webhooks-definitions/schema';
-import { breakingModules } from './parser';
 import { findModulePath, moduleStability } from './module';
-import { Endpoints } from "@octokit/types";
-import { execSync } from 'child_process';
+import { breakingModules } from './parser';
 
 export type GitHubPr =
-  Endpoints["GET /repos/{owner}/{repo}/pulls/{pull_number}"]["response"]["data"];
+  Endpoints['GET /repos/{owner}/{repo}/pulls/{pull_number}']['response']['data'];
 
 export const CODE_BUILD_CONTEXT = 'AWS CodeBuild us-east-1 (AutoBuildv2Project1C6BFA3F-wQm2hXv2jqQv)';
 
@@ -237,8 +237,8 @@ export class PullRequestLinter {
       await this.client.pulls.dismissReview({
         ...this.prParams,
         review_id: existingReview.id,
-        message: '✅ Updated pull request passes all PRLinter validations. Dismissing previous PRLinter review.'
-      })
+        message: '✅ Updated pull request passes all PRLinter validations. Dismissing previous PRLinter review.',
+      });
     }
   }
 
@@ -258,15 +258,15 @@ export class PullRequestLinter {
         body: 'The pull request linter has failed. See the aws-cdk-automation comment below for failure reasons.'
           + ' If you believe this pull request should receive an exemption, please comment and provide a justification.'
           + '\n\n\nA comment requesting an exemption should contain the text `Exemption Request`.'
-          +  ' Additionally, if clarification is needed add `Clarification Request` to a comment.',
+          + ' Additionally, if clarification is needed add `Clarification Request` to a comment.',
         event: 'REQUEST_CHANGES',
-      })
+      });
     }
 
     await this.client.issues.createComment({
       ...this.issueParams,
       body,
-    })
+    });
 
     throw new LinterError(body);
   }
@@ -296,7 +296,7 @@ export class PullRequestLinter {
   private async communicateResult(result: ValidationCollector): Promise<void> {
     const existingReview = await this.findExistingReview();
     if (result.isValid()) {
-      console.log("✅  Success");
+      console.log('✅  Success');
       await this.dismissPRLinterReview(existingReview);
     } else {
       await this.createOrUpdatePRLinterReview(result.errors, existingReview);
@@ -342,7 +342,7 @@ export class PullRequestLinter {
    *   7. It links to a p2 issue and has an approved community review
    */
   private async assessNeedsReview(
-    pr: Pick<GitHubPr, "mergeable_state" | "draft" | "labels" | "number">,
+    pr: Pick<GitHubPr, 'mergeable_state' | 'draft' | 'labels' | 'number'>,
   ): Promise<void> {
     const reviews = await this.client.pulls.listReviews(this.prParams);
     // NOTE: MEMBER = a member of the organization that owns the repository
@@ -350,19 +350,19 @@ export class PullRequestLinter {
     const maintainerRequestedChanges = reviews.data.some(
       review => review.author_association === 'MEMBER'
         && review.user?.login !== 'aws-cdk-automation'
-        && review.state === 'CHANGES_REQUESTED'
+        && review.state === 'CHANGES_REQUESTED',
     );
     const maintainerApproved = reviews.data.some(
       review => review.author_association === 'MEMBER'
-        && review.state === 'APPROVED'
+        && review.state === 'APPROVED',
     );
     const communityRequestedChanges = reviews.data.some(
       review => this.getTrustedCommunityMembers().includes(review.user?.login ?? '')
-        && review.state !== 'APPROVED' // community members cannot request changes
-    )
+        && review.state === 'COMMENTED', // community members can only approve or comment
+    );
     const communityApproved = reviews.data.some(
       review => this.getTrustedCommunityMembers().includes(review.user?.login ?? '')
-        && review.state === 'APPROVED'
+        && review.state === 'APPROVED',
     );
 
     const prLinterFailed = reviews.data.find((review) => review.user?.login === 'aws-cdk-automation' && review.state !== 'DISMISSED') as Review;
@@ -372,6 +372,9 @@ export class PullRequestLinter {
       mergeable_state: pr.mergeable_state,
       prLinterFailed,
       maintainerRequestedChanges,
+      maintainerApproved,
+      communityRequestedChanges,
+      communityApproved,
       userRequestsExemption,
     }, undefined, 2));
 
@@ -394,7 +397,11 @@ export class PullRequestLinter {
       readyForReview = false;
     }
 
-    if (readyForReview && (fixesP1 || communityApproved)) {
+    // needs-maintainer-review means one of the following
+    // 1) fixes a p1 bug
+    // 2) is already community approved
+    // 3) is authored by a core team member
+    if (readyForReview && (fixesP1 || communityApproved || pr.labels.some(label => label.name === 'contribution/core'))) {
       this.addLabel('pr/needs-maintainer-review', pr);
       this.removeLabel('pr/needs-community-review', pr);
     } else if (readyForReview && !fixesP1) {
@@ -406,7 +413,7 @@ export class PullRequestLinter {
     }
   }
 
-  private addLabel(label: string, pr: Pick<GitHubPr, "labels" | "number">) {
+  private addLabel(label: string, pr: Pick<GitHubPr, 'labels' | 'number'>) {
     // already has label, so no-op
     if (pr.labels.some(l => l.name === label)) { return; }
     console.log(`adding ${label} to pr ${pr.number}`);
@@ -420,7 +427,7 @@ export class PullRequestLinter {
     });
   }
 
-  private removeLabel(label: string, pr: Pick<GitHubPr, "labels" | "number">) {
+  private removeLabel(label: string, pr: Pick<GitHubPr, 'labels' | 'number'>) {
     // does not have label, so no-op
     if (!pr.labels.some(l => l.name === label)) { return; }
     console.log(`removing ${label} to pr ${pr.number}`);
@@ -439,7 +446,7 @@ export class PullRequestLinter {
   private getTrustedCommunityMembers(): string[] {
     if (this.trustedCommunity.length > 0) { return this.trustedCommunity; }
 
-    const wiki = execSync('curl https://raw.githubusercontent.com/wiki/aws/aws-cdk/Introducing-CDK-Community-PR-Reviews.md', { encoding: 'utf-8'}).toString();
+    const wiki = execSync('curl https://raw.githubusercontent.com/wiki/aws/aws-cdk/Introducing-CDK-Community-PR-Reviews.md', { encoding: 'utf-8' }).toString();
     const rawMdTable = wiki.split('<!--section-->')[1].split('\n').filter(l => l !== '');
     for (let i = 2; i < rawMdTable.length; i++) {
       this.trustedCommunity.push(rawMdTable[i].split('|')[1].trim());
@@ -460,48 +467,48 @@ export class PullRequestLinter {
     console.log(`⌛  Fetching files for PR number ${number}`);
     const files = await this.client.paginate(this.client.pulls.listFiles, this.prParams);
 
-    console.log("⌛  Validating...");
+    console.log('⌛  Validating...');
 
     const validationCollector = new ValidationCollector(pr, files);
 
     validationCollector.validateRuleSet({
       exemption: shouldExemptReadme,
       exemptionMessage: `Not validating README changes since the PR is labeled with '${Exemption.README}'`,
-      testRuleSet: [ { test: featureContainsReadme } ],
+      testRuleSet: [{ test: featureContainsReadme }],
     });
 
     validationCollector.validateRuleSet({
       exemption: shouldExemptTest,
       exemptionMessage: `Not validating test changes since the PR is labeled with '${Exemption.TEST}'`,
-      testRuleSet: [ { test: featureContainsTest }, { test: fixContainsTest } ],
+      testRuleSet: [{ test: featureContainsTest }, { test: fixContainsTest }],
     });
 
     validationCollector.validateRuleSet({
       exemption: shouldExemptIntegTest,
       exemptionMessage: `Not validating integration test changes since the PR is labeled with '${Exemption.INTEG_TEST}'`,
-      testRuleSet: [ { test: featureContainsIntegTest}, { test: fixContainsIntegTest } ]
+      testRuleSet: [{ test: featureContainsIntegTest }, { test: fixContainsIntegTest }],
     });
 
     validationCollector.validateRuleSet({
-      testRuleSet: [ { test: validateBreakingChangeFormat } ]
+      testRuleSet: [{ test: validateBreakingChangeFormat }],
     });
 
     validationCollector.validateRuleSet({
-      testRuleSet: [ { test: validateTitlePrefix } ]
+      testRuleSet: [{ test: validateTitlePrefix }],
     });
     validationCollector.validateRuleSet({
-      testRuleSet: [ { test: validateTitleScope } ]
-    })
+      testRuleSet: [{ test: validateTitleScope }],
+    });
 
     validationCollector.validateRuleSet({
       exemption: shouldExemptBreakingChange,
       exemptionMessage: `Not validating breaking changes since the PR is labeled with '${Exemption.BREAKING_CHANGE}'`,
-      testRuleSet: [ { test: assertStability } ]
+      testRuleSet: [{ test: assertStability }],
     });
 
     validationCollector.validateRuleSet({
       exemption: shouldExemptCliIntegTested,
-      testRuleSet: [ { test: noCliChanges } ],
+      testRuleSet: [{ test: noCliChanges }],
     });
 
     await this.deletePRLinterComment();
@@ -527,19 +534,19 @@ export class PullRequestLinter {
 }
 
 function isPkgCfnspec(pr: GitHubPr): boolean {
-  return pr.title.indexOf("(cfnspec)") > -1;
+  return pr.title.indexOf('(cfnspec)') > -1;
 }
 
 function isFeature(pr: GitHubPr): boolean {
-  return pr.title.startsWith("feat")
+  return pr.title.startsWith('feat');
 }
 
 function isFix(pr: GitHubPr): boolean {
-  return pr.title.startsWith("fix")
+  return pr.title.startsWith('fix');
 }
 
 function testChanged(files: GitHubFile[]): boolean {
-  return files.filter(f => f.filename.toLowerCase().includes("test")).length != 0;
+  return files.filter(f => f.filename.toLowerCase().includes('test')).length != 0;
 }
 
 function integTestChanged(files: GitHubFile[]): boolean {
@@ -547,11 +554,11 @@ function integTestChanged(files: GitHubFile[]): boolean {
 }
 
 function integTestSnapshotChanged(files: GitHubFile[]): boolean {
-  return files.filter(f => f.filename.toLowerCase().includes(".snapshot")).length != 0;
+  return files.filter(f => f.filename.toLowerCase().includes('.snapshot')).length != 0;
 }
 
 function readmeChanged(files: GitHubFile[]): boolean {
-  return files.filter(f => path.basename(f.filename) == "README.md").length != 0;
+  return files.filter(f => path.basename(f.filename) == 'README.md').length != 0;
 }
 
 function featureContainsReadme(pr: GitHubPr, files: GitHubFile[]): TestResult {
@@ -627,7 +634,7 @@ function validateBreakingChangeFormat(pr: GitHubPr, _files: GitHubFile[]): TestR
   const m = re.exec(body ?? '');
   if (m) {
     result.assessFailure(!m[0].startsWith('BREAKING CHANGE: '), `Breaking changes should be indicated by starting a line with 'BREAKING CHANGE: ', variations are not allowed. (found: '${m[0]}').`);
-    result.assessFailure(m[0].slice('BREAKING CHANGE:'.length).trim().length === 0, `The description of the first breaking change should immediately follow the 'BREAKING CHANGE: ' clause.`);
+    result.assessFailure(m[0].slice('BREAKING CHANGE:'.length).trim().length === 0, 'The description of the first breaking change should immediately follow the \'BREAKING CHANGE: \' clause.');
     const titleRe = /^[a-z]+\([0-9a-z-_]+\)/;
     result.assessFailure(!titleRe.exec(title), 'The title of this pull request must specify the module name that the first breaking change should be associated to.');
   }
@@ -643,7 +650,7 @@ function validateTitlePrefix(pr: GitHubPr): TestResult {
   const m = titleRe.exec(pr.title);
   result.assessFailure(
     !m,
-    "The title of this pull request does not follow the Conventional Commits format, see https://www.conventionalcommits.org/.");
+    'The title of this pull request does not follow the Conventional Commits format, see https://www.conventionalcommits.org/.');
   return result;
 }
 
@@ -654,7 +661,7 @@ function validateTitlePrefix(pr: GitHubPr): TestResult {
  */
 function validateTitleScope(pr: GitHubPr): TestResult {
   const result = new TestResult();
-  const scopesExemptFromThisRule = [ 'aws-cdk-lib' ];
+  const scopesExemptFromThisRule = ['aws-cdk-lib'];
   // Specific commit types are handled by `validateTitlePrefix`. This just checks whether
   // the scope includes an `aws-` prefix or not.
   // Group 1: Scope with parens - "(aws-<name>)"
