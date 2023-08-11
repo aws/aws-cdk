@@ -358,7 +358,7 @@ describe('schedule target', () => {
       })).toThrow(/Both the queue and the schedule must be in the same region./);
   });
 
-  test('does nothing when configuring imported DLQ from the same account', () => {
+  test('does not create a queue policy when DLQ is imported', () => {
     const importedQueue = sqs.Queue.fromQueueArn(stack, 'ImportedQueue', 'arn:aws:sqs:us-east-1:123456789012:queue1');
 
     const lambdaTarget = new targets.LambdaInvoke(func, {
@@ -373,11 +373,20 @@ describe('schedule target', () => {
     Template.fromStack(stack).resourceCountIs('AWS::SQS::QueuePolicy', 0);
   });
 
-  test('does nothing when configuring imported DLQ from the a different account', () => {
-    const importedQueue = sqs.Queue.fromQueueArn(stack, 'ImportedQueue', 'arn:aws:sqs:us-east-1:111122223333:queue1');
+  test('does not create a queue policy when DLQ is created in a different account', () => {
+    const stack2 = new Stack(app, 'Stack2', {
+      env: {
+        region: 'us-east-1',
+        account: '111122223333',
+      },
+    });
+
+    const queue = new sqs.Queue(stack2, 'DummyDeadLetterQueue', {
+      queueName: 'DummyDeadLetterQueue',
+    });
 
     const lambdaTarget = new targets.LambdaInvoke(func, {
-      deadLetterQueue: importedQueue,
+      deadLetterQueue: queue,
     });
 
     new Schedule(stack, 'MyScheduleDummy', {
