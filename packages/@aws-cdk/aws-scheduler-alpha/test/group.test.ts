@@ -1,4 +1,4 @@
-import { Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { App, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as cw from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -16,9 +16,18 @@ describe('Schedule Group', () => {
   const expr = ScheduleExpression.at(new Date(Date.UTC(1969, 10, 20, 0, 0, 0)));
 
   beforeEach(() => {
-    stack = new Stack();
-    role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/johndoe');
-    func = lambda.Function.fromFunctionArn(stack, 'Function', 'arn:aws:lambda:us-east-1:123456789012:function/somefunc');
+    const app = new App();
+    stack = new Stack(app, 'Stack', { env: { region: 'us-east-1', account: '123456789012' } });
+    role = new iam.Role(stack, 'Role', {
+      roleName: 'someRole',
+      assumedBy: new iam.AccountRootPrincipal(),
+    });
+    func = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_14_X,
+      tracing: lambda.Tracing.PASS_THROUGH,
+    });
   });
 
   test('creates a group with default properties', () => {
@@ -155,15 +164,7 @@ describe('Schedule Group', () => {
                   {
                     Ref: 'AWS::Partition',
                   },
-                  ':scheduler:',
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':schedule/MyGroup/*',
+                  ':scheduler:us-east-1:123456789012:schedule/MyGroup/*',
                 ],
               ],
             },
@@ -204,15 +205,7 @@ describe('Schedule Group', () => {
                   {
                     Ref: 'AWS::Partition',
                   },
-                  ':scheduler:',
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':schedule/MyGroup/*',
+                  ':scheduler:us-east-1:123456789012:schedule/MyGroup/*',
                 ],
               ],
             },
@@ -250,15 +243,7 @@ describe('Schedule Group', () => {
                   {
                     Ref: 'AWS::Partition',
                   },
-                  ':scheduler:',
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':schedule/MyGroup/*',
+                  ':scheduler:us-east-1:123456789012:schedule/MyGroup/*',
                 ],
               ],
             },

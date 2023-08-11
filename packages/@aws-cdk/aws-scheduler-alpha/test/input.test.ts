@@ -1,4 +1,5 @@
-import { Stack } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
+
 import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
@@ -13,16 +14,20 @@ describe('schedule target input', () => {
   const expr = ScheduleExpression.at(new Date(Date.UTC(1969, 10, 20, 0, 0, 0)));
 
   beforeEach(() => {
-    stack = new Stack();
-    role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/johndoe');
-    func = lambda.Function.fromFunctionArn(stack, 'Function', 'arn:aws:lambda:us-east-1:123456789012:function/somefunc');
+    const app = new App();
+    stack = new Stack(app);
+    func = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_14_X,
+      tracing: lambda.Tracing.PASS_THROUGH,
+    });
   });
 
   test('create an input from text', () => {
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
       target: new targets.LambdaInvoke(func, {
-        role,
         input: ScheduleTargetInput.fromText('test'),
       }),
     });
@@ -39,7 +44,6 @@ describe('schedule target input', () => {
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
       target: new targets.LambdaInvoke(func, {
-        role,
         input: ScheduleTargetInput.fromText(stack.account),
       }),
     });
@@ -77,7 +81,6 @@ describe('schedule target input', () => {
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
       target: new targets.LambdaInvoke(func, {
-        role,
         input: ScheduleTargetInput.fromObject({
           test: stack.account,
         }),
@@ -102,7 +105,6 @@ describe('schedule target input', () => {
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
       target: new targets.LambdaInvoke(func, {
-        role,
         input: ScheduleTargetInput.fromText(`Test=${ContextAttribute.scheduleArn}`),
       }),
     });
@@ -119,7 +121,6 @@ describe('schedule target input', () => {
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
       target: new targets.LambdaInvoke(func, {
-        role,
         input: ScheduleTargetInput.fromObject({
           arn: ContextAttribute.scheduleArn,
           att: ContextAttribute.attemptNumber,

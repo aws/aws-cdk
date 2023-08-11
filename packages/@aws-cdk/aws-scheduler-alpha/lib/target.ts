@@ -1,9 +1,9 @@
-import { Annotations, Duration, Names, PhysicalName, Token, TokenComparison } from 'aws-cdk-lib';
+import { Annotations, Duration, Names, PhysicalName, Token, TokenComparison, Stack } from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { CfnSchedule } from 'aws-cdk-lib/aws-scheduler';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
-import { Construct, IConstruct } from 'constructs';
+import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { ScheduleTargetInput } from './input';
 import { ISchedule } from './schedule';
 
@@ -11,7 +11,23 @@ export interface IScheduleTarget {
   bind(_schedule: ISchedule): ScheduleTargetConfig;
 }
 
+/**
+ * Base properties for a Schedule Target
+ */
 export interface ScheduleTargetBaseProps {
+  /**
+   * An execution role is an IAM role that EventBridge Scheduler assumes in order to interact with other AWS services on your behalf.
+   *
+   * If none provided templates target will automatically create an IAM role with all the minimum necessary
+   * permissions to interact with the templated target. If you wish you may specify your own IAM role, then the templated targets
+   * will grant minimal required permissions.
+   *
+   * Universal target automatically create an IAM role if you do not specify your own IAM role.
+   * However, in comparison with templated targets, for universal targets you must grant the required
+   * IAM permissions yourself.
+   *
+   * @default - created by target
+   */
   readonly role?: iam.IRole;
   /**
    * The SQS queue to be used as deadLetterQueue.
@@ -23,7 +39,14 @@ export interface ScheduleTargetBaseProps {
    * @default - no dead-letter queue
    */
   readonly deadLetterQueue?: sqs.IQueue;
+
+  /**
+   * Input passed to the target.
+   *
+   * @default - no input.
+   */
   readonly input?: ScheduleTargetInput;
+
   /**
    * The maximum age of a request that Scheduler sends to a target for processing.
    *
@@ -45,7 +68,7 @@ export interface ScheduleTargetBaseProps {
 }
 
 /**
- * Properties for an Schedule Target
+ * Config of a Schedule Target used during initalization of Schedule
  */
 export interface ScheduleTargetConfig {
   /**
@@ -110,23 +133,40 @@ export function bindBaseTargetConfig(props: ScheduleTargetBaseProps) {
   };
 }
 
+const roleCache: {[key: string]: iam.Role} = {};
+
 /**
- * Obtain the Role for the EventBridge Schedule
+ * Obtain the Role for the EventBridge Scheduler event
  *
  * If a role already exists, it will be returned. This ensures that if multiple
  * events have the same target, they will share a role.
  * @internal
  */
-export function singletonEventRole(scope: IConstruct): iam.IRole {
-  const id = 'SchedulesRole';
-  const existing = scope.node.tryFindChild(id) as iam.IRole;
-  if (existing) { return existing; }
+function singletonScheduleRole(schedule: ISchedule, targetArn: string): iam.IRole {
+  const stack = Stack.of(schedule);
+  const arn = Token.isUnresolved(targetArn) ? stack.resolve(targetArn).toString() : targetArn;
+  const hash = md5hash(arn).slice(0, 6);
+  const id = 'SchedulerRoleForTarget-' + hash;
+  const existing = stack.node.tryFindChild(id) as iam.IRole;
 
-  const role = new iam.Role(scope as Construct, id, {
-    roleName: PhysicalName.GENERATE_IF_NEEDED,
-    assumedBy: new iam.ServicePrincipal('scheduler.amazonaws.com'),
+  const principal = new iam.PrincipalWithConditions(new iam.ServicePrincipal('scheduler.amazonaws.com'), {
+    StringEquals: {
+      'aws:SourceAccount': schedule.env.account,
+    },
   });
-
+  if (existing) {
+    roleCache[targetArn].assumeRolePolicy?.addStatements(new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      principals: [new iam.ServicePrincipal('scheduler.amazonaws.com')],
+      actions: ['sts:AssumeRole'],
+    }));
+    return existing;
+  }
+  const role = new iam.Role(stack, id, {
+    roleName: PhysicalName.GENERATE_IF_NEEDED,
+    assumedBy: principal,
+  });
+  roleCache[targetArn] = role;
   return role;
 }
 
@@ -151,11 +191,6 @@ export function addToDeadLetterQueueResourcePolicy(schedule: ISchedule, queue: s
       effect: iam.Effect.ALLOW,
       actions: ['sqs:SendMessage'],
       resources: [queue.queueArn],
-      conditions: {
-        ArnEquals: {
-          'aws:SourceArn': schedule.scheduleArn,
-        },
-      },
     }));
   } else {
     Annotations.of(schedule).addWarning(`Cannot add a resource policy to your dead letter queue associated with schedule ${schedule.scheduleName} because the queue is in a different account. You must add the resource policy manually to the dead letter queue in account ${queue.env.account}.`);
@@ -169,7 +204,7 @@ export function addToDeadLetterQueueResourcePolicy(schedule: ISchedule, queue: s
  * are unresolved (in which case both are expted to be "current region" or "current account").
  * @internal
  */
-export function sameEnvDimension(dim1: string, dim2: string) {
+function sameEnvDimension(dim1: string, dim2: string) {
   return [TokenComparison.SAME, TokenComparison.BOTH_UNRESOLVED].includes(Token.compareStrings(dim1, dim2));
 }
 
@@ -189,12 +224,12 @@ export function renderRetryPolicy(maximumEventAge: Duration | undefined, maximum
   let maxAttempts = 185;
   if (typeof maximumRetryAttempts != 'undefined') {
     if (maximumRetryAttempts < 0) {
-      maxAttempts = maximumRetryAttempts; // todo number might be converted to fixed int?
       throw Error('Number of retry attempts should be greater or equal than 0');
     }
     if (maximumRetryAttempts > 185) {
       throw Error('Number of retry attempts should be less or equal than 185');
     }
+    maxAttempts = maximumRetryAttempts;
   }
   return {
     maximumEventAgeInSeconds: maxAge,
@@ -211,12 +246,23 @@ export namespace targets {
     }
 
     bind(_schedule: ISchedule): ScheduleTargetConfig {
+      if (!sameEnvDimension(this.func.env.region, _schedule.env.region)) {
+        throw new Error(`Cannot assign function in region ${this.func.env.region} to the schedule ${Names.nodeUniqueId(_schedule.node)} in region ${_schedule.env.region}. Both the schedule and the function must be in the same region.`);
+      }
+
+      if (!sameEnvDimension(this.func.env.account, _schedule.env.account)) {
+        throw new Error(`Cannot assign function in account ${this.func.env.account} to the schedule ${Names.nodeUniqueId(_schedule.node)} in account ${_schedule.env.region}. Both the schedule and the function must be in the same account.`);
+      }
 
       if (this.props.deadLetterQueue) {
         addToDeadLetterQueueResourcePolicy(_schedule, this.props.deadLetterQueue);
       }
 
-      const role = this.props.role ?? singletonEventRole(this.func);
+      if (this.props.role && !sameEnvDimension(this.props.role.env.account, this.func.env.account)) {
+        throw new Error(`Cannot grant permission to execution role in account ${this.props.role.env.account} to invoke target ${Names.nodeUniqueId(this.func.node)} in account ${this.func.env.account}. Both the target and the execution role must be in the same account.`);
+      }
+
+      const role = this.props.role ?? singletonScheduleRole(_schedule, this.func.functionArn);
       this.func.grantInvoke(role);
 
       return {
