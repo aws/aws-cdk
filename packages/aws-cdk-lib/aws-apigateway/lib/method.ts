@@ -286,7 +286,7 @@ export class Method extends Resource {
    * will nondeterministically use one of the responses, and ignore the rest.
    */
   public addMethodResponse(methodResponse: MethodResponse): void {
-    const mr = this.methodResponses.find((mr) => mr.statusCode === methodResponse.statusCode);
+    const mr = this.methodResponses.find((x) => x.statusCode === methodResponse.statusCode);
     if (mr) {
       Annotations.of(this).addWarning(`addMethodResponse called multiple times with statusCode=${methodResponse.statusCode}, deployment will be nondeterministic. Use a single addMethodResponse call to configure the entire response.`);
     }
