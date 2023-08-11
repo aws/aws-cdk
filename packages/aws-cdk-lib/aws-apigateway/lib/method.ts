@@ -513,7 +513,3 @@ export enum AuthorizationType {
 function pathForArn(path: string): string {
   return path.replace(/\{[^\}]*\}/g, '*'); // replace path parameters (like '{bookId}') with asterisk
 }
-
-function mergeDicts<T>(xs?: Record<string, T>, ys?: Record<string, T>): Record<string, T> | undefined {
-  return xs || ys ? Object.assign(xs ?? {}, ys) : undefined;
-}
