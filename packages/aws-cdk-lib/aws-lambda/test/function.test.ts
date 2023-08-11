@@ -3246,6 +3246,41 @@ test('set SnapStart to desired value', () => {
   });
 });
 
+
+test('function using SnapStart', () => {
+  const stack = new cdk.Stack();
+  //WHEN
+  new lambda.Function(stack, 'MyLambda', {
+    code: lambda.Code.fromAsset('test/handler.zip'),
+    handler: 'example.Handler::handleRequest',
+    runtime: lambda.Runtime.JAVA_11,
+    snapStart: lambda.SnapStartConfig.ON_PUBLISHED_VERSIONS,
+  });
+
+  //THEN
+  Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+    Properties:
+        {
+          Handler: 'example.Handler::handleRequest',
+          Runtime: 'java11',
+          SnapStart: {
+            ApplyOn: 'PublishedVersions',
+          },
+        },
+  });
+});
+
+test('runtime validation for snapStart', () => {
+  const stack = new cdk.Stack();
+
+  expect(() => new lambda.Function(stack, 'MyLambda', {
+    code: new lambda.InlineCode('foo'),
+    handler: 'bar',
+    runtime: lambda.Runtime.NODEJS_14_X,
+    snapStart: lambda.SnapStartConfig.ON_PUBLISHED_VERSIONS,
+  })).toThrowError('SnapStart is currently supported only Java 11/Java 17 runtime');
+});
+
 function newTestLambda(scope: constructs.Construct) {
   return new lambda.Function(scope, 'MyLambda', {
     code: new lambda.InlineCode('foo'),

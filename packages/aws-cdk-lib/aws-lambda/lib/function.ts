@@ -29,6 +29,7 @@ import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
 import { Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, IAspect, Lazy, Names, Size, Stack, Token } from '../../core';
 import { LAMBDA_RECOGNIZE_LAYER_VERSION } from '../../cx-api';
+import { SnapStartConfig } from './snapstart-management'
 
 /**
  * X-Ray Tracing Modes (https://docs.aws.amazon.com/lambda/latest/dg/API_TracingConfig.html)
@@ -224,6 +225,14 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default Tracing.Disabled
    */
   readonly tracing?: Tracing;
+
+  /**
+  * Enable SnapStart for Lambda Function.
+  * SnapStart is currently supported only for Java 11, 17 runtime
+  *
+  * @default - No snapstart
+  */
+ readonly snapStart?: SnapStartConfig;
 
   /**
    * Enable profiling.
@@ -832,6 +841,7 @@ export class Function extends FunctionBase {
       codeSigningConfigArn: props.codeSigningConfig?.codeSigningConfigArn,
       architectures: this._architecture ? [this._architecture.name] : undefined,
       runtimeManagementConfig: props.runtimeManagementMode?.runtimeManagementConfig,
+      snapStart: this.configureSnapStart(props),
     });
 
     if ((props.tracing !== undefined) || (props.adotInstrumentation !== undefined)) {
@@ -1281,6 +1291,36 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       subnetIds: selectedSubnets.subnetIds,
       securityGroupIds: securityGroups.map(sg => sg.securityGroupId),
     };
+  }
+
+  private configureSnapStart(props: FunctionProps): CfnFunction.SnapStartProperty | undefined {
+    if (!props.snapStart){
+      return undefined;
+    }
+
+    if (props.snapStart != SnapStartConfig.ON_PUBLISHED_VERSIONS){
+      throw new Error('SnapStart is currently supported only published versions');
+    }
+
+    if (props.runtime != Runtime.JAVA_11 && props.runtime != Runtime.JAVA_17 ) {
+      throw new Error('SnapStart is currently supported only Java 11/Java 17 runtime');
+    }
+    
+    if (props.architecture == Architecture.ARM_64){
+      throw new Error('SnapStart is currently not supported on Arm_64');
+    }
+
+    // seems no provision concurrency in props? can't check it here
+
+    if (props.filesystem){
+      throw new Error('SnapStart is currently does not supported using EFS');
+    }
+    
+    if (props.ephemeralStorageSize && props.ephemeralStorageSize?.toMebibytes() > 512){
+      throw new Error('SnapStart is currently not supported using more than 512 MiB Ephemeral Storage');
+    }
+
+    return SnapStartConfig.ON_PUBLISHED_VERSIONS;
   }
 
   private isQueue(deadLetterQueue: sqs.IQueue | sns.ITopic): deadLetterQueue is sqs.IQueue {
