@@ -13,7 +13,7 @@ import { IStage } from './stage';
 import { validateHttpMethod } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
-import { ArnFormat, FeatureFlags, Lazy, Names, Resource, Stack } from '../../core';
+import { Annotations, ArnFormat, FeatureFlags, Lazy, Names, Resource, Stack } from '../../core';
 import { APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID } from '../../cx-api';
 
 export interface MethodOptions {
@@ -285,18 +285,11 @@ export class Method extends Resource {
    * and `responseParameters` maps will be merged.
    */
   public addMethodResponse(methodResponse: MethodResponse): void {
-    const i = this.methodResponses.findIndex((mr) => mr.statusCode === methodResponse.statusCode);
-    if (i >= 0) {
-      // Need to do a splice because MethodResponses are immutable
-      const existing = this.methodResponses[i];
-      this.methodResponses.splice(i, 1, {
-        statusCode: methodResponse.statusCode,
-        responseModels: mergeDicts(existing.responseModels, methodResponse.responseModels),
-        responseParameters: mergeDicts(existing.responseParameters, methodResponse.responseParameters),
-      });
-    } else {
-      this.methodResponses.push(methodResponse);
+    const mr = this.methodResponses.find((mr) => mr.statusCode === methodResponse.statusCode);
+    if (mr) {
+      Annotations.of(this).addWarning(`addMethodResponse called multiple times with statusCode=${methodResponse.statusCode}, deployment will be nondeterministic. Use a single addMethodResponse call to configure the entire response.`);
     }
+    this.methodResponses.push(methodResponse);
   }
 
   private renderIntegration(bindResult: IntegrationConfig): CfnMethod.IntegrationProperty {
