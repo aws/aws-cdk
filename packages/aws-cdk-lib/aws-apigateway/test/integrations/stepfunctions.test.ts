@@ -398,6 +398,7 @@ describe('StepFunctionsIntegration', () => {
           statusCode: '200',
         },
       ],
+      addDefaultMethodResponses: false,
     };
 
     const integ = apigw.StepFunctionsIntegration.startExecution(stateMachine, integrationOptions);
@@ -412,9 +413,6 @@ describe('StepFunctionsIntegration', () => {
         {
           ResponseParameters: {
             'method.response.header.Access-Control-Allow-Origin': true,
-          },
-          ResponseModels: {
-            'application/json': 'Empty',
           },
           StatusCode: '200',
         },
