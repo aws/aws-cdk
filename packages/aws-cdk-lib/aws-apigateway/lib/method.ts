@@ -173,7 +173,7 @@ export class Method extends Resource {
    */
   public readonly api: IRestApi;
 
-  private readonly methodResponses: MethodResponse[];
+  private readonly methodResponses: MethodResponse[] = [];
 
   constructor(scope: Construct, id: string, props: MethodProps) {
     super(scope, id);
@@ -203,7 +203,9 @@ export class Method extends Resource {
       authorizer._attachToApi(this.api);
     }
 
-    this.methodResponses = options.methodResponses ?? defaultMethodOptions.methodResponses ?? [];
+    for (const mr of options.methodResponses ?? defaultMethodOptions.methodResponses ?? []) {
+      this.addMethodResponse(mr);
+    }
 
     const integration = props.integration ?? this.resource.defaultIntegration ?? new MockIntegration();
     const bindResult = integration.bind(this);
@@ -242,22 +244,6 @@ export class Method extends Resource {
         },
       });
     }
-
-    this.node.addValidation({
-      validate: () => {
-        const responses = this.methodResponses;
-
-        // Validate that all method response codes are unique
-        const counts: Record<string, number> = {};
-        for (const resp of responses) {
-          counts[resp.statusCode] = (counts[resp.statusCode] ?? 0) + 1;
-        }
-        const dupes = Object.entries(counts).filter(([_, n]) => n > 1).map(([c, _]) => c);
-        return dupes.map((code) =>
-          `${counts[code]} methodResponses for code ${code}: ${this.methodResponses.filter((r) => r.statusCode === code).map((x) => JSON.stringify(x)).join(', ')}`,
-        );
-      },
-    });
   }
 
   /**
@@ -294,9 +280,23 @@ export class Method extends Resource {
 
   /**
    * Add a method response to this method
+   *
+   * If a method response for the same status code already exists, the `responseModels`
+   * and `responseParameters` maps will be merged.
    */
   public addMethodResponse(methodResponse: MethodResponse): void {
-    this.methodResponses.push(methodResponse);
+    const i = this.methodResponses.findIndex((mr) => mr.statusCode === methodResponse.statusCode);
+    if (i >= 0) {
+      // Need to do a splice because MethodResponses are immutable
+      const existing = this.methodResponses[i];
+      this.methodResponses.splice(i, 1, {
+        statusCode: methodResponse.statusCode,
+        responseModels: mergeDicts(existing.responseModels, methodResponse.responseModels),
+        responseParameters: mergeDicts(existing.responseParameters, methodResponse.responseParameters),
+      });
+    } else {
+      this.methodResponses.push(methodResponse);
+    }
   }
 
   private renderIntegration(bindResult: IntegrationConfig): CfnMethod.IntegrationProperty {
@@ -518,4 +518,8 @@ export enum AuthorizationType {
 
 function pathForArn(path: string): string {
   return path.replace(/\{[^\}]*\}/g, '*'); // replace path parameters (like '{bookId}') with asterisk
+}
+
+function mergeDicts<T>(xs?: Record<string, T>, ys?: Record<string, T>): Record<string, T> | undefined {
+  return xs || ys ? Object.assign(xs ?? {}, ys) : undefined;
 }

@@ -373,7 +373,7 @@ describe('StepFunctionsIntegration', () => {
     });
   });
 
-  test('with custom methodOptions and integrationOptions', () => {
+  test('merging methodOptions.methodResponses, and not susceptible to false sharing of arrays', () => {
     //GIVEN
     const { stack, api, stateMachine } = givenSetup();
 
@@ -402,7 +402,7 @@ describe('StepFunctionsIntegration', () => {
 
     const integ = apigw.StepFunctionsIntegration.startExecution(stateMachine, integrationOptions);
     api.root.addMethod('GET', integ, methodOptions);
-    // api.root.addMethod('POST', integ, methodOptions);
+    api.root.addMethod('POST', integ, methodOptions);
 
     //THEN
     Template.fromStack(stack).resourceCountIs('AWS::ApiGateway::Method', 2);
