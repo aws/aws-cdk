@@ -373,7 +373,7 @@ describe('StepFunctionsIntegration', () => {
     });
   });
 
-  test('merging methodOptions.methodResponses, and not susceptible to false sharing of arrays', () => {
+  test('addMethod is not susceptible to false sharing of arrays', () => {
     //GIVEN
     const { stack, api, stateMachine } = givenSetup();
 
@@ -404,7 +404,9 @@ describe('StepFunctionsIntegration', () => {
     api.root.addMethod('GET', integ, methodOptions);
     api.root.addMethod('POST', integ, methodOptions);
 
-    //THEN
+    // THEN - the MethodResponses arrays have 4 elements instead of 8
+    // (This is still incorrect because 200 occurs multiple times, but that's a separate
+    // issue with a non-straightforward solution)
     Template.fromStack(stack).resourceCountIs('AWS::ApiGateway::Method', 2);
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'GET',
@@ -413,10 +415,25 @@ describe('StepFunctionsIntegration', () => {
           ResponseParameters: {
             'method.response.header.Access-Control-Allow-Origin': true,
           },
+          StatusCode: '200',
+        },
+        {
           ResponseModels: {
             'application/json': 'Empty',
           },
           StatusCode: '200',
+        },
+        {
+          ResponseModels: {
+            'application/json': 'Error',
+          },
+          StatusCode: '400',
+        },
+        {
+          ResponseModels: {
+            'application/json': 'Error',
+          },
+          StatusCode: '500',
         },
       ],
       Integration: {
@@ -439,6 +456,24 @@ describe('StepFunctionsIntegration', () => {
             'method.response.header.Access-Control-Allow-Origin': true,
           },
           StatusCode: '200',
+        },
+        {
+          ResponseModels: {
+            'application/json': 'Empty',
+          },
+          StatusCode: '200',
+        },
+        {
+          ResponseModels: {
+            'application/json': 'Error',
+          },
+          StatusCode: '400',
+        },
+        {
+          ResponseModels: {
+            'application/json': 'Error',
+          },
+          StatusCode: '500',
         },
       ],
       Integration: {
