@@ -653,3 +653,31 @@ B => 2 vCPU - WAITING
 In this situation, Batch will allocate **Job A** to compute resource #1 because it is the most cost efficient resource that matches the vCPU requirement. However, with this `BEST_FIT` strategy, **Job B** will not be allocated to our other available compute resource even though it is strong enough to handle it. Instead, it will wait until the first job is finished processing or wait a similar `m5.xlarge` resource to be provisioned.
 
 The alternative would be to use the `BEST_FIT_PROGRESSIVE` strategy in order for the remaining job to be handled in larger containers regardless of vCPU requirement and costs.
+
+### Permissions
+
+You can grant any Principal the `batch:submitJob` permission on both a job definition and a job queue like this:
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+new batch.EcsJobDefinition(this, 'JobDefn', {
+  container: new batch.EcsEc2ContainerDefinition(this, 'containerDefn', {
+    image: ecs.ContainerImage.fromRegistry('public.ecr.aws/amazonlinux/amazonlinux:latest'),
+    memory: cdk.Size.mebibytes(2048),
+    cpu: 256,
+  }),
+});
+
+new batch.JobQueue(this, 'JobQueue', {
+  computeEnvironments: [{
+    computeEnvironment: new ManagedEc2EcsComputeEnvironment(this, 'managedEc2CE', {
+      vpc,
+    }),
+    order: 1,
+  }],
+  priority: 10,
+});
+
+const user = new iam.User(this, 'MyUser');
+ecsJob.grantSubmitJob(user, queue);
+```
