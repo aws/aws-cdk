@@ -372,6 +372,90 @@ describe('StepFunctionsIntegration', () => {
         .toThrow(/State Machine must be of type "EXPRESS". Please use StateMachineType.EXPRESS as the stateMachineType/);
     });
   });
+
+  test('merging methodOptions.methodResponses, and not susceptible to false sharing of arrays', () => {
+    //GIVEN
+    const { stack, api, stateMachine } = givenSetup();
+
+    //WHEN
+    const methodOptions = {
+      methodResponses: [
+        {
+          statusCode: '200',
+          responseParameters: {
+            'method.response.header.Access-Control-Allow-Origin': true,
+          },
+        },
+      ],
+    };
+
+    const integrationOptions = {
+      integrationResponses: [
+        {
+          responseParameters: {
+            'method.response.header.Access-Control-Allow-Origin': "'*'",
+          },
+          statusCode: '200',
+        },
+      ],
+    };
+
+    const integ = apigw.StepFunctionsIntegration.startExecution(stateMachine, integrationOptions);
+    api.root.addMethod('GET', integ, methodOptions);
+    api.root.addMethod('POST', integ, methodOptions);
+
+    //THEN
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGateway::Method', 2);
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+      HttpMethod: 'GET',
+      MethodResponses: [
+        {
+          ResponseParameters: {
+            'method.response.header.Access-Control-Allow-Origin': true,
+          },
+          ResponseModels: {
+            'application/json': 'Empty',
+          },
+          StatusCode: '200',
+        },
+      ],
+      Integration: {
+        IntegrationResponses: [
+          {
+            ResponseParameters: {
+              'method.response.header.Access-Control-Allow-Origin': "'*'",
+            },
+            StatusCode: '200',
+          },
+        ],
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+      HttpMethod: 'POST',
+      MethodResponses: [
+        {
+          ResponseParameters: {
+            'method.response.header.Access-Control-Allow-Origin': true,
+          },
+          ResponseModels: {
+            'application/json': 'Empty',
+          },
+          StatusCode: '200',
+        },
+      ],
+      Integration: {
+        IntegrationResponses: [
+          {
+            ResponseParameters: {
+              'method.response.header.Access-Control-Allow-Origin': "'*'",
+            },
+            StatusCode: '200',
+          },
+        ],
+      },
+    });
+  });
 });
 
 function givenSetup() {

@@ -278,9 +278,23 @@ export class Method extends Resource {
 
   /**
    * Add a method response to this method
+   *
+   * If a method response for the same status code already exists, the `responseModels`
+   * and `responseParameters` maps will be merged.
    */
   public addMethodResponse(methodResponse: MethodResponse): void {
-    this.methodResponses.push(methodResponse);
+    const i = this.methodResponses.findIndex((mr) => mr.statusCode === methodResponse.statusCode);
+    if (i >= 0) {
+      // Need to do a splice because MethodResponses are immutable
+      const existing = this.methodResponses[i];
+      this.methodResponses.splice(i, 1, {
+        statusCode: methodResponse.statusCode,
+        responseModels: mergeDicts(existing.responseModels, methodResponse.responseModels),
+        responseParameters: mergeDicts(existing.responseParameters, methodResponse.responseParameters),
+      });
+    } else {
+      this.methodResponses.push(methodResponse);
+    }
   }
 
   private renderIntegration(bindResult: IntegrationConfig): CfnMethod.IntegrationProperty {
@@ -322,12 +336,8 @@ export class Method extends Resource {
       let responseModels: {[contentType: string]: string} | undefined;
 
       if (mr.responseModels) {
-        responseModels = {};
-        for (const contentType in mr.responseModels) {
-          if (mr.responseModels.hasOwnProperty(contentType)) {
-            responseModels[contentType] = mr.responseModels[contentType].modelId;
-          }
-        }
+        responseModels = Object.fromEntries(Object.entries(mr.responseModels)
+          .map(([contentType, rm]) => [contentType, rm.modelId]));
       }
 
       const methodResponseProp = {
@@ -506,4 +516,8 @@ export enum AuthorizationType {
 
 function pathForArn(path: string): string {
   return path.replace(/\{[^\}]*\}/g, '*'); // replace path parameters (like '{bookId}') with asterisk
+}
+
+function mergeDicts<T>(xs?: Record<string, T>, ys?: Record<string, T>): Record<string, T> | undefined {
+  return xs || ys ? Object.assign(xs ?? {}, ys) : undefined;
 }
