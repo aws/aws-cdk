@@ -20,26 +20,26 @@ export class DataProtectionPolicy {
    * @internal
    */
   public _bind(_scope: Construct): DataProtectionPolicyConfig {
-    const name = this.dataProtectionPolicyProps.name || 'data-protection-policy-cdk';
-    const description = this.dataProtectionPolicyProps.description || 'cdk generated data protection policy';
-    const version = '2021-06-01';
+    const Name = this.dataProtectionPolicyProps.name || 'data-protection-policy-cdk';
+    const Description = this.dataProtectionPolicyProps.description || 'cdk generated data protection policy';
+    const Version = '2021-06-01';
 
     const findingsDestination: FindingsDestination = {};
     if (this.dataProtectionPolicyProps.logGroupAuditDestination) {
-      findingsDestination.cloudWatchLogs = {
-        logGroup: this.dataProtectionPolicyProps.logGroupAuditDestination.logGroupName,
+      findingsDestination.CloudWatchLogs = {
+        LogGroup: this.dataProtectionPolicyProps.logGroupAuditDestination.logGroupName,
       };
     }
 
     if (this.dataProtectionPolicyProps.s3BucketAuditDestination) {
-      findingsDestination.s3 = {
-        bucket: this.dataProtectionPolicyProps.s3BucketAuditDestination.bucketName,
+      findingsDestination.S3 = {
+        Bucket: this.dataProtectionPolicyProps.s3BucketAuditDestination.bucketName,
       };
     }
 
     if (this.dataProtectionPolicyProps.deliveryStreamNameAuditDestination) {
-      findingsDestination.firehose = {
-        deliveryStream: this.dataProtectionPolicyProps.deliveryStreamNameAuditDestination,
+      findingsDestination.Firehose = {
+        DeliveryStream: this.dataProtectionPolicyProps.deliveryStreamNameAuditDestination,
       };
     }
 
@@ -54,46 +54,46 @@ export class DataProtectionPolicy {
       }));
     };
 
-    const statement = [
+    const Statement = [
       {
-        sid: 'audit-statement-cdk',
-        dataIdentifier: identifierArns,
-        operation: {
-          audit: {
-            findingsDestination: findingsDestination,
+        Sid: 'audit-statement-cdk',
+        DataIdentifier: identifierArns,
+        Operation: {
+          Audit: {
+            FindingsDestination: findingsDestination,
           },
         },
       },
       {
-        sid: 'redact-statement-cdk',
-        dataIdentifier: identifierArns,
-        operation: {
-          deidentify: {
-            maskConfig: {},
+        Sid: 'redact-statement-cdk',
+        DataIdentifier: identifierArns,
+        Operation: {
+          Deidentify: {
+            MaskConfig: {},
           },
         },
       },
     ];
-    return { name, description, version, statement };
+    return { Name, Description, Version, Statement };
   }
 }
 
 interface FindingsDestination {
-  cloudWatchLogs?: CloudWatchLogsDestination;
-  firehose?: FirehoseDestination;
-  s3?: S3Destination;
+  CloudWatchLogs?: CloudWatchLogsDestination;
+  Firehose?: FirehoseDestination;
+  S3?: S3Destination;
 }
 
 interface CloudWatchLogsDestination {
-  logGroup: string;
+  LogGroup: string;
 }
 
 interface FirehoseDestination {
-  deliveryStream: string;
+  DeliveryStream: string;
 }
 
 interface S3Destination {
-  bucket: string;
+  Bucket: string;
 }
 
 /**
@@ -105,24 +105,24 @@ export interface DataProtectionPolicyConfig {
    *
    * @default - 'data-protection-policy-cdk'
    */
-  readonly name: string;
+  readonly Name: string;
 
   /**
    * Description of the data protection policy
    *
    * @default - 'cdk generated data protection policy'
    */
-  readonly description: string;
+  readonly Description: string;
 
   /**
    * Version of the data protection policy
    */
-  readonly version: string;
+  readonly Version: string;
 
   /**
    * Statements within the data protection policy. Must contain one Audit and one Redact statement
    */
-  readonly statement: any;
+  readonly Statement: any;
 }
 
 /**
