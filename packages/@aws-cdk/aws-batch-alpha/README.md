@@ -128,19 +128,23 @@ computeEnv.addInstanceClass(ec2.InstanceClass.R4);
 
 #### Allocation Strategies
 
-| Allocation Strategy     | Optimized for      | Downsides                     |
-| ----------------------- | -------------      | ----------------------------- |
-| BEST_FIT                | Cost               | May limit throughput          |
-| BEST_FIT_PROGRESSIVE    | Throughput         | May increase cost             |
-| SPOT_CAPACITY_OPTIMIZED | Least interruption | Only useful on Spot instances |
+| Allocation Strategy           | Optimized for              | Downsides                     |
+| -----------------------       | -------------              | ----------------------------- |
+| BEST_FIT                      | Cost                       | May limit throughput          |
+| BEST_FIT_PROGRESSIVE          | Throughput                 | May increase cost             |
+| SPOT_CAPACITY_OPTIMIZED       | Least interruption         | Only useful on Spot instances |
+| SPOT_PRICE_CAPACITY_OPTIMIZED | Least interruption + Price | Only useful on Spot instances |
 
 Batch provides different Allocation Strategies to help it choose which instances to provision.
 If your workflow tolerates interruptions, you should enable `spot` on your `ComputeEnvironment`
-and use `SPOT_CAPACITY_OPTIMIZED` (this is the default if `spot` is enabled).
+and use `SPOT_PRICE_CAPACITY_OPTIMIZED` (this is the default if `spot` is enabled).
 This will tell Batch to choose the instance types from the ones you’ve specified that have
-the most spot capacity available to minimize the chance of interruption.
+the most spot capacity available to minimize the chance of interruption and have the lowest price.
 To get the most benefit from your spot instances,
 you should allow Batch to choose from as many different instance types as possible.
+If you only care about minimal interruptions and not want Batch to optimize for cost, use
+`SPOT_CAPACITY_OPTIMIZED`. `SPOT_PRICE_CAPACITY_OPTIMIZED` is recommended over `SPOT_CAPACITY_OPTIMIZED`
+for most use cases.
 
 If your workflow does not tolerate interruptions and you want to minimize your costs at the expense
 of potentially longer waiting times, use `AllocationStrategy.BEST_FIT`.
@@ -189,7 +193,8 @@ const computeEnv = new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2Compute
 You can specify the maximum and minimum vCPUs a managed `ComputeEnvironment` can have at any given time.
 Batch will *always* maintain `minvCpus` worth of instances in your ComputeEnvironment, even if it is not executing any jobs,
 and even if it is disabled. Batch will scale the instances up to `maxvCpus` worth of instances as
-jobs exit the JobQueue and enter the ComputeEnvironment. If you use `AllocationStrategy.BEST_FIT_PROGRESSIVE` or `AllocationStrategy.SPOT_CAPACITY_OPTIMIZED`,
+jobs exit the JobQueue and enter the ComputeEnvironment. If you use `AllocationStrategy.BEST_FIT_PROGRESSIVE`, 
+`AllocationStrategy.SPOT_PRICE_CAPACITY_OPTIMIZED`, or `AllocationStrategy.SPOT_CAPACITY_OPTIMIZED`,
 batch may exceed `maxvCpus`; it will never exceed `maxvCpus` by more than a single instance type. This example configures a
 `minvCpus` of 10 and a `maxvCpus` of 100:
 

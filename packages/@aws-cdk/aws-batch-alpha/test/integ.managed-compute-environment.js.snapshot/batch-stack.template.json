@@ -18,9 +18,6 @@
   "vpcPublicSubnet1Subnet2E65531E": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "vpcA2121C38"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -44,21 +41,24 @@
       "Key": "Name",
       "Value": "batch-stack/vpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
    }
   },
   "vpcPublicSubnet1RouteTable48A2DF9B": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "vpcA2121C38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "batch-stack/vpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
    }
   },
   "vpcPublicSubnet1RouteTableAssociation5D3F4579": {
@@ -75,12 +75,12 @@
   "vpcPublicSubnet1DefaultRoute10708846": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "vpcPublicSubnet1RouteTable48A2DF9B"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "vpcIGWE57CBDCA"
+    },
+    "RouteTableId": {
+     "Ref": "vpcPublicSubnet1RouteTable48A2DF9B"
     }
    },
    "DependsOn": [
@@ -102,14 +102,14 @@
   "vpcPublicSubnet1NATGateway9C16659E": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "vpcPublicSubnet1Subnet2E65531E"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "vpcPublicSubnet1EIPDA49DCBE",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "vpcPublicSubnet1Subnet2E65531E"
     },
     "Tags": [
      {
@@ -126,9 +126,6 @@
   "vpcPublicSubnet2Subnet009B674F": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "vpcA2121C38"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -152,21 +149,24 @@
       "Key": "Name",
       "Value": "batch-stack/vpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
    }
   },
   "vpcPublicSubnet2RouteTableEB40D4CB": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "vpcA2121C38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "batch-stack/vpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
    }
   },
   "vpcPublicSubnet2RouteTableAssociation21F81B59": {
@@ -183,12 +183,12 @@
   "vpcPublicSubnet2DefaultRouteA1EC0F60": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "vpcPublicSubnet2RouteTableEB40D4CB"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "vpcIGWE57CBDCA"
+    },
+    "RouteTableId": {
+     "Ref": "vpcPublicSubnet2RouteTableEB40D4CB"
     }
    },
    "DependsOn": [
@@ -210,14 +210,14 @@
   "vpcPublicSubnet2NATGateway9B8AE11A": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "vpcPublicSubnet2Subnet009B674F"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "vpcPublicSubnet2EIP9B3743B1",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "vpcPublicSubnet2Subnet009B674F"
     },
     "Tags": [
      {
@@ -234,9 +234,6 @@
   "vpcPrivateSubnet1Subnet934893E8": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "vpcA2121C38"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -260,21 +257,24 @@
       "Key": "Name",
       "Value": "batch-stack/vpc/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
    }
   },
   "vpcPrivateSubnet1RouteTableB41A48CC": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "vpcA2121C38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "batch-stack/vpc/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
    }
   },
   "vpcPrivateSubnet1RouteTableAssociation67945127": {
@@ -291,21 +291,18 @@
   "vpcPrivateSubnet1DefaultRoute1AA8E2E5": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "vpcPrivateSubnet1RouteTableB41A48CC"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "vpcPublicSubnet1NATGateway9C16659E"
+    },
+    "RouteTableId": {
+     "Ref": "vpcPrivateSubnet1RouteTableB41A48CC"
     }
    }
   },
   "vpcPrivateSubnet2Subnet7031C2BA": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "vpcA2121C38"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -329,21 +326,24 @@
       "Key": "Name",
       "Value": "batch-stack/vpc/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
    }
   },
   "vpcPrivateSubnet2RouteTable7280F23E": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "vpcA2121C38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "batch-stack/vpc/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
    }
   },
   "vpcPrivateSubnet2RouteTableAssociation007E94D3": {
@@ -360,12 +360,12 @@
   "vpcPrivateSubnet2DefaultRouteB0E07F99": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "vpcPrivateSubnet2RouteTable7280F23E"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "vpcPublicSubnet2NATGateway9B8AE11A"
+    },
+    "RouteTableId": {
+     "Ref": "vpcPrivateSubnet2RouteTable7280F23E"
     }
    }
   },
@@ -383,11 +383,11 @@
   "vpcVPCGW7984C166": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
    "Properties": {
-    "VpcId": {
-     "Ref": "vpcA2121C38"
-    },
     "InternetGatewayId": {
      "Ref": "vpcIGWE57CBDCA"
+    },
+    "VpcId": {
+     "Ref": "vpcA2121C38"
     }
    }
   },
@@ -410,7 +410,6 @@
   "minimalPropsFargate58449235": {
    "Type": "AWS::Batch::ComputeEnvironment",
    "Properties": {
-    "Type": "managed",
     "ComputeResources": {
      "MaxvCpus": 512,
      "SecurityGroupIds": [
@@ -434,6 +433,7 @@
     },
     "ReplaceComputeEnvironment": false,
     "State": "ENABLED",
+    "Type": "managed",
     "UpdatePolicy": {}
    }
   },
@@ -456,7 +456,6 @@
   "maximalPropsFargate2D7D8138": {
    "Type": "AWS::Batch::ComputeEnvironment",
    "Properties": {
-    "Type": "managed",
     "ComputeEnvironmentName": "maxPropsFargateCE",
     "ComputeResources": {
      "MaxvCpus": 512,
@@ -481,6 +480,7 @@
     },
     "ReplaceComputeEnvironment": true,
     "State": "ENABLED",
+    "Type": "managed",
     "UpdatePolicy": {
      "JobExecutionTimeoutMinutes": 30,
      "TerminateJobsOnUpdate": true
@@ -547,7 +547,6 @@
   "minimalPropsEc200AECC55": {
    "Type": "AWS::Batch::ComputeEnvironment",
    "Properties": {
-    "Type": "managed",
     "ComputeResources": {
      "AllocationStrategy": "BEST_FIT_PROGRESSIVE",
      "Ec2Configuration": [
@@ -590,6 +589,7 @@
     },
     "ReplaceComputeEnvironment": false,
     "State": "ENABLED",
+    "Type": "managed",
     "UpdatePolicy": {}
    }
   },
@@ -694,7 +694,6 @@
   "LaunchTemplate04EC5460": {
    "Type": "AWS::Batch::ComputeEnvironment",
    "Properties": {
-    "Type": "managed",
     "ComputeResources": {
      "AllocationStrategy": "BEST_FIT",
      "Ec2Configuration": [
@@ -748,6 +747,7 @@
     },
     "ReplaceComputeEnvironment": true,
     "State": "ENABLED",
+    "Type": "managed",
     "UpdatePolicy": {
      "JobExecutionTimeoutMinutes": 60,
      "TerminateJobsOnUpdate": false
@@ -831,9 +831,8 @@
   "SpotEc2A0470C83": {
    "Type": "AWS::Batch::ComputeEnvironment",
    "Properties": {
-    "Type": "managed",
     "ComputeResources": {
-     "AllocationStrategy": "SPOT_CAPACITY_OPTIMIZED",
+     "AllocationStrategy": "SPOT_PRICE_CAPACITY_OPTIMIZED",
      "BidPercentage": 95,
      "Ec2Configuration": [
       {
@@ -881,6 +880,114 @@
     },
     "ReplaceComputeEnvironment": false,
     "State": "ENABLED",
+    "Type": "managed",
+    "UpdatePolicy": {}
+   }
+  },
+  "AllocationStrategySPOTCAPACITYSecurityGroupA581EB8C": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "batch-stack/AllocationStrategySPOT_CAPACITY/SecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
+   }
+  },
+  "AllocationStrategySPOTCAPACITYInstanceProfileRoleA6211395": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "AllocationStrategySPOTCAPACITYInstanceProfile0B71F375": {
+   "Type": "AWS::IAM::InstanceProfile",
+   "Properties": {
+    "Roles": [
+     {
+      "Ref": "AllocationStrategySPOTCAPACITYInstanceProfileRoleA6211395"
+     }
+    ]
+   }
+  },
+  "AllocationStrategySPOTCAPACITYEE4582C5": {
+   "Type": "AWS::Batch::ComputeEnvironment",
+   "Properties": {
+    "ComputeResources": {
+     "AllocationStrategy": "SPOT_CAPACITY_OPTIMIZED",
+     "BidPercentage": 95,
+     "Ec2Configuration": [
+      {
+       "ImageIdOverride": {
+        "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+       },
+       "ImageType": "ECS_AL2"
+      }
+     ],
+     "InstanceRole": {
+      "Fn::GetAtt": [
+       "AllocationStrategySPOTCAPACITYInstanceProfile0B71F375",
+       "Arn"
+      ]
+     },
+     "InstanceTypes": [
+      "optimal"
+     ],
+     "MaxvCpus": 256,
+     "MinvCpus": 0,
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "AllocationStrategySPOTCAPACITYSecurityGroupA581EB8C",
+        "GroupId"
+       ]
+      }
+     ],
+     "Subnets": [
+      {
+       "Ref": "vpcPrivateSubnet1Subnet934893E8"
+      },
+      {
+       "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
+      }
+     ],
+     "Type": "SPOT",
+     "UpdateToLatestImageVersion": true
+    },
+    "ReplaceComputeEnvironment": false,
+    "State": "ENABLED",
+    "Type": "managed",
     "UpdatePolicy": {}
    }
   },
@@ -964,7 +1071,6 @@
   "taggedCE5029E6F8": {
    "Type": "AWS::Batch::ComputeEnvironment",
    "Properties": {
-    "Type": "managed",
     "ComputeResources": {
      "AllocationStrategy": "BEST_FIT_PROGRESSIVE",
      "Ec2Configuration": [
@@ -1015,6 +1121,7 @@
      "foo": "bar",
      "super": "salamander"
     },
+    "Type": "managed",
     "UpdatePolicy": {}
    }
   }
