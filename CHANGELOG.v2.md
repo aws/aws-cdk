@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.91.0](https://github.com/aws/aws-cdk/compare/v2.90.0...v2.91.0) (2023-08-10)
+
+
+### Features
+
+* **cdk:** `cdk diff --quiet` suppresses progress messages ([#26652](https://github.com/aws/aws-cdk/issues/26652)) ([5777c88](https://github.com/aws/aws-cdk/commit/5777c88394e2834bd56d6a20ace41e8d317a0d85)), closes [#26526](https://github.com/aws/aws-cdk/issues/26526) [#26526](https://github.com/aws/aws-cdk/issues/26526)
+* **core:** Fn.findInMap supports default value ([#26543](https://github.com/aws/aws-cdk/issues/26543)) ([8526feb](https://github.com/aws/aws-cdk/commit/8526febc8f4b6bf6b21d80b3acc3fc3a932401a4)), closes [#26125](https://github.com/aws/aws-cdk/issues/26125)
+* **rds:** support aurora mysql 3.04.0 ([#26651](https://github.com/aws/aws-cdk/issues/26651)) ([6de3344](https://github.com/aws/aws-cdk/commit/6de3344a6292daf402d920480961ee6e920fbdca))
+* update AWS Service Spec ([#26658](https://github.com/aws/aws-cdk/issues/26658)) ([d865d6c](https://github.com/aws/aws-cdk/commit/d865d6ce896b36210aeabdd3f465bbaf4bfa6201))
+
+
+### Bug Fixes
+
+* **apigateway:** allowedOrigins are incorrectly interpreted as regexes ([#26648](https://github.com/aws/aws-cdk/issues/26648)) ([cc52e2d](https://github.com/aws/aws-cdk/commit/cc52e2dc22df1434d27c38073bcd60421d2ec39e)), closes [#26623](https://github.com/aws/aws-cdk/issues/26623)
+* **lambda:** Lambda Insights Layer ARN 1.0.229 in us-west-1 on ARM64 incorrect ([#26626](https://github.com/aws/aws-cdk/issues/26626)) ([dabf868](https://github.com/aws/aws-cdk/commit/dabf868ed81235174b59d4990157b777ed23be64)), closes [/docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-extension-versionsARM.html#Lambda-Insights-extension-ARM-1](https://github.com/aws//docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-extension-versionsARM.html/issues/Lambda-Insights-extension-ARM-1) [#26615](https://github.com/aws/aws-cdk/issues/26615)
+* **rds:** `grantConnect` fails to deploy when no user is specified for instances with secret credentials ([#26647](https://github.com/aws/aws-cdk/issues/26647)) ([112b861](https://github.com/aws/aws-cdk/commit/112b8619d60dd9082be92cb811cc5c7f36f05fe1)), closes [#26603](https://github.com/aws/aws-cdk/issues/26603)
+* **sam:** CfnFunction events are not rendered ([#26679](https://github.com/aws/aws-cdk/issues/26679)) ([305a9cc](https://github.com/aws/aws-cdk/commit/305a9cc9a5cb18db0c2660c5354a2c43e8d36cf6)), closes [#26637](https://github.com/aws/aws-cdk/issues/26637)
+* **triggers:** executed on update even when executeOnHandlerChange is false ([#26676](https://github.com/aws/aws-cdk/issues/26676)) ([ed3aaf7](https://github.com/aws/aws-cdk/commit/ed3aaf7826884d3fdafd667fe7816fc57772632c)), closes [#25939](https://github.com/aws/aws-cdk/issues/25939)
+* broken cross-region reference in aws-route53 ([#26666](https://github.com/aws/aws-cdk/issues/26666)) ([ec61b09](https://github.com/aws/aws-cdk/commit/ec61b09f6f3f49ace109ec150064fb948635eee1))
+
 ## [2.90.0](https://github.com/aws/aws-cdk/compare/v2.89.0...v2.90.0) (2023-08-04)
 
 
