@@ -17,13 +17,13 @@
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
     "DataProtectionPolicy": {
-     "Name": "policy-name",
-     "Description": "policy description",
-     "Version": "2021-06-01",
-     "Statement": [
+     "name": "policy-name",
+     "description": "policy description",
+     "version": "2021-06-01",
+     "statement": [
       {
-       "Sid": "audit-statement-cdk",
-       "DataIdentifier": [
+       "sid": "audit-statement-cdk",
+       "dataIdentifier": [
         {
          "Fn::Join": [
           "",
@@ -49,16 +49,16 @@
          ]
         }
        ],
-       "Operation": {
-        "Audit": {
-         "FindingsDestination": {
-          "CloudWatchLogs": {
-           "LogGroup": {
+       "operation": {
+        "audit": {
+         "findingsDestination": {
+          "cloudWatchLogs": {
+           "logGroup": {
             "Ref": "LogGroupLambdaAuditF8F47F46"
            }
           },
-          "S3": {
-           "Bucket": {
+          "s3": {
+           "bucket": {
             "Ref": "auditbucketidE6660EBD"
            }
           }
@@ -67,8 +67,8 @@
        }
       },
       {
-       "Sid": "redact-statement-cdk",
-       "DataIdentifier": [
+       "sid": "redact-statement-cdk",
+       "dataIdentifier": [
         {
          "Fn::Join": [
           "",
@@ -94,9 +94,9 @@
          ]
         }
        ],
-       "Operation": {
-        "Deidentify": {
-         "MaskConfig": {}
+       "operation": {
+        "deidentify": {
+         "maskConfig": {}
         }
        }
       }
