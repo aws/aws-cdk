@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { FargateTaskDefinition } from '../../../aws-ecs';
+import { FargatePlatformVersion, FargateTaskDefinition } from '../../../aws-ecs';
 import { EcsTask } from '../../../aws-events-targets';
 import { FargateServiceBaseProps } from '../base/fargate-service-base';
 import { ScheduledTaskBase, ScheduledTaskBaseProps, ScheduledTaskImageProps } from '../base/scheduled-task-base';
@@ -7,7 +7,7 @@ import { ScheduledTaskBase, ScheduledTaskBaseProps, ScheduledTaskImageProps } fr
 /**
  * The properties for the ScheduledFargateTask task.
  */
-export interface ScheduledFargateTaskProps extends ScheduledTaskBaseProps, FargateServiceBaseProps {
+export interface ScheduledFargateTaskProps extends ScheduledTaskBaseProps {
   /**
    * The properties to define if using an existing TaskDefinition in this construct.
    * ScheduledFargateTaskDefinitionOptions or ScheduledFargateTaskImageOptions must be defined, but not both.
@@ -24,6 +24,16 @@ export interface ScheduledFargateTaskProps extends ScheduledTaskBaseProps, Farga
    */
   readonly scheduledFargateTaskImageOptions?: ScheduledFargateTaskImageOptions;
 
+  /**
+   * The platform version on which to run your service.
+   *
+   * If one is not specified, the LATEST platform version is used by default. For more information, see
+   * [AWS Fargate Platform Versions](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html)
+   * in the Amazon Elastic Container Service Developer Guide.
+   *
+   * @default Latest
+   */
+  readonly platformVersion?: FargatePlatformVersion;
 }
 
 /**
@@ -89,7 +99,7 @@ export class ScheduledFargateTask extends ScheduledTaskBase {
     }
 
     // Use the EcsTask as the target of the EventRule
-    this.task = new EcsTask( {
+    this.task = new EcsTask({
       cluster: this.cluster,
       taskDefinition: this.taskDefinition,
       taskCount: this.desiredTaskCount,
