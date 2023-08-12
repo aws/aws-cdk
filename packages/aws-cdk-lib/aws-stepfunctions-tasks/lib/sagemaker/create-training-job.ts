@@ -163,6 +163,14 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
       throw new Error('Must define either an algorithm name or training image URI in the algorithm specification');
     }
 
+    // validate the algorithmName if the algorithmName is defined
+    if (props.algorithmSpecification.algorithmName) {
+      const regex = /^(arn:aws[a-z\-]*:sagemaker:[a-z0-9\-]*:[0-9]{12}:[a-z\-]*\/)?([a-zA-Z0-9]([a-zA-Z0-9-]){0,62})(?<!-)$/;
+      if (!regex.test(props.algorithmSpecification.algorithmName)) {
+        throw new Error(`Value '${props.algorithmSpecification.algorithmName}' at 'algorithmName' must satisfy regular expression pattern: ${regex.source}`);
+      }
+    }
+
     // set the input mode to 'File' if not defined
     this.algorithmSpecification = props.algorithmSpecification.trainingInputMode
       ? props.algorithmSpecification

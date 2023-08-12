@@ -408,3 +408,97 @@ test('Cannot create a SageMaker train task with both algorithm name and image na
   }))
     .toThrowError(/Must define either an algorithm name or training image URI in the algorithm specification/);
 });
+
+test('create a SageMaker train task with trainingImage', () => {
+
+  const task = new SageMakerCreateTrainingJob(stack, 'SageMakerTrainingTask', {
+    trainingJobName: 'myTrainJob',
+    algorithmSpecification: {
+      trainingImage: tasks.DockerImage.fromJsonExpression(sfn.JsonPath.stringAt('$.Training.imageName')),
+    },
+    inputDataConfig: [
+      {
+        channelName: 'train',
+        dataSource: {
+          s3DataSource: {
+            s3DataType: tasks.S3DataType.S3_PREFIX,
+            s3Location: tasks.S3Location.fromJsonExpression('$.S3Bucket'),
+          },
+        },
+      },
+    ],
+    outputDataConfig: {
+      s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'Bucket', 'mybucket'), 'myoutputpath/'),
+    },
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toMatchObject({
+    Parameters: {
+      AlgorithmSpecification: {
+        'TrainingImage.$': '$.Training.imageName',
+        'TrainingInputMode': 'File',
+      },
+    },
+  });
+});
+
+test('create a SageMaker train task with image URI algorithmName', () => {
+
+  const task = new SageMakerCreateTrainingJob(stack, 'SageMakerTrainingTask', {
+    trainingJobName: 'myTrainJob',
+    algorithmSpecification: {
+      algorithmName: 'arn:aws:sagemaker:us-east-1:123456789012:algorithm/scikit-decision-trees',
+      trainingInputMode: tasks.InputMode.FILE,
+    },
+    inputDataConfig: [
+      {
+        channelName: 'train',
+        dataSource: {
+          s3DataSource: {
+            s3DataType: tasks.S3DataType.S3_PREFIX,
+            s3Location: tasks.S3Location.fromJsonExpression('$.S3Bucket'),
+          },
+        },
+      },
+    ],
+    outputDataConfig: {
+      s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'Bucket', 'mybucket'), 'myoutputpath/'),
+    },
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toMatchObject({
+    Parameters: {
+      AlgorithmSpecification: {
+        AlgorithmName: 'arn:aws:sagemaker:us-east-1:123456789012:algorithm/scikit-decision-trees',
+      },
+    },
+  });
+});
+
+test('Cannot create a SageMaker train task with incorrect algorithmName', () => {
+
+  expect(() => new SageMakerCreateTrainingJob(stack, 'SageMakerTrainingTask', {
+    trainingJobName: 'myTrainJob',
+    algorithmSpecification: {
+      algorithmName: 'Blazing_Text', // underscores are not allowed
+      trainingInputMode: tasks.InputMode.FILE,
+    },
+    inputDataConfig: [
+      {
+        channelName: 'train',
+        dataSource: {
+          s3DataSource: {
+            s3DataType: tasks.S3DataType.S3_PREFIX,
+            s3Location: tasks.S3Location.fromJsonExpression('$.S3Bucket'),
+          },
+        },
+      },
+    ],
+    outputDataConfig: {
+      s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'Bucket', 'mybucket'), 'myoutputpath/'),
+    },
+  }))
+    .toThrowError(/'Blazing_Text' at 'algorithmName' must satisfy regular expression pattern/);
+});
