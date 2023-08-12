@@ -163,13 +163,13 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
       throw new Error('Must define either an algorithm name or training image URI in the algorithm specification');
     }
 
-    // validate the algorithmName if the algorithmName is defined
-    if (props.algorithmSpecification.algorithmName) {
-      const regex = /^(arn:aws[a-z\-]*:sagemaker:[a-z0-9\-]*:[0-9]{12}:[a-z\-]*\/)?([a-zA-Z0-9]([a-zA-Z0-9-]){0,62})(?<!-)$/;
-      if (!regex.test(props.algorithmSpecification.algorithmName)) {
-        throw new Error(`Value '${props.algorithmSpecification.algorithmName}' at 'algorithmName' must satisfy regular expression pattern: ${regex.source}`);
-      }
+    // check that both algorithm name and image are not defined
+    if (props.algorithmSpecification.algorithmName && props.algorithmSpecification.trainingImage) {
+      throw new Error('Cannot define both an algorithm name and training image URI in the algorithm specification');
     }
+
+    // validate algorithm name
+    this.validateAlgorithmName(props.algorithmSpecification.algorithmName);
 
     // set the input mode to 'File' if not defined
     this.algorithmSpecification = props.algorithmSpecification.trainingInputMode
@@ -330,6 +330,21 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
         },
       }
       : {};
+  }
+
+  private validateAlgorithmName(algorithmName?: string): void {
+    if (algorithmName === undefined) {
+      return;
+    }
+
+    if (algorithmName.length < 1 || 170 < algorithmName.length) {
+      throw new Error(`Algorithm name length must be between 1 and 170, but got ${algorithmName.length}`);
+    }
+
+    const regex = /^(arn:aws[a-z\-]*:sagemaker:[a-z0-9\-]*:[0-9]{12}:[a-z\-]*\/)?([a-zA-Z0-9]([a-zA-Z0-9-]){0,62})(?<!-)$/;
+    if (!regex.test(algorithmName)) {
+      throw new Error(`Expected algorithm name to match pattern ${regex.source}, but got ${algorithmName}`);
+    }
   }
 
   private makePolicyStatements(): iam.PolicyStatement[] {
