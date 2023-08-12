@@ -65,13 +65,13 @@
                   "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
                   "aws:cdk:cloudformation:props": {
                     "dataProtectionPolicy": {
-                      "name": "policy-name",
-                      "description": "policy description",
-                      "version": "2021-06-01",
-                      "statement": [
+                      "Name": "policy-name",
+                      "Description": "policy description",
+                      "Version": "2021-06-01",
+                      "Statement": [
                         {
-                          "sid": "audit-statement-cdk",
-                          "dataIdentifier": [
+                          "Sid": "audit-statement-cdk",
+                          "DataIdentifier": [
                             {
                               "Fn::Join": [
                                 "",
@@ -97,16 +97,16 @@
                               ]
                             }
                           ],
-                          "operation": {
-                            "audit": {
-                              "findingsDestination": {
-                                "cloudWatchLogs": {
-                                  "logGroup": {
+                          "Operation": {
+                            "Audit": {
+                              "FindingsDestination": {
+                                "CloudWatchLogs": {
+                                  "LogGroup": {
                                     "Ref": "LogGroupLambdaAuditF8F47F46"
                                   }
                                 },
-                                "s3": {
-                                  "bucket": {
+                                "S3": {
+                                  "Bucket": {
                                     "Ref": "auditbucketidE6660EBD"
                                   }
                                 }
@@ -115,8 +115,8 @@
                           }
                         },
                         {
-                          "sid": "redact-statement-cdk",
-                          "dataIdentifier": [
+                          "Sid": "redact-statement-cdk",
+                          "DataIdentifier": [
                             {
                               "Fn::Join": [
                                 "",
@@ -142,9 +142,9 @@
                               ]
                             }
                           ],
-                          "operation": {
-                            "deidentify": {
-                              "maskConfig": {}
+                          "Operation": {
+                            "Deidentify": {
+                              "MaskConfig": {}
                             }
                           }
                         }
