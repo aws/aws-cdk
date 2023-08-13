@@ -69,9 +69,23 @@
          ],
          "Resource": [
           {
-           "Fn::GetAtt": [
-            "Repo02AC86CF",
-            "Arn"
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":ecr:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":repository/*"
+            ]
            ]
           }
          ]
