@@ -104,6 +104,56 @@ describe('container definition', () => {
         expect(() => portMap.validate()).toThrow('Cannot set "hostPort" while using a port range for the container.');
       });
 
+      test('throws when PortMapping.containerPortRange string is invalid', () => {
+        expect(() => {
+          const portMap = new ecs.PortMap(ecs.NetworkMode.AWS_VPC, {
+            containerPortRange: '-',
+          });
+
+          portMap.validate();
+        }).toThrow('The containerPortRange must be a string in the format [start port]-[end port].');
+
+        expect(() => {
+          const portMap = new ecs.PortMap(ecs.NetworkMode.AWS_VPC, {
+            containerPortRange: 'foo-',
+          });
+
+          portMap.validate();
+        }).toThrow('The containerPortRange must be a string in the format [start port]-[end port].');
+
+        expect(() => {
+          const portMap = new ecs.PortMap(ecs.NetworkMode.AWS_VPC, {
+            containerPortRange: '-bar',
+          });
+
+          portMap.validate();
+        }).toThrow('The containerPortRange must be a string in the format [start port]-[end port].');
+
+        expect(() => {
+          const portMap = new ecs.PortMap(ecs.NetworkMode.AWS_VPC, {
+            containerPortRange: 'foo-bar',
+          });
+
+          portMap.validate();
+        }).toThrow('The containerPortRange must be a string in the format [start port]-[end port].');
+
+        expect(() => {
+          const portMap = new ecs.PortMap(ecs.NetworkMode.AWS_VPC, {
+            containerPortRange: '808a-8081',
+          });
+
+          portMap.validate();
+        }).toThrow('The containerPortRange must be a string in the format [start port]-[end port].');
+
+        expect(() => {
+          const portMap = new ecs.PortMap(ecs.NetworkMode.AWS_VPC, {
+            containerPortRange: '8080-808a',
+          });
+
+          portMap.validate();
+        }).toThrow('The containerPortRange must be a string in the format [start port]-[end port].');
+      });
+
       describe('throws when PortMapping.containerPortRange is used with an unsupported network mode', () => {
         test('when network mode is Host', () => {
           // GIVEN

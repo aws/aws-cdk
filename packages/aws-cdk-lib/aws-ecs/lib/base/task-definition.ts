@@ -593,7 +593,7 @@ export class TaskDefinition extends TaskDefinitionBase {
     if (portMapping.containerPort !== undefined) {
       return portMapping.protocol === Protocol.UDP ? ec2.Port.udp(portMapping.containerPort) : ec2.Port.tcp(portMapping.containerPort);
     }
-    const [startPort, endPort] = portMapping.containerPortRange!.split('-', 2).map(v => +v);
+    const [startPort, endPort] = portMapping.containerPortRange!.split('-', 2).map(v => Number(v));
     return portMapping.protocol === Protocol.UDP ? ec2.Port.udpRange(startPort, endPort) : ec2.Port.tcpRange(startPort, endPort);
   }
 

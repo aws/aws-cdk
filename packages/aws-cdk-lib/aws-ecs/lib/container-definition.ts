@@ -1196,6 +1196,10 @@ export class PortMap {
       if (this.networkmode !== NetworkMode.BRIDGE && this.networkmode !== NetworkMode.AWS_VPC) {
         throw new Error('Either AwsVpc or Bridge network mode is required to set a port range for the container.');
       }
+
+      if (!/^\d+-\d+$/.test(this.portmapping.containerPortRange)) {
+        throw new Error('The containerPortRange must be a string in the format [start port]-[end port].');
+      }
     }
   }
 
