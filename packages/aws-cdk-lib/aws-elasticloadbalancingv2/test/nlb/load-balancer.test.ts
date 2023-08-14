@@ -636,5 +636,32 @@ describe('tests', () => {
         LoadBalancer: 'network/my-load-balancer/50dc6c495c0c9188',
       });
     });
+
+    test('Can create NetworkLoadBalancer with Security', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'stack');
+      const vpc = new ec2.Vpc(stack, 'Stack');
+      const sg = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+        vpc,
+        description: 'Can create NetworkLoadBalancer with Security',
+      });
+      // WHEN
+      new elbv2.NetworkLoadBalancer(stack, 'LB', {
+        vpc,
+        internetFacing: true,
+        securityGroup: sg,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        Scheme: 'internet-facing',
+        Subnets: [
+          { Ref: 'StackPublicSubnet1Subnet0AD81D22' },
+          { Ref: 'StackPublicSubnet2Subnet3C7D2288' },
+        ],
+        Type: 'network',
+      });
+    });
   });
 });

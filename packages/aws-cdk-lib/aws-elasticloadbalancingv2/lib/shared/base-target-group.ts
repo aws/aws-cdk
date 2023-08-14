@@ -440,3 +440,18 @@ export function loadBalancerNameFromListenerArn(listenerArn: string) {
   const arnParts = cdk.Fn.split('/', listenerArn);
   return `${cdk.Fn.select(1, arnParts)}/${cdk.Fn.select(2, arnParts)}/${cdk.Fn.select(3, arnParts)}`;
 }
+
+/**
+ * A connectable member of a target group
+ */
+export interface ConnectableMember {
+  /**
+   * The connectable member
+   */
+  connectable: ec2.IConnectable;
+
+  /**
+   * The port (range) the member is listening on
+   */
+  portRange: ec2.Port;
+}

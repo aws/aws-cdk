@@ -1,10 +1,11 @@
 import { Construct } from 'constructs';
 import { INetworkListener } from './network-listener';
 import * as cloudwatch from '../../../aws-cloudwatch';
+import * as ec2 from '../../../aws-ec2';
 import * as cdk from '../../../core';
 import {
   BaseTargetGroupProps, HealthCheck, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
-  TargetGroupAttributes, TargetGroupBase, TargetGroupImportProps,
+  TargetGroupAttributes, TargetGroupBase, TargetGroupImportProps, ConnectableMember,
 } from '../shared/base-target-group';
 import { Protocol } from '../shared/enums';
 import { ImportedTargetGroupBase } from '../shared/imported';
@@ -146,6 +147,7 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
     return NetworkTargetGroup.fromTargetGroupAttributes(scope, id, props);
   }
 
+  private readonly connectableMembers: ConnectableMember[];
   private readonly listeners: INetworkListener[];
   private _metrics?: INetworkTargetGroupMetrics;
 
@@ -158,6 +160,7 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
       port: props.port,
     });
 
+    this.connectableMembers = [];
     this.listeners = [];
 
     if (props.proxyProtocolV2 != null) {
@@ -192,11 +195,31 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
   }
 
   /**
+   * Register a connectable as a member of this target group.
+   *
+   * Don't call this directly. It will be called by load balancing targets.
+   */
+  public registerConnectable(connectable: ec2.IConnectable, portRange?: ec2.Port) {
+    portRange = portRange || ec2.Port.tcp(this.defaultPort);
+
+    // Notify all listeners that we already know about of this new connectable.
+    // Then remember for new listeners that might get added later.
+    this.connectableMembers.push({ connectable, portRange });
+    for (const listener of this.listeners) {
+      listener.registerConnectable(connectable, portRange);
+    }
+  }
+
+  /**
    * Register a listener that is load balancing to this target group.
    *
    * Don't call this directly. It will be called by listeners.
    */
   public registerListener(listener: INetworkListener) {
+    // Then remember for new connectables that might get added later.
+    for (const member of this.connectableMembers) {
+      listener.registerConnectable(member.connectable, member.portRange);
+    }
     this.loadBalancerAttachedDependencies.add(listener);
     this.listeners.push(listener);
   }
@@ -314,6 +337,13 @@ export interface INetworkTargetGroup extends ITargetGroup {
   registerListener(listener: INetworkListener): void;
 
   /**
+  * Register a connectable as a member of this target group.
+  *
+  * Don't call this directly. It will be called by load balancing targets.
+  */
+  registerConnectable(connectable: ec2.IConnectable, portRange?: ec2.Port): void;
+
+  /**
    * Add a load balancing target to this target group
    */
   addTarget(...targets: INetworkLoadBalancerTarget[]): void;
@@ -345,6 +375,10 @@ class ImportedNetworkTargetGroup extends ImportedTargetGroupBase implements INet
 
   public registerListener(_listener: INetworkListener) {
     // Nothing to do, we know nothing of our members
+  }
+
+  public registerConnectable(_connectable: ec2.IConnectable, _portRange?: ec2.Port | undefined): void {
+    cdk.Annotations.of(this).addWarning('Cannot register connectable on imported target group -- security groups might need to be updated manually');
   }
 
   public addTarget(...targets: INetworkLoadBalancerTarget[]) {

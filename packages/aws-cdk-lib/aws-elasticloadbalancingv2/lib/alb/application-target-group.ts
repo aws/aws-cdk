@@ -7,7 +7,7 @@ import { Aws, Annotations, Duration, Token } from '../../../core';
 import { ApplicationELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
 import {
   BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
-  TargetGroupAttributes, TargetGroupBase, TargetGroupImportProps,
+  TargetGroupAttributes, TargetGroupBase, TargetGroupImportProps, ConnectableMember,
 } from '../shared/base-target-group';
 import { ApplicationProtocol, ApplicationProtocolVersion, Protocol, TargetType, TargetGroupLoadBalancingAlgorithmType } from '../shared/enums';
 import { ImportedTargetGroupBase } from '../shared/imported';
@@ -580,21 +580,6 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
 
     return ret;
   }
-}
-
-/**
- * A connectable member of a target group
- */
-interface ConnectableMember {
-  /**
-   * The connectable member
-   */
-  connectable: ec2.IConnectable;
-
-  /**
-   * The port (range) the member is listening on
-   */
-  portRange: ec2.Port;
 }
 
 /**

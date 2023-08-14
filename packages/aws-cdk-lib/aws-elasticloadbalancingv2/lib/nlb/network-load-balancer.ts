@@ -3,7 +3,7 @@ import { BaseNetworkListenerProps, NetworkListener } from './network-listener';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
 import * as cxschema from '../../../cloud-assembly-schema';
-import { Resource } from '../../../core';
+import { Resource, Lazy } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { NetworkELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
 import { BaseLoadBalancer, BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
@@ -19,6 +19,18 @@ export interface NetworkLoadBalancerProps extends BaseLoadBalancerProps {
    * @default false
    */
   readonly crossZoneEnabled?: boolean;
+
+  /**
+   * Security group to associate with this load balancer
+   *
+   * @description Security groups support on Network Load Balancers can only be enabled at creation by including at least one security group.
+   * You can change security groups after creation. The security groups for your load balancer must allow it to communicate with registered targets on both the listener port and the health check port.
+   * For PrivateLink Network Load Balancers, security group rules are enforced on PrivateLink traffic; however, you can turn off inbound rule evaluation after creation within the load balancer’s Security tab or using the API
+   *
+   * @default A security group is created
+   */
+  readonly securityGroup?: ec2.ISecurityGroup;
+
 }
 
 /**
@@ -166,13 +178,19 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
 
     return new Import(scope, id, { environmentFromArn: attrs.loadBalancerArn });
   }
-
+  public readonly connections?: ec2.Connections;
   public readonly metrics: INetworkLoadBalancerMetrics;
 
   constructor(scope: Construct, id: string, props: NetworkLoadBalancerProps) {
     super(scope, id, props, {
       type: 'network',
+      securityGroups: Lazy.list({ produce: () => this.connections?.securityGroups.map(sg => sg.securityGroupId) }),
     });
+
+    if (props.securityGroup) {
+      const securityGroups = [props.securityGroup];
+      this.connections = new ec2.Connections({ securityGroups });
+    }
 
     this.metrics = new NetworkLoadBalancerMetrics(this, this.loadBalancerFullName);
     if (props.crossZoneEnabled) { this.setAttribute('load_balancing.cross_zone.enabled', 'true'); }

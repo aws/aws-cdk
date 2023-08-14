@@ -3,6 +3,7 @@ import { NetworkListenerAction } from './network-listener-action';
 import { NetworkListenerCertificate } from './network-listener-certificate';
 import { INetworkLoadBalancer } from './network-load-balancer';
 import { INetworkLoadBalancerTarget, INetworkTargetGroup, NetworkTargetGroup } from './network-target-group';
+import * as ec2 from '../../../aws-ec2';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { Duration, Resource, Lazy } from '../../../core';
 import { BaseListener, BaseListenerLookupOptions, IListener } from '../shared/base-listener';
@@ -215,6 +216,9 @@ export class NetworkListener extends BaseListener implements INetworkListener {
     if (props.defaultTargetGroups) {
       this.setDefaultAction(NetworkListenerAction.forward(props.defaultTargetGroups));
     }
+  }
+  registerConnectable(connectable: ec2.IConnectable, portRange: ec2.Port): void {
+    throw new Error('Method not implemented.');
   }
 
   /**
