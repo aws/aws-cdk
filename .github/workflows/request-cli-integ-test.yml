@@ -19,8 +19,9 @@ jobs:
           persist-credentials: false
       - name: Find changed cli files
         id: changed-cli-files
-        uses: tj-actions/changed-files@v37
+        uses: tj-actions/changed-files@87697c0dca7dd44e37a2b79a79489332556ff1f3
         with:
+          base_sha: ${{ github.event.pull_request.base.sha }}
           files_yaml: |
             cli:
               - packages/aws-cdk/bin/**
@@ -35,22 +36,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
+          # Needs to run with PROJEN_GITHUB_TOKEN because we need permissions to force push the branch
           token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - name: Submit to test-pipeline
-        # Needs to run with PROJEN_GITHUB_TOKEN because we need permissions to force push the branch
         run: |
           git config --global user.name 'aws-cdk-automation'
           git config --global user.email 'aws-cdk-automation@users.noreply.github.com'
-          git push --force --atomic ${{ github.repositoryUrl }} FETCH_HEAD:test-main-pipeline
+          git push --force --atomic https://github.com/${{ github.repository }}.git FETCH_HEAD:test-main-pipeline
       - name: Explain next steps
-        uses: thollander/actions-comment-pull-request@v2
+        uses: thollander/actions-comment-pull-request@d61db783da9abefc3437960d0cce08552c7c004f
         with:
           message: |
             :arrow_right: **PR build request submitted to `test-main-pipeline`** :arrow_left:
 
-            A maintainer must now manually check the pipeline and add the `pr-linter/cli-integ-tested` label once the pipeline succeeds.
+            A maintainer must now check the pipeline and add the `pr-linter/cli-integ-tested` label once the pipeline succeeds.
           comment_tag: request-cli-integ-test
           mode: recreate
           # Post as our automation user

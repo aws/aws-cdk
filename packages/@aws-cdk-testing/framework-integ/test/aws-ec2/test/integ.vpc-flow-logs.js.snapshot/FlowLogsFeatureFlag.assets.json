@@ -1,7 +1,7 @@
 {
   "version": "32.0.0",
   "files": {
-    "78717d02d2d8c5c72f3b9f48f05d8b4540b1158d7fb58b3e2f694655fdf84c8d": {
+    "c39f7b631b3a1d9b4674008f811e6744819d574022c8dd4e077bece443ed3457": {
       "source": {
         "path": "FlowLogsFeatureFlag.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "78717d02d2d8c5c72f3b9f48f05d8b4540b1158d7fb58b3e2f694655fdf84c8d.json",
+          "objectKey": "c39f7b631b3a1d9b4674008f811e6744819d574022c8dd4e077bece443ed3457.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

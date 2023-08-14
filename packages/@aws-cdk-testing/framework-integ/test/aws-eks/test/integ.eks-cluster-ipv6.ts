@@ -350,7 +350,7 @@ class EksClusterStack extends Stack {
 }
 
 // this test uses both the bottlerocket image and the inf1 instance, which are only supported in these
-// regions. see https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-eks#bottlerocket
+// regions. see https://github.com/aws/aws-cdk/tree/main/packages/aws-cdk-lib/aws-eks#bottlerocket
 // and https://aws.amazon.com/about-aws/whats-new/2019/12/introducing-amazon-ec2-inf1-instances-high-performance-and-the-lowest-cost-machine-learning-inference-in-the-cloud/
 const supportedRegions = [
   'us-east-1',
@@ -382,7 +382,8 @@ if (process.env.CDK_INTEG_ACCOUNT !== '12345678') {
 
 new integ.IntegTest(app, 'aws-cdk-eks-cluster-ipv6', {
   testCases: [stack],
-  diffAssets: true,
+  // Test includes assets that are updated weekly. If not disabled, the upgrade PR will fail.
+  diffAssets: false,
   cdkCommandOptions: {
     deploy: {
       args: {

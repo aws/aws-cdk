@@ -1,3 +1,4 @@
+import { EOL } from 'os';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -389,8 +390,9 @@ export interface SparkUIProps {
 
   /**
    * The path inside the bucket (objects prefix) where the Glue job stores the logs.
+   * Use format `'/foo/bar'`
    *
-   * @default '/' - the logs will be written at the root of the bucket
+   * @default - the logs will be written at the root of the bucket
    */
   readonly prefix?: string;
 }
@@ -719,11 +721,20 @@ export class Job extends JobBase {
       }
     }
 
-    if (props.maxCapacity !== undefined && (props.workerType && props.workerCount !== undefined)) {
+    let maxCapacity = props.maxCapacity;
+    if (maxCapacity !== undefined && (props.workerType && props.workerCount !== undefined)) {
       throw new Error('maxCapacity cannot be used when setting workerType and workerCount');
     }
-    if (props.maxCapacity !== undefined && ![GlueVersion.V0_9, GlueVersion.V1_0].includes(executable.glueVersion)) {
-      throw new Error('maxCapacity cannot be used when GlueVersion 2.0 or later');
+    if (executable.type !== JobType.PYTHON_SHELL) {
+      if (maxCapacity !== undefined && ![GlueVersion.V0_9, GlueVersion.V1_0].includes(executable.glueVersion)) {
+        throw new Error('maxCapacity cannot be used when GlueVersion 2.0 or later');
+      }
+    } else {
+      // max capacity validation for python shell jobs (defaults to 0.0625)
+      maxCapacity = maxCapacity ?? 0.0625;
+      if (maxCapacity !== 0.0625 && maxCapacity !== 1) {
+        throw new Error(`maxCapacity value must be either 0.0625 or 1 for JobType.PYTHON_SHELL jobs, received ${maxCapacity}`);
+      }
     }
     if ((!props.workerType && props.workerCount !== undefined) || (props.workerType && props.workerCount === undefined)) {
       throw new Error('Both workerType and workerCount must be set');
@@ -804,8 +815,9 @@ export class Job extends JobBase {
       throw new Error('Spark UI is not available for JobType.RAY jobs');
     }
 
+    this.validatePrefix(props.prefix);
     const bucket = props.bucket ?? new s3.Bucket(this, 'SparkUIBucket');
-    bucket.grantReadWrite(role);
+    bucket.grantReadWrite(role, this.cleanPrefixForGrant(props.prefix));
     const args = {
       '--enable-spark-ui': 'true',
       '--spark-event-logs-path': bucket.s3UrlForObject(props.prefix),
@@ -818,6 +830,31 @@ export class Job extends JobBase {
       },
       args,
     };
+  }
+
+  private validatePrefix(prefix?: string): void {
+    if (!prefix || cdk.Token.isUnresolved(prefix)) {
+      // skip validation if prefix is not specified or is a token
+      return;
+    }
+
+    const errors: string[] = [];
+
+    if (!prefix.startsWith('/')) {
+      errors.push('Prefix must begin with \'/\'');
+    }
+
+    if (prefix.endsWith('/')) {
+      errors.push('Prefix must not end with \'/\'');
+    }
+
+    if (errors.length > 0) {
+      throw new Error(`Invalid prefix format (value: ${prefix})${EOL}${errors.join(EOL)}`);
+    }
+  }
+
+  private cleanPrefixForGrant(prefix?: string): string | undefined {
+    return prefix !== undefined ? prefix.slice(1) + '/*' : undefined;
   }
 
   private setupContinuousLogging(role: iam.IRole, props: ContinuousLoggingProps) {
