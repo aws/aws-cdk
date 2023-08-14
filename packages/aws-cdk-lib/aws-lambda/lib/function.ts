@@ -1294,10 +1294,15 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
   }
 
   private configureSnapStart(props: FunctionProps): CfnFunction.SnapStartProperty | undefined {
+    // return/exit if no snapStart included
     if (!props.snapStart){
       return undefined;
     }
 
+    // SnapStart does not support provisioned concurrency, arm64 architecture, 
+    // Amazon Elastic File System (Amazon EFS), or ephemeral storage greater than 512 MB.
+    // SnapStart supports the Java 11 and Java 17 (java11 and java17) managed runtimes.
+    // See https://docs.aws.amazon.com/lambda/latest/dg/snapstart.html
     if (props.snapStart != SnapStartConfig.ON_PUBLISHED_VERSIONS){
       throw new Error('SnapStart is currently supported only published versions');
     }
@@ -1320,7 +1325,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       throw new Error('SnapStart is currently not supported using more than 512 MiB Ephemeral Storage');
     }
 
-    return SnapStartConfig.ON_PUBLISHED_VERSIONS.snapConfig;
+    return props.snapStart.snapStartConfig;
   }
 
   private isQueue(deadLetterQueue: sqs.IQueue | sns.ITopic): deadLetterQueue is sqs.IQueue {
