@@ -18,9 +18,6 @@
   "MyVpcPublicSubnet1SubnetF6608456": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "MyVpcF9F0CA6F"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -44,21 +41,24 @@
       "Key": "Name",
       "Value": "aws-cdk-vpc-no-default-igw/MyVpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "MyVpcF9F0CA6F"
+    }
    }
   },
   "MyVpcPublicSubnet1RouteTableC46AB2F4": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "MyVpcF9F0CA6F"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-cdk-vpc-no-default-igw/MyVpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "MyVpcF9F0CA6F"
+    }
    }
   },
   "MyVpcPublicSubnet1RouteTableAssociation2ECEE1CB": {
@@ -75,9 +75,6 @@
   "MyVpcPublicSubnet2Subnet492B6BFB": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "MyVpcF9F0CA6F"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -101,21 +98,24 @@
       "Key": "Name",
       "Value": "aws-cdk-vpc-no-default-igw/MyVpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "MyVpcF9F0CA6F"
+    }
    }
   },
   "MyVpcPublicSubnet2RouteTable1DF17386": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "MyVpcF9F0CA6F"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-cdk-vpc-no-default-igw/MyVpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "MyVpcF9F0CA6F"
+    }
    }
   },
   "MyVpcPublicSubnet2RouteTableAssociation227DE78D": {
@@ -227,7 +227,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "ba598c1f1d84f7077ea9c16a6b921e4f8acf18e996100e72a8f17da980e64fdd.zip"
+     "S3Key": "18d379b052acd60e0d086d5b19d9bef956ebc0bd018c5570960125aab0c7f837.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -238,7 +238,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x",
+    "Runtime": "nodejs18.x",
     "Description": "Lambda function for removing all inbound/outbound rules from the VPC default security group"
    },
    "DependsOn": [

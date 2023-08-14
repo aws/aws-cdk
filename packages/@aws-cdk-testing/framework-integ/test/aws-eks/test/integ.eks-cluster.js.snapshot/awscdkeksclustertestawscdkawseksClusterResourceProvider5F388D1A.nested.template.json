@@ -7,7 +7,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "25f7dc8c7a6d65604d70050f2d9d19d6bfc5060a3d74662fc86589f4385e3a1b.zip"
+     "S3Key": "3f579d6c1ab146cac713730c96809dd4a9c5d9750440fb835ab20fd6925e528c.zip"
     },
     "Description": "/opt/nodejs/node_modules/proxy-agent"
    }
