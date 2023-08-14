@@ -46,7 +46,7 @@ jobs:
           git config --global user.email 'aws-cdk-automation@users.noreply.github.com'
           git push --force --atomic https://github.com/${{ github.repository }}.git FETCH_HEAD:test-main-pipeline
       - name: Explain next steps
-        uses: thollander/actions-comment-pull-request@dadb7667129e23f12ca3925c90dc5cd7121ab57e
+        uses: thollander/actions-comment-pull-request@d61db783da9abefc3437960d0cce08552c7c004f
         with:
           message: |
             :arrow_right: **PR build request submitted to `test-main-pipeline`** :arrow_left:
