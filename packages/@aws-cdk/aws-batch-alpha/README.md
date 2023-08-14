@@ -660,7 +660,11 @@ You can grant any Principal the `batch:submitJob` permission on both a job defin
 
 ```ts
 import * as cdk from 'aws-cdk-lib';
-new batch.EcsJobDefinition(this, 'JobDefn', {
+import * as iam from 'aws-cdk-lib/aws-iam';
+
+declare const vpc: ec2.IVpc;
+
+const ecsJob = new batch.EcsJobDefinition(this, 'JobDefn', {
   container: new batch.EcsEc2ContainerDefinition(this, 'containerDefn', {
     image: ecs.ContainerImage.fromRegistry('public.ecr.aws/amazonlinux/amazonlinux:latest'),
     memory: cdk.Size.mebibytes(2048),
@@ -668,9 +672,9 @@ new batch.EcsJobDefinition(this, 'JobDefn', {
   }),
 });
 
-new batch.JobQueue(this, 'JobQueue', {
+const queue = new batch.JobQueue(this, 'JobQueue', {
   computeEnvironments: [{
-    computeEnvironment: new ManagedEc2EcsComputeEnvironment(this, 'managedEc2CE', {
+    computeEnvironment: new batch.ManagedEc2EcsComputeEnvironment(this, 'managedEc2CE', {
       vpc,
     }),
     order: 1,
