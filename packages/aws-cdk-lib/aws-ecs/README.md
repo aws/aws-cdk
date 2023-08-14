@@ -358,7 +358,7 @@ declare const taskDefinition: ecs.TaskDefinition;
 taskDefinition.addContainer("WebContainer", {
   image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   memoryLimitMiB: 1024,
-  portMappings: [{ containerPort: 3000 }, { containerPortRange: '3000-4000' }],
+  portMappings: [{ containerPort: 3000 }],
 });
 ```
 
@@ -369,6 +369,22 @@ declare const container: ecs.ContainerDefinition;
 
 container.addPortMappings({
   containerPort: 3000,
+});
+```
+
+Sometimes it is useful to be able to configure port ranges for a container, e.g. to run applications such as game servers
+and real-time streaming which typically require multiple ports to be opened simultaneously. This feature is supported on
+both Linux and Windows operating systems and both the EC2 and AWS Fargate launch types. There is a maximum limit of 100
+port ranges per container, and you cannot specify overlapping port ranges.
+
+Docker recommends that you turn off the `docker-proxy` in the Docker daemon config file when you have a large number of ports.
+For more information, see [Issue #11185](https://github.com/moby/moby/issues/11185) on the GitHub website.
+
+```ts
+declare const container: ecs.ContainerDefintion;
+
+container.addPortMappings({
+    containerPortRange: '8080-8081',
 });
 ```
 
