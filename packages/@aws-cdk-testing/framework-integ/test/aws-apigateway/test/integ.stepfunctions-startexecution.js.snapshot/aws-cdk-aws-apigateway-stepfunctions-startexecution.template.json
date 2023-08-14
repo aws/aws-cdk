@@ -6,7 +6,7 @@
     "Name": "my-rest-api"
    }
   },
-  "myrestapiDeployment010A9D4F59b46296e944eb988c600755d169a00d": {
+  "myrestapiDeployment010A9D4F8d8391dd5e41be487121f43257df00d7": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "Description": "Automatically created by the RestApi construct",
@@ -23,7 +23,7 @@
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
     "DeploymentId": {
-     "Ref": "myrestapiDeployment010A9D4F59b46296e944eb988c600755d169a00d"
+     "Ref": "myrestapiDeployment010A9D4F8d8391dd5e41be487121f43257df00d7"
     },
     "RestApiId": {
      "Ref": "myrestapiBAC2BF45"
@@ -131,6 +131,24 @@
        "method.response.header.Access-Control-Allow-Origin": true
       },
       "StatusCode": "200"
+     },
+     {
+      "ResponseModels": {
+       "application/json": "Empty"
+      },
+      "StatusCode": "200"
+     },
+     {
+      "ResponseModels": {
+       "application/json": "Error"
+      },
+      "StatusCode": "400"
+     },
+     {
+      "ResponseModels": {
+       "application/json": "Error"
+      },
+      "StatusCode": "500"
      }
     ],
     "ResourceId": {
@@ -244,6 +262,24 @@
        "method.response.header.Access-Control-Allow-Origin": true
       },
       "StatusCode": "200"
+     },
+     {
+      "ResponseModels": {
+       "application/json": "Empty"
+      },
+      "StatusCode": "200"
+     },
+     {
+      "ResponseModels": {
+       "application/json": "Error"
+      },
+      "StatusCode": "400"
+     },
+     {
+      "ResponseModels": {
+       "application/json": "Error"
+      },
+      "StatusCode": "500"
      }
     ],
     "ResourceId": {

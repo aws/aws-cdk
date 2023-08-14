@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8cbe12776c2bea21b28f7f29c548b0d830b9c92d7f8f93dc5fe6047a274592bc.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/11071ca702d34295486ea4a64c45b64857f4bd23c672fe0895a0b7e753065d77.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -42,7 +42,7 @@
         "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myrestapiDeployment010A9D4F59b46296e944eb988c600755d169a00d"
+            "data": "myrestapiDeployment010A9D4F8d8391dd5e41be487121f43257df00d7"
           }
         ],
         "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/DeploymentStage.prod/Resource": [
@@ -55,6 +55,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "myrestapiEndpoint0DE8A5DE"
+          }
+        ],
+        "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/Default/GET": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "addMethodResponse called multiple times with statusCode=200, deployment will be nondeterministic. Use a single addMethodResponse call to configure the entire response."
           }
         ],
         "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/Default/GET/StartSyncExecutionRole/Resource": [
@@ -73,6 +79,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "myrestapiGET3A49A218"
+          }
+        ],
+        "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/Default/POST": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "addMethodResponse called multiple times with statusCode=200, deployment will be nondeterministic. Use a single addMethodResponse call to configure the entire response."
           }
         ],
         "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/Default/POST/StartSyncExecutionRole/Resource": [
@@ -115,6 +127,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "myrestapiDeployment010A9D4F59b46296e944eb988c600755d169a00d": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myrestapiDeployment010A9D4F59b46296e944eb988c600755d169a00d",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
