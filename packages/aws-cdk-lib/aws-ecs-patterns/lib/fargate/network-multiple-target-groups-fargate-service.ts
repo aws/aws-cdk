@@ -106,7 +106,7 @@ export class NetworkMultipleTargetGroupsFargateService extends NetworkMultipleTa
       const containerPort = this.taskDefinition.defaultContainer.portMappings[0].containerPort;
 
       if (!containerPort) {
-        throw new Error('The first port mapping added to the essential container must expose a single port');
+        throw new Error('The first port mapping added to the default container must expose a single port');
       }
 
       this.targetGroup = this.listener.addTargets('ECS', {

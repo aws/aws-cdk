@@ -151,7 +151,7 @@ export class NetworkMultipleTargetGroupsEc2Service extends NetworkMultipleTarget
       const containerPort = this.taskDefinition.defaultContainer.portMappings[0].containerPort;
 
       if (!containerPort) {
-        throw new Error('You must specify a containerPort');
+        throw new Error('The first port mapping added to the default container must expose a single port');
       }
 
       this.targetGroup = this.listener.addTargets('ECS', {

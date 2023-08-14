@@ -858,6 +858,6 @@ describe('When Network Load Balancer', () => {
         cluster,
         taskDefinition,
       });
-    }).toThrow('The first port mapping added to the essential container must expose a single port');
+    }).toThrow('The first port mapping added to the default container must expose a single port');
   });
 });
