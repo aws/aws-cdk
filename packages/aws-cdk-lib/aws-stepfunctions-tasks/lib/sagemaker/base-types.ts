@@ -469,7 +469,7 @@ export enum InputMode {
   /**
    * FastFile mode.
    */
-  FASTFILE = 'FastFile'
+  FAST_FILE = 'FastFile'
 }
 
 /**

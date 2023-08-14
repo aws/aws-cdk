@@ -36,7 +36,7 @@ const sm = new StateMachine(stack, 'StateMachine', {
   definition: new SageMakerCreateTrainingJob(stack, 'TrainTask', {
     algorithmSpecification: {
       algorithmName: 'BlazingText',
-      trainingInputMode: InputMode.FASTFILE,
+      trainingInputMode: InputMode.FAST_FILE,
     },
     inputDataConfig: [{
       channelName: 'InputData',

@@ -134,7 +134,7 @@ test('create complex training job', () => {
     role,
     algorithmSpecification: {
       algorithmName: 'BlazingText',
-      trainingInputMode: tasks.InputMode.FASTFILE,
+      trainingInputMode: tasks.InputMode.FAST_FILE,
       metricDefinitions: [
         {
           name: 'mymetric', regex: 'regex_pattern',
