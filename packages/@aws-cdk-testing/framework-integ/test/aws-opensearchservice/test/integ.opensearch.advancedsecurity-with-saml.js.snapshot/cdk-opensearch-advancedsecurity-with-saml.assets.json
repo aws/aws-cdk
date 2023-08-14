@@ -1,15 +1,15 @@
 {
   "version": "33.0.0",
   "files": {
-    "c107f22b1a273d6b3e98ae47d04dfc2c17295a01e96b0b2a69ceaaad3ec33905": {
+    "026445656dddc9b7080faac1092d4280a9c24fdf2b21a398f4c44f31d96fcc22": {
       "source": {
-        "path": "batch-stack.template.json",
+        "path": "cdk-opensearch-advancedsecurity-with-saml.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "c107f22b1a273d6b3e98ae47d04dfc2c17295a01e96b0b2a69ceaaad3ec33905.json",
+          "objectKey": "026445656dddc9b7080faac1092d4280a9c24fdf2b21a398f4c44f31d96fcc22.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
