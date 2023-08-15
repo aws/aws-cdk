@@ -3038,7 +3038,7 @@ describe('function', () => {
         handler: 'bar',
         runtime: lambda.Runtime.NODEJS_14_X,
         snapStart: lambda.SnapStartConfig.ON_PUBLISHED_VERSIONS,
-      })).toThrowError('SnapStart is currently supported only Java 11/Java 17 runtime');
+      })).toThrowError('SnapStart currently only support Java 11/Java 17 runtime');
     });
     
     test('arm64 validation for snapStart', () => {
@@ -3072,7 +3072,7 @@ describe('function', () => {
         runtime: lambda.Runtime.JAVA_11,
         filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
         snapStart: lambda.SnapStartConfig.ON_PUBLISHED_VERSIONS,
-      })).toThrowError('SnapStart is currently does not supported using EFS');
+      })).toThrowError('SnapStart is currently not supported using EFS');
     });
     
     test('arm64 validation for snapStart', () => {

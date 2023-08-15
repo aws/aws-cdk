@@ -29,7 +29,7 @@ import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
 import { Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, IAspect, Lazy, Names, Size, Stack, Token } from '../../core';
 import { LAMBDA_RECOGNIZE_LAYER_VERSION } from '../../cx-api';
-import { SnapStartConfig } from './snapstart-management'
+import { SnapStartConfig } from './snapstart-config'
 
 /**
  * X-Ray Tracing Modes (https://docs.aws.amazon.com/lambda/latest/dg/API_TracingConfig.html)
@@ -1299,26 +1299,25 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       return undefined;
     }
 
-    // SnapStart does not support provisioned concurrency, arm64 architecture, 
-    // Amazon Elastic File System (Amazon EFS), or ephemeral storage greater than 512 MB.
+    // SnapStart does not support arm64 architecture, Amazon Elastic File System (Amazon EFS), or ephemeral storage greater than 512 MB.
+    // SnapStart doesn't support provisioned concurrency either, but that's configured at the version level, 
+    // so it can't be checked at function set up time
     // SnapStart supports the Java 11 and Java 17 (java11 and java17) managed runtimes.
     // See https://docs.aws.amazon.com/lambda/latest/dg/snapstart.html
     if (props.snapStart != SnapStartConfig.ON_PUBLISHED_VERSIONS){
-      throw new Error('SnapStart is currently supported only published versions');
+      throw new Error('SnapStart currently only support published versions');
     }
 
     if (props.runtime != Runtime.JAVA_11 && props.runtime != Runtime.JAVA_17 ) {
-      throw new Error('SnapStart is currently supported only Java 11/Java 17 runtime');
+      throw new Error('SnapStart currently only support Java 11/Java 17 runtime');
     }
     
     if (props.architecture == Architecture.ARM_64){
       throw new Error('SnapStart is currently not supported on Arm_64');
     }
 
-    // seems no provision concurrency in props? can't check it here
-
     if (props.filesystem){
-      throw new Error('SnapStart is currently does not supported using EFS');
+      throw new Error('SnapStart is currently not supported using EFS');
     }
     
     if (props.ephemeralStorageSize && props.ephemeralStorageSize?.toMebibytes() > 512){
