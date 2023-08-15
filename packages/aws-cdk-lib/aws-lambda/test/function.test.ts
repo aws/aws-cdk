@@ -2992,7 +2992,7 @@ describe('function', () => {
         runtime: 'java11',
         snapStart: { applyOn: 'PublishedVersions' },
       });
-    
+
       Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
         Properties:
         {
@@ -3005,8 +3005,7 @@ describe('function', () => {
         },
       });
     });
-    
-    
+
     test('function using SnapStart', () => {
       const stack = new cdk.Stack();
       //WHEN
@@ -3016,7 +3015,7 @@ describe('function', () => {
         runtime: lambda.Runtime.JAVA_11,
         snapStart: lambda.SnapStartConfig.ON_PUBLISHED_VERSIONS,
       });
-    
+
       //THEN
       Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
         Properties:
@@ -3029,10 +3028,10 @@ describe('function', () => {
             },
       });
     });
-    
+
     test('runtime validation for snapStart', () => {
       const stack = new cdk.Stack();
-    
+
       expect(() => new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'bar',
@@ -3040,10 +3039,10 @@ describe('function', () => {
         snapStart: lambda.SnapStartConfig.ON_PUBLISHED_VERSIONS,
       })).toThrowError('SnapStart currently only support Java 11/Java 17 runtime');
     });
-    
+
     test('arm64 validation for snapStart', () => {
       const stack = new cdk.Stack();
-    
+
       expect(() => new lambda.Function(stack, 'MyLambda', {
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         handler: 'example.Handler::handleRequest',
@@ -3052,19 +3051,19 @@ describe('function', () => {
         snapStart: lambda.SnapStartConfig.ON_PUBLISHED_VERSIONS,
       })).toThrowError('SnapStart is currently not supported on Arm_64');
     });
-    
+
     test('EFS validation for snapStart', () => {
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'Vpc', {
         maxAzs: 3,
         natGateways: 1,
       });
-    
+
       const fs = new efs.FileSystem(stack, 'Efs', {
         vpc,
       });
       const accessPoint = fs.addAccessPoint('AccessPoint');
-    
+
       expect(() => new lambda.Function(stack, 'MyLambda', {
         vpc,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
@@ -3074,10 +3073,10 @@ describe('function', () => {
         snapStart: lambda.SnapStartConfig.ON_PUBLISHED_VERSIONS,
       })).toThrowError('SnapStart is currently not supported using EFS');
     });
-    
+
     test('arm64 validation for snapStart', () => {
       const stack = new cdk.Stack();
-    
+
       expect(() => new lambda.Function(stack, 'MyLambda', {
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         handler: 'example.Handler::handleRequest',
@@ -3248,8 +3247,6 @@ describe('function', () => {
         }),
     ).toThrow(/ADOT Lambda layer can't be configured with container image package type/);
   });
-
-
 });
 
 test('throws if ephemeral storage size is out of bound', () => {
