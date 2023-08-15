@@ -1,7 +1,10 @@
 import { Template } from 'aws-cdk-lib/assertions';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import { DefaultTokenResolver, Size, StringConcat, Stack, Tokenization } from 'aws-cdk-lib';
-import { Compatibility, CpuArchitecture, EcsEc2ContainerDefinition, EcsFargateContainerDefinition, EcsJobDefinition, OperatingSystemFamily } from '../lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import { Compatibility, CpuArchitecture, EcsEc2ContainerDefinition, EcsFargateContainerDefinition, EcsJobDefinition, OperatingSystemFamily, JobQueue, ManagedEc2EcsComputeEnvironment } from '../lib';
+import { Vpc } from 'aws-cdk-lib/aws-ec2';
+
 
 test('EcsJobDefinition respects propagateTags', () => {
   // GIVEN
