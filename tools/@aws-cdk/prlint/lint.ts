@@ -345,6 +345,8 @@ export class PullRequestLinter {
     pr: Pick<GitHubPr, 'mergeable_state' | 'draft' | 'labels' | 'number'>,
   ): Promise<void> {
     const reviews = await this.client.pulls.listReviews(this.prParams);
+    console.log(JSON.stringify(reviews.data));
+
     // NOTE: MEMBER = a member of the organization that owns the repository
     // COLLABORATOR = has been invited to collaborate on the repository
     const maintainerRequestedChanges = reviews.data.some(
@@ -356,13 +358,20 @@ export class PullRequestLinter {
       review => review.author_association === 'MEMBER'
         && review.state === 'APPROVED',
     );
-    const communityRequestedChanges = reviews.data.some(
-      review => this.getTrustedCommunityMembers().includes(review.user?.login ?? '')
-        && review.state === 'COMMENTED', // community members can only approve or comment
-    );
+
     const communityApproved = reviews.data.some(
       review => this.getTrustedCommunityMembers().includes(review.user?.login ?? '')
         && review.state === 'APPROVED',
+    );
+
+    // NOTE: community members can only approve or comment, but it is possible
+    // for the same member to have both an approved review and a commented review.
+    // we solve this issue by turning communityRequestedChanges to false if
+    // communityApproved is true. We can always dismiss an approved review if we want
+    // to respect someone else's requested changes.
+    const communityRequestedChanges = communityApproved ? false : reviews.data.some(
+      review => this.getTrustedCommunityMembers().includes(review.user?.login ?? '')
+        && review.state === 'COMMENTED',
     );
 
     const prLinterFailed = reviews.data.find((review) => review.user?.login === 'aws-cdk-automation' && review.state !== 'DISMISSED') as Review;
