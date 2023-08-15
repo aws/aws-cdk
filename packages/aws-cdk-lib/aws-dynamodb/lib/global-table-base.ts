@@ -6,10 +6,19 @@ import { Grant, IGrantable } from '../../aws-iam';
 import { IKey } from '../../aws-kms';
 import { Aws, Resource } from '../../core';
 
+export interface IGlobalTable extends ITable {
+  /**
+   * The ID of the Replica Table in the deployment region of the Global Table.
+   *
+   * @attribute
+   */
+  readonly tableId?: string;
+}
+
 /**
  * Base class for a Global Table.
  */
-export abstract class GlobalTableBase extends Resource implements ITable {
+export abstract class GlobalTableBase extends Resource implements IGlobalTable {
   /**
    * The ARN of the Replica Table in the deployment region of the Global Table.
    *

@@ -3,9 +3,9 @@ import { Billing } from './billing';
 import { Capacity } from './capacity';
 import { CfnGlobalTable } from './dynamodb.generated';
 import { TableEncryptionV2 } from './encryption';
-import { GlobalTableBase } from './global-table-base';
+import { GlobalTableBase, IGlobalTable } from './global-table-base';
 import {
-  ITable, Attribute, TableClass, LocalSecondaryIndexProps,
+  Attribute, TableClass, LocalSecondaryIndexProps,
   SecondaryIndexProps, BillingMode, ProjectionType,
 } from './shared';
 import { IStream } from '../../aws-kinesis';
@@ -306,7 +306,7 @@ export class GlobalTable extends GlobalTableBase {
    * @param id the construct's name
    * @param tableName the Global Table's name
    */
-  public static fromTableName(scope: Construct, id: string, tableName: string): ITable {
+  public static fromTableName(scope: Construct, id: string, tableName: string): IGlobalTable {
     return GlobalTable.fromTableAttributes(scope, id, { tableName });
   }
 
@@ -317,7 +317,7 @@ export class GlobalTable extends GlobalTableBase {
    * @param id the construct's name
    * @param tableArn the Global Table's ARN
    */
-  public static fromTableArn(scope: Construct, id: string, tableArn: string): ITable {
+  public static fromTableArn(scope: Construct, id: string, tableArn: string): IGlobalTable {
     return GlobalTable.fromTableAttributes(scope, id, { tableArn });
   }
 
@@ -328,7 +328,7 @@ export class GlobalTable extends GlobalTableBase {
    * @param id the construct's name
    * @param attrs attributes of the Global Table
    */
-  public static fromTableAttributes(scope: Construct, id: string, attrs: GlobalTableAttributes): ITable {
+  public static fromTableAttributes(scope: Construct, id: string, attrs: GlobalTableAttributes): IGlobalTable {
     class Import extends GlobalTableBase {
       public readonly tableArn: string;
       public readonly tableName: string;
@@ -356,7 +356,7 @@ export class GlobalTable extends GlobalTableBase {
     const stack = Stack.of(scope);
     if (!attrs.tableArn) {
       if (!attrs.tableName) {
-        throw new Error('At least one of tableArn or tableName must be provided');
+        throw new Error('At least one of `tableArn` or `tableName` must be provided');
       }
 
       tableName = attrs.tableName;
@@ -367,7 +367,7 @@ export class GlobalTable extends GlobalTableBase {
       });
     } else {
       if (attrs.tableName) {
-        throw new Error('Only one of tableArn or tableName can be provided, but not both');
+        throw new Error('Only one of `tableArn` or `tableName` can be provided, but not both');
       }
 
       tableArn = attrs.tableArn;
@@ -530,7 +530,7 @@ export class GlobalTable extends GlobalTableBase {
    *
    * @param region the region of the Replica Table
    */
-  public replica(region: string): ITable {
+  public replica(region: string): IGlobalTable {
     if (Token.isUnresolved(this.stack.region)) {
       throw new Error('Replica Tables are not supported in a region agnostic stack');
     }

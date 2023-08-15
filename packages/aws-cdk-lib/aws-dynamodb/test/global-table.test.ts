@@ -2216,3 +2216,96 @@ describe('secondary indexes', () => {
     }).toThrow('Non-key attributes should not be specified when not using INCLUDE projection type');
   });
 });
+
+describe('imports', () => {
+  test('can import a global table by name', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2', account: '123456789012' } });
+
+    // WHEN
+    const globalTable = GlobalTable.fromTableName(stack, 'GlobalTable', 'my-global-table');
+
+    // THEN
+    expect(globalTable.tableName).toEqual('my-global-table');
+    expect(stack.resolve(globalTable.tableArn)).toEqual({
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':dynamodb:us-west-2:123456789012:table/my-global-table',
+        ],
+      ],
+    });
+  });
+
+  test('can import a global table by arn', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2', account: '123456789012' } });
+
+    // WHEN
+    const globalTable = GlobalTable.fromTableArn(stack, 'GlobalTable', 'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table');
+
+    // THEN
+    expect(globalTable.tableArn).toEqual('arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table');
+    expect(globalTable.tableName).toEqual('my-global-table');
+  });
+
+  test('can import a global table with attributes', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2', account: '123456789012' } });
+    const tableKey = new Key(stack, 'Key');
+
+    // WHEN
+    const globalTable = GlobalTable.fromTableAttributes(stack, 'GlobalTable', {
+      tableArn: 'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table',
+      tableStreamArn: 'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table/stream/*',
+      tableId: 'a123b456-01ab-23cd-123a-111222aaabbb',
+      encryptionKey: tableKey,
+    });
+
+    // THEN
+    expect(globalTable.tableStreamArn).toEqual('arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table/stream/*');
+    expect(globalTable.encryptionKey?.keyArn).toEqual(tableKey.keyArn);
+    expect(globalTable.tableId).toEqual('a123b456-01ab-23cd-123a-111222aaabbb');
+  });
+
+  test('throws if name or arn are not provided', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN / THEN
+    expect(() => {
+      GlobalTable.fromTableAttributes(stack, 'GlobalTable', {
+        tableStreamArn: 'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table/stream/*',
+      });
+    }).toThrow('At least one of `tableArn` or `tableName` must be provided');
+  });
+
+  test('throws if name and arn are both provided', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN / THEN
+    expect(() => {
+      GlobalTable.fromTableAttributes(stack, 'GlobalTable', {
+        tableName: 'my-global-table',
+        tableArn: 'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table',
+      });
+    }).toThrow('Only one of `tableArn` or `tableName` can be provided, but not both');
+  });
+
+  test('throws for invalid arn format', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN / THEN
+    expect(() => {
+      GlobalTable.fromTableAttributes(stack, 'GlobalTable', {
+        tableArn: 'arn:aws:dynamodb:us-east-2:123456789012:table/',
+      });
+    }).toThrow('Table ARN must be of the form: arn:<partition>:dynamodb:<region>:<account>:table/<table-name>');
+  });
+});

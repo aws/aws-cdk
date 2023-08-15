@@ -1306,6 +1306,276 @@ describe('grants', () => {
       ],
     });
   });
+
+  test('can grant with a global table imported by name', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+    const user = new User(stack, 'User');
+    const globalTable = GlobalTable.fromTableName(stack, 'GlobalTable', 'my-global-table');
+
+    // WHEN
+    globalTable.grantReadData(user);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'dynamodb:BatchGetItem',
+              'dynamodb:GetRecords',
+              'dynamodb:GetShardIterator',
+              'dynamodb:Query',
+              'dynamodb:GetItem',
+              'dynamodb:Scan',
+              'dynamodb:ConditionCheckItem',
+              'dynamodb:DescribeTable',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/my-global-table',
+                  ],
+                ],
+              },
+              {
+                Ref: 'AWS::NoValue',
+              },
+            ],
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'UserDefaultPolicy1F97781E',
+      Users: [
+        {
+          Ref: 'User00B015A1',
+        },
+      ],
+    });
+  });
+
+  test('can grant with a global table imported by arn', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+    const user = new User(stack, 'User');
+    const globalTable = GlobalTable.fromTableArn(stack, 'GlobalTable', 'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table');
+
+    // WHEN
+    globalTable.grantReadData(user);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'dynamodb:BatchGetItem',
+              'dynamodb:GetRecords',
+              'dynamodb:GetShardIterator',
+              'dynamodb:Query',
+              'dynamodb:GetItem',
+              'dynamodb:Scan',
+              'dynamodb:ConditionCheckItem',
+              'dynamodb:DescribeTable',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table',
+              {
+                Ref: 'AWS::NoValue',
+              },
+            ],
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'UserDefaultPolicy1F97781E',
+      Users: [
+        {
+          Ref: 'User00B015A1',
+        },
+      ],
+    });
+  });
+
+  test('can grant with a global table imported with an encryption key', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+    const user = new User(stack, 'User');
+    const tableKey = new Key(stack, 'Key');
+    const globalTable = GlobalTable.fromTableAttributes(stack, 'GlobalTable', {
+      tableArn: 'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table',
+      encryptionKey: tableKey,
+    });
+
+    // WHEN
+    globalTable.grantReadData(user);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'kms:Decrypt',
+              'kms:DescribeKey',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'Key961B73FD',
+                'Arn',
+              ],
+            },
+          },
+          {
+            Action: [
+              'dynamodb:BatchGetItem',
+              'dynamodb:GetRecords',
+              'dynamodb:GetShardIterator',
+              'dynamodb:Query',
+              'dynamodb:GetItem',
+              'dynamodb:Scan',
+              'dynamodb:ConditionCheckItem',
+              'dynamodb:DescribeTable',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table',
+              {
+                Ref: 'AWS::NoValue',
+              },
+            ],
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'UserDefaultPolicy1F97781E',
+      Users: [
+        {
+          Ref: 'User00B015A1',
+        },
+      ],
+    });
+  });
+
+  test('can grant with a global table imported with secondary index permission', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+    const user = new User(stack, 'User');
+    const globalTable = GlobalTable.fromTableAttributes(stack, 'GlobalTable', {
+      tableArn: 'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table',
+      grantIndexPermissions: true,
+    });
+
+    // WHEN
+    globalTable.grantReadData(user);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'dynamodb:BatchGetItem',
+              'dynamodb:GetRecords',
+              'dynamodb:GetShardIterator',
+              'dynamodb:Query',
+              'dynamodb:GetItem',
+              'dynamodb:Scan',
+              'dynamodb:ConditionCheckItem',
+              'dynamodb:DescribeTable',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table',
+              'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table/index/*',
+            ],
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'UserDefaultPolicy1F97781E',
+      Users: [
+        {
+          Ref: 'User00B015A1',
+        },
+      ],
+    });
+  });
+
+  test('can grant with a global table imported with secondary index', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+    const user = new User(stack, 'User');
+    const globalTable = GlobalTable.fromTableAttributes(stack, 'GlobalTable', {
+      tableArn: 'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table',
+      globalIndexes: ['gsi'],
+    });
+
+    // WHEN
+    globalTable.grantReadData(user);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'dynamodb:BatchGetItem',
+              'dynamodb:GetRecords',
+              'dynamodb:GetShardIterator',
+              'dynamodb:Query',
+              'dynamodb:GetItem',
+              'dynamodb:Scan',
+              'dynamodb:ConditionCheckItem',
+              'dynamodb:DescribeTable',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table',
+              'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table/index/*',
+            ],
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'UserDefaultPolicy1F97781E',
+      Users: [
+        {
+          Ref: 'User00B015A1',
+        },
+      ],
+    });
+  });
+
+  test('throws if table stream arn is missing when granting for table stream', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+    const user = new User(stack, 'User');
+    const globalTable = GlobalTable.fromTableName(stack, 'GlobalTable', 'my-global-table');
+
+    // WHEN / THEN
+    expect(() => {
+      globalTable.grantStreamRead(user);
+    }).toThrow('No stream ARNs found on the table Stack/GlobalTable');
+  });
 });
 
 describe('metrics', () => {});
