@@ -1017,6 +1017,11 @@ describe('repository', () => {
                       ]],
                     },
                   ],
+                  Condition: {
+                    StringEquals: {
+                      'ecr:ResourceTag/aws-cdk:auto-delete-images': 'true',
+                    },
+                  },
                 },
               ],
             },

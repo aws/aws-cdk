@@ -878,6 +878,11 @@ export class Repository extends RepositoryBase {
           'ecr:ListTagsForResource',
         ],
         Resource: [`arn:${Aws.PARTITION}:ecr:${Stack.of(this).region}:${Stack.of(this).account}:repository/*`],
+        Condition: {
+          StringEquals: {
+            ['ecr:ResourceTag/' + AUTO_DELETE_IMAGES_TAG]: 'true',
+          },
+        },
       });
     }
 
