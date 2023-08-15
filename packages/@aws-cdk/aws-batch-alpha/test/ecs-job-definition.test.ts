@@ -1,7 +1,7 @@
 import { Template } from 'aws-cdk-lib/assertions';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import { DefaultTokenResolver, Size, StringConcat, Stack, Tokenization } from 'aws-cdk-lib';
-import { Compatibility, CpuArchitecture, EcsEc2ContainerDefinition, EcsFargateContainerDefinition, EcsJobDefinition } from '../lib';
+import { Compatibility, CpuArchitecture, EcsEc2ContainerDefinition, EcsFargateContainerDefinition, EcsJobDefinition, OperatingSystemFamily } from '../lib';
 
 test('EcsJobDefinition respects propagateTags', () => {
   // GIVEN
@@ -52,6 +52,10 @@ test('EcsJobDefinition uses runtimePlatform EC2 containers', () => {
       cpu: 256,
       image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
       memory: Size.mebibytes(2048),
+      runtimePlatform: {
+        cpuArchitecture: CpuArchitecture.ARM64,
+        operatingSystemFamily: OperatingSystemFamily.LINUX,
+      },
     }),
   });
 
