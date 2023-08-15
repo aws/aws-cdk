@@ -1083,7 +1083,7 @@ export class MustDependonCdkByPointVersions extends ValidationRule {
       ...fs.readdirSync(path.join(monoRepoRoot(), 'tools', '@aws-cdk')).map((name) => `@aws-cdk/${name}`),
       // Packages in the @aws-cdk namespace that are vended outside of the monorepo
       '@aws-cdk/asset-kubectl-v20',
-      '@aws-cdk/asset-node-proxy-agent-v5',
+      '@aws-cdk/asset-node-proxy-agent-v6',
       '@aws-cdk/asset-awscli-v1',
       '@aws-cdk/cdk-cli-wrapper',
     ];
