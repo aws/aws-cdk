@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "33.0.0",
   "artifacts": {
     "cors-twitch-test.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/eec545187c8ac2e517efd9fbf2f13eb327409c8aea5ab3f76dd09184a47a37f6.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d6fea47c1f0462158dff41f11b88b1cc5a13df20fda1d39aa230bae47a50ae63.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -54,7 +54,7 @@
         "/cors-twitch-test/cors-api-test/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "corsapitestDeployment2BF1633Aec735238f184cf252b8c47cd8212eacb"
+            "data": "corsapitestDeployment2BF1633Adc24ac182461aecc920a8724663ce2a1"
           }
         ],
         "/cors-twitch-test/cors-api-test/DeploymentStage.prod/Resource": [
@@ -159,10 +159,10 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "corsapitestDeployment2BF1633A51392cbce1ac2785bd0e53063423e203": [
+        "corsapitestDeployment2BF1633Aec735238f184cf252b8c47cd8212eacb": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "corsapitestDeployment2BF1633A51392cbce1ac2785bd0e53063423e203",
+            "data": "corsapitestDeployment2BF1633Aec735238f184cf252b8c47cd8212eacb",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]

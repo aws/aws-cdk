@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "33.0.0",
   "artifacts": {
     "batch-stack.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/81f3134124cef368d56ccabda586dbcbef39a78089edd14c9d641cbcb4e0bad2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c107f22b1a273d6b3e98ae47d04dfc2c17295a01e96b0b2a69ceaaad3ec33905.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -192,10 +192,7 @@
         "/batch-stack/maximalPropsFargate/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "maximalPropsFargate2D7D8138",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "maximalPropsFargate2D7D8138"
           }
         ],
         "/batch-stack/minimalPropsEc2/SecurityGroup/Resource": [
@@ -292,6 +289,30 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SpotEc2A0470C83"
+          }
+        ],
+        "/batch-stack/AllocationStrategySPOT_CAPACITY/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AllocationStrategySPOTCAPACITYSecurityGroupA581EB8C"
+          }
+        ],
+        "/batch-stack/AllocationStrategySPOT_CAPACITY/InstanceProfileRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AllocationStrategySPOTCAPACITYInstanceProfileRoleA6211395"
+          }
+        ],
+        "/batch-stack/AllocationStrategySPOT_CAPACITY/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AllocationStrategySPOTCAPACITYInstanceProfile0B71F375"
+          }
+        ],
+        "/batch-stack/AllocationStrategySPOT_CAPACITY/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AllocationStrategySPOTCAPACITYEE4582C5"
           }
         ],
         "/batch-stack/taggedCE/SecurityGroup/Resource": [

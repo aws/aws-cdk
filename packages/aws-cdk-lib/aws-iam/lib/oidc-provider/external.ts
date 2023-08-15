@@ -10,12 +10,11 @@ import { X509Certificate } from 'node:crypto';
 import * as tls from 'tls';
 import * as url from 'url';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import * as aws from 'aws-sdk';
+import * as sdk from '@aws-sdk/client-iam';
 
-let client: aws.IAM;
-
-function iam() {
-  if (!client) { client = new aws.IAM(); }
+let client: sdk.IAM;
+function iam(): sdk.IAM {
+  if (!client) { client = new sdk.IAM({}); }
   return client;
 }
 
@@ -109,9 +108,9 @@ function getCertificateValidity(certDate: Date): Number {
 export const external = {
   downloadThumbprint,
   log: defaultLogger,
-  createOpenIDConnectProvider: (req: aws.IAM.CreateOpenIDConnectProviderRequest) => iam().createOpenIDConnectProvider(req).promise(),
-  deleteOpenIDConnectProvider: (req: aws.IAM.DeleteOpenIDConnectProviderRequest) => iam().deleteOpenIDConnectProvider(req).promise(),
-  updateOpenIDConnectProviderThumbprint: (req: aws.IAM.UpdateOpenIDConnectProviderThumbprintRequest) => iam().updateOpenIDConnectProviderThumbprint(req).promise(),
-  addClientIDToOpenIDConnectProvider: (req: aws.IAM.AddClientIDToOpenIDConnectProviderRequest) => iam().addClientIDToOpenIDConnectProvider(req).promise(),
-  removeClientIDFromOpenIDConnectProvider: (req: aws.IAM.RemoveClientIDFromOpenIDConnectProviderRequest) => iam().removeClientIDFromOpenIDConnectProvider(req).promise(),
+  createOpenIDConnectProvider: (req: sdk.CreateOpenIDConnectProviderCommandInput) => iam().createOpenIDConnectProvider(req),
+  deleteOpenIDConnectProvider: (req: sdk.DeleteOpenIDConnectProviderCommandInput) => iam().deleteOpenIDConnectProvider(req),
+  updateOpenIDConnectProviderThumbprint: (req: sdk.UpdateOpenIDConnectProviderThumbprintCommandInput) => iam().updateOpenIDConnectProviderThumbprint(req),
+  addClientIDToOpenIDConnectProvider: (req: sdk.AddClientIDToOpenIDConnectProviderCommandInput) => iam().addClientIDToOpenIDConnectProvider(req),
+  removeClientIDFromOpenIDConnectProvider: (req: sdk.RemoveClientIDFromOpenIDConnectProviderCommandInput) => iam().removeClientIDFromOpenIDConnectProvider(req),
 };

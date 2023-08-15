@@ -59,6 +59,16 @@ new ManagedEc2EcsComputeEnvironment(stack, 'SpotEc2', {
   }),
 });
 
+new ManagedEc2EcsComputeEnvironment(stack, 'AllocationStrategySPOT_CAPACITY', {
+  vpc,
+  images: [{
+    image: new ec2.AmazonLinuxImage(),
+  }],
+  spot: true,
+  spotBidPercentage: 95,
+  allocationStrategy: AllocationStrategy.SPOT_CAPACITY_OPTIMIZED,
+});
+
 const taggedEc2Ecs = new ManagedEc2EcsComputeEnvironment(stack, 'taggedCE', {
   vpc,
   images: [{

@@ -452,6 +452,15 @@ export enum AllocationStrategy {
    * you should allow Batch to choose from as many different instance types as possible.
    */
   SPOT_CAPACITY_OPTIMIZED = 'SPOT_CAPACITY_OPTIMIZED',
+
+  /**
+   * The price and capacity optimized allocation strategy looks at both price and capacity
+   * to select the Spot Instance pools that are the least likely to be interrupted
+   * and have the lowest possible price.
+   *
+   * The Batch team recommends this over `SPOT_CAPACITY_OPTIMIZED` in most instances.
+   */
+  SPOT_PRICE_CAPACITY_OPTIMIZED = 'SPOT_PRICE_CAPACITY_OPTIMIZED',
 }
 
 /**
@@ -1145,7 +1154,9 @@ function createSpotFleetRole(scope: Construct): IRole {
 function determineAllocationStrategy(id: string, allocationStrategy?: AllocationStrategy, spot?: boolean): AllocationStrategy | undefined {
   let result = allocationStrategy;
   if (!allocationStrategy) {
-    result = spot ? AllocationStrategy.SPOT_CAPACITY_OPTIMIZED : AllocationStrategy.BEST_FIT_PROGRESSIVE;
+    result = spot ? AllocationStrategy.SPOT_PRICE_CAPACITY_OPTIMIZED : AllocationStrategy.BEST_FIT_PROGRESSIVE;
+  } else if (allocationStrategy === AllocationStrategy.SPOT_PRICE_CAPACITY_OPTIMIZED && !spot) {
+    throw new Error(`Managed ComputeEnvironment '${id}' specifies 'AllocationStrategy.SPOT_PRICE_CAPACITY_OPTIMIZED' without using spot instances`);
   } else if (allocationStrategy === AllocationStrategy.SPOT_CAPACITY_OPTIMIZED && !spot) {
     throw new Error(`Managed ComputeEnvironment '${id}' specifies 'AllocationStrategy.SPOT_CAPACITY_OPTIMIZED' without using spot instances`);
   }

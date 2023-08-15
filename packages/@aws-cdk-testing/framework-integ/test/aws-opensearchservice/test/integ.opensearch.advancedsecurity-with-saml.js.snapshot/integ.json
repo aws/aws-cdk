@@ -1,0 +1,12 @@
+{
+  "version": "33.0.0",
+  "testCases": {
+    "integ-opensearch-advancedsecurity-with-saml/DefaultTest": {
+      "stacks": [
+        "cdk-opensearch-advancedsecurity-with-saml"
+      ],
+      "assertionStack": "integ-opensearch-advancedsecurity-with-saml/DefaultTest/DeployAssert",
+      "assertionStackName": "integopensearchadvancedsecuritywithsamlDefaultTestDeployAssertA27B274A"
+    }
+  }
+}

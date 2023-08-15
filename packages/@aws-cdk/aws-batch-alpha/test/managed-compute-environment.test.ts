@@ -168,7 +168,7 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
     });
   });
 
-  test('spot => AllocationStrategy.SPOT_CAPACITY_OPTIMIZED', () => {
+  test('spot => AllocationStrategy.SPOT_PRICE_CAPACITY_OPTIMIZED', () => {
     // WHEN
     new ComputeEnvironment(stack, 'MyCE', {
       ...defaultProps,
@@ -182,7 +182,7 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
       ComputeResources: {
         ...defaultComputeResources,
         Type: 'SPOT',
-        AllocationStrategy: 'SPOT_CAPACITY_OPTIMIZED',
+        AllocationStrategy: 'SPOT_PRICE_CAPACITY_OPTIMIZED',
       },
     });
   });
@@ -643,6 +643,17 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
     }).toThrow(/Managed ComputeEnvironment 'MyCE' specifies 'AllocationStrategy.SPOT_CAPACITY_OPTIMIZED' without using spot instances/);
   });
 
+  test('throws error when AllocationStrategy.SPOT_PRICE_CAPACITY_OPTIMIZED is used without specfiying spot', () => {
+    // THEN
+    expect(() => {
+      new ComputeEnvironment(stack, 'MyCE', {
+        ...defaultProps,
+        vpc,
+        allocationStrategy: AllocationStrategy.SPOT_PRICE_CAPACITY_OPTIMIZED,
+      });
+    }).toThrow(/Managed ComputeEnvironment 'MyCE' specifies 'AllocationStrategy.SPOT_PRICE_CAPACITY_OPTIMIZED' without using spot instances/);
+  });
+
   test('throws error when spotBidPercentage is specified without spot', () => {
     // THEN
     expect(() => {
@@ -750,7 +761,7 @@ describe('ManagedEc2EcsComputeEnvironment', () => {
       ...pascalCaseExpectedEcsProps,
       ComputeResources: {
         ...defaultComputeResources,
-        AllocationStrategy: AllocationStrategy.SPOT_CAPACITY_OPTIMIZED,
+        AllocationStrategy: AllocationStrategy.SPOT_PRICE_CAPACITY_OPTIMIZED,
         Type: 'SPOT',
         SpotIamFleetRole: {
           'Fn::GetAtt': ['SpotFleetRole6D4F7558', 'Arn'],
