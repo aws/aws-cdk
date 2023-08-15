@@ -37,7 +37,6 @@ alias.addFunctionUrl({
 // to validate the changed function hash.
 cdk.Aspects.of(stack).add(new lambda.FunctionVersionUpgrade(LAMBDA_RECOGNIZE_LAYER_VERSION));
 
-
 new lambda.Function(stack, 'MySnapStartLambda', {
   code: lambda.Code.fromAsset(path.join(__dirname, 'handler-snapstart.zip')),
   handler: 'example.Handler::handleRequest',
