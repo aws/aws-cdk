@@ -2,7 +2,8 @@ import { bockfs } from '@aws-cdk/cdk-build-tools';
 import { Template, Match } from '../../assertions';
 import { Vpc } from '../../aws-ec2';
 import { CodeConfig, Runtime } from '../../aws-lambda';
-import { Stack } from '../../core';
+import { App, Stack } from '../../core';
+import { LAMBDA_NODEJS_USE_LATEST_RUNTIME } from '../../cx-api';
 import { NodejsFunction } from '../lib';
 import { Bundling } from '../lib/bundling';
 
@@ -290,5 +291,22 @@ test('NodejsFunction in a VPC', () => {
         },
       ],
     },
+  });
+});
+
+test('defaults to NODEJS_LATEST with feature flag enabled', () => {
+  // GIVEN
+  const appLocal = new App({
+    context: {
+      [LAMBDA_NODEJS_USE_LATEST_RUNTIME]: true,
+    },
+  });
+  const stackLocal = new Stack(appLocal, 'TestStackFF');
+
+  // WHEN
+  new NodejsFunction(stackLocal, 'handler1');
+
+  Template.fromStack(stackLocal).hasResourceProperties('AWS::Lambda::Function', {
+    Runtime: 'nodejs18.x',
   });
 });
