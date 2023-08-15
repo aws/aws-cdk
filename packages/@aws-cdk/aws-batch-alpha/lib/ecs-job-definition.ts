@@ -3,6 +3,8 @@ import { Construct } from 'constructs';
 import { CfnJobDefinition } from 'aws-cdk-lib/aws-batch';
 import { EcsEc2ContainerDefinition, IEcsContainerDefinition } from './ecs-container-definition';
 import { baseJobDefinitionProperties, IJobDefinition, JobDefinitionBase, JobDefinitionProps } from './job-definition-base';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import { IJobQueue } from './job-queue';
 
 /**
  * A JobDefinition that uses ECS orchestration
@@ -100,6 +102,17 @@ export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefini
       resourceName: this.physicalName,
     });
     this.jobDefinitionName = EcsJobDefinition.getJobDefinitionName(scope, this.jobDefinitionArn);
+  }
+
+  /**
+   * Grants the `batch:submitJob` permission to the identity on both this job definition and the `queue`
+  */
+  public grantSubmitJob(identity: iam.IGrantable, queue: IJobQueue) {
+    iam.Grant.addToPrincipal({
+      actions: ['batch:SubmitJob'],
+      grantee: identity,
+      resourceArns: [this.jobDefinitionArn, queue.jobQueueArn],
+    });
   }
 
   private renderPlatformCapabilities() {
