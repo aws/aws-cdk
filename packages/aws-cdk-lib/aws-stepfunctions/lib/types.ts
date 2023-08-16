@@ -146,15 +146,10 @@ export interface CatchProps {
   /**
    * JSONPath expression to indicate where to inject the error data
    *
-   * May also be the special value DISCARD, which will cause the error
+   * May also be the special value JsonPath.DISCARD, which will cause the error
    * data to be discarded.
    *
    * @default $
    */
   readonly resultPath?: string;
 }
-
-/**
- * Special string value to discard state input, output or result
- */
-export const DISCARD = 'DISCARD';
