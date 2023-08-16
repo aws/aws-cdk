@@ -1,11 +1,11 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Construct } from 'constructs';
 import { Template } from '../../assertions';
-import { Alarm } from '../../aws-cloudwatch';
+import { Alarm, Metric } from '../../aws-cloudwatch';
 import { User } from '../../aws-iam';
 import { Key } from '../../aws-kms';
 import { Stack, StackProps, App } from '../../core';
 import { GlobalTable, AttributeType, TableEncryptionV2, ITable, IGlobalTable, Operation } from '../lib';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 
 function replicaResourceArns(replicaRegions: string[]) {
   const resourceArns: { [key: string]: any }[] = [];
@@ -1795,6 +1795,126 @@ describe('metrics', () => {
     });
   });
 
+  test('can use metricThrottledRequestsForOperation on a global table', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+
+    // WHEN / THEN
+    expect(stack.resolve(globalTable.metricThrottledRequestsForOperation(Operation.PUT_ITEM))).toEqual({
+      period: {
+        amount: 5,
+        unit: { label: 'minutes', isoLabel: 'M', inMillis: 60000 },
+      },
+      metricName: 'ThrottledRequests',
+      dimensions: { TableName: { Ref: 'Resource' }, Operation: 'PutItem' },
+      namespace: 'AWS/DynamoDB',
+      account: { Ref: 'AWS::AccountId' },
+      region: { Ref: 'AWS::Region' },
+      statistic: 'Sum',
+    });
+  });
+
+  test('can use metricThrottledRequestForOperations on a global table', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+
+    // WHEN / THEN
+    expect(stack.resolve(globalTable.metricThrottledRequestsForOperations({ operations: [Operation.GET_ITEM, Operation.PUT_ITEM] }))).toEqual({
+      expression: 'getitem + putitem',
+      label: 'Sum of throttled requests across all operations',
+      period: {
+        amount: 5,
+        unit: { label: 'minutes', isoLabel: 'M', inMillis: 60000 },
+      },
+      usingMetrics: {
+        getitem: {
+          account: { Ref: 'AWS::AccountId' },
+          region: { Ref: 'AWS::Region' },
+          dimensions: {
+            Operation: 'GetItem',
+            TableName: {
+              Ref: 'Resource',
+            },
+          },
+          metricName: 'ThrottledRequests',
+          namespace: 'AWS/DynamoDB',
+          period: {
+            amount: 5,
+            unit: { label: 'minutes', isoLabel: 'M', inMillis: 60000 },
+          },
+          statistic: 'Sum',
+        },
+        putitem: {
+          account: { Ref: 'AWS::AccountId' },
+          region: { Ref: 'AWS::Region' },
+          dimensions: {
+            Operation: 'PutItem',
+            TableName: {
+              Ref: 'Resource',
+            },
+          },
+          metricName: 'ThrottledRequests',
+          namespace: 'AWS/DynamoDB',
+          period: {
+            amount: 5,
+            unit: { label: 'minutes', isoLabel: 'M', inMillis: 60000 },
+          },
+          statistic: 'Sum',
+        },
+      },
+    });
+  });
+
+  test('can use metrics on a global table imported by name', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+    const globalTable = GlobalTable.fromTableName(stack, 'GlobalTable', 'my-global-table');
+
+    // WHEN / THEN
+    expect(stack.resolve(globalTable.metricConsumedReadCapacityUnits())).toEqual({
+      period: {
+        amount: 5,
+        unit: { label: 'minutes', isoLabel: 'M', inMillis: 60000 },
+      },
+      dimensions: {
+        TableName: 'my-global-table',
+      },
+      namespace: 'AWS/DynamoDB',
+      metricName: 'ConsumedReadCapacityUnits',
+      statistic: 'Sum',
+      account: { Ref: 'AWS::AccountId' },
+      region: { Ref: 'AWS::Region' },
+    });
+  });
+
+  test('can use metrics on a global table imported by arn', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+    const globalTable = GlobalTable.fromTableArn(stack, 'GlobalTable', 'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table');
+
+    // WHEN / THEN
+    expect(stack.resolve(globalTable.metricConsumedReadCapacityUnits())).toEqual({
+      period: {
+        amount: 5,
+        unit: { label: 'minutes', isoLabel: 'M', inMillis: 60000 },
+      },
+      dimensions: {
+        TableName: 'my-global-table',
+      },
+      namespace: 'AWS/DynamoDB',
+      metricName: 'ConsumedReadCapacityUnits',
+      statistic: 'Sum',
+      account: { Ref: 'AWS::AccountId' },
+      region: 'us-east-2',
+    });
+  });
+
   test('can configure alarm with global table configured in a different stack', () => {
     class FooStack extends Stack {
       public readonly globalTable: GlobalTable;
@@ -1814,13 +1934,14 @@ describe('metrics', () => {
     }
 
     class BarStack extends Stack {
+      public readonly metric: Metric;
+
       public constructor(scope: Construct, id: string, props: BarStackProps) {
         super(scope, id, props);
 
-        const metric = props.replicaTable.metricConsumedReadCapacityUnits();
-        console.log(this.resolve(metric));
+        this.metric = props.replicaTable.metricConsumedReadCapacityUnits();
         new Alarm(this, 'ReadCapacityAlarm', {
-          metric,
+          metric: this.metric,
           evaluationPeriods: 1,
           threshold: 1,
         });
@@ -1829,8 +1950,69 @@ describe('metrics', () => {
 
     const app = new App();
     const fooStack = new FooStack(app, 'FooStack', { env: { region: 'us-west-2', account: '123456789012' } });
-    new BarStack(app, 'BarStack', {
+    const barStack = new BarStack(app, 'BarStack', {
       replicaTable: fooStack.globalTable.replica('us-east-1'),
+    });
+
+    expect(barStack.resolve(barStack.metric)).toEqual({
+      period: {
+        amount: 5,
+        unit: { label: 'minutes', isoLabel: 'M', inMillis: 60000 },
+      },
+      dimensions: { TableName: 'foostackstackglobaltableb6dd9d1a6f2b84889e59' },
+      namespace: 'AWS/DynamoDB',
+      metricName: 'ConsumedReadCapacityUnits',
+      statistic: 'Sum',
+      account: '123456789012',
+      region: 'us-east-1',
+    });
+    Template.fromStack(barStack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+      ComparisonOperator: 'GreaterThanOrEqualToThreshold',
+      EvaluationPeriods: 1,
+      Metrics: [
+        {
+          AccountId: '123456789012',
+          Id: 'm1',
+          MetricStat: {
+            Metric: {
+              Dimensions: [
+                {
+                  Name: 'TableName',
+                  Value: 'foostackstackglobaltableb6dd9d1a6f2b84889e59',
+                },
+              ],
+              MetricName: 'ConsumedReadCapacityUnits',
+              Namespace: 'AWS/DynamoDB',
+            },
+            Period: 300,
+            Stat: 'Sum',
+          },
+          ReturnData: true,
+        },
+      ],
+      Threshold: 1,
+    });
+  });
+
+  testDeprecated('can use metricThrottledRequests on a global table', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+
+    // WHEN / THEN
+    expect(stack.resolve(globalTable.metricThrottledRequests())).toEqual({
+      period: {
+        amount: 5,
+        unit: { label: 'minutes', isoLabel: 'M', inMillis: 60000 },
+      },
+      dimensions: { TableName: { Ref: 'Resource' } },
+      namespace: 'AWS/DynamoDB',
+      metricName: 'ThrottledRequests',
+      statistic: 'Sum',
+      account: { Ref: 'AWS::AccountId' },
+      region: { Ref: 'AWS::Region' },
     });
   });
 
@@ -1896,5 +2078,16 @@ describe('metrics', () => {
     }).toThrow('`Operation` dimension must be passed for the `SuccessfulRequestLatency` metric');
   });
 
-  testDeprecated('throws when using metricSystemErrors without Operation dimension', () => {});
+  testDeprecated('throws when using metricSystemErrors without Operation dimension', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+
+    // WHEN / THEN
+    expect(() => {
+      globalTable.metricSystemErrors({ dimensions: { TableName: globalTable.tableName } });
+    }).toThrow("'Operation' dimension must be passed for the 'SystemErrors' metric.");
+  });
 });
