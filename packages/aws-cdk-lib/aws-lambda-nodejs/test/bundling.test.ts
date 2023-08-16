@@ -897,6 +897,21 @@ test('bundling with >= Node18 warns when sdk v3 is external', () => {
   );
 });
 
+test('bundling with NODEJS_LATEST warns when any dependencies are external', () => {
+  Bundling.bundle(stack, {
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: Runtime.NODEJS_LATEST,
+    architecture: Architecture.X86_64,
+    externalModules: ['my-external-dep'],
+  });
+
+  Annotations.fromStack(stack).hasWarning('*',
+    `When using NODEJS_LATEST the runtime version may change as new runtimes are released, this may affect the availability of packages shipped with the environment. Ensure that any external dependencies are available through layers or specify a specific runtime version.`
+  );
+});
+
 function findParentTsConfigPath(dir: string, depth: number = 1, limit: number = 5): string {
   const target = path.join(dir, 'tsconfig.json');
   if (fs.existsSync(target)) {

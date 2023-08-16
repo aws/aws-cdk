@@ -124,6 +124,10 @@ export class NodejsFunction extends lambda.Function {
 
 }
 
+/**
+ * Check if the feature flag is enabled and default to NODEJS_LATEST if so.
+ * Otherwise default to NODEJS_16_X.
+ */
 function getRuntime(scope: Construct, props: NodejsFunctionProps): lambda.Runtime {
   const defaultRuntime = FeatureFlags.of(scope).isEnabled(LAMBDA_NODEJS_USE_LATEST_RUNTIME)
     ? lambda.Runtime.NODEJS_LATEST

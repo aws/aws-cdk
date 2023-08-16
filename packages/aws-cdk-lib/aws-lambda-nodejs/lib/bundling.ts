@@ -27,7 +27,7 @@ export interface BundlingProps extends BundlingOptions {
   /**
    * The runtime of the lambda function
    */
-  readonly runtime?: Runtime;
+  readonly runtime: Runtime;
 
   /**
    * The system architecture of the lambda function
@@ -131,13 +131,21 @@ export class Bundling implements cdk.BundlingOptions {
     const versionedExternals = isV2Runtime ? ['aws-sdk'] : ['@aws-sdk/*'];
     // Don't automatically externalize any dependencies when using a `latest` runtime which may
     // update versions in the future.
-    const defaultExternals = props.runtime?.isLatest ? [] : versionedExternals;
+    const defaultExternals = props.runtime?.isVariable ? [] : versionedExternals;
     const externals = props.externalModules ?? defaultExternals;
 
+    // Warn users if they are trying to rely on global versions of the SDK that aren't available in
+    // their environment.
     if (isV2Runtime && externals.some((pkgName) => pkgName.startsWith('@aws-sdk/'))) {
       cdk.Annotations.of(scope).addWarning('If you are relying on AWS SDK v3 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 18 or higher.');
     } else if (externals.includes('aws-sdk')) {
       cdk.Annotations.of(scope).addWarning('If you are relying on AWS SDK v2 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 16 or lower.');
+    }
+
+    // Warn users if they are using a runtime that may change and are excluding any dependencies from
+    // bundling.
+    if (externals.length && props.runtime?.isVariable) {
+      cdk.Annotations.of(scope).addWarning('When using NODEJS_LATEST the runtime version may change as new runtimes are released, this may affect the availability of packages shipped with the environment. Ensure that any external dependencies are available through layers or specify a specific runtime version.')
     }
 
     this.externals = [

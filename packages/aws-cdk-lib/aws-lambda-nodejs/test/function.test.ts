@@ -294,6 +294,15 @@ test('NodejsFunction in a VPC', () => {
   });
 });
 
+test('defaults to NODEJS_16_X with feature flag disabled', () => {
+  // WHEN
+  new NodejsFunction(stack, 'handler1');
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    Runtime: 'nodejs16.x',
+  });
+});
+
 test('defaults to NODEJS_LATEST with feature flag enabled', () => {
   // GIVEN
   const appLocal = new App({
