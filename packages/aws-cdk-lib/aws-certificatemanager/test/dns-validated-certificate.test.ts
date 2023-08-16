@@ -352,3 +352,74 @@ testDeprecated('can set removal policy', () => {
     CleanupRecords: 'true',
   });
 });
+
+testDeprecated('normalizes domain names with uppercase characters for policy conditions', () => {
+  const stack = new Stack();
+
+  const exampleDotComZone = new PublicHostedZone(stack, 'ExampleDotCom', {
+    zoneName: 'example.com',
+  });
+
+  new DnsValidatedCertificate(stack, 'Certificate', {
+    domainName: 'TEST.example.com',
+    hostedZone: exampleDotComZone,
+    subjectAlternativeNames: ['TEST2.example.com'],
+    cleanupRoute53Records: true,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyName: 'CertificateCertificateRequestorFunctionServiceRoleDefaultPolicy3C8845BC',
+    Roles: [
+      {
+        Ref: 'CertificateCertificateRequestorFunctionServiceRoleC04C13DA',
+      },
+    ],
+    PolicyDocument: {
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Action: [
+            'acm:RequestCertificate',
+            'acm:DescribeCertificate',
+            'acm:DeleteCertificate',
+            'acm:AddTagsToCertificate',
+          ],
+          Effect: 'Allow',
+          Resource: '*',
+        },
+        {
+          Action: 'route53:GetChange',
+          Effect: 'Allow',
+          Resource: '*',
+        },
+        {
+          Action: 'route53:changeResourceRecordSets',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':route53:::hostedzone/',
+                { Ref: 'ExampleDotCom4D1B83AA' },
+              ],
+            ],
+          },
+          Condition: {
+            'ForAllValues:StringEquals': {
+              'route53:ChangeResourceRecordSetsRecordTypes': ['CNAME'],
+              'route53:ChangeResourceRecordSetsActions': ['UPSERT', 'DELETE'],
+            },
+            'ForAllValues:StringLike': {
+              'route53:ChangeResourceRecordSetsNormalizedRecordNames': [
+                '*.test.example.com',
+                '*.test2.example.com',
+              ],
+            },
+          },
+        },
+      ],
+    },
+  });
+});

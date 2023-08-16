@@ -177,8 +177,9 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
 
 // https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/specifying-rrset-conditions.html
 function addWildcard(domainName: string) {
-  if (domainName.startsWith('*.')) {
-    return domainName;
+  const domain = domainName.toLowerCase();
+  if (domain.startsWith('*.')) {
+    return domain;
   }
-  return `*.${domainName}`;
+  return `*.${domain}`;
 }
