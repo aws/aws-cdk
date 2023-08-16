@@ -18,7 +18,7 @@ import { LogRetentionRetryOptions } from './log-retention';
 import { ParamsAndSecretsLayerVersion } from './params-and-secrets-layers';
 import { Runtime, RuntimeFamily } from './runtime';
 import { RuntimeManagementMode } from './runtime-management';
-import { SnapStartConfig } from './snapstart-config';
+import { SnapStartConf } from './snapstart-config';
 import { addAlias } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import { IProfilingGroup, ProfilingGroup, ComputePlatform } from '../../aws-codeguruprofiler';
@@ -232,7 +232,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   *
   * @default - No snapstart
   */
-  readonly snapStart?: SnapStartConfig;
+  readonly snapStart?: SnapStartConf;
 
   /**
    * Enable profiling.
@@ -1304,7 +1304,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     // so it can't be checked at function set up time
     // SnapStart supports the Java 11 and Java 17 (java11 and java17) managed runtimes.
     // See https://docs.aws.amazon.com/lambda/latest/dg/snapstart.html
-    if (props.snapStart != SnapStartConfig.ON_PUBLISHED_VERSIONS) {
+    if (props.snapStart != SnapStartConf.ON_PUBLISHED_VERSIONS) {
       throw new Error('SnapStart currently only support published versions');
     }
 
@@ -1324,7 +1324,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       throw new Error('SnapStart is currently not supported using more than 512 MiB Ephemeral Storage');
     }
 
-    return props.snapStart.snapStartConfig;
+    return props.snapStart._render();
   }
 
   private isQueue(deadLetterQueue: sqs.IQueue | sns.ITopic): deadLetterQueue is sqs.IQueue {

@@ -3013,7 +3013,7 @@ describe('function', () => {
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         handler: 'example.Handler::handleRequest',
         runtime: lambda.Runtime.JAVA_11,
-        snapStart: lambda.SnapStartConfig.ON_PUBLISHED_VERSIONS,
+        snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
       });
 
       //THEN
@@ -3036,7 +3036,7 @@ describe('function', () => {
         code: new lambda.InlineCode('foo'),
         handler: 'bar',
         runtime: lambda.Runtime.NODEJS_14_X,
-        snapStart: lambda.SnapStartConfig.ON_PUBLISHED_VERSIONS,
+        snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
       })).toThrowError('SnapStart currently only support Java 11/Java 17 runtime');
     });
 
@@ -3048,7 +3048,7 @@ describe('function', () => {
         handler: 'example.Handler::handleRequest',
         runtime: lambda.Runtime.JAVA_11,
         architecture: lambda.Architecture.ARM_64,
-        snapStart: lambda.SnapStartConfig.ON_PUBLISHED_VERSIONS,
+        snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
       })).toThrowError('SnapStart is currently not supported on Arm_64');
     });
 
@@ -3070,7 +3070,7 @@ describe('function', () => {
         handler: 'example.Handler::handleRequest',
         runtime: lambda.Runtime.JAVA_11,
         filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
-        snapStart: lambda.SnapStartConfig.ON_PUBLISHED_VERSIONS,
+        snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
       })).toThrowError('SnapStart is currently not supported using EFS');
     });
 
@@ -3082,7 +3082,7 @@ describe('function', () => {
         handler: 'example.Handler::handleRequest',
         runtime: lambda.Runtime.JAVA_11,
         ephemeralStorageSize: Size.mebibytes(1024),
-        snapStart: lambda.SnapStartConfig.ON_PUBLISHED_VERSIONS,
+        snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
       })).toThrowError('SnapStart is currently not supported using more than 512 MiB Ephemeral Storage');
     });
   });
