@@ -68,7 +68,7 @@ test('NodejsFunction with .ts handler', () => {
   // WHEN
   new NodejsFunction(stack, 'handler1');
 
-  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
+  expect(Bundling.bundle).toHaveBeenCalledWith(stack, expect.objectContaining({
     entry: expect.stringContaining('function.test.handler1.ts'), // Automatically finds .ts handler file
   }));
 
@@ -84,7 +84,7 @@ test('NodejsFunction with overridden handler - no dots', () => {
     handler: 'myHandler',
   });
 
-  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
+  expect(Bundling.bundle).toHaveBeenCalledWith(stack, expect.objectContaining({
     entry: expect.stringContaining('function.test.handler1.ts'), // Automatically finds .ts handler file
   }));
 
@@ -100,7 +100,7 @@ test('NodejsFunction with overridden handler - with dots', () => {
     handler: 'run.sh',
   });
 
-  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
+  expect(Bundling.bundle).toHaveBeenCalledWith(stack, expect.objectContaining({
     entry: expect.stringContaining('function.test.handler1.ts'), // Automatically finds .ts handler file
   }));
 
@@ -115,7 +115,7 @@ test('NodejsFunction with .js handler', () => {
   new NodejsFunction(stack, 'handler2');
 
   // THEN
-  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
+  expect(Bundling.bundle).toHaveBeenCalledWith(stack, expect.objectContaining({
     entry: expect.stringContaining('function.test.handler2.js'), // Automatically finds .ts handler file
   }));
 });
@@ -125,7 +125,7 @@ test('NodejsFunction with .mjs handler', () => {
   new NodejsFunction(stack, 'handler3');
 
   // THEN
-  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
+  expect(Bundling.bundle).toHaveBeenCalledWith(stack, expect.objectContaining({
     entry: expect.stringContaining('function.test.handler3.mjs'), // Automatically finds .mjs handler file
   }));
 });
@@ -135,7 +135,7 @@ test('NodejsFunction with .mts handler', () => {
   new NodejsFunction(stack, 'handler4');
 
   // THEN
-  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
+  expect(Bundling.bundle).toHaveBeenCalledWith(stack, expect.objectContaining({
     entry: expect.stringContaining('function.test.handler4.mts'), // Automatically finds .mts handler file
   }));
 });
@@ -145,7 +145,7 @@ test('NodejsFunction with .cts handler', () => {
   new NodejsFunction(stack, 'handler5');
 
   // THEN
-  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
+  expect(Bundling.bundle).toHaveBeenCalledWith(stack, expect.objectContaining({
     entry: expect.stringContaining('function.test.handler5.cts'), // Automatically finds .cts handler file
   }));
 });
@@ -155,7 +155,7 @@ test('NodejsFunction with .cjs handler', () => {
   new NodejsFunction(stack, 'handler6');
 
   // THEN
-  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
+  expect(Bundling.bundle).toHaveBeenCalledWith(stack, expect.objectContaining({
     entry: expect.stringContaining('function.test.handler6.cjs'), // Automatically finds .cjs handler file
   }));
 });
@@ -170,7 +170,7 @@ test('NodejsFunction with container env vars', () => {
     },
   });
 
-  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
+  expect(Bundling.bundle).toHaveBeenCalledWith(stack, expect.objectContaining({
     environment: {
       KEY: 'VALUE',
     },
@@ -224,7 +224,7 @@ test('resolves depsLockFilePath to an absolute path', () => {
     depsLockFilePath: './package.json',
   });
 
-  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
+  expect(Bundling.bundle).toHaveBeenCalledWith(stack, expect.objectContaining({
     depsLockFilePath: bockPath`/home/project/package.json`,
   }));
 });
@@ -235,7 +235,7 @@ test('resolves entry to an absolute path', () => {
     entry: 'aws-lambda-nodejs/lib/index.ts',
   });
 
-  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
+  expect(Bundling.bundle).toHaveBeenCalledWith(stack, expect.objectContaining({
     entry: bockPath`/home/project/aws-lambda-nodejs/lib/index.ts`,
   }));
 });
