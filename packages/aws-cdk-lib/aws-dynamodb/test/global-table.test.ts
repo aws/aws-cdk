@@ -1400,6 +1400,7 @@ describe('secondary indexes', () => {
     // WHEN
     new GlobalTable(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
+      sortKey: { name: 'sk', type: AttributeType.STRING },
       localSecondaryIndexes: [
         {
           indexName: 'lsi1',
@@ -1416,9 +1417,11 @@ describe('secondary indexes', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
       KeySchema: [
         { AttributeName: 'pk', KeyType: 'HASH' },
+        { AttributeName: 'sk', KeyType: 'RANGE' },
       ],
       AttributeDefinitions: [
         { AttributeName: 'pk', AttributeType: 'S' },
+        { AttributeName: 'sk', AttributeType: 'S' },
         { AttributeName: 'lsi-sk-1', AttributeType: 'S' },
         { AttributeName: 'lsi-sk-2', AttributeType: 'N' },
       ],
@@ -1454,6 +1457,7 @@ describe('secondary indexes', () => {
     // WHEN
     new GlobalTable(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
+      sortKey: { name: 'sk', type: AttributeType.STRING },
       localSecondaryIndexes: [
         {
           indexName: 'lsi1',
@@ -1470,9 +1474,11 @@ describe('secondary indexes', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
       KeySchema: [
         { AttributeName: 'pk', KeyType: 'HASH' },
+        { AttributeName: 'sk', KeyType: 'RANGE' },
       ],
       AttributeDefinitions: [
         { AttributeName: 'pk', AttributeType: 'S' },
+        { AttributeName: 'sk', AttributeType: 'S' },
         { AttributeName: 'lsi-sk', AttributeType: 'S' },
       ],
       LocalSecondaryIndexes: [
@@ -1507,6 +1513,7 @@ describe('secondary indexes', () => {
     // WHEN
     new GlobalTable(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
+      sortKey: { name: 'sk', type: AttributeType.STRING },
       globalSecondaryIndexes: [
         {
           indexName: 'gsi',
@@ -1525,9 +1532,11 @@ describe('secondary indexes', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
       KeySchema: [
         { AttributeName: 'pk', KeyType: 'HASH' },
+        { AttributeName: 'sk', KeyType: 'RANGE' },
       ],
       AttributeDefinitions: [
         { AttributeName: 'pk', AttributeType: 'S' },
+        { AttributeName: 'sk', AttributeType: 'S' },
         { AttributeName: 'gsi-pk', AttributeType: 'S' },
         { AttributeName: 'lsi-sk', AttributeType: 'S' },
       ],
@@ -1749,6 +1758,7 @@ describe('secondary indexes', () => {
     // WHEN
     new GlobalTable(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
+      sortKey: { name: 'sk', type: AttributeType.STRING },
       localSecondaryIndexes: [
         {
           indexName: 'lsi',
@@ -1762,9 +1772,11 @@ describe('secondary indexes', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
       KeySchema: [
         { AttributeName: 'pk', KeyType: 'HASH' },
+        { AttributeName: 'sk', KeyType: 'RANGE' },
       ],
       AttributeDefinitions: [
         { AttributeName: 'pk', AttributeType: 'S' },
+        { AttributeName: 'sk', AttributeType: 'S' },
         { AttributeName: 'lsi-sk', AttributeType: 'S' },
       ],
       LocalSecondaryIndexes: [
@@ -1789,6 +1801,7 @@ describe('secondary indexes', () => {
     // WHEN
     new GlobalTable(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
+      sortKey: { name: 'sk', type: AttributeType.STRING },
       localSecondaryIndexes: [
         {
           indexName: 'lsi',
@@ -1803,9 +1816,11 @@ describe('secondary indexes', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
       KeySchema: [
         { AttributeName: 'pk', KeyType: 'HASH' },
+        { AttributeName: 'sk', KeyType: 'RANGE' },
       ],
       AttributeDefinitions: [
         { AttributeName: 'pk', AttributeType: 'S' },
+        { AttributeName: 'sk', AttributeType: 'S' },
         { AttributeName: 'lsi-sk', AttributeType: 'S' },
       ],
       LocalSecondaryIndexes: [
@@ -1854,6 +1869,7 @@ describe('secondary indexes', () => {
     expect(() => {
       new GlobalTable(stack, 'GlobalTable', {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
+        sortKey: { name: 'sk', type: AttributeType.STRING },
         localSecondaryIndexes: [
           {
             indexName: 'lsi',
@@ -1876,6 +1892,7 @@ describe('secondary indexes', () => {
     expect(() => {
       new GlobalTable(stack, 'GlobalTable', {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
+        sortKey: { name: 'sk', type: AttributeType.STRING },
         globalSecondaryIndexes: [
           {
             indexName: 'secondary-index',
@@ -1922,6 +1939,7 @@ describe('secondary indexes', () => {
     expect(() => {
       new GlobalTable(stack, 'GlobalTable', {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
+        sortKey: { name: 'sk', type: AttributeType.STRING },
         localSecondaryIndexes: [
           {
             indexName: 'lsi1',
@@ -1944,6 +1962,7 @@ describe('secondary indexes', () => {
     expect(() => {
       new GlobalTable(stack, 'GlobalTable', {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
+        sortKey: { name: 'sk', type: AttributeType.STRING },
         globalSecondaryIndexes: [
           {
             indexName: 'gsi',
@@ -1986,6 +2005,7 @@ describe('secondary indexes', () => {
     expect(() => {
       new GlobalTable(stack, 'GlobalTable', {
         partitionKey: { name: 'key', type: AttributeType.STRING },
+        sortKey: { name: 'sk', type: AttributeType.STRING },
         localSecondaryIndexes: [
           {
             indexName: 'lsi',
@@ -2071,6 +2091,7 @@ describe('secondary indexes', () => {
     expect(() => {
       new GlobalTable(stack, 'GlobalTable', {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
+        sortKey: { name: 'sk', type: AttributeType.STRING },
         localSecondaryIndexes,
       });
     }).toThrow('You may not provide more than 5 local secondary indexes to a Global Table');
@@ -2165,6 +2186,7 @@ describe('secondary indexes', () => {
     expect(() => {
       new GlobalTable(stack, 'GlobalTable', {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
+        sortKey: { name: 'sk', type: AttributeType.STRING },
         localSecondaryIndexes: [
           {
             indexName: 'lsi',
@@ -2184,6 +2206,7 @@ describe('secondary indexes', () => {
     expect(() => {
       new GlobalTable(stack, 'GlobalTable', {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
+        sortKey: { name: 'sk', type: AttributeType.STRING },
         localSecondaryIndexes: [
           {
             indexName: 'lsi',
@@ -2204,6 +2227,7 @@ describe('secondary indexes', () => {
     expect(() => {
       new GlobalTable(stack, 'GlobalTable', {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
+        sortKey: { name: 'sk', type: AttributeType.STRING },
         localSecondaryIndexes: [
           {
             indexName: 'lsi',
@@ -2214,6 +2238,24 @@ describe('secondary indexes', () => {
         ],
       });
     }).toThrow('Non-key attributes should not be specified when not using INCLUDE projection type');
+  });
+
+  test('throws if local secondary index is specified without global table sort key', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+
+    // WHEN / THEN
+    expect(() => {
+      new GlobalTable(stack, 'GlobalTable', {
+        partitionKey: { name: 'pk', type: AttributeType.STRING },
+        localSecondaryIndexes: [
+          {
+            indexName: 'lsi',
+            sortKey: { name: 'sk', type: AttributeType.NUMBER },
+          },
+        ],
+      });
+    }).toThrow('The Global Table must have a sort key in order to add local secondary indexes');
   });
 });
 

@@ -415,6 +415,7 @@ export class GlobalTable extends GlobalTableBase {
 
   private readonly billingMode: string;
   private readonly partitionKey: Attribute;
+  private readonly sortKey?: Attribute;
   private readonly tableOptions: TableOptionsV2;
   private readonly encryption?: TableEncryptionV2;
 
@@ -436,6 +437,7 @@ export class GlobalTable extends GlobalTableBase {
 
     this.tableOptions = props;
     this.partitionKey = props.partitionKey;
+    this.sortKey = props.sortKey;
     this.region = this.stack.region;
 
     this.encryption = props.encryption;
@@ -817,6 +819,10 @@ export class GlobalTable extends GlobalTableBase {
 
   private validateLocalSecondaryIndex(props: LocalSecondaryIndexProps) {
     this.validateIndexName(props.indexName);
+
+    if (!this.sortKey) {
+      throw new Error('The Global Table must have a sort key in order to add local secondary indexes');
+    }
 
     if (this.localSecondaryIndexes.size === MAX_LSI_COUNT) {
       throw new Error(`You may not provide more than ${MAX_LSI_COUNT} local secondary indexes to a Global Table`);
