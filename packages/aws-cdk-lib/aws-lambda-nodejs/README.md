@@ -97,7 +97,7 @@ This can be set via `lambda.Runtime`:
 ```ts
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 
-new nodejs.Nodejsfunction(this, 'my-function', {
+new nodejs.NodejsFunction(this, 'my-function', {
     runtime: Runtime.NODEJS_18_X,
 });
 ```
