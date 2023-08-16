@@ -149,7 +149,7 @@ compatible environment. This is usually the case with modules using native depen
 
 ### Externals
 
-When the `NODEJS_LATEST` runtime is used, no modules are excluded from bundling by default. This is because the the runtime
+When the `NODEJS_LATEST` runtime is used, no modules are excluded from bundling by default. This is because the runtime
 will change as new NodeJs versions become available in lambda, which may change what packages are vended as part of the
 environment.
 
