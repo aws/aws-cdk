@@ -336,12 +336,20 @@ export class GlobalTable extends GlobalTableBase {
       public readonly tableStreamArn?: string;
       public readonly encryptionKey?: IKey;
 
+      protected readonly region: string;
       protected readonly hasIndex = (attrs.grantIndexPermissions ?? false) ||
         (attrs.globalIndexes ?? []).length > 0 ||
         (attrs.localIndexes ?? []).length > 0;
 
       public constructor(tableArn: string, tableName: string, tableId?: string, tableStreamArn?: string) {
         super(scope, id);
+
+        const resourceRegion = stack.splitArn(tableArn, ArnFormat.SLASH_RESOURCE_NAME).region;
+        if (!resourceRegion) {
+          throw new Error('Table ARN must be of the form: arn:<partition>:dynamodb:<region>:<account>:table/<table-name>');
+        }
+
+        this.region = resourceRegion;
         this.tableArn = tableArn;
         this.tableName = tableName;
         this.tableId = tableId;
@@ -403,6 +411,8 @@ export class GlobalTable extends GlobalTableBase {
 
   public readonly encryptionKey?: IKey;
 
+  protected readonly region: string;
+
   private readonly billingMode: string;
   private readonly partitionKey: Attribute;
   private readonly tableOptions: TableOptionsV2;
@@ -426,6 +436,7 @@ export class GlobalTable extends GlobalTableBase {
 
     this.tableOptions = props;
     this.partitionKey = props.partitionKey;
+    this.region = this.stack.region;
 
     this.encryption = props.encryption;
     this.encryptionKey = this.encryption?.tableKey;

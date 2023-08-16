@@ -53,6 +53,8 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
    */
   public abstract readonly encryptionKey?: IKey;
 
+  protected abstract readonly region: string;
+
   protected readonly replicaKeys: { [region: string]: IKey } = {};
 
   protected readonly replicaArns: string[] = [];
@@ -209,12 +211,13 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
    * You can customize this by using the `statistic` and `period` properties.
    */
   public metric(metricName: string, props?: MetricOptions): Metric {
-    return new Metric({
+    const metricProps: MetricProps = {
       namespace: 'AWS/DynamoDB',
       metricName,
       dimensionsMap: { TableName: this.tableName },
       ...props,
-    }).attachTo(this);
+    };
+    return this.configureMetric(metricProps);
   }
 
   /**
@@ -224,7 +227,11 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
    * You can customize this by using the `statistic` and `period` properties.
    */
   public metricConsumedReadCapacityUnits(props?: MetricOptions): Metric {
-    return this.cannedMetric(DynamoDBMetrics.consumedReadCapacityUnitsSum, props);
+    const metricProps: MetricProps = {
+      ...DynamoDBMetrics.consumedReadCapacityUnitsSum({ TableName: this.tableName }),
+      ...props,
+    };
+    return this.configureMetric(metricProps);
   }
 
   /**
@@ -234,7 +241,11 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
    * You can customize this by using the `statistic` and `period` properties.
    */
   public metricConsumedWriteCapacityUnits(props?: MetricOptions): Metric {
-    return this.cannedMetric(DynamoDBMetrics.consumedWriteCapacityUnitsSum, props);
+    const metricProps: MetricProps = {
+      ...DynamoDBMetrics.consumedWriteCapacityUnitsSum({ TableName: this.tableName }),
+      ...props,
+    };
+    return this.configureMetric(metricProps);
   }
 
   /**
@@ -280,11 +291,12 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
       Operation: props.dimensionsMap?.Operation ?? props.dimensions?.Operation,
     };
 
-    return new Metric({
+    const metricProps: MetricProps = {
       ...DynamoDBMetrics.successfulRequestLatencyAverage(dimensionsMap),
       ...props,
       dimensionsMap,
-    }).attachTo(this);
+    };
+    return this.configureMetric(metricProps);
   }
 
   /**
@@ -294,10 +306,11 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
    * You can customize this by using the `statistic` and `period` properties.
    */
   public metricThrottledRequestsForOperation(operation: string, props?: OperationsMetricOptions): IMetric {
-    return new Metric({
+    const metricProps: MetricProps = {
       ...DynamoDBMetrics.throttledRequestsSum({ Operation: operation, TableName: this.tableName }),
       ...props,
-    }).attachTo(this);
+    };
+    return this.configureMetric(metricProps);
   }
 
   /**
@@ -451,10 +464,25 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
     throw new Error(`Unexpected 'action', ${options.tableActions || options.streamActions}`);
   }
 
-  private cannedMetric(fn: (dims: { TableName: string }) => MetricProps, props?: MetricOptions): Metric {
+  private configureMetric(props: MetricProps) {
+    if (!props?.region && !props?.account) {
+      return new Metric({
+        region: this.region,
+        account: this.stack.account,
+        ...props,
+      });
+    }
+
+    if (!props?.region) {
+      return new Metric({
+        region: this.region,
+        ...props,
+      });
+    }
+
     return new Metric({
-      ...fn({ TableName: this.tableName }),
+      account: this.stack.account,
       ...props,
-    }).attachTo(this);
+    });
   }
 }

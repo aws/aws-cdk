@@ -1,9 +1,11 @@
 import { Construct } from 'constructs';
 import { Template } from '../../assertions';
+import { Alarm } from '../../aws-cloudwatch';
 import { User } from '../../aws-iam';
 import { Key } from '../../aws-kms';
 import { Stack, StackProps, App } from '../../core';
-import { GlobalTable, AttributeType, TableEncryptionV2, ITable } from '../lib';
+import { GlobalTable, AttributeType, TableEncryptionV2, ITable, IGlobalTable, Operation } from '../lib';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 
 function replicaResourceArns(replicaRegions: string[]) {
   const resourceArns: { [key: string]: any }[] = [];
@@ -1578,4 +1580,321 @@ describe('grants', () => {
   });
 });
 
-describe('metrics', () => {});
+describe('metrics', () => {
+  test('can use metricConsumedReadCapacityUnits on a global table', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+
+    // WHEN / THEN
+    expect(stack.resolve(globalTable.metricConsumedReadCapacityUnits())).toEqual({
+      period: {
+        amount: 5,
+        unit: { label: 'minutes', isoLabel: 'M', inMillis: 60000 },
+      },
+      dimensions: {
+        TableName: {
+          Ref: 'Resource',
+        },
+      },
+      namespace: 'AWS/DynamoDB',
+      metricName: 'ConsumedReadCapacityUnits',
+      statistic: 'Sum',
+      account: { Ref: 'AWS::AccountId' },
+      region: { Ref: 'AWS::Region' },
+    });
+  });
+
+  test('can use metricConsumedWriteCapacityUnits on a global table', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+
+    // WHEN / THEN
+    expect(stack.resolve(globalTable.metricConsumedWriteCapacityUnits())).toEqual({
+      period: {
+        amount: 5,
+        unit: { label: 'minutes', isoLabel: 'M', inMillis: 60000 },
+      },
+      dimensions: {
+        TableName: {
+          Ref: 'Resource',
+        },
+      },
+      namespace: 'AWS/DynamoDB',
+      metricName: 'ConsumedWriteCapacityUnits',
+      statistic: 'Sum',
+      account: { Ref: 'AWS::AccountId' },
+      region: { Ref: 'AWS::Region' },
+    });
+  });
+
+  test('using metricSystemErrorsForOperations with no operations will default to all', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+
+    // WHEN / THEN
+    expect(Object.keys(globalTable.metricSystemErrorsForOperations().toMetricConfig().mathExpression!.usingMetrics)).toEqual([
+      'getitem',
+      'batchgetitem',
+      'scan',
+      'query',
+      'getrecords',
+      'putitem',
+      'deleteitem',
+      'updateitem',
+      'batchwriteitem',
+      'transactwriteitems',
+      'transactgetitems',
+      'executetransaction',
+      'batchexecutestatement',
+      'executestatement',
+    ]);
+  });
+
+  test('can use metricSystemErrorsForOperations on a global table', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+
+    // WHEN / THEN
+    expect(stack.resolve(globalTable.metricSystemErrorsForOperations({ operations: [Operation.GET_ITEM, Operation.PUT_ITEM] }))).toEqual({
+      expression: 'getitem + putitem',
+      label: 'Sum of errors across all operations',
+      period: {
+        amount: 5,
+        unit: { label: 'minutes', isoLabel: 'M', inMillis: 60000 },
+      },
+      usingMetrics: {
+        getitem: {
+          account: { Ref: 'AWS::AccountId' },
+          region: { Ref: 'AWS::Region' },
+          dimensions: {
+            Operation: 'GetItem',
+            TableName: {
+              Ref: 'Resource',
+            },
+          },
+          metricName: 'SystemErrors',
+          namespace: 'AWS/DynamoDB',
+          period: {
+            amount: 5,
+            unit: { label: 'minutes', isoLabel: 'M', inMillis: 60000 },
+          },
+          statistic: 'Sum',
+        },
+        putitem: {
+          account: { Ref: 'AWS::AccountId' },
+          region: { Ref: 'AWS::Region' },
+          dimensions: {
+            Operation: 'PutItem',
+            TableName: {
+              Ref: 'Resource',
+            },
+          },
+          metricName: 'SystemErrors',
+          namespace: 'AWS/DynamoDB',
+          period: {
+            amount: 5,
+            unit: { label: 'minutes', isoLabel: 'M', inMillis: 60000 },
+          },
+          statistic: 'Sum',
+        },
+      },
+    });
+  });
+
+  test('can use metricUserErrors on a global table', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+
+    // WHEN / THEN
+    expect(stack.resolve(globalTable.metricUserErrors())).toEqual({
+      period: {
+        amount: 5,
+        unit: { label: 'minutes', isoLabel: 'M', inMillis: 60000 },
+      },
+      dimensions: {},
+      namespace: 'AWS/DynamoDB',
+      metricName: 'UserErrors',
+      statistic: 'Sum',
+      account: { Ref: 'AWS::AccountId' },
+      region: { Ref: 'AWS::Region' },
+    });
+  });
+
+  test('can use metricConditionalCheckFailedRequests on a global table', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+
+    // WHEN / THEN
+    expect(stack.resolve(globalTable.metricConditionalCheckFailedRequests())).toEqual({
+      period: {
+        amount: 5,
+        unit: { label: 'minutes', isoLabel: 'M', inMillis: 60000 },
+      },
+      dimensions: { TableName: { Ref: 'Resource' } },
+      namespace: 'AWS/DynamoDB',
+      metricName: 'ConditionalCheckFailedRequests',
+      statistic: 'Sum',
+      account: { Ref: 'AWS::AccountId' },
+      region: { Ref: 'AWS::Region' },
+    });
+  });
+
+  test('can use metricSuccessfulRequestLatency without TableName dimension', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+
+    // WHEN / THEN
+    expect(globalTable.metricSuccessfulRequestLatency({ dimensionsMap: { Operation: 'GetItem' } }).dimensions).toEqual({
+      TableName: globalTable.tableName,
+      Operation: 'GetItem',
+    });
+  });
+
+  test('can use metricSuccessfulRequestLatency on a global table', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+
+    // WHEN / THEN
+    expect(stack.resolve(globalTable.metricSuccessfulRequestLatency({
+      dimensionsMap: { TableName: globalTable.tableName, Operation: 'GetItem' },
+    }))).toEqual({
+      period: {
+        amount: 5,
+        unit: { label: 'minutes', isoLabel: 'M', inMillis: 60000 },
+      },
+      dimensions: { TableName: { Ref: 'Resource' }, Operation: 'GetItem' },
+      namespace: 'AWS/DynamoDB',
+      metricName: 'SuccessfulRequestLatency',
+      statistic: 'Average',
+      account: { Ref: 'AWS::AccountId' },
+      region: { Ref: 'AWS::Region' },
+    });
+  });
+
+  test('can configure alarm with global table configured in a different stack', () => {
+    class FooStack extends Stack {
+      public readonly globalTable: GlobalTable;
+
+      public constructor(scope: Construct, id: string, props: StackProps) {
+        super(scope, id, props);
+
+        this.globalTable = new GlobalTable(this, 'GlobalTable', {
+          partitionKey: { name: 'pk', type: AttributeType.STRING },
+          replicas: [{ region: 'us-east-1' }],
+        });
+      }
+    }
+
+    interface BarStackProps extends StackProps {
+      readonly replicaTable: IGlobalTable;
+    }
+
+    class BarStack extends Stack {
+      public constructor(scope: Construct, id: string, props: BarStackProps) {
+        super(scope, id, props);
+
+        const metric = props.replicaTable.metricConsumedReadCapacityUnits();
+        console.log(this.resolve(metric));
+        new Alarm(this, 'ReadCapacityAlarm', {
+          metric,
+          evaluationPeriods: 1,
+          threshold: 1,
+        });
+      }
+    }
+
+    const app = new App();
+    const fooStack = new FooStack(app, 'FooStack', { env: { region: 'us-west-2', account: '123456789012' } });
+    new BarStack(app, 'BarStack', {
+      replicaTable: fooStack.globalTable.replica('us-east-1'),
+    });
+  });
+
+  testDeprecated('can use metricSystemErrors without TableName dimension', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+
+    // WHEN / THEN
+    expect(globalTable.metricSystemErrors({ dimensions: { Operation: 'GetItem' } }).dimensions).toEqual({
+      TableName: globalTable.tableName,
+      Operation: 'GetItem',
+    });
+  });
+
+  testDeprecated('can use metricSystemErrors on a global table', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+
+    // WHEN / THEN
+    expect(stack.resolve(globalTable.metricSystemErrors({ dimensionsMap: { TableName: globalTable.tableName, Operation: 'GetItem' } }))).toEqual({
+      period: {
+        amount: 5,
+        unit: { label: 'minutes', isoLabel: 'M', inMillis: 60000 },
+      },
+      dimensions: { TableName: { Ref: 'Resource' }, Operation: 'GetItem' },
+      namespace: 'AWS/DynamoDB',
+      metricName: 'SystemErrors',
+      statistic: 'Sum',
+      account: { Ref: 'AWS::AccountId' },
+      region: { Ref: 'AWS::Region' },
+    });
+  });
+
+  test('throws when using metricUserErrors with dimensions', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+
+    // WHEN / THEN
+    expect(() => {
+      globalTable.metricUserErrors({ dimensions: { TableName: globalTable.tableName } });
+    }).toThrow('`dimensions` is not supported for the `UserErrors` metric');
+  });
+
+  test('throws when using metricSuccessfulRequestLatency without Operation dimension', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+
+    // WHEN / THEN
+    expect(() => {
+      globalTable.metricSuccessfulRequestLatency({ dimensionsMap: { TableName: globalTable.tableName } });
+    }).toThrow('`Operation` dimension must be passed for the `SuccessfulRequestLatency` metric');
+  });
+
+  testDeprecated('throws when using metricSystemErrors without Operation dimension', () => {});
+});
