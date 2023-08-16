@@ -8,6 +8,12 @@ export interface LambdaRuntimeProps {
   readonly supportsInlineCode?: boolean;
 
   /**
+   * Whether the runtime enum is meant to change over time, IE NODEJS_LATEST.
+   * @default false
+   */
+  readonly isVariable?: boolean;
+
+  /**
    * The Docker image name to be used for bundling in this runtime.
    * @default - the latest docker image "amazon/public.ecr.aws/sam/build-<runtime>" from https://gallery.ecr.aws
    */
@@ -90,6 +96,11 @@ export class Runtime {
    * The NodeJS 18.x runtime (nodejs18.x)
    */
   public static readonly NODEJS_18_X = new Runtime('nodejs18.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
+
+  /**
+   * The latest NodeJS version currently available
+   */
+  public static readonly NODEJS_LATEST = new Runtime('nodejs18.x', RuntimeFamily.NODEJS, { supportsInlineCode: true, isVariable: true });
 
   /**
    * The Python 2.7 runtime (python2.7)
@@ -274,10 +285,16 @@ export class Runtime {
    */
   public readonly bundlingImage: DockerImage;
 
+  /**
+   * Enabled for runtime enums that always target the latest available.
+   */
+  public readonly isVariable: Boolean;
+
   constructor(name: string, family?: RuntimeFamily, props: LambdaRuntimeProps = {}) {
     this.name = name;
     this.supportsInlineCode = !!props.supportsInlineCode;
     this.family = family;
+    this.isVariable = !!props.isVariable;
 
     const imageName = props.bundlingDockerImage ?? `public.ecr.aws/sam/build-${name}`;
     this.bundlingDockerImage = DockerImage.fromRegistry(imageName);
