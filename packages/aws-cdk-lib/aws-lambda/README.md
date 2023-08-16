@@ -913,7 +913,7 @@ const fn = new lambda.Function(this, 'MyFunction', {
   code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
   runtime: lambda.Runtime.JAVA_11,
   handler: 'example.Handler::handleRequest',
-  snapStart: lambda.SnapStartConfig.ON_PUBLISHED_VERSIONS,
+  snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
   });
 
 const version = fn.currentVersion;
