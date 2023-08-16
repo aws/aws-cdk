@@ -410,7 +410,6 @@ test('Cannot create a SageMaker train task with both algorithm name and image na
 });
 
 test('Cannot create a SageMaker train task with both algorithm name and image name defined', () => {
-
   expect(() => new SageMakerCreateTrainingJob(stack, 'SageMakerTrainingTask', {
     trainingJobName: 'myTrainJob',
     algorithmSpecification: {
@@ -436,7 +435,6 @@ test('Cannot create a SageMaker train task with both algorithm name and image na
 });
 
 test('create a SageMaker train task with trainingImage', () => {
-
   const task = new SageMakerCreateTrainingJob(stack, 'SageMakerTrainingTask', {
     trainingJobName: 'myTrainJob',
     algorithmSpecification: {
@@ -470,7 +468,6 @@ test('create a SageMaker train task with trainingImage', () => {
 });
 
 test('create a SageMaker train task with image URI algorithmName', () => {
-
   const task = new SageMakerCreateTrainingJob(stack, 'SageMakerTrainingTask', {
     trainingJobName: 'myTrainJob',
     algorithmSpecification: {
@@ -503,7 +500,6 @@ test('create a SageMaker train task with image URI algorithmName', () => {
 });
 
 test('Cannot create a SageMaker train task when algorithmName length is 171 or more', () => {
-
   expect(() => new SageMakerCreateTrainingJob(stack, 'SageMakerTrainingTask', {
     trainingJobName: 'myTrainJob',
     algorithmSpecification: {
@@ -528,7 +524,6 @@ test('Cannot create a SageMaker train task when algorithmName length is 171 or m
 });
 
 test('Cannot create a SageMaker train task with incorrect algorithmName', () => {
-
   expect(() => new SageMakerCreateTrainingJob(stack, 'SageMakerTrainingTask', {
     trainingJobName: 'myTrainJob',
     algorithmSpecification: {
