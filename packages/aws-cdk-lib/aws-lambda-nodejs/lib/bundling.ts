@@ -145,7 +145,7 @@ export class Bundling implements cdk.BundlingOptions {
     // Warn users if they are using a runtime that may change and are excluding any dependencies from
     // bundling.
     if (externals.length && props.runtime?.isVariable) {
-      cdk.Annotations.of(scope).addWarning('When using NODEJS_LATEST the runtime version may change as new runtimes are released, this may affect the availability of packages shipped with the environment. Ensure that any external dependencies are available through layers or specify a specific runtime version.')
+      cdk.Annotations.of(scope).addWarning('When using NODEJS_LATEST the runtime version may change as new runtimes are released, this may affect the availability of packages shipped with the environment. Ensure that any external dependencies are available through layers or specify a specific runtime version.');
     }
 
     this.externals = [

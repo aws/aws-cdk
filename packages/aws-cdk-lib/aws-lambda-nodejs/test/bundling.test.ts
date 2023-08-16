@@ -908,7 +908,7 @@ test('bundling with NODEJS_LATEST warns when any dependencies are external', () 
   });
 
   Annotations.fromStack(stack).hasWarning('*',
-    `When using NODEJS_LATEST the runtime version may change as new runtimes are released, this may affect the availability of packages shipped with the environment. Ensure that any external dependencies are available through layers or specify a specific runtime version.`
+    'When using NODEJS_LATEST the runtime version may change as new runtimes are released, this may affect the availability of packages shipped with the environment. Ensure that any external dependencies are available through layers or specify a specific runtime version.',
   );
 });
 
