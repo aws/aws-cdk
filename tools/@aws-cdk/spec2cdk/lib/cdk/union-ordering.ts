@@ -114,7 +114,7 @@ function requiredPropertyNames(t: TypeDefinition): Set<string> {
 
 function assertTruthy<T>(x: T): NonNullable<T> {
   if (x == null) {
-    throw new Error('Expected truhty value');
+    throw new Error('Expected truthy value');
   }
   return x;
 }
