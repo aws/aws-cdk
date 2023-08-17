@@ -55,7 +55,7 @@ export abstract class Billing {
     }) (BillingMode.PROVISIONED);
   }
 
-  private constructor (public readonly mode: string) {}
+  private constructor (public readonly mode: BillingMode) {}
 
   /**
    * @internal

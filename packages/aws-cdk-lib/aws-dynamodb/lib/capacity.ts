@@ -49,13 +49,13 @@ export abstract class Capacity {
    *
    * Note: You cannot configure write capacity using fixed capacity mode.
    *
-   * @param units the capacity units.
+   * @param units the number of input/output operations per second.
    */
-  public static fixed(units: number): Capacity {
+  public static fixed(iops: number): Capacity {
     return new (class extends Capacity {
       public _renderReadCapacity() {
         return {
-          readCapacityUnits: units,
+          readCapacityUnits: iops,
         } satisfies CfnGlobalTable.ReadProvisionedThroughputSettingsProperty;
       }
 
@@ -105,7 +105,7 @@ export abstract class Capacity {
     }) (CapacityMode.AUTOSCALED);
   }
 
-  private constructor(public readonly mode: string) {}
+  private constructor(public readonly mode: CapacityMode) {}
 
   /**
    * @internal

@@ -87,7 +87,7 @@ export abstract class TableEncryptionV2 {
   }
 
   private constructor (
-    public readonly type: string,
+    public readonly type: TableEncryption,
     public readonly tableKey?: IKey,
     public readonly replicaKeyArns?: { [region: string]: string }) {}
 
