@@ -5,14 +5,13 @@ import { EKS } from '@aws-sdk/client-eks';
 import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { NodeHttpHandler } from '@aws-sdk/node-http-handler';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { ProxyAgent } from 'proxy-agent';
 import { ClusterResourceHandler } from './cluster';
 import { EksClient } from './common';
 import * as consts from './consts';
 import { FargateProfileResourceHandler } from './fargate';
 import { IsCompleteResponse } from '../../../custom-resources/lib/provider-framework/types';
-
-// eslint-disable-next-line @typescript-eslint/no-require-imports, import/no-extraneous-dependencies
-const ProxyAgent = require('proxy-agent');
 
 const proxyAgent = new ProxyAgent();
 const awsConfig = {
