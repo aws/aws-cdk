@@ -81,6 +81,29 @@ See also the [AWS Lambda construct library](https://github.com/aws/aws-cdk/tree/
 The `NodejsFunction` construct automatically [reuses existing connections](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/node-reusing-connections.html)
 when working with the AWS SDK for JavaScript. Set the `awsSdkConnectionReuse` prop to `false` to disable it.
 
+## Runtime
+
+When the `@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion` feature flag is enabled, the `NODEJS_LATEST` runtime 
+will be used by default. This runtime will be updated to use the latest Node.js version currently available in lambda.
+Since this runtime can change from version to version, you should ensure that all of your dependencies are included
+during packaging and avoid relying on depdendencies being globally installed. See [externals](#externals) for details.
+
+**When using `NODEJS_LATEST` runtime make sure that all of your dependencies are included during bundling, or as layers.
+Usage of globally installed packages in the lambda environment may cause your function to break in future versions. If
+you need to rely on packages pre-installed in the lambda environment, you must explicitly set your runtime.**
+
+This can be set via `lambda.Runtime`:
+
+```ts
+import { Runtime } from 'aws-cdk-lib/aws-lambda';
+
+new nodejs.NodejsFunction(this, 'my-function', {
+    runtime: Runtime.NODEJS_18_X,
+});
+```
+
+With the `@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion` disabled, the runtime will default to `NODEJ_16_X`.
+
 ## Lock file
 
 The `NodejsFunction` requires a dependencies lock file (`yarn.lock`, `pnpm-lock.yaml` or
@@ -126,8 +149,14 @@ compatible environment. This is usually the case with modules using native depen
 
 ### Externals
 
-By default, all node modules are bundled except for `aws-sdk`. This can be configured by specifying
-`bundling.externalModules`:
+When the `NODEJS_LATEST` runtime is used, no modules are excluded from bundling by default. This is because the runtime
+will change as new NodeJs versions become available in lambda, which may change what packages are vended as part of the
+environment.
+
+When passing a runtime that is known to include a version of the aws sdk, it will be excluded by default. For example, when
+passing `NODEJS_16_X`, `aws-sdk` is excluded. When passing `NODEJS_18_X`,  all `@aws-sdk/*` packages are excluded.
+
+This can be configured by specifying `bundling.externalModules`:
 
 ```ts
 new nodejs.NodejsFunction(this, 'my-handler', {
