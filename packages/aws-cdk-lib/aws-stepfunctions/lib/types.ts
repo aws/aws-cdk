@@ -153,3 +153,9 @@ export interface CatchProps {
    */
   readonly resultPath?: string;
 }
+
+/**
+ * Special string value to discard state input, output or result
+ * @deprecated use JsonPath.DISCARD
+ */
+export const DISCARD = 'DISCARD';
