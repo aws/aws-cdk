@@ -1,0 +1,13 @@
+{
+  "version": "33.0.0",
+  "testCases": {
+    "aws-cdk-redshift-distkey-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-redshift-distkey-create",
+        "aws-cdk-redshift-distkey-update"
+      ],
+      "assertionStack": "aws-cdk-redshift-distkey-test/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkredshiftdistkeytestDefaultTestDeployAssert61A36BE8"
+    }
+  }
+}
