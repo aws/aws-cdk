@@ -1086,6 +1086,8 @@ export interface PortMapping {
    *
    * For more information, see hostPort.
    * Port mappings that are automatically assigned in this way do not count toward the 100 reserved ports limit of a container instance.
+   *
+   * If you want to expose a port range, you must specify CONTAINER_PORT_UNSET_VALUE as container port.
    */
   readonly containerPort: number;
 
@@ -1100,6 +1102,8 @@ export interface PortMapping {
    * - A port can only be included in one port mapping per container.
    * - You cannot specify overlapping port ranges.
    * - The first port in the range must be less than last port in the range.
+   *
+   * If you want to expose a single port, you must not set a range.
    */
   readonly containerPortRange?: string;
 
