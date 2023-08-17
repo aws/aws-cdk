@@ -85,6 +85,8 @@ describe('non-nested stacks', () => {
     expect(exitCode).toBe(0);
   });
 
+  test('diff reports correct number of stack diffs')
+
   test('exits with 1 with diffs and fail set to true', async () => {
     // GIVEN
     const buffer = new StringWritable();

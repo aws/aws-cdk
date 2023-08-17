@@ -143,7 +143,7 @@ export class CdkToolkit {
         const currentTemplate = await this.props.deployments.readCurrentTemplateWithNestedStacks(stack, options.compareAgainstProcessedTemplate);
         diffs += options.securityOnly
           ? numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening))
-          : printStackDiff(currentTemplate, stack, strict, contextLines, quiet, stream);
+          : printStackDiff(currentTemplate, stack, strict, contextLines, quiet, stream) > 0 ? 1 : 0;
       }
     }
 
