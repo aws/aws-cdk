@@ -414,7 +414,7 @@ export class GlobalTable extends GlobalTableBase {
 
   private readonly billingMode: string;
   private readonly partitionKey: Attribute;
-  private readonly sortKey?: Attribute;
+  private readonly hasSortKey: boolean;
   private readonly tableOptions: TableOptionsV2;
   private readonly encryption?: TableEncryptionV2;
 
@@ -439,7 +439,7 @@ export class GlobalTable extends GlobalTableBase {
 
     this.tableOptions = props;
     this.partitionKey = props.partitionKey;
-    this.sortKey = props.sortKey;
+    this.hasSortKey = props.sortKey !== undefined;
     this.region = this.stack.region;
 
     this.encryption = props.encryption;
@@ -553,12 +553,7 @@ export class GlobalTable extends GlobalTableBase {
     }
 
     if (region === this.stack.region) {
-      return GlobalTable.fromTableAttributes(this, `ReplicaTable${region}`, {
-        tableArn: this.tableArn,
-        encryptionKey: this.encryptionKey,
-        tableStreamArn: this.tableStreamArn,
-        grantIndexPermissions: this.hasIndex,
-      });
+      return this;
     }
 
     if (!this.replicaTables.has(region)) {
@@ -820,7 +815,7 @@ export class GlobalTable extends GlobalTableBase {
   private validateLocalSecondaryIndex(props: LocalSecondaryIndexProps) {
     this.validateIndexName(props.indexName);
 
-    if (!this.sortKey) {
+    if (!this.hasSortKey) {
       throw new Error('The Global Table must have a sort key in order to add local secondary indexes');
     }
 

@@ -73,6 +73,18 @@ export abstract class Capacity {
    */
   public static autoscaled(options: AutoscaledCapacityOptions): Capacity {
     return new (class extends Capacity {
+      public constructor(mode: CapacityMode) {
+        super(mode);
+
+        if (options.minCapacity > options.maxCapacity) {
+          throw new Error('`minCapacity` must be less than or equal to `maxCapacity`');
+        }
+
+        if (options.targetUtilizationPercent !== undefined && (options.targetUtilizationPercent < 20 || options.targetUtilizationPercent > 90)) {
+          throw new Error('`targetUtilizationPercent` cannot be less than 20 or greater than 90');
+        }
+      }
+
       public _renderReadCapacity() {
         return {
           readCapacityAutoScalingSettings: this.renderAutoscaledCapacity(),
@@ -86,14 +98,6 @@ export abstract class Capacity {
       }
 
       private renderAutoscaledCapacity() {
-        if (options.minCapacity > options.maxCapacity) {
-          throw new Error('`minCapacity` must be less than or equal to `maxCapacity`');
-        }
-
-        if (options.targetUtilizationPercent !== undefined && (options.targetUtilizationPercent < 20 || options.targetUtilizationPercent > 90)) {
-          throw new Error('`targetUtilizationPercent` cannot be less than 20 or greater than 90');
-        }
-
         return {
           minCapacity: options.minCapacity,
           maxCapacity: options.maxCapacity,
@@ -102,6 +106,7 @@ export abstract class Capacity {
           },
         };
       }
+
     }) (CapacityMode.AUTOSCALED);
   }
 
