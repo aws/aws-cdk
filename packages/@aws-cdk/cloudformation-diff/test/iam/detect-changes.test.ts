@@ -1,4 +1,6 @@
-import { diffTemplate } from '../../lib';
+import { MaybeParsed, diffTemplate } from '../../lib';
+import { IamChangesJson } from '../../lib/iam/iam-changes';
+import { deepRemoveUndefined } from '../../lib/util';
 import { poldoc, policy, resource, role, template } from '../util';
 
 test('shows new AssumeRolePolicyDocument', () => {
@@ -14,7 +16,7 @@ test('shows new AssumeRolePolicyDocument', () => {
   }));
 
   // THEN
-  expect(diff.iamChanges._toJson()).toEqual({
+  expect(unwrapParsed(diff.iamChanges._toJson())).toEqual({
     statementAdditions: [
       {
         effect: 'Allow',
@@ -41,7 +43,7 @@ test('implicitly knows principal of identity policy for all resource types', () 
     }));
 
     // THEN
-    expect(diff.iamChanges._toJson()).toEqual({
+    expect(unwrapParsed(diff.iamChanges._toJson())).toEqual({
       statementAdditions: [
         {
           effect: 'Allow',
@@ -73,7 +75,7 @@ test('policies on an identity object', () => {
     }));
 
     // THEN
-    expect(diff.iamChanges._toJson()).toEqual({
+    expect(unwrapParsed(diff.iamChanges._toJson())).toEqual({
       statementAdditions: [
         {
           effect: 'Allow',
@@ -84,6 +86,39 @@ test('policies on an identity object', () => {
       ],
     });
   }
+});
+
+test('statement is an intrinsic', () => {
+  const diff = diffTemplate({}, template({
+    MyIdentity: resource('AWS::IAM::User', {
+      Policies: [
+        {
+          PolicyName: 'Polly',
+          PolicyDocument: poldoc({
+            'Fn::If': [
+              'SomeCondition',
+              {
+                Effect: 'Allow',
+                Action: 's3:DoThatThing',
+                Resource: '*',
+              },
+              { Ref: 'AWS::NoValue' },
+            ],
+          }),
+        },
+      ],
+    }),
+  }));
+
+  // THEN
+  expect(diff.iamChanges._toJson()).toEqual({
+    statementAdditions: [
+      {
+        type: 'unparseable',
+        repr: '{"Fn::If":["SomeCondition",{"Effect":"Allow","Action":"s3:DoThatThing","Resource":"*"}]}',
+      },
+    ],
+  });
 });
 
 test('if policy is attached to multiple roles all are shown', () => {
@@ -100,7 +135,7 @@ test('if policy is attached to multiple roles all are shown', () => {
   }));
 
   // THEN
-  expect(diff.iamChanges._toJson()).toEqual({
+  expect(unwrapParsed(diff.iamChanges._toJson())).toEqual({
     statementAdditions: [
       {
         effect: 'Allow',
@@ -131,7 +166,7 @@ test('correctly parses Lambda permissions', () => {
   }));
 
   // THEN
-  expect(diff.iamChanges._toJson()).toEqual({
+  expect(unwrapParsed(diff.iamChanges._toJson())).toEqual({
     statementAdditions: [
       {
         effect: 'Allow',
@@ -162,7 +197,7 @@ test('implicitly knows resource of (queue) resource policy even if * given', () 
   }));
 
   // THEN
-  expect(diff.iamChanges._toJson()).toEqual({
+  expect(unwrapParsed(diff.iamChanges._toJson())).toEqual({
     statementAdditions: [
       {
         effect: 'Allow',
@@ -189,7 +224,7 @@ test('finds sole statement removals', () => {
   }), {});
 
   // THEN
-  expect(diff.iamChanges._toJson()).toEqual({
+  expect(unwrapParsed(diff.iamChanges._toJson())).toEqual({
     statementRemovals: [
       {
         effect: 'Allow',
@@ -233,7 +268,7 @@ test('finds one of many statement removals', () => {
     }));
 
   // THEN
-  expect(diff.iamChanges._toJson()).toEqual({
+  expect(unwrapParsed(diff.iamChanges._toJson())).toEqual({
     statementRemovals: [
       {
         effect: 'Allow',
@@ -254,7 +289,7 @@ test('finds policy attachments', () => {
   }));
 
   // THEN
-  expect(diff.iamChanges._toJson()).toEqual({
+  expect(unwrapParsed(diff.iamChanges._toJson())).toEqual({
     managedPolicyAdditions: [
       {
         identityArn: '${SomeRole}',
@@ -279,7 +314,7 @@ test('finds policy removals', () => {
     }));
 
   // THEN
-  expect(diff.iamChanges._toJson()).toEqual({
+  expect(unwrapParsed(diff.iamChanges._toJson())).toEqual({
     managedPolicyRemovals: [
       {
         identityArn: '${SomeRole}',
@@ -314,7 +349,7 @@ test('queuepolicy queue change counts as removal+addition', () => {
   }));
 
   // THEN
-  expect(diff.iamChanges._toJson()).toEqual({
+  expect(unwrapParsed(diff.iamChanges._toJson())).toEqual({
     statementAdditions: [
       {
         effect: 'Allow',
@@ -354,7 +389,7 @@ test('supports Fn::If in the top-level property value of Role', () => {
   }));
 
   // THEN
-  expect(diff.iamChanges._toJson()).toEqual({
+  expect(unwrapParsed(diff.iamChanges._toJson())).toEqual({
     managedPolicyAdditions: [
       {
         identityArn: '${MyRole}',
@@ -420,3 +455,22 @@ test('supports Fn::If in the elements of an array-typed property of Role', () =>
   expect(changedPolicies[resourceColumn]).toContain('{"Fn::If":["SomeCondition",{"PolicyName":"S3","PolicyDocument":{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":"s3:GetObject","Resource":"*"}]}}]}');
   expect(changedPolicies[principalColumn]).toContain('AWS:${MyRole}');
 });
+
+/**
+ * Assume that all types are parsed, and unwrap them
+ */
+function unwrapParsed(chg: IamChangesJson) {
+  return deepRemoveUndefined({
+    managedPolicyAdditions: chg.managedPolicyAdditions?.map(unwrap1),
+    managedPolicyRemovals: chg.managedPolicyRemovals?.map(unwrap1),
+    statementAdditions: chg.statementAdditions?.map(unwrap1),
+    statementRemovals: chg.statementRemovals?.map(unwrap1),
+  });
+
+  function unwrap1<A>(x: MaybeParsed<A>): A {
+    if (x.type !== 'parsed') {
+      throw new Error(`Expected parsed expression, found: "${x.repr}"`);
+    }
+    return x.value;
+  }
+}
