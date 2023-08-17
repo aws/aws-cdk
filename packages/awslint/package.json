@@ -18,11 +18,11 @@
     "awslint": "bin/awslint"
   },
   "dependencies": {
-    "@jsii/spec": "1.86.0",
+    "@jsii/spec": "1.87.0",
     "camelcase": "^6.3.0",
     "chalk": "^4",
     "fs-extra": "^9.1.0",
-    "jsii-reflect": "1.86.0",
+    "jsii-reflect": "1.87.0",
     "yargs": "^16.2.0"
   },
   "devDependencies": {
@@ -34,7 +34,7 @@
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
     "eslint": "^7.32.0",
-    "eslint-import-resolver-node": "^0.3.7",
+    "eslint-import-resolver-node": "^0.3.9",
     "eslint-import-resolver-typescript": "^2.7.1",
     "@aws-cdk/eslint-plugin": "0.0.0",
     "eslint-plugin-import": "^2.28.0",
