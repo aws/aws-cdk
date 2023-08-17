@@ -4,7 +4,7 @@ import * as s3 from '../../aws-s3';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as ssm from '../../aws-ssm';
 import * as cdk from '../../core';
-import { Duration } from '../../core';
+import { Duration, Lazy } from '../../core';
 import * as cxapi from '../../cx-api';
 import * as ecs from '../lib';
 import { AppProtocol } from '../lib';
@@ -161,6 +161,17 @@ describe('container definition', () => {
 
           portMap.validate();
         }).toThrow('The containerPortRange must be a string in the format [start port]-[end port].');
+      });
+
+      describe('throws when PortMapping.containerPortRange is not a concrete value', () => {
+        // GIVEN
+        const portMap = new ecs.PortMap(ecs.NetworkMode.AWS_VPC, {
+          containerPort: ecs.CONTAINER_PORT_UNSET_VALUE,
+          containerPortRange: Lazy.string({ produce: () => '8080-8081' }),
+        });
+
+        // THEN
+        expect(() => portMap.validate()).toThrow('The value of containerPortRange must be concrete (no Tokens)');
       });
 
       describe('throws when PortMapping.containerPortRange is used with an unsupported network mode', () => {
