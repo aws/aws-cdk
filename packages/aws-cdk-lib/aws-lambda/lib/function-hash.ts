@@ -127,19 +127,13 @@ function calculateLayersHash(layers: ILayerVersion[]): string {
  * Sort properties in an object according to a sort order of known keys
  *
  * Any additional keys are added at the end, but also sorted.
+ *
+ * We only sort one level deep, because we rely on the fact that everything
+ * that needs to be sorted happens to be sorted by the codegen already, and
+ * we explicitly rely on some objects NOT being sorted.
  */
 class PropertySort {
   constructor(private readonly knownKeysOrder: string[]) {
-  }
-
-  public sortAny(x: any): any {
-    if (Array.isArray(x)) {
-      return x.map((e) => this.sortAny(e));
-    }
-    if (x && typeof x === 'object') {
-      return this.sortObject(x);
-    }
-    return x;
   }
 
   public sortObject(properties: any): any {
@@ -148,19 +142,15 @@ class PropertySort {
     // Scratch-off set for keys we don't know about yet
     const unusedKeys = new Set(Object.keys(properties));
     for (const prop of this.knownKeysOrder) {
-      ret[prop] = recurse(properties[prop]);
+      ret[prop] = properties[prop];
       unusedKeys.delete(prop);
     }
 
     for (const prop of Array.from(unusedKeys).sort()) {
-      ret[prop] = recurse(properties[prop]);
+      ret[prop] = properties[prop];
     }
 
     return ret;
-
-    function recurse(x: any): any {
-      return new PropertySort([]).sortAny(x);
-    }
   }
 }
 
@@ -179,6 +169,11 @@ class PropertySort {
  * between 2.87.0 and 2.88.0 are the same, but fortunately all the subobjects
  * were already in lexicographic order in <=2.87.0 so we only need to sort some
  * top-level properties on the resource.
+ *
+ * We also can't deep-sort everything, because for backwards compatibility
+ * reasons we have a test that ensures that environment variables are not
+ * lexicographically sorted, but emitted in the order they are added in source
+ * code, so for now we rely on the codegen being lexicographically sorted.
  */
 function sortFunctionProperties(properties: any) {
   return new PropertySort([
