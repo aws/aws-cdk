@@ -60,8 +60,8 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
   /**
    * Adds an IAM policy statement associated with this Global Table to an IAM principal's policy.
    *
-   * Note: Appropriate grants will also be added to the customer-managed KMS keys associated with this
-   * Global Table and its Replicas.
+   * Note: If `encryptionKey` is present, appropriate grants to the key needs to be added
+   * separately using the `table.encryptionKey.grant*` methods.
    *
    * @param grantee the principal (no-op if undefined)
    * @param actions the set of actions to allow (i.e., 'dynamodb:PutItem', 'dynamodb:GetItem', etc.)
@@ -81,8 +81,8 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
   /**
    * Adds an IAM policy statement associated with this Global Table to an IAM principal's policy.
    *
-   * Note: Appropriate grants will also be added to the customer-managed KMS keys associated with this
-   * Global Table and its Replicas.
+   * Note: If `encryptionKey` is present, appropriate grants to the key needs to be added
+   * separately using the `table.encryptionKey.grant*` methods.
    *
    * @param grantee the principal (no-op if undefined)
    * @param actions the set of actions to allow (i.e., 'dynamodb:DescribeStream', 'dynamodb:GetRecords', etc.)
@@ -105,7 +105,7 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
    * Actions: DescribeStream, GetRecords, GetShardIterator, ListStreams.
    *
    * Note: Appropriate grants will also be added to the customer-managed KMS keys associated with this
-   * Global Table and its Replicas.
+   * Global Table if one was configured.
    *
    * @param grantee the principal to grant access to
    */
@@ -141,7 +141,7 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
    * Actions: BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan, DescribeTable.
    *
    * Note: Appropriate grants will also be added to the customer-managed KMS keys associated with this
-   * Global Table and its Replicas.
+   * Global Table if one was configured.
    *
    * @param grantee the principal to grant access to
    */
@@ -156,7 +156,7 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
    * Actions: BatchWriteItem, PutItem, UpdateItem, DeleteItem, DescribeTable.
    *
    * Note: Appropriate grants will also be added to the customer-managed KMS keys associated with this
-   * Global Table and its Replicas.
+   * Global Table if one was configured.
    *
    * @param grantee the principal to grant access to
    */
@@ -173,7 +173,7 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
    * DeleteItem, DescribeTable.
    *
    * Note: Appropriate grants will also be added to the customer-managed KMS keys associated with this
-   * Global Table and its Replicas.
+   * Global Table if one was configured.
    *
    * @param grantee the principal to grant access to
    */
@@ -187,7 +187,7 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
    * Permits an IAM principal to all DynamoDB operations ('dynamodb:*') on this Global Table.
    *
    * Note: Appropriate grants will also be added to the customer-managed KMS keys associated with this
-   * Global Table and its Replicas.
+   * Global Table if one was configured.
    *
    * @param grantee the principal to grant access to
    */
