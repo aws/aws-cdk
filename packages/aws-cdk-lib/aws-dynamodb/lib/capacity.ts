@@ -20,14 +20,16 @@ export enum CapacityMode {
  */
 export interface AutoscaledCapacityOptions {
   /**
-   * The minimum allowable capacity.
-   */
-  readonly minCapacity: number;
-
-  /**
    * The maximum allowable capacity.
    */
   readonly maxCapacity: number;
+
+  /**
+   * The minimum allowable capacity.
+   *
+   * @default 1
+   */
+  readonly minCapacity?: number;
 
   /**
    * The ratio of consumed capacity units to provisioned capacity units.
@@ -76,7 +78,7 @@ export abstract class Capacity {
       public constructor(mode: CapacityMode) {
         super(mode);
 
-        if (options.minCapacity > options.maxCapacity) {
+        if ((options.minCapacity ?? 1) > options.maxCapacity) {
           throw new Error('`minCapacity` must be less than or equal to `maxCapacity`');
         }
 
@@ -99,7 +101,7 @@ export abstract class Capacity {
 
       private renderAutoscaledCapacity() {
         return {
-          minCapacity: options.minCapacity,
+          minCapacity: options.minCapacity ?? 1,
           maxCapacity: options.maxCapacity,
           targetTrackingScalingPolicyConfiguration: {
             targetValue: options.targetUtilizationPercent ?? 70,

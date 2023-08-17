@@ -28,7 +28,7 @@ describe('fixed capacity', () => {
 describe('autoscaled capacity', () => {
   test('can render read capacity', () => {
     // GIVEN
-    const capacity = Capacity.autoscaled({ minCapacity: 1, maxCapacity: 10 });
+    const capacity = Capacity.autoscaled({ maxCapacity: 10 });
 
     // WHEN / THEN
     expect(capacity._renderReadCapacity()).toEqual({
@@ -44,7 +44,7 @@ describe('autoscaled capacity', () => {
 
   test('can render write capacity', () => {
     // GIVEN
-    const capacity = Capacity.autoscaled({ minCapacity: 1, maxCapacity: 10 });
+    const capacity = Capacity.autoscaled({ maxCapacity: 10 });
 
     // WHEN / THEN
     expect(capacity._renderWriteCapacity()).toEqual({
@@ -58,9 +58,25 @@ describe('autoscaled capacity', () => {
     });
   });
 
+  test('can render capacity with non-default min capacity', () => {
+    // GIVEN
+    const capacity = Capacity.autoscaled({ minCapacity: 5, maxCapacity: 10 });
+
+    // WHEN / THEN
+    expect(capacity._renderReadCapacity()).toEqual({
+      readCapacityAutoScalingSettings: {
+        minCapacity: 5,
+        maxCapacity: 10,
+        targetTrackingScalingPolicyConfiguration: {
+          targetValue: 70,
+        },
+      },
+    });
+  });
+
   test('can render capacity with non-default target utilization', () => {
     // GIVEN
-    const capacity = Capacity.autoscaled({ minCapacity: 1, maxCapacity: 10, targetUtilizationPercent: 50 });
+    const capacity = Capacity.autoscaled({ maxCapacity: 10, targetUtilizationPercent: 50 });
 
     // WHEN / THEN
     expect(capacity._renderReadCapacity()).toEqual({
@@ -82,33 +98,24 @@ describe('autoscaled capacity', () => {
     expect(capacity.mode).toEqual(CapacityMode.AUTOSCALED);
   });
 
-  test('throws is minimum capacity is greater than maximum capacity', () => {
-    // GIVEN
-    const capacity = Capacity.autoscaled({ minCapacity: 11, maxCapacity: 10 });
-
-    // WHEN / THEN
+  test('throws if minimum capacity is greater than maximum capacity', () => {
+    // GIVEN / WHEN / THEN
     expect(() => {
-      capacity._renderReadCapacity();
+      Capacity.autoscaled({ minCapacity: 11, maxCapacity: 10 });
     }).toThrow('`minCapacity` must be less than or equal to `maxCapacity`');
   });
 
   test('throws if target utilization is less than 20', () => {
-    // GIVEN
-    const capacity = Capacity.autoscaled({ minCapacity: 1, maxCapacity: 10, targetUtilizationPercent: 19 });
-
-    // WHEN / THEN
+    // GIVEN / WHEN / THEN
     expect(() => {
-      capacity._renderReadCapacity();
+      Capacity.autoscaled({ maxCapacity: 10, targetUtilizationPercent: 19 });
     }).toThrow('`targetUtilizationPercent` cannot be less than 20 or greater than 90');
   });
 
   test('throws if target utilization is greater than 90', () => {
-    // GIVEN
-    const capacity = Capacity.autoscaled({ minCapacity: 1, maxCapacity: 10, targetUtilizationPercent: 91 });
-
-    // WHEN / THEN
+    // GIVEN / WHEN / THEN
     expect(() => {
-      capacity._renderReadCapacity();
+      Capacity.autoscaled({ maxCapacity: 10, targetUtilizationPercent: 91 });
     }).toThrow('`targetUtilizationPercent` cannot be less than 20 or greater than 90');
   });
 });
