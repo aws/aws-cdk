@@ -192,7 +192,7 @@ import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 const metric = new cloudwatch.Metric({
   namespace: 'MyNamespace',
   metricName: 'MyMetric',
-  dimensions: { MyDimension: 'MyDimensionValue' },
+  dimensionsMap: { MyDimension: 'MyDimensionValue' },
 });
 const alarm = new cloudwatch.Alarm(this, 'MyAlarm', {
   metric: metric,
