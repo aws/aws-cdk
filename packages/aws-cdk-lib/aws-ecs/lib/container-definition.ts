@@ -1322,7 +1322,7 @@ export class AppProtocol {
 
 function renderPortMapping(pm: PortMapping): CfnTaskDefinition.PortMappingProperty {
   return {
-    containerPort: pm.containerPort,
+    containerPort: pm.containerPort !== CONTAINER_PORT_UNSET_VALUE ? pm.containerPort : undefined,
     containerPortRange: pm.containerPortRange,
     hostPort: pm.hostPort,
     protocol: pm.protocol || Protocol.TCP,
