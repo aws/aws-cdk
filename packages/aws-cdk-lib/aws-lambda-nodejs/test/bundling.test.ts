@@ -171,7 +171,7 @@ test('esbuild bundling with externals and dependencies', () => {
       command: [
         'bash', '-c',
         [
-          'esbuild --bundle "/asset-input/test/bundling.test.js" --target=node14 --platform=node --outfile="/asset-output/index.js" --external:abc --external:delay',
+          'esbuild --bundle "/asset-input/test/bundling.test.ts" --target=node14 --platform=node --outfile="/asset-output/index.js" --external:abc --external:delay',
           `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > "/asset-output/package.json"`,
           'cp "/asset-input/package-lock.json" "/asset-output/package-lock.json"',
           'cd "/asset-output"',
@@ -619,7 +619,7 @@ test('esbuild bundling with projectRoot and externals and dependencies', () => {
       command: [
         'bash', '-c',
         [
-          'esbuild --bundle "/asset-input/packages/aws-cdk-lib/aws-lambda-nodejs/test/bundling.test.js" --target=node14 --platform=node --outfile="/asset-output/index.js" --external:abc --external:delay',
+          'esbuild --bundle "/asset-input/packages/aws-cdk-lib/aws-lambda-nodejs/test/bundling.test.ts" --target=node14 --platform=node --outfile="/asset-output/index.js" --external:abc --external:delay',
           `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > "/asset-output/package.json"`,
           'cp "/asset-input/common/package-lock.json" "/asset-output/package-lock.json"',
           'cd "/asset-output"',
