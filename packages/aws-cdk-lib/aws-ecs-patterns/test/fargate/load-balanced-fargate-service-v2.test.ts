@@ -848,6 +848,7 @@ describe('When Network Load Balancer', () => {
     taskDefinition.addContainer('MainContainer', {
       image: ecs.ContainerImage.fromRegistry('test'),
       portMappings: [{
+        containerPort: ecs.CONTAINER_PORT_UNSET_VALUE,
         containerPortRange: '8080-8081',
       }],
     });

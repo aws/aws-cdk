@@ -15,7 +15,10 @@ class EcsContainerPortRangeStack extends cdk.Stack {
 
     taskDefinition.addContainer('web', {
       image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-      portMappings: [{ containerPortRange: '8080-8081' }],
+      portMappings: [{
+        containerPort: ecs.CONTAINER_PORT_UNSET_VALUE,
+        containerPortRange: '8080-8081',
+      }],
     });
 
     new ecs.FargateService(this, 'FargateService', {

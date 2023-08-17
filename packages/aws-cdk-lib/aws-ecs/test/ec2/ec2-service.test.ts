@@ -2714,7 +2714,10 @@ describe('ec2 service', () => {
       const container = taskDefinition.addContainer('MainContainer', {
         image: ecs.ContainerImage.fromRegistry('hello'),
       });
-      container.addPortMappings({ containerPortRange: '8000-8001' });
+      container.addPortMappings({
+        containerPort: ecs.CONTAINER_PORT_UNSET_VALUE,
+        containerPortRange: '8000-8001',
+      });
 
       const service = new ecs.Ec2Service(stack, 'Service', {
         cluster,
@@ -2988,7 +2991,10 @@ describe('ec2 service', () => {
       const container = taskDefinition.addContainer('MainContainer', {
         image: ecs.ContainerImage.fromRegistry('hello'),
       });
-      container.addPortMappings({ containerPortRange: '8000-8001' });
+      container.addPortMappings({
+        containerPort: ecs.CONTAINER_PORT_UNSET_VALUE,
+        containerPortRange: '8000-8001',
+      });
 
       const service = new ecs.Ec2Service(stack, 'Service', {
         cluster,

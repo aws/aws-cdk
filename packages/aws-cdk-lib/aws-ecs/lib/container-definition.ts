@@ -10,6 +10,8 @@ import * as secretsmanager from '../../aws-secretsmanager';
 import * as ssm from '../../aws-ssm';
 import * as cdk from '../../core';
 
+export const CONTAINER_PORT_UNSET_VALUE = 0;
+
 /**
  * Specify the secret's version id or version stage
  */
@@ -753,7 +755,7 @@ export class ContainerDefinition extends Construct {
       return 0;
     }
 
-    if (defaultPortMapping.containerPort === undefined) {
+    if (defaultPortMapping.containerPortRange !== undefined) {
       throw new Error(`The first port mapping of the container ${this.containerName} must expose a single port.`);
     }
 
@@ -769,7 +771,7 @@ export class ContainerDefinition extends Construct {
     }
     const defaultPortMapping = this.portMappings[0];
 
-    if (defaultPortMapping.containerPort === undefined) {
+    if (defaultPortMapping.containerPortRange !== undefined) {
       throw new Error(`The first port mapping of the container ${this.containerName} must expose a single port.`);
     }
 
@@ -1085,7 +1087,7 @@ export interface PortMapping {
    * For more information, see hostPort.
    * Port mappings that are automatically assigned in this way do not count toward the 100 reserved ports limit of a container instance.
    */
-  readonly containerPort?: number;
+  readonly containerPort: number;
 
   /**
    * The port number range on the container that's bound to the dynamically mapped host port range.
@@ -1173,15 +1175,15 @@ export class PortMap {
       throw new Error('Port mapping name cannot be an empty string.');
     }
 
-    if (this.portmapping.containerPort === undefined && this.portmapping.containerPortRange === undefined) {
-      throw new Error('Either "containerPort" or "containerPortRange" must be set.');
+    if (this.portmapping.containerPort === CONTAINER_PORT_UNSET_VALUE && this.portmapping.containerPortRange === undefined) {
+      throw new Error(`The containerPortRange must be set when containerPort is equal to ${CONTAINER_PORT_UNSET_VALUE}`);
     }
 
-    if (this.portmapping.containerPort !== undefined && this.portmapping.containerPortRange !== undefined) {
+    if (this.portmapping.containerPort !== CONTAINER_PORT_UNSET_VALUE && this.portmapping.containerPortRange !== undefined) {
       throw new Error('Cannot set "containerPort" and "containerPortRange" at the same time.');
     }
 
-    if (this.portmapping.containerPort !== undefined) {
+    if (this.portmapping.containerPort !== CONTAINER_PORT_UNSET_VALUE) {
       if ((this.networkmode === NetworkMode.AWS_VPC || this.networkmode === NetworkMode.HOST)
           && this.portmapping.hostPort !== undefined && this.portmapping.hostPort !== this.portmapping.containerPort) {
         throw new Error('The host port must be left out or must be the same as the container port for AwsVpc or Host network mode.');
@@ -1189,6 +1191,10 @@ export class PortMap {
     }
 
     if (this.portmapping.containerPortRange !== undefined) {
+      if (cdk.Token.isUnresolved(this.portmapping.containerPortRange)) {
+        throw new Error('The value of containerPortRange must be concrete (no Tokens)');
+      }
+
       if (this.portmapping.hostPort !== undefined) {
         throw new Error('Cannot set "hostPort" while using a port range for the container.');
       }

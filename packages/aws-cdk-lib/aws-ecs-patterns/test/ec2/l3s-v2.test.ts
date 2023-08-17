@@ -4,6 +4,7 @@ import { Certificate } from '../../../aws-certificatemanager';
 import * as ec2 from '../../../aws-ec2';
 import { MachineImage, Vpc } from '../../../aws-ec2';
 import {
+  CONTAINER_PORT_UNSET_VALUE,
   AsgCapacityProvider,
   AwsLogDriver,
   Cluster,
@@ -1802,6 +1803,7 @@ describe('When Network Load Balancer', () => {
     taskDefinition.addContainer('MainContainer', {
       image: ContainerImage.fromRegistry('test'),
       portMappings: [{
+        containerPort: CONTAINER_PORT_UNSET_VALUE,
         containerPortRange: '8080-8081',
       }],
     });

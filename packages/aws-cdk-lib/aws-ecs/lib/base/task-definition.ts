@@ -3,7 +3,7 @@ import { ImportedTaskDefinition } from './_imported-task-definition';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import { IResource, Lazy, Names, PhysicalName, Resource } from '../../../core';
-import { ContainerDefinition, ContainerDefinitionOptions, PortMapping, Protocol } from '../container-definition';
+import { CONTAINER_PORT_UNSET_VALUE, ContainerDefinition, ContainerDefinitionOptions, PortMapping, Protocol } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
 import { FirelensLogRouter, FirelensLogRouterDefinitionOptions, FirelensLogRouterType, obtainDefaultFluentBitECRImage } from '../firelens-log-router';
 import { AwsLogDriver } from '../log-drivers/aws-log-driver';
@@ -590,7 +590,7 @@ export class TaskDefinition extends TaskDefinitionBase {
     if (this.networkMode === NetworkMode.BRIDGE || this.networkMode === NetworkMode.NAT) {
       return EPHEMERAL_PORT_RANGE;
     }
-    if (portMapping.containerPort !== undefined) {
+    if (portMapping.containerPort !== CONTAINER_PORT_UNSET_VALUE) {
       return portMapping.protocol === Protocol.UDP ? ec2.Port.udp(portMapping.containerPort) : ec2.Port.tcp(portMapping.containerPort);
     }
     const [startPort, endPort] = portMapping.containerPortRange!.split('-', 2).map(v => Number(v));
