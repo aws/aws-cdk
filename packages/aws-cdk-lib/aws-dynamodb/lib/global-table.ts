@@ -355,7 +355,6 @@ export class GlobalTable extends GlobalTableBase {
         this.tableId = tableId;
         this.tableStreamArn = tableStreamArn;
         this.encryptionKey = attrs.encryptionKey;
-        this.tableStreamArn && this.streamArns.push(this.tableStreamArn);
       }
     }
 
@@ -427,6 +426,9 @@ export class GlobalTable extends GlobalTableBase {
   private readonly writeProvisioning?: CfnGlobalTable.WriteProvisionedThroughputSettingsProperty;
 
   private readonly replicaTables = new Map<string, ReplicaTableProps>();
+  private readonly replicaKeys: { [region: string]: IKey } = {};
+  private readonly replicaTableArns: string[] = [];
+  private readonly replicaStreamArns: string[] = [];
 
   private readonly globalSecondaryIndexes = new Map<string, CfnGlobalTable.GlobalSecondaryIndexProperty>();
   private readonly localSecondaryIndexes = new Map<string, CfnGlobalTable.LocalSecondaryIndexProperty>();
@@ -482,8 +484,6 @@ export class GlobalTable extends GlobalTableBase {
     this.tableId = resource.attrTableId;
     this.tableStreamArn = resource.attrStreamArn;
 
-    this.streamArns.push(this.tableStreamArn);
-
     props.replicas?.forEach(replica => this.addReplica(replica));
 
     if (props.tableName) {
@@ -505,10 +505,10 @@ export class GlobalTable extends GlobalTableBase {
       service: 'dynamodb',
       resourceName: this.tableName,
     });
-    this.replicaArns.push(replicaArn);
+    this.replicaTableArns.push(replicaArn);
 
     const replicaStreamArn = `${replicaArn}/stream/*`;
-    this.streamArns.push(replicaStreamArn);
+    this.replicaStreamArns.push(replicaStreamArn);
 
     this.replicaTables.set(props.region, props);
   }
@@ -565,14 +565,14 @@ export class GlobalTable extends GlobalTableBase {
       throw new Error(`Global Table does not have a Replica Table in region ${region}`);
     }
 
-    const tableArn = this.replicaArns.find(replicaArn => replicaArn.includes(region));
-    const tableStreamArn = this.streamArns.find(streamArn => streamArn.includes(region));
+    const replicaTableArn = this.replicaTableArns.find(arn => arn.includes(region));
+    const replicaStreamArn = this.replicaStreamArns.find(arn => arn.includes(region));
 
     return GlobalTable.fromTableAttributes(this, `ReplicaTable${region}`, {
-      tableArn,
+      tableArn: replicaTableArn,
       encryptionKey: this.replicaKeys[region],
       grantIndexPermissions: this.hasIndex,
-      tableStreamArn,
+      tableStreamArn: replicaStreamArn,
     });
   }
 

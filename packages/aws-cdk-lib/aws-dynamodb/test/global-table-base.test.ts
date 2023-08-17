@@ -7,106 +7,6 @@ import { Key } from '../../aws-kms';
 import { Stack, StackProps, App } from '../../core';
 import { GlobalTable, AttributeType, TableEncryptionV2, ITable, IGlobalTable, Operation } from '../lib';
 
-function replicaResourceArns(replicaRegions: string[]) {
-  const resourceArns: { [key: string]: any }[] = [];
-
-  for (const replicaRegion of replicaRegions) {
-    resourceArns.push({
-      'Fn::Join': [
-        '',
-        [
-          'arn:',
-          {
-            Ref: 'AWS::Partition',
-          },
-          `:dynamodb:${replicaRegion}:`,
-          {
-            Ref: 'AWS::AccountId',
-          },
-          ':table/',
-          {
-            Ref: 'Resource',
-          },
-        ],
-      ],
-    });
-  }
-
-  return resourceArns;
-}
-
-function replicaIndexArns(replicaRegions: string[]) {
-  const indexArns: { [key: string]: any }[] = [];
-
-  for (const replicaRegion of replicaRegions) {
-    indexArns.push({
-      'Fn::Join': [
-        '',
-        [
-          'arn:',
-          {
-            Ref: 'AWS::Partition',
-          },
-          `:dynamodb:${replicaRegion}:`,
-          {
-            Ref: 'AWS::AccountId',
-          },
-          ':table/',
-          {
-            Ref: 'Resource',
-          },
-          '/index/*',
-        ],
-      ],
-    });
-  }
-
-  return indexArns;
-}
-
-function replicaStreamArns(replicaRegions: string[]) {
-  const streamArns: { [key: string]: any }[] = [];
-
-  for (const replicaRegion of replicaRegions) {
-    streamArns.push({
-      'Fn::Join': [
-        '',
-        [
-          'arn:',
-          {
-            Ref: 'AWS::Partition',
-          },
-          `:dynamodb:${replicaRegion}:`,
-          {
-            Ref: 'AWS::AccountId',
-          },
-          ':table/',
-          {
-            Ref: 'Resource',
-          },
-          '/stream/*',
-        ],
-      ],
-    });
-  }
-
-  return streamArns;
-}
-
-function keyStatements(keyActions: string[], replicaKeyArns: { [region: string]: string }) {
-  const statements: { [key: string]: any }[] = [];
-
-  for (const replicaKeyArn of Object.values(replicaKeyArns)) {
-    statements.push({
-      Action: keyActions,
-      Effect: 'Allow',
-      Resource: replicaKeyArn,
-    });
-  }
-
-  return statements;
-}
-
 function testForKey(stack: Stack) {
   Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
     KeyPolicy: {
@@ -172,7 +72,6 @@ describe('grants', () => {
                 ],
               },
               { Ref: 'AWS::NoValue' },
-              ...replicaResourceArns(['us-east-1', 'us-east-2']),
             ],
           },
         ],
@@ -226,7 +125,6 @@ describe('grants', () => {
                 ],
               },
               { Ref: 'AWS::NoValue' },
-              ...replicaResourceArns(['us-east-1', 'us-east-2']),
             ],
           },
         ],
@@ -266,16 +164,6 @@ describe('grants', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
-          ...keyStatements(
-            [
-              'kms:Decrypt',
-              'kms:DescribeKey',
-            ],
-            {
-              'us-east-1': 'arn:aws:kms:us-east-1:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
-              'us-east-2': 'arn:aws:kms:us-east-2:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
-            },
-          ),
           {
             Action: [
               'kms:Decrypt',
@@ -309,7 +197,6 @@ describe('grants', () => {
                 ],
               },
               { Ref: 'AWS::NoValue' },
-              ...replicaResourceArns(['us-east-1', 'us-east-2']),
             ],
           },
         ],
@@ -361,7 +248,6 @@ describe('grants', () => {
                 ],
               },
               { Ref: 'AWS::NoValue' },
-              ...replicaResourceArns(['us-east-1', 'us-east-2']),
             ],
           },
         ],
@@ -401,19 +287,6 @@ describe('grants', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
-          ...keyStatements(
-            [
-              'kms:Decrypt',
-              'kms:DescribeKey',
-              'kms:Encrypt',
-              'kms:ReEncrypt*',
-              'kms:GenerateDataKey*',
-            ],
-            {
-              'us-east-1': 'arn:aws:kms:us-east-1:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
-              'us-east-2': 'arn:aws:kms:us-east-2:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
-            },
-          ),
           {
             Action: [
               'kms:Decrypt',
@@ -447,7 +320,6 @@ describe('grants', () => {
                 ],
               },
               { Ref: 'AWS::NoValue' },
-              ...replicaResourceArns(['us-east-1', 'us-east-2']),
             ],
           },
         ],
@@ -506,7 +378,6 @@ describe('grants', () => {
                 ],
               },
               { Ref: 'AWS::NoValue' },
-              ...replicaResourceArns(['us-east-1', 'us-east-2']),
             ],
           },
         ],
@@ -546,19 +417,6 @@ describe('grants', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
-          ...keyStatements(
-            [
-              'kms:Decrypt',
-              'kms:DescribeKey',
-              'kms:Encrypt',
-              'kms:ReEncrypt*',
-              'kms:GenerateDataKey*',
-            ],
-            {
-              'us-east-1': 'arn:aws:kms:us-east-1:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
-              'us-east-2': 'arn:aws:kms:us-east-2:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
-            },
-          ),
           {
             Action: [
               'kms:Decrypt',
@@ -599,7 +457,6 @@ describe('grants', () => {
                 ],
               },
               { Ref: 'AWS::NoValue' },
-              ...replicaResourceArns(['us-east-1', 'us-east-2']),
             ],
           },
         ],
@@ -645,7 +502,6 @@ describe('grants', () => {
                 ],
               },
               { Ref: 'AWS::NoValue' },
-              ...replicaResourceArns(['us-east-1', 'us-east-2']),
             ],
           },
         ],
@@ -685,19 +541,6 @@ describe('grants', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
-          ...keyStatements(
-            [
-              'kms:Decrypt',
-              'kms:DescribeKey',
-              'kms:Encrypt',
-              'kms:ReEncrypt*',
-              'kms:GenerateDataKey*',
-            ],
-            {
-              'us-east-1': 'arn:aws:kms:us-east-1:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
-              'us-east-2': 'arn:aws:kms:us-east-2:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
-            },
-          ),
           {
             Action: [
               'kms:Decrypt',
@@ -725,7 +568,6 @@ describe('grants', () => {
                 ],
               },
               { Ref: 'AWS::NoValue' },
-              ...replicaResourceArns(['us-east-1', 'us-east-2']),
             ],
           },
         ],
@@ -799,8 +641,6 @@ describe('grants', () => {
                   ],
                 ],
               },
-              ...replicaResourceArns(['us-east-1', 'us-east-2']),
-              ...replicaIndexArns(['us-east-1', 'us-east-2']),
             ],
           },
         ],
@@ -839,15 +679,12 @@ describe('grants', () => {
               'dynamodb:StreamAction1',
               'dynamodb:StreamAction2',
             ],
-            Resource: [
-              {
-                'Fn::GetAtt': [
-                  'Resource',
-                  'StreamArn',
-                ],
-              },
-              ...replicaStreamArns(['us-east-1', 'us-east-2']),
-            ],
+            Resource: {
+              'Fn::GetAtt': [
+                'Resource',
+                'StreamArn',
+              ],
+            },
           },
         ],
         Version: '2012-10-17',
@@ -883,15 +720,12 @@ describe('grants', () => {
           {
             Action: 'dynamodb:ListStreams',
             Effect: 'Allow',
-            Resource: [
-              {
-                'Fn::GetAtt': [
-                  'Resource',
-                  'StreamArn',
-                ],
-              },
-              ...replicaStreamArns(['us-east-1', 'us-east-2']),
-            ],
+            Resource: {
+              'Fn::GetAtt': [
+                'Resource',
+                'StreamArn',
+              ],
+            },
           },
           {
             Action: [
@@ -900,15 +734,12 @@ describe('grants', () => {
               'dynamodb:GetShardIterator',
             ],
             Effect: 'Allow',
-            Resource: [
-              {
-                'Fn::GetAtt': [
-                  'Resource',
-                  'StreamArn',
-                ],
-              },
-              ...replicaStreamArns(['us-east-1', 'us-east-2']),
-            ],
+            Resource: {
+              'Fn::GetAtt': [
+                'Resource',
+                'StreamArn',
+              ],
+            },
           },
         ],
         Version: '2012-10-17',
@@ -944,26 +775,13 @@ describe('grants', () => {
           {
             Action: 'dynamodb:ListStreams',
             Effect: 'Allow',
-            Resource: [
-              {
-                'Fn::GetAtt': [
-                  'Resource',
-                  'StreamArn',
-                ],
-              },
-              ...replicaStreamArns(['us-east-1', 'us-east-2']),
-            ],
-          },
-          ...keyStatements(
-            [
-              'kms:Decrypt',
-              'kms:DescribeKey',
-            ],
-            {
-              'us-east-1': 'arn:aws:kms:us-east-1:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
-              'us-east-2': 'arn:aws:kms:us-east-2:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
+            Resource: {
+              'Fn::GetAtt': [
+                'Resource',
+                'StreamArn',
+              ],
             },
-          ),
+          },
           {
             Action: [
               'kms:Decrypt',
@@ -984,15 +802,12 @@ describe('grants', () => {
               'dynamodb:GetShardIterator',
             ],
             Effect: 'Allow',
-            Resource: [
-              {
-                'Fn::GetAtt': [
-                  'Resource',
-                  'StreamArn',
-                ],
-              },
-              ...replicaStreamArns(['us-east-1', 'us-east-2']),
-            ],
+            Resource: {
+              'Fn::GetAtt': [
+                'Resource',
+                'StreamArn',
+              ],
+            },
           },
         ],
         Version: '2012-10-17',
@@ -1023,15 +838,12 @@ describe('grants', () => {
           {
             Action: 'dynamodb:ListStreams',
             Effect: 'Allow',
-            Resource: [
-              {
-                'Fn::GetAtt': [
-                  'Resource',
-                  'StreamArn',
-                ],
-              },
-              ...replicaStreamArns(['us-east-1', 'us-east-2']),
-            ],
+            Resource: {
+              'Fn::GetAtt': [
+                'Resource',
+                'StreamArn',
+              ],
+            },
           },
         ],
         Version: '2012-10-17',
@@ -1576,7 +1388,7 @@ describe('grants', () => {
     // WHEN / THEN
     expect(() => {
       globalTable.grantStreamRead(user);
-    }).toThrow('No stream ARNs found on the table Stack/GlobalTable');
+    }).toThrow('No stream ARN found on the table Stack/GlobalTable');
   });
 });
 

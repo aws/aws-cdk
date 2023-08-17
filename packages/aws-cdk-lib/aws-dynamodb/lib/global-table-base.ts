@@ -55,12 +55,6 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
 
   protected abstract readonly region: string;
 
-  protected readonly replicaKeys: { [region: string]: IKey } = {};
-
-  protected readonly replicaArns: string[] = [];
-
-  protected readonly streamArns: string[] = [];
-
   protected abstract get hasIndex(): boolean;
 
   /**
@@ -79,8 +73,6 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
       resourceArns: [
         this.tableArn,
         this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE,
-        ...this.replicaArns,
-        ...this.replicaArns.map(arn => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE),
       ],
       scope: this,
     });
@@ -96,14 +88,14 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
    * @param actions the set of actions to allow (i.e., 'dynamodb:DescribeStream', 'dynamodb:GetRecords', etc.)
    */
   public grantStream(grantee: IGrantable, ...actions: string[]): Grant {
-    if (this.streamArns.length === 0) {
-      throw new Error(`No stream ARNs found on the table ${this.node.path}`);
+    if (!this.tableStreamArn) {
+      throw new Error(`No stream ARN found on the table ${this.node.path}`);
     }
 
     return Grant.addToPrincipal({
       grantee,
       actions,
-      resourceArns: this.streamArns,
+      resourceArns: [this.tableStreamArn],
     });
   }
 
@@ -132,14 +124,14 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
    * @param grantee the principal to grant access to
    */
   public grantTableListStreams(grantee: IGrantable): Grant {
-    if (this.streamArns.length == 0) {
-      throw new Error(`No stream ARNs found on the table ${this.node.path}`);
+    if (!this.tableStreamArn) {
+      throw new Error(`No stream ARN found on the table ${this.node.path}`);
     }
 
     return Grant.addToPrincipal({
       grantee,
       actions: ['dynamodb:ListStreams'],
-      resourceArns: this.streamArns,
+      resourceArns: [this.tableStreamArn],
     });
   }
 
@@ -426,19 +418,14 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
    * @param options options for keyActions, tableActions, and streamActions
    */
   private combinedGrant(grantee: IGrantable, options: { keyActions?: string[], tableActions?: string[], streamActions?: string[] }) {
-    if (options.keyActions) {
-      for (const key of Object.values(this.replicaKeys)) {
-        key.grant(grantee, ...options.keyActions);
-      }
-      this.encryptionKey && this.encryptionKey.grant(grantee, ...options.keyActions);
+    if (options.keyActions && this.encryptionKey) {
+      this.encryptionKey.grant(grantee, ...options.keyActions);
     }
 
     if (options.tableActions) {
       const resources = [
         this.tableArn,
         this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE,
-        ...this.replicaArns,
-        ...this.replicaArns.map(arn => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE),
       ];
       return Grant.addToPrincipal({
         grantee,
@@ -449,14 +436,14 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
     }
 
     if (options.streamActions) {
-      if (this.streamArns.length === 0) {
+      if (!this.tableStreamArn) {
         throw new Error(`No stream ARNs found on the table ${this.node.path}`);
       }
 
       return Grant.addToPrincipal({
         grantee,
         actions: options.streamActions,
-        resourceArns: this.streamArns,
+        resourceArns: [this.tableStreamArn],
         scope: this,
       });
     }
@@ -465,24 +452,10 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
   }
 
   private configureMetric(props: MetricProps) {
-    if (!props?.region && !props?.account) {
-      return new Metric({
-        region: this.region,
-        account: this.stack.account,
-        ...props,
-      });
-    }
-
-    if (!props?.region) {
-      return new Metric({
-        region: this.region,
-        ...props,
-      });
-    }
-
     return new Metric({
-      account: this.stack.account,
       ...props,
+      region: props?.region ?? this.region,
+      account: props?.account ?? this.stack.account,
     });
   }
 }
