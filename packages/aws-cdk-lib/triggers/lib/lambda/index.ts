@@ -53,6 +53,11 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     return;
   }
 
+  if (event.RequestType === 'Update' && event.ResourceProperties.ExecuteOnHandlerChange === 'false') {
+    console.log('not calling trigger because ExecuteOnHandlerChange is false');
+    return;
+  }
+
   const handlerArn = event.ResourceProperties.HandlerArn;
   if (!handlerArn) {
     throw new Error('The "HandlerArn" property is required');

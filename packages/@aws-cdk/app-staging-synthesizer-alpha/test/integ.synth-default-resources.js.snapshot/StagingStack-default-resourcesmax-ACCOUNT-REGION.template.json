@@ -637,18 +637,31 @@
          ],
          "Resource": [
           {
-           "Fn::GetAtt": [
-            "defaultresourcesmaxecrasset13112F7F9",
-            "Arn"
-           ]
-          },
-          {
-           "Fn::GetAtt": [
-            "defaultresourcesmaxecrasset2904B88A7",
-            "Arn"
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":ecr:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":repository/*"
+            ]
            ]
           }
-         ]
+         ],
+         "Condition": {
+          "StringEquals": {
+           "ecr:ResourceTag/aws-cdk:auto-delete-images": "true"
+          }
+         }
         }
        ]
       }

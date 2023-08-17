@@ -46,13 +46,13 @@
     "Code": {
      "ZipFile": "exports.handler = function() { console.log(\"hi\"); };"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "MyTriggerFunctionServiceRole1BB78C29",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
     "Runtime": "nodejs16.x"
    },
    "DependsOn": [
@@ -72,7 +72,8 @@
      "Ref": "MyTriggerFunctionCurrentVersion61957CE160cd5b4c06c4d00191dc10a647ea0777"
     },
     "InvocationType": "RequestResponse",
-    "Timeout": "120000"
+    "Timeout": "120000",
+    "ExecuteOnHandlerChange": true
    },
    "DependsOn": [
     "Topic269377B75"
@@ -237,7 +238,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "bcb8f5f1cebce365c4a0bf886b9820908bb469b121d65ef42809ae9798fb9232.zip"
+     "S3Key": "237e4a416773a5765262a8b9c70210bd35dfd48ae5a364b19e35f260026b5139.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -299,13 +300,13 @@
     "Code": {
      "ZipFile": "exports.handler = async function() { await setTimeout(() => {console.log(\"hi\")}, 3*60*1000); };"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "MyLambdaFunctionServiceRole313A4D46",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
     "Runtime": "nodejs16.x",
     "Timeout": 900
    },
@@ -334,7 +335,8 @@
      "Ref": "MyLambdaFunctionCurrentVersion4FAB80EC75f2df347bcc21ea05f818cb68778d9f"
     },
     "InvocationType": "Event",
-    "Timeout": "60000"
+    "Timeout": "60000",
+    "ExecuteOnHandlerChange": true
    },
    "DependsOn": [
     "Topic198E71B3E",
@@ -413,12 +415,6 @@
      },
      "S3Key": "004b12857696fed3c10ad54c8e3cabd07cdf653ec469cbadab6c64ae6c9ce690.zip"
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "MyAssertionLambdaFunctionServiceRole36146F3B",
-      "Arn"
-     ]
-    },
     "Environment": {
      "Variables": {
       "QUEUE_URL": {
@@ -427,6 +423,12 @@
      }
     },
     "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "MyAssertionLambdaFunctionServiceRole36146F3B",
+      "Arn"
+     ]
+    },
     "Runtime": "nodejs16.x",
     "Timeout": 900
    },
@@ -456,7 +458,8 @@
      "Ref": "MyAssertionLambdaFunctionCurrentVersionF4FA4C80f14c7075b9f4d7c63066e881d45e211c"
     },
     "InvocationType": "RequestResponse",
-    "Timeout": "60000"
+    "Timeout": "60000",
+    "ExecuteOnHandlerChange": true
    },
    "DependsOn": [
     "TestQueue6F0069AA"
@@ -501,13 +504,13 @@
     "Code": {
      "ZipFile": "exports.handler = function() { console.log(\"hello\"); };"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "MySecondFunctionServiceRole5B930841",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
     "Runtime": "nodejs16.x"
    },
    "DependsOn": [
@@ -527,7 +530,8 @@
      "Ref": "MySecondFunctionCurrentVersion7D497B5D173a4bb1f758991022ea97d651403362"
     },
     "InvocationType": "RequestResponse",
-    "Timeout": "120000"
+    "Timeout": "120000",
+    "ExecuteOnHandlerChange": true
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -553,7 +557,8 @@
      "Ref": "MyLambdaFunctionCurrentVersion4FAB80EC75f2df347bcc21ea05f818cb68778d9f"
     },
     "InvocationType": "RequestResponse",
-    "Timeout": "120000"
+    "Timeout": "120000",
+    "ExecuteOnHandlerChange": true
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
