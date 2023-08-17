@@ -1,6 +1,6 @@
 import * as fc from 'fast-check';
-import { diffTemplate, ResourceImpact } from '../lib/diff-template';
 import { arbitraryTemplate } from './test-arbitraries';
+import { diffTemplate, ResourceImpact } from '../lib/diff-template';
 
 const POLICY_DOCUMENT = { foo: 'Bar' }; // Obviously a fake one!
 const BUCKET_POLICY_RESOURCE = {
