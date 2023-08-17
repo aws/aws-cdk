@@ -1538,6 +1538,88 @@ var require_eventStream = __commonJS({
   }
 });
 
+// ../../../node_modules/@smithy/types/dist-cjs/extensions/checksum.js
+var require_checksum2 = __commonJS({
+  "../../../node_modules/@smithy/types/dist-cjs/extensions/checksum.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.resolveChecksumRuntimeConfig = exports.getChecksumConfiguration = exports.AlgorithmId = void 0;
+    var AlgorithmId;
+    (function(AlgorithmId2) {
+      AlgorithmId2["MD5"] = "md5";
+      AlgorithmId2["CRC32"] = "crc32";
+      AlgorithmId2["CRC32C"] = "crc32c";
+      AlgorithmId2["SHA1"] = "sha1";
+      AlgorithmId2["SHA256"] = "sha256";
+    })(AlgorithmId = exports.AlgorithmId || (exports.AlgorithmId = {}));
+    var getChecksumConfiguration = (runtimeConfig) => {
+      const checksumAlgorithms = [];
+      if (runtimeConfig.sha256 !== void 0) {
+        checksumAlgorithms.push({
+          algorithmId: () => AlgorithmId.SHA256,
+          checksumConstructor: () => runtimeConfig.sha256
+        });
+      }
+      if (runtimeConfig.md5 != void 0) {
+        checksumAlgorithms.push({
+          algorithmId: () => AlgorithmId.MD5,
+          checksumConstructor: () => runtimeConfig.md5
+        });
+      }
+      return {
+        _checksumAlgorithms: checksumAlgorithms,
+        addChecksumAlgorithm(algo) {
+          this._checksumAlgorithms.push(algo);
+        },
+        checksumAlgorithms() {
+          return this._checksumAlgorithms;
+        }
+      };
+    };
+    exports.getChecksumConfiguration = getChecksumConfiguration;
+    var resolveChecksumRuntimeConfig = (clientConfig) => {
+      const runtimeConfig = {};
+      clientConfig.checksumAlgorithms().forEach((checksumAlgorithm) => {
+        runtimeConfig[checksumAlgorithm.algorithmId()] = checksumAlgorithm.checksumConstructor();
+      });
+      return runtimeConfig;
+    };
+    exports.resolveChecksumRuntimeConfig = resolveChecksumRuntimeConfig;
+  }
+});
+
+// ../../../node_modules/@smithy/types/dist-cjs/extensions/defaultClientConfiguration.js
+var require_defaultClientConfiguration = __commonJS({
+  "../../../node_modules/@smithy/types/dist-cjs/extensions/defaultClientConfiguration.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.resolveDefaultRuntimeConfig = exports.getDefaultClientConfiguration = void 0;
+    var checksum_1 = require_checksum2();
+    var getDefaultClientConfiguration = (runtimeConfig) => {
+      return {
+        ...(0, checksum_1.getChecksumConfiguration)(runtimeConfig)
+      };
+    };
+    exports.getDefaultClientConfiguration = getDefaultClientConfiguration;
+    var resolveDefaultRuntimeConfig = (config) => {
+      return {
+        ...(0, checksum_1.resolveChecksumRuntimeConfig)(config)
+      };
+    };
+    exports.resolveDefaultRuntimeConfig = resolveDefaultRuntimeConfig;
+  }
+});
+
+// ../../../node_modules/@smithy/types/dist-cjs/extensions/index.js
+var require_extensions = __commonJS({
+  "../../../node_modules/@smithy/types/dist-cjs/extensions/index.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
+    tslib_1.__exportStar(require_defaultClientConfiguration(), exports);
+  }
+});
+
 // ../../../node_modules/@smithy/types/dist-cjs/http.js
 var require_http = __commonJS({
   "../../../node_modules/@smithy/types/dist-cjs/http.js"(exports) {
@@ -1756,6 +1838,7 @@ var require_dist_cjs = __commonJS({
     tslib_1.__exportStar(require_endpoint(), exports);
     tslib_1.__exportStar(require_endpoints(), exports);
     tslib_1.__exportStar(require_eventStream(), exports);
+    tslib_1.__exportStar(require_extensions(), exports);
     tslib_1.__exportStar(require_http(), exports);
     tslib_1.__exportStar(require_identity2(), exports);
     tslib_1.__exportStar(require_logger(), exports);
@@ -5224,7 +5307,7 @@ var require_blob_types = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/types/dist-cjs/checksum.js
-var require_checksum2 = __commonJS({
+var require_checksum3 = __commonJS({
   "../../../node_modules/@aws-sdk/types/dist-cjs/checksum.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -5518,7 +5601,7 @@ var require_dist_cjs17 = __commonJS({
     tslib_1.__exportStar(require_abort2(), exports);
     tslib_1.__exportStar(require_auth2(), exports);
     tslib_1.__exportStar(require_blob_types(), exports);
-    tslib_1.__exportStar(require_checksum2(), exports);
+    tslib_1.__exportStar(require_checksum3(), exports);
     tslib_1.__exportStar(require_client2(), exports);
     tslib_1.__exportStar(require_command2(), exports);
     tslib_1.__exportStar(require_connection2(), exports);
@@ -10396,7 +10479,7 @@ var require_package = __commonJS({
     module2.exports = {
       name: "@aws-sdk/client-sfn",
       description: "AWS SDK for JavaScript Sfn Client for Node.js, Browser and React Native",
-      version: "3.388.0",
+      version: "3.391.0",
       scripts: {
         build: "concurrently 'yarn:build:cjs' 'yarn:build:es' 'yarn:build:types'",
         "build:cjs": "tsc -p tsconfig.cjs.json",
@@ -10416,37 +10499,37 @@ var require_package = __commonJS({
       dependencies: {
         "@aws-crypto/sha256-browser": "3.0.0",
         "@aws-crypto/sha256-js": "3.0.0",
-        "@aws-sdk/client-sts": "3.388.0",
-        "@aws-sdk/credential-provider-node": "3.388.0",
-        "@aws-sdk/middleware-host-header": "3.387.0",
-        "@aws-sdk/middleware-logger": "3.387.0",
-        "@aws-sdk/middleware-recursion-detection": "3.387.0",
-        "@aws-sdk/middleware-signing": "3.387.0",
-        "@aws-sdk/middleware-user-agent": "3.387.0",
-        "@aws-sdk/types": "3.387.0",
-        "@aws-sdk/util-endpoints": "3.387.0",
-        "@aws-sdk/util-user-agent-browser": "3.387.0",
-        "@aws-sdk/util-user-agent-node": "3.387.0",
-        "@smithy/config-resolver": "^2.0.2",
-        "@smithy/fetch-http-handler": "^2.0.2",
-        "@smithy/hash-node": "^2.0.2",
-        "@smithy/invalid-dependency": "^2.0.2",
-        "@smithy/middleware-content-length": "^2.0.2",
-        "@smithy/middleware-endpoint": "^2.0.2",
-        "@smithy/middleware-retry": "^2.0.2",
-        "@smithy/middleware-serde": "^2.0.2",
+        "@aws-sdk/client-sts": "3.391.0",
+        "@aws-sdk/credential-provider-node": "3.391.0",
+        "@aws-sdk/middleware-host-header": "3.391.0",
+        "@aws-sdk/middleware-logger": "3.391.0",
+        "@aws-sdk/middleware-recursion-detection": "3.391.0",
+        "@aws-sdk/middleware-signing": "3.391.0",
+        "@aws-sdk/middleware-user-agent": "3.391.0",
+        "@aws-sdk/types": "3.391.0",
+        "@aws-sdk/util-endpoints": "3.391.0",
+        "@aws-sdk/util-user-agent-browser": "3.391.0",
+        "@aws-sdk/util-user-agent-node": "3.391.0",
+        "@smithy/config-resolver": "^2.0.3",
+        "@smithy/fetch-http-handler": "^2.0.3",
+        "@smithy/hash-node": "^2.0.3",
+        "@smithy/invalid-dependency": "^2.0.3",
+        "@smithy/middleware-content-length": "^2.0.3",
+        "@smithy/middleware-endpoint": "^2.0.3",
+        "@smithy/middleware-retry": "^2.0.3",
+        "@smithy/middleware-serde": "^2.0.3",
         "@smithy/middleware-stack": "^2.0.0",
-        "@smithy/node-config-provider": "^2.0.2",
-        "@smithy/node-http-handler": "^2.0.2",
-        "@smithy/protocol-http": "^2.0.2",
-        "@smithy/smithy-client": "^2.0.2",
-        "@smithy/types": "^2.1.0",
-        "@smithy/url-parser": "^2.0.2",
+        "@smithy/node-config-provider": "^2.0.3",
+        "@smithy/node-http-handler": "^2.0.3",
+        "@smithy/protocol-http": "^2.0.3",
+        "@smithy/smithy-client": "^2.0.3",
+        "@smithy/types": "^2.2.0",
+        "@smithy/url-parser": "^2.0.3",
         "@smithy/util-base64": "^2.0.0",
         "@smithy/util-body-length-browser": "^2.0.0",
         "@smithy/util-body-length-node": "^2.0.0",
-        "@smithy/util-defaults-mode-browser": "^2.0.2",
-        "@smithy/util-defaults-mode-node": "^2.0.2",
+        "@smithy/util-defaults-mode-browser": "^2.0.3",
+        "@smithy/util-defaults-mode-node": "^2.0.3",
         "@smithy/util-retry": "^2.0.0",
         "@smithy/util-utf8": "^2.0.0",
         tslib: "^2.5.0"
@@ -10535,7 +10618,7 @@ var require_package2 = __commonJS({
     module2.exports = {
       name: "@aws-sdk/client-sts",
       description: "AWS SDK for JavaScript Sts Client for Node.js, Browser and React Native",
-      version: "3.388.0",
+      version: "3.391.0",
       scripts: {
         build: "concurrently 'yarn:build:cjs' 'yarn:build:es' 'yarn:build:types'",
         "build:cjs": "tsc -p tsconfig.cjs.json",
@@ -10557,37 +10640,37 @@ var require_package2 = __commonJS({
       dependencies: {
         "@aws-crypto/sha256-browser": "3.0.0",
         "@aws-crypto/sha256-js": "3.0.0",
-        "@aws-sdk/credential-provider-node": "3.388.0",
-        "@aws-sdk/middleware-host-header": "3.387.0",
-        "@aws-sdk/middleware-logger": "3.387.0",
-        "@aws-sdk/middleware-recursion-detection": "3.387.0",
-        "@aws-sdk/middleware-sdk-sts": "3.387.0",
-        "@aws-sdk/middleware-signing": "3.387.0",
-        "@aws-sdk/middleware-user-agent": "3.387.0",
-        "@aws-sdk/types": "3.387.0",
-        "@aws-sdk/util-endpoints": "3.387.0",
-        "@aws-sdk/util-user-agent-browser": "3.387.0",
-        "@aws-sdk/util-user-agent-node": "3.387.0",
-        "@smithy/config-resolver": "^2.0.2",
-        "@smithy/fetch-http-handler": "^2.0.2",
-        "@smithy/hash-node": "^2.0.2",
-        "@smithy/invalid-dependency": "^2.0.2",
-        "@smithy/middleware-content-length": "^2.0.2",
-        "@smithy/middleware-endpoint": "^2.0.2",
-        "@smithy/middleware-retry": "^2.0.2",
-        "@smithy/middleware-serde": "^2.0.2",
+        "@aws-sdk/credential-provider-node": "3.391.0",
+        "@aws-sdk/middleware-host-header": "3.391.0",
+        "@aws-sdk/middleware-logger": "3.391.0",
+        "@aws-sdk/middleware-recursion-detection": "3.391.0",
+        "@aws-sdk/middleware-sdk-sts": "3.391.0",
+        "@aws-sdk/middleware-signing": "3.391.0",
+        "@aws-sdk/middleware-user-agent": "3.391.0",
+        "@aws-sdk/types": "3.391.0",
+        "@aws-sdk/util-endpoints": "3.391.0",
+        "@aws-sdk/util-user-agent-browser": "3.391.0",
+        "@aws-sdk/util-user-agent-node": "3.391.0",
+        "@smithy/config-resolver": "^2.0.3",
+        "@smithy/fetch-http-handler": "^2.0.3",
+        "@smithy/hash-node": "^2.0.3",
+        "@smithy/invalid-dependency": "^2.0.3",
+        "@smithy/middleware-content-length": "^2.0.3",
+        "@smithy/middleware-endpoint": "^2.0.3",
+        "@smithy/middleware-retry": "^2.0.3",
+        "@smithy/middleware-serde": "^2.0.3",
         "@smithy/middleware-stack": "^2.0.0",
-        "@smithy/node-config-provider": "^2.0.2",
-        "@smithy/node-http-handler": "^2.0.2",
-        "@smithy/protocol-http": "^2.0.2",
-        "@smithy/smithy-client": "^2.0.2",
-        "@smithy/types": "^2.1.0",
-        "@smithy/url-parser": "^2.0.2",
+        "@smithy/node-config-provider": "^2.0.3",
+        "@smithy/node-http-handler": "^2.0.3",
+        "@smithy/protocol-http": "^2.0.3",
+        "@smithy/smithy-client": "^2.0.3",
+        "@smithy/types": "^2.2.0",
+        "@smithy/url-parser": "^2.0.3",
         "@smithy/util-base64": "^2.0.0",
         "@smithy/util-body-length-browser": "^2.0.0",
         "@smithy/util-body-length-node": "^2.0.0",
-        "@smithy/util-defaults-mode-browser": "^2.0.2",
-        "@smithy/util-defaults-mode-node": "^2.0.2",
+        "@smithy/util-defaults-mode-browser": "^2.0.3",
+        "@smithy/util-defaults-mode-node": "^2.0.3",
         "@smithy/util-retry": "^2.0.0",
         "@smithy/util-utf8": "^2.0.0",
         "fast-xml-parser": "4.2.5",
@@ -14806,7 +14889,7 @@ var require_package3 = __commonJS({
     module2.exports = {
       name: "@aws-sdk/client-sso",
       description: "AWS SDK for JavaScript Sso Client for Node.js, Browser and React Native",
-      version: "3.387.0",
+      version: "3.391.0",
       scripts: {
         build: "concurrently 'yarn:build:cjs' 'yarn:build:es' 'yarn:build:types'",
         "build:cjs": "tsc -p tsconfig.cjs.json",
@@ -14826,34 +14909,34 @@ var require_package3 = __commonJS({
       dependencies: {
         "@aws-crypto/sha256-browser": "3.0.0",
         "@aws-crypto/sha256-js": "3.0.0",
-        "@aws-sdk/middleware-host-header": "3.387.0",
-        "@aws-sdk/middleware-logger": "3.387.0",
-        "@aws-sdk/middleware-recursion-detection": "3.387.0",
-        "@aws-sdk/middleware-user-agent": "3.387.0",
-        "@aws-sdk/types": "3.387.0",
-        "@aws-sdk/util-endpoints": "3.387.0",
-        "@aws-sdk/util-user-agent-browser": "3.387.0",
-        "@aws-sdk/util-user-agent-node": "3.387.0",
-        "@smithy/config-resolver": "^2.0.2",
-        "@smithy/fetch-http-handler": "^2.0.2",
-        "@smithy/hash-node": "^2.0.2",
-        "@smithy/invalid-dependency": "^2.0.2",
-        "@smithy/middleware-content-length": "^2.0.2",
-        "@smithy/middleware-endpoint": "^2.0.2",
-        "@smithy/middleware-retry": "^2.0.2",
-        "@smithy/middleware-serde": "^2.0.2",
+        "@aws-sdk/middleware-host-header": "3.391.0",
+        "@aws-sdk/middleware-logger": "3.391.0",
+        "@aws-sdk/middleware-recursion-detection": "3.391.0",
+        "@aws-sdk/middleware-user-agent": "3.391.0",
+        "@aws-sdk/types": "3.391.0",
+        "@aws-sdk/util-endpoints": "3.391.0",
+        "@aws-sdk/util-user-agent-browser": "3.391.0",
+        "@aws-sdk/util-user-agent-node": "3.391.0",
+        "@smithy/config-resolver": "^2.0.3",
+        "@smithy/fetch-http-handler": "^2.0.3",
+        "@smithy/hash-node": "^2.0.3",
+        "@smithy/invalid-dependency": "^2.0.3",
+        "@smithy/middleware-content-length": "^2.0.3",
+        "@smithy/middleware-endpoint": "^2.0.3",
+        "@smithy/middleware-retry": "^2.0.3",
+        "@smithy/middleware-serde": "^2.0.3",
         "@smithy/middleware-stack": "^2.0.0",
-        "@smithy/node-config-provider": "^2.0.2",
-        "@smithy/node-http-handler": "^2.0.2",
-        "@smithy/protocol-http": "^2.0.2",
-        "@smithy/smithy-client": "^2.0.2",
-        "@smithy/types": "^2.1.0",
-        "@smithy/url-parser": "^2.0.2",
+        "@smithy/node-config-provider": "^2.0.3",
+        "@smithy/node-http-handler": "^2.0.3",
+        "@smithy/protocol-http": "^2.0.3",
+        "@smithy/smithy-client": "^2.0.3",
+        "@smithy/types": "^2.2.0",
+        "@smithy/url-parser": "^2.0.3",
         "@smithy/util-base64": "^2.0.0",
         "@smithy/util-body-length-browser": "^2.0.0",
         "@smithy/util-body-length-node": "^2.0.0",
-        "@smithy/util-defaults-mode-browser": "^2.0.2",
-        "@smithy/util-defaults-mode-node": "^2.0.2",
+        "@smithy/util-defaults-mode-browser": "^2.0.3",
+        "@smithy/util-defaults-mode-node": "^2.0.3",
         "@smithy/util-retry": "^2.0.0",
         "@smithy/util-utf8": "^2.0.0",
         tslib: "^2.5.0"

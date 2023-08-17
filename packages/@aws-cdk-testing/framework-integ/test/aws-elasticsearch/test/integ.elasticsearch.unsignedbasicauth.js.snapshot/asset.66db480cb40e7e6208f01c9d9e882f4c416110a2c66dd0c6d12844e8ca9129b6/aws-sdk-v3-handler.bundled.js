@@ -561,15 +561,25 @@ var import_sdk_v2_to_v3_adapter = __toESM(require_lib());
 
 // custom-resources/lib/aws-custom-resource/runtime/shared.ts
 var PHYSICAL_RESOURCE_ID_REFERENCE = "PHYSICAL:RESOURCEID:";
+var decoder = new TextDecoder();
+function parseField(value) {
+  if (Buffer.isBuffer(value)) {
+    return value.toString("utf8");
+  } else if (ArrayBuffer.isView(value)) {
+    return decoder.decode(value.buffer);
+  }
+  return value;
+}
 function flatten(object) {
+  function _flatten(child, path = []) {
+    return [].concat(...Object.keys(child).map((key) => {
+      const childKey = parseField(child[key]);
+      return typeof childKey === "object" && childKey !== null ? _flatten(childKey, path.concat([key])) : { [path.concat([key]).join(".")]: childKey };
+    }));
+  }
   return Object.assign(
     {},
-    ...function _flatten(child, path = []) {
-      return [].concat(...Object.keys(child).map((key) => {
-        const childKey = Buffer.isBuffer(child[key]) ? child[key].toString("utf8") : child[key];
-        return typeof childKey === "object" && childKey !== null ? _flatten(childKey, path.concat([key])) : { [path.concat([key]).join(".")]: childKey };
-      }));
-    }(object)
+    ..._flatten(object)
   );
 }
 function decodeSpecialValues(object, physicalResourceId) {
