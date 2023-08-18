@@ -863,7 +863,7 @@ export class Repository extends RepositoryBase {
       codeDirectory: path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-ecr', 'auto-delete-images-handler'),
       useCfnResponseWrapper: false,
       runtime: CustomResourceProviderRuntime.NODEJS_18_X,
-      description: `Lambda function for auto-deleting images in ${this.repositoryName} repository.`,
+      description: `Lambda function for auto-deleting images in ${Lazy.string({ produce: () => this.repositoryName })} repository.`,
     });
 
     if (firstTime) {
