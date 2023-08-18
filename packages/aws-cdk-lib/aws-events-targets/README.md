@@ -9,7 +9,7 @@ Currently supported are:
 
 * [Start a CodeBuild build](#start-a-codebuild-build)
 * [Start a CodePipeline pipeline](#start-a-codepipeline-pipeline)
-* Run an ECS task
+* [Run an ECS task](#run-an-ecs-task)
 * [Invoke a Lambda function](#invoke-a-lambda-function)
 * [Invoke a API Gateway REST API](#invoke-an-api-gateway-rest-api)
 * Publish a message to an SNS topic
