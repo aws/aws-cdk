@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable import/no-extraneous-dependencies */
 import { LambdaClient, DeleteFunctionCommand } from '@aws-sdk/client-lambda';
 import { SyntheticsClient, GetCanaryCommand } from '@aws-sdk/client-synthetics';
@@ -29,14 +30,19 @@ async function onUpdate(event: AWSLambda.CloudFormationCustomResourceEvent) {
     && (newCanaryName !== oldCanaryName);
 
   // If the name of the canary has changed, CloudFormation will delete the canary
-  // and create a new one with the new name. So the old lambda will be isolated
-  // and we should try to delete the old lambdae. */
+  // and create a new one with the new name. Returning a PhysicalResourceId that
+  // differs from the event's PhysicalResourceId will trigger a `Delete` event
+  // for this custom resource. That `Delete` event will handle deleting the lambda
+  // associated with the deleted canary.
   if (canaryNameHasChanged) {
-    return onDelete(oldCanaryName);
+    return { PhysicalResourceId: newCanaryName };
   }
+  return { PhysicalResourceId: (event as any).PhysicalResourceId };
 }
 
 async function onDelete(canaryName: string) {
+  console.log(`Deleting lambda function associated with ${canaryName}`);
+
   if (!canaryName) {
     throw new Error('No CanaryName was provided.');
   }
@@ -46,14 +52,31 @@ async function onDelete(canaryName: string) {
       Name: canaryName,
     })));
 
-    if (!isCanaryTaggedForDeletion(response.Canary?.Tags)) {
-      // eslint-disable-next-line no-console
+    // Unlikely to happen but here so I don't have to write '?' everywhere
+    if (response.Canary === undefined || response.Canary.Id === undefined) {
+      // Canary does not exist. Exiting.
+      return;
+    } else if (response.Canary.EngineArn === undefined) {
+      // Lambda does not exist. Exiting.
+      return;
+    }
+
+    if (!isCanaryTaggedForDeletion(response.Canary.Tags)) {
       console.log(`Canary does not have '${AUTO_DELETE_LAMBDA_TAG}' tag, skipping deletion.`);
       return;
     }
 
+    // EngineArn is a qualified function arn, but double check that is the case before removing qualifier
+    let qualifiedFunctionArnComponents = response.Canary.EngineArn.split(':');
+    if (!qualifiedFunctionArnComponents.at(-1)?.includes(response.Canary.Id)) {
+      qualifiedFunctionArnComponents.pop(); // remove qualifier
+    }
+
+    const unqualifedFunctionArn = qualifiedFunctionArnComponents.join(':');
+    console.log(`Deleting lambda ${unqualifedFunctionArn}`);
+
     await lambda.send(new DeleteFunctionCommand({
-      FunctionName: response.Canary?.ExecutionRoleArn,
+      FunctionName: unqualifedFunctionArn,
     }));
   } catch (error: any) {
     if (error.name !== 'ResourceNotFoundException') {
