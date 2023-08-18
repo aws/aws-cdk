@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as mimeTypes from 'mime-types';
 import { PhysicalName, Stack, ArnFormat, Names, RemovalPolicy } from 'aws-cdk-lib';
 import { CfnConfigurationProfile, CfnDeployment, CfnHostedConfigurationVersion } from 'aws-cdk-lib/aws-appconfig';
 import * as cp from 'aws-cdk-lib/aws-codepipeline';
@@ -55,9 +56,8 @@ export interface ConfigurationOptions {
   /**
    * The list of environments to deploy the configuration to.
    *
-   * If this parameter is not specified and there is only one environment
-   * associated to the application, then we will deploy to that one. Otherwise,
-   * there will be no deployment.
+   * If this parameter is not specified, then there will be no
+   * deployment.
    *
    * @default - None.
    */
@@ -305,13 +305,7 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
   }
 
   protected deployConfigToEnvironments() {
-    if (this.application.environments.length == 0) {
-      this.application.addEnvironment('Environment', {
-        description: this.description,
-      });
-    }
-
-    if ((!this.deployTo && this.application.environments.length > 1) || !this.versionNumber) {
+    if (!this.deployTo || !this.versionNumber) {
       return;
     }
 
@@ -320,9 +314,6 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
         return;
       }
       const logicalId = `Deployment${this.getDeploymentHash(environment)}`;
-      if (this.node.tryFindChild(logicalId)) {
-        return;
-      }
       new CfnDeployment(this, logicalId, {
         applicationId: this.application.applicationId,
         configurationProfileId: this.configurationProfileId,
@@ -343,11 +334,6 @@ export interface HostedConfigurationOptions extends ConfigurationOptions {
   readonly content: ConfigurationContent;
 
   /**
-   * The content type of the hosted configuration.
-   */
-  readonly contentType?: string;
-
-  /**
    * The latest version number of the hosted configuration.
    */
   readonly latestVersionNumber?: number;
@@ -363,11 +349,6 @@ export interface HostedConfigurationProps extends ConfigurationProps {
    * The content of the hosted configuration.
    */
   readonly content: ConfigurationContent;
-
-  /**
-   * The content type of the hosted configuration.
-   */
-  readonly contentType?: string;
 
   /**
    * The latest version number of the hosted configuration.
@@ -444,7 +425,7 @@ export class HostedConfiguration extends ConfigurationBase {
     this.extensible = new ExtensibleBase(scope, this.configurationProfileArn, this.name);
 
     this.content = props.content.content;
-    this.contentType = props.contentType || 'application/json';
+    this.contentType = props.content.contentType;
     this.latestVersionNumber = props.latestVersionNumber;
     this.versionLabel = props.versionLabel;
     this._cfnHostedConfigurationVersion = new CfnHostedConfigurationVersion(this, 'Resource', {
@@ -792,10 +773,12 @@ export abstract class ConfigurationContent {
    * Defines the hosted configuration content from a file.
    *
    * @param path The path to the file that defines configuration content
+   * @param contentType The content type of the configuration
    */
-  public static fromFile(path: string): ConfigurationContent {
+  public static fromFile(path: string, contentType?: string): ConfigurationContent {
     return {
       content: fs.readFileSync(path).toString(),
+      contentType: contentType || mimeTypes.lookup(path) || 'application/json',
     };
   }
 
@@ -803,10 +786,37 @@ export abstract class ConfigurationContent {
    * Defines the hosted configuration content from inline code.
    *
    * @param content The inline code that defines the configuration content
+   * @param contentType The content type of the configuration
    */
-  public static fromInline(content: string): ConfigurationContent {
+  public static fromInline(content: string, contentType?: string): ConfigurationContent {
     return {
       content,
+      contentType: contentType || 'application/octet-stream',
+    };
+  }
+
+  /**
+   * Defines the hosted configuration content as JSON from inline code.
+   *
+   * @param content The inline code that defines the configuration content
+   * @param contentType The content type of the configuration
+   */
+  public static fromInlineJson(content: string, contentType?: string): ConfigurationContent {
+    return {
+      content,
+      contentType: contentType || 'application/json',
+    };
+  }
+
+  /**
+   * Defines the hosted configuration content as text from inline code.
+   *
+   * @param content The inline code that defines the configuration content
+   */
+  public static fromInlineText(content: string): ConfigurationContent {
+    return {
+      content,
+      contentType: 'text/plain',
     };
   }
 
@@ -814,6 +824,11 @@ export abstract class ConfigurationContent {
    * The configuration content.
    */
   public abstract readonly content: string;
+
+  /**
+   * The configuration content type.
+   */
+  public abstract readonly contentType: string;
 }
 
 /**

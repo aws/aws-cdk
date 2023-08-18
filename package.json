@@ -96,6 +96,8 @@
       "@aws-cdk/assertions-alpha/fs-extra/**",
       "@aws-cdk/assertions/fs-extra",
       "@aws-cdk/assertions/fs-extra/**",
+      "@aws-cdk/aws-appconfig-alpha/mime-types",
+      "@aws-cdk/aws-appconfig-alpha/mime-types/**",
       "@aws-cdk/aws-codebuild/yaml",
       "@aws-cdk/aws-codebuild/yaml/**",
       "@aws-cdk/aws-codepipeline-actions/case",

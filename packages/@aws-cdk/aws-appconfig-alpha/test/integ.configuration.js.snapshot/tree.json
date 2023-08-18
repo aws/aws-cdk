@@ -49,7 +49,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
+                  "fqn": "@aws-cdk/aws-appconfig-alpha.Environment",
                   "version": "0.0.0"
                 }
               },
@@ -76,7 +76,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
+                  "fqn": "@aws-cdk/aws-appconfig-alpha.Environment",
                   "version": "0.0.0"
                 }
               },
@@ -103,7 +103,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
+                  "fqn": "@aws-cdk/aws-appconfig-alpha.Environment",
                   "version": "0.0.0"
                 }
               },
@@ -130,7 +130,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
+                  "fqn": "@aws-cdk/aws-appconfig-alpha.Environment",
                   "version": "0.0.0"
                 }
               },
@@ -157,7 +157,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
+                  "fqn": "@aws-cdk/aws-appconfig-alpha.Environment",
                   "version": "0.0.0"
                 }
               },
@@ -184,7 +184,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
+                  "fqn": "@aws-cdk/aws-appconfig-alpha.Environment",
                   "version": "0.0.0"
                 }
               },
@@ -211,13 +211,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
+                  "fqn": "@aws-cdk/aws-appconfig-alpha.Environment",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "@aws-cdk/aws-appconfig-alpha.Application",
               "version": "0.0.0"
             }
           },
@@ -245,7 +245,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "@aws-cdk/aws-appconfig-alpha.DeploymentStrategy",
               "version": "0.0.0"
             }
           },
@@ -290,7 +290,7 @@
                       "Ref": "MyHostedConfigConfigurationProfile2E1A2BBC"
                     },
                     "content": "This is my configuration content.",
-                    "contentType": "application/json"
+                    "contentType": "text/plain"
                   }
                 },
                 "constructInfo": {
@@ -328,8 +328,8 @@
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.69"
+              "fqn": "@aws-cdk/aws-appconfig-alpha.HostedConfiguration",
+              "version": "0.0.0"
             }
           },
           "MyHostedConfigFromJson": {
@@ -367,7 +367,7 @@
                       "Ref": "MyHostedConfigFromJsonConfigurationProfile863E1E42"
                     },
                     "content": "This is the configuration content",
-                    "contentType": "application/json"
+                    "contentType": "text/plain"
                   }
                 },
                 "constructInfo": {
@@ -405,8 +405,8 @@
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.69"
+              "fqn": "@aws-cdk/aws-appconfig-alpha.HostedConfiguration",
+              "version": "0.0.0"
             }
           },
           "MyValidatorFunction": {
@@ -717,8 +717,8 @@
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.69"
+              "fqn": "@aws-cdk/aws-appconfig-alpha.SourcedConfiguration",
+              "version": "0.0.0"
             }
           },
           "MyDocument": {
@@ -897,8 +897,8 @@
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.69"
+              "fqn": "@aws-cdk/aws-appconfig-alpha.SourcedConfiguration",
+              "version": "0.0.0"
             }
           },
           "MyBucket": {
@@ -1349,7 +1349,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
+                  "fqn": "@aws-cdk/aws-appconfig-alpha.DeploymentStrategy",
                   "version": "0.0.0"
                 }
               },
@@ -1515,8 +1515,8 @@
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.69"
+              "fqn": "@aws-cdk/aws-appconfig-alpha.SourcedConfiguration",
+              "version": "0.0.0"
             }
           },
           "MySecret": {
@@ -1572,7 +1572,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
+                  "fqn": "@aws-cdk/aws-appconfig-alpha.DeploymentStrategy",
                   "version": "0.0.0"
                 }
               },
@@ -1664,8 +1664,8 @@
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.69"
+              "fqn": "@aws-cdk/aws-appconfig-alpha.SourcedConfiguration",
+              "version": "0.0.0"
             }
           },
           "MyKey": {
@@ -1824,7 +1824,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
+                  "fqn": "@aws-cdk/aws-appconfig-alpha.DeploymentStrategy",
                   "version": "0.0.0"
                 }
               },
@@ -1926,8 +1926,8 @@
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.69"
+              "fqn": "@aws-cdk/aws-appconfig-alpha.SourcedConfiguration",
+              "version": "0.0.0"
             }
           },
           "MyPipeline": {
@@ -2787,7 +2787,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
+                  "fqn": "@aws-cdk/aws-appconfig-alpha.DeploymentStrategy",
                   "version": "0.0.0"
                 }
               },
@@ -2821,8 +2821,8 @@
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.69"
+              "fqn": "@aws-cdk/aws-appconfig-alpha.SourcedConfiguration",
+              "version": "0.0.0"
             }
           },
           "BootstrapVersion": {
