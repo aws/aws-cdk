@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallEC2describeSecurityGroups": {
+  "AwsApiCallEC2describeSecurityGroups6ad015b9cce9b36a98cd9794471d1ab0": {
    "Type": "Custom::DeployAssert@SdkCallEC2describeSecurityGroups",
    "Properties": {
     "ServiceToken": {
@@ -13,14 +13,21 @@
     "api": "describeSecurityGroups",
     "expected": "{\"$ObjectLike\":{\"SecurityGroups\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"Description\":\"default VPC security group\",\"GroupName\":\"default\",\"IpPermissions\":[],\"IpPermissionsEgress\":[]}}]}}}",
     "parameters": {
-     "GroupIds": [
-      {
-       "Fn::ImportValue": "integ-restrict-default-sg:ExportsOutputFnGetAttVpc8378EB38DefaultSecurityGroupF5E0D218"
-      }
-     ]
+     "GroupIds": {
+      "Fn::Join": [
+       "",
+       [
+        "[\"",
+        {
+         "Fn::ImportValue": "integ-restrict-default-sg:ExportsOutputFnGetAttVpc8378EB38DefaultSecurityGroupF5E0D218"
+        },
+        "\"]"
+       ]
+      ]
+     }
     },
     "flattenResponse": "false",
-    "salt": "1682361464379"
+    "salt": "1691698955701"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -69,12 +76,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs18.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "ae370e1010629b78f494346f49ceef3ab2875718f20e6c808114e6aa770c7bf3.zip"
+     "S3Key": "854c68e9b071accbb9b7c92951a2a38b51aa01c67b21ba5813d089a8b3473228.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -88,10 +95,10 @@
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallEC2describeSecurityGroups": {
+  "AssertionResultsAwsApiCallEC2describeSecurityGroups6ad015b9cce9b36a98cd9794471d1ab0": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallEC2describeSecurityGroups",
+     "AwsApiCallEC2describeSecurityGroups6ad015b9cce9b36a98cd9794471d1ab0",
      "assertion"
     ]
    }
