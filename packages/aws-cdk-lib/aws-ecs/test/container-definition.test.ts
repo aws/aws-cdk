@@ -163,7 +163,7 @@ describe('container definition', () => {
         }).toThrow('The containerPortRange must be a string in the format [start port]-[end port].');
       });
 
-      describe('throws when PortMapping.containerPortRange is not a concrete value', () => {
+      test('throws when PortMapping.containerPortRange is not a concrete value', () => {
         // GIVEN
         const portMap = new ecs.PortMap(ecs.NetworkMode.AWS_VPC, {
           containerPort: ecs.CONTAINER_PORT_UNSET_VALUE,
