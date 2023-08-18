@@ -204,7 +204,7 @@ describe('nested stacks', () => {
     cloudExecutable = new MockCloudExecutable({
       stacks: [{
         stackName: 'Parent',
-        template: { },
+        template: {},
       }],
     });
 
@@ -297,7 +297,7 @@ describe('nested stacks', () => {
   });
 
   test('diff can diff nested stacks', async () => {
-  // GIVEN
+    // GIVEN
     const buffer = new StringWritable();
 
     // WHEN
