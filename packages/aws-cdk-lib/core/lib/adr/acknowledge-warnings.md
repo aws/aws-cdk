@@ -27,7 +27,7 @@ Warning messages are typically used for two types of messages:
    certain scenarios.
 
 Users who are developing CDK applications may want to always use the `--strict`
-CLI argument to turn all warnings into errors. Currently this is probably not
+CLI argument to turn all warnings into errors. Currently this is not
 possible since as soon as one warning is not applicable they can no longer use
 `--strict`. Ideally they should be able to `acknowledge` warnings (similar to
 what they can do with notices) indicating that the warning is not applicable to
@@ -55,14 +55,7 @@ Annotations.of(scope).addWarning('This is a warning');
 ```
 
 `Annotations.of(scope)` creates a new instance of `Annotations` every time so
-there is no way to keep track of warnings added. For example, doing something
-like this would not work because the `Annotations` instance created with
-`acknowledgeWarning` would be different than the one created with `addWarning`.
-
-```ts
-Annotations.of(scope).addWarning('This is a warning');
-Annotations.of(scope).acknowledgeWarning('This is a warning');
-```
+there is no way to keep track of warnings added inside this object.
 
 Currently the storage mechanism for `Annotations` is the `Node` metadata. The
 warning is added to the node as node metadata which is read by the CLI after
@@ -96,54 +89,28 @@ acknowledge a specific warning by `id`.
   public acknowledgeWarning(id: string, message?: string): void
 ```
 
-We will continue to use the node metadata as the storage mechanism and will add
-a new metadata type `aws:cdk:acknowledge` to store information on
-acknowledgements.
+We want warning acknowledgement to work both before and after the warning is actually emitted.
 
-At synthesis when we collect all of the annotation messages, we will filter out
-any messages that have an acknowledgement.
+We therefore do the following:
 
-Storing the acknowledgements in the metadata will also allow us to report on
-warnings that were acknowledged by the user (info will be stored in the
-assembly).
+- When a warning is acknowledged on a construct, we iterate over the already
+  added warnings and remove matching warnings. At the same time, we record
+  that this warning has been acknowledged on this construct tree.
+- When a warning is added, we only add it if it hasn't been acknowledged in
+  that location.
 
 ## Alternatives
 
-### Alternative storage mechanism
+### Filter at synthesis time
 
-One alternative that was considered was to implement some alternative
-intermediary storage mechanism. This storage mechanism would allow storing all
-warnings and acknowledgements in a special construct that was created once per
-app. It would look something like this (pseudo code)
+Right now, we are filtering in every method call. We could defer the filtering
+to when we translate construct tree metadata to cloud assembly metadata.
 
-```ts
-class AnnotationManager extends Construct {
-  private constructor(scope: Construct) {
-    attachCustomSynthesis(this, {
-      onSynthesize: () => {
-        this.warnings.forEach(warning => node.addMetadata(...))
-      }
-    }
-  }
- 
-  public addWarning() {
-     if (!this.acks.has()) {
-       this.warnings.set();
-    }
-  }
-  public ack() {
-    if (this.warnings.has()) {
-      this.warnings.delete();
-    }
-    this.acks.add();
-  }
-}
-```
+Right now, removing existing metadata entries requires accessing private APIs
+of the `constructs` library, which is not an ideal situation.
 
-The problem with this method is represented by the `attachCustomSynthesis` in
-the example. This same applies for if we used `addValidation` or `Aspects`.
-Annotations can be added _after_ that which means they would not be added or
-acknowledged.
+At the same time, implementing it there would allow us to generate a suppression
+report. We can always still do this.
 
 ### Use context and remove metadata
 
@@ -173,9 +140,9 @@ There are two issues with this alternative.
    types since currently there is no unique identifier for a given metadata
    entry (other than the message).
 
-## Consequences
 
-With the recommended solution the only major consequence is that it requires
-updating the `metadata-schema`, but we can do this in a non-breaking way
-(addition of new types). The alternatives may also require changes to the schema
-as well.
+### Acknowledge via context
+
+There is currently no way to configure suppressed warnings via context, which
+might be useful to do at the application level (using `cdk.json`). We can always
+add this feature in the future if desired.
