@@ -601,6 +601,37 @@ distribution.grant(lambdaFn, 'cloudfront:ListInvalidations', 'cloudfront:GetInva
 distribution.grantCreateInvalidation(lambdaFn);
 ```
 
+### Realtime Log Config
+
+CloudFront supports realtime log delivery from your distribution to a Kinesis stream.
+
+See [Real-time logs](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/real-time-logs.html) in the CloudFront User Guide.
+
+Example:
+
+```ts
+// Adding realtime logs config to a Cloudfront Distribution on default behavior.
+const realTimeConfig = new RealtimeLogConfig(stack, 'RealtimeConfig', {
+  endPoints: [{
+    kinesisStreamConfig: {
+      roleArn: 'arn:aws:iam::123456789012:role/roleName',
+      streamArn: 'arn:aws:kinesis:us-east-1:123456789012:stream/my-stream',
+    },
+    streamType: DataStreamType.KINESIS,
+  }],
+  fields: ['timestamp'],
+  name: 'realtime-config',
+  samplingRate: 100,
+});
+
+new Distribution(stack, 'MyDist', {
+  defaultBehavior: {
+    origin: defaultOrigin(),
+    realtimeLogConfigArn: realTimeConfig.realtimeLogConfigArn,
+  },
+});
+```
+
 ## Migrating from the original CloudFrontWebDistribution to the newer Distribution construct
 
 It's possible to migrate a distribution from the original to the modern API.
