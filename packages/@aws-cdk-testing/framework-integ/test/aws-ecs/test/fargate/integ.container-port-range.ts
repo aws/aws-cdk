@@ -4,13 +4,10 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 
 class EcsContainerPortRangeStack extends cdk.Stack {
-  readonly cluster: ecs.Cluster;
-
   constructor(scope: constructs.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    this.cluster = new ecs.Cluster(this, 'EcsCluster');
-
+    const cluster = new ecs.Cluster(this, 'EcsCluster');
     const taskDefinition = new ecs.FargateTaskDefinition(this, 'FargateTaskDef');
 
     taskDefinition.addContainer('web', {
@@ -22,7 +19,7 @@ class EcsContainerPortRangeStack extends cdk.Stack {
     });
 
     new ecs.FargateService(this, 'FargateService', {
-      cluster: this.cluster,
+      cluster,
       taskDefinition,
     });
   }
