@@ -165,11 +165,6 @@ change-return-type:aws-cdk-lib.aws_ec2.SecurityGroup.determineRuleScope
 # broken only in non-JS/TS, where that was not previously usable
 strengthened:aws-cdk-lib.aws_s3_deployment.BucketDeploymentProps
 
-# weakened added additional types to a union type, meaning all new props are optional
-weakened:aws-cdk-lib.cloud_assembly_schema.MetadataEntry
-weakened:aws-cdk-lib.cx_api.MetadataEntryResult
-weakened:@aws-cdk/cloud-assembly-schema.MetadataEntry
-weakened:@aws-cdk/cx-api.MetadataEntryResult
 # Fix for non-working property
 # loadBalancerName is used to idenitfy a Classic Load Balancer
 # However TaskSet only works with modern Application or Network LBs
