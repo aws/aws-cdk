@@ -416,7 +416,7 @@ rule.addTarget(
 );
 ```
 
-### enable Amazon ECS Exec for ECS Task
+### Enable Amazon ECS Exec for ECS Task
 
 If you use Amazon ECS Exec, you can run commands in or get a shell to a container running on an Amazon EC2 instance or on AWS Fargate.
 
