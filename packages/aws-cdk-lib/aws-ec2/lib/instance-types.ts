@@ -313,6 +313,20 @@ export enum InstanceClass {
   R7G = 'r7g',
 
   /**
+   * Memory optimized instances, 7th generation with Graviton3 processors and local NVME drive
+   *
+   * This instance class is currently only available in US East (Ohio), US East (N. Virginia), US West (Oregon), and Europe (Ireland).
+   */
+  MEMORY7_GRAVITON3_NVME_DRIVE = 'memory7-graviton3-nvme-drive',
+
+  /**
+   * Memory optimized instances, 7th generation with Graviton3 processors and local NVME drive
+   *
+   * This instance class is currently only available in US East (Ohio), US East (N. Virginia), US West (Oregon), and Europe (Ireland).
+   */
+  R7GD = 'r7gd',
+
+  /**
    * Compute optimized instances, 3rd generation
    */
   COMPUTE3 = 'compute3',
@@ -453,6 +467,20 @@ export enum InstanceClass {
    * and local NVME drive
    */
   C6GD = 'c6gd',
+
+  /**
+   * Compute optimized instances for high performance computing, 7th generation with Graviton3 processors and local NVME drive
+   *
+   * This instance class is currently only available in US East (Ohio), US East (N. Virginia), US West (Oregon), and Europe (Ireland).
+   */
+  COMPUTE7_GRAVITON3_NVME_DRIVE = 'compute7-graviton3-nvme-drive',
+
+  /**
+   * Compute optimized instances for high performance computing, 7th generation with Graviton3 processors and local NVME drive
+   *
+   * This instance class is currently only available in US East (Ohio), US East (N. Virginia), US West (Oregon), and Europe (Ireland).
+   */
+  C7GD = 'c7gd',
 
   /**
    * Compute optimized instances for high performance computing, 6th generation with Graviton2 processors
@@ -865,6 +893,20 @@ export enum InstanceClass {
   M7G = 'm7g',
 
   /**
+   * Standard instances, 7th generation with Graviton3 processors and local NVME drive
+   *
+   * This instance class is currently only available in US East (Ohio), US East (N. Virginia), US West (Oregon), and Europe (Ireland).
+   */
+  STANDARD7_GRAVITON3_NVME_DRIVE = 'standard7-graviton3-nvme-drive',
+
+  /**
+   * Standard instances, 7th generation with Graviton3 processors and local NVME drive
+   *
+   * This instance class is currently only available in US East (Ohio), US East (N. Virginia), US West (Oregon), and Europe (Ireland).
+   */
+  M7GD = 'm7gd',
+
+  /**
    * High memory and compute capacity instances, 1st generation
    */
   HIGH_COMPUTE_MEMORY1 = 'high-compute-memory1',
@@ -1143,6 +1185,8 @@ export class InstanceType {
       [InstanceClass.R6GD]: 'r6gd',
       [InstanceClass.MEMORY7_GRAVITON]: 'r7g',
       [InstanceClass.R7G]: 'r7g',
+      [InstanceClass.MEMORY7_GRAVITON3_NVME_DRIVE]: 'r7gd',
+      [InstanceClass.R7GD]: 'r7gd',
       [InstanceClass.COMPUTE3]: 'c3',
       [InstanceClass.C3]: 'c3',
       [InstanceClass.COMPUTE4]: 'c4',
@@ -1173,6 +1217,8 @@ export class InstanceType {
       [InstanceClass.C6GN]: 'c6gn',
       [InstanceClass.COMPUTE7_GRAVITON3]: 'c7g',
       [InstanceClass.C7G]: 'c7g',
+      [InstanceClass.COMPUTE7_GRAVITON3_NVME_DRIVE]: 'c7gd',
+      [InstanceClass.C7GD]: 'c7gd',
       [InstanceClass.STORAGE2]: 'd2',
       [InstanceClass.D2]: 'd2',
       [InstanceClass.STORAGE3]: 'd3',
@@ -1243,6 +1289,8 @@ export class InstanceType {
       [InstanceClass.M6GD]: 'm6gd',
       [InstanceClass.STANDARD7_GRAVITON]: 'm7g',
       [InstanceClass.M7G]: 'm7g',
+      [InstanceClass.STANDARD7_GRAVITON3_NVME_DRIVE]: 'm7gd',
+      [InstanceClass.M7GD]: 'm7gd',
       [InstanceClass.HIGH_COMPUTE_MEMORY1]: 'z1d',
       [InstanceClass.Z1D]: 'z1d',
       [InstanceClass.INFERENCE1]: 'inf1',
