@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/91a91ba2465570538f2719626228501bece9be6b0132bf5ec3adc8d4c40d0882.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2f14fc060bb60751213b507a2252cd34052b5da4fd8778ddfd34cf233124612f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,12 +33,6 @@
         "cdk-integ-lambda-nodejs-esm.assets"
       ],
       "metadata": {
-        "/cdk-integ-lambda-nodejs-esm": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "If you are relying on AWS SDK v2 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 16 or lower."
-          }
-        ],
         "/cdk-integ-lambda-nodejs-esm/esm/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
