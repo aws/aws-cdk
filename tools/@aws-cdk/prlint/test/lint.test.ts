@@ -738,6 +738,45 @@ describe('integration tests required on features', () => {
       });
     });
 
+    test('needs a maintainer review if a community member has approved p2, regardless of other community reviews', async () => {
+      // GIVEN
+      mockListReviews.mockImplementation(() => {
+        return {
+          data: [
+            { id: 1111122223, user: { login: 'pahud' }, state: 'COMMENTED' },
+            { id: 1111122223, user: { login: 'pahud' }, state: 'APPROVED' },
+          ],
+        };
+      });
+      (pr as any).labels = [
+        {
+          name: 'pr/needs-community-review',
+        },
+      ];
+
+      // WHEN
+      const prLinter = configureMock(pr);
+      await prLinter.validateStatusEvent(pr as any, {
+        sha: SHA,
+        context: linter.CODE_BUILD_CONTEXT,
+        state: 'success',
+      } as any);
+
+      // THEN
+      expect(mockRemoveLabel.mock.calls[0][0]).toEqual({
+        issue_number: 1234,
+        name: 'pr/needs-community-review',
+        owner: 'aws',
+        repo: 'aws-cdk',
+      });
+      expect(mockAddLabel.mock.calls[0][0]).toEqual({
+        issue_number: 1234,
+        labels: ['pr/needs-maintainer-review'],
+        owner: 'aws',
+        repo: 'aws-cdk',
+      });
+    });
+
     test('trusted community member can "request changes" on p2 PR by commenting', async () => {
       // GIVEN
       mockListReviews.mockImplementation(() => {

@@ -1006,18 +1006,22 @@ describe('repository', () => {
                   ],
                   Resource: [
                     {
-                      'Fn::GetAtt': [
-                        'Repo1DBD717D9',
-                        'Arn',
-                      ],
-                    },
-                    {
-                      'Fn::GetAtt': [
-                        'Repo2730A8200',
-                        'Arn',
-                      ],
+                      'Fn::Join': ['', [
+                        'arn:',
+                        { Ref: 'AWS::Partition' },
+                        ':ecr:',
+                        { Ref: 'AWS::Region' },
+                        ':',
+                        { Ref: 'AWS::AccountId' },
+                        ':repository/*',
+                      ]],
                     },
                   ],
+                  Condition: {
+                    StringEquals: {
+                      'ecr:ResourceTag/aws-cdk:auto-delete-images': 'true',
+                    },
+                  },
                 },
               ],
             },
