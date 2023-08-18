@@ -369,8 +369,8 @@ describe('tree metadata', () => {
 
     const warn = treenode.node.metadata.find((md) => {
       return md.type === cxschema.ArtifactMetadataEntryType.WARN
-        && /Forcing an inspect error/.test(md.data.message as string)
-        && /mycfnresource/.test(md.data.message as string);
+        && /Forcing an inspect error/.test(md.data as string)
+        && /mycfnresource/.test(md.data as string);
     });
     expect(warn).toBeDefined();
 
