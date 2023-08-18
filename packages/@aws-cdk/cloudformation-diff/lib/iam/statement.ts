@@ -1,4 +1,4 @@
-import { MaybeParsed, mkParsed, mkUnparseable } from '../diff/types';
+import { MaybeParsed, mkParsed, mkUnparseable } from '../diff/maybe-parsed';
 import { deepRemoveUndefined } from '../util';
 
 // namespace object imports won't work in the bundle for function exports
