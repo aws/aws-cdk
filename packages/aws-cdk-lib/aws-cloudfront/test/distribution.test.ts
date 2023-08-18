@@ -7,6 +7,7 @@ import * as s3 from '../../aws-s3';
 import { App, Duration, Stack } from '../../core';
 import {
   CfnDistribution,
+  DataStreamType,
   Distribution,
   Function,
   FunctionCode,
@@ -16,6 +17,7 @@ import {
   IOrigin,
   LambdaEdgeEventType,
   PriceClass,
+  RealtimeLogConfig,
   SecurityPolicyProtocol,
   SSLMethod,
 } from '../lib';
@@ -1143,6 +1145,52 @@ test('grants createInvalidation', () => {
           },
         },
       ],
+    },
+  });
+});
+
+test('render distribution behavior with realtime log config', () => {
+  const realTimeConfig = new RealtimeLogConfig(stack, 'RealtimeConfig', {
+    endPoints: [{
+      kinesisStreamConfig: {
+        roleArn: 'arn:aws:iam::111122223333:role/ForTest',
+        streamArn: 'arn:aws:kinesis:xx-west-1:111122223333:stream/my-stream',
+      },
+      streamType: DataStreamType.KINESIS,
+    }],
+    fields: ['timestamp'],
+    name: 'realtime-config',
+    samplingRate: 50,
+  });
+
+  new Distribution(stack, 'MyDist', {
+    defaultBehavior: {
+      origin: defaultOrigin(),
+      realtimeLogConfigArn: realTimeConfig.realtimeLogConfigArn,
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+    DistributionConfig: {
+      DefaultCacheBehavior: {
+        CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+        Compress: true,
+        TargetOriginId: 'StackMyDistOrigin1D6D5E535',
+        ViewerProtocolPolicy: 'allow-all',
+        RealtimeLogConfigArn: {
+          'Fn::GetAtt': ['RealtimeConfigB6004E8E', 'Arn']
+        },
+      },
+      Enabled: true,
+      HttpVersion: 'http2',
+      IPV6Enabled: true,
+      Origins: [{
+        DomainName: 'www.example.com',
+        Id: 'StackMyDistOrigin1D6D5E535',
+        CustomOriginConfig: {
+          OriginProtocolPolicy: 'https-only',
+        },
+      }],
     },
   });
 });
