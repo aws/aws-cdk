@@ -6,6 +6,7 @@ import { INetworkLoadBalancerTarget, INetworkTargetGroup, NetworkTargetGroup } f
 import * as ec2 from '../../../aws-ec2';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { Duration, Resource, Lazy } from '../../../core';
+import * as cxapi from '../../../cx-api';
 import { BaseListener, BaseListenerLookupOptions, IListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
 import { AlpnPolicy, Protocol, SslPolicy } from '../shared/enums';
@@ -69,7 +70,7 @@ export interface BaseNetworkListenerProps {
   readonly sslPolicy?: SslPolicy;
 
   /**
-   * Application-Layer Protocol Negotiation (ALPN) is a TLS extension that is sent on the initial TLS handshake hello messages.
+   * Network-Layer Protocol Negotiation (ALPN) is a TLS extension that is sent on the initial TLS handshake hello messages.
    * ALPN enables the application layer to negotiate which protocols should be used over a secure connection, such as HTTP/1 and HTTP/2.
    *
    * Can only be specified together with Protocol TLS.
@@ -138,24 +139,15 @@ export class NetworkListener extends BaseListener implements INetworkListener {
       loadBalancerType: cxschema.LoadBalancerType.NETWORK,
     });
 
-    class LookedUp extends Resource implements INetworkListener {
-      public listenerArn = props.listenerArn;
-    }
-
-    return new LookedUp(scope, id);
+    return new LookedUpNetworkListener(scope, id, props);
   }
 
   /**
    * Import an existing listener
    */
-  public static fromNetworkListenerArn(scope: Construct, id: string, networkListenerArn: string): INetworkListener {
-    class Import extends Resource implements INetworkListener {
-      public listenerArn = networkListenerArn;
-    }
-
-    return new Import(scope, id);
+  public static fromNetworkListenerAttributes(scope: Construct, id: string, attrs: NetworkListenerAttributes): INetworkListener {
+    return new ImportedNetworkListener(scope, id, attrs);
   }
-
   /**
    * The load balancer this listener is attached to
    */
@@ -170,6 +162,11 @@ export class NetworkListener extends BaseListener implements INetworkListener {
    * the protocol of the listener
    */
   private readonly protocol: Protocol;
+
+  /**
+ * Manage connections to this ApplicationListener
+ */
+  public readonly connections?: ec2.Connections;
 
   constructor(scope: Construct, id: string, props: NetworkListenerProps) {
     const certs = props.certificates || [];
@@ -217,8 +214,9 @@ export class NetworkListener extends BaseListener implements INetworkListener {
       this.setDefaultAction(NetworkListenerAction.forward(props.defaultTargetGroups));
     }
   }
+
   registerConnectable(connectable: ec2.IConnectable, portRange: ec2.Port): void {
-    throw new Error('Method not implemented.');
+    this.connections?.allowTo(connectable, portRange, 'Load balancer to target');
   }
 
   /**
@@ -314,7 +312,119 @@ export class NetworkListener extends BaseListener implements INetworkListener {
 /**
  * Properties to reference an existing listener
  */
+export interface NetworkListenerAttributes {
+  /**
+   * ARN of the listener
+   */
+  readonly listenerArn: string;
+
+  /**
+   * Security group of the load balancer this listener is associated with
+   */
+  readonly securityGroup: ec2.ISecurityGroup;
+
+  /**
+   * The default port on which this listener is listening
+   */
+  readonly defaultPort?: number;
+
+  /**
+   * Whether the imported security group allows all outbound traffic or not when
+   * imported using `securityGroupId`
+   *
+   * Unless set to `false`, no egress rules will be added to the security group.
+   *
+   * @default true
+   *
+   * @deprecated use `securityGroup` instead
+   */
+  readonly securityGroupAllowsAllOutbound?: boolean;
+}
+
+abstract class ExternalNetworkListener extends Resource implements INetworkListener {
+  /**
+   * Connections object.
+   */
+  public abstract readonly connections: ec2.Connections;
+
+  /**
+   * ARN of the listener
+   */
+  public abstract readonly listenerArn: string;
+
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+  }
+
+  /**
+   * Register that a connectable that has been added to this load balancer.
+   *
+   * Don't call this directly. It is called by NetworkTargetGroup.
+   */
+  public registerConnectable(connectable: ec2.IConnectable, portRange: ec2.Port): void {
+    this.connections.allowTo(connectable, portRange, 'Load balancer to target');
+  }
+
+  /**
+   * Add one or more certificates to this listener.
+   */
+  public addCertificates(id: string, certificates: IListenerCertificate[]): void {
+    new NetworkListenerCertificate(this, id, {
+      listener: this,
+      certificates,
+    });
+  }
+};
+
+/**
+ * Properties to reference an existing listener
+ */
 export interface INetworkListener extends IListener {
+  /**
+   * Register that a connectable that has been added to this load balancer.
+   *
+   * Don't call this directly. It is called by NetworkListenerTargetGroup.
+   */
+  registerConnectable(connectable: ec2.IConnectable, portRange: ec2.Port): void;
+}
+
+class LookedUpNetworkListener extends ExternalNetworkListener {
+  public readonly listenerArn: string;
+  public readonly connections: ec2.Connections;
+
+  constructor(scope: Construct, id: string, props: cxapi.LoadBalancerListenerContextResponse) {
+    super(scope, id);
+
+    this.listenerArn = props.listenerArn;
+    this.connections = new ec2.Connections({
+      defaultPort: ec2.Port.tcp(props.listenerPort),
+    });
+
+    for (const securityGroupId of props.securityGroupIds) {
+      const securityGroup = ec2.SecurityGroup.fromLookupById(this, `SecurityGroup-${securityGroupId}`, securityGroupId);
+      this.connections.addSecurityGroup(securityGroup);
+    }
+  }
+}
+
+/**
+ * An imported application listener.
+ */
+class ImportedNetworkListener extends ExternalNetworkListener {
+  public readonly listenerArn: string;
+  public readonly connections: ec2.Connections;
+
+  constructor(scope: Construct, id: string, props: NetworkListenerAttributes) {
+    super(scope, id);
+
+    this.listenerArn = props.listenerArn;
+    const defaultPort = props.defaultPort !== undefined ? ec2.Port.tcp(props.defaultPort) : undefined;
+
+    this.connections = new ec2.Connections({
+      securityGroups: [props.securityGroup],
+      defaultPort,
+    });
+  }
 }
 
 /**
