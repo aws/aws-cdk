@@ -1,6 +1,5 @@
 import * as eks from '@aws-sdk/client-eks';
 import * as sts from '@aws-sdk/client-sts';
-import * as sdk from 'aws-sdk';
 import { EksClient } from '../lib/cluster-resource-handler/common';
 
 /**
@@ -9,15 +8,15 @@ import { EksClient } from '../lib/cluster-resource-handler/common';
  */
 export let actualRequest: {
   configureAssumeRoleRequest?: sts.AssumeRoleRequest;
-  createClusterRequest?: eks.CreateClusterRequest;
-  describeClusterRequest?: eks.DescribeClusterRequest;
-  describeUpdateRequest?: eks.DescribeUpdateRequest;
-  deleteClusterRequest?: eks.DeleteClusterRequest;
-  updateClusterConfigRequest?: eks.UpdateClusterConfigRequest;
-  updateClusterVersionRequest?: eks.UpdateClusterVersionRequest;
-  createFargateProfile?: eks.CreateFargateProfileRequest;
-  describeFargateProfile?: eks.DescribeFargateProfileRequest;
-  deleteFargateProfile?: eks.DeleteFargateProfileRequest;
+  createClusterRequest?: eks.CreateClusterCommandInput;
+  describeClusterRequest?: eks.DescribeClusterCommandInput;
+  describeUpdateRequest?: eks.DescribeUpdateCommandInput;
+  deleteClusterRequest?: eks.DeleteClusterCommandInput;
+  updateClusterConfigRequest?: eks.UpdateClusterConfigCommandInput;
+  updateClusterVersionRequest?: eks.UpdateClusterVersionCommandInput;
+  createFargateProfile?: eks.CreateFargateProfileCommandInput;
+  describeFargateProfile?: eks.DescribeFargateProfileCommandInput;
+  deleteFargateProfile?: eks.DeleteFargateProfileCommandInput;
 } = { };
 
 /**
@@ -26,7 +25,7 @@ export let actualRequest: {
 export let simulateResponse: {
   describeClusterResponseMockStatus?: string;
   describeUpdateResponseMockStatus?: string;
-  describeUpdateResponseMockErrors?: sdk.EKS.ErrorDetails;
+  describeUpdateResponseMockErrors?: eks.ErrorDetail[];
   deleteClusterError?: Error;
   describeClusterException?: Error;
 } = { };
@@ -47,6 +46,7 @@ export const client: EksClient = {
   createCluster: async req => {
     actualRequest.createClusterRequest = req;
     return {
+      $metadata: {},
       cluster: {
         name: req.name,
         roleArn: req.roleArn,
@@ -64,6 +64,7 @@ export const client: EksClient = {
       throw simulateResponse.deleteClusterError;
     }
     return {
+      $metadata: {},
       cluster: {
         name: req.name,
       },
@@ -78,6 +79,7 @@ export const client: EksClient = {
     }
 
     return {
+      $metadata: {},
       cluster: {
         name: req.name,
         version: '1.0',
@@ -94,6 +96,7 @@ export const client: EksClient = {
     actualRequest.describeUpdateRequest = req;
 
     return {
+      $metadata: {},
       update: {
         id: req.updateId,
         errors: simulateResponse.describeUpdateResponseMockErrors,
@@ -105,6 +108,7 @@ export const client: EksClient = {
   updateClusterConfig: async req => {
     actualRequest.updateClusterConfigRequest = req;
     return {
+      $metadata: {},
       update: {
         id: MOCK_UPDATE_STATUS_ID,
       },
@@ -114,6 +118,7 @@ export const client: EksClient = {
   updateClusterVersion: async req => {
     actualRequest.updateClusterVersionRequest = req;
     return {
+      $metadata: {},
       update: {
         id: MOCK_UPDATE_STATUS_ID,
       },
@@ -122,17 +127,17 @@ export const client: EksClient = {
 
   createFargateProfile: async req => {
     actualRequest.createFargateProfile = req;
-    return { };
+    return { $metadata: {} };
   },
 
   describeFargateProfile: async req => {
     actualRequest.describeFargateProfile = req;
-    return { };
+    return { $metadata: {} };
   },
 
   deleteFargateProfile: async req => {
     actualRequest.deleteFargateProfile = req;
-    return { };
+    return { $metadata: {} };
   },
 };
 
@@ -148,8 +153,8 @@ export const MOCK_ASSUME_ROLE_ARN = 'assume:role:arn';
 
 export function newRequest<T extends 'Create' | 'Update' | 'Delete'>(
   requestType: T,
-  props?: Partial<sdk.EKS.CreateClusterRequest>,
-  oldProps?: Partial<sdk.EKS.CreateClusterRequest>) {
+  props?: Partial<eks.CreateClusterCommandInput>,
+  oldProps?: Partial<eks.CreateClusterCommandInput>) {
   return {
     StackId: 'fake-stack-id',
     RequestId: 'fake-request-id',

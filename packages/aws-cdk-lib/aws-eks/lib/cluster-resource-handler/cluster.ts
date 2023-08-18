@@ -1,9 +1,7 @@
 /* eslint-disable no-console */
 
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { ResourceNotFoundException } from '@aws-sdk/client-eks';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import * as aws from 'aws-sdk';
+import * as EKS from '@aws-sdk/client-eks';
 import { EksClient, ResourceEvent, ResourceHandler } from './common';
 import { compareLoggingProps } from './compareLogging';
 import { IsCompleteResponse, OnEventResponse } from '../../../custom-resources/lib/provider-framework/types';
@@ -19,8 +17,8 @@ export class ClusterResourceHandler extends ResourceHandler {
     return this.physicalResourceId;
   }
 
-  private readonly newProps: aws.EKS.CreateClusterRequest;
-  private readonly oldProps: Partial<aws.EKS.CreateClusterRequest>;
+  private readonly newProps: EKS.CreateClusterCommandInput;
+  private readonly oldProps: Partial<EKS.CreateClusterCommandInput>;
 
   constructor(eks: EksClient, event: ResourceEvent) {
     super(eks, event);
@@ -28,7 +26,7 @@ export class ClusterResourceHandler extends ResourceHandler {
     this.newProps = parseProps(this.event.ResourceProperties);
     this.oldProps = event.RequestType === 'Update' ? parseProps(event.OldResourceProperties) : {};
     // compare newProps and oldProps and update the newProps by appending disabled LogSetup if any
-    const compared: Partial<aws.EKS.CreateClusterRequest> = compareLoggingProps(this.oldProps, this.newProps);
+    const compared: Partial<EKS.CreateClusterCommandInput> = compareLoggingProps(this.oldProps, this.newProps);
     this.newProps.logging = compared.logging;
   }
 
@@ -71,7 +69,7 @@ export class ClusterResourceHandler extends ResourceHandler {
     try {
       await this.eks.deleteCluster({ name: this.clusterName });
     } catch (e: any) {
-      if (!(e instanceof ResourceNotFoundException)) {
+      if (!(e instanceof EKS.ResourceNotFoundException)) {
         throw e;
       } else {
         console.log(`cluster ${this.clusterName} not found, idempotently succeeded`);
@@ -90,7 +88,7 @@ export class ClusterResourceHandler extends ResourceHandler {
       console.log('describeCluster returned:', JSON.stringify(resp, undefined, 2));
     } catch (e: any) {
       // see https://aws.amazon.com/blogs/developer/service-error-handling-modular-aws-sdk-js/
-      if (e instanceof ResourceNotFoundException) {
+      if (e instanceof EKS.ResourceNotFoundException) {
         console.log('received ResourceNotFoundException, this means the cluster has been deleted (or never existed)');
         return { IsComplete: true };
       }
@@ -147,7 +145,7 @@ export class ClusterResourceHandler extends ResourceHandler {
     }
 
     if (updates.updateLogging || updates.updateAccess) {
-      const config: aws.EKS.UpdateClusterConfigRequest = {
+      const config: EKS.UpdateClusterConfigCommandInput = {
         name: this.clusterName,
       };
       if (updates.updateLogging) {
@@ -158,9 +156,9 @@ export class ClusterResourceHandler extends ResourceHandler {
         // https://awscli.amazonaws.com/v2/documentation/api/latest/reference/eks/update-cluster-config.html)
         // will fail, therefore we take only the access fields explicitly
         config.resourcesVpcConfig = {
-          endpointPrivateAccess: this.newProps.resourcesVpcConfig.endpointPrivateAccess,
-          endpointPublicAccess: this.newProps.resourcesVpcConfig.endpointPublicAccess,
-          publicAccessCidrs: this.newProps.resourcesVpcConfig.publicAccessCidrs,
+          endpointPrivateAccess: this.newProps.resourcesVpcConfig?.endpointPrivateAccess,
+          endpointPublicAccess: this.newProps.resourcesVpcConfig?.endpointPublicAccess,
+          publicAccessCidrs: this.newProps.resourcesVpcConfig?.publicAccessCidrs,
         };
       }
       const updateResponse = await this.eks.updateClusterConfig(config);
@@ -241,7 +239,7 @@ export class ClusterResourceHandler extends ResourceHandler {
           OpenIdConnectIssuer: cluster.identity?.oidc?.issuer?.substring(8) ?? '', // Strips off https:// from the issuer url
 
           // We can safely return the first item from encryption configuration array, because it has a limit of 1 item
-          // https://docs.aws.amazon.com/eks/latest/APIReference/API_CreateCluster.html#AmazonEKS-CreateCluster-request-encryptionConfig
+          // https://docs.amazon.com/eks/latest/APIReference/API_CreateCluster.html#AmazonEKS-CreateCluster-request-encryptionConfig
           EncryptionConfigKeyArn: cluster.encryptionConfig?.shift()?.provider?.keyArn ?? '',
         },
       };
@@ -283,7 +281,7 @@ export class ClusterResourceHandler extends ResourceHandler {
   }
 }
 
-function parseProps(props: any): aws.EKS.CreateClusterRequest {
+function parseProps(props: any): EKS.CreateClusterCommandInput {
 
   const parsed = props?.Config ?? {};
 
@@ -317,7 +315,7 @@ interface UpdateMap {
   updateAccess: boolean; // resourcesVpcConfig.endpointPrivateAccess and endpointPublicAccess
 }
 
-function analyzeUpdate(oldProps: Partial<aws.EKS.CreateClusterRequest>, newProps: aws.EKS.CreateClusterRequest): UpdateMap {
+function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProps: EKS.CreateClusterCommandInput): UpdateMap {
   console.log('old props: ', JSON.stringify(oldProps));
   console.log('new props: ', JSON.stringify(newProps));
 

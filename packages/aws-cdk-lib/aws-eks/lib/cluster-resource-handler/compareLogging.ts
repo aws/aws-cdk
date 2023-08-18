@@ -6,12 +6,14 @@
  * @param newProps new properties
  * @returns result with LogSet with enabled:false if any
  */
+// eslint-disable-next-line import/no-extraneous-dependencies
+import * as EKS from '@aws-sdk/client-eks';
 
-export function compareLoggingProps(oldProps: Partial<AWS.EKS.CreateClusterRequest>,
-  newProps: Partial<AWS.EKS.CreateClusterRequest>): Partial<AWS.EKS.CreateClusterRequest> {
-  const result: Partial<AWS.EKS.CreateClusterRequest> = { logging: {} };
-  let enabledTypes: AWS.EKS.LogType[] = [];
-  let disabledTypes: AWS.EKS.LogType[] = [];
+export function compareLoggingProps(oldProps: Partial<EKS.CreateClusterCommandInput>,
+  newProps: Partial<EKS.CreateClusterCommandInput>): Partial<EKS.CreateClusterCommandInput> {
+  const result: Partial<EKS.CreateClusterCommandInput> = { logging: {} };
+  let enabledTypes: (EKS.LogType | string)[] = [];
+  let disabledTypes: (EKS.LogType | string)[] = [];
 
   if (newProps.logging?.clusterLogging === undefined && oldProps.logging?.clusterLogging === undefined) {
     return newProps;
