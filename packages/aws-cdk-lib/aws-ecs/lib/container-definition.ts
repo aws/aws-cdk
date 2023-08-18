@@ -1087,7 +1087,7 @@ export interface PortMapping {
    * For more information, see hostPort.
    * Port mappings that are automatically assigned in this way do not count toward the 100 reserved ports limit of a container instance.
    *
-   * If you want to expose a port range, you must specify CONTAINER_PORT_UNSET_VALUE as container port.
+   * If you want to expose a port range, you must specify `CONTAINER_PORT_UNSET_VALUE` as container port.
    */
   readonly containerPort: number;
 
@@ -1096,6 +1096,7 @@ export interface PortMapping {
    *
    * The following rules apply when you specify a `containerPortRange`:
    *
+   * - You must specify `CONTAINER_PORT_UNSET_VALUE` as `containerPort`
    * - You must use either the `bridge` network mode or the `awsvpc` network mode.
    * - The container instance must have at least version 1.67.0 of the container agent and at least version 1.67.0-1 of the `ecs-init` package
    * - You can specify a maximum of 100 port ranges per container.
