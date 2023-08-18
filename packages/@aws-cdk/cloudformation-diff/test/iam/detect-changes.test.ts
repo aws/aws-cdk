@@ -1,4 +1,5 @@
-import { MaybeParsed, diffTemplate } from '../../lib';
+import { diffTemplate } from '../../lib';
+import { MaybeParsed } from '../../lib/diff/maybe-parsed';
 import { IamChangesJson } from '../../lib/iam/iam-changes';
 import { deepRemoveUndefined } from '../../lib/util';
 import { poldoc, policy, resource, role, template } from '../util';
