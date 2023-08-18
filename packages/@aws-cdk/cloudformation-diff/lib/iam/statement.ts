@@ -1,3 +1,4 @@
+import { MaybeParsed, mkParsed, mkUnparseable } from '../diff/maybe-parsed';
 import { deepRemoveUndefined } from '../util';
 
 // namespace object imports won't work in the bundle for function exports
@@ -94,17 +95,17 @@ export class Statement {
    *
    * @internal
    */
-  public _toJson(): StatementJson {
+  public _toJson(): MaybeParsed<StatementJson> {
     return this.serializedIntrinsic
-      ? this.serializedIntrinsic
-      : deepRemoveUndefined({
+      ? mkUnparseable(this.serializedIntrinsic)
+      : mkParsed(deepRemoveUndefined({
         sid: this.sid,
         effect: this.effect,
         resources: this.resources._toJson(),
         principals: this.principals._toJson(),
         actions: this.actions._toJson(),
         condition: this.condition,
-      });
+      }));
   }
 
   /**

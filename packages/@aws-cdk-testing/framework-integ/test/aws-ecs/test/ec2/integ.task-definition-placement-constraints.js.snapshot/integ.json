@@ -1,0 +1,12 @@
+{
+  "version": "33.0.0",
+  "testCases": {
+    "aws-cdk-ecs-integration-test-stack/TaskDefinitionPlacementConstraints/DefaultTest": {
+      "stacks": [
+        "aws-cdk-ecs-integration-test-stack"
+      ],
+      "assertionStack": "aws-cdk-ecs-integration-test-stack/TaskDefinitionPlacementConstraints/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkecsintegrationteststackTaskDefinitionPlacementConstraintsDefaultTestDeployAssert906A0CF3"
+    }
+  }
+}

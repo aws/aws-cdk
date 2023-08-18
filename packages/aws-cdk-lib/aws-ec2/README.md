@@ -2,7 +2,7 @@
 
 
 
-The `@aws-cdk/aws-ec2` package contains primitives for setting up networking and
+The `aws-cdk-lib/aws-ec2` package contains primitives for setting up networking and
 instances.
 
 ```ts nofixture
@@ -878,7 +878,7 @@ By default, routes will be propagated on the route tables associated with the pr
 private subnets exist, isolated subnets are used. If no isolated subnets exist, public subnets are
 used. Use the `Vpc` property `vpnRoutePropagation` to customize this behavior.
 
-VPN connections expose [metrics (cloudwatch.Metric)](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-cloudwatch/README.md) across all tunnels in the account/region and per connection:
+VPN connections expose [metrics (cloudwatch.Metric)](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-cloudwatch/README.md) across all tunnels in the account/region and per connection:
 
 ```ts fixture=with-vpc
 // Across all tunnels in the account/region
@@ -980,8 +980,8 @@ Endpoint services support private DNS, which makes it easier for clients to conn
 You can enable private DNS on an endpoint service like so:
 
 ```ts
-import { HostedZone, VpcEndpointServiceDomainName } from 'aws-cdk-lib/aws-route53';
-declare const zone: HostedZone;
+import { PublicHostedZone, VpcEndpointServiceDomainName } from 'aws-cdk-lib/aws-route53';
+declare const zone: PublicHostedZone;
 declare const vpces: ec2.VpcEndpointService;
 
 new VpcEndpointServiceDomainName(this, 'EndpointDomain', {
