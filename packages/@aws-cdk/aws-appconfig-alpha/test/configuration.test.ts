@@ -25,7 +25,7 @@ describe('configuration', () => {
     const stack = new cdk.Stack();
     const app = new Application(stack, 'MyAppConfig');
     new HostedConfiguration(stack, 'MyHostedConfig', {
-      content: ConfigurationContent.fromInline('This is my content'),
+      content: ConfigurationContent.fromInlineText('This is my content'),
       application: app,
       deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
         rolloutStrategy: RolloutStrategy.linear({
@@ -35,12 +35,7 @@ describe('configuration', () => {
       }),
     });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::Environment', {
-      Name: 'MyAppConfig-Environment-CF46384A',
-      ApplicationId: {
-        Ref: 'MyAppConfigB4B63E75',
-      },
-    });
+    Template.fromStack(stack).resourceCountIs('AWS::AppConfig::Environment', 0);
     Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::ConfigurationProfile', {
       Name: 'MyHostedConfig',
       ApplicationId: {
@@ -55,25 +50,9 @@ describe('configuration', () => {
         Ref: 'MyHostedConfigConfigurationProfile2E1A2BBC',
       },
       Content: 'This is my content',
-      ContentType: 'application/json',
+      ContentType: 'text/plain',
     });
-    Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::Deployment', {
-      ApplicationId: {
-        Ref: 'MyAppConfigB4B63E75',
-      },
-      EnvironmentId: {
-        Ref: 'MyAppConfigEnvironment833A9182',
-      },
-      ConfigurationVersion: {
-        Ref: 'MyHostedConfig51D3877D',
-      },
-      ConfigurationProfileId: {
-        Ref: 'MyHostedConfigConfigurationProfile2E1A2BBC',
-      },
-      DeploymentStrategyId: {
-        Ref: 'MyDeploymentStrategy60D31FB0',
-      },
-    });
+    Template.fromStack(stack).resourceCountIs('AWS::AppConfig::Deployment', 0);
   });
 
   test('configuration with environments and no deployTo prop', () => {
@@ -84,7 +63,7 @@ describe('configuration', () => {
     app.addEnvironment('MyEnv1');
     app.addEnvironment('MyEnv2');
     new HostedConfiguration(stack, 'MyHostedConfig', {
-      content: ConfigurationContent.fromInline('This is my content'),
+      content: ConfigurationContent.fromInlineText('This is my content'),
       application: app,
       deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
         rolloutStrategy: RolloutStrategy.linear({
@@ -108,7 +87,7 @@ describe('configuration', () => {
         Ref: 'MyHostedConfigConfigurationProfile2E1A2BBC',
       },
       Content: 'This is my content',
-      ContentType: 'application/json',
+      ContentType: 'text/plain',
     });
     Template.fromStack(stack).resourceCountIs('AWS::AppConfig::Environment', 2);
     Template.fromStack(stack).resourceCountIs('AWS::AppConfig::Deployment', 0);
@@ -122,7 +101,7 @@ describe('configuration', () => {
     app.addEnvironment('MyEnv1');
     const env = app.addEnvironment('MyEnv2');
     new HostedConfiguration(stack, 'MyHostedConfig', {
-      content: ConfigurationContent.fromInline('This is my content'),
+      content: ConfigurationContent.fromInlineText('This is my content'),
       application: app,
       deployTo: [env],
       deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
@@ -147,7 +126,7 @@ describe('configuration', () => {
         Ref: 'MyHostedConfigConfigurationProfile2E1A2BBC',
       },
       Content: 'This is my content',
-      ContentType: 'application/json',
+      ContentType: 'text/plain',
     });
     Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::Deployment', {
       ApplicationId: {
@@ -179,7 +158,7 @@ describe('configuration', () => {
     const env2 = app.addEnvironment('MyEnv2');
     const bucket = new Bucket(stack, 'MyBucket');
     new HostedConfiguration(stack, 'MyHostedConfig', {
-      content: ConfigurationContent.fromInline('This is my content'),
+      content: ConfigurationContent.fromInlineText('This is my content'),
       application: app,
       deployTo: [env1],
       deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy1', {
@@ -217,7 +196,7 @@ describe('configuration', () => {
         Ref: 'MyHostedConfigConfigurationProfile2E1A2BBC',
       },
       Content: 'This is my content',
-      ContentType: 'application/json',
+      ContentType: 'text/plain',
     });
     Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::ConfigurationProfile', {
       Name: 'MySourcedConfig',
@@ -292,7 +271,7 @@ describe('configuration', () => {
     });
     const bucket = new Bucket(stack, 'MyBucket');
     new HostedConfiguration(stack, 'MyHostedConfig', {
-      content: ConfigurationContent.fromInline('This is my content'),
+      content: ConfigurationContent.fromInlineText('This is my content'),
       application: app,
     });
     new SourcedConfiguration(stack, 'MySourcedConfig', {
@@ -333,6 +312,7 @@ describe('configuration', () => {
           deploymentDuration: cdk.Duration.minutes(30),
         }),
       }),
+      deployTo: [app.addEnvironment('Environment')],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::Deployment', {
@@ -358,13 +338,14 @@ describe('configuration', () => {
     const app = new Application(stack, 'MyAppConfig');
     new HostedConfiguration(stack, 'MyConfiguration', {
       application: app,
-      content: ConfigurationContent.fromInline('This is my content'),
+      content: ConfigurationContent.fromInlineText('This is my content'),
       deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
         rolloutStrategy: RolloutStrategy.linear({
           growthFactor: 15,
           deploymentDuration: cdk.Duration.minutes(30),
         }),
       }),
+      deployTo: [app.addEnvironment('Environment')],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::ConfigurationProfile', {
@@ -382,41 +363,76 @@ describe('configuration', () => {
         Ref: 'MyConfigurationConfigurationProfileEE0ECA85',
       },
       Content: 'This is my content',
-      ContentType: 'application/json',
+      ContentType: 'text/plain',
     });
     Template.fromStack(stack).resourceCountIs('AWS::AppConfig::Deployment', 1);
   });
 
-  // test('default configuration from asset', () => {
-  //   const stack = new cdk.Stack();
-  //   const app = new AppConfig(stack, 'MyAppConfig', {
-  //     deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
-  //       rolloutStrategy: RolloutStrategy.linear(15, cdk.Duration.minutes(30)),
-  //     }),
-  //   });
-  //   new HostedConfiguration(stack, 'MyConfiguration', {
-  //     appConfig: app,
-  //     content: ConfigurationContent.fromAsset('/Users/chenjane/Documents/appconfig-l2-constructs/test/config.json'),
-  //   });
+  test('default configuration from file', () => {
+    const stack = new cdk.Stack();
+    const app = new Application(stack, 'MyAppConfig');
+    new HostedConfiguration(stack, 'MyConfiguration', {
+      deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
+        rolloutStrategy: RolloutStrategy.linear({
+          growthFactor: 15,
+          deploymentDuration: cdk.Duration.minutes(30),
+        }),
+      }),
+      application: app,
+      content: ConfigurationContent.fromFile('./test/config.json'),
+    });
 
-  //   Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::ConfigurationProfile', {
-  //     Name: 'MyConfiguration',
-  //     ApplicationId: {
-  //       Ref: 'MyAppConfigB4B63E75',
-  //     },
-  //     LocationUri: 'hosted',
-  //   });
-  //   Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::HostedConfigurationVersion', {
-  //     ApplicationId: {
-  //       Ref: 'MyAppConfigB4B63E75',
-  //     },
-  //     ConfigurationProfileId: {
-  //       Ref: 'MyConfigurationConfigurationProfileEE0ECA85',
-  //     },
-  //     Content: '{\n  "content": "This is the configuration content"\n}',
-  //     ContentType: 'application/json',
-  //   });
-  // });
+    Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::ConfigurationProfile', {
+      Name: 'MyConfiguration',
+      ApplicationId: {
+        Ref: 'MyAppConfigB4B63E75',
+      },
+      LocationUri: 'hosted',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::HostedConfigurationVersion', {
+      ApplicationId: {
+        Ref: 'MyAppConfigB4B63E75',
+      },
+      ConfigurationProfileId: {
+        Ref: 'MyConfigurationConfigurationProfileEE0ECA85',
+      },
+      Content: '{\n  "content": "This is the configuration content"\n}',
+      ContentType: 'application/json',
+    });
+  });
+
+  test('default configuration from inline octet', () => {
+    const stack = new cdk.Stack();
+    const app = new Application(stack, 'MyAppConfig');
+    new HostedConfiguration(stack, 'MyConfiguration', {
+      deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
+        rolloutStrategy: RolloutStrategy.linear({
+          growthFactor: 15,
+          deploymentDuration: cdk.Duration.minutes(30),
+        }),
+      }),
+      application: app,
+      content: ConfigurationContent.fromInline('This should be of content type application/octet'),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::ConfigurationProfile', {
+      Name: 'MyConfiguration',
+      ApplicationId: {
+        Ref: 'MyAppConfigB4B63E75',
+      },
+      LocationUri: 'hosted',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::HostedConfigurationVersion', {
+      ApplicationId: {
+        Ref: 'MyAppConfigB4B63E75',
+      },
+      ConfigurationProfileId: {
+        Ref: 'MyConfigurationConfigurationProfileEE0ECA85',
+      },
+      Content: 'This should be of content type application/octet',
+      ContentType: 'application/octet-stream',
+    });
+  });
 
   test('configuration profile with name', () => {
     const stack = new cdk.Stack();
@@ -424,7 +440,7 @@ describe('configuration', () => {
     new HostedConfiguration(stack, 'MyConfigurationProfile', {
       name: 'TestConfigProfile',
       application: app,
-      content: ConfigurationContent.fromInline('This is my content'),
+      content: ConfigurationContent.fromInlineText('This is my content'),
       deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
         rolloutStrategy: RolloutStrategy.linear({
           growthFactor: 15,
@@ -448,9 +464,9 @@ describe('configuration', () => {
         Ref: 'MyConfigurationProfile33A97163',
       },
       Content: 'This is my content',
-      ContentType: 'application/json',
+      ContentType: 'text/plain',
     });
-    Template.fromStack(stack).resourceCountIs('AWS::AppConfig::Deployment', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::AppConfig::Deployment', 0);
   });
 
   test('configuration profile with type', () => {
@@ -460,7 +476,7 @@ describe('configuration', () => {
       name: 'TestConfigProfile',
       application: app,
       type: ConfigurationType.FEATURE_FLAGS,
-      content: ConfigurationContent.fromInline('This is my content'),
+      content: ConfigurationContent.fromInlineText('This is my content'),
       deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
         rolloutStrategy: RolloutStrategy.linear({
           growthFactor: 15,
@@ -485,9 +501,9 @@ describe('configuration', () => {
         Ref: 'MyConfigurationProfile33A97163',
       },
       Content: 'This is my content',
-      ContentType: 'application/json',
+      ContentType: 'text/plain',
     });
-    Template.fromStack(stack).resourceCountIs('AWS::AppConfig::Deployment', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::AppConfig::Deployment', 0);
   });
 
   test('configuration profile with description', () => {
@@ -496,7 +512,7 @@ describe('configuration', () => {
     new HostedConfiguration(stack, 'MyConfigurationProfile', {
       name: 'TestConfigProfile',
       application: app,
-      content: ConfigurationContent.fromInline('This is my content'),
+      content: ConfigurationContent.fromInlineText('This is my content'),
       description: 'This is my description',
       deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
         rolloutStrategy: RolloutStrategy.linear({
@@ -522,10 +538,10 @@ describe('configuration', () => {
         Ref: 'MyConfigurationProfile33A97163',
       },
       Content: 'This is my content',
-      ContentType: 'application/json',
+      ContentType: 'text/plain',
       Description: 'This is my description',
     });
-    Template.fromStack(stack).resourceCountIs('AWS::AppConfig::Deployment', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::AppConfig::Deployment', 0);
   });
 
   test('configuration profile with validator', () => {
@@ -534,7 +550,7 @@ describe('configuration', () => {
     new HostedConfiguration(stack, 'MyConfigurationProfile', {
       name: 'TestConfigProfile',
       application: app,
-      content: ConfigurationContent.fromInline('This is my content'),
+      content: ConfigurationContent.fromInlineText('This is my content'),
       validators: [
         {
           content: 'dummy validator',
@@ -570,9 +586,9 @@ describe('configuration', () => {
         Ref: 'MyConfigurationProfile33A97163',
       },
       Content: 'This is my content',
-      ContentType: 'application/json',
+      ContentType: 'text/plain',
     });
-    Template.fromStack(stack).resourceCountIs('AWS::AppConfig::Deployment', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::AppConfig::Deployment', 0);
   });
 
   test('configuration profile with inline json schema validator', () => {
@@ -715,7 +731,7 @@ describe('configuration', () => {
       validators: [
         JsonSchemaValidator.fromInline(validatorContent),
       ],
-      content: ConfigurationContent.fromInline('This is my content'),
+      content: ConfigurationContent.fromInlineText('This is my content'),
       deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
         rolloutStrategy: RolloutStrategy.linear({
           growthFactor: 15,
@@ -745,9 +761,9 @@ describe('configuration', () => {
         Ref: 'MyConfigurationConfigurationProfileEE0ECA85',
       },
       Content: 'This is my content',
-      ContentType: 'application/json',
+      ContentType: 'text/plain',
     });
-    Template.fromStack(stack).resourceCountIs('AWS::AppConfig::Deployment', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::AppConfig::Deployment', 0);
   });
 
   test('configuration profile with ssm parameter', () => {
@@ -768,6 +784,7 @@ describe('configuration', () => {
           deploymentDuration: cdk.Duration.minutes(30),
         }),
       }),
+      deployTo: [app.addEnvironment('Environment')],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::ConfigurationProfile', {
@@ -848,6 +865,7 @@ describe('configuration', () => {
           deploymentDuration: cdk.Duration.minutes(30),
         }),
       }),
+      deployTo: [app.addEnvironment('Environment')],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::ConfigurationProfile', {
@@ -915,6 +933,7 @@ describe('configuration', () => {
           deploymentDuration: cdk.Duration.minutes(30),
         }),
       }),
+      deployTo: [app.addEnvironment('Environment')],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::ConfigurationProfile', {
@@ -1030,6 +1049,7 @@ describe('configuration', () => {
           deploymentDuration: cdk.Duration.minutes(30),
         }),
       }),
+      deployTo: [app.addEnvironment('Environment')],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::ConfigurationProfile', {
@@ -1074,6 +1094,7 @@ describe('configuration', () => {
           deploymentDuration: cdk.Duration.minutes(30),
         }),
       }),
+      deployTo: [app.addEnvironment('Environment')],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::ConfigurationProfile', {
@@ -1125,6 +1146,7 @@ describe('configuration', () => {
           deploymentDuration: cdk.Duration.minutes(30),
         }),
       }),
+      deployTo: [app.addEnvironment('Environment')],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::ConfigurationProfile', {
