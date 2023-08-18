@@ -220,6 +220,11 @@ export class AdotLambdaLayerJavaSdkVersion extends AdotLambdaLayerVersion {
    */
   public static readonly V1_19_0 = new AdotLambdaLayerJavaSdkVersion('1.19.0');
 
+  /**
+   * Version 1.28.1
+   */
+  public static readonly V1_28_1 = new AdotLambdaLayerJavaSdkVersion('1.28.1');
+
   private constructor(protected readonly layerVersion: string) {
     super(AdotLambdaLayerType.JAVA_SDK, layerVersion);
   }
@@ -240,6 +245,11 @@ export class AdotLambdaLayerJavaAutoInstrumentationVersion extends AdotLambdaLay
    */
   public static readonly V1_19_2 = new AdotLambdaLayerJavaAutoInstrumentationVersion('1.19.2');
 
+    /**
+   * Version 1.28.1
+   */
+  public static readonly V1_28_1 = new AdotLambdaLayerJavaAutoInstrumentationVersion('1.28.1');
+
   private constructor(protected readonly layerVersion: string) {
     super(AdotLambdaLayerType.JAVA_AUTO_INSTRUMENTATION, layerVersion);
   }
@@ -254,6 +264,11 @@ export class AdotLambdaLayerPythonSdkVersion extends AdotLambdaLayerVersion {
    * introduce incompatible changes. Make sure to test them before deploying to production.
    */
   public static readonly LATEST = new AdotLambdaLayerPythonSdkVersion('1.18.0');
+
+  /**
+   * Version 1.19.0
+   */
+  public static readonly V1_19_0_1 = new AdotLambdaLayerPythonSdkVersion('1.19.0-1');
 
   /**
    * Version 1.18.0
@@ -305,6 +320,11 @@ export class AdotLambdaLayerJavaScriptSdkVersion extends AdotLambdaLayerVersion 
    */
   public static readonly V1_7_0 = new AdotLambdaLayerJavaScriptSdkVersion('1.7.0');
 
+  /**
+   * Version 1.15.0
+   */
+  public static readonly V1_15_0_1 = new AdotLambdaLayerJavaScriptSdkVersion('1.15.0-1');
+
   private constructor(protected readonly layerVersion: string) {
     super(AdotLambdaLayerType.JAVASCRIPT_SDK, layerVersion);
   }
@@ -324,6 +344,11 @@ export class AdotLambdaLayerGenericVersion extends AdotLambdaLayerVersion {
    * Version 0.62.1
    */
   public static readonly V0_62_1 = new AdotLambdaLayerGenericVersion('0.62.1');
+
+  /**
+   * Version 0.82.0
+   */
+  public static readonly V0_82_0 = new AdotLambdaLayerGenericVersion('0.82.0');
 
   private constructor(protected readonly layerVersion: string) {
     super(AdotLambdaLayerType.GENERIC, layerVersion);
