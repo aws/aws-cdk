@@ -75,7 +75,7 @@ describe('Messages', () => {
 
   describe('hasWarning', () => {
     test('match', () => {
-      annotations.hasWarning('/Default/Fred', 'Fred: this is a warning');
+      annotations.hasWarning('/Default/Fred', 'this is a warning [ack: Fred]');
     });
 
     test('no match', () => {
@@ -89,7 +89,7 @@ describe('Messages', () => {
     });
 
     test('no match', () => {
-      expect(() => annotations.hasNoWarning('/Default/Fred', 'Fred: this is a warning'))
+      expect(() => annotations.hasNoWarning('/Default/Fred', 'this is a warning [ack: Fred]'))
         .toThrowError(/Expected no matches, but stack has 1 messages as follows:/);
     });
   });
@@ -183,7 +183,7 @@ describe('Multiple Messages on the Resource', () => {
   test('succeeds on hasXxx APIs', () => {
     annotations.hasError('/Default/Foo', 'error: this is an error');
     annotations.hasError('/Default/Foo', 'error: unsupported type Foo::Bar');
-    annotations.hasWarning('/Default/Foo', 'Foo: warning: Foo::Bar is deprecated');
+    annotations.hasWarning('/Default/Foo', 'warning: Foo::Bar is deprecated [ack: Foo]');
   });
 
   test('succeeds on findXxx APIs', () => {
@@ -191,8 +191,8 @@ describe('Multiple Messages on the Resource', () => {
     expect(result1.length).toEqual(4);
     const result2 = annotations.findError('/Default/Bar', Match.stringLikeRegexp('error:.*'));
     expect(result2.length).toEqual(2);
-    const result3 = annotations.findWarning('/Default/Bar', 'Bar: warning: Foo::Bar is deprecated');
-    expect(result3[0].entry.data).toEqual('Bar: warning: Foo::Bar is deprecated');
+    const result3 = annotations.findWarning('/Default/Bar', 'warning: Foo::Bar is deprecated [ack: Bar]');
+    expect(result3[0].entry.data).toEqual('warning: Foo::Bar is deprecated [ack: Bar]');
   });
 });
 class MyAspect implements IAspect {

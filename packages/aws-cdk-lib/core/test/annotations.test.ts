@@ -24,7 +24,7 @@ describe('annotations', () => {
     expect(getWarnings(app.synth())).toEqual([
       {
         path: '/MyStack/Hello',
-        message: 'Deprecated:@aws-cdk/core.Construct.node: The API @aws-cdk/core.Construct.node is deprecated: use @aws-Construct.construct instead. This API will be removed in the next major release',
+        message: 'The API @aws-cdk/core.Construct.node is deprecated: use @aws-Construct.construct instead. This API will be removed in the next major release [ack: Deprecated:@aws-cdk/core.Construct.node]',
       },
     ]);
   });
@@ -51,15 +51,15 @@ describe('annotations', () => {
     expect(getWarnings(app.synth())).toEqual([
       {
         path: '/MyStack1/Hello',
-        message: 'Deprecated:@aws-cdk/core.Construct.node: The API @aws-cdk/core.Construct.node is deprecated: use @aws-Construct.construct instead. This API will be removed in the next major release',
+        message: 'The API @aws-cdk/core.Construct.node is deprecated: use @aws-Construct.construct instead. This API will be removed in the next major release [ack: Deprecated:@aws-cdk/core.Construct.node]',
       },
       {
         path: '/MyStack1/World',
-        message: 'Deprecated:@aws-cdk/core.Construct.node: The API @aws-cdk/core.Construct.node is deprecated: use @aws-Construct.construct instead. This API will be removed in the next major release',
+        message: 'The API @aws-cdk/core.Construct.node is deprecated: use @aws-Construct.construct instead. This API will be removed in the next major release [ack: Deprecated:@aws-cdk/core.Construct.node]',
       },
       {
         path: '/MyStack2/FooBar',
-        message: 'Deprecated:@aws-cdk/core.Construct.node: The API @aws-cdk/core.Construct.node is deprecated: use @aws-Construct.construct instead. This API will be removed in the next major release',
+        message: 'The API @aws-cdk/core.Construct.node is deprecated: use @aws-Construct.construct instead. This API will be removed in the next major release [ack: Deprecated:@aws-cdk/core.Construct.node]',
       },
     ]);
   });
@@ -83,15 +83,16 @@ describe('annotations', () => {
     Annotations.of(c1).addWarningV2('warning1', 'You should know this!');
     Annotations.of(c1).addWarningV2('warning1', 'You should know this!');
     Annotations.of(c1).addWarningV2('warning2', 'You should know this, too!');
-    expect(getWarnings(app.synth())).toEqual([{
-      path: '/S1/C1',
-      message: 'warning1: You should know this!',
-    },
-    {
-      path: '/S1/C1',
-      message: 'warning2: You should know this, too!',
-    }],
-    );
+    expect(getWarnings(app.synth())).toEqual([
+      {
+        path: '/S1/C1',
+        message: 'You should know this! [ack: warning1]',
+      },
+      {
+        path: '/S1/C1',
+        message: 'You should know this, too! [ack: warning2]',
+      },
+    ]);
   });
 
   test('acknowledgeWarning removes warning', () => {
@@ -106,28 +107,12 @@ describe('annotations', () => {
     Annotations.of(c1).acknowledgeWarning('MESSAGE2', 'I Ack this');
 
     // THEN
-    const assembly = app.synth();
-    let acknoledgement: any = {};
-    for (const s of Object.values(assembly.manifest.artifacts ?? {})) {
-      for (const [_path, md] of Object.entries(s.metadata ?? {})) {
-        for (const x of md) {
-          if (x.type === 'aws:cdk:acknowledge') {
-            acknoledgement.message = x.data as string;
-          }
-        }
-      }
-    }
-    expect(acknoledgement).toEqual({
-      message: {
-        id: 'MESSAGE2',
-        scopes: ['S1/C1'],
-        message: 'I Ack this',
+    expect(getWarnings(app.synth())).toEqual([
+      {
+        path: '/S1/C1',
+        message: 'You should know this! [ack: MESSAGE1]',
       },
-    });
-    expect(getWarnings(assembly)).toEqual([{
-      path: '/S1/C1',
-      message: 'MESSAGE1: You should know this!',
-    }]);
+    ]);
   });
 
   test('acknowledgeWarning removes warning on children', () => {
@@ -142,24 +127,6 @@ describe('annotations', () => {
     Annotations.of(c1).acknowledgeWarning('MESSAGE2', 'I Ack this');
 
     // THEN
-    const assembly = app.synth();
-    let acknoledgement: any = {};
-    for (const s of Object.values(assembly.manifest.artifacts ?? {})) {
-      for (const [_path, md] of Object.entries(s.metadata ?? {})) {
-        for (const x of md) {
-          if (x.type === 'aws:cdk:acknowledge') {
-            acknoledgement.message = x.data as string;
-          }
-        }
-      }
-    }
-    expect(acknoledgement).toEqual({
-      message: {
-        id: 'MESSAGE2',
-        scopes: ['S1/C1', 'S1/C1/C2'],
-        message: 'I Ack this',
-      },
-    });
-    expect(getWarnings(assembly)).toEqual([]);
+    expect(getWarnings(app.synth())).toEqual([]);
   });
 });

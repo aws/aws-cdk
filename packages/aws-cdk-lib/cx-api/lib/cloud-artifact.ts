@@ -1,7 +1,6 @@
 import type { CloudAssembly } from './cloud-assembly';
 import { MetadataEntryResult, SynthesisMessage, SynthesisMessageLevel } from './metadata';
 import * as cxschema from '../../cloud-assembly-schema';
-import type { LogMessageObjectMetadataEntry } from '../../cloud-assembly-schema/lib/cloud-assembly/metadata-schema';
 
 /**
  * Artifact properties for CloudFormation stacks.
@@ -111,36 +110,12 @@ export class CloudArtifact {
 
   private renderMessages() {
     const messages = new Array<SynthesisMessage>();
-    // messageId: scopes[]
-    const acks = new Map<string, string[]>();
 
-    // collect any acknowledgements
-    for (const [_id, metadata] of Object.entries(this.manifest.metadata || { })) {
-      for (const entry of metadata) {
-        if (entry.type === cxschema.ArtifactMetadataEntryType.ACKNOWLEDGE) {
-          const data = (entry.data as cxschema.AcknowledgementMetadataEntry);
-          acks.set(data.id, data.scopes);
-        }
-      }
-    }
     for (const [id, metadata] of Object.entries(this.manifest.metadata || { })) {
       for (const entry of metadata) {
         let level: SynthesisMessageLevel;
-        let entryData: string | undefined = undefined;
         switch (entry.type) {
           case cxschema.ArtifactMetadataEntryType.WARN:
-            if (typeof entry.data === 'object' && 'id' in entry.data) {
-              const data = entry.data as LogMessageObjectMetadataEntry;
-              const ack = acks.get(data.id);
-              // if the scope has been acknowledged then don't add the warning
-              if (ack && ack.includes(data.scope)) {
-                continue;
-              } else {
-                entryData = `${data.id}: ${data.message}`;
-                level = SynthesisMessageLevel.WARNING;
-                break;
-              }
-            }
             level = SynthesisMessageLevel.WARNING;
             break;
           case cxschema.ArtifactMetadataEntryType.ERROR:
@@ -153,14 +128,7 @@ export class CloudArtifact {
             continue;
         }
 
-        messages.push({
-          level,
-          entry: {
-            ...entry,
-            data: entryData ?? entry.data,
-          },
-          id,
-        });
+        messages.push({ level, entry, id });
       }
     }
 

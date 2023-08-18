@@ -244,30 +244,6 @@ export type AssetMetadataEntry = FileAssetMetadataEntry | ContainerImageAssetMet
 export type LogMessageMetadataEntry = string;
 
 /**
- * Newer log message metadata entries contain more info
- *
- * @see ArtifactMetadataEntryType.INFO
- * @see ArtifactMetadataEntryType.WARN
- * @see ArtifactMetadataEntryType.ERROR
- */
-export interface LogMessageObjectMetadataEntry {
-  /**
-   * The message id
-   */
-  readonly id: string;
-
-  /**
-   * The scope the message applies to
-   */
-  readonly scope: string;
-
-  /**
-   * The log message
-   */
-  readonly message: string;
-};
-
-/**
  * @see ArtifactMetadataEntryType.LOGICAL_ID
  */
 export type LogicalIdMetadataEntry = string;
@@ -278,35 +254,9 @@ export type LogicalIdMetadataEntry = string;
 export type StackTagsMetadataEntry = Tag[];
 
 /**
- * @see ArtifactMetadataEntryType.ACKNOWLEDGE
- */
-export interface AcknowledgementMetadataEntry {
-  /**
-   * The message id that is acknowledged
-   */
-  readonly id: string;
-
-  /**
-   * The list of scopes that this acknowledgement should apply to
-   */
-  readonly scopes: string[];
-
-  /**
-   * The acknowledgement message
-   */
-  readonly message?: string;
-};
-
-/**
  * Union type for all metadata entries that might exist in the manifest.
  */
-export type MetadataEntryData =
-  LogMessageObjectMetadataEntry |
-  AcknowledgementMetadataEntry |
-  AssetMetadataEntry |
-  LogMessageMetadataEntry |
-  LogicalIdMetadataEntry |
-  StackTagsMetadataEntry;
+export type MetadataEntryData = AssetMetadataEntry | LogMessageMetadataEntry | LogicalIdMetadataEntry | StackTagsMetadataEntry;
 
 /**
  * Type of artifact metadata entry.
@@ -331,11 +281,6 @@ export enum ArtifactMetadataEntryType {
    * Metadata key used to print ERROR-level messages by the toolkit when an app is syntheized.
    */
   ERROR = 'aws:cdk:error',
-
-  /**
-   * Metadata key used to suppress WARNING-level messages
-   */
-  ACKNOWLEDGE = 'aws:cdk:acknowledge',
 
   /**
    * Represents the CloudFormation logical ID of a resource at a certain path.
