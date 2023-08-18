@@ -117,7 +117,7 @@ class StepFunctionsExecutionIntegration extends AwsIntegration {
       action: 'StartSyncExecution',
       options: {
         credentialsRole: options.credentialsRole,
-        integrationResponses: integrationResponse(),
+        integrationResponses: options.integrationResponses ?? integrationResponse(),
         passthroughBehavior: PassthroughBehavior.NEVER,
         requestTemplates: requestTemplates(stateMachine, options),
         ...options,

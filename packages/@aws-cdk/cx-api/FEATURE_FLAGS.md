@@ -55,8 +55,9 @@ Flags come in three types:
 | [@aws-cdk/aws-ec2:restrictDefaultSecurityGroup](#aws-cdkaws-ec2restrictdefaultsecuritygroup) | Restrict access to the VPC default security group | 2.78.0 | (default) |
 | [@aws-cdk/aws-kms:aliasNameRef](#aws-cdkaws-kmsaliasnameref) | KMS Alias name and keyArn will have implicit reference to KMS Key | 2.83.0 | (fix) |
 | [@aws-cdk/core:includePrefixInUniqueNameGeneration](#aws-cdkcoreincludeprefixinuniquenamegeneration) | Include the stack prefix in the stack name generation process | 2.84.0 | (fix) |
-| [@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig](#aws-cdkaws-autoscalinggeneratelaunchtemplateinsteadoflaunchconfig) | Generate a launch template when creating an AutoScalingGroup | V2NEXT | (fix) |
-| [@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby](#aws-cdkaws-opensearchserviceenableopensearchmultiazwithstandby) | Enables support for Multi-AZ with Standby deployment for opensearch domains | V2NEXT | (default) |
+| [@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig](#aws-cdkaws-autoscalinggeneratelaunchtemplateinsteadoflaunchconfig) | Generate a launch template when creating an AutoScalingGroup | 2.88.0 | (fix) |
+| [@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby](#aws-cdkaws-opensearchserviceenableopensearchmultiazwithstandby) | Enables support for Multi-AZ with Standby deployment for opensearch domains | 2.88.0 | (default) |
+| [@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion](#aws-cdkaws-lambda-nodejsuselatestruntimeversion) | Enables aws-lambda-nodejs.Function to use the latest available NodeJs runtime as the default | V2NEXT | (default) |
 
 <!-- END table -->
 
@@ -104,7 +105,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig": true,
     "@aws-cdk/core:includePrefixInUniqueNameGeneration": true,
     "@aws-cdk/aws-efs:denyAnonymousAccess": true,
-    "@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby": true
+    "@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby": true,
+    "@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion": true
   }
 }
 ```
@@ -1049,7 +1051,7 @@ provided.
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
+| 2.88.0 | `false` | `true` |
 
 **Compatibility with old behavior:** 
       If backwards compatibility needs to be maintained due to an existing autoscaling group
@@ -1068,9 +1070,27 @@ multi-az with standby enabled.
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
+| 2.88.0 | `false` | `true` |
 
 **Compatibility with old behavior:** Pass `capacity.multiAzWithStandbyEnabled: false` to `Domain` construct to restore the old behavior.
+
+
+### @aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion
+
+*Enables aws-lambda-nodejs.Function to use the latest available NodeJs runtime as the default* (default)
+
+If this is set, and a `runtime` prop is not passed to, Lambda NodeJs
+functions will us the latest version of the runtime provided by the Lambda
+service. Do not use this if you your lambda function is reliant on dependencies
+shipped as part of the runtime environment.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Pass `runtime: lambda.Runtime.NODEJS_16_X` to `Function` construct to restore the previous behavior.
 
 
 <!-- END details -->
