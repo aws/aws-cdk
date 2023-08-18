@@ -90,6 +90,7 @@ export const INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION = '@aws-cdk/core:includePr
 export const KMS_ALIAS_NAME_REF = '@aws-cdk/aws-kms:aliasNameRef';
 export const AUTOSCALING_GENERATE_LAUNCH_TEMPLATE = '@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig';
 export const ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY = '@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby';
+export const LAMBDA_NODEJS_USE_LATEST_RUNTIME = '@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -858,6 +859,21 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.88.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Pass `capacity.multiAzWithStandbyEnabled: false` to `Domain` construct to restore the old behavior.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [LAMBDA_NODEJS_USE_LATEST_RUNTIME]: {
+    type: FlagType.ApiDefault,
+    summary: 'Enables aws-lambda-nodejs.Function to use the latest available NodeJs runtime as the default',
+    detailsMd: `
+      If this is set, and a \`runtime\` prop is not passed to, Lambda NodeJs
+      functions will us the latest version of the runtime provided by the Lambda
+      service. Do not use this if you your lambda function is reliant on dependencies
+      shipped as part of the runtime environment.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Pass `runtime: lambda.Runtime.NODEJS_16_X` to `Function` construct to restore the previous behavior.',
   },
 };
 
