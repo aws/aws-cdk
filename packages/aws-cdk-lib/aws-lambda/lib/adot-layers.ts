@@ -245,7 +245,7 @@ export class AdotLambdaLayerJavaAutoInstrumentationVersion extends AdotLambdaLay
    */
   public static readonly V1_19_2 = new AdotLambdaLayerJavaAutoInstrumentationVersion('1.19.2');
 
-    /**
+  /**
    * Version 1.28.1
    */
   public static readonly V1_28_1 = new AdotLambdaLayerJavaAutoInstrumentationVersion('1.28.1');
