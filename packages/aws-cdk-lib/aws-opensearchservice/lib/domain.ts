@@ -15,6 +15,7 @@ import * as logs from '../../aws-logs';
 import * as route53 from '../../aws-route53';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as cdk from '../../core';
+import * as cxapi from '../../cx-api';
 
 /**
  * Configures the capacity of the cluster such as the instance type and the
@@ -73,6 +74,14 @@ export interface CapacityConfig {
    */
   readonly warmInstanceType?: string;
 
+  /**
+   * Indicates whether Multi-AZ with Standby deployment option is enabled.
+   * For more information, see [Multi-AZ with Standby]
+   * (https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-multiaz.html#managedomains-za-standby)
+   *
+   * @default - no multi-az with standby
+   */
+  readonly multiAzWithStandbyEnabled?: boolean;
 }
 
 /**
@@ -268,6 +277,60 @@ export enum TLSSecurityPolicy {
 }
 
 /**
+ * Container for information about the SAML configuration for OpenSearch Dashboards.
+ */
+export interface SAMLOptionsProperty {
+  /**
+   * The unique entity ID of the application in the SAML identity provider.
+   */
+  readonly idpEntityId: string;
+
+  /**
+   * The metadata of the SAML application, in XML format.
+   */
+  readonly idpMetadataContent: string;
+
+  /**
+   * The SAML master username, which is stored in the domain's internal user database.
+   * This SAML user receives full permission in OpenSearch Dashboards/Kibana.
+   * Creating a new master username does not delete any existing master usernames.
+   *
+   * @default - No master user name is configured
+   */
+  readonly masterUserName?: string;
+
+  /**
+   * The backend role that the SAML master user is mapped to.
+   * Any users with this backend role receives full permission in OpenSearch Dashboards/Kibana.
+   * To use a SAML master backend role, configure the `rolesKey` property.
+   *
+   * @default - The master user is not mapped to a backend role
+   */
+  readonly masterBackendRole?: string;
+
+  /**
+   * Element of the SAML assertion to use for backend roles.
+   *
+   * @default - roles
+   */
+  readonly rolesKey?: string;
+
+  /**
+   * Element of the SAML assertion to use for the user name.
+   *
+   * @default - NameID element of the SAML assertion fot the user name
+   */
+  readonly subjectKey?: string;
+
+  /**
+   * The duration, in minutes, after which a user session becomes inactive.
+   *
+   * @default - 60
+   */
+  readonly sessionTimeoutMinutes?: number;
+}
+
+/**
  * Specifies options for fine-grained access control.
  */
 export interface AdvancedSecurityOptions {
@@ -295,6 +358,23 @@ export interface AdvancedSecurityOptions {
    * @default - A Secrets Manager generated password
    */
   readonly masterUserPassword?: cdk.SecretValue;
+
+  /**
+   * True to enable SAML authentication for a domain.
+   *
+   * @see https://docs.aws.amazon.com/opensearch-service/latest/developerguide/saml.html
+   *
+   * @default - SAML authentication is disabled. Enabled if `samlAuthenticationOptions` is set.
+   */
+  readonly samlAuthenticationEnabled?: boolean;
+
+  /**
+   * Container for information about the SAML configuration for OpenSearch Dashboards.
+   * If set, `samlAuthenticationEnabled` will be enabled.
+   *
+   * @default - no SAML authentication options
+   */
+  readonly samlAuthenticationOptions?: SAMLOptionsProperty;
 }
 
 /**
@@ -317,6 +397,22 @@ export interface CustomEndpointOptions {
    * @default - do not create a CNAME
    */
   readonly hostedZone?: route53.IHostedZone;
+}
+
+export interface WindowStartTime {
+  /**
+   * The start hour of the window in Coordinated Universal Time (UTC), using 24-hour time.
+   * For example, 17 refers to 5:00 P.M. UTC.
+   *
+   * @default - 22
+   */
+  readonly hours: number;
+  /**
+   * The start minute of the window, in UTC.
+   *
+   * @default - 0
+   */
+  readonly minutes: number;
 }
 
 /**
@@ -484,6 +580,7 @@ export interface DomainProps {
    * domain resource, use the EnableVersionUpgrade update policy.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-updatepolicy.html#cfn-attributes-updatepolicy-upgradeopensearchdomain
+   *
    * @default - false
    */
   readonly enableVersionUpgrade?: boolean;
@@ -499,9 +596,44 @@ export interface DomainProps {
    * To configure a custom domain configure these options
    *
    * If you specify a Route53 hosted zone it will create a CNAME record and use DNS validation for the certificate
+   *
    * @default - no custom domain endpoint will be configured
    */
   readonly customEndpoint?: CustomEndpointOptions;
+
+  /**
+   * Options for enabling a domain's off-peak window, during which OpenSearch Service can perform mandatory
+   * configuration changes on the domain.
+   *
+   * Off-peak windows were introduced on February 16, 2023.
+   * All domains created before this date have the off-peak window disabled by default.
+   * You must manually enable and configure the off-peak window for these domains.
+   * All domains created after this date will have the off-peak window enabled by default.
+   * You can't disable the off-peak window for a domain after it's enabled.
+   *
+   * @see https://docs.aws.amazon.com/it_it/AWSCloudFormation/latest/UserGuide/aws-properties-opensearchservice-domain-offpeakwindow.html
+   *
+   * @default - Disabled for domains created before February 16, 2023. Enabled for domains created after. Enabled if `offPeakWindowStart` is set.
+   */
+  readonly offPeakWindowEnabled?: boolean;
+
+  /**
+   * Start time for the off-peak window, in Coordinated Universal Time (UTC).
+   * The window length will always be 10 hours, so you can't specify an end time.
+   * For example, if you specify 11:00 P.M. UTC as a start time, the end time will automatically be set to 9:00 A.M.
+   *
+   * @default - 10:00 P.M. local time
+   */
+  readonly offPeakWindowStart?: WindowStartTime;
+
+  /**
+   * Specifies whether automatic service software updates are enabled for the domain.
+   *
+   * @see https://docs.aws.amazon.com/it_it/AWSCloudFormation/latest/UserGuide/aws-properties-opensearchservice-domain-softwareupdateoptions.html
+   *
+   * @default - false
+   */
+  readonly enableAutoSoftwareUpdate?: boolean;
 }
 
 /**
@@ -1080,7 +1212,6 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
 
     return grant;
   }
-
 }
 
 /**
@@ -1542,6 +1673,27 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       }
     }
 
+    let multiAzWithStandbyEnabled = props.capacity?.multiAzWithStandbyEnabled;
+    if (multiAzWithStandbyEnabled === undefined) {
+      if (cdk.FeatureFlags.of(this).isEnabled(cxapi.ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY)) {
+        multiAzWithStandbyEnabled = true;
+      }
+    }
+
+    const offPeakWindowEnabled = props.offPeakWindowEnabled ?? props.offPeakWindowStart !== undefined;
+    if (offPeakWindowEnabled) {
+      this.validateWindowStartTime(props.offPeakWindowStart);
+    }
+
+    const samlAuthenticationEnabled = props.fineGrainedAccessControl?.samlAuthenticationEnabled ??
+      props.fineGrainedAccessControl?.samlAuthenticationOptions !== undefined;
+    if (samlAuthenticationEnabled) {
+      if (!advancedSecurityEnabled) {
+        throw new Error('SAML authentication requires fine-grained access control to be enabled.');
+      }
+      this.validateSamlAuthenticationOptions(props.fineGrainedAccessControl?.samlAuthenticationOptions);
+    }
+
     // Create the domain
     this.domain = new CfnDomain(this, 'Resource', {
       domainName: this.physicalName,
@@ -1556,6 +1708,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
           : undefined,
         instanceCount,
         instanceType,
+        multiAzWithStandbyEnabled,
         warmEnabled: warmEnabled
           ? warmEnabled
           : undefined,
@@ -1612,9 +1765,33 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
             masterUserName: masterUserName,
             masterUserPassword: this.masterUserPassword?.unsafeUnwrap(), // Safe usage
           },
+          samlOptions: samlAuthenticationEnabled ? {
+            enabled: true,
+            idp: props.fineGrainedAccessControl && props.fineGrainedAccessControl.samlAuthenticationOptions ? {
+              entityId: props.fineGrainedAccessControl.samlAuthenticationOptions.idpEntityId,
+              metadataContent: props.fineGrainedAccessControl.samlAuthenticationOptions.idpMetadataContent,
+            } : undefined,
+            masterUserName: props.fineGrainedAccessControl?.samlAuthenticationOptions?.masterUserName,
+            masterBackendRole: props.fineGrainedAccessControl?.samlAuthenticationOptions?.masterBackendRole,
+            rolesKey: props.fineGrainedAccessControl?.samlAuthenticationOptions?.rolesKey ?? 'roles',
+            subjectKey: props.fineGrainedAccessControl?.samlAuthenticationOptions?.subjectKey,
+            sessionTimeoutMinutes: props.fineGrainedAccessControl?.samlAuthenticationOptions?.sessionTimeoutMinutes ?? 60,
+          } : undefined,
         }
         : undefined,
       advancedOptions: props.advancedOptions,
+      offPeakWindowOptions: offPeakWindowEnabled ? {
+        enabled: offPeakWindowEnabled,
+        offPeakWindow: {
+          windowStartTime: props.offPeakWindowStart ?? {
+            hours: 22,
+            minutes: 0,
+          },
+        },
+      } : undefined,
+      softwareUpdateOptions: props.enableAutoSoftwareUpdate ? {
+        autoSoftwareUpdateEnabled: props.enableAutoSoftwareUpdate,
+      } : undefined,
     });
     this.domain.applyRemovalPolicy(props.removalPolicy);
 
@@ -1669,6 +1846,54 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     }
     if (unsignedBasicAuthEnabled) {
       this.addAccessPolicies(unsignedAccessPolicy);
+    }
+  }
+
+  /**
+   * Validate windowStartTime property according to
+   * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-opensearchservice-domain-windowstarttime.html
+   */
+  private validateWindowStartTime(windowStartTime?: WindowStartTime) {
+    if (!windowStartTime) return;
+    if (windowStartTime.hours < 0 || windowStartTime.hours > 23) {
+      throw new Error(`Hours must be a value between 0 and 23, but got ${windowStartTime.hours}.`);
+    }
+    if (windowStartTime.minutes < 0 || windowStartTime.minutes > 59) {
+      throw new Error(`Minutes must be a value between 0 and 59, but got ${windowStartTime.minutes}.`);
+    }
+  }
+
+  /**
+   * Validate SAML configuration according to
+   * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-opensearchservice-domain-samloptions.html
+   */
+  private validateSamlAuthenticationOptions(samlAuthenticationOptions?: SAMLOptionsProperty) {
+    if (!samlAuthenticationOptions) {
+      throw new Error('You need to specify at least an Entity ID and Metadata content for the SAML configuration');
+    }
+    if (samlAuthenticationOptions.idpEntityId.length < 8 || samlAuthenticationOptions.idpEntityId.length > 512) {
+      throw new Error(`SAML identity provider entity ID must be between 8 and 512 characters long, received ${samlAuthenticationOptions.idpEntityId.length}.`);
+    }
+    if (samlAuthenticationOptions.idpMetadataContent.length < 1 || samlAuthenticationOptions.idpMetadataContent.length > 1048576) {
+      throw new Error(`SAML identity provider metadata content must be between 1 and 1048576 characters long, received ${samlAuthenticationOptions.idpMetadataContent.length}.`);
+    }
+    if (
+      samlAuthenticationOptions.masterUserName &&
+      (samlAuthenticationOptions.masterUserName.length < 1 || samlAuthenticationOptions.masterUserName.length > 64)
+    ) {
+      throw new Error(`SAML master username must be between 1 and 64 characters long, received ${samlAuthenticationOptions.masterUserName.length}.`);
+    }
+    if (
+      samlAuthenticationOptions.masterBackendRole &&
+      (samlAuthenticationOptions.masterBackendRole.length < 1 || samlAuthenticationOptions.masterBackendRole.length > 256)
+    ) {
+      throw new Error(`SAML backend role must be between 1 and 256 characters long, received ${samlAuthenticationOptions.masterBackendRole.length}.`);
+    }
+    if (
+      samlAuthenticationOptions.sessionTimeoutMinutes &&
+      (samlAuthenticationOptions.sessionTimeoutMinutes < 1 || samlAuthenticationOptions.sessionTimeoutMinutes > 1440)
+    ) {
+      throw new Error(`SAML session timeout must be a value between 1 and 1440, received ${samlAuthenticationOptions.sessionTimeoutMinutes}.`);
     }
   }
 

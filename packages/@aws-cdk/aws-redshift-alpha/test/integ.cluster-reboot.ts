@@ -79,7 +79,7 @@ stacks.forEach(s => {
 const test = new integ.IntegTest(app, 'aws-cdk-redshift-reboot-test', {
   testCases: stacks,
   stackUpdateWorkflow: false,
-  // diffAssets: true,
+  diffAssets: true,
 });
 
 const describeClusters = test.assertions.awsApiCall('Redshift', 'describeClusters', { ClusterIdentifier: updateStack.cluster.clusterName });

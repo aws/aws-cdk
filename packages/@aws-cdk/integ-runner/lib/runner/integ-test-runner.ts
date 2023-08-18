@@ -77,8 +77,8 @@ export class IntegTestRunner extends IntegRunner {
     // test then point the user to the new `IntegTest` construct
     if (!this.hasSnapshot() && this.isLegacyTest) {
       throw new Error(`${this.testName} is a new test. Please use the IntegTest construct ` +
-       'to configure the test\n' +
-        'https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/integ-tests',
+        'to configure the test\n' +
+        'https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/integ-tests-alpha',
       );
     }
   }

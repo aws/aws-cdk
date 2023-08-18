@@ -635,6 +635,11 @@
      "Ref": "TestFargateCluster0BF869F3"
     },
     "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
      "MaximumPercent": 200,
      "MinimumHealthyPercent": 50
     },
@@ -696,7 +701,9 @@
      "Ref": "Vpc8378EB38"
     }
    },
-   "DependsOn": ["ALBFargateServiceWithCommandAndEntryPointTaskDefTaskRole65CE9392"]
+   "DependsOn": [
+    "ALBFargateServiceWithCommandAndEntryPointTaskDefTaskRole65CE9392"
+   ]
   },
   "ALBFargateServiceWithCommandAndEntryPointServiceSecurityGroupfromawsecsinteglbfargatecmdentrypointtestALBFargateServiceWithCommandAndEntryPointLBSecurityGroup886E70918046DDBFE6": {
    "Type": "AWS::EC2::SecurityGroupIngress",
@@ -718,7 +725,9 @@
     },
     "ToPort": 80
    },
-   "DependsOn": ["ALBFargateServiceWithCommandAndEntryPointTaskDefTaskRole65CE9392"]
+   "DependsOn": [
+    "ALBFargateServiceWithCommandAndEntryPointTaskDefTaskRole65CE9392"
+   ]
   }
  },
  "Outputs": {

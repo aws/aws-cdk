@@ -24,7 +24,7 @@ export function createModuleDefinitionFromCfnNamespace(namespace: string): Modul
   const submoduleName = moduleName.replace('-', '_');
 
   const lowcaseModuleName = moduleBaseName.toLocaleLowerCase();
-  const packageName = `@aws-cdk/${moduleName}`;
+  const packageName = `aws-cdk-lib/${moduleName}`;
 
   // dotnet names
   const dotnetPackage = `Amazon.CDK.${moduleFamily}.${moduleBaseName}`;

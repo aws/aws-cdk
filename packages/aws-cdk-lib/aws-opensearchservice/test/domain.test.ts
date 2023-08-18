@@ -9,6 +9,7 @@ import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as route53 from '../../aws-route53';
 import { App, Stack, Duration, SecretValue, CfnParameter, Token } from '../../core';
+import * as cxapi from '../../cx-api';
 import { Domain, EngineVersion } from '../lib';
 
 let app: App;
@@ -37,6 +38,7 @@ const testedOpenSearchVersions = [
   EngineVersion.OPENSEARCH_1_3,
   EngineVersion.OPENSEARCH_2_3,
   EngineVersion.OPENSEARCH_2_5,
+  EngineVersion.OPENSEARCH_2_7,
 ];
 
 each(testedOpenSearchVersions).test('connections throws if domain is not placed inside a vpc', (engineVersion) => {
@@ -198,6 +200,7 @@ each([
   [EngineVersion.OPENSEARCH_1_3, 'OpenSearch_1.3'],
   [EngineVersion.OPENSEARCH_2_3, 'OpenSearch_2.3'],
   [EngineVersion.OPENSEARCH_2_5, 'OpenSearch_2.5'],
+  [EngineVersion.OPENSEARCH_2_7, 'OpenSearch_2.7'],
 ]).test('minimal example renders correctly', (engineVersion, expectedCfVersion) => {
   new Domain(stack, 'Domain', { version: engineVersion });
 
@@ -380,6 +383,37 @@ each([testedOpenSearchVersions]).test('can use tokens in capacity configuration'
       WarmType: {
         Ref: 'warmInstanceType',
       },
+    },
+  });
+});
+
+each([testedOpenSearchVersions]).test('can specify multiAZWithStandbyEnabled in capacity configuration', (engineVersion) => {
+  new Domain(stack, 'Domain', {
+    version: engineVersion,
+    capacity: {
+      multiAzWithStandbyEnabled: true,
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+    ClusterConfig: {
+      MultiAZWithStandbyEnabled: true,
+    },
+  });
+});
+
+each([testedOpenSearchVersions]).test('ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY set multiAZWithStandbyEnabled value', (engineVersion) => {
+  const stackWithFlag = new Stack(app, 'StackWithFlag', {
+    env: { account: '1234', region: 'testregion' },
+  });
+  stackWithFlag.node.setContext(cxapi.ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY, true);
+  new Domain(stackWithFlag, 'Domain', {
+    version: engineVersion,
+  });
+
+  Template.fromStack(stackWithFlag).hasResourceProperties('AWS::OpenSearchService::Domain', {
+    ClusterConfig: {
+      MultiAZWithStandbyEnabled: true,
     },
   });
 });
@@ -1295,6 +1329,197 @@ each(testedOpenSearchVersions).describe('advanced security options', (engineVers
       enforceHttps: false,
     })).toThrow(/Enforce HTTPS is required when fine-grained access control is enabled/);
   });
+
+  describe('SAML authentication', () => {
+    test('with SAML authentication enabled', () => {
+      new Domain(stack, 'Domain', {
+        version: engineVersion,
+        fineGrainedAccessControl: {
+          masterUserArn,
+          samlAuthenticationEnabled: true,
+          samlAuthenticationOptions: {
+            idpEntityId: 'entity-id',
+            idpMetadataContent: 'metadata',
+            masterBackendRole: 'backend-role',
+            masterUserName: 'master-username',
+          },
+        },
+        encryptionAtRest: {
+          enabled: true,
+        },
+        nodeToNodeEncryption: true,
+        enforceHttps: true,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+        AdvancedSecurityOptions: {
+          Enabled: true,
+          InternalUserDatabaseEnabled: false,
+          MasterUserOptions: {
+            MasterUserARN: masterUserArn,
+          },
+          SAMLOptions: {
+            Enabled: true,
+            Idp: {
+              EntityId: 'entity-id',
+              MetadataContent: 'metadata',
+            },
+            MasterBackendRole: 'backend-role',
+            MasterUserName: 'master-username',
+            RolesKey: 'roles',
+            SessionTimeoutMinutes: 60,
+          },
+        },
+      });
+    });
+
+    test('throws if SAML authentication is enabled without fine-grained access control', () => {
+      expect(() => {
+        new Domain(stack, 'Domain', {
+          version: engineVersion,
+          fineGrainedAccessControl: {
+            samlAuthenticationEnabled: true,
+            samlAuthenticationOptions: {
+              idpEntityId: 'entity-id',
+              idpMetadataContent: 'metadata',
+              masterBackendRole: 'backend-role',
+              masterUserName: 'master-username',
+            },
+          },
+          encryptionAtRest: {
+            enabled: true,
+          },
+          nodeToNodeEncryption: true,
+          enforceHttps: true,
+        });
+      }).toThrow(/SAML authentication requires fine-grained access control to be enabled./);
+    });
+
+    test('throws if SAML authentication is enabled without specifying its options', () => {
+      expect(() => {
+        new Domain(stack, 'Domain', {
+          version: engineVersion,
+          fineGrainedAccessControl: {
+            masterUserArn,
+            samlAuthenticationEnabled: true,
+          },
+          encryptionAtRest: {
+            enabled: true,
+          },
+          nodeToNodeEncryption: true,
+          enforceHttps: true,
+        });
+      }).toThrow(/You need to specify at least an Entity ID and Metadata content for the SAML configuration/);
+    });
+
+    test('validate SAML authentication options', () => {
+      expect(() => {
+        new Domain(stack, 'Domain0', {
+          version: engineVersion,
+          fineGrainedAccessControl: {
+            masterUserArn,
+            samlAuthenticationEnabled: true,
+            samlAuthenticationOptions: {
+              idpEntityId: 'short',
+              idpMetadataContent: 'metadata',
+              masterBackendRole: 'backend-role',
+              masterUserName: 'master-username',
+            },
+          },
+          encryptionAtRest: {
+            enabled: true,
+          },
+          nodeToNodeEncryption: true,
+          enforceHttps: true,
+        });
+      }).toThrow(/SAML identity provider entity ID must be between 8 and 512 characters long/);
+
+      expect(() => {
+        new Domain(stack, 'Domain1', {
+          version: engineVersion,
+          fineGrainedAccessControl: {
+            masterUserArn,
+            samlAuthenticationEnabled: true,
+            samlAuthenticationOptions: {
+              idpEntityId: 'identity-id',
+              idpMetadataContent: '',
+              masterBackendRole: 'backend-role',
+              masterUserName: 'master-username',
+            },
+          },
+          encryptionAtRest: {
+            enabled: true,
+          },
+          nodeToNodeEncryption: true,
+          enforceHttps: true,
+        });
+      }).toThrow(/SAML identity provider metadata content must be between 1 and 1048576 characters long/);
+
+      expect(() => {
+        new Domain(stack, 'Domain2', {
+          version: engineVersion,
+          fineGrainedAccessControl: {
+            masterUserArn,
+            samlAuthenticationEnabled: true,
+            samlAuthenticationOptions: {
+              idpEntityId: 'identity-id',
+              idpMetadataContent: 'metadata',
+              masterBackendRole: 'backend-role',
+              masterUserName: 'master-long'.repeat(10),
+            },
+          },
+          encryptionAtRest: {
+            enabled: true,
+          },
+          nodeToNodeEncryption: true,
+          enforceHttps: true,
+        });
+      }).toThrow(/SAML master username must be between 1 and 64 characters long/);
+
+      expect(() => {
+        new Domain(stack, 'Domain3', {
+          version: engineVersion,
+          fineGrainedAccessControl: {
+            masterUserArn,
+            samlAuthenticationEnabled: true,
+            samlAuthenticationOptions: {
+              idpEntityId: 'identity-id',
+              idpMetadataContent: 'metadata',
+              masterBackendRole: 'backend-long'.repeat(50),
+              masterUserName: 'master-username',
+            },
+          },
+          encryptionAtRest: {
+            enabled: true,
+          },
+          nodeToNodeEncryption: true,
+          enforceHttps: true,
+        });
+      }).toThrow(/SAML backend role must be between 1 and 256 characters long/);
+
+      expect(() => {
+        new Domain(stack, 'Domain4', {
+          version: engineVersion,
+          fineGrainedAccessControl: {
+            masterUserArn,
+            samlAuthenticationEnabled: true,
+            samlAuthenticationOptions: {
+              idpEntityId: 'identity-id',
+              idpMetadataContent: 'metadata',
+              masterBackendRole: 'backend-role',
+              masterUserName: 'master-username',
+              sessionTimeoutMinutes: 2000,
+            },
+          },
+          encryptionAtRest: {
+            enabled: true,
+          },
+          nodeToNodeEncryption: true,
+          enforceHttps: true,
+        });
+      }).toThrow(/SAML session timeout must be a value between 1 and 1440/);
+    });
+  });
 });
 
 each(testedOpenSearchVersions).describe('custom endpoints', (engineVersion) => {
@@ -1943,6 +2168,113 @@ each(testedOpenSearchVersions).describe('cognito dashboards auth', (engineVersio
         UserPoolId: userPoolId,
       },
     });
+  });
+});
+
+each(testedOpenSearchVersions).describe('offPeakWindow and softwareUpdateOptions', (engineVersion) => {
+  test('with offPeakWindowStart and offPeakWindowEnabled', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      offPeakWindowEnabled: true,
+      offPeakWindowStart: {
+        hours: 10,
+        minutes: 30,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      OffPeakWindowOptions: {
+        Enabled: true,
+        OffPeakWindow: {
+          WindowStartTime: {
+            Hours: 10,
+            Minutes: 30,
+          },
+        },
+      },
+    });
+  });
+
+  test('with offPeakWindowStart only', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      offPeakWindowStart: {
+        hours: 10,
+        minutes: 30,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      OffPeakWindowOptions: {
+        Enabled: true,
+        OffPeakWindow: {
+          WindowStartTime: {
+            Hours: 10,
+            Minutes: 30,
+          },
+        },
+      },
+    });
+  });
+
+  test('with offPeakWindowOptions default start time', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      offPeakWindowEnabled: true,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      OffPeakWindowOptions: {
+        Enabled: true,
+        OffPeakWindow: {
+          WindowStartTime: {
+            Hours: 22,
+            Minutes: 0,
+          },
+        },
+      },
+    });
+  });
+
+  test('with autoSoftwareUpdateEnabled', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      enableAutoSoftwareUpdate: true,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      SoftwareUpdateOptions: {
+        AutoSoftwareUpdateEnabled: true,
+      },
+    });
+  });
+
+  test('with invalid offPeakWindowStart', () => {
+    expect(() => {
+      new Domain(stack, 'Domain1', {
+        version: engineVersion,
+        offPeakWindowEnabled: true,
+        offPeakWindowStart: {
+          hours: 50,
+          minutes: 0,
+        },
+      });
+    }).toThrow(
+      /Hours must be a value between 0 and 23/,
+    );
+
+    expect(() => {
+      new Domain(stack, 'Domain2', {
+        version: engineVersion,
+        offPeakWindowEnabled: true,
+        offPeakWindowStart: {
+          hours: 10,
+          minutes: 90,
+        },
+      });
+    }).toThrow(
+      /Minutes must be a value between 0 and 59/,
+    );
   });
 });
 

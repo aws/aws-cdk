@@ -81,6 +81,7 @@ describe('non-nested stacks', () => {
     expect(plainTextOutput).toContain('Stack A');
     expect(plainTextOutput).toContain('Stack B');
 
+    expect(buffer.data.trim()).toContain('✨  Number of stacks with differences: 2');
     expect(exitCode).toBe(0);
   });
 
@@ -96,6 +97,7 @@ describe('non-nested stacks', () => {
     });
 
     // THEN
+    expect(buffer.data.trim()).toContain('✨  Number of stacks with differences: 1');
     expect(exitCode).toBe(1);
   });
 
@@ -121,6 +123,7 @@ describe('non-nested stacks', () => {
     });
 
     // THEN
+    expect(buffer.data.trim()).toContain('✨  Number of stacks with differences: 1');
     expect(exitCode).toBe(1);
   });
 
@@ -132,6 +135,24 @@ describe('non-nested stacks', () => {
       stackNames: ['C'],
       stream: buffer,
     })).rejects.toThrow(/Found errors/);
+  });
+
+  test('when quiet mode is enabled, stacks with no diffs should not print stack name & no differences to stdout', async () => {
+    // GIVEN
+    const buffer = new StringWritable();
+
+    // WHEN
+    const exitCode = await toolkit.diff({
+      stackNames: ['A', 'A'],
+      stream: buffer,
+      fail: false,
+      quiet: true,
+    });
+
+    // THEN
+    expect(buffer.data.trim()).not.toContain('Stack A');
+    expect(buffer.data.trim()).not.toContain('There were no differences');
+    expect(exitCode).toBe(0);
   });
 });
 
@@ -255,7 +276,10 @@ Resources
          └─ [~] .Properties:
              └─ [~] .Prop:
                  ├─ [-] old-value
-                 └─ [+] new-value`);
+                 └─ [+] new-value
+
+
+✨  Number of stacks with differences: 3`);
 
     expect(exitCode).toBe(0);
   });

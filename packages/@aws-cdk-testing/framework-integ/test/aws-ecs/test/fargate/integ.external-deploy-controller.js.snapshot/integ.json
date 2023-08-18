@@ -1,0 +1,12 @@
+{
+  "version": "32.0.0",
+  "testCases": {
+    "aws-ecs-fargate-integ-external-deploy-controller/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ"
+      ],
+      "assertionStack": "aws-ecs-fargate-integ-external-deploy-controller/DefaultTest/DeployAssert",
+      "assertionStackName": "awsecsfargateintegexternaldeploycontrollerDefaultTestDeployAssert27D69498"
+    }
+  }
+}

@@ -195,9 +195,7 @@
                 "packaging": {
                     "description": "Type of asset",
                     "type": "string",
-                    "enum": [
-                        "container-image"
-                    ]
+                    "const": "container-image"
                 },
                 "imageNameParameter": {
                     "description": "ECR Repository name and repo digest (separated by \"@sha256:\") where this\nimage is stored. (Default undefined If not specified, `repositoryName` and `imageTag` are\nrequired because otherwise how will the stack know where to find the asset,\nha?)",
@@ -217,6 +215,10 @@
                     "additionalProperties": {
                         "type": "string"
                     }
+                },
+                "buildSsh": {
+                    "description": "SSH agent socket or keys to pass to the `docker build` command (Default no ssh arg is passed)",
+                    "type": "string"
                 },
                 "buildSecrets": {
                     "description": "Build secrets to pass to the `docker build` command (Default no build secrets are passed)",

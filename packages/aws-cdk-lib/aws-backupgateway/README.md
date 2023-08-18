@@ -16,7 +16,7 @@
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ```ts nofixture
-import * as backupgateway from '@aws-cdk/aws-backupgateway';
+import * as backupgateway from 'aws-cdk-lib/aws-backupgateway';
 ```
 
 <!--BEGIN CFNONLY DISCLAIMER-->

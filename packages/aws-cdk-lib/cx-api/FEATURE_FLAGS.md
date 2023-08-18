@@ -17,10 +17,6 @@ Flags come in three types:
 
 | Flag | Summary | Since | Type |
 | ----- | ----- | ----- | ----- |
-| [@aws-cdk/aws-apigateway:requestValidatorUniqueId](#aws-cdkaws-apigatewayrequestvalidatoruniqueid) | Generate a unique id for each RequestValidator added to a method | V2·NEXT | (fix) |
-| [@aws-cdk/aws-ec2:restrictDefaultSecurityGroup](#aws-cdkaws-ec2restrictdefaultsecuritygroup) | Restrict access to the VPC default security group | V2·NEXT | (default) |
-| [@aws-cdk/aws-kms:aliasNameRef](#aws-cdkaws-kmsaliasnameref) | KMS Alias name and keyArn will have implicit reference to KMS Key | V2·NEXT | (fix) |
-| [@aws-cdk/aws-route53-patters:useCertificate](#aws-cdkaws-route53-pattersusecertificate) | Use the official `Certificate` resource instead of `DnsValidatedCertificate` | V2·NEXT | (default) |
 | [@aws-cdk/core:newStyleStackSynthesis](#aws-cdkcorenewstylestacksynthesis) | Switch to new stack synthesis method which enables CI/CD | 2.0.0 | (fix) |
 | [@aws-cdk/core:stackRelativeExports](#aws-cdkcorestackrelativeexports) | Name exports based on the construct paths relative to the stack, rather than the global construct path | 2.0.0 | (fix) |
 | [@aws-cdk/aws-rds:lowercaseDbIdentifier](#aws-cdkaws-rdslowercasedbidentifier) | Force lowercasing of RDS Cluster names in CDK | 2.0.0 | (fix) |
@@ -58,6 +54,9 @@ Flags come in three types:
 | [@aws-cdk/aws-ec2:restrictDefaultSecurityGroup](#aws-cdkaws-ec2restrictdefaultsecuritygroup) | Restrict access to the VPC default security group | 2.78.0 | (default) |
 | [@aws-cdk/aws-kms:aliasNameRef](#aws-cdkaws-kmsaliasnameref) | KMS Alias name and keyArn will have implicit reference to KMS Key | 2.83.0 | (fix) |
 | [@aws-cdk/core:includePrefixInUniqueNameGeneration](#aws-cdkcoreincludeprefixinuniquenamegeneration) | Include the stack prefix in the stack name generation process | 2.84.0 | (fix) |
+| [@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig](#aws-cdkaws-autoscalinggeneratelaunchtemplateinsteadoflaunchconfig) | Generate a launch template when creating an AutoScalingGroup | 2.88.0 | (fix) |
+| [@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby](#aws-cdkaws-opensearchserviceenableopensearchmultiazwithstandby) | Enables support for Multi-AZ with Standby deployment for opensearch domains | 2.88.0 | (default) |
+| [@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion](#aws-cdkaws-lambda-nodejsuselatestruntimeversion) | Enables aws-lambda-nodejs.Function to use the latest available NodeJs runtime as the default | V2NEXT | (default) |
 
 <!-- END table -->
 
@@ -102,7 +101,10 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ec2:restrictDefaultSecurityGroup": true,
     "@aws-cdk/aws-apigateway:requestValidatorUniqueId": true,
     "@aws-cdk/aws-kms:aliasNameRef": true,
-    "@aws-cdk/core:includePrefixInUniqueNameGeneration": true
+    "@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig": true,
+    "@aws-cdk/core:includePrefixInUniqueNameGeneration": true,
+    "@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby": true,
+    "@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion": true
   }
 }
 ```
@@ -330,82 +332,6 @@ Encryption can also be configured explicitly using the `encrypted` property.
 | (default in v2) | `true` |  |
 
 **Compatibility with old behavior:** Pass the `encrypted: false` property to the `FileSystem` construct to disable encryption.
-
-
-### @aws-cdk/aws-apigateway:requestValidatorUniqueId
-
-*Generate a unique id for each RequestValidator added to a method* (fix)
-
-This flag allows multiple RequestValidators to be added to a RestApi when
-providing the `RequestValidatorOptions` in the `addMethod()` method.
-
-If the flag is not set then only a single RequestValidator can be added in this way.
-Any additional RequestValidators have to be created directly with `new RequestValidator`.
-
-
-| Since | Default | Recommended |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| V2·NEXT | `false` | `true` |
-
-
-### @aws-cdk/aws-ec2:restrictDefaultSecurityGroup
-
-*Restrict access to the VPC default security group* (default)
-
-Enable this feature flag to remove the default ingress/egress rules from the
-VPC default security group.
-
-When a VPC is created, a default security group is created as well and this cannot
-be deleted. The default security group is created with ingress/egress rules that allow
-_all_ traffic. [AWS Security best practices recommend](https://docs.aws.amazon.com/securityhub/latest/userguide/ec2-controls.html#ec2-2)
-removing these ingress/egress rules in order to restrict access to the default security group.
-
-
-| Since | Default | Recommended |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| V2·NEXT | `false` | `true` |
-
-**Compatibility with old behavior:** 
-      To allow all ingress/egress traffic to the VPC default security group you
-      can set the `restrictDefaultSecurityGroup: false`.
-    
-
-
-### @aws-cdk/aws-kms:aliasNameRef
-
-*KMS Alias name and keyArn will have implicit reference to KMS Key* (fix)
-
-This flag allows an implicit dependency to be created between KMS Alias and KMS Key
-when referencing key.aliasName or key.keyArn.
-
-If the flag is not set then a raw string is passed as the Alias name and no
-implicit dependencies will be set.
-
-
-| Since | Default | Recommended |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| V2·NEXT | `false` | `true` |
-
-
-### @aws-cdk/aws-route53-patters:useCertificate
-
-*Use the official `Certificate` resource instead of `DnsValidatedCertificate`* (default)
-
-Enable this feature flag to use the official CloudFormation supported `Certificate` resource instead
-of the deprecated `DnsValidatedCertificate` construct. If this flag is enabled and you are creating
-the stack in a region other than us-east-1 then you must also set `crossRegionReferences=true` on the
-stack.
-
-
-| Since | Default | Recommended |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| V2·NEXT | `false` | `true` |
-
-**Compatibility with old behavior:** Define a `DnsValidatedCertificate` explicitly and pass in the `certificate` property
 
 
 ### @aws-cdk/core:newStyleStackSynthesis
@@ -1086,6 +1012,64 @@ is not viable in some productive setups.
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.84.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig
+
+*Generate a launch template when creating an AutoScalingGroup* (fix)
+
+Enable this flag to allow AutoScalingGroups to generate a launch template when being created.
+Launch configurations have been deprecated and cannot be created in AWS Accounts created after
+December 31, 2023. Existing 'AutoScalingGroup' properties used for creating a launch configuration
+will now create an equivalent 'launchTemplate'. Alternatively, users can provide an explicit 
+'launchTemplate' or 'mixedInstancesPolicy'. When this flag is enabled a 'launchTemplate' will 
+attempt to set user data according to the OS of the machine image if explicit user data is not
+provided.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.88.0 | `false` | `true` |
+
+**Compatibility with old behavior:** 
+      If backwards compatibility needs to be maintained due to an existing autoscaling group
+      using a launch config, set this flag to false.
+    
+
+
+### @aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby
+
+*Enables support for Multi-AZ with Standby deployment for opensearch domains* (default)
+
+If this is set, an opensearch domain will automatically be created with 
+multi-az with standby enabled.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.88.0 | `false` | `true` |
+
+**Compatibility with old behavior:** Pass `capacity.multiAzWithStandbyEnabled: false` to `Domain` construct to restore the old behavior.
+
+
+### @aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion
+
+*Enables aws-lambda-nodejs.Function to use the latest available NodeJs runtime as the default* (default)
+
+If this is set, and a `runtime` prop is not passed to, Lambda NodeJs
+functions will us the latest version of the runtime provided by the Lambda
+service. Do not use this if you your lambda function is reliant on dependencies
+shipped as part of the runtime environment.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Pass `runtime: lambda.Runtime.NODEJS_16_X` to `Function` construct to restore the previous behavior.
 
 
 <!-- END details -->

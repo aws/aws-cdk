@@ -5,6 +5,7 @@ import { Construct } from 'constructs';
 import { ProductStackSynthesizer } from './private/product-stack-synthesizer';
 import { ProductStackHistory } from './product-stack-history';
 import { IBucket } from '../../aws-s3';
+import { ServerSideEncryption } from '../../aws-s3-deployment';
 import * as cdk from '../../core';
 
 /**
@@ -13,9 +14,24 @@ import * as cdk from '../../core';
 export interface ProductStackProps {
   /**
    * A Bucket can be passed to store assets, enabling ProductStack Asset support
-   * @default No Bucket provided and Assets will not be supported.
+   *
+   * @default - No Bucket provided and Assets will not be supported.
    */
   readonly assetBucket?: IBucket;
+
+  /**
+   * A ServerSideEncryption can be enabled to encrypt assets that are put into assetBucket
+   *
+   * @default - No encryption is used
+   */
+  readonly serverSideEncryption? : ServerSideEncryption;
+
+  /**
+   * For AWS_KMS ServerSideEncryption a KMS KeyId must be provided which will be used to encrypt assets
+   *
+   * @default - No KMS KeyId and SSE_KMS encryption cannot be used
+   */
+  readonly serverSideEncryptionAwsKmsKeyId? : string;
 }
 
 /**
@@ -32,15 +48,20 @@ export class ProductStack extends cdk.Stack {
   private _parentProductStackHistory?: ProductStackHistory;
   private _templateUrl?: string;
   private _parentStack: cdk.Stack;
-
   private assetBucket?: IBucket;
 
   constructor(scope: Construct, id: string, props: ProductStackProps = {}) {
+    const parentStack = findParentStack(scope);
     super(scope, id, {
-      synthesizer: new ProductStackSynthesizer(props.assetBucket),
+      synthesizer: new ProductStackSynthesizer({
+        parentStack,
+        assetBucket: props.assetBucket,
+        serverSideEncryption: props.serverSideEncryption,
+        serverSideEncryptionAwsKmsKeyId: props.serverSideEncryptionAwsKmsKeyId,
+      }),
     });
 
-    this._parentStack = findParentStack(scope);
+    this._parentStack = parentStack;
 
     // this is the file name of the synthesized template file within the cloud assembly
     this.templateFile = `${cdk.Names.uniqueId(this)}.product.template.json`;

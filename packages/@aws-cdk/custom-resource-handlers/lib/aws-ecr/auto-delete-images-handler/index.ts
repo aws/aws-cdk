@@ -1,10 +1,10 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { ECR } from 'aws-sdk';
+import { ECR, ImageIdentifier, ListImagesRequest, RepositoryNotFoundException } from '@aws-sdk/client-ecr';
 import { makeHandler } from '../../nodejs-entrypoint';
 
 const AUTO_DELETE_IMAGES_TAG = 'aws-cdk:auto-delete-images';
 
-const ecr = new ECR();
+const ecr = new ECR({});
 
 export const handler = makeHandler(autoDeleteHandler);
 
@@ -37,13 +37,13 @@ async function onUpdate(event: AWSLambda.CloudFormationCustomResourceEvent) {
 /**
  * Recursively delete all images in the repository
  *
- * @param ECR.ListImagesRequest the repositoryName & nextToken if presented
+ * @param ListImagesRequest the repositoryName & nextToken if presented
  */
-async function emptyRepository(params: ECR.ListImagesRequest) {
-  const listedImages = await ecr.listImages(params).promise();
+async function emptyRepository(params: ListImagesRequest) {
+  const listedImages = await ecr.listImages(params);
 
-  const imageIds: ECR.ImageIdentifier[] = [];
-  const imageIdsTagged: ECR.ImageIdentifier[] = [];
+  const imageIds: ImageIdentifier[] = [];
+  const imageIdsTagged: ImageIdentifier[] = [];
   (listedImages.imageIds ?? []).forEach(imageId => {
     if ('imageTag' in imageId) {
       imageIdsTagged.push(imageId);
@@ -61,14 +61,14 @@ async function emptyRepository(params: ECR.ListImagesRequest) {
     await ecr.batchDeleteImage({
       repositoryName: params.repositoryName,
       imageIds: imageIdsTagged,
-    }).promise();
+    });
   }
 
   if (imageIds.length !== 0) {
     await ecr.batchDeleteImage({
       repositoryName: params.repositoryName,
       imageIds: imageIds,
-    }).promise();
+    });
   }
 
   if (nextToken) {
@@ -84,7 +84,7 @@ async function onDelete(repositoryName: string) {
     throw new Error('No RepositoryName was provided.');
   }
 
-  const response = await ecr.describeRepositories({ repositoryNames: [repositoryName] }).promise();
+  const response = await ecr.describeRepositories({ repositoryNames: [repositoryName] });
   const repository = response.repositories?.find(repo => repo.repositoryName === repositoryName);
 
   if (!await isRepositoryTaggedForDeletion(repository?.repositoryArn!)) {
@@ -94,7 +94,7 @@ async function onDelete(repositoryName: string) {
   try {
     await emptyRepository({ repositoryName });
   } catch (e: any) {
-    if (e.name !== 'RepositoryNotFoundException') {
+    if (!(e instanceof RepositoryNotFoundException)) {
       throw e;
     }
     // Repository doesn't exist. Ignoring
@@ -110,6 +110,6 @@ async function onDelete(repositoryName: string) {
  * been removed before we get to this Delete event.
  */
 async function isRepositoryTaggedForDeletion(repositoryArn: string) {
-  const response = await ecr.listTagsForResource({ resourceArn: repositoryArn }).promise();
+  const response = await ecr.listTagsForResource({ resourceArn: repositoryArn });
   return response.tags?.some(tag => tag.Key === AUTO_DELETE_IMAGES_TAG && tag.Value === 'true');
 }

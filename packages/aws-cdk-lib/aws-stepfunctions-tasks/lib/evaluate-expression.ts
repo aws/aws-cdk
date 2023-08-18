@@ -3,7 +3,6 @@ import { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as sfn from '../../aws-stepfunctions';
-import { builtInCustomResourceNodeRuntime } from '../../custom-resources';
 
 /**
  * Properties for EvaluateExpression
@@ -125,7 +124,7 @@ function createEvalFn(runtime: lambda.Runtime | undefined, scope: Construct) {
 
   if (uuid) {
     return new lambda.SingletonFunction(scope, 'EvalFunction', {
-      runtime: runtime ?? builtInCustomResourceNodeRuntime(scope),
+      runtime: runtime ?? lambda.Runtime.NODEJS_18_X,
       uuid,
       handler: 'index.handler',
       lambdaPurpose,

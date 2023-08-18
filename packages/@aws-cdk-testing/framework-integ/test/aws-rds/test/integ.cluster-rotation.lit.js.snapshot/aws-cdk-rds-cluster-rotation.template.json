@@ -915,6 +915,7 @@
     "SecretId": {
      "Ref": "CustomRotationOptionsSecretAttachment697A23BF"
     },
+    "RotateImmediatelyOnUpdate": false,
     "RotationLambdaARN": {
      "Fn::GetAtt": [
       "CustomRotationOptionsRotationSingleUserC555446F",

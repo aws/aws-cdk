@@ -35,14 +35,7 @@ test('Eval with Node.js', () => {
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-    Runtime: {
-      'Fn::FindInMap': [
-        'DefaultCrNodeVersionMap',
-        { Ref: 'AWS::Region' },
-        'value',
-      ],
-    },
-    // Runtime: 'nodejs16.x',
+    Runtime: 'nodejs18.x',
   });
 });
 

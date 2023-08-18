@@ -1,12 +1,6 @@
 {
-  "version": "21.0.0",
+  "version": "32.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "aws-ecs-integ-bottlerocket.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/46dc1b5f578c9a2ed560860ec0f572a40bdbaae0cabfcfc525c38fd19e0863f9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/23efb012af109a2b701accba88ab31415b5012b2ff3ce7c0de38ee461130c4a3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -195,10 +189,10 @@
             "data": "EcsClusterbottlerocketasgInstanceProfile22A89B9D"
           }
         ],
-        "/aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/LaunchConfig": [
+        "/aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/LaunchTemplate/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EcsClusterbottlerocketasgLaunchConfig644AD24C"
+            "data": "EcsClusterbottlerocketasgLaunchTemplateE141ADC4"
           }
         ],
         "/aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/ASG": [
@@ -278,9 +272,24 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "EcsClusterbottlerocketasgLaunchTemplateProfileF6362A11": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterbottlerocketasgLaunchTemplateProfileF6362A11",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "aws-ecs-integ-bottlerocket"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

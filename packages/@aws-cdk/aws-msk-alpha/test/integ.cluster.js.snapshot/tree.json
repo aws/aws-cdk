@@ -867,14 +867,6 @@
               "version": "0.0.0"
             }
           },
-          "DefaultCrNodeVersionMap": {
-            "id": "DefaultCrNodeVersionMap",
-            "path": "aws-cdk-msk-integ/DefaultCrNodeVersionMap",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
-              "version": "0.0.0"
-            }
-          },
           "Custom::S3AutoDeleteObjectsCustomResourceProvider": {
             "id": "Custom::S3AutoDeleteObjectsCustomResourceProvider",
             "path": "aws-cdk-msk-integ/Custom::S3AutoDeleteObjectsCustomResourceProvider",
@@ -1115,7 +1107,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.54"
+              "version": "10.2.55"
             }
           },
           "AWS679f53fac002430cb0da5b7982bd2287": {
@@ -1215,7 +1207,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "4d8215259ea7ff53d0938a2da38847d4f2ad793311ce02594e231231697ef181.zip"
+                      "s3Key": "5009f77d2e9161f4799d4facb1cb8859134a40234014484b4911e924c169c9cb.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -1224,15 +1216,7 @@
                       ]
                     },
                     "handler": "index.handler",
-                    "runtime": {
-                      "Fn::FindInMap": [
-                        "DefaultCrNodeVersionMap",
-                        {
-                          "Ref": "AWS::Region"
-                        },
-                        "value"
-                      ]
-                    },
+                    "runtime": "nodejs18.x",
                     "timeout": 120
                   }
                 },
@@ -2565,7 +2549,7 @@
                 "path": "MskLogging/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.54"
+                  "version": "10.2.55"
                 }
               },
               "DeployAssert": {
@@ -2585,7 +2569,7 @@
                             "path": "MskLogging/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV26b9d6cbe6c7fc63b1146226918d8056f/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.54"
+                              "version": "10.2.55"
                             }
                           }
                         },
@@ -2657,7 +2641,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.54"
+                      "version": "10.2.55"
                     }
                   },
                   "BootstrapVersion": {
@@ -2699,7 +2683,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.54"
+          "version": "10.2.55"
         }
       }
     },

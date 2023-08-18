@@ -1,15 +1,17 @@
 /* eslint-disable no-console */
 
-// eslint-disable-next-line import/no-extraneous-dependencies
-import * as AWS from 'aws-sdk';
+/* eslint-disable import/no-extraneous-dependencies */
+import { AccessDeniedException } from '@aws-sdk/client-account';
+import { Lambda, InvocationResponse } from '@aws-sdk/client-lambda';
+import { NodeHttpHandler } from '@aws-sdk/node-http-handler';
 
-export type InvokeFunction = (functionName: string, invocationType: string, timeout: number) => Promise<AWS.Lambda.InvocationResponse>;
+export type InvokeFunction = (functionName: string, invocationType: string, timeout: number) => Promise<InvocationResponse>;
 
 export const invoke: InvokeFunction = async (functionName, invocationType, timeout) => {
-  const lambda = new AWS.Lambda({
-    httpOptions: {
-      timeout,
-    },
+  const lambda = new Lambda({
+    requestHandler: new NodeHttpHandler({
+      socketTimeout: timeout,
+    }),
   });
 
   const invokeRequest = { FunctionName: functionName, InvocationType: invocationType };
@@ -24,10 +26,10 @@ export const invoke: InvokeFunction = async (functionName, invocationType, timeo
   let invokeResponse;
   while (true) {
     try {
-      invokeResponse = await lambda.invoke(invokeRequest).promise();
+      invokeResponse = await lambda.invoke(invokeRequest);
       break;
     } catch (error) {
-      if (error instanceof Error && (error as AWS.AWSError).code === 'AccessDeniedException' && retryCount < 12) {
+      if (error instanceof AccessDeniedException && retryCount < 12) {
         retryCount++;
         await new Promise((resolve) => {
           setTimeout(resolve, delay);
@@ -48,6 +50,11 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 
   if (event.RequestType === 'Delete') {
     console.log('not calling trigger on DELETE');
+    return;
+  }
+
+  if (event.RequestType === 'Update' && event.ResourceProperties.ExecuteOnHandlerChange === 'false') {
+    console.log('not calling trigger because ExecuteOnHandlerChange is false');
     return;
   }
 

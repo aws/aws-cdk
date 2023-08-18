@@ -8,6 +8,12 @@ export interface LambdaRuntimeProps {
   readonly supportsInlineCode?: boolean;
 
   /**
+   * Whether the runtime enum is meant to change over time, IE NODEJS_LATEST.
+   * @default false
+   */
+  readonly isVariable?: boolean;
+
+  /**
    * The Docker image name to be used for bundling in this runtime.
    * @default - the latest docker image "amazon/public.ecr.aws/sam/build-<runtime>" from https://gallery.ecr.aws
    */
@@ -92,6 +98,11 @@ export class Runtime {
   public static readonly NODEJS_18_X = new Runtime('nodejs18.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
   /**
+   * The latest NodeJS version currently available
+   */
+  public static readonly NODEJS_LATEST = new Runtime('nodejs18.x', RuntimeFamily.NODEJS, { supportsInlineCode: true, isVariable: true });
+
+  /**
    * The Python 2.7 runtime (python2.7)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Python runtime.
    */
@@ -137,6 +148,14 @@ export class Runtime {
    * The Python 3.10 runtime (python3.10)
    */
   public static readonly PYTHON_3_10 = new Runtime('python3.10', RuntimeFamily.PYTHON, {
+    supportsInlineCode: true,
+    supportsCodeGuruProfiling: true,
+  });
+
+  /**
+   * The Python 3.11 runtime (python3.11)
+   */
+  public static readonly PYTHON_3_11 = new Runtime('python3.11', RuntimeFamily.PYTHON, {
     supportsInlineCode: true,
     supportsCodeGuruProfiling: true,
   });
@@ -266,10 +285,16 @@ export class Runtime {
    */
   public readonly bundlingImage: DockerImage;
 
+  /**
+   * Enabled for runtime enums that always target the latest available.
+   */
+  public readonly isVariable: Boolean;
+
   constructor(name: string, family?: RuntimeFamily, props: LambdaRuntimeProps = {}) {
     this.name = name;
     this.supportsInlineCode = !!props.supportsInlineCode;
     this.family = family;
+    this.isVariable = !!props.isVariable;
 
     const imageName = props.bundlingDockerImage ?? `public.ecr.aws/sam/build-${name}`;
     this.bundlingDockerImage = DockerImage.fromRegistry(imageName);

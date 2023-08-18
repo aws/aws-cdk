@@ -1,5 +1,5 @@
 {
-  "version": "21.0.0",
+  "version": "32.0.0",
   "artifacts": {
     "aws-cdk-codedeploy-ecs-dg.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8058932a68b7558432685502c7b88e62d0ce087e3a6648b189ef5cda358e4f75.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/54ea34edd18b9383781f88fd1ab5487b7d2a4ca076f0a365fa77e3b3a4b109d9.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -291,16 +291,16 @@
             "data": "CanaryConfig039778DD"
           }
         ],
-        "/aws-cdk-codedeploy-ecs-dg/BlueGreenDG/Application/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BlueGreenDGApplication3649479D"
-          }
-        ],
         "/aws-cdk-codedeploy-ecs-dg/BlueGreenDG/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BlueGreenDGServiceRole33E3BCAC"
+          }
+        ],
+        "/aws-cdk-codedeploy-ecs-dg/BlueGreenDG/Application/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BlueGreenDGApplication3649479D"
           }
         ],
         "/aws-cdk-codedeploy-ecs-dg/BlueGreenDG/Resource": [

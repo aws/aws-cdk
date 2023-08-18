@@ -145,7 +145,10 @@
                     "originRequestPolicyConfig": {
                       "name": "ACustomOriginRequestPolicy",
                       "cookiesConfig": {
-                        "cookieBehavior": "none"
+                        "cookieBehavior": "whitelist",
+                        "cookies": [
+                          "cookie1"
+                        ]
                       },
                       "headersConfig": {
                         "headerBehavior": "allViewerAndWhitelistCloudFront",
@@ -154,7 +157,10 @@
                         ]
                       },
                       "queryStringsConfig": {
-                        "queryStringBehavior": "none"
+                        "queryStringBehavior": "allExcept",
+                        "queryStrings": [
+                          "querystringparam"
+                        ]
                       }
                     }
                   }
@@ -244,7 +250,7 @@
                 "path": "integ-distribution-policies/Dist/Origin1",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.26"
+                  "version": "10.2.52"
                 }
               },
               "Resource": {
@@ -304,7 +310,7 @@
                 "path": "integ-distribution-policies/Dist-2/Origin1",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.26"
+                  "version": "10.2.52"
                 }
               },
               "Resource": {
@@ -388,7 +394,7 @@
                 "path": "DistributionPolicies/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.26"
+                  "version": "10.2.52"
                 }
               },
               "DeployAssert": {
@@ -434,7 +440,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.26"
+          "version": "10.2.52"
         }
       }
     },

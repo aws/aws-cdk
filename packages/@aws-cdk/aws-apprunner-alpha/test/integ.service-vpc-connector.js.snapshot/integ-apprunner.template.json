@@ -442,7 +442,14 @@
       "ImageRepositoryType": "ECR_PUBLIC"
      }
     },
-    "InstanceConfiguration": {},
+    "InstanceConfiguration": {
+      "InstanceRoleArn": {
+        "Fn::GetAtt": [
+          "Service6InstanceRole7220D460",
+          "Arn"
+        ]
+      }
+    },
     "NetworkConfiguration": {
      "EgressConfiguration": {
       "EgressType": "VPC",
@@ -469,7 +476,14 @@
       "ImageRepositoryType": "ECR_PUBLIC"
      }
     },
-    "InstanceConfiguration": {},
+    "InstanceConfiguration": {
+      "InstanceRoleArn": {
+        "Fn::GetAtt": [
+          "Service7InstanceRoleFD40F312",
+          "Arn"
+        ]
+      }
+    },
     "NetworkConfiguration": {
      "EgressConfiguration": {
       "EgressType": "VPC",
@@ -482,7 +496,41 @@
      }
     }
    }
-  }
+  },
+  "Service6InstanceRole7220D460": {
+    "Type": "AWS::IAM::Role",
+    "Properties": {
+     "AssumeRolePolicyDocument": {
+      "Statement": [
+       {
+        "Action": "sts:AssumeRole",
+        "Effect": "Allow",
+        "Principal": {
+         "Service": "tasks.apprunner.amazonaws.com"
+        }
+       }
+      ],
+      "Version": "2012-10-17"
+     }
+    }
+   },
+   "Service7InstanceRoleFD40F312": {
+    "Type": "AWS::IAM::Role",
+    "Properties": {
+     "AssumeRolePolicyDocument": {
+      "Statement": [
+       {
+        "Action": "sts:AssumeRole",
+        "Effect": "Allow",
+        "Principal": {
+         "Service": "tasks.apprunner.amazonaws.com"
+        }
+       }
+      ],
+      "Version": "2012-10-17"
+     }
+    }
+   }
  },
  "Outputs": {
   "URL6": {

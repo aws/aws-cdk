@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "33.0.0",
   "artifacts": {
     "aws-cdk-eks-import-cluster-test.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a496000766e0a87356dd72bc64c6ac6e1309bb2e7569ed270892c5eb3a8448b4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2f28ce51bb093a23e3efa1ca91b99a843f070d1dc55006a00d5a1d24e6a1eb96.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -267,12 +267,6 @@
             "data": "NodeProxyAgentLayer924C1971"
           }
         ],
-        "/aws-cdk-eks-import-cluster-test/@aws-cdk--aws-eks.ClusterResourceProvider/DefaultCrNodeVersionMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DefaultCrNodeVersionMap"
-          }
-        ],
         "/aws-cdk-eks-import-cluster-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -423,28 +417,22 @@
             "data": "ProviderframeworkonEvent83C1D0A7"
           }
         ],
-        "/aws-cdk-eks-import-cluster-test/@aws-cdk--aws-eks.KubectlProvider/DefaultCrNodeVersionMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DefaultCrNodeVersionMap"
-          }
-        ],
         "/aws-cdk-eks-import-cluster-test/@aws-cdk--aws-eks.KubectlProvider/awscdkeksimportclustertestawscdkawseksKubectlProviderframeworkonEvent301ACD4FArn": [
           {
             "type": "aws:cdk:logicalId",
             "data": "awscdkeksimportclustertestawscdkawseksKubectlProviderframeworkonEvent301ACD4FArn"
           }
         ],
-        "/aws-cdk-eks-import-cluster-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksimportclustertestClusterKubectlHandlerRole18502D21Arn": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "referencetoawscdkeksimportclustertestClusterKubectlHandlerRole18502D21Arn"
-          }
-        ],
         "/aws-cdk-eks-import-cluster-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksimportclustertestKubectlLayer51952008Ref": [
           {
             "type": "aws:cdk:logicalId",
             "data": "referencetoawscdkeksimportclustertestKubectlLayer51952008Ref"
+          }
+        ],
+        "/aws-cdk-eks-import-cluster-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksimportclustertestClusterKubectlHandlerRole18502D21Arn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoawscdkeksimportclustertestClusterKubectlHandlerRole18502D21Arn"
           }
         ],
         "/aws-cdk-eks-import-cluster-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksimportclustertestVpcPrivateSubnet1Subnet8DEF468ERef": [
@@ -561,12 +549,6 @@
             "data": "HelloAppWithoutValidation7C638ACB"
           }
         ],
-        "/aws-cdk-eks-import-cluster-test/DefaultCrNodeVersionMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DefaultCrNodeVersionMap"
-          }
-        ],
         "/aws-cdk-eks-import-cluster-test/AWSCDKCfnUtilsProviderCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
@@ -624,19 +606,19 @@
       },
       "displayName": "aws-cdk-eks-import-cluster-test"
     },
-    "awscdkeksclusterDefaultTestDeployAssertFBF4B356.assets": {
+    "awscdkeksimportclusterDefaultTestDeployAssert71CEFD92.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "awscdkeksclusterDefaultTestDeployAssertFBF4B356.assets.json",
+        "file": "awscdkeksimportclusterDefaultTestDeployAssert71CEFD92.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "awscdkeksclusterDefaultTestDeployAssertFBF4B356": {
+    "awscdkeksimportclusterDefaultTestDeployAssert71CEFD92": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "awscdkeksclusterDefaultTestDeployAssertFBF4B356.template.json",
+        "templateFile": "awscdkeksimportclusterDefaultTestDeployAssert71CEFD92.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -644,7 +626,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "awscdkeksclusterDefaultTestDeployAssertFBF4B356.assets"
+          "awscdkeksimportclusterDefaultTestDeployAssert71CEFD92.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -653,23 +635,23 @@
         }
       },
       "dependencies": [
-        "awscdkeksclusterDefaultTestDeployAssertFBF4B356.assets"
+        "awscdkeksimportclusterDefaultTestDeployAssert71CEFD92.assets"
       ],
       "metadata": {
-        "/aws-cdk-eks-cluster/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/aws-cdk-eks-import-cluster/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-eks-cluster/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/aws-cdk-eks-import-cluster/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-eks-cluster/DefaultTest/DeployAssert"
+      "displayName": "aws-cdk-eks-import-cluster/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

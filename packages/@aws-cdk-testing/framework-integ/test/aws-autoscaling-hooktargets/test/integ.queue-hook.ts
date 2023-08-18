@@ -28,7 +28,11 @@ class TestStack extends cdk.Stack {
           return {
             osType: OperatingSystemType.LINUX,
             userData: UserData.forLinux(),
-            imageId: StringParameter.fromStringParameterName(this, 'al2022AMI', '/aws/service/ami-amazon-linux-latest/al2022-ami-kernel-default-x86_64').stringValue,
+            imageId: StringParameter.fromStringParameterName(
+              this,
+              'al2023AMI',
+              '/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-6.1-x86_64',
+            ).stringValue,
           };
         },
       },

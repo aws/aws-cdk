@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { Redshift } from 'aws-sdk';
+import { InvalidClusterStateFault, Redshift } from '@aws-sdk/client-redshift';
 
-const redshift = new Redshift();
+const redshift = new Redshift({});
 
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent): Promise<void> {
   if (event.RequestType !== 'Delete') {
@@ -19,9 +19,9 @@ async function rebootClusterIfRequired(clusterId: string, parameterGroupName: st
     await sleep(retryDurationMs ?? 0);
     if (['pending-reboot', 'apply-deferred', 'apply-error'].includes(status)) {
       try {
-        await redshift.rebootCluster({ ClusterIdentifier: clusterId }).promise();
+        await redshift.rebootCluster({ ClusterIdentifier: clusterId });
       } catch (err: any) {
-        if (err.code === 'InvalidClusterState') {
+        if (err instanceof InvalidClusterStateFault) {
           return await executeActionForStatus(status, 30000);
         } else {
           throw err;
@@ -35,7 +35,7 @@ async function rebootClusterIfRequired(clusterId: string, parameterGroupName: st
   }
 
   async function getApplyStatus(): Promise<string> {
-    const clusterDetails = await redshift.describeClusters({ ClusterIdentifier: clusterId }).promise();
+    const clusterDetails = await redshift.describeClusters({ ClusterIdentifier: clusterId });
     if (clusterDetails.Clusters?.[0].ClusterParameterGroups === undefined) {
       throw new Error(`Unable to find any Parameter Groups associated with ClusterId "${clusterId}".`);
     }

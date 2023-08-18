@@ -1,0 +1,12 @@
+{
+  "version": "32.0.0",
+  "testCases": {
+    "state-machine-integtest/DefaultTest": {
+      "stacks": [
+        "test-step-functions-start-state-machine-action-stack"
+      ],
+      "assertionStack": "state-machine-integtest/DefaultTest/DeployAssert",
+      "assertionStackName": "statemachineintegtestDefaultTestDeployAssert1FAFBF55"
+    }
+  }
+}

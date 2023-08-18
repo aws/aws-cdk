@@ -1,15 +1,18 @@
 const mockECRClient = {
-  listImages: jest.fn().mockReturnThis(),
-  batchDeleteImage: jest.fn().mockReturnThis(),
-  describeRepositories: jest.fn().mockReturnThis(),
-  listTagsForResource: jest.fn().mockReturnThis(),
-  promise: jest.fn(),
+  listImages: jest.fn(),
+  batchDeleteImage: jest.fn(),
+  describeRepositories: jest.fn(),
+  listTagsForResource: jest.fn(),
 };
 
 import { autoDeleteHandler } from '../../lib/aws-ecr/auto-delete-images-handler';
 
-jest.mock('aws-sdk', () => {
-  return { ECR: jest.fn(() => mockECRClient) };
+jest.mock('@aws-sdk/client-ecr', () => {
+  return {
+    ECR: jest.fn().mockImplementation(() => {
+      return mockECRClient;
+    }),
+  };
 });
 
 beforeEach(() => {
@@ -128,13 +131,13 @@ test('does nothing on update event when the old resource properties are absent',
 
 test('deletes all objects when the name changes on update event', async () => {
   // GIVEN
-  mockAwsPromise(mockECRClient.describeRepositories, {
+  mockECRClient.describeRepositories.mockReturnValue({
     repositories: [
       { repositoryArn: 'RepositoryArn', respositoryName: 'MyRepo' },
     ],
   });
 
-  mockAwsPromise(mockECRClient.listImages, {
+  mockECRClient.listImages.mockReturnValue({
     imageIds: [
       { imageDigest: 'ImageDigest1', imageTag: 'ImageTag1' },
       { imageDigest: 'ImageDigest2', imageTag: 'ImageTag2' },
@@ -172,7 +175,7 @@ test('deletes all objects when the name changes on update event', async () => {
 
 test('deletes no images on delete event when repository has no images', async () => {
   // GIVEN
-  mockECRClient.promise.mockResolvedValue({ imageIds: [] }); // listedImages() call
+  mockECRClient.listImages.mockResolvedValue({ imageIds: [] }); // listedImages() call
 
   // WHEN
   const event: Partial<AWSLambda.CloudFormationCustomResourceDeleteEvent> = {
@@ -192,7 +195,7 @@ test('deletes no images on delete event when repository has no images', async ()
 });
 
 test('deletes all images on delete event', async () => {
-  mockECRClient.promise.mockResolvedValue({ // listedImages() call
+  mockECRClient.listImages.mockResolvedValue({ // listedImages() call
     imageIds: [
       {
         imageTag: 'tag1',
@@ -237,7 +240,7 @@ test('deletes all images on delete event', async () => {
 test('does not empty repository if it is not tagged', async () => {
   // GIVEN
   givenNotTaggedForDeletion();
-  mockECRClient.promise.mockResolvedValue({ // listedImages() call
+  mockECRClient.listImages.mockResolvedValue({ // listedImages() call
     imageIds: [
       {
         imageTag: 'tag1',
@@ -266,13 +269,13 @@ test('does not empty repository if it is not tagged', async () => {
 
 test('delete event where repo has many images does recurse appropriately', async () => {
   // GIVEN
-  mockAwsPromise(mockECRClient.describeRepositories, {
+  mockECRClient.describeRepositories.mockReturnValue({
     repositories: [
       { repositoryArn: 'RepositoryArn', respositoryName: 'MyRepo' },
     ],
   });
 
-  mockECRClient.promise // listedImages() call
+  mockECRClient.listImages // listedImages() call
     .mockResolvedValueOnce({
       imageIds: [
         {
@@ -285,20 +288,20 @@ test('delete event where repo has many images does recurse appropriately', async
         },
       ],
       nextToken: 'token1',
-    })
-    .mockResolvedValueOnce(undefined) // batchDeleteImage() call
-    .mockResolvedValueOnce({ // listedImages() call
-      imageIds: [
-        {
-          imageTag: 'tag3',
-          imageDigest: 'sha256-3',
-        },
-        {
-          imageTag: 'tag4',
-          imageDigest: 'sha256-4',
-        },
-      ],
     });
+  mockECRClient.batchDeleteImage.mockResolvedValueOnce(undefined); // batchDeleteImage() call
+  mockECRClient.listImages.mockResolvedValueOnce({ // listedImages() call
+    imageIds: [
+      {
+        imageTag: 'tag3',
+        imageDigest: 'sha256-3',
+      },
+      {
+        imageTag: 'tag4',
+        imageDigest: 'sha256-4',
+      },
+    ],
+  });
 
   // WHEN
   const event: Partial<AWSLambda.CloudFormationCustomResourceDeleteEvent> = {
@@ -345,9 +348,12 @@ test('delete event where repo has many images does recurse appropriately', async
 
 test('does nothing when the repository does not exist', async () => {
   // GIVEN
-  mockECRClient.promise.mockRejectedValue({ name: 'RepositoryNotFoundException' });
+  mockECRClient.listImages.mockImplementation(async () => {
+    const { RepositoryNotFoundException } = jest.requireActual('@aws-sdk/client-ecr');
+    return new RepositoryNotFoundException({ name: '', $metadata: {} });
+  });
 
-  mockAwsPromise(mockECRClient.describeRepositories, {
+  mockECRClient.describeRepositories.mockReturnValue({
     repositories: [
       { repositoryArn: 'RepositoryArn', respositoryName: 'MyRepo' },
     ],
@@ -368,13 +374,13 @@ test('does nothing when the repository does not exist', async () => {
 
 test('delete event where repo has tagged images and untagged images', async () => {
   // GIVEN
-  mockAwsPromise(mockECRClient.describeRepositories, {
+  mockECRClient.describeRepositories.mockReturnValue({
     repositories: [
       { repositoryArn: 'RepositoryArn', respositoryName: 'MyRepo' },
     ],
   });
 
-  mockECRClient.promise // listedImages() call
+  mockECRClient.listImages // listedImages() call
     .mockResolvedValueOnce({
       imageIds: [
         {
@@ -427,14 +433,8 @@ async function invokeHandler(event: Partial<AWSLambda.CloudFormationCustomResour
   return autoDeleteHandler(event as AWSLambda.CloudFormationCustomResourceEvent);
 }
 
-function mockAwsPromise<A>(fn: jest.Mock<any, any>, value: A, when: 'once' | 'always' = 'always') {
-  (when === 'always' ? fn.mockReturnValue : fn.mockReturnValueOnce).call(fn, {
-    promise: () => value,
-  });
-}
-
 function givenTaggedForDeletion() {
-  mockAwsPromise(mockECRClient.listTagsForResource, {
+  mockECRClient.listTagsForResource.mockReturnValue({
     tags: [
       {
         Key: 'aws-cdk:auto-delete-images',
@@ -445,7 +445,7 @@ function givenTaggedForDeletion() {
 }
 
 function givenNotTaggedForDeletion() {
-  mockAwsPromise(mockECRClient.listTagsForResource, {
+  mockECRClient.listTagsForResource.mockReturnValue({
     tags: [],
   });
 }

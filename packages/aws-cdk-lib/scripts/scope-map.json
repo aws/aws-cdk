@@ -639,6 +639,9 @@
   "aws-transfer": [
     "AWS::Transfer"
   ],
+  "aws-verifiedpermissions": [
+    "AWS::VerifiedPermissions"
+  ],
   "aws-voiceid": [
     "AWS::VoiceID"
   ],

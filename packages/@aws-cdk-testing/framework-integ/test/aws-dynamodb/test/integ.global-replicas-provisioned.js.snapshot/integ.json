@@ -5,6 +5,7 @@
       "stacks": [
         "aws-cdk-dynamodb-global-replicas-provisioned"
       ],
+      "diffAssets": true,
       "assertionStack": "aws-cdk-dynamodb-global-replicas-provisioned-test/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkdynamodbglobalreplicasprovisionedtestDefaultTestDeployAssertE7F91F54"
     }

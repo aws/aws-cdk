@@ -1,9 +1,9 @@
 # AWS Step Functions Construct Library
 
 
-The `@aws-cdk/aws-stepfunctions` package contains constructs for building
+The `aws-cdk-lib/aws-stepfunctions` package contains constructs for building
 serverless workflows using objects. Use this in conjunction with the
-`@aws-cdk/aws-stepfunctions-tasks` package, which contains classes used
+`aws-cdk-lib/aws-stepfunctions-tasks` package, which contains classes used
 to call other AWS services.
 
 Defining a workflow looks like this (for the [Step Functions Job Poller
@@ -59,11 +59,12 @@ const definition = submitJob
 new sfn.StateMachine(this, 'StateMachine', {
   definition,
   timeout: Duration.minutes(5),
+  comment: 'a super cool state machine',
 });
 ```
 
 You can find more sample snippets and learn more about the service integrations
-in the `@aws-cdk/aws-stepfunctions-tasks` package.
+in the `aws-cdk-lib/aws-stepfunctions-tasks` package.
 
 ## State Machine
 
@@ -98,11 +99,11 @@ history when CloudFormation deletes your state machine.
 Alternatively you can specify an existing step functions definition by providing a string or a file that contains the ASL JSON.
 
 ```ts
-new sfn.StateMachine(stack, 'StateMachineFromString', {
+new sfn.StateMachine(this, 'StateMachineFromString', {
   definitionBody: sfn.DefinitionBody.fromString('{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}'),
 });
 
-new sfn.StateMachine(stack, 'StateMachineFromFile', {
+new sfn.StateMachine(this, 'StateMachineFromFile', {
   definitionBody: sfn.DefinitionBody.fromFile('./asl.json'),
 });
 ```
@@ -250,7 +251,7 @@ information, see the States Language spec.
 
 A `Task` represents some work that needs to be done. Do not use the `Task` class directly.
 
-Instead, use one of the classes in the `@aws-cdk/aws-stepfunctions-tasks` module,
+Instead, use one of the classes in the `aws-cdk-lib/aws-stepfunctions-tasks` module,
 which provide a much more ergonomic way to integrate with various AWS services.
 
 ### Pass
@@ -532,6 +533,7 @@ const chain = sfn.Chain.start(custom)
 const sm = new sfn.StateMachine(this, 'StateMachine', {
   definition: chain,
   timeout: Duration.seconds(30),
+  comment: 'a super cool state machine',
 });
 
 // don't forget permissions. You need to assign them

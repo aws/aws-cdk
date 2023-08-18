@@ -31,6 +31,7 @@ export enum AmiHardwareType {
  * ECS-optimized Windows version list
  */
 export enum WindowsOptimizedVersion {
+  SERVER_2022 = '2022',
   SERVER_2019 = '2019',
   SERVER_2016 = '2016',
 }
@@ -134,13 +135,14 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
     }
 
     // set the SSM parameter name
-    this.amiParameterName = '/aws/service/ecs/optimized-ami/'
+    this.amiParameterName = '/aws/service/'
+      + (this.windowsVersion ? 'ami-windows-latest/' : 'ecs/optimized-ami/')
       + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX ? 'amazon-linux/' : '')
       + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? 'amazon-linux-2/' : '')
-      + (this.windowsVersion ? `windows_server/${this.windowsVersion}/english/full/` : '')
+      + (this.windowsVersion ? `Windows_Server-${this.windowsVersion}-English-Full-ECS_Optimized/` : '')
       + (this.hwType === AmiHardwareType.GPU ? 'gpu/' : '')
       + (this.hwType === AmiHardwareType.ARM ? 'arm64/' : '')
-      + 'recommended/image_id';
+      + (this.windowsVersion ? 'image_id' : 'recommended/image_id');
 
     this.cachedInContext = props?.cachedInContext ?? false;
   }
@@ -247,13 +249,14 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
     }
 
     // set the SSM parameter name
-    this.amiParameterName = '/aws/service/ecs/optimized-ami/'
+    this.amiParameterName = '/aws/service/'
+      + (this.windowsVersion ? 'ami-windows-latest/' : 'ecs/optimized-ami/')
       + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX ? 'amazon-linux/' : '')
       + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? 'amazon-linux-2/' : '')
-      + (this.windowsVersion ? `windows_server/${this.windowsVersion}/english/full/` : '')
+      + (this.windowsVersion ? `Windows_Server-${this.windowsVersion}-English-Full-ECS_Optimized/` : '')
       + (this.hwType === AmiHardwareType.GPU ? 'gpu/' : '')
       + (this.hwType === AmiHardwareType.ARM ? 'arm64/' : '')
-      + 'recommended/image_id';
+      + (this.windowsVersion ? 'image_id' : 'recommended/image_id');
 
     this.cachedInContext = props?.cachedInContext ?? false;
   }

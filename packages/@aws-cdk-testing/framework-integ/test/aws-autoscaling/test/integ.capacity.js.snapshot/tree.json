@@ -770,34 +770,85 @@
                   "version": "0.0.0"
                 }
               },
-              "LaunchConfig": {
-                "id": "LaunchConfig",
-                "path": "aws-cdk-autoscaling-integ/ASG-1/LaunchConfig",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::AutoScaling::LaunchConfiguration",
-                  "aws:cdk:cloudformation:props": {
-                    "imageId": {
-                      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
-                    },
-                    "instanceType": "t2.micro",
-                    "iamInstanceProfile": {
-                      "Ref": "ASG1InstanceProfile46E7155F"
-                    },
-                    "securityGroups": [
-                      {
-                        "Fn::GetAtt": [
-                          "ASG1InstanceSecurityGroup2777683A",
-                          "GroupId"
+              "LaunchTemplate": {
+                "id": "LaunchTemplate",
+                "path": "aws-cdk-autoscaling-integ/ASG-1/LaunchTemplate",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-autoscaling-integ/ASG-1/LaunchTemplate/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::LaunchTemplate",
+                      "aws:cdk:cloudformation:props": {
+                        "launchTemplateData": {
+                          "iamInstanceProfile": {
+                            "arn": {
+                              "Fn::GetAtt": [
+                                "ASG1InstanceProfile46E7155F",
+                                "Arn"
+                              ]
+                            }
+                          },
+                          "imageId": {
+                            "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+                          },
+                          "instanceType": "t2.micro",
+                          "monitoring": {
+                            "enabled": false
+                          },
+                          "securityGroupIds": [
+                            {
+                              "Fn::GetAtt": [
+                                "ASG1InstanceSecurityGroup2777683A",
+                                "GroupId"
+                              ]
+                            }
+                          ],
+                          "tagSpecifications": [
+                            {
+                              "resourceType": "instance",
+                              "tags": [
+                                {
+                                  "key": "Name",
+                                  "value": "aws-cdk-autoscaling-integ/ASG-1/LaunchTemplate"
+                                }
+                              ]
+                            },
+                            {
+                              "resourceType": "volume",
+                              "tags": [
+                                {
+                                  "key": "Name",
+                                  "value": "aws-cdk-autoscaling-integ/ASG-1/LaunchTemplate"
+                                }
+                              ]
+                            }
+                          ],
+                          "userData": {
+                            "Fn::Base64": "#!/bin/bash"
+                          }
+                        },
+                        "tagSpecifications": [
+                          {
+                            "resourceType": "launch-template",
+                            "tags": [
+                              {
+                                "key": "Name",
+                                "value": "aws-cdk-autoscaling-integ/ASG-1/LaunchTemplate"
+                              }
+                            ]
+                          }
                         ]
                       }
-                    ],
-                    "userData": {
-                      "Fn::Base64": "#!/bin/bash"
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnLaunchTemplate",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_autoscaling.CfnLaunchConfiguration",
+                  "fqn": "aws-cdk-lib.aws_ec2.LaunchTemplate",
                   "version": "0.0.0"
                 }
               },
@@ -809,8 +860,16 @@
                   "aws:cdk:cloudformation:props": {
                     "maxSize": "1",
                     "minSize": "1",
-                    "launchConfigurationName": {
-                      "Ref": "ASG1LaunchConfigE2A82E9E"
+                    "launchTemplate": {
+                      "launchTemplateId": {
+                        "Ref": "ASG1LaunchTemplate322A17A3"
+                      },
+                      "version": {
+                        "Fn::GetAtt": [
+                          "ASG1LaunchTemplate322A17A3",
+                          "LatestVersionNumber"
+                        ]
+                      }
                     },
                     "tags": [
                       {
@@ -967,34 +1026,85 @@
                   "version": "0.0.0"
                 }
               },
-              "LaunchConfig": {
-                "id": "LaunchConfig",
-                "path": "aws-cdk-autoscaling-integ/ASG-2/LaunchConfig",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::AutoScaling::LaunchConfiguration",
-                  "aws:cdk:cloudformation:props": {
-                    "imageId": {
-                      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
-                    },
-                    "instanceType": "t2.micro",
-                    "iamInstanceProfile": {
-                      "Ref": "ASG2InstanceProfile46CEEEAC"
-                    },
-                    "securityGroups": [
-                      {
-                        "Fn::GetAtt": [
-                          "ASG2InstanceSecurityGroup8FEC0A45",
-                          "GroupId"
+              "LaunchTemplate": {
+                "id": "LaunchTemplate",
+                "path": "aws-cdk-autoscaling-integ/ASG-2/LaunchTemplate",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-autoscaling-integ/ASG-2/LaunchTemplate/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::LaunchTemplate",
+                      "aws:cdk:cloudformation:props": {
+                        "launchTemplateData": {
+                          "iamInstanceProfile": {
+                            "arn": {
+                              "Fn::GetAtt": [
+                                "ASG2InstanceProfile46CEEEAC",
+                                "Arn"
+                              ]
+                            }
+                          },
+                          "imageId": {
+                            "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+                          },
+                          "instanceType": "t2.micro",
+                          "monitoring": {
+                            "enabled": false
+                          },
+                          "securityGroupIds": [
+                            {
+                              "Fn::GetAtt": [
+                                "ASG2InstanceSecurityGroup8FEC0A45",
+                                "GroupId"
+                              ]
+                            }
+                          ],
+                          "tagSpecifications": [
+                            {
+                              "resourceType": "instance",
+                              "tags": [
+                                {
+                                  "key": "Name",
+                                  "value": "aws-cdk-autoscaling-integ/ASG-2/LaunchTemplate"
+                                }
+                              ]
+                            },
+                            {
+                              "resourceType": "volume",
+                              "tags": [
+                                {
+                                  "key": "Name",
+                                  "value": "aws-cdk-autoscaling-integ/ASG-2/LaunchTemplate"
+                                }
+                              ]
+                            }
+                          ],
+                          "userData": {
+                            "Fn::Base64": "#!/bin/bash"
+                          }
+                        },
+                        "tagSpecifications": [
+                          {
+                            "resourceType": "launch-template",
+                            "tags": [
+                              {
+                                "key": "Name",
+                                "value": "aws-cdk-autoscaling-integ/ASG-2/LaunchTemplate"
+                              }
+                            ]
+                          }
                         ]
                       }
-                    ],
-                    "userData": {
-                      "Fn::Base64": "#!/bin/bash"
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnLaunchTemplate",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_autoscaling.CfnLaunchConfiguration",
+                  "fqn": "aws-cdk-lib.aws_ec2.LaunchTemplate",
                   "version": "0.0.0"
                 }
               },
@@ -1010,8 +1120,16 @@
                     "minSize": {
                       "Ref": "CapacityParam"
                     },
-                    "launchConfigurationName": {
-                      "Ref": "ASG2LaunchConfig588DEC87"
+                    "launchTemplate": {
+                      "launchTemplateId": {
+                        "Ref": "ASG2LaunchTemplateE362DD58"
+                      },
+                      "version": {
+                        "Fn::GetAtt": [
+                          "ASG2LaunchTemplateE362DD58",
+                          "LatestVersionNumber"
+                        ]
+                      }
                     },
                     "tags": [
                       {
@@ -1152,34 +1270,85 @@
                   "version": "0.0.0"
                 }
               },
-              "LaunchConfig": {
-                "id": "LaunchConfig",
-                "path": "aws-cdk-autoscaling-integ/ASG-3/LaunchConfig",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::AutoScaling::LaunchConfiguration",
-                  "aws:cdk:cloudformation:props": {
-                    "imageId": {
-                      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
-                    },
-                    "instanceType": "t2.micro",
-                    "iamInstanceProfile": {
-                      "Ref": "ASG3InstanceProfile6546A906"
-                    },
-                    "securityGroups": [
-                      {
-                        "Fn::GetAtt": [
-                          "ASG3InstanceSecurityGroup77440998",
-                          "GroupId"
+              "LaunchTemplate": {
+                "id": "LaunchTemplate",
+                "path": "aws-cdk-autoscaling-integ/ASG-3/LaunchTemplate",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-autoscaling-integ/ASG-3/LaunchTemplate/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::LaunchTemplate",
+                      "aws:cdk:cloudformation:props": {
+                        "launchTemplateData": {
+                          "iamInstanceProfile": {
+                            "arn": {
+                              "Fn::GetAtt": [
+                                "ASG3InstanceProfile6546A906",
+                                "Arn"
+                              ]
+                            }
+                          },
+                          "imageId": {
+                            "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+                          },
+                          "instanceType": "t2.micro",
+                          "monitoring": {
+                            "enabled": false
+                          },
+                          "securityGroupIds": [
+                            {
+                              "Fn::GetAtt": [
+                                "ASG3InstanceSecurityGroup77440998",
+                                "GroupId"
+                              ]
+                            }
+                          ],
+                          "tagSpecifications": [
+                            {
+                              "resourceType": "instance",
+                              "tags": [
+                                {
+                                  "key": "Name",
+                                  "value": "aws-cdk-autoscaling-integ/ASG-3/LaunchTemplate"
+                                }
+                              ]
+                            },
+                            {
+                              "resourceType": "volume",
+                              "tags": [
+                                {
+                                  "key": "Name",
+                                  "value": "aws-cdk-autoscaling-integ/ASG-3/LaunchTemplate"
+                                }
+                              ]
+                            }
+                          ],
+                          "userData": {
+                            "Fn::Base64": "#!/bin/bash"
+                          }
+                        },
+                        "tagSpecifications": [
+                          {
+                            "resourceType": "launch-template",
+                            "tags": [
+                              {
+                                "key": "Name",
+                                "value": "aws-cdk-autoscaling-integ/ASG-3/LaunchTemplate"
+                              }
+                            ]
+                          }
                         ]
                       }
-                    ],
-                    "userData": {
-                      "Fn::Base64": "#!/bin/bash"
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnLaunchTemplate",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_autoscaling.CfnLaunchConfiguration",
+                  "fqn": "aws-cdk-lib.aws_ec2.LaunchTemplate",
                   "version": "0.0.0"
                 }
               },
@@ -1193,8 +1362,16 @@
                       "Ref": "CapacityParam"
                     },
                     "minSize": "1",
-                    "launchConfigurationName": {
-                      "Ref": "ASG3LaunchConfig06D6D11E"
+                    "launchTemplate": {
+                      "launchTemplateId": {
+                        "Ref": "ASG3LaunchTemplate687D93D0"
+                      },
+                      "version": {
+                        "Fn::GetAtt": [
+                          "ASG3LaunchTemplate687D93D0",
+                          "LatestVersionNumber"
+                        ]
+                      }
                     },
                     "tags": [
                       {
@@ -1259,7 +1436,7 @@
                 "path": "AutoScalingGroupCapacity/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.26"
+                  "version": "10.2.55"
                 }
               },
               "DeployAssert": {
@@ -1305,7 +1482,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.26"
+          "version": "10.2.55"
         }
       }
     },

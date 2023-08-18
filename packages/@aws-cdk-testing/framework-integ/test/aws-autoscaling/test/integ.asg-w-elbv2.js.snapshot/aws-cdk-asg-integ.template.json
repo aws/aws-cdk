@@ -467,27 +467,68 @@
     ]
    }
   },
-  "FleetLaunchConfig59F79D36": {
-   "Type": "AWS::AutoScaling::LaunchConfiguration",
+  "FleetLaunchTemplate3FC2FEAE": {
+   "Type": "AWS::EC2::LaunchTemplate",
    "Properties": {
-    "ImageId": {
-     "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+    "LaunchTemplateData": {
+     "IamInstanceProfile": {
+      "Arn": {
+       "Fn::GetAtt": [
+        "FleetInstanceProfileC6192A66",
+        "Arn"
+       ]
+      }
+     },
+     "ImageId": {
+      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+     },
+     "InstanceType": "t2.micro",
+     "Monitoring": {
+      "Enabled": false
+     },
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "FleetInstanceSecurityGroupA8C3D7AD",
+        "GroupId"
+       ]
+      }
+     ],
+     "TagSpecifications": [
+      {
+       "ResourceType": "instance",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-cdk-asg-integ/Fleet/LaunchTemplate"
+        }
+       ]
+      },
+      {
+       "ResourceType": "volume",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-cdk-asg-integ/Fleet/LaunchTemplate"
+        }
+       ]
+      }
+     ],
+     "UserData": {
+      "Fn::Base64": "#!/bin/bash"
+     }
     },
-    "InstanceType": "t2.micro",
-    "IamInstanceProfile": {
-     "Ref": "FleetInstanceProfileC6192A66"
-    },
-    "SecurityGroups": [
+    "TagSpecifications": [
      {
-      "Fn::GetAtt": [
-       "FleetInstanceSecurityGroupA8C3D7AD",
-       "GroupId"
+      "ResourceType": "launch-template",
+      "Tags": [
+       {
+        "Key": "Name",
+        "Value": "aws-cdk-asg-integ/Fleet/LaunchTemplate"
+       }
       ]
      }
-    ],
-    "UserData": {
-     "Fn::Base64": "#!/bin/bash"
-    }
+    ]
    },
    "DependsOn": [
     "FleetInstanceRoleA605DB82"
@@ -498,8 +539,16 @@
    "Properties": {
     "MaxSize": "1",
     "MinSize": "1",
-    "LaunchConfigurationName": {
-     "Ref": "FleetLaunchConfig59F79D36"
+    "LaunchTemplate": {
+     "LaunchTemplateId": {
+      "Ref": "FleetLaunchTemplate3FC2FEAE"
+     },
+     "Version": {
+      "Fn::GetAtt": [
+       "FleetLaunchTemplate3FC2FEAE",
+       "LatestVersionNumber"
+      ]
+     }
     },
     "Tags": [
      {

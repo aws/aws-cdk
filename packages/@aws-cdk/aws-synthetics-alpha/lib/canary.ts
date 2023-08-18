@@ -22,23 +22,7 @@ export class Test {
    * @param options The configuration options
    */
   public static custom(options: CustomTestOptions): Test {
-    Test.validateHandler(options.handler);
     return new Test(options.code, options.handler);
-  }
-
-  /**
-   * Verifies that the given handler ends in '.handler'. Returns the handler if successful and
-   * throws an error if not.
-   *
-   * @param handler - the handler given by the user
-   */
-  private static validateHandler(handler: string) {
-    if (!handler.endsWith('.handler')) {
-      throw new Error(`Canary Handler must end in '.handler' (${handler})`);
-    }
-    if (handler.length > 21) {
-      throw new Error(`Canary Handler must be less than 21 characters (${handler})`);
-    }
   }
 
   /**
@@ -213,6 +197,16 @@ export interface CanaryProps {
    * @default false
    */
   readonly enableAutoDeleteLambdas?: boolean;
+
+  /**
+   * Lifecycle rules for the generated canary artifact bucket. Has no effect
+   * if a bucket is passed to `artifactsBucketLocation`. If you pass a bucket
+   * to `artifactsBucketLocation`, you can add lifecycle rules to the bucket
+   * itself.
+   *
+   * @default - no rules applied to the generated bucket.
+   */
+  readonly artifactsBucketLifecycleRules?: Array<s3.LifecycleRule>;
 }
 
 /**
@@ -269,6 +263,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     this.artifactsBucket = props.artifactsBucketLocation?.bucket ?? new s3.Bucket(this, 'ArtifactsBucket', {
       encryption: s3.BucketEncryption.KMS_MANAGED,
       enforceSSL: true,
+      lifecycleRules: props.artifactsBucketLifecycleRules,
     });
 
     this.role = props.role ?? this.createDefaultRole(props);
@@ -411,6 +406,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
    * Returns the code object taken in by the canary resource.
    */
   private createCode(props: CanaryProps): CfnCanary.CodeProperty {
+    this.validateHandler(props.test.handler, props.runtime);
     const codeConfig = {
       handler: props.test.handler,
       ...props.test.code.bind(this, props.test.handler, props.runtime.family),
@@ -422,6 +418,35 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
       s3Key: codeConfig.s3Location?.objectKey,
       s3ObjectVersion: codeConfig.s3Location?.objectVersion,
     };
+  }
+
+  /**
+   * Verifies that the handler name matches the conventions given a certain runtime.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-synthetics-canary-code.html#cfn-synthetics-canary-code-handler
+   * @param handler - the name of the handler
+   * @param runtime - the runtime version
+   */
+  private validateHandler(handler: string, runtime: Runtime) {
+    const oldRuntimes = [
+      Runtime.SYNTHETICS_PYTHON_SELENIUM_1_0,
+      Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_0,
+      Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_1,
+      Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_2,
+      Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_3,
+    ];
+    if (oldRuntimes.includes(runtime)) {
+      if (!handler.match(/^[0-9A-Za-z_\\-]+\.handler*$/)) {
+        throw new Error(`Canary Handler must be specified as \'fileName.handler\' for legacy runtimes, received ${handler}`);
+      }
+    } else {
+      if (!handler.match(/^([0-9a-zA-Z_-]+\/)*[0-9A-Za-z_\\-]+\.[A-Za-z_][A-Za-z0-9_]*$/)) {
+        throw new Error(`Canary Handler must be specified either as \'fileName.handler\', \'fileName.functionName\', or \'folder/fileName.functionName\', received ${handler}`);
+      }
+    }
+    if (handler.length < 1 || handler.length > 128) {
+      throw new Error(`Canary Handler length must be between 1 and 128, received ${handler.length}`);
+    }
   }
 
   private createRunConfig(props: CanaryProps): CfnCanary.RunConfigProperty | undefined {

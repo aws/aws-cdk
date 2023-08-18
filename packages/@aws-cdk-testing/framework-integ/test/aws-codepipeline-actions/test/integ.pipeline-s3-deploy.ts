@@ -79,6 +79,7 @@ const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
 
 const integ = new IntegTest(app, 's3-deploy-test', {
   testCases: [stack],
+  diffAssets: true,
 });
 
 const getObjectCall = integ.assertions.awsApiCall('S3', 'getObject', {

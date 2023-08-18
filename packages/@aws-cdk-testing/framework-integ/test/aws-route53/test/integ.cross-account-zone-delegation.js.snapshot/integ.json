@@ -1,14 +1,13 @@
 {
-  "version": "31.0.0",
+  "version": "33.0.0",
   "testCases": {
-    "integ.cross-account-zone-delegation": {
+    "Route53CrossAccountInteg/DefaultTest": {
       "stacks": [
         "aws-cdk-route53-cross-account-integ"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "diffAssets": true,
+      "assertionStack": "Route53CrossAccountInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "Route53CrossAccountIntegDefaultTestDeployAssertF1D808C9"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

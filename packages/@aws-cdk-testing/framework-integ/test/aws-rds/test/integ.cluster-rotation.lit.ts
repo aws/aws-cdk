@@ -54,6 +54,7 @@ clusterWithCustomRotationOptions.addRotationSingleUser({
   securityGroup,
   vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
   endpoint: endpoint,
+  rotateImmediatelyOnUpdate: false,
 });
 /// !hide
 

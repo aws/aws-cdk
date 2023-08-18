@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ebd9079218fdf31ab53c24742c2d4f158e5544bf478c3f4fbe60a1fa5b53e2c9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/73fdc4869d3cfaf6175f46746eadb17789602a1c78a57c3648a0f5347dbab35f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -195,10 +195,10 @@
             "data": "ASG1InstanceProfile46E7155F"
           }
         ],
-        "/aws-cdk-autoscaling-integ/ASG-1/LaunchConfig": [
+        "/aws-cdk-autoscaling-integ/ASG-1/LaunchTemplate/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASG1LaunchConfigE2A82E9E"
+            "data": "ASG1LaunchTemplate322A17A3"
           }
         ],
         "/aws-cdk-autoscaling-integ/ASG-1/ASG": [
@@ -231,10 +231,10 @@
             "data": "ASG2InstanceProfile46CEEEAC"
           }
         ],
-        "/aws-cdk-autoscaling-integ/ASG-2/LaunchConfig": [
+        "/aws-cdk-autoscaling-integ/ASG-2/LaunchTemplate/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASG2LaunchConfig588DEC87"
+            "data": "ASG2LaunchTemplateE362DD58"
           }
         ],
         "/aws-cdk-autoscaling-integ/ASG-2/ASG": [
@@ -261,10 +261,10 @@
             "data": "ASG3InstanceProfile6546A906"
           }
         ],
-        "/aws-cdk-autoscaling-integ/ASG-3/LaunchConfig": [
+        "/aws-cdk-autoscaling-integ/ASG-3/LaunchTemplate/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASG3LaunchConfig06D6D11E"
+            "data": "ASG3LaunchTemplate687D93D0"
           }
         ],
         "/aws-cdk-autoscaling-integ/ASG-3/ASG": [
@@ -283,6 +283,33 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "ASG1LaunchTemplateProfileB8B67C6F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASG1LaunchTemplateProfileB8B67C6F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ASG2LaunchTemplateProfileBAB9923E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASG2LaunchTemplateProfileBAB9923E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ASG3LaunchTemplateProfileBF2C0F81": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASG3LaunchTemplateProfileBF2C0F81",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

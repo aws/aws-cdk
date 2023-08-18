@@ -499,6 +499,14 @@ export interface CommonRotationUserOptions {
    * @default - a new security group is created
    */
   readonly securityGroup?: ec2.ISecurityGroup;
+
+  /**
+   * Specifies whether to rotate the secret immediately or wait until the next
+   * scheduled rotation window.
+   *
+   * @default true
+   */
+  readonly rotateImmediatelyOnUpdate?: boolean;
 }
 
 /**

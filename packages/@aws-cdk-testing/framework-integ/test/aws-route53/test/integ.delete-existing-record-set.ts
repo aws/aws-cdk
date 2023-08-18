@@ -1,6 +1,7 @@
 import { App, Duration, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as route53 from 'aws-cdk-lib/aws-route53';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -29,5 +30,10 @@ class TestStack extends Stack {
 }
 
 const app = new App();
-new TestStack(app, 'cdk-route53-integ-delete-existing-record-set');
+const stack = new TestStack(app, 'cdk-route53-integ-delete-existing-record-set');
+
+new IntegTest(app, 'Rooute53DeleteExistingRecordSetInteg', {
+  testCases: [stack],
+  diffAssets: true,
+});
 app.synth();

@@ -7,6 +7,7 @@ import * as cr from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 import * as rds from 'aws-cdk-lib/aws-rds';
 import { ClusterInstance } from 'aws-cdk-lib/aws-rds';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -120,5 +121,10 @@ class Snapshoter extends Construct {
 }
 
 const app = new App();
-new TestStack(app, 'cdk-integ-cluster-snapshot');
+const stack = new TestStack(app, 'cdk-integ-cluster-snapshot');
+
+new IntegTest(app, 'ClusterSnapshotInteg', {
+  testCases: [stack],
+  diffAssets: true,
+});
 app.synth();

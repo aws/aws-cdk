@@ -170,3 +170,11 @@ weakened:aws-cdk-lib.cloud_assembly_schema.MetadataEntry
 weakened:aws-cdk-lib.cx_api.MetadataEntryResult
 weakened:@aws-cdk/cloud-assembly-schema.MetadataEntry
 weakened:@aws-cdk/cx-api.MetadataEntryResult
+# Fix for non-working property
+# loadBalancerName is used to idenitfy a Classic Load Balancer
+# However TaskSet only works with modern Application or Network LBs
+removed:aws-cdk-lib.aws_ecs.CfnTaskSet.LoadBalancerProperty.loadBalancerName
+
+# Introduction of a new feature
+# Previously only BlueGreenUpdatePolicy could be set, now BlueGreenUpdatePolicy or new RollingUpdatePolicy can be provided
+weakened:aws-cdk-lib.aws_sagemaker.CfnEndpoint.DeploymentConfigProperty

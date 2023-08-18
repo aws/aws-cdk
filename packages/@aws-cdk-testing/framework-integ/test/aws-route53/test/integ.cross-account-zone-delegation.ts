@@ -1,6 +1,7 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
 import { PublicHostedZone, CrossAccountZoneDelegationRecord } from 'aws-cdk-lib/aws-route53';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 
@@ -31,4 +32,8 @@ new CrossAccountZoneDelegationRecord(stack, 'DelegationWithZoneName', {
   delegationRole: parentZone.crossAccountZoneDelegationRole!,
 });
 
+new IntegTest(app, 'Route53CrossAccountInteg', {
+  testCases: [stack],
+  diffAssets: true,
+});
 app.synth();

@@ -533,38 +533,79 @@
     ]
    }
   },
-  "EcsClustergravitonclusterLaunchConfig64183B57": {
-   "Type": "AWS::AutoScaling::LaunchConfiguration",
+  "EcsClustergravitonclusterLaunchTemplate46854EA7": {
+   "Type": "AWS::EC2::LaunchTemplate",
    "Properties": {
-    "ImageId": {
-     "Ref": "SsmParameterValueawsservicebottlerocketawsecs1arm64latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
-    },
-    "InstanceType": "c6g.large",
-    "IamInstanceProfile": {
-     "Ref": "EcsClustergravitonclusterInstanceProfileD1BBFAAE"
-    },
-    "SecurityGroups": [
-     {
-      "Fn::GetAtt": [
-       "EcsClustergravitonclusterInstanceSecurityGroup0187E9BB",
-       "GroupId"
-      ]
-     }
-    ],
-    "UserData": {
-     "Fn::Base64": {
-      "Fn::Join": [
-       "",
-       [
-        "\n[settings.ecs]\ncluster = \"",
-        {
-         "Ref": "EcsCluster97242B84"
-        },
-        "\""
+    "LaunchTemplateData": {
+     "IamInstanceProfile": {
+      "Arn": {
+       "Fn::GetAtt": [
+        "EcsClustergravitonclusterInstanceProfileD1BBFAAE",
+        "Arn"
        ]
+      }
+     },
+     "ImageId": {
+      "Ref": "SsmParameterValueawsservicebottlerocketawsecs1arm64latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+     },
+     "InstanceType": "c6g.large",
+     "Monitoring": {
+      "Enabled": false
+     },
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "EcsClustergravitonclusterInstanceSecurityGroup0187E9BB",
+        "GroupId"
+       ]
+      }
+     ],
+     "TagSpecifications": [
+      {
+       "ResourceType": "instance",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-ecs-integ/EcsCluster/graviton-cluster/LaunchTemplate"
+        }
+       ]
+      },
+      {
+       "ResourceType": "volume",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-ecs-integ/EcsCluster/graviton-cluster/LaunchTemplate"
+        }
+       ]
+      }
+     ],
+     "UserData": {
+      "Fn::Base64": {
+       "Fn::Join": [
+        "",
+        [
+         "\n[settings.ecs]\ncluster = \"",
+         {
+          "Ref": "EcsCluster97242B84"
+         },
+         "\""
+        ]
+       ]
+      }
+     }
+    },
+    "TagSpecifications": [
+     {
+      "ResourceType": "launch-template",
+      "Tags": [
+       {
+        "Key": "Name",
+        "Value": "aws-ecs-integ/EcsCluster/graviton-cluster/LaunchTemplate"
+       }
       ]
      }
-    }
+    ]
    },
    "DependsOn": [
     "EcsClustergravitonclusterInstanceRoleDefaultPolicyB89DB33F",
@@ -576,8 +617,16 @@
    "Properties": {
     "MaxSize": "2",
     "MinSize": "2",
-    "LaunchConfigurationName": {
-     "Ref": "EcsClustergravitonclusterLaunchConfig64183B57"
+    "LaunchTemplate": {
+     "LaunchTemplateId": {
+      "Ref": "EcsClustergravitonclusterLaunchTemplate46854EA7"
+     },
+     "Version": {
+      "Fn::GetAtt": [
+       "EcsClustergravitonclusterLaunchTemplate46854EA7",
+       "LatestVersionNumber"
+      ]
+     }
     },
     "Tags": [
      {
