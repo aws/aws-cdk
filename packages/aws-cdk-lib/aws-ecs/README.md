@@ -381,7 +381,7 @@ Docker recommends that you turn off the `docker-proxy` in the Docker daemon conf
 For more information, see [Issue #11185](https://github.com/moby/moby/issues/11185) on the GitHub website.
 
 ```ts
-declare const container: ecs.ContainerDefintion;
+declare const container: ecs.ContainerDefinition;
 
 container.addPortMappings({
     containerPort: ecs.CONTAINER_PORT_UNSET_VALUE,
