@@ -4,7 +4,6 @@ import { Certificate } from '../../../aws-certificatemanager';
 import * as ec2 from '../../../aws-ec2';
 import { MachineImage, Vpc } from '../../../aws-ec2';
 import {
-  CONTAINER_PORT_UNSET_VALUE,
   AsgCapacityProvider,
   AwsLogDriver,
   Cluster,
@@ -14,6 +13,7 @@ import {
   Protocol,
   PlacementStrategy,
   PlacementConstraint,
+  ContainerDefinition,
 } from '../../../aws-ecs';
 import { ApplicationProtocol, SslPolicy } from '../../../aws-elasticloadbalancingv2';
 import { CompositePrincipal, Role, ServicePrincipal } from '../../../aws-iam';
@@ -1803,7 +1803,7 @@ describe('When Network Load Balancer', () => {
     taskDefinition.addContainer('MainContainer', {
       image: ContainerImage.fromRegistry('test'),
       portMappings: [{
-        containerPort: CONTAINER_PORT_UNSET_VALUE,
+        containerPort: ContainerDefinition.CONTAINER_PORT_USE_RANGE,
         containerPortRange: '8080-8081',
       }],
     });

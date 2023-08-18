@@ -10,8 +10,6 @@ import * as secretsmanager from '../../aws-secretsmanager';
 import * as ssm from '../../aws-ssm';
 import * as cdk from '../../core';
 
-export const CONTAINER_PORT_UNSET_VALUE = 0;
-
 /**
  * Specify the secret's version id or version stage
  */
@@ -384,6 +382,8 @@ export interface ContainerDefinitionProps extends ContainerDefinitionOptions {
  * A container definition is used in a task definition to describe the containers that are launched as part of a task.
  */
 export class ContainerDefinition extends Construct {
+  public static readonly CONTAINER_PORT_USE_RANGE = 0;
+
   /**
    * The Linux-specific modifications that are applied to the container, such as Linux kernel capabilities.
    */
@@ -1087,7 +1087,7 @@ export interface PortMapping {
    * For more information, see hostPort.
    * Port mappings that are automatically assigned in this way do not count toward the 100 reserved ports limit of a container instance.
    *
-   * If you want to expose a port range, you must specify `CONTAINER_PORT_UNSET_VALUE` as container port.
+   * If you want to expose a port range, you must specify `CONTAINER_PORT_USE_RANGE` as container port.
    */
   readonly containerPort: number;
 
@@ -1096,7 +1096,7 @@ export interface PortMapping {
    *
    * The following rules apply when you specify a `containerPortRange`:
    *
-   * - You must specify `CONTAINER_PORT_UNSET_VALUE` as `containerPort`
+   * - You must specify `CONTAINER_PORT_USE_RANGE` as `containerPort`
    * - You must use either the `bridge` network mode or the `awsvpc` network mode.
    * - The container instance must have at least version 1.67.0 of the container agent and at least version 1.67.0-1 of the `ecs-init` package
    * - You can specify a maximum of 100 port ranges per container.
@@ -1180,15 +1180,15 @@ export class PortMap {
       throw new Error('Port mapping name cannot be an empty string.');
     }
 
-    if (this.portmapping.containerPort === CONTAINER_PORT_UNSET_VALUE && this.portmapping.containerPortRange === undefined) {
-      throw new Error(`The containerPortRange must be set when containerPort is equal to ${CONTAINER_PORT_UNSET_VALUE}`);
+    if (this.portmapping.containerPort === ContainerDefinition.CONTAINER_PORT_USE_RANGE && this.portmapping.containerPortRange === undefined) {
+      throw new Error(`The containerPortRange must be set when containerPort is equal to ${ContainerDefinition.CONTAINER_PORT_USE_RANGE}`);
     }
 
-    if (this.portmapping.containerPort !== CONTAINER_PORT_UNSET_VALUE && this.portmapping.containerPortRange !== undefined) {
+    if (this.portmapping.containerPort !== ContainerDefinition.CONTAINER_PORT_USE_RANGE && this.portmapping.containerPortRange !== undefined) {
       throw new Error('Cannot set "containerPort" and "containerPortRange" at the same time.');
     }
 
-    if (this.portmapping.containerPort !== CONTAINER_PORT_UNSET_VALUE) {
+    if (this.portmapping.containerPort !== ContainerDefinition.CONTAINER_PORT_USE_RANGE) {
       if ((this.networkmode === NetworkMode.AWS_VPC || this.networkmode === NetworkMode.HOST)
           && this.portmapping.hostPort !== undefined && this.portmapping.hostPort !== this.portmapping.containerPort) {
         throw new Error('The host port must be left out or must be the same as the container port for AwsVpc or Host network mode.');
@@ -1323,7 +1323,7 @@ export class AppProtocol {
 
 function renderPortMapping(pm: PortMapping): CfnTaskDefinition.PortMappingProperty {
   return {
-    containerPort: pm.containerPort !== CONTAINER_PORT_UNSET_VALUE ? pm.containerPort : undefined,
+    containerPort: pm.containerPort !== ContainerDefinition.CONTAINER_PORT_USE_RANGE ? pm.containerPort : undefined,
     containerPortRange: pm.containerPortRange,
     hostPort: pm.hostPort,
     protocol: pm.protocol || Protocol.TCP,

@@ -2715,7 +2715,7 @@ describe('ec2 service', () => {
         image: ecs.ContainerImage.fromRegistry('hello'),
       });
       container.addPortMappings({
-        containerPort: ecs.CONTAINER_PORT_UNSET_VALUE,
+        containerPort: ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE,
         containerPortRange: '8000-8001',
       });
 
@@ -2992,7 +2992,7 @@ describe('ec2 service', () => {
         image: ecs.ContainerImage.fromRegistry('hello'),
       });
       container.addPortMappings({
-        containerPort: ecs.CONTAINER_PORT_UNSET_VALUE,
+        containerPort: ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE,
         containerPortRange: '8000-8001',
       });
 

@@ -2129,7 +2129,7 @@ describe('fargate service', () => {
           taskDefinition.addContainer('MainContainer', {
             image: ecs.ContainerImage.fromRegistry('hello'),
             portMappings: [{
-              containerPort: ecs.CONTAINER_PORT_UNSET_VALUE,
+              containerPort: ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE,
               containerPortRange: '8000-8001',
             }],
           });
@@ -2261,7 +2261,7 @@ describe('fargate service', () => {
           taskDefinition.addContainer('MainContainer', {
             image: ecs.ContainerImage.fromRegistry('hello'),
             portMappings: [{
-              containerPort: ecs.CONTAINER_PORT_UNSET_VALUE,
+              containerPort: ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE,
               containerPortRange: '8000-8001',
             }],
           });

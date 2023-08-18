@@ -7,7 +7,6 @@ import * as cdk from '../../core';
 import { Duration, Lazy } from '../../core';
 import * as cxapi from '../../cx-api';
 import * as ecs from '../lib';
-import { AppProtocol } from '../lib';
 
 describe('container definition', () => {
   describe('When creating a Task Definition', () => {
@@ -53,11 +52,11 @@ describe('container definition', () => {
       test('throws when PortMapping.containerPortRange is not set and PortMapping.containerPort is set to 0', () => {
         // GIVEN
         const portMap = new ecs.PortMap(ecs.NetworkMode.AWS_VPC, {
-          containerPort: ecs.CONTAINER_PORT_UNSET_VALUE,
+          containerPort: ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE,
         });
 
         // THEN
-        expect(() => portMap.validate()).toThrow(`The containerPortRange must be set when containerPort is equal to ${ecs.CONTAINER_PORT_UNSET_VALUE}`);
+        expect(() => portMap.validate()).toThrow(`The containerPortRange must be set when containerPort is equal to ${ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE}`);
       });
 
       test('throws when PortMapping.containerPortRange is used along with PortMapping.containerPort', () => {
@@ -98,7 +97,7 @@ describe('container definition', () => {
       test('throws when PortMapping.containerPortRange is used along with PortMapping.hostPort', () => {
         // GIVEN
         const portMap = new ecs.PortMap(ecs.NetworkMode.AWS_VPC, {
-          containerPort: ecs.CONTAINER_PORT_UNSET_VALUE,
+          containerPort: ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE,
           containerPortRange: '8080-8081',
           hostPort: 8080,
         });
@@ -110,7 +109,7 @@ describe('container definition', () => {
       test('throws when PortMapping.containerPortRange string is invalid', () => {
         expect(() => {
           const portMap = new ecs.PortMap(ecs.NetworkMode.AWS_VPC, {
-            containerPort: ecs.CONTAINER_PORT_UNSET_VALUE,
+            containerPort: ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE,
             containerPortRange: '-',
           });
 
@@ -119,7 +118,7 @@ describe('container definition', () => {
 
         expect(() => {
           const portMap = new ecs.PortMap(ecs.NetworkMode.AWS_VPC, {
-            containerPort: ecs.CONTAINER_PORT_UNSET_VALUE,
+            containerPort: ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE,
             containerPortRange: 'foo-',
           });
 
@@ -128,7 +127,7 @@ describe('container definition', () => {
 
         expect(() => {
           const portMap = new ecs.PortMap(ecs.NetworkMode.AWS_VPC, {
-            containerPort: ecs.CONTAINER_PORT_UNSET_VALUE,
+            containerPort: ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE,
             containerPortRange: '-bar',
           });
 
@@ -137,7 +136,7 @@ describe('container definition', () => {
 
         expect(() => {
           const portMap = new ecs.PortMap(ecs.NetworkMode.AWS_VPC, {
-            containerPort: ecs.CONTAINER_PORT_UNSET_VALUE,
+            containerPort: ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE,
             containerPortRange: 'foo-bar',
           });
 
@@ -146,7 +145,7 @@ describe('container definition', () => {
 
         expect(() => {
           const portMap = new ecs.PortMap(ecs.NetworkMode.AWS_VPC, {
-            containerPort: ecs.CONTAINER_PORT_UNSET_VALUE,
+            containerPort: ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE,
             containerPortRange: '808a-8081',
           });
 
@@ -155,7 +154,7 @@ describe('container definition', () => {
 
         expect(() => {
           const portMap = new ecs.PortMap(ecs.NetworkMode.AWS_VPC, {
-            containerPort: ecs.CONTAINER_PORT_UNSET_VALUE,
+            containerPort: ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE,
             containerPortRange: '8080-808a',
           });
 
@@ -166,7 +165,7 @@ describe('container definition', () => {
       test('throws when PortMapping.containerPortRange is not a concrete value', () => {
         // GIVEN
         const portMap = new ecs.PortMap(ecs.NetworkMode.AWS_VPC, {
-          containerPort: ecs.CONTAINER_PORT_UNSET_VALUE,
+          containerPort: ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE,
           containerPortRange: Lazy.string({ produce: () => '8080-8081' }),
         });
 
@@ -178,7 +177,7 @@ describe('container definition', () => {
         test('when network mode is Host', () => {
           // GIVEN
           const portMap = new ecs.PortMap(ecs.NetworkMode.HOST, {
-            containerPort: ecs.CONTAINER_PORT_UNSET_VALUE,
+            containerPort: ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE,
             containerPortRange: '8080-8081',
           });
 
@@ -189,7 +188,7 @@ describe('container definition', () => {
         test('when network mode is NAT', () => {
           // GIVEN
           const portMap = new ecs.PortMap(ecs.NetworkMode.NAT, {
-            containerPort: ecs.CONTAINER_PORT_UNSET_VALUE,
+            containerPort: ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE,
             containerPortRange: '8080-8081',
           });
 
@@ -200,7 +199,7 @@ describe('container definition', () => {
         test('when network mode is None', () => {
           // GIVEN
           const portMap = new ecs.PortMap(ecs.NetworkMode.NONE, {
-            containerPort: ecs.CONTAINER_PORT_UNSET_VALUE,
+            containerPort: ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE,
             containerPortRange: '8080-8081',
           });
 
@@ -213,7 +212,7 @@ describe('container definition', () => {
         test('when network mode is AwsVpc', () => {
           // GIVEN
           const portMap = new ecs.PortMap(ecs.NetworkMode.AWS_VPC, {
-            containerPort: ecs.CONTAINER_PORT_UNSET_VALUE,
+            containerPort: ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE,
             containerPortRange: '8080-8081',
           });
 
@@ -224,7 +223,7 @@ describe('container definition', () => {
         test('when network mode is Bridge', () => {
           // GIVEN
           const portMap = new ecs.PortMap(ecs.NetworkMode.BRIDGE, {
-            containerPort: ecs.CONTAINER_PORT_UNSET_VALUE,
+            containerPort: ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE,
             containerPortRange: '8080-8081',
           });
 
@@ -399,7 +398,7 @@ describe('container definition', () => {
         container.addPortMappings(
           {
             containerPort: 443,
-            appProtocol: AppProtocol.grpc,
+            appProtocol: ecs.AppProtocol.grpc,
           },
         );
       }).toThrow(/Service connect-related port mapping field 'appProtocol' cannot be set without 'name'/);
@@ -894,7 +893,7 @@ describe('container definition', () => {
           image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
           memoryLimitMiB: 2048,
           portMappings: [{
-            containerPort: ecs.CONTAINER_PORT_UNSET_VALUE,
+            containerPort: ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE,
             containerPortRange: '8080-8081',
           }],
         });
@@ -1003,7 +1002,7 @@ describe('container definition', () => {
         image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
         memoryLimitMiB: 2048,
         portMappings: [{
-          containerPort: ecs.CONTAINER_PORT_UNSET_VALUE,
+          containerPort: ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE,
           containerPortRange: '8080-8081',
         }],
       });
@@ -1070,7 +1069,7 @@ describe('container definition', () => {
         image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
         memoryLimitMiB: 2048,
         portMappings: [{
-          containerPort: ecs.CONTAINER_PORT_UNSET_VALUE,
+          containerPort: ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE,
           containerPortRange: '8080-8081',
         }],
       });

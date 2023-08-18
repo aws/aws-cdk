@@ -1,7 +1,7 @@
 import { Match, Template } from '../../../assertions';
 import { Vpc } from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
-import { ContainerImage } from '../../../aws-ecs';
+import { ContainerDefinition, ContainerImage } from '../../../aws-ecs';
 import { CompositePrincipal, Role, ServicePrincipal } from '../../../aws-iam';
 import { Duration, Stack } from '../../../core';
 import { ApplicationLoadBalancedFargateService, ApplicationMultipleTargetGroupsFargateService, NetworkLoadBalancedFargateService, NetworkMultipleTargetGroupsFargateService } from '../../lib';
@@ -848,7 +848,7 @@ describe('When Network Load Balancer', () => {
     taskDefinition.addContainer('MainContainer', {
       image: ecs.ContainerImage.fromRegistry('test'),
       portMappings: [{
-        containerPort: ecs.CONTAINER_PORT_UNSET_VALUE,
+        containerPort: ContainerDefinition.CONTAINER_PORT_USE_RANGE,
         containerPortRange: '8080-8081',
       }],
     });
