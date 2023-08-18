@@ -3246,6 +3246,68 @@ test('set SnapStart to desired value', () => {
   });
 });
 
+test('test 2.87.0 version hash stability', () => {
+  // GIVEN
+  const app = new cdk.App({
+    context: {
+      '@aws-cdk/aws-lambda:recognizeLayerVersion': true,
+    },
+  });
+  const stack = new cdk.Stack(app, 'Stack');
+
+  // WHEN
+  const layer = new lambda.LayerVersion(stack, 'MyLayer', {
+    code: lambda.Code.fromAsset(path.join(__dirname, 'x.zip')),
+    compatibleRuntimes: [
+      lambda.Runtime.NODEJS_18_X,
+    ],
+  });
+
+  const role = new iam.Role(stack, 'MyRole', {
+    assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    managedPolicies: [
+      iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
+      iam.ManagedPolicy.fromAwsManagedPolicyName('AWSXRayDaemonWriteAccess'),
+    ],
+  });
+
+  const lambdaFn = new lambda.Function(stack, 'MyLambda', {
+    runtime: lambda.Runtime.NODEJS_18_X,
+    memorySize: 128,
+    handler: 'index.handler',
+    timeout: cdk.Duration.seconds(30),
+    environment: {
+      VARIABLE_1: 'ONE',
+    },
+    code: lambda.Code.fromAsset(path.join(__dirname, 'x.zip')),
+    role,
+    currentVersionOptions: {
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    },
+    layers: [
+      layer,
+    ],
+  });
+
+  new lambda.Alias(stack, 'MyAlias', {
+    aliasName: 'current',
+    version: lambdaFn.currentVersion,
+  });
+
+  // THEN
+  // Precalculated version hash using 2.87.0 version
+  Template.fromStack(stack).hasResource('AWS::Lambda::Alias', {
+    Properties: {
+      FunctionVersion: {
+        'Fn::GetAtt': [
+          'MyLambdaCurrentVersionE7A382CCd55a48b26bd9a860d8842137f2243c37',
+          'Version',
+        ],
+      },
+    },
+  });
+});
+
 describe('VPC configuration', () => {
   test('with both securityGroup and securityGroups', () => {
     const stack = new cdk.Stack();
