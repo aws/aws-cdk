@@ -2,6 +2,7 @@ import * as cfnspec from '@aws-cdk/cfnspec';
 import * as chalk from 'chalk';
 import { ManagedPolicyAttachment, ManagedPolicyJson } from './managed-policy';
 import { parseLambdaPermission, parseStatements, Statement, StatementJson } from './statement';
+import { MaybeParsed } from '../diff/maybe-parsed';
 import { PropertyChange, PropertyMap, ResourceChange } from '../diff/types';
 import { DiffableCollection } from '../diffable';
 import { renderIntrinsics } from '../render-intrinsics';
@@ -184,7 +185,7 @@ export class IamChanges {
    * Parse a list of policies on an identity
    */
   private readIdentityPolicies(policies: any, logicalId: string): Statement[] {
-    if (policies === undefined) { return []; }
+    if (policies === undefined || !Array.isArray(policies)) { return []; }
 
     const appliesToPrincipal = 'AWS:${' + logicalId + '}';
 
@@ -276,8 +277,8 @@ function defaultResource(resource: string, statements: Statement[]) {
 }
 
 export interface IamChangesJson {
-  statementAdditions?: StatementJson[];
-  statementRemovals?: StatementJson[];
-  managedPolicyAdditions?: ManagedPolicyJson[];
-  managedPolicyRemovals?: ManagedPolicyJson[];
+  statementAdditions?: Array<MaybeParsed<StatementJson>>;
+  statementRemovals?: Array<MaybeParsed<StatementJson>>;
+  managedPolicyAdditions?: Array<MaybeParsed<ManagedPolicyJson>>;
+  managedPolicyRemovals?: Array<MaybeParsed<ManagedPolicyJson>>;
 }

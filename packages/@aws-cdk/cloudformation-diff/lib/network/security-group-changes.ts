@@ -97,12 +97,16 @@ export class SecurityGroupChanges {
   }
 
   private readInlineRules(rules: any, logicalId: string): SecurityGroupRule[] {
-    if (!rules) { return []; }
+    if (!rules || !Array.isArray(rules)) { return []; }
 
     // UnCloudFormation so the parser works in an easier domain
 
     const ref = '${' + logicalId + '.GroupId}';
-    return rules.map((r: any) => new SecurityGroupRule(renderIntrinsics(r), ref));
+    return rules.flatMap((r: any) => {
+      const rendered = renderIntrinsics(r);
+      // SecurityGroupRule is not robust against unparsed objects
+      return typeof rendered === 'object' ? [new SecurityGroupRule(rendered, ref)] : [];
+    });
   }
 
   private readRuleResource(resource: any): SecurityGroupRule[] {
