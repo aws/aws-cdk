@@ -209,6 +209,7 @@ class MyAspect implements IAspect {
   };
 
   protected warn(node: IConstruct, message: string): void {
+    // Use construct ID as suppression string, just to make it unique easily
     Annotations.of(node).addWarningV2(node.node.id, message);
   }
 
