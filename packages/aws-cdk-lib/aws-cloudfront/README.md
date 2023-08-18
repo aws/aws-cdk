@@ -611,20 +611,19 @@ Example:
 
 ```ts
 // Adding realtime logs config to a Cloudfront Distribution on default behavior.
-const realTimeConfig = new RealtimeLogConfig(stack, 'RealtimeConfig', {
-  endPoints: [{
-    kinesisStreamConfig: {
-      roleArn: 'arn:aws:iam::123456789012:role/roleName',
-      streamArn: 'arn:aws:kinesis:us-east-1:123456789012:stream/my-stream',
-    },
-    streamType: DataStreamType.KINESIS,
-  }],
+declare const role: iam.Role;
+declare const stream: kinesis.Stream;
+
+const realTimeConfig = new cloudfront.RealtimeLogConfig(stack, 'realtimeLog', {
+  endPoints: [
+    cloudfront.Endpoint.fromKinesisStream(stream, role),
+  ],
   fields: ['timestamp'],
-  name: 'realtime-config',
+  name: 'my-delivery-stream',
   samplingRate: 100,
 });
 
-new Distribution(stack, 'MyDist', {
+new Distribution(stack, 'myCdn', {
   defaultBehavior: {
     origin: defaultOrigin(),
     realtimeLogConfigArn: realTimeConfig.realtimeLogConfigArn,

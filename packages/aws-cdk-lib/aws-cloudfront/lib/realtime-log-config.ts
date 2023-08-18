@@ -1,40 +1,33 @@
 import { Construct } from 'constructs';
 import { CfnRealtimeLogConfig } from './cloudfront.generated';
+import * as iam from '../../aws-iam';
+import * as kinesis from '../../aws-kinesis';
 import { IResource, Resource } from '../../core';
 
 /**
- * Endpoint data streams types.
+ * Represents the endpoints available for targetting within a realtime log config resource
  */
-export enum DataStreamType {
-  KINESIS = 'Kinesis'
-}
+export abstract class Endpoint {
+  public static fromKinesisStream(stream: kinesis.IStream, role: iam.IRole): Endpoint {
+    return new (class extends Endpoint {
+      public _renderEndpoint() {
+        return {
+          kinesisStreamConfig: {
+            roleArn: role.roleArn,
+            streamArn: stream.streamArn,
+          },
+          streamType: 'Kinesis',
+        };
+      }
+    });
+  }
 
-/**
- * Contains information about the Amazon Kinesis data stream where you are sending real-time log data.
- */
-export interface KinesisStreamConfig {
-  /**
-   * The Amazon Resource Name (ARN) of an AWS Identity and Access Management (IAM) role that CloudFront can use to send real-time log data to your Kinesis data stream.
-   */
-  readonly roleArn: string;
-  /**
-   * The Amazon Resource Name (ARN) of the Kinesis data stream where you are sending real-time log data.
-   */
-  readonly streamArn: string;
-}
+  private constructor() {}
 
-/**
- * Contains information about the Amazon Kinesis data stream where you are sending real-time log data in a real-time log configuration.
- */
-export interface EndPoint {
   /**
-   * Contains information about the Amazon Kinesis data stream where you are sending real-time log data.
-   */
-  readonly kinesisStreamConfig: KinesisStreamConfig,
-  /**
-   * The type of data stream where you are sending real-time log data.
-   */
-  readonly streamType: DataStreamType;
+  * @internal
+  */
+  public abstract _renderEndpoint(): any;
 }
 
 /**
@@ -43,10 +36,12 @@ export interface EndPoint {
 export interface IRealtimeLogConfig extends IResource {
   /**
    * The name of the realtime log config.
+   * @attribute
    */
   readonly realtimeLogConfigName: string;
   /**
    * The arn of the realtime log config.
+   * @attribute
    */
   readonly realtimeLogConfigArn: string;
 }
@@ -67,7 +62,7 @@ export interface RealtimeLogConfigProps {
   /**
    * Contains information about the Amazon Kinesis data stream where you are sending real-time log data for this real-time log configuration.
    */
-  readonly endPoints: EndPoint[];
+  readonly endPoints: Endpoint[];
 }
 
 export class RealtimeLogConfig extends Resource implements IRealtimeLogConfig {
@@ -83,14 +78,21 @@ export class RealtimeLogConfig extends Resource implements IRealtimeLogConfig {
       throw new Error(`Sampling rate must be between 1 and 100 (inclusive), received ${props.samplingRate}`);
     }
 
-    const resource: CfnRealtimeLogConfig = new CfnRealtimeLogConfig(this, 'Resource', {
-      endPoints: props.endPoints,
+    const resource = new CfnRealtimeLogConfig(this, 'Resource', {
+      endPoints: props.endPoints.map(endpoint => {
+        return endpoint._renderEndpoint();
+      }),
       fields: props.fields,
       name: this.physicalName,
       samplingRate: props.samplingRate,
     });
 
-    this.realtimeLogConfigName = resource.ref;
-    this.realtimeLogConfigArn = resource.attrArn;
+    this.realtimeLogConfigArn = this.getResourceArnAttribute(resource.attrArn, {
+      service: 'cloudfront',
+      resource: 'realtime-log-config',
+      resourceName: this.physicalName,
+    });
+
+    this.realtimeLogConfigName = this.getResourceNameAttribute(resource.ref);
   }
 }

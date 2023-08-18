@@ -17,13 +17,9 @@ const kinesis = new Stream(stack, 'stream', {
 });
 
 new cloudfront.RealtimeLogConfig(stack, 'RealtimeLog', {
-  endPoints: [{
-    kinesisStreamConfig: {
-      roleArn: role.roleArn,
-      streamArn: kinesis.streamArn,
-    },
-    streamType: cloudfront.DataStreamType.KINESIS,
-  }],
+  endPoints: [
+    cloudfront.Endpoint.fromKinesisStream(kinesis, role),
+  ],
   fields: ['timestamp'],
   name: 'testing',
   samplingRate: 1,

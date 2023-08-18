@@ -2,13 +2,14 @@ import { defaultOrigin, defaultOriginGroup } from './test-origin';
 import { Match, Template } from '../../assertions';
 import * as acm from '../../aws-certificatemanager';
 import * as iam from '../../aws-iam';
+import * as kinesis from '../../aws-kinesis';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
 import { App, Duration, Stack } from '../../core';
 import {
   CfnDistribution,
-  DataStreamType,
   Distribution,
+  Endpoint,
   Function,
   FunctionCode,
   FunctionEventType,
@@ -1150,14 +1151,19 @@ test('grants createInvalidation', () => {
 });
 
 test('render distribution behavior with realtime log config', () => {
+  const role = new iam.Role(stack, 'Role', {
+    assumedBy: new iam.ServicePrincipal('cloudfront.amazonaws.com'),
+  });
+
+  const stream = new kinesis.Stream(stack, 'stream', {
+    streamMode: kinesis.StreamMode.ON_DEMAND,
+    encryption: kinesis.StreamEncryption.MANAGED,
+  });
+
   const realTimeConfig = new RealtimeLogConfig(stack, 'RealtimeConfig', {
-    endPoints: [{
-      kinesisStreamConfig: {
-        roleArn: 'arn:aws:iam::111122223333:role/ForTest',
-        streamArn: 'arn:aws:kinesis:xx-west-1:111122223333:stream/my-stream',
-      },
-      streamType: DataStreamType.KINESIS,
-    }],
+    endPoints: [
+      Endpoint.fromKinesisStream(stream, role),
+    ],
     fields: ['timestamp'],
     name: 'realtime-config',
     samplingRate: 50,
