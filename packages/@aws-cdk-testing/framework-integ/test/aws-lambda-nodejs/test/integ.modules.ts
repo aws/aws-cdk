@@ -3,6 +3,7 @@ import { App, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as lambda from 'aws-cdk-lib/aws-lambda-nodejs';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { LAMBDA_NODEJS_USE_LATEST_RUNTIME } from 'aws-cdk-lib/cx-api';
 
 class TypeScriptModuleStack extends Stack {
   public lambdaFunction: lambda.NodejsFunction;
@@ -35,7 +36,11 @@ class JavaScriptCommonJsStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  context: {
+    [LAMBDA_NODEJS_USE_LATEST_RUNTIME]: true,
+  },
+});
 const mtsEntryTestCase = new TypeScriptModuleStack(app, 'cdk-integ-lambda-nodejs-modules-mts');
 const ctsEntryTestCase = new TypeScriptCommonJsStack(app, 'cdk-integ-lambda-nodejs-modules-cts');
 const cjsEntryTestCase = new JavaScriptCommonJsStack(app, 'cdk-integ-lambda-nodejs-modules-cjs');

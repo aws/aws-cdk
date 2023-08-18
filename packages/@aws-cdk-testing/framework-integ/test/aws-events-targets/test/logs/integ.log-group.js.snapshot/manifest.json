@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6feea734979602727e48e034646a8a447ddc1aa154848f139a3291416ef27212.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c7d0acde3d0eb5ed37c977f9c75f871f44eb1767d1e831ab9e6c96f97d438cb0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -57,6 +57,12 @@
             "data": "TimerBF6F831F"
           }
         ],
+        "/log-group-events/EventsLogGroupPolicyloggroupeventsTimerC63340B0": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version."
+          }
+        ],
         "/log-group-events/EventsLogGroupPolicyloggroupeventsTimerC63340B0/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -87,6 +93,12 @@
             "data": "CustomRuleB1CBBADE"
           }
         ],
+        "/log-group-events/EventsLogGroupPolicyloggroupeventsCustomRule99E1EEF6": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version."
+          }
+        ],
         "/log-group-events/EventsLogGroupPolicyloggroupeventsCustomRule99E1EEF6/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -109,6 +121,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Timer30894E3BB"
+          }
+        ],
+        "/log-group-events/EventsLogGroupPolicyloggroupeventsTimer37DF74C17": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version."
           }
         ],
         "/log-group-events/EventsLogGroupPolicyloggroupeventsTimer37DF74C17/Resource/Default": [
@@ -160,7 +178,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/52d728c85f35a58bbfdfd2b6dbdad511312ae00ed2707bd69ad2bf8dfc772400.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/69fcede415ffed48915f848f7515603039a2ec603b4ebf6fb36a165f18bdc98d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -177,10 +195,10 @@
         "LogGroupDefaultTestDeployAssert353EE07A.assets"
       ],
       "metadata": {
-        "/LogGroup/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEvents86d1feecd8251713d5bdf1c558f2aa31/Default/Default": [
+        "/LogGroup/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEvents4923866d22d2c71d8b1a85360b620e5f/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallEventBridgeputEvents86d1feecd8251713d5bdf1c558f2aa31"
+            "data": "AwsApiCallEventBridgeputEvents4923866d22d2c71d8b1a85360b620e5f"
           }
         ],
         "/LogGroup/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
@@ -195,16 +213,16 @@
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
           }
         ],
-        "/LogGroup/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents5769f20437ecc1683899ac2c8e798593/Default/Default": [
+        "/LogGroup/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents9ba36aa083750b6bbe1071e7a7e08267/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallCloudWatchLogsfilterLogEvents5769f20437ecc1683899ac2c8e798593"
+            "data": "AwsApiCallCloudWatchLogsfilterLogEvents9ba36aa083750b6bbe1071e7a7e08267"
           }
         ],
-        "/LogGroup/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents5769f20437ecc1683899ac2c8e798593/AssertionResults": [
+        "/LogGroup/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents9ba36aa083750b6bbe1071e7a7e08267/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallCloudWatchLogsfilterLogEvents5769f20437ecc1683899ac2c8e798593"
+            "data": "AssertionResultsAwsApiCallCloudWatchLogsfilterLogEvents9ba36aa083750b6bbe1071e7a7e08267"
           }
         ],
         "/LogGroup/DefaultTest/DeployAssert/BootstrapVersion": [
