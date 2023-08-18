@@ -778,6 +778,13 @@ export interface AddBehaviorOptions {
   readonly originRequestPolicy?: IOriginRequestPolicy;
 
   /**
+   * The real-time log configuration ARN to be attached to this cache behavior.
+   *
+   * @default - none
+   */
+  readonly realtimeLogConfigArn?: string;
+
+  /**
    * The response headers policy for this behavior. The response headers policy determines which headers are included in responses
    *
    * @default - none
