@@ -15,6 +15,8 @@ import {
 } from '@cdklabs/typewriter';
 import { CDK_CORE } from './cdk';
 import { PropertyValidator } from './property-validator';
+import { TypeConverter } from './type-converter';
+import { UnionOrdering } from './union-ordering';
 import { cfnParserNameFromType, cfnProducerNameFromType, cfnPropsValidatorNameFromType } from '../naming';
 
 export interface PropertyMapping {
@@ -34,7 +36,7 @@ export class CloudFormationMapping {
   private readonly cfn2ts: Record<string, string> = {};
   private readonly cfn2Prop: Record<string, PropertyMapping> = {};
 
-  constructor(private readonly mapperFunctionsScope: IScope) {}
+  constructor(private readonly mapperFunctionsScope: IScope, private readonly converter: TypeConverter) {}
 
   public add(mapping: PropertyMapping) {
     this.cfn2ts[mapping.cfnName] = mapping.propName;
@@ -181,7 +183,10 @@ export class CloudFormationMapping {
     }
 
     if (type.unionOfTypes) {
-      const innerProducers = type.unionOfTypes.map((t) => this.typeHandlers(t));
+      // Need access to the PropertyTypes to order these
+      const originalTypes = type.unionOfTypes.map((t) => this.converter.originalType(t));
+      const orderedTypes = new UnionOrdering(this.converter.db).orderTypewriterTypes(type.unionOfTypes, originalTypes);
+      const innerProducers = orderedTypes.map((t) => this.typeHandlers(t));
       const validators = innerProducers.map((p) => p.validate);
 
       return {

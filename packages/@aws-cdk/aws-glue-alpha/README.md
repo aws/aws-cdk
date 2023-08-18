@@ -105,6 +105,26 @@ new glue.Job(this, 'RayJob', {
 });
 ```
 
+### Enable Spark UI
+
+Enable Spark UI setting the `sparkUI` property.
+
+```ts
+new glue.Job(this, 'EnableSparkUI', {
+  jobName: 'EtlJobWithSparkUIPrefix',
+  sparkUI: {
+    enabled: true,
+  },
+  executable: glue.JobExecutable.pythonEtl({
+    glueVersion: glue.GlueVersion.V3_0,
+    pythonVersion: glue.PythonVersion.THREE,
+    script: glue.Code.fromAsset(path.join(__dirname, 'job-script/hello_world.py')),
+  }),
+});
+```
+
+The `sparkUI` property also allows the specification of an s3 bucket and a bucket prefix.
+
 See [documentation](https://docs.aws.amazon.com/glue/latest/dg/add-job.html) for more information on adding jobs in Glue.
 
 ## Connection
@@ -223,7 +243,25 @@ new glue.Table(this, 'MyTable', {
 });
 ```
 
-By default, an S3 bucket will be created to store the table's data and stored in the bucket root. You can also manually pass the `bucket` and `s3Prefix`:
+Glue tables can be configured to contain user-defined properties, to describe the physical storage of table data, through the `storageParameters` property:
+
+```ts
+declare const myDatabase: glue.Database;
+new glue.Table(this, 'MyTable', {
+  storageParameters: [
+    glue.StorageParameter.skipHeaderLineCount(1),
+    glue.StorageParameter.compressionType(glue.CompressionType.GZIP),
+    glue.StorageParameter.custom('separatorChar', ',')
+  ],
+  // ...
+  database: myDatabase,
+  columns: [{
+    name: 'col1',
+    type: glue.Schema.STRING,
+  }],
+  dataFormat: glue.DataFormat.JSON,
+});
+```
 
 ### Partition Keys
 

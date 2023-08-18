@@ -147,6 +147,13 @@ export interface BatchSubmitJobProps extends sfn.TaskStateBaseProps {
    * @default 1
    */
   readonly attempts?: number;
+
+  /**
+   * The tags applied to the job request.
+   *
+   * @default {} - no tags
+   */
+  readonly tags?: { [key: string]: string };
 }
 
 /**
@@ -212,6 +219,8 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
       });
     }
 
+    this.validateTags(props.tags);
+
     this.taskPolicies = this.configurePolicyStatements();
   }
 
@@ -255,7 +264,7 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
           this.props.attempts !== undefined
             ? { Attempts: this.props.attempts }
             : undefined,
-
+        Tags: this.props.tags,
         Timeout: timeout
           ? { AttemptDurationSeconds: timeout }
           : undefined,
@@ -336,5 +345,21 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
       InstanceType: containerOverrides.instanceType?.toString(),
       ResourceRequirements: resources.length ? resources : undefined,
     };
+  }
+
+  private validateTags(tags?: { [key: string]: string }) {
+    if (tags === undefined) return;
+    const tagEntries = Object.entries(tags);
+    if (tagEntries.length > 50) {
+      throw new Error(`Maximum tag number of entries is 50. Received ${tagEntries.length}.`);
+    }
+    for (const [key, value] of tagEntries) {
+      if (key.length < 1 || key.length > 128) {
+        throw new Error(`Tag key size must be between 1 and 128, but got ${key.length}.`);
+      }
+      if (value.length > 256) {
+        throw new Error(`Tag value maximum size is 256, but got ${value.length}.`);
+      }
+    }
   }
 }
