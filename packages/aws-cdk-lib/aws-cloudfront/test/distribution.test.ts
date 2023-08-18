@@ -1178,7 +1178,7 @@ test('render distribution behavior with realtime log config', () => {
         TargetOriginId: 'StackMyDistOrigin1D6D5E535',
         ViewerProtocolPolicy: 'allow-all',
         RealtimeLogConfigArn: {
-          'Fn::GetAtt': ['RealtimeConfigB6004E8E', 'Arn']
+          'Fn::GetAtt': ['RealtimeConfigB6004E8E', 'Arn'],
         },
       },
       Enabled: true,
