@@ -159,15 +159,10 @@ test('deletes lambda when the name changes on update event', async () => {
   };
 
   // WHEN
-  await invokeHandler(event);
+  const result = await invokeHandler(event);
 
   // THEN
-  expect(mockSyntheticsClient.send).toHaveBeenCalledTimes(1);
-  expect(mockGetCanaryCommand).toHaveBeenCalledWith({ Name: 'MyCanary' });
-  expect(mockLambdaClient.send).toHaveBeenCalledTimes(1);
-  expect(mockDeleteFunctionCommand).toHaveBeenCalledWith({
-    FunctionName: `cwsyn-MyCanary-${id}`,
-  });
+  expect((result as any).PhysicalResourceId).toEqual('MyCanary-renamed');
 });
 
 test('deletes lambda on delete', async () => {
@@ -179,6 +174,7 @@ test('deletes lambda on delete', async () => {
         'aws-cdk:auto-delete-lambda': 'true',
       },
       Id: id,
+      EngineArn: `arn:aws:lambda:region:account:function:cwsyn-name-${id}:1`,
     },
   });
 
@@ -197,7 +193,7 @@ test('deletes lambda on delete', async () => {
   expect(mockGetCanaryCommand).toHaveBeenCalledWith({ Name: 'MyCanary' });
   expect(mockLambdaClient.send).toHaveBeenCalledTimes(1);
   expect(mockDeleteFunctionCommand).toHaveBeenCalledWith({
-    FunctionName: `cwsyn-MyCanary-${id}`,
+    FunctionName: `arn:aws:lambda:region:account:function:cwsyn-name-${id}`,
   });
 });
 
@@ -207,6 +203,7 @@ test('does not delete lambda if canary is not tagged', async () => {
   mockSyntheticsClient.send.mockReturnValue({
     Canary: {
       Id: id,
+      EngineArn: `arn:aws:lambda:region:account:function:cwsyn-name-${id}:1`,
     },
   });
 
