@@ -1087,7 +1087,7 @@ export class Stack extends Construct implements ITaggable {
 
       const message = `Template size ${verb} limit: ${templateData.length}/${TEMPLATE_BODY_MAXIMUM_SIZE}. ${advice}.`;
 
-      Annotations.of(this).addWarning(message);
+      Annotations.of(this).addWarningV2('@aws-cdk/core:Stack.templateSize', message);
     }
 
     fs.writeFileSync(outPath, templateData);
