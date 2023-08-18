@@ -145,10 +145,8 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
 
       // defined only when using private access
       vpc: cluster.kubectlPrivateSubnets ? cluster.vpc : undefined,
-      securityGroups: cluster.kubectlPrivateSubnets && cluster.kubectlSecurityGroup ?
-        [cluster.kubectlSecurityGroup] : undefined,
-      vpcSubnets: cluster.kubectlPrivateSubnets && cluster.kubectlPrivateSubnets ?
-        { subnets: cluster.kubectlPrivateSubnets } : undefined,
+      securityGroups: cluster.kubectlPrivateSubnets && cluster.kubectlSecurityGroup ? [cluster.kubectlSecurityGroup] : undefined,
+      vpcSubnets: cluster.kubectlPrivateSubnets ? { subnets: cluster.kubectlPrivateSubnets } : undefined,
     });
 
     // allow user to customize the layers with the tools we need
