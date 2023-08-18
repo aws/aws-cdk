@@ -384,7 +384,7 @@ For more information, see [Issue #11185](https://github.com/moby/moby/issues/111
 declare const container: ecs.ContainerDefinition;
 
 container.addPortMappings({
-    containerPort: ecs.CONTAINER_PORT_UNSET_VALUE,
+    containerPort: ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE,
     containerPortRange: '8080-8081',
 });
 ```
