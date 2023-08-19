@@ -21,7 +21,7 @@ describe('file assets', () => {
       {
         sourceHash: 'source-hash',
         path: __filename,
-        id: 'SomeStackSomeResource4567',
+        id: 'SomeStackSomeResource45678',
         packaging: 'file',
         s3BucketParameter: 'BucketParameter',
         s3KeyParameter: 'KeyParameter',
