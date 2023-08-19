@@ -705,13 +705,6 @@ export class Repository extends RepositoryBase {
     });
     this._resource = resource;
 
-    if (props.autoDeleteImages) {
-      if (props.removalPolicy !== RemovalPolicy.DESTROY) {
-        throw new Error('Cannot use \'autoDeleteImages\' property on a repository without setting removal policy to \'DESTROY\'.');
-      }
-      this.enableAutoDeleteImages();
-    }
-
     resource.applyRemovalPolicy(props.removalPolicy);
 
     this.registryId = props.lifecycleRegistryId;
@@ -725,6 +718,13 @@ export class Repository extends RepositoryBase {
       resource: 'repository',
       resourceName: this.physicalName,
     });
+
+    if (props.autoDeleteImages) {
+      if (props.removalPolicy !== RemovalPolicy.DESTROY) {
+        throw new Error('Cannot use \'autoDeleteImages\' property on a repository without setting removal policy to \'DESTROY\'.');
+      }
+      this.enableAutoDeleteImages();
+    }
 
     this.node.addValidation({ validate: () => this.policyDocument?.validateForResourcePolicy() ?? [] });
   }
@@ -863,7 +863,7 @@ export class Repository extends RepositoryBase {
       codeDirectory: path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-ecr', 'auto-delete-images-handler'),
       useCfnResponseWrapper: false,
       runtime: CustomResourceProviderRuntime.NODEJS_18_X,
-      description: `Lambda function for auto-deleting images in ${Lazy.string({ produce: () => this.repositoryName })} repository.`,
+      description: `Lambda function for auto-deleting images in ${this.repositoryName} repository.`,
     });
 
     if (firstTime) {
@@ -890,7 +890,7 @@ export class Repository extends RepositoryBase {
       resourceType: AUTO_DELETE_IMAGES_RESOURCE_TYPE,
       serviceToken: provider.serviceToken,
       properties: {
-        RepositoryName: Lazy.any({ produce: () => this.repositoryName }),
+        RepositoryName: this.repositoryName,
       },
     });
     customResource.node.addDependency(this);
