@@ -619,7 +619,7 @@ declare const stream: kinesis.Stream;
 
 const realTimeConfig = new cloudfront.RealtimeLogConfig(this, 'realtimeLog', {
   endPoints: [
-    cloudfront.Endpoint.fromKinesisStream(this, role),
+    cloudfront.Endpoint.fromKinesisStream(stream, role),
   ],
   fields: [
     'timestamp',
