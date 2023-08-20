@@ -1,10 +1,9 @@
+import { ScheduleExpression, Schedule } from '@aws-cdk/aws-scheduler-alpha';
 import { App, Duration, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { AccountRootPrincipal, Role } from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
-import { ScheduleExpression } from '../lib';
-import { Schedule } from '../lib/private';
 import { targets } from '../lib/target';
 
 describe('schedule target', () => {

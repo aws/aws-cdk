@@ -4,24 +4,30 @@ import * as cw from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { CfnScheduleGroup } from 'aws-cdk-lib/aws-scheduler';
-import { ScheduleExpression, ScheduleTargetInput } from '../lib';
+import { IScheduleTarget, ScheduleExpression, ScheduleTargetConfig } from '../lib';
 import { Group, GroupProps } from '../lib/group';
-import { Schedule } from '../lib/private';
-import { targets } from '../lib/target';
+import { Schedule } from '../lib/schedule';
+
+class SomeLambdaTarget implements IScheduleTarget {
+  public constructor(private readonly fn: lambda.IFunction, private readonly role: iam.IRole) {
+  }
+
+  public bind(): ScheduleTargetConfig {
+    return {
+      arn: this.fn.functionArn,
+      role: this.role,
+    };
+  }
+}
 
 describe('Schedule Group', () => {
   let stack: Stack;
   let func: lambda.IFunction;
-  let role: iam.IRole;
   const expr = ScheduleExpression.at(new Date(Date.UTC(1969, 10, 20, 0, 0, 0)));
 
   beforeEach(() => {
     const app = new App();
     stack = new Stack(app, 'Stack', { env: { region: 'us-east-1', account: '123456789012' } });
-    role = new iam.Role(stack, 'Role', {
-      roleName: 'someRole',
-      assumedBy: new iam.AccountRootPrincipal(),
-    });
     func = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
@@ -107,22 +113,17 @@ describe('Schedule Group', () => {
       groupName: 'MyGroup',
     };
     const group = new Group(stack, 'TestGroup', props);
+    const role = iam.Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/someRole');
 
     const schedule1 = new Schedule(stack, 'MyScheduleDummy1', {
       schedule: expr,
       group: group,
-      target: new targets.LambdaInvoke(func, {
-        role,
-        input: ScheduleTargetInput.fromText('test'),
-      }),
+      target: new SomeLambdaTarget(func, role),
     });
     const schedule2 = new Schedule(stack, 'MyScheduleDummy2', {
       schedule: expr,
       group: group,
-      target: new targets.LambdaInvoke(func, {
-        role,
-        input: ScheduleTargetInput.fromText('test'),
-      }),
+      target: new SomeLambdaTarget(func, role),
     });
 
     expect(schedule1.group).toEqual(group);
