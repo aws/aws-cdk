@@ -4,7 +4,7 @@ import { Template } from 'aws-cdk-lib/assertions';
 import { AccountRootPrincipal, Role } from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
-import { LambdaInvoke } from '../lib/target';
+import { LambdaInvoke } from '../lib/lambda-invoke';
 
 describe('schedule target', () => {
   let app: App;
@@ -375,7 +375,7 @@ describe('schedule target', () => {
           {
             Action: 'sqs:SendMessage',
             Principal: {
-              Service: 'events.amazonaws.com',
+              Service: 'scheduler.amazonaws.com',
             },
             Effect: 'Allow',
             Resource: {
