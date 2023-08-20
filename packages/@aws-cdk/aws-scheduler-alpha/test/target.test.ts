@@ -137,6 +137,60 @@ describe('schedule target', () => {
     });
   });
 
+  test('reuses IAM role and IAM policy for two schedules from the same account', () => {
+    const lambdaTarget = new targets.LambdaInvoke(func, { });
+
+    new Schedule(stack, 'MyScheduleDummy1', {
+      schedule: expr,
+      target: lambdaTarget,
+    });
+
+    new Schedule(stack, 'MyScheduleDummy2', {
+      schedule: expr,
+      target: lambdaTarget,
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 0);
+    Template.fromStack(stack).resourcePropertiesCountIs('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Effect: 'Allow',
+            Condition: { StringEquals: { 'aws:SourceAccount': '123456789012' } },
+            Principal: {
+              Service: 'scheduler.amazonaws.com',
+            },
+            Action: 'sts:AssumeRole',
+          },
+        ],
+      },
+    }, 1);
+
+    Template.fromStack(stack).resourcePropertiesCountIs('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
+            Resource: [{
+              'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'],
+            },
+            {
+              'Fn::Join': [
+                '', [
+                  { 'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'] },
+                  ':*',
+                ],
+              ],
+            }],
+          },
+        ],
+      },
+      Roles: [{ Ref: 'SchedulerRoleForTarget1441a743A31888' }],
+    }, 1);
+  });
+
   test('creates IAM policy for imported lambda function in the same account', () => {
     const importedFunc = lambda.Function.fromFunctionArn(stack, 'ImportedFunction', 'arn:aws:lambda:us-east-1:123456789012:function/somefunc');
 

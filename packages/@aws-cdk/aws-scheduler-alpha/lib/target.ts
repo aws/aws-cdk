@@ -122,7 +122,6 @@ export interface ScheduleTargetConfig {
 
 /**
  * Bind props to base schedule target config.
- * @internal
  */
 export function bindBaseTargetConfig(props: ScheduleTargetBaseProps) {
   let { deadLetterQueue } = props;
@@ -133,46 +132,41 @@ export function bindBaseTargetConfig(props: ScheduleTargetBaseProps) {
   };
 }
 
-const roleCache: {[key: string]: iam.Role} = {};
-
 /**
  * Obtain the Role for the EventBridge Scheduler event
  *
  * If a role already exists, it will be returned. This ensures that if multiple
  * events have the same target, they will share a role.
- * @internal
  */
 function singletonScheduleRole(schedule: ISchedule, targetArn: string): iam.IRole {
   const stack = Stack.of(schedule);
   const arn = Token.isUnresolved(targetArn) ? stack.resolve(targetArn).toString() : targetArn;
   const hash = md5hash(arn).slice(0, 6);
   const id = 'SchedulerRoleForTarget-' + hash;
-  const existing = stack.node.tryFindChild(id) as iam.IRole;
+  const existingRole = stack.node.tryFindChild(id) as iam.Role;
 
   const principal = new iam.PrincipalWithConditions(new iam.ServicePrincipal('scheduler.amazonaws.com'), {
     StringEquals: {
       'aws:SourceAccount': schedule.env.account,
     },
   });
-  if (existing) {
-    roleCache[targetArn].assumeRolePolicy?.addStatements(new iam.PolicyStatement({
+  if (existingRole) {
+    existingRole.assumeRolePolicy?.addStatements(new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
-      principals: [new iam.ServicePrincipal('scheduler.amazonaws.com')],
+      principals: [principal],
       actions: ['sts:AssumeRole'],
     }));
-    return existing;
+    return existingRole;
   }
   const role = new iam.Role(stack, id, {
     roleName: PhysicalName.GENERATE_IF_NEEDED,
     assumedBy: principal,
   });
-  roleCache[targetArn] = role;
   return role;
 }
 
 /**
  * Allow a schedule to send events with failed invocation to an Amazon SQS queue.
- * @internal
  */
 export function addToDeadLetterQueueResourcePolicy(schedule: ISchedule, queue: sqs.IQueue) {
   if (!sameEnvDimension(schedule.env.region, queue.env.region)) {
@@ -202,7 +196,6 @@ export function addToDeadLetterQueueResourcePolicy(schedule: ISchedule, queue: s
  *
  * Used to compare either accounts or regions, and also returns true if both
  * are unresolved (in which case both are expted to be "current region" or "current account").
- * @internal
  */
 function sameEnvDimension(dim1: string, dim2: string) {
   return [TokenComparison.SAME, TokenComparison.BOTH_UNRESOLVED].includes(Token.compareStrings(dim1, dim2));
