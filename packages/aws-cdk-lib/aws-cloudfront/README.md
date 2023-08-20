@@ -634,7 +634,7 @@ const realTimeConfig = new cloudfront.RealtimeLogConfig(this, 'realtimeLog', {
 new cloudfront.Distribution(this, 'myCdn', {
   defaultBehavior: {
     origin: new origins.HttpOrigin('www.example.com'),
-    realtimeLogConfigArn: realTimeConfig.realtimeLogConfigArn,
+    realtimeLogConfig: realTimeConfig,
   },
 });
 ```
