@@ -13,8 +13,8 @@ import { CfnCanary } from 'aws-cdk-lib/aws-synthetics';
 import { CustomResource, CustomResourceProvider, CustomResourceProviderRuntime } from 'aws-cdk-lib/core';
 import * as path from 'path';
 
-const AUTO_DELETE_LAMBDA_RESOURCE_TYPE = 'Custom::SyntheticsAutoDeleteLambda';
-const AUTO_DELETE_LAMBDA_TAG = 'aws-cdk:auto-delete-lambda';
+const AUTO_DELETE_UNDERLYING_RESOURCES_RESOURCE_TYPE = 'Custom::SyntheticsAutoDeleteUnderlyingResources';
+const AUTO_DELETE_UNDERLYING_RESOURCES_TAG = 'aws-cdk:auto-delete-underlying-resources';
 
 /**
  * Specify a test that the canary should run
@@ -327,16 +327,16 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     this.canaryName = this.getResourceNameAttribute(resource.ref);
 
     if (props.cleanup === Cleanup.LAMBDA ?? props.enableAutoDeleteLambdas) {
-      this.enableAutoDeleteLambda();
+      this.cleanupUnderlyingResources();
     }
   }
 
-  private enableAutoDeleteLambda() {
-    const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_LAMBDA_RESOURCE_TYPE, {
+  private cleanupUnderlyingResources() {
+    const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_UNDERLYING_RESOURCES_RESOURCE_TYPE, {
       codeDirectory: path.join(__dirname, '..', 'custom-resource-handlers', 'dist', 'aws-synthetics-alpha', 'auto-delete-lambda-handler'),
       useCfnResponseWrapper: false,
       runtime: CustomResourceProviderRuntime.NODEJS_18_X,
-      description: `Lambda function for auto-deleting lambda created by ${this.canaryName}.`,
+      description: `Lambda function for auto-deleting underlying resources created by ${this.canaryName}.`,
       policyStatements: [{
         Effect: 'Allow',
         Action: ['lambda:DeleteFunction'],
@@ -348,8 +348,8 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
       }],
     });
 
-    new CustomResource(this, 'AutoDeleteObjectsCustomResource', {
-      resourceType: AUTO_DELETE_LAMBDA_RESOURCE_TYPE,
+    new CustomResource(this, 'AutoDeleteUnderlyingResourcesCustomResource', {
+      resourceType: AUTO_DELETE_UNDERLYING_RESOURCES_RESOURCE_TYPE,
       serviceToken: provider.serviceToken,
       properties: {
         CanaryName: this.canaryName,
@@ -361,7 +361,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     // Because tagging and untagging will ALWAYS happen before the CR is deleted,
     // we can set `autoDeleteLambda: false` without the removal of the CR emptying
     // the lambda as a side effect.
-    cdk.Tags.of(this._resource).add(AUTO_DELETE_LAMBDA_TAG, 'true');
+    cdk.Tags.of(this._resource).add(AUTO_DELETE_UNDERLYING_RESOURCES_TAG, 'true');
   }
 
   /**
