@@ -56,6 +56,25 @@ export interface CustomTestOptions {
 }
 
 /**
+ * Different ways to clean up underlying Canary resources
+ * when the Canary is deleted.
+ */
+export enum Cleanup {
+  /**
+   * Clean up nothing. The user is responsible for cleaning up
+   * all resources left behind by the Canary.
+   */
+  NOTHING = 'nothing',
+
+  /**
+   * Clean up the underlying Lambda function only. The user is
+   * responsible for cleaning up all other resources left behind
+   * by the Canary.
+   */
+  LAMBDA = 'lambda',
+}
+
+/**
  * Options for specifying the s3 location that stores the data of each canary run. The artifacts bucket location **cannot**
  * be updated once the canary is created.
  */
@@ -200,16 +219,17 @@ export interface CanaryProps {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-synthetics-canary.html#cfn-synthetics-canary-deletelambdaresourcesoncanarydeletion
    *
    * @default false
-   * @deprecated use autoDeleteLambda instead
+   * @deprecated this feature has been deprecated by the service team, use `cleanup: Cleanup.LAMBDA` instead which will use a Custom Resource to achieve the same effect.
    */
   readonly enableAutoDeleteLambdas?: boolean;
 
   /**
-   * Whether or not to delete the lambda resource when the canary is deleted
+   * Specify the underlying resources to be cleaned up when the canary is deleted.
+   * Using `Cleanup.LAMBDA` will create a Custom Resource to achieve this.
    *
-   * @default false
+   * @default Cleanup.NOTHING
    */
-  readonly autoDeleteLambda?: boolean;
+  readonly cleanup?: Cleanup;
 
   /**
    * Lifecycle rules for the generated canary artifact bucket. Has no effect
@@ -306,7 +326,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     this.canaryState = resource.attrState;
     this.canaryName = this.getResourceNameAttribute(resource.ref);
 
-    if (props.autoDeleteLambda ?? props.enableAutoDeleteLambdas) {
+    if (props.cleanup === Cleanup.LAMBDA ?? props.enableAutoDeleteLambdas) {
       this.enableAutoDeleteLambda();
     }
   }

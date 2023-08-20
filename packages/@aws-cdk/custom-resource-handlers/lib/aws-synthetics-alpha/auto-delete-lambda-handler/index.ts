@@ -91,7 +91,7 @@ async function onDelete(canaryName: string) {
  * deployment as this Custom Resource.
  *
  * If the Custom Resource is ever deleted before the repository, it must be because
- * `autoDeleteImages` has been switched to false, in which case the tag would have
+ * `cleanup` has been switched to `Cleanup.NOTHING`, in which case the tag would have
  * been removed before we get to this Delete event.
  */
 function isCanaryTaggedForDeletion(tags?: Record<string, string>): boolean {
