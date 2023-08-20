@@ -1,7 +1,7 @@
 # AWS AppSync Construct Library
 
 
-The `@aws-cdk/aws-appsync` package contains constructs for building flexible
+The `aws-cdk-lib/aws-appsync` package contains constructs for building flexible
 APIs that use GraphQL.
 
 ```ts nofixture

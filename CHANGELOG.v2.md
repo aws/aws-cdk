@@ -2,6 +2,60 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.92.0](https://github.com/aws/aws-cdk/compare/v2.91.0...v2.92.0) (2023-08-15)
+
+
+### Features
+
+* update AWS Service Spec ([#26751](https://github.com/aws/aws-cdk/issues/26751)) ([e4e0832](https://github.com/aws/aws-cdk/commit/e4e08320412cd6cc999fb9eef0cd93b0445abceb))
+* **opensearchservice:** SAML authorization properties for Domain construct ([#26673](https://github.com/aws/aws-cdk/issues/26673)) ([6e20cbf](https://github.com/aws/aws-cdk/commit/6e20cbf8536f47ee1d3c11b8115258a8cf268e41)), closes [#26600](https://github.com/aws/aws-cdk/issues/26600)
+
+
+### Bug Fixes
+
+* **aws-cdk-lib:** custom resources using Node16 and SDKv2 ([#26710](https://github.com/aws/aws-cdk/issues/26710)) ([259a469](https://github.com/aws/aws-cdk/commit/259a4694f1f398cabce5a910a7c4f1af927bfcf8)), closes [#26708](https://github.com/aws/aws-cdk/issues/26708)
+* **custom-resources:** incorrect sdkv3 fallback  ([#26693](https://github.com/aws/aws-cdk/issues/26693)) ([0fc33d9](https://github.com/aws/aws-cdk/commit/0fc33d94ee54b6cefc3383ad76309efe626c23a2))
+
+## [2.91.0](https://github.com/aws/aws-cdk/compare/v2.90.0...v2.91.0) (2023-08-10)
+
+
+### Features
+
+* **cdk:** `cdk diff --quiet` suppresses progress messages ([#26652](https://github.com/aws/aws-cdk/issues/26652)) ([5777c88](https://github.com/aws/aws-cdk/commit/5777c88394e2834bd56d6a20ace41e8d317a0d85)), closes [#26526](https://github.com/aws/aws-cdk/issues/26526) [#26526](https://github.com/aws/aws-cdk/issues/26526)
+* **core:** Fn.findInMap supports default value ([#26543](https://github.com/aws/aws-cdk/issues/26543)) ([8526feb](https://github.com/aws/aws-cdk/commit/8526febc8f4b6bf6b21d80b3acc3fc3a932401a4)), closes [#26125](https://github.com/aws/aws-cdk/issues/26125)
+* **rds:** support aurora mysql 3.04.0 ([#26651](https://github.com/aws/aws-cdk/issues/26651)) ([6de3344](https://github.com/aws/aws-cdk/commit/6de3344a6292daf402d920480961ee6e920fbdca))
+* update AWS Service Spec ([#26658](https://github.com/aws/aws-cdk/issues/26658)) ([d865d6c](https://github.com/aws/aws-cdk/commit/d865d6ce896b36210aeabdd3f465bbaf4bfa6201))
+
+
+### Bug Fixes
+
+* **apigateway:** allowedOrigins are incorrectly interpreted as regexes ([#26648](https://github.com/aws/aws-cdk/issues/26648)) ([cc52e2d](https://github.com/aws/aws-cdk/commit/cc52e2dc22df1434d27c38073bcd60421d2ec39e)), closes [#26623](https://github.com/aws/aws-cdk/issues/26623)
+* **lambda:** Lambda Insights Layer ARN 1.0.229 in us-west-1 on ARM64 incorrect ([#26626](https://github.com/aws/aws-cdk/issues/26626)) ([dabf868](https://github.com/aws/aws-cdk/commit/dabf868ed81235174b59d4990157b777ed23be64)), closes [/docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-extension-versionsARM.html#Lambda-Insights-extension-ARM-1](https://github.com/aws//docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-extension-versionsARM.html/issues/Lambda-Insights-extension-ARM-1) [#26615](https://github.com/aws/aws-cdk/issues/26615)
+* **rds:** `grantConnect` fails to deploy when no user is specified for instances with secret credentials ([#26647](https://github.com/aws/aws-cdk/issues/26647)) ([112b861](https://github.com/aws/aws-cdk/commit/112b8619d60dd9082be92cb811cc5c7f36f05fe1)), closes [#26603](https://github.com/aws/aws-cdk/issues/26603)
+* **sam:** CfnFunction events are not rendered ([#26679](https://github.com/aws/aws-cdk/issues/26679)) ([305a9cc](https://github.com/aws/aws-cdk/commit/305a9cc9a5cb18db0c2660c5354a2c43e8d36cf6)), closes [#26637](https://github.com/aws/aws-cdk/issues/26637)
+* **triggers:** executed on update even when executeOnHandlerChange is false ([#26676](https://github.com/aws/aws-cdk/issues/26676)) ([ed3aaf7](https://github.com/aws/aws-cdk/commit/ed3aaf7826884d3fdafd667fe7816fc57772632c)), closes [#25939](https://github.com/aws/aws-cdk/issues/25939)
+* broken cross-region reference in aws-route53 ([#26666](https://github.com/aws/aws-cdk/issues/26666)) ([ec61b09](https://github.com/aws/aws-cdk/commit/ec61b09f6f3f49ace109ec150064fb948635eee1))
+
+## [2.90.0](https://github.com/aws/aws-cdk/compare/v2.89.0...v2.90.0) (2023-08-04)
+
+
+### Features
+
+* **aws-cdk-lib:** ADOT Lambda Layer v0.31.0 ([#26505](https://github.com/aws/aws-cdk/issues/26505)) ([03c6f6f](https://github.com/aws/aws-cdk/commit/03c6f6fb667a1d7034537b514103215bb949a8da))
+* **core:** new RemovalPolicy.RETAIN_EXCEPT_ON_CREATE to only retain resources that have been successfully created ([#26602](https://github.com/aws/aws-cdk/issues/26602)) ([c84666c](https://github.com/aws/aws-cdk/commit/c84666c22658e22956d79b83d0d226278d829f9d)), closes [#26595](https://github.com/aws/aws-cdk/issues/26595)
+* **core:** support ssh build arg in DockerImageAsset ([#26356](https://github.com/aws/aws-cdk/issues/26356)) ([7b3d381](https://github.com/aws/aws-cdk/commit/7b3d3813124c6c1dfa912c4fbe20772c84a0ffc6))
+* **stepfunctions:** allow setting comment on state machine ([#25858](https://github.com/aws/aws-cdk/issues/25858)) ([6a70b4f](https://github.com/aws/aws-cdk/commit/6a70b4fe83f6ab2571086454909aae13ec9959fb))
+* update AWS Service Spec ([#26579](https://github.com/aws/aws-cdk/issues/26579)) ([6c588da](https://github.com/aws/aws-cdk/commit/6c588da2c6b1c2f5a53fb9151c84c7298ce2427e))
+
+
+### Bug Fixes
+
+* **cli:** specifying --quiet does not suppress asset building and publishing logs ([#26493](https://github.com/aws/aws-cdk/issues/26493)) ([b12bc67](https://github.com/aws/aws-cdk/commit/b12bc676bd5f99843b224839bc32504b47f0599e)), closes [#26265](https://github.com/aws/aws-cdk/issues/26265)
+* **ec2:** flowLogName property for FlowLog construct does not work ([#26371](https://github.com/aws/aws-cdk/issues/26371)) ([f910f78](https://github.com/aws/aws-cdk/commit/f910f7840f9ceb02780dc3b08d548fb7a2072e58)), closes [#26370](https://github.com/aws/aws-cdk/issues/26370)
+* **ecr:** error handling compatible with aws sdk v3 ([#26608](https://github.com/aws/aws-cdk/issues/26608)) ([300989a](https://github.com/aws/aws-cdk/commit/300989a675bd9fc9c2829c5115efe34e753e0976)), closes [#26433](https://github.com/aws/aws-cdk/issues/26433)
+* **ecs:** unclear docs on valid ec2 task definition placement constraints and no validation of input [#25933](https://github.com/aws/aws-cdk/issues/25933) ([#26384](https://github.com/aws/aws-cdk/issues/26384)) ([4c57f45](https://github.com/aws/aws-cdk/commit/4c57f4550917f5a280a5c0a79f2ae03325ef3a66))
+* **logs:** LogRetention Custom Resource does not use Node18 ([#26609](https://github.com/aws/aws-cdk/issues/26609)) ([54e64c7](https://github.com/aws/aws-cdk/commit/54e64c7eb0435bd043affe4bbd8dc2fdbddbcffd)), closes [#26461](https://github.com/aws/aws-cdk/issues/26461)
+
 ## [2.89.0](https://github.com/aws/aws-cdk/compare/v2.88.0...v2.89.0) (2023-07-28)
 
 

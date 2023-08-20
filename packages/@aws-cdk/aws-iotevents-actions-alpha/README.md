@@ -15,8 +15,8 @@
 
 <!--END STABILITY BANNER-->
 
-This library contains integration classes to specify actions of state events of Detector Model in `@aws-cdk/aws-iotevents`.
-Instances of these classes should be passed to `State` defined in `@aws-cdk/aws-iotevents`
+This library contains integration classes to specify actions of state events of Detector Model in `@aws-cdk/aws-iotevents-alpha`.
+Instances of these classes should be passed to `State` defined in `@aws-cdk/aws-iotevents-alpha`
 You can define built-in actions to use a timer or set a variable, or send data to other AWS resources.
 
 This library contains integration classes to use a timer or set a variable, or send data to other AWS resources.

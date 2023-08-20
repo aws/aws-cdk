@@ -1,6 +1,6 @@
 // Integration test to deploy some resources, create an alarm on it and create a dashboard.
 //
-// Because literally every other library is going to depend on @aws-cdk/aws-cloudwatch, we drop down
+// Because literally every other library is going to depend on aws-cdk-lib/aws-cloudwatch, we drop down
 // to the very lowest level to create CloudFormation resources by hand, without even generated
 // library support.
 
