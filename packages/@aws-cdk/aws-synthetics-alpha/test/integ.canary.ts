@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
-import { Canary, Code, Runtime, Schedule, Test } from '../lib';
+import { Canary, Cleanup, Code, Runtime, Schedule, Test } from '../lib';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { RemovalPolicy } from 'aws-cdk-lib';
 
@@ -63,7 +63,7 @@ const folderAsset = new Canary(stack, 'FolderAsset', {
   environmentVariables: {
     URL: api.url,
   },
-  enableAutoDeleteLambdas: true,
+  cleanup: Cleanup.LAMBDA,
 });
 
 const zipAsset = new Canary(stack, 'ZipAsset', {

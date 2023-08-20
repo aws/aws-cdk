@@ -1,5 +1,5 @@
 import { App, Stack, StackProps } from 'aws-cdk-lib';
-// import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 import * as synthetics from '../lib';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from 'aws-cdk-lib/custom-resources';
@@ -17,7 +17,7 @@ class TestStack extends Stack {
             console.log(\'hello world\');
           };`),
       }),
-      autoDeleteLambda: true,
+      cleanup: synthetics.Cleanup.LAMBDA,
     });
 
     const canaryThatWillBeRemoved = new synthetics.Canary(this, 'CanaryRemoved', {
@@ -29,7 +29,7 @@ class TestStack extends Stack {
             console.log(\'hello world\');
           };`),
       }),
-      autoDeleteLambda: true,
+      cleanup: synthetics.Cleanup.LAMBDA,
       startAfterCreation: false, // otherwise we get error: canary is in a state that can't be deleted: RUNNING
     });
 
@@ -52,11 +52,9 @@ class TestStack extends Stack {
 }
 
 const app = new App();
-new TestStack(app, 'cdk-synthetics-canary-auto-delete-lambda');
-app.synth();
 
-// new IntegTest(app, 'cdk-integ-synthetics-canary-auto-delete-lambda', {
-//   testCases: [new TestStack(app, 'cdk-synthetics-canary-auto-delete-lambda')],
-//   diffAssets: true,
-//   stackUpdateWorkflow: false, // will error because this stack has a cr that deletes its own resources
-// });
+new IntegTest(app, 'cdk-integ-synthetics-canary-auto-delete-lambda', {
+  testCases: [new TestStack(app, 'cdk-synthetics-canary-auto-delete-lambda')],
+  diffAssets: true,
+  stackUpdateWorkflow: false, // will error because this stack has a cr that deletes its own resources
+});
