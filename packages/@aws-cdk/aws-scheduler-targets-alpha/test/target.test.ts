@@ -4,7 +4,7 @@ import { Template } from 'aws-cdk-lib/assertions';
 import { AccountRootPrincipal, Role } from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
-import { targets } from '../lib/target';
+import { LambdaInvoke } from '../lib/target';
 
 describe('schedule target', () => {
   let app: App;
@@ -24,7 +24,7 @@ describe('schedule target', () => {
   });
 
   test('creates IAM role and IAM policy for lambda target in the same account', () => {
-    const lambdaTarget = new targets.LambdaInvoke(func, {});
+    const lambdaTarget = new LambdaInvoke(func, {});
 
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
@@ -90,7 +90,7 @@ describe('schedule target', () => {
       assumedBy: new AccountRootPrincipal(),
     });
 
-    const lambdaTarget = new targets.LambdaInvoke(func, {
+    const lambdaTarget = new LambdaInvoke(func, {
       role: targetExecutionRole,
     });
 
@@ -137,7 +137,7 @@ describe('schedule target', () => {
   });
 
   test('reuses IAM role and IAM policy for two schedules from the same account', () => {
-    const lambdaTarget = new targets.LambdaInvoke(func, { });
+    const lambdaTarget = new LambdaInvoke(func, { });
 
     new Schedule(stack, 'MyScheduleDummy1', {
       schedule: expr,
@@ -193,7 +193,7 @@ describe('schedule target', () => {
   test('creates IAM policy for imported lambda function in the same account', () => {
     const importedFunc = lambda.Function.fromFunctionArn(stack, 'ImportedFunction', 'arn:aws:lambda:us-east-1:123456789012:function/somefunc');
 
-    const lambdaTarget = new targets.LambdaInvoke(importedFunc, {});
+    const lambdaTarget = new LambdaInvoke(importedFunc, {});
 
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
@@ -232,7 +232,7 @@ describe('schedule target', () => {
   test('creates IAM policy for imported role for lambda function in the same account', () => {
     const importedRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/someRole');
 
-    const lambdaTarget = new targets.LambdaInvoke(func, {
+    const lambdaTarget = new LambdaInvoke(func, {
       role: importedRole,
     });
 
@@ -282,7 +282,7 @@ describe('schedule target', () => {
     const importedFunc = lambda.Function.fromFunctionArn(stack, 'ImportedFunction', 'arn:aws:lambda:us-east-1:123456789012:function/somefunc');
     const importedRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/someRole');
 
-    const lambdaTarget = new targets.LambdaInvoke(importedFunc, {
+    const lambdaTarget = new LambdaInvoke(importedFunc, {
       role: importedRole,
     });
 
@@ -322,7 +322,7 @@ describe('schedule target', () => {
   test('throws when lambda function is imported from different account', () => {
     const importedFunc = lambda.Function.fromFunctionArn(stack, 'ImportedFunction', 'arn:aws:lambda:us-east-1:111122223333:function/somefunc');
 
-    const lambdaTarget = new targets.LambdaInvoke(importedFunc, {});
+    const lambdaTarget = new LambdaInvoke(importedFunc, {});
 
     expect(() =>
       new Schedule(stack, 'MyScheduleDummy', {
@@ -334,7 +334,7 @@ describe('schedule target', () => {
   test('throws when lambda function is imported from different region', () => {
     const importedFunc = lambda.Function.fromFunctionArn(stack, 'ImportedFunction', 'arn:aws:lambda:us-west-2:123456789012:function/somefunc');
 
-    const lambdaTarget = new targets.LambdaInvoke(importedFunc, {});
+    const lambdaTarget = new LambdaInvoke(importedFunc, {});
 
     expect(() =>
       new Schedule(stack, 'MyScheduleDummy', {
@@ -346,7 +346,7 @@ describe('schedule target', () => {
   test('throws when IAM role is imported from different account', () => {
     const importedRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::111122223333:role/someRole');
 
-    const lambdaTarget = new targets.LambdaInvoke(func, {
+    const lambdaTarget = new LambdaInvoke(func, {
       role: importedRole,
     });
 
@@ -360,7 +360,7 @@ describe('schedule target', () => {
   test('adds permissions to DLQ', () => {
     const dlq = new sqs.Queue(stack, 'DummyDeadLetterQueue');
 
-    const lambdaTarget = new targets.LambdaInvoke(func, {
+    const lambdaTarget = new LambdaInvoke(func, {
       deadLetterQueue: dlq,
     });
 
@@ -400,7 +400,7 @@ describe('schedule target', () => {
     });
     const queue = new sqs.Queue(stack2, 'DummyDeadLetterQueue');
 
-    const lambdaTarget = new targets.LambdaInvoke(func, {
+    const lambdaTarget = new LambdaInvoke(func, {
       deadLetterQueue: queue,
     });
 
@@ -414,7 +414,7 @@ describe('schedule target', () => {
   test('does not create a queue policy when DLQ is imported', () => {
     const importedQueue = sqs.Queue.fromQueueArn(stack, 'ImportedQueue', 'arn:aws:sqs:us-east-1:123456789012:queue1');
 
-    const lambdaTarget = new targets.LambdaInvoke(func, {
+    const lambdaTarget = new LambdaInvoke(func, {
       deadLetterQueue: importedQueue,
     });
 
@@ -438,7 +438,7 @@ describe('schedule target', () => {
       queueName: 'DummyDeadLetterQueue',
     });
 
-    const lambdaTarget = new targets.LambdaInvoke(func, {
+    const lambdaTarget = new LambdaInvoke(func, {
       deadLetterQueue: queue,
     });
 
@@ -451,7 +451,7 @@ describe('schedule target', () => {
   });
 
   test('renders expected retry policy', () => {
-    const lambdaTarget = new targets.LambdaInvoke(func, {
+    const lambdaTarget = new LambdaInvoke(func, {
       retryAttempts: 5,
       maxEventAge: Duration.hours(3),
     });
@@ -478,7 +478,7 @@ describe('schedule target', () => {
   });
 
   test('throws when retry policy max age is more than 1 day', () => {
-    const lambdaTarget = new targets.LambdaInvoke(func, {
+    const lambdaTarget = new LambdaInvoke(func, {
       maxEventAge: Duration.days(3),
     });
 
@@ -490,7 +490,7 @@ describe('schedule target', () => {
   });
 
   test('throws when retry policy max age is less than 15 minutes', () => {
-    const lambdaTarget = new targets.LambdaInvoke(func, {
+    const lambdaTarget = new LambdaInvoke(func, {
       maxEventAge: Duration.minutes(5),
     });
 
@@ -502,7 +502,7 @@ describe('schedule target', () => {
   });
 
   test('throws when retry policy max retry attempts is out of the allowed limits', () => {
-    const lambdaTarget = new targets.LambdaInvoke(func, {
+    const lambdaTarget = new LambdaInvoke(func, {
       retryAttempts: 200,
     });
 

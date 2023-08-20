@@ -229,41 +229,39 @@ export function renderRetryPolicy(maximumEventAge: Duration | undefined, maximum
   };
 }
 
-export namespace targets {
-  export class LambdaInvoke implements IScheduleTarget {
-    constructor(
-      private readonly func: lambda.IFunction,
-      private readonly props: ScheduleTargetBaseProps,
-    ) {
+export class LambdaInvoke implements IScheduleTarget {
+  constructor(
+    private readonly func: lambda.IFunction,
+    private readonly props: ScheduleTargetBaseProps,
+  ) {
+  }
+
+  bind(_schedule: ISchedule): ScheduleTargetConfig {
+    if (!sameEnvDimension(this.func.env.region, _schedule.env.region)) {
+      throw new Error(`Cannot assign function in region ${this.func.env.region} to the schedule ${Names.nodeUniqueId(_schedule.node)} in region ${_schedule.env.region}. Both the schedule and the function must be in the same region.`);
     }
 
-    bind(_schedule: ISchedule): ScheduleTargetConfig {
-      if (!sameEnvDimension(this.func.env.region, _schedule.env.region)) {
-        throw new Error(`Cannot assign function in region ${this.func.env.region} to the schedule ${Names.nodeUniqueId(_schedule.node)} in region ${_schedule.env.region}. Both the schedule and the function must be in the same region.`);
-      }
-
-      if (!sameEnvDimension(this.func.env.account, _schedule.env.account)) {
-        throw new Error(`Cannot assign function in account ${this.func.env.account} to the schedule ${Names.nodeUniqueId(_schedule.node)} in account ${_schedule.env.region}. Both the schedule and the function must be in the same account.`);
-      }
-
-      if (this.props.deadLetterQueue) {
-        addToDeadLetterQueueResourcePolicy(_schedule, this.props.deadLetterQueue);
-      }
-
-      if (this.props.role && !sameEnvDimension(this.props.role.env.account, this.func.env.account)) {
-        throw new Error(`Cannot grant permission to execution role in account ${this.props.role.env.account} to invoke target ${Names.nodeUniqueId(this.func.node)} in account ${this.func.env.account}. Both the target and the execution role must be in the same account.`);
-      }
-
-      const role = this.props.role ?? singletonScheduleRole(_schedule, this.func.functionArn);
-      this.func.grantInvoke(role);
-
-      return {
-        ...bindBaseTargetConfig(this.props),
-        role: role,
-        arn: this.func.functionArn,
-        input: this.props.input,
-      };
-
+    if (!sameEnvDimension(this.func.env.account, _schedule.env.account)) {
+      throw new Error(`Cannot assign function in account ${this.func.env.account} to the schedule ${Names.nodeUniqueId(_schedule.node)} in account ${_schedule.env.region}. Both the schedule and the function must be in the same account.`);
     }
+
+    if (this.props.deadLetterQueue) {
+      addToDeadLetterQueueResourcePolicy(_schedule, this.props.deadLetterQueue);
+    }
+
+    if (this.props.role && !sameEnvDimension(this.props.role.env.account, this.func.env.account)) {
+      throw new Error(`Cannot grant permission to execution role in account ${this.props.role.env.account} to invoke target ${Names.nodeUniqueId(this.func.node)} in account ${this.func.env.account}. Both the target and the execution role must be in the same account.`);
+    }
+
+    const role = this.props.role ?? singletonScheduleRole(_schedule, this.func.functionArn);
+    this.func.grantInvoke(role);
+
+    return {
+      ...bindBaseTargetConfig(this.props),
+      role: role,
+      arn: this.func.functionArn,
+      input: this.props.input,
+    };
+
   }
 }

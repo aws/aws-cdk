@@ -126,9 +126,14 @@ new Schedule(this, 'Schedule', {
 
 ## Scheduler Targets
 
-TODO: Scheduler Targets Module is not yet implemented. See section in [L2 Event Bridge Scheduler RFC](https://github.com/aws/aws-cdk-rfcs/blob/master/text/0474-event-bridge-scheduler-l2.md)
+The `@aws-cdk/aws-schedule-targets-alpha` module includes classes that implement the `IScheduleTarget` interface for
+various AWS services. EventBridge Scheduler supports two types of targets: templated targets invoke common API
+operations across a core groups of services, and customizeable universal targets that you can use to call more
+than 6,000 operations across over 270 services.
 
-Only LambdaInvoke target is added for now.
+The following targets are supported:
+
+1. `targets.LambdaInvoke`: Invoke an AWS Lambda function
 
 ### Input 
 
@@ -156,7 +161,30 @@ const input = ScheduleTargetInput.fromText(text);
 
 ### Specifying Execution Role 
 
-TODO: Not yet implemented. See section in [L2 Event Bridge Scheduler RFC](https://github.com/aws/aws-cdk-rfcs/blob/master/text/0474-event-bridge-scheduler-l2.md)
+An execution role is an IAM role that EventBridge Scheduler assumes in order to interact with other AWS services on your behalf.
+
+The classes for templated schedule targets automatically create an IAM role with all the minimum necessary
+permissions to interact with the templated target. If you wish you may specify your own IAM role, then the templated targets
+will grant minimal required permissions. For example: for invoking Lambda function target `LambdaInvoke` will grant
+execution IAM role permission to `lambda:InvokeFunction`.
+
+```text
+import * as iam from '@aws-cdk/aws-iam';
+
+declare const fn: lambda.Function;
+
+const role = new iam.Role(this, 'Role', {
+    assumedBy: new iam.ServicePrincipal('scheduler.amazonaws.com'),
+});
+
+const target = new targets.LambdaInvoke(fn, {
+    input: ScheduleTargetInput.fromObject({
+        "payload": "useful"
+    }),
+    role,
+});
+```
+
 
 ### Cross-account and cross-region targets
 
@@ -168,7 +196,30 @@ TODO: Not yet implemented. See section in [L2 Event Bridge Scheduler RFC](https:
 
 ## Error-handling 
 
-TODO: Not yet implemented. See section in [L2 Event Bridge Scheduler RFC](https://github.com/aws/aws-cdk-rfcs/blob/master/text/0474-event-bridge-scheduler-l2.md)
+You can configure how your schedule handles failures, when EventBridge Scheduler is unable to deliver an event
+successfully to a target, by using two primary mechanisms: a retry policy, and a dead-letter queue (DLQ).
+
+A retry policy determines the number of times EventBridge Scheduler must retry a failed event, and how long
+to keep an unprocessed event.
+
+A DLQ is a standard Amazon SQS queue EventBridge Scheduler uses to deliver failed events to, after the retry
+policy has been exhausted. You can use a DLQ to troubleshoot issues with your schedule or its downstream target.
+If you've configured a retry policy for your schedule, EventBridge Scheduler delivers the dead-letter event after
+exhausting the maximum number of retries you set in the retry policy.
+
+```text
+declare const fn: lambda.Function;
+
+const dlq = new Queue(this, "DLQ", {
+    queueName: 'MyDLQ',
+});
+
+const target = new targets.LambdaInvoke(fn, {
+    deadLetterQueue: dlq,
+    maxEventAge: Duration.minutes(1),
+    retryAttempts: 3
+});
+```
 
 ## Overriding Target Properties 
 
