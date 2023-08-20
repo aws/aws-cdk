@@ -46,6 +46,9 @@ export interface IRealtimeLogConfig extends IResource {
   readonly realtimeLogConfigArn: string;
 }
 
+/**
+ * Properties for defining a RealtimeLogConfig resource.
+ */
 export interface RealtimeLogConfigProps {
   /**
    * The unique name of this real-time log configuration.
@@ -65,6 +68,11 @@ export interface RealtimeLogConfigProps {
   readonly endPoints: Endpoint[];
 }
 
+/**
+ * A Realtime Log Config configuration
+ *
+ * @resource AWS::CloudFront::RealtimeLogConfig
+ */
 export class RealtimeLogConfig extends Resource implements IRealtimeLogConfig {
   public readonly realtimeLogConfigName: string;
   public readonly realtimeLogConfigArn: string;

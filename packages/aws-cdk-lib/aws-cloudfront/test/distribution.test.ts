@@ -1172,7 +1172,7 @@ test('render distribution behavior with realtime log config', () => {
   new Distribution(stack, 'MyDist', {
     defaultBehavior: {
       origin: defaultOrigin(),
-      realtimeLogConfigArn: realTimeConfig.realtimeLogConfigArn,
+      realtimeLogConfig: realTimeConfig,
     },
   });
 
