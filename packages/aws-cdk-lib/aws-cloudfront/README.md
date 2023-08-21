@@ -611,15 +611,13 @@ Example:
 
 ```ts
 // Adding realtime logs config to a Cloudfront Distribution on default behavior.
-import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kinesis from 'aws-cdk-lib/aws-kinesis';
 
-declare const role: iam.Role;
 declare const stream: kinesis.Stream;
 
 const realTimeConfig = new cloudfront.RealtimeLogConfig(this, 'realtimeLog', {
   endPoints: [
-    cloudfront.Endpoint.fromKinesisStream(stream, role),
+    cloudfront.Endpoint.fromKinesisStream(this, stream),
   ],
   fields: [
     'timestamp',
