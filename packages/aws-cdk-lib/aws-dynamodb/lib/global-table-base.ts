@@ -27,7 +27,7 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
   public abstract readonly tableArn: string;
 
   /**
-   * The name of all Replica Tables in the Global Table.
+   * The name of this Global Table and its Replicas.
    *
    * @attribute
    */

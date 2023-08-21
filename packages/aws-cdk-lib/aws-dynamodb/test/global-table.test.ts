@@ -1971,6 +1971,74 @@ describe('secondary indexes', () => {
     });
   });
 
+  test('with global secondary index wihtout read capacity inherits from table when billing mode is provisioned', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+
+    // WHEN
+    new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      billing: Billing.provisioned({
+        readCapacity: Capacity.fixed(10),
+        writeCapacity: Capacity.autoscaled({ maxCapacity: 10 }),
+      }),
+      globalSecondaryIndexes: [
+        {
+          indexName: 'gsi',
+          partitionKey: { name: 'gsi-pk', type: AttributeType.STRING },
+        },
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      WriteProvisionedThroughputSettings: {
+        WriteCapacityAutoScalingSettings: {
+          MinCapacity: 1,
+          MaxCapacity: 10,
+          TargetTrackingScalingPolicyConfiguration: {
+            TargetValue: 70,
+          },
+        },
+      },
+      GlobalSecondaryIndexes: [
+        {
+          IndexName: 'gsi',
+          KeySchema: [
+            { AttributeName: 'gsi-pk', KeyType: 'HASH' },
+          ],
+          Projection: {
+            ProjectionType: 'ALL',
+          },
+          WriteProvisionedThroughputSettings: {
+            WriteCapacityAutoScalingSettings: {
+              MinCapacity: 1,
+              MaxCapacity: 10,
+              TargetTrackingScalingPolicyConfiguration: {
+                TargetValue: 70,
+              },
+            },
+          },
+        },
+      ],
+      Replicas: [
+        {
+          Region: {
+            Ref: 'AWS::Region',
+          },
+          GlobalSecondaryIndexes: [
+            {
+              IndexName: 'gsi',
+              ReadProvisionedThroughputSettings: {
+                ReadCapacityUnits: 10,
+              },
+            },
+          ],
+        },
+      ],
+    });
+  });
+
   test('with global secondary index and KEYS_ONLY projection type', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
