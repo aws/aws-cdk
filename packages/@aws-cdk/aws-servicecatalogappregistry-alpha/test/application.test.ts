@@ -511,8 +511,8 @@ describe('Scope based Associations with Application with Cross Region/Account', 
     const stageStack = new cdk.Stack(stage, 'MyStack');
     application.associateAllStacksInScope(stage);
     Annotations.fromStack(stageStack).hasWarning('*',
-      'SCAppRegistry:CrossRegionAssociation: AppRegistry does not support cross region associations, deployment might fail if there is cross region stacks in the app.'
-          + ' Application region region, stack region region1');
+      'AppRegistry does not support cross region associations, deployment might fail if there is cross region stacks in the app.'
+          + ' Application region region, stack region region1 [ack: @aws-cdk/servicecatalogappregistry:CrossRegionAssociation]');
   });
 });
 
