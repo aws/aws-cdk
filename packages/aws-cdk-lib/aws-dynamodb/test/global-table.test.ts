@@ -530,7 +530,328 @@ describe('global table', () => {
   });
 
   test('with all properties configured', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const stream = new Stream(stack, 'Stream');
+    const tableKey = new Key(stack, 'Key');
+    const replicaKeyArns = {
+      'us-east-1': 'arn:aws:kms:us-east-1:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
+      'us-east-2': 'arn:aws:kms:us-east-2:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
+    };
 
+    // WHEN
+    new GlobalTable(stack, 'GlobalTable', {
+      tableName: 'my-global-table',
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      sortKey: { name: 'sk', type: AttributeType.NUMBER },
+      billing: Billing.provisioned({
+        readCapacity: Capacity.fixed(10),
+        writeCapacity: Capacity.autoscaled({ maxCapacity: 20 }),
+      }),
+      encryption: TableEncryptionV2.customerManagedKey(tableKey, replicaKeyArns),
+      contributorInsights: true,
+      deletionProtection: true,
+      pointInTimeRecovery: true,
+      tableClass: TableClass.STANDARD_INFREQUENT_ACCESS,
+      kinesisStream: stream,
+      timeToLiveAttribute: 'attribute',
+      removalPolicy: RemovalPolicy.DESTROY,
+      globalSecondaryIndexes: [
+        {
+          indexName: 'gsi1',
+          partitionKey: { name: 'pk', type: AttributeType.STRING },
+          readCapacity: Capacity.fixed(10),
+        },
+        {
+          indexName: 'gsi2',
+          partitionKey: { name: 'pk', type: AttributeType.STRING },
+        },
+      ],
+      localSecondaryIndexes: [
+        {
+          indexName: 'lsi',
+          sortKey: { name: 'sk', type: AttributeType.NUMBER },
+        },
+      ],
+      replicas: [
+        {
+          region: 'us-east-1',
+          deletionProtection: false,
+          readCapacity: Capacity.autoscaled({
+            minCapacity: 5,
+            maxCapacity: 25,
+          }),
+          globalSecondaryIndexOptions: {
+            gsi2: {
+              contributorInsights: false,
+            },
+          },
+        },
+        {
+          region: 'us-east-2',
+          tableClass: TableClass.STANDARD,
+          contributorInsights: false,
+          globalSecondaryIndexOptions: {
+            gsi1: {
+              readCapacity: Capacity.fixed(15),
+            },
+          },
+        },
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      AttributeDefinitions: [
+        {
+          AttributeName: 'pk',
+          AttributeType: 'S',
+        },
+        {
+          AttributeName: 'sk',
+          AttributeType: 'N',
+        },
+      ],
+      BillingMode: 'PROVISIONED',
+      GlobalSecondaryIndexes: [
+        {
+          IndexName: 'gsi1',
+          KeySchema: [
+            {
+              AttributeName: 'pk',
+              KeyType: 'HASH',
+            },
+          ],
+          Projection: {
+            ProjectionType: 'ALL',
+          },
+          WriteProvisionedThroughputSettings: {
+            WriteCapacityAutoScalingSettings: {
+              MaxCapacity: 20,
+              MinCapacity: 1,
+              TargetTrackingScalingPolicyConfiguration: {
+                TargetValue: 70,
+              },
+            },
+          },
+        },
+        {
+          IndexName: 'gsi2',
+          KeySchema: [
+            {
+              AttributeName: 'pk',
+              KeyType: 'HASH',
+            },
+          ],
+          Projection: {
+            ProjectionType: 'ALL',
+          },
+          WriteProvisionedThroughputSettings: {
+            WriteCapacityAutoScalingSettings: {
+              MaxCapacity: 20,
+              MinCapacity: 1,
+              TargetTrackingScalingPolicyConfiguration: {
+                TargetValue: 70,
+              },
+            },
+          },
+        },
+      ],
+      KeySchema: [
+        {
+          AttributeName: 'pk',
+          KeyType: 'HASH',
+        },
+        {
+          AttributeName: 'sk',
+          KeyType: 'RANGE',
+        },
+      ],
+      LocalSecondaryIndexes: [
+        {
+          IndexName: 'lsi',
+          KeySchema: [
+            {
+              AttributeName: 'pk',
+              KeyType: 'HASH',
+            },
+            {
+              AttributeName: 'sk',
+              KeyType: 'RANGE',
+            },
+          ],
+          Projection: {
+            ProjectionType: 'ALL',
+          },
+        },
+      ],
+      Replicas: [
+        {
+          ContributorInsightsSpecification: {
+            Enabled: true,
+          },
+          DeletionProtectionEnabled: false,
+          GlobalSecondaryIndexes: [
+            {
+              ContributorInsightsSpecification: {
+                Enabled: true,
+              },
+              IndexName: 'gsi1',
+              ReadProvisionedThroughputSettings: {
+                ReadCapacityUnits: 10,
+              },
+            },
+            {
+              ContributorInsightsSpecification: {
+                Enabled: false,
+              },
+              IndexName: 'gsi2',
+              ReadProvisionedThroughputSettings: {
+                ReadCapacityUnits: 10,
+              },
+            },
+          ],
+          KinesisStreamSpecification: {
+            StreamArn: {
+              'Fn::GetAtt': [
+                'Stream790BDEE4',
+                'Arn',
+              ],
+            },
+          },
+          PointInTimeRecoverySpecification: {
+            PointInTimeRecoveryEnabled: true,
+          },
+          ReadProvisionedThroughputSettings: {
+            ReadCapacityAutoScalingSettings: {
+              MaxCapacity: 25,
+              MinCapacity: 5,
+              TargetTrackingScalingPolicyConfiguration: {
+                TargetValue: 70,
+              },
+            },
+          },
+          Region: 'us-east-1',
+          SSESpecification: {
+            KMSMasterKeyId: 'arn:aws:kms:us-east-1:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
+          },
+          TableClass: 'STANDARD_INFREQUENT_ACCESS',
+        },
+        {
+          ContributorInsightsSpecification: {
+            Enabled: false,
+          },
+          DeletionProtectionEnabled: true,
+          GlobalSecondaryIndexes: [
+            {
+              IndexName: 'gsi1',
+              ReadProvisionedThroughputSettings: {
+                ReadCapacityUnits: 15,
+              },
+            },
+            {
+              ContributorInsightsSpecification: {
+                Enabled: true,
+              },
+              IndexName: 'gsi2',
+              ReadProvisionedThroughputSettings: {
+                ReadCapacityUnits: 10,
+              },
+            },
+          ],
+          KinesisStreamSpecification: {
+            StreamArn: {
+              'Fn::GetAtt': [
+                'Stream790BDEE4',
+                'Arn',
+              ],
+            },
+          },
+          PointInTimeRecoverySpecification: {
+            PointInTimeRecoveryEnabled: true,
+          },
+          ReadProvisionedThroughputSettings: {
+            ReadCapacityUnits: 10,
+          },
+          Region: 'us-east-2',
+          SSESpecification: {
+            KMSMasterKeyId: 'arn:aws:kms:us-east-2:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
+          },
+          TableClass: 'STANDARD',
+        },
+        {
+          ContributorInsightsSpecification: {
+            Enabled: true,
+          },
+          DeletionProtectionEnabled: true,
+          GlobalSecondaryIndexes: [
+            {
+              ContributorInsightsSpecification: {
+                Enabled: true,
+              },
+              IndexName: 'gsi1',
+              ReadProvisionedThroughputSettings: {
+                ReadCapacityUnits: 10,
+              },
+            },
+            {
+              ContributorInsightsSpecification: {
+                Enabled: true,
+              },
+              IndexName: 'gsi2',
+              ReadProvisionedThroughputSettings: {
+                ReadCapacityUnits: 10,
+              },
+            },
+          ],
+          KinesisStreamSpecification: {
+            StreamArn: {
+              'Fn::GetAtt': [
+                'Stream790BDEE4',
+                'Arn',
+              ],
+            },
+          },
+          PointInTimeRecoverySpecification: {
+            PointInTimeRecoveryEnabled: true,
+          },
+          ReadProvisionedThroughputSettings: {
+            ReadCapacityUnits: 10,
+          },
+          Region: 'us-west-2',
+          SSESpecification: {
+            KMSMasterKeyId: {
+              'Fn::GetAtt': [
+                'Key961B73FD',
+                'Arn',
+              ],
+            },
+          },
+          TableClass: 'STANDARD_INFREQUENT_ACCESS',
+        },
+      ],
+      SSESpecification: {
+        SSEEnabled: true,
+        SSEType: 'KMS',
+      },
+      StreamSpecification: {
+        StreamViewType: 'NEW_AND_OLD_IMAGES',
+      },
+      TableName: 'my-global-table',
+      TimeToLiveSpecification: {
+        AttributeName: 'attribute',
+        Enabled: true,
+      },
+      WriteProvisionedThroughputSettings: {
+        WriteCapacityAutoScalingSettings: {
+          MaxCapacity: 20,
+          MinCapacity: 1,
+          TargetTrackingScalingPolicyConfiguration: {
+            TargetValue: 70,
+          },
+        },
+      },
+    });
   });
 
   test('can add global secondary index', () => {
@@ -2098,28 +2419,6 @@ describe('secondary indexes', () => {
         localSecondaryIndexes,
       });
     }).toThrow('You may not provide more than 5 local secondary indexes to a Global Table');
-  });
-
-  test('throws if read capacity is not defined on global secondary index when billing mode is PROVISIONED', () => {
-    // GIVEN
-    const stack = new Stack(undefined, 'Stack');
-
-    // WHEN / THEN
-    expect(() => {
-      new GlobalTable(stack, 'GlobalTable', {
-        partitionKey: { name: 'pk', type: AttributeType.STRING },
-        billing: Billing.provisioned({
-          readCapacity: Capacity.fixed(10),
-          writeCapacity: Capacity.autoscaled({ minCapacity: 1, maxCapacity: 10 }),
-        }),
-        globalSecondaryIndexes: [
-          {
-            indexName: 'gsi',
-            partitionKey: { name: 'gsi-pk', type: AttributeType.STRING },
-          },
-        ],
-      });
-    }).toThrow("You must specify 'readCapacity' on a global secondary index when the billing mode is PROVISIONED");
   });
 
   test('throws if global secondary index has INCLUDE projection type and no non-key attributes', () => {

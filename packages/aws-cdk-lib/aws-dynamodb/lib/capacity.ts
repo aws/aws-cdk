@@ -51,7 +51,7 @@ export abstract class Capacity {
    *
    * Note: You cannot configure write capacity using fixed capacity mode.
    *
-   * @param iops the number of input/output operations per second.
+   * @param iops the number of I/O operations per second.
    */
   public static fixed(iops: number): Capacity {
     return new (class extends Capacity {

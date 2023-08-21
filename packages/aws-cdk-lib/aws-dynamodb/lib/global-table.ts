@@ -640,9 +640,11 @@ export class GlobalTable extends GlobalTableBase {
         readCapacity = indexOptions.readCapacity;
       }
 
+      const readProvisionedThroughputSettings = readCapacity?._renderReadCapacity() ?? this.readProvisioning;
+
       replicaGlobalSecondaryIndexes.push({
         indexName,
-        readProvisionedThroughputSettings: readCapacity?._renderReadCapacity(),
+        readProvisionedThroughputSettings,
         contributorInsightsSpecification: contributorInsights !== undefined
           ? { enabled: contributorInsights }
           : undefined,
@@ -805,10 +807,6 @@ export class GlobalTable extends GlobalTableBase {
 
     if (this.billingMode === BillingMode.PAY_PER_REQUEST && (props.readCapacity || props.writeCapacity)) {
       throw new Error(`You cannot configure 'readCapacity' or 'writeCapacity' on a global secondary index when the billing mode is ${BillingMode.PAY_PER_REQUEST}`);
-    }
-
-    if (this.billingMode === BillingMode.PROVISIONED && !props.readCapacity) {
-      throw new Error(`You must specify 'readCapacity' on a global secondary index when the billing mode is ${BillingMode.PROVISIONED}`);
     }
   }
 
