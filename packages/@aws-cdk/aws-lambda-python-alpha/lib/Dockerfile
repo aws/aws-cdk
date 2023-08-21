@@ -31,7 +31,8 @@ RUN \
     mkdir /tmp/poetry-cache && \
 # Ensure all users can write to poetry cache
     chmod -R 777 /tmp/poetry-cache && \
-    pip install pipenv==2023.8.20 poetry==$POETRY_VERSION && \
+# pipenv 2022.4.8 is the last version with Python 3.6 support
+    pip install pipenv==2022.4.8 poetry==$POETRY_VERSION && \
 # Ensure no temporary files remain in the caches
     rm -rf /tmp/pip-cache/* /tmp/poetry-cache/*
 
