@@ -51,7 +51,7 @@ export function flattenNestedStackNames(nestedStackNames: { [nestedStackLogicalI
     nameList.push(key);
 
     if (Object.keys(nestedStackNames[key].nestedChildStackNames).length !== 0) {
-      countNestedStacksHelper(nestedStackNames[key].nestedChildStackNames, nameList);
+      flattenNestedStacksHelper(nestedStackNames[key].nestedChildStackNames, nameList);
     }
   }
 
@@ -153,12 +153,12 @@ function isCdkManagedNestedStack(stackResource: any): stackResource is NestedSta
   return stackResource.Type === 'AWS::CloudFormation::Stack' && stackResource.Metadata && stackResource.Metadata['aws:asset:path'];
 }
 
-function countNestedStacksHelper(nestedStackNames: { [logicalId: string]: NestedStackNames }, nameList: string[]) {
+function flattenNestedStacksHelper(nestedStackNames: { [logicalId: string]: NestedStackNames }, nameList: string[]) {
   for (const key of Object.keys(nestedStackNames)) {
     nameList.push(key);
 
     if (Object.keys(nestedStackNames[key].nestedChildStackNames).length !== 0) {
-      countNestedStacksHelper(nestedStackNames[key].nestedChildStackNames, nameList);
+      flattenNestedStacksHelper(nestedStackNames[key].nestedChildStackNames, nameList);
     }
   }
 }
