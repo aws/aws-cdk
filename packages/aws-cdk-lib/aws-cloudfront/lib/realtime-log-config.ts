@@ -2,18 +2,54 @@ import { Construct } from 'constructs';
 import { CfnRealtimeLogConfig } from './cloudfront.generated';
 import * as iam from '../../aws-iam';
 import * as kinesis from '../../aws-kinesis';
-import { IResource, Resource } from '../../core';
+import { IResource, Names, PhysicalName, Resource } from '../../core';
+
+/**
+ * @internal
+ */
+function singletonKinesisRole(scope: Construct): iam.IRole {
+  const id = 'RealtimeLogKinesisRole';
+  const existing = scope.node.tryFindChild(id) as iam.IRole;
+  if (existing) { return existing; }
+
+  const role = new iam.Role(scope, id, {
+    roleName: PhysicalName.GENERATE_IF_NEEDED,
+    assumedBy: new iam.ServicePrincipal('cloudfront.amazonaws.com'),
+  });
+
+  return role;
+}
 
 /**
  * Represents the endpoints available for targetting within a realtime log config resource
  */
 export abstract class Endpoint {
-  public static fromKinesisStream(stream: kinesis.IStream, role: iam.IRole): Endpoint {
+  /**
+   * Configure a Kinesis Stream Endpoint for Realtime Log Config
+   *
+   * @default - a role will be created and used across your endpoints
+   */
+  public static fromKinesisStream(scope: Construct, stream: kinesis.IStream, role?: iam.IRole): Endpoint {
+    const cloudfrontRole = role || singletonKinesisRole(scope);
+
+    if (!role) {
+      stream.grant(cloudfrontRole,
+        'kinesis:DescribeStreamSummary',
+        'kinesis:DescribeStream',
+        'kinesis:PutRecord',
+        'kinesis:PutRecords',
+      );
+
+      if (stream.encryptionKey) {
+        stream.encryptionKey.grant(cloudfrontRole, 'kms:GenerateDataKey');
+      }
+    }
+
     return new (class extends Endpoint {
       public _renderEndpoint() {
         return {
           kinesisStreamConfig: {
-            roleArn: role.roleArn,
+            roleArn: cloudfrontRole.roleArn,
             streamArn: stream.streamArn,
           },
           streamType: 'Kinesis',
@@ -53,7 +89,7 @@ export interface RealtimeLogConfigProps {
   /**
    * The unique name of this real-time log configuration.
    */
-  readonly name: string;
+  readonly name?: string;
   /**
    * A list of fields that are included in each real-time log record.
    */
@@ -82,6 +118,8 @@ export class RealtimeLogConfig extends Resource implements IRealtimeLogConfig {
       physicalName: props.name,
     });
 
+    this.realtimeLogConfigName = props.name || Names.uniqueId(this);
+
     if ((props.samplingRate < 1 || props.samplingRate > 100)) {
       throw new Error(`Sampling rate must be between 1 and 100 (inclusive), received ${props.samplingRate}`);
     }
@@ -91,7 +129,7 @@ export class RealtimeLogConfig extends Resource implements IRealtimeLogConfig {
         return endpoint._renderEndpoint();
       }),
       fields: props.fields,
-      name: this.physicalName,
+      name: this.realtimeLogConfigName,
       samplingRate: props.samplingRate,
     });
 

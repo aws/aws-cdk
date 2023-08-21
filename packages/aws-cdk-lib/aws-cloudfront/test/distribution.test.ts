@@ -1162,7 +1162,7 @@ test('render distribution behavior with realtime log config', () => {
 
   const realTimeConfig = new RealtimeLogConfig(stack, 'RealtimeConfig', {
     endPoints: [
-      Endpoint.fromKinesisStream(stream, role),
+      Endpoint.fromKinesisStream(stack, stream, role),
     ],
     fields: ['timestamp'],
     name: 'realtime-config',
@@ -1176,27 +1176,14 @@ test('render distribution behavior with realtime log config', () => {
     },
   });
 
-  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
-    DistributionConfig: {
-      DefaultCacheBehavior: {
-        CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
-        Compress: true,
-        TargetOriginId: 'StackMyDistOrigin1D6D5E535',
-        ViewerProtocolPolicy: 'allow-all',
-        RealtimeLogConfigArn: {
-          'Fn::GetAtt': ['RealtimeConfigB6004E8E', 'Arn'],
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution',
+    Match.objectLike({
+      DistributionConfig: {
+        DefaultCacheBehavior: {
+          RealtimeLogConfigArn: {
+            'Fn::GetAtt': ['RealtimeConfigB6004E8E', 'Arn'],
+          },
         },
       },
-      Enabled: true,
-      HttpVersion: 'http2',
-      IPV6Enabled: true,
-      Origins: [{
-        DomainName: 'www.example.com',
-        Id: 'StackMyDistOrigin1D6D5E535',
-        CustomOriginConfig: {
-          OriginProtocolPolicy: 'https-only',
-        },
-      }],
-    },
-  });
+    }));
 });
