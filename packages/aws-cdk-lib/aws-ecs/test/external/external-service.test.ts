@@ -1,4 +1,4 @@
-import { Template } from '../../../assertions';
+
 import * as autoscaling from '../../../aws-autoscaling';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
@@ -576,7 +576,7 @@ describe('external service', () => {
     app.synth();
 
     // THEN
-    expect(service.node.metadata[0].data).toEqual('Deployment circuit breaker requires the ECS deployment controller.');
+    expect(service.node.metadata[0].data).toEqual('Deployment circuit breaker requires the ECS deployment controller. [ack: @aws-cdk/aws-ecs:externalDeploymentController]');
     expect(service.node.metadata[1].data).toEqual('taskDefinition and launchType are blanked out when using external deployment controller. [ack: @aws-cdk/aws-ecs:externalDeploymentController]');
 
   });
