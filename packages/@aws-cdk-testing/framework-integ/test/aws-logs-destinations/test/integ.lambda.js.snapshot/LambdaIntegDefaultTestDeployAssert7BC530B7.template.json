@@ -15,7 +15,7 @@
      "Entries": "[{\"Detail\":\"{\\\"foo\\\":\\\"bar\\\"}\",\"DetailType\":\"cdk-integ-custom-rule\",\"Source\":\"cdk-lambda-integ\"}]"
     },
     "flattenResponse": "false",
-    "salt": "1692312757785"
+    "salt": "1692596442666"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -87,7 +87,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "54ed1902ad5ad220444041937ce65cb63c7fbccd0c11fdfd9ecbec43770cdaa5.zip"
+     "S3Key": "e48f7225eb1421b4c781624150aa01e89d01ebe439b837a8272c3c5cb36f5641.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -127,7 +127,7 @@
      "WaitTimeSeconds": "20"
     },
     "flattenResponse": "false",
-    "salt": "1692312757785"
+    "salt": "1692596442667"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
