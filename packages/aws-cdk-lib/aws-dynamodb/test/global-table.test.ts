@@ -7,7 +7,6 @@ import {
   LocalSecondaryIndexProps, ProjectionType, TableClass, TableEncryptionV2,
 } from '../lib';
 
-/* eslint-disable no-console */
 describe('global table', () => {
   test('with default properties', () => {
     // GIVEN
@@ -528,6 +527,10 @@ describe('global table', () => {
         SSEType: 'KMS',
       },
     });
+  });
+
+  test('with all properties configured', () => {
+
   });
 
   test('can add global secondary index', () => {

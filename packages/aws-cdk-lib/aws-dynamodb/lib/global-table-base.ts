@@ -4,11 +4,11 @@ import { Operation, SystemErrorsForOperationsMetricOptions, OperationsMetricOpti
 import { IMetric, MathExpression, Metric, MetricOptions, MetricProps } from '../../aws-cloudwatch';
 import { Grant, IGrantable } from '../../aws-iam';
 import { IKey } from '../../aws-kms';
-import { Aws, Resource } from '../../core';
+import { Resource } from '../../core';
 
 export interface IGlobalTable extends ITable {
   /**
-   * The ID of the Replica Table in the deployment region of the Global Table.
+   * The ID of the table in the main deployment region.
    *
    * @attribute
    */
@@ -20,7 +20,7 @@ export interface IGlobalTable extends ITable {
  */
 export abstract class GlobalTableBase extends Resource implements IGlobalTable {
   /**
-   * The ARN of the Replica Table in the deployment region of the Global Table.
+   * The ARN of the table in the main deployment region.
    *
    * @attribute
    */
@@ -34,22 +34,21 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
   public abstract readonly tableName: string;
 
   /**
-   * The stream ARN of the Replica Table in the deployment region of the Global Table.
+   * The stream ARN of the table in the main deployment region.
    *
    * @attribute
    */
   public abstract readonly tableStreamArn?: string;
 
   /**
-   * The ID of the Replica Table in the deployment region of the Global Table.
+   * The ID of the table in the main deployment region.
    *
    * @attribute
    */
   readonly tableId?: string;
 
   /**
-   * The KMS encryption key associated with the Replica Table in the deployment region
-   * of the Global Table.
+   * The KMS encryption key associated with the table in the main deployment region.
    */
   public abstract readonly encryptionKey?: IKey;
 
@@ -67,13 +66,12 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
    * @param actions the set of actions to allow (i.e., 'dynamodb:PutItem', 'dynamodb:GetItem', etc.)
    */
   public grant(grantee: IGrantable, ...actions: string[]): Grant {
+    const resourceArns = [this.tableArn];
+    this.hasIndex && resourceArns.push(`${this.tableArn}/index/*`);
     return Grant.addToPrincipal({
       grantee,
       actions,
-      resourceArns: [
-        this.tableArn,
-        this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE,
-      ],
+      resourceArns,
       scope: this,
     });
   }
@@ -423,14 +421,12 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
     }
 
     if (options.tableActions) {
-      const resources = [
-        this.tableArn,
-        this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE,
-      ];
+      const resourceArns = [this.tableArn];
+      this.hasIndex && resourceArns.push(`${this.tableArn}/index/*`);
       return Grant.addToPrincipal({
         grantee,
         actions: options.tableActions,
-        resourceArns: resources,
+        resourceArns,
         scope: this,
       });
     }

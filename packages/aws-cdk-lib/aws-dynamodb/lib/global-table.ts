@@ -342,7 +342,7 @@ export class GlobalTable extends GlobalTableBase {
         (attrs.localIndexes ?? []).length > 0;
 
       public constructor(tableArn: string, tableName: string, tableId?: string, tableStreamArn?: string) {
-        super(scope, id);
+        super(scope, id, { environmentFromArn: tableArn });
 
         const resourceRegion = stack.splitArn(tableArn, ArnFormat.SLASH_RESOURCE_NAME).region;
         if (!resourceRegion) {

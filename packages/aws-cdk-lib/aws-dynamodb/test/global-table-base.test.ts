@@ -40,7 +40,6 @@ function testForKey(stack: Stack) {
   });
 }
 
-/* eslint-disable no-console */
 describe('grants', () => {
   test('grant with arbitrary actions on global table', () => {
     // GIVEN
@@ -64,15 +63,12 @@ describe('grants', () => {
           {
             Action: ['dynamodb:action1', 'dynamodb:action2'],
             Effect: 'Allow',
-            Resource: [
-              {
-                'Fn::GetAtt': [
-                  'Resource',
-                  'Arn',
-                ],
-              },
-              { Ref: 'AWS::NoValue' },
-            ],
+            Resource: {
+              'Fn::GetAtt': [
+                'Resource',
+                'Arn',
+              ],
+            },
           },
         ],
         Version: '2012-10-17',
@@ -117,15 +113,12 @@ describe('grants', () => {
               'dynamodb:DescribeTable',
             ],
             Effect: 'Allow',
-            Resource: [
-              {
-                'Fn::GetAtt': [
-                  'Resource',
-                  'Arn',
-                ],
-              },
-              { Ref: 'AWS::NoValue' },
-            ],
+            Resource: {
+              'Fn::GetAtt': [
+                'Resource',
+                'Arn',
+              ],
+            },
           },
         ],
         Version: '2012-10-17',
@@ -189,15 +182,12 @@ describe('grants', () => {
               'dynamodb:DescribeTable',
             ],
             Effect: 'Allow',
-            Resource: [
-              {
-                'Fn::GetAtt': [
-                  'Resource',
-                  'Arn',
-                ],
-              },
-              { Ref: 'AWS::NoValue' },
-            ],
+            Resource: {
+              'Fn::GetAtt': [
+                'Resource',
+                'Arn',
+              ],
+            },
           },
         ],
         Version: '2012-10-17',
@@ -240,15 +230,12 @@ describe('grants', () => {
               'dynamodb:DescribeTable',
             ],
             Effect: 'Allow',
-            Resource: [
-              {
-                'Fn::GetAtt': [
-                  'Resource',
-                  'Arn',
-                ],
-              },
-              { Ref: 'AWS::NoValue' },
-            ],
+            Resource: {
+              'Fn::GetAtt': [
+                'Resource',
+                'Arn',
+              ],
+            },
           },
         ],
         Version: '2012-10-17',
@@ -312,15 +299,12 @@ describe('grants', () => {
               'dynamodb:DescribeTable',
             ],
             Effect: 'Allow',
-            Resource: [
-              {
-                'Fn::GetAtt': [
-                  'Resource',
-                  'Arn',
-                ],
-              },
-              { Ref: 'AWS::NoValue' },
-            ],
+            Resource: {
+              'Fn::GetAtt': [
+                'Resource',
+                'Arn',
+              ],
+            },
           },
         ],
         Version: '2012-10-17',
@@ -370,15 +354,12 @@ describe('grants', () => {
               'dynamodb:DescribeTable',
             ],
             Effect: 'Allow',
-            Resource: [
-              {
-                'Fn::GetAtt': [
-                  'Resource',
-                  'Arn',
-                ],
-              },
-              { Ref: 'AWS::NoValue' },
-            ],
+            Resource: {
+              'Fn::GetAtt': [
+                'Resource',
+                'Arn',
+              ],
+            },
           },
         ],
         Version: '2012-10-17',
@@ -449,15 +430,12 @@ describe('grants', () => {
               'dynamodb:DescribeTable',
             ],
             Effect: 'Allow',
-            Resource: [
-              {
-                'Fn::GetAtt': [
-                  'Resource',
-                  'Arn',
-                ],
-              },
-              { Ref: 'AWS::NoValue' },
-            ],
+            Resource: {
+              'Fn::GetAtt': [
+                'Resource',
+                'Arn',
+              ],
+            },
           },
         ],
         Version: '2012-10-17',
@@ -494,15 +472,12 @@ describe('grants', () => {
           {
             Action: 'dynamodb:*',
             Effect: 'Allow',
-            Resource: [
-              {
-                'Fn::GetAtt': [
-                  'Resource',
-                  'Arn',
-                ],
-              },
-              { Ref: 'AWS::NoValue' },
-            ],
+            Resource: {
+              'Fn::GetAtt': [
+                'Resource',
+                'Arn',
+              ],
+            },
           },
         ],
         Version: '2012-10-17',
@@ -560,15 +535,12 @@ describe('grants', () => {
           {
             Action: 'dynamodb:*',
             Effect: 'Allow',
-            Resource: [
-              {
-                'Fn::GetAtt': [
-                  'Resource',
-                  'Arn',
-                ],
-              },
-              { Ref: 'AWS::NoValue' },
-            ],
+            Resource: {
+              'Fn::GetAtt': [
+                'Resource',
+                'Arn',
+              ],
+            },
           },
         ],
         Version: '2012-10-17',
@@ -1000,30 +972,25 @@ describe('grants', () => {
               'dynamodb:DescribeTable',
             ],
             Effect: 'Allow',
-            Resource: [
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      Ref: 'AWS::Partition',
-                    },
-                    ':dynamodb:us-east-1:',
-                    {
-                      Ref: 'AWS::AccountId',
-                    },
-                    ':table/',
-                    {
-                      Ref: 'Resource',
-                    },
-                  ],
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':dynamodb:us-east-1:',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':table/',
+                  {
+                    Ref: 'Resource',
+                  },
                 ],
-              },
-              {
-                Ref: 'AWS::NoValue',
-              },
-            ],
+              ],
+            },
           },
         ],
         Version: '2012-10-17',
@@ -1091,23 +1058,18 @@ describe('grants', () => {
               'dynamodb:DescribeTable',
             ],
             Effect: 'Allow',
-            Resource: [
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      Ref: 'AWS::Partition',
-                    },
-                    ':dynamodb:us-east-1:123456789012:table/foostackstackglobaltableb6dd9d1a6f2b84889e59',
-                  ],
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':dynamodb:us-east-1:123456789012:table/foostackstackglobaltableb6dd9d1a6f2b84889e59',
                 ],
-              },
-              {
-                Ref: 'AWS::NoValue',
-              },
-            ],
+              ],
+            },
           },
         ],
         Version: '2012-10-17',
@@ -1146,31 +1108,26 @@ describe('grants', () => {
               'dynamodb:DescribeTable',
             ],
             Effect: 'Allow',
-            Resource: [
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      Ref: 'AWS::Partition',
-                    },
-                    ':dynamodb:',
-                    {
-                      Ref: 'AWS::Region',
-                    },
-                    ':',
-                    {
-                      Ref: 'AWS::AccountId',
-                    },
-                    ':table/my-global-table',
-                  ],
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':dynamodb:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':table/my-global-table',
                 ],
-              },
-              {
-                Ref: 'AWS::NoValue',
-              },
-            ],
+              ],
+            },
           },
         ],
         Version: '2012-10-17',
@@ -1209,12 +1166,7 @@ describe('grants', () => {
               'dynamodb:DescribeTable',
             ],
             Effect: 'Allow',
-            Resource: [
-              'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table',
-              {
-                Ref: 'AWS::NoValue',
-              },
-            ],
+            Resource: 'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table',
           },
         ],
         Version: '2012-10-17',
@@ -1270,12 +1222,7 @@ describe('grants', () => {
               'dynamodb:DescribeTable',
             ],
             Effect: 'Allow',
-            Resource: [
-              'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table',
-              {
-                Ref: 'AWS::NoValue',
-              },
-            ],
+            Resource: 'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table',
           },
         ],
         Version: '2012-10-17',
