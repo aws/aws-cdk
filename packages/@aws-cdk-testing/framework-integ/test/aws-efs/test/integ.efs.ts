@@ -1,6 +1,8 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib';
 import { FileSystem } from 'aws-cdk-lib/aws-efs';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import * as integ from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'test-efs-integ');
@@ -23,3 +25,8 @@ fileSystem.addAccessPoint('AccessPoint', {
     uid: '1000',
   },
 });
+
+new integ.IntegTest(app, 'test-efs-integ-test', {
+  testCases: [stack],
+});
+app.synth();

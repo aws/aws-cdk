@@ -3,6 +3,8 @@ import * as efs from 'aws-cdk-lib/aws-efs';
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import * as integ from '@aws-cdk/integ-tests-alpha';
 
 class FargateWithEfsStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -29,6 +31,9 @@ class FargateWithEfsStack extends cdk.Stack {
 }
 
 const app = new cdk.App();
-new FargateWithEfsStack(app, 'aws-ecs-fargate-efs');
+const stack = new FargateWithEfsStack(app, 'aws-ecs-fargate-efs');
 
+new integ.IntegTest(app, 'aws-ecs-fargate-test', {
+  testCases: [stack],
+});
 app.synth();

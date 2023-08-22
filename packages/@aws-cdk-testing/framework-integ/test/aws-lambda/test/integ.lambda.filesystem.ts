@@ -2,6 +2,8 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as efs from 'aws-cdk-lib/aws-efs';
 import * as cdk from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import * as integ from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 
@@ -99,4 +101,7 @@ const lambda2 = new lambda.Function(stack, 'MyLambda2', {
 // We are adding a dependency on the first lambda to simulate this situation.
 lambda2.node.addDependency(lambda1);
 
+new integ.IntegTest(app, 'aws-ecs-fargate-test', {
+  testCases: [stack],
+});
 app.synth();
