@@ -980,8 +980,8 @@ Endpoint services support private DNS, which makes it easier for clients to conn
 You can enable private DNS on an endpoint service like so:
 
 ```ts
-import { HostedZone, VpcEndpointServiceDomainName } from 'aws-cdk-lib/aws-route53';
-declare const zone: HostedZone;
+import { PublicHostedZone, VpcEndpointServiceDomainName } from 'aws-cdk-lib/aws-route53';
+declare const zone: PublicHostedZone;
 declare const vpces: ec2.VpcEndpointService;
 
 new VpcEndpointServiceDomainName(this, 'EndpointDomain', {

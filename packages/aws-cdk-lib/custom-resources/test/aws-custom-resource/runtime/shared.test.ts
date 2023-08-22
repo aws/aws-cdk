@@ -34,3 +34,22 @@ test('flatten correctly flattens an object with buffers', () => {
     'nested.array.1': 'array.1',
   });
 });
+
+test('flatten correctly flattens an object with Uint8Array', () => {
+  const encoder = new TextEncoder();
+  expect(flatten({
+    body: encoder.encode('body'),
+    nested: {
+      buffer: encoder.encode('buffer'),
+      array: [
+        encoder.encode('array.0'),
+        encoder.encode('array.1'),
+      ],
+    },
+  })).toEqual({
+    'body': 'body',
+    'nested.buffer': 'buffer',
+    'nested.array.0': 'array.0',
+    'nested.array.1': 'array.1',
+  });
+});
