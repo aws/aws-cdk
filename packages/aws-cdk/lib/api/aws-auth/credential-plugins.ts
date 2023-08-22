@@ -1,5 +1,6 @@
 import { debug } from './_env';
 import { Mode } from './credentials';
+import { warning } from '../../logging';
 import { CredentialProviderSource, PluginHost } from '../plugin';
 
 /**
@@ -33,12 +34,29 @@ export class CredentialPlugins {
     const triedSources: CredentialProviderSource[] = [];
     // Otherwise, inspect the various credential sources we have
     for (const source of PluginHost.instance.credentialProviderSources) {
-      if (!(await source.isAvailable())) {
+      let available: boolean;
+      try {
+        available = await source.isAvailable();
+      } catch (e: any) {
+        // This shouldn't happen, but let's guard against it anyway
+        warning(`Uncaught exception in ${source.name}: ${e.message}`);
+        available = false;
+      }
+
+      if (!available) {
         debug('Credentials source %s is not available, ignoring it.', source.name);
         continue;
       }
       triedSources.push(source);
-      if (!(await source.canProvideCredentials(awsAccountId))) { continue; }
+      let canProvide: boolean;
+      try {
+        canProvide = await source.canProvideCredentials(awsAccountId);
+      } catch (e: any) {
+        // This shouldn't happen, but let's guard against it anyway
+        warning(`Uncaught exception in ${source.name}: ${e.message}`);
+        canProvide = false;
+      }
+      if (!canProvide) { continue; }
       debug(`Using ${source.name} credentials for account ${awsAccountId}`);
       const providerOrCreds = await source.getProvider(awsAccountId, mode);
 

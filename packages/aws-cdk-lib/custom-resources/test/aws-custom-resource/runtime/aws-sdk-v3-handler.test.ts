@@ -11,6 +11,20 @@ import { handler, forceSdkInstallation } from '../../../lib/aws-custom-resource/
 // 5s timeout
 jest.setTimeout(60_000);
 
+const mockExecSync = jest.fn();
+jest.mock('child_process', () => {
+  return jest.fn().mockImplementation(() => {
+    return {
+      ...(jest.requireActual('child_process')),
+      execSync: mockExecSync,
+    };
+  });
+});
+
+beforeEach(() => {
+  mockExecSync.mockReset();
+});
+
 /* eslint-disable no-console */
 console.log = jest.fn();
 
@@ -39,9 +53,6 @@ afterEach(() => {
   s3MockClient.reset();
   nock.cleanAll();
 });
-
-/* eslint-disable no-console */
-console.log = jest.fn();
 
 jest.mock('@aws-sdk/credential-providers', () => {
   return {
@@ -245,9 +256,9 @@ test('create event with Delete call only', async () => {
   expect(request.isDone()).toBeTruthy();
 });
 
-test('catch errors', async () => {
+test('catch errors - name property', async () => {
   const error: NodeJS.ErrnoException = new Error();
-  error.code = 'NoSuchBucket';
+  error.name = 'NoSuchBucket';
   s3MockClient.on(S3.ListObjectsCommand).rejects(error);
 
   const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
@@ -263,6 +274,43 @@ test('catch errors', async () => {
         },
         physicalResourceId: PhysicalResourceId.of('physicalResourceId'),
         ignoreErrorCodesMatching: 'NoSuchBucket',
+      } as AwsSdkCall),
+    },
+  };
+
+  const request = createRequest(body =>
+    body.Status === 'SUCCESS' &&
+    body.PhysicalResourceId === 'physicalResourceId' &&
+    Object.keys(body.Data!).length === 0,
+  );
+
+  await handler(event, {} as AWSLambda.Context);
+
+  expect(request.isDone()).toBeTruthy();
+});
+
+test('catch errors - constructor name', async () => {
+  const error = new S3.S3ServiceException({
+    name: 'kuk',
+    $fault: 'client',
+    $metadata: { httpStatusCode: 404 },
+  });
+  error.name = 'S3ServiceException';
+  s3MockClient.on(S3.ListObjectsCommand).rejects(error);
+
+  const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
+    ...eventCommon,
+    RequestType: 'Create',
+    ResourceProperties: {
+      ServiceToken: 'token',
+      Create: JSON.stringify({
+        service: '@aws-sdk/client-s3',
+        action: 'ListObjectsCommand',
+        parameters: {
+          Bucket: 'my-bucket',
+        },
+        physicalResourceId: PhysicalResourceId.of('physicalResourceId'),
+        ignoreErrorCodesMatching: 'S3ServiceException',
       } as AwsSdkCall),
     },
   };
@@ -446,6 +494,42 @@ test('installs the latest SDK', async () => {
 
   // clean up aws-sdk install
   await fs.remove(tmpPath);
+});
+
+test('falls back to installed sdk if installation fails', async () => {
+  mockExecSync.mockImplementation(() => {
+    throw new Error('Install failed');
+  });
+
+  s3MockClient.on(S3.GetObjectCommand).resolves({});
+
+  const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
+    ...eventCommon,
+    RequestType: 'Create',
+    ResourceProperties: {
+      ServiceToken: 'token',
+      Create: JSON.stringify({
+        service: '@aws-sdk/client-s3',
+        action: 'GetObjectCommand',
+        parameters: {
+          Bucket: 'my-bucket',
+          Key: 'key',
+        },
+        physicalResourceId: PhysicalResourceId.of('id'),
+      } as AwsSdkCall),
+      InstallLatestAwsSdk: 'true',
+    },
+  };
+
+  const request = createRequest(body =>
+    body.Status === 'SUCCESS',
+  );
+
+  // Reset to 'false' so that the next run will reinstall aws-sdk
+  forceSdkInstallation();
+  await handler(event, {} as AWSLambda.Context);
+
+  expect(request.isDone()).toBeTruthy();
 });
 
 test('SDK credentials are not persisted across subsequent invocations', async () => {

@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnDashboard } from './cloudwatch.generated';
 import { Column, Row } from './layout';
+import { IVariable } from './variable';
 import { IWidget } from './widget';
 import { Lazy, Resource, Stack, Token, Annotations, Duration } from '../../core';
 
@@ -12,6 +13,7 @@ export enum PeriodOverride {
    * Period of all graphs on the dashboard automatically adapt to the time range of the dashboard.
    */
   AUTO = 'auto',
+
   /**
    * Period set for each graph will be used
    */
@@ -77,6 +79,15 @@ export interface DashboardProps {
    * @default - No widgets
    */
   readonly widgets?: IWidget[][]
+
+  /**
+   * A list of dashboard variables
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/cloudwatch_dashboard_variables.html#cloudwatch_dashboard_variables_types
+   *
+   * @default - No variables
+   */
+  readonly variables?: IVariable[];
 }
 
 /**
@@ -99,6 +110,8 @@ export class Dashboard extends Resource {
   public readonly dashboardArn: string;
 
   private readonly rows: IWidget[] = [];
+
+  private readonly variables: IVariable[] = [];
 
   constructor(scope: Construct, id: string, props: DashboardProps = {}) {
     super(scope, id, {
@@ -130,6 +143,7 @@ export class Dashboard extends Resource {
             end: props.defaultInterval !== undefined ? undefined : props.end,
             periodOverride: props.periodOverride,
             widgets: column.toJson(),
+            variables: this.variables.length > 0 ? this.variables.map(variable => variable.toJson()) : undefined,
           });
         },
       }),
@@ -140,6 +154,8 @@ export class Dashboard extends Resource {
     (props.widgets || []).forEach(row => {
       this.addWidgets(...row);
     });
+
+    (props.variables || []).forEach(variable => this.addVariable(variable));
 
     this.dashboardArn = Stack.of(this).formatArn({
       service: 'cloudwatch',
@@ -170,6 +186,15 @@ export class Dashboard extends Resource {
 
     const w = widgets.length > 1 ? new Row(...widgets) : widgets[0];
     this.rows.push(w);
+  }
+
+  /**
+   * Add a variable to the dashboard.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/cloudwatch_dashboard_variables.html
+   */
+  public addVariable(variable: IVariable) {
+    this.variables.push(variable);
   }
 }
 

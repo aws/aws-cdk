@@ -81,7 +81,7 @@ new autoscaling.AutoScalingGroup(stack, 'AsgWithGp3Blockdevice', {
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
   machineImage: new ec2.AmazonLinuxImage(),
   blockDevices: [{
-    deviceName: 'ebs',
+    deviceName: '/dev/sda1',
     mappingEnabled: true,
     volume: autoscaling.BlockDeviceVolume.ebs(15, {
       deleteOnTermination: true,

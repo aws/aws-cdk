@@ -1,7 +1,7 @@
 
 import * as path from 'node:path';
-import { ModuleMap } from '@aws-cdk/cfn2ts';
 import * as fs from 'fs-extra';
+import { ModuleMap } from '../codegen';
 
 export default async function cloudformationInclude(moduleMap: ModuleMap, outPath: string) {
   const classMap: { [cfnType: string]: string } = {};

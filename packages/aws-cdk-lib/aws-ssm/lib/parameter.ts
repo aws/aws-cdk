@@ -389,6 +389,14 @@ export interface StringParameterAttributes extends CommonStringParameterAttribut
    * @default ParameterValueType.STRING
    */
   readonly valueType?: ParameterValueType;
+
+  /**
+   * Use a dynamic reference as the representation in CloudFormation template level.
+   * By default, CDK tries to deduce an appropriate representation based on the parameter value (a CfnParameter or a dynamic reference). Use this flag to override the representation when it does not work.
+   *
+   * @default false
+   */
+  readonly forceDynamicReference?: boolean;
 }
 
 /**
@@ -472,10 +480,19 @@ export class StringParameter extends ParameterBase implements IStringParameter {
     }
 
     const type = attrs.type ?? attrs.valueType ?? ParameterValueType.STRING;
+    const forceDynamicReference = attrs.forceDynamicReference ?? false;
 
-    const stringValue = attrs.version
-      ? new CfnDynamicReference(CfnDynamicReferenceService.SSM, `${attrs.parameterName}:${Tokenization.stringifyNumber(attrs.version)}`).toString()
-      : new CfnParameter(scope, `${id}.Parameter`, { type: `AWS::SSM::Parameter::Value<${type}>`, default: attrs.parameterName }).valueAsString;
+    let stringValue: string;
+    if (attrs.version) {
+      stringValue = new CfnDynamicReference(CfnDynamicReferenceService.SSM, `${attrs.parameterName}:${Tokenization.stringifyNumber(attrs.version)}`).toString();
+    } else if (forceDynamicReference) {
+      stringValue = new CfnDynamicReference(CfnDynamicReferenceService.SSM, attrs.parameterName).toString();
+    } else if (Token.isUnresolved(attrs.parameterName) && Fn._isFnBase(Tokenization.reverseString(attrs.parameterName).firstToken)) {
+      // the default value of a CfnParameter can only contain strings, so we cannot use it when a parameter name contains tokens.
+      stringValue = new CfnDynamicReference(CfnDynamicReferenceService.SSM, attrs.parameterName).toString();
+    } else {
+      stringValue = new CfnParameter(scope, `${id}.Parameter`, { type: `AWS::SSM::Parameter::Value<${type}>`, default: attrs.parameterName }).valueAsString;
+    }
 
     class Import extends ParameterBase {
       public readonly parameterName = attrs.parameterName;

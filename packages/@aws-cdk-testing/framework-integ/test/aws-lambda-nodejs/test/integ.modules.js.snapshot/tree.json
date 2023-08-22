@@ -8,14 +8,6 @@
         "id": "cdk-integ-lambda-nodejs-modules-mts",
         "path": "cdk-integ-lambda-nodejs-modules-mts",
         "children": {
-          "DefaultCrNodeVersionMap": {
-            "id": "DefaultCrNodeVersionMap",
-            "path": "cdk-integ-lambda-nodejs-modules-mts/DefaultCrNodeVersionMap",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
-              "version": "0.0.0"
-            }
-          },
           "mts-entry": {
             "id": "mts-entry",
             "path": "cdk-integ-lambda-nodejs-modules-mts/mts-entry",
@@ -127,15 +119,7 @@
                       }
                     },
                     "handler": "index.handler",
-                    "runtime": {
-                      "Fn::FindInMap": [
-                        "DefaultCrNodeVersionMap",
-                        {
-                          "Ref": "AWS::Region"
-                        },
-                        "value"
-                      ]
-                    }
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -164,7 +148,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.26"
+              "version": "10.2.55"
             }
           },
           "BootstrapVersion": {
@@ -193,14 +177,6 @@
         "id": "cdk-integ-lambda-nodejs-modules-cts",
         "path": "cdk-integ-lambda-nodejs-modules-cts",
         "children": {
-          "DefaultCrNodeVersionMap": {
-            "id": "DefaultCrNodeVersionMap",
-            "path": "cdk-integ-lambda-nodejs-modules-cts/DefaultCrNodeVersionMap",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
-              "version": "0.0.0"
-            }
-          },
           "cts-entry": {
             "id": "cts-entry",
             "path": "cdk-integ-lambda-nodejs-modules-cts/cts-entry",
@@ -312,15 +288,7 @@
                       }
                     },
                     "handler": "index.handler",
-                    "runtime": {
-                      "Fn::FindInMap": [
-                        "DefaultCrNodeVersionMap",
-                        {
-                          "Ref": "AWS::Region"
-                        },
-                        "value"
-                      ]
-                    }
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -349,7 +317,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.26"
+              "version": "10.2.55"
             }
           },
           "BootstrapVersion": {
@@ -378,14 +346,6 @@
         "id": "cdk-integ-lambda-nodejs-modules-cjs",
         "path": "cdk-integ-lambda-nodejs-modules-cjs",
         "children": {
-          "DefaultCrNodeVersionMap": {
-            "id": "DefaultCrNodeVersionMap",
-            "path": "cdk-integ-lambda-nodejs-modules-cjs/DefaultCrNodeVersionMap",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
-              "version": "0.0.0"
-            }
-          },
           "cjs-entry": {
             "id": "cjs-entry",
             "path": "cdk-integ-lambda-nodejs-modules-cjs/cjs-entry",
@@ -497,15 +457,7 @@
                       }
                     },
                     "handler": "index.handler",
-                    "runtime": {
-                      "Fn::FindInMap": [
-                        "DefaultCrNodeVersionMap",
-                        {
-                          "Ref": "AWS::Region"
-                        },
-                        "value"
-                      ]
-                    }
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -534,7 +486,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.26"
+              "version": "10.2.55"
             }
           },
           "BootstrapVersion": {
@@ -572,7 +524,7 @@
                 "path": "LambdaModules/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.26"
+                  "version": "10.2.55"
                 }
               },
               "DeployAssert": {
@@ -592,7 +544,7 @@
                             "path": "LambdaModules/DefaultTest/DeployAssert/LambdaInvokeab00724fde60c789ed33b78cb44044f9/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.26"
+                              "version": "10.2.55"
                             }
                           }
                         },
@@ -672,7 +624,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.26"
+                      "version": "10.2.55"
                     }
                   },
                   "LambdaInvoke3d6d691a590234a399aac26bf978ebd1": {
@@ -688,7 +640,7 @@
                             "path": "LambdaModules/DefaultTest/DeployAssert/LambdaInvoke3d6d691a590234a399aac26bf978ebd1/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.26"
+                              "version": "10.2.55"
                             }
                           }
                         },
@@ -750,7 +702,7 @@
                             "path": "LambdaModules/DefaultTest/DeployAssert/LambdaInvoke1f8a896da0f461988a245593326b79ed/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.26"
+                              "version": "10.2.55"
                             }
                           }
                         },
@@ -838,7 +790,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.26"
+          "version": "10.2.55"
         }
       }
     },

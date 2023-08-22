@@ -36,4 +36,11 @@ export class Architecture {
     this.name = archName;
     this.dockerPlatform = dockerPlatform;
   }
+
+  /**
+  * Returns a string representation of the architecture using the name
+  */
+  public toString(): string {
+    return this.name;
+  }
 }

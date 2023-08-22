@@ -3,6 +3,8 @@ import { CfnTag } from './cfn-tag';
 import { Lazy } from './lazy';
 import { IResolvable } from './resolvable';
 
+const TAG_MANAGER_SYM = Symbol.for('@aws-cdk/core.TagManager');
+
 interface Tag {
   key: string;
   value: string;
@@ -301,7 +303,7 @@ export class TagManager {
    */
   public static isTaggable(construct: any): construct is ITaggable {
     const tags = (construct as any).tags;
-    return tags && typeof tags === 'object' && tags.constructor.name === 'TagManager';
+    return tags && typeof tags === 'object' && (tags as any)[TAG_MANAGER_SYM];
   }
 
   /**
@@ -461,3 +463,4 @@ export class TagManager {
     }
   }
 }
+(TagManager.prototype as any)[TAG_MANAGER_SYM] = true;

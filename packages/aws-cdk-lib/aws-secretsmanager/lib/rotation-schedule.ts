@@ -47,7 +47,7 @@ export interface RotationScheduleOptions {
    * Specifies whether to rotate the secret immediately or wait until the next
    * scheduled rotation window.
    *
-   * @default - secret is rotated immediately
+   * @default true
    */
   readonly rotateImmediatelyOnUpdate?: boolean;
 }
@@ -100,7 +100,8 @@ export class RotationSchedule extends Resource {
         );
       }
 
-      props.rotationLambda.grantInvoke(new iam.ServicePrincipal('secretsmanager.amazonaws.com'));
+      const grant = props.rotationLambda.grantInvoke(new iam.ServicePrincipal('secretsmanager.amazonaws.com'));
+      grant.applyBefore(this);
 
       props.rotationLambda.addToRolePolicy(
         new iam.PolicyStatement({

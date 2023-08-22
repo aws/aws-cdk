@@ -12,8 +12,8 @@
             "id": "HostedZone",
             "path": "integ-https-redirect/HostedZone",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.55"
             }
           },
           "redirect": {
@@ -45,14 +45,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.55"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3.Bucket",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.55"
                 }
               },
               "RedirectDistribution": {
@@ -140,14 +140,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_cloudfront.CfnDistribution",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.55"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_cloudfront.CloudFrontWebDistribution",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.55"
                 }
               },
               "RedirectAliasRecord700dc5": {
@@ -160,8 +160,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
                       "aws:cdk:cloudformation:props": {
-                        "name": "integ.example.com.",
-                        "type": "A",
                         "aliasTarget": {
                           "hostedZoneId": {
                             "Fn::FindInMap": [
@@ -179,18 +177,20 @@
                             ]
                           }
                         },
-                        "hostedZoneId": "Z23ABC4XYZL05B"
+                        "hostedZoneId": "Z23ABC4XYZL05B",
+                        "name": "integ.example.com.",
+                        "type": "A"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.55"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_route53.ARecord",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.55"
                 }
               },
               "RedirectAliasRecordSix700dc5": {
@@ -203,8 +203,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
                       "aws:cdk:cloudformation:props": {
-                        "name": "integ.example.com.",
-                        "type": "AAAA",
                         "aliasTarget": {
                           "hostedZoneId": {
                             "Fn::FindInMap": [
@@ -222,32 +220,34 @@
                             ]
                           }
                         },
-                        "hostedZoneId": "Z23ABC4XYZL05B"
+                        "hostedZoneId": "Z23ABC4XYZL05B",
+                        "name": "integ.example.com.",
+                        "type": "AAAA"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.55"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_route53.AaaaRecord",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.55"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_route53_patterns.HttpsRedirect",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.55"
             }
           },
           "AWSCloudFrontPartitionHostedZoneIdMap": {
             "id": "AWSCloudFrontPartitionHostedZoneIdMap",
             "path": "integ-https-redirect/AWSCloudFrontPartitionHostedZoneIdMap",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.55"
             }
           },
           "ExportsReader": {
@@ -262,20 +262,20 @@
                     "id": "Default",
                     "path": "integ-https-redirect/ExportsReader/Resource/Default",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.55"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.55"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.270"
+              "version": "10.2.55"
             }
           },
           "Custom::CrossRegionExportReaderCustomResourceProvider": {
@@ -286,52 +286,52 @@
                 "id": "Staging",
                 "path": "integ-https-redirect/Custom::CrossRegionExportReaderCustomResourceProvider/Staging",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.AssetStaging",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.55"
                 }
               },
               "Role": {
                 "id": "Role",
                 "path": "integ-https-redirect/Custom::CrossRegionExportReaderCustomResourceProvider/Role",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.55"
                 }
               },
               "Handler": {
                 "id": "Handler",
                 "path": "integ-https-redirect/Custom::CrossRegionExportReaderCustomResourceProvider/Handler",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.55"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CustomResourceProvider",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.55"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "integ-https-redirect/BootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnParameter",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.55"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "integ-https-redirect/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnRule",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.55"
             }
           }
         },
         "constructInfo": {
-          "fqn": "aws-cdk-lib.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.2.55"
         }
       },
       "certificate-redirect-stack-c8dcaeced090b732e39f9a17bfcca0bf8d20ce4f61": {
@@ -372,14 +372,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_certificatemanager.CfnCertificate",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.55"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_certificatemanager.Certificate",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.55"
             }
           },
           "ExportsWriteruseast2828FA26B": {
@@ -394,20 +394,20 @@
                     "id": "Default",
                     "path": "certificate-redirect-stack-c8dcaeced090b732e39f9a17bfcca0bf8d20ce4f61/ExportsWriteruseast2828FA26B/Resource/Default",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.55"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.55"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.270"
+              "version": "10.2.55"
             }
           },
           "Custom::CrossRegionExportWriterCustomResourceProvider": {
@@ -418,52 +418,52 @@
                 "id": "Staging",
                 "path": "certificate-redirect-stack-c8dcaeced090b732e39f9a17bfcca0bf8d20ce4f61/Custom::CrossRegionExportWriterCustomResourceProvider/Staging",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.AssetStaging",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.55"
                 }
               },
               "Role": {
                 "id": "Role",
                 "path": "certificate-redirect-stack-c8dcaeced090b732e39f9a17bfcca0bf8d20ce4f61/Custom::CrossRegionExportWriterCustomResourceProvider/Role",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.55"
                 }
               },
               "Handler": {
                 "id": "Handler",
                 "path": "certificate-redirect-stack-c8dcaeced090b732e39f9a17bfcca0bf8d20ce4f61/Custom::CrossRegionExportWriterCustomResourceProvider/Handler",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.55"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CustomResourceProvider",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.55"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "certificate-redirect-stack-c8dcaeced090b732e39f9a17bfcca0bf8d20ce4f61/BootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnParameter",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.55"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "certificate-redirect-stack-c8dcaeced090b732e39f9a17bfcca0bf8d20ce4f61/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnRule",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.55"
             }
           }
         },
         "constructInfo": {
-          "fqn": "aws-cdk-lib.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.2.55"
         }
       },
       "integ-test": {
@@ -479,7 +479,7 @@
                 "path": "integ-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.2.55"
                 }
               },
               "DeployAssert": {
@@ -490,22 +490,22 @@
                     "id": "BootstrapVersion",
                     "path": "integ-test/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnParameter",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.55"
                     }
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
                     "path": "integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnRule",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.55"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Stack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.55"
                 }
               }
             },
@@ -525,13 +525,13 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.2.55"
         }
       }
     },
     "constructInfo": {
-      "fqn": "aws-cdk-lib.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.2.55"
     }
   }
 }

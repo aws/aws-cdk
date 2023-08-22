@@ -128,6 +128,16 @@ class EksClusterStack extends Stack {
       repository: 'https://helm.nginx.com/stable',
       namespace: 'nginx',
       wait: true,
+      release: 'nginx-ingress',
+      // https://github.com/nginxinc/helm-charts/tree/master/stable
+      version: '0.17.1',
+      values: {
+        controller: {
+          service: {
+            create: false,
+          },
+        },
+      },
       createNamespace: false,
       timeout: Duration.minutes(15),
     });
@@ -159,6 +169,8 @@ class EksClusterStack extends Stack {
     // deploy the Kubernetes dashboard through a helm chart
     this.importedCluster.addHelmChart('dashboard', {
       chart: 'kubernetes-dashboard',
+      // https://artifacthub.io/packages/helm/k8s-dashboard/kubernetes-dashboard
+      version: '6.0.8',
       repository: 'https://kubernetes.github.io/dashboard/',
     });
   }
@@ -197,8 +209,10 @@ class EksClusterStack extends Stack {
 const app = new App();
 const stack = new EksClusterStack(app, 'aws-cdk-eks-import-cluster-test');
 
-new integ.IntegTest(app, 'aws-cdk-eks-cluster', {
+new integ.IntegTest(app, 'aws-cdk-eks-import-cluster', {
   testCases: [stack],
+  // Test includes assets that are updated weekly. If not disabled, the upgrade PR will fail.
+  diffAssets: false,
   cdkCommandOptions: {
     deploy: {
       args: {

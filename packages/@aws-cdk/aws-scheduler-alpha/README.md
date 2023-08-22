@@ -37,7 +37,16 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 
 ## Defining a schedule 
 
-TODO: Schedule is not yet implemented. See section in [L2 Event Bridge Scheduler RFC](https://github.com/aws/aws-cdk-rfcs/blob/master/text/0474-event-bridge-scheduler-l2.md)
+TODO: Schedule is not yet fully implemented. See section in [L2 Event Bridge Scheduler RFC](https://github.com/aws/aws-cdk-rfcs/blob/master/text/0474-event-bridge-scheduler-l2.md)
+
+[comment]: <> (TODO: change for each PR that implements more functionality)
+
+Only an L2 class is created that wraps the L1 class and handles the following properties:
+
+- schedule
+- schedule group
+- target (only LambdaInvoke is supported for now)
+- flexibleTimeWindow will be set to `{ mode: 'OFF' }`
 
 ### Schedule Expressions
 
@@ -89,16 +98,61 @@ const oneTimeSchedule = new Schedule(this, 'Schedule', {
 
 ### Grouping Schedules
 
-TODO: Group is not yet implemented. See section in [L2 Event Bridge Scheduler RFC](https://github.com/aws/aws-cdk-rfcs/blob/master/text/0474-event-bridge-scheduler-l2.md)
+Your AWS account comes with a default scheduler group. You can access default group in CDK with:
+
+```text
+const defaultGroup = Group.fromDefaultGroup(this, "DefaultGroup");
+```
+
+If not specified a schedule is added to the default group. However, you can also add the schedule to a custom scheduling group managed by you:
+
+```text
+const group = new Group(this, "Group", {
+    groupName: "MyGroup",
+});
+
+const target = new targets.LambdaInvoke(props.func, {
+    input: ScheduleTargetInput.fromObject({
+        "payload": "useful",
+    }),
+});
+
+new Schedule(this, 'Schedule', {
+    scheduleExpression: ScheduleExpression.rate(Duration.minutes(10)),
+    target,
+    group,
+});
+```
 
 ## Scheduler Targets
 
 TODO: Scheduler Targets Module is not yet implemented. See section in [L2 Event Bridge Scheduler RFC](https://github.com/aws/aws-cdk-rfcs/blob/master/text/0474-event-bridge-scheduler-l2.md)
 
+Only LambdaInvoke target is added for now.
+
 ### Input 
 
-TODO: Target Input is not yet implemented. See section in [L2 Event Bridge Scheduler RFC](https://github.com/aws/aws-cdk-rfcs/blob/master/text/0474-event-bridge-scheduler-l2.md)
+Target can be invoked with a custom input. Class `ScheduleTargetInput` supports free form text input and JSON-formatted object input:
 
+```ts
+const input = ScheduleTargetInput.fromObject({
+    'QueueName': 'MyQueue'
+});
+```
+
+You can include context attributes in your target payload. EventBridge Scheduler will replace each keyword with
+its respective value and deliver it to the target. See
+[full list of supported context attributes](https://docs.aws.amazon.com/scheduler/latest/UserGuide/managing-schedule-context-attributes.html):
+
+1. `ContextAttribute.scheduleArn()` – The ARN of the schedule.
+2. `ContextAttribute.scheduledTime()` – The time you specified for the schedule to invoke its target, for example, 2022-03-22T18:59:43Z.
+3. `ContextAttribute.executionId()` – The unique ID that EventBridge Scheduler assigns for each attempted invocation of a target, for example, d32c5kddcf5bb8c3.
+4. `ContextAttribute.attemptNumber()` – A counter that identifies the attempt number for the current invocation, for example, 1.
+
+```ts
+const text = `Attempt number: ${ContextAttribute.attemptNumber}`;
+const input = ScheduleTargetInput.fromText(text);
+```
 
 ### Specifying Execution Role 
 
@@ -135,4 +189,28 @@ TODO: Not yet implemented. See section in [L2 Event Bridge Scheduler RFC](https:
 
 ### Metrics for a Group
 
-TODO: Not yet implemented. See section in [L2 Event Bridge Scheduler RFC](https://github.com/aws/aws-cdk-rfcs/blob/master/text/0474-event-bridge-scheduler-l2.md)
+To view metrics for a specific group you can use methods on class `Group`:
+
+```ts
+const group = new Group(this, "Group", {
+    groupName: "MyGroup",
+});
+
+new cloudwatch.Alarm(this, 'MyGroupErrorAlarm', {
+    metric: group.metricTargetErrors(),
+    evaluationPeriods: 1,
+    threshold: 0
+});
+
+// Or use default group
+const defaultGroup = Group.fromDefaultGroup(this, "DefaultGroup");
+new cloudwatch.Alarm(this, 'DefaultGroupErrorAlarm', {
+    metric: defaultGroup.metricTargetErrors(),
+    evaluationPeriods: 1,
+    threshold: 0
+});
+```
+
+See full list of metrics and their description at
+[Monitoring Using CloudWatch Metrics](https://docs.aws.amazon.com/scheduler/latest/UserGuide/monitoring-cloudwatch.html)
+in the *AWS Event Bridge Scheduler User Guide*.

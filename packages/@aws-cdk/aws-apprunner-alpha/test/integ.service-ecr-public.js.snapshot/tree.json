@@ -34,7 +34,8 @@
                       "egressConfiguration": {
                         "egressType": "DEFAULT"
                       }
-                    }
+                    },
+                    "serviceName": "service1"
                   }
                 },
                 "constructInfo": {
@@ -51,38 +52,6 @@
           "URL1": {
             "id": "URL1",
             "path": "integ-apprunner-ecr-public/URL1",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnOutput",
-              "version": "0.0.0"
-            }
-          },
-          "ServiceName": {
-            "id": "ServiceName",
-            "path": "integ-apprunner-ecr-public/ServiceName",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnOutput",
-              "version": "0.0.0"
-            }
-          },
-          "ServiceId": {
-            "id": "ServiceId",
-            "path": "integ-apprunner-ecr-public/ServiceId",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnOutput",
-              "version": "0.0.0"
-            }
-          },
-          "ServiceStatus": {
-            "id": "ServiceStatus",
-            "path": "integ-apprunner-ecr-public/ServiceStatus",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnOutput",
-              "version": "0.0.0"
-            }
-          },
-          "ServiceArn": {
-            "id": "ServiceArn",
-            "path": "integ-apprunner-ecr-public/ServiceArn",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnOutput",
               "version": "0.0.0"

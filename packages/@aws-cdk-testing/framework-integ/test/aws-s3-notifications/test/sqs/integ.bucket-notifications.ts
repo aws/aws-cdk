@@ -26,6 +26,7 @@ bucket1.addObjectRemovedNotification(new s3n.SqsDestination(encryptedQueue));
 
 const integTest = new integ.IntegTest(app, 'SQSBucketNotificationsTest', {
   testCases: [stack],
+  diffAssets: true,
 });
 
 integTest.assertions

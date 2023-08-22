@@ -39,7 +39,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.54"
+                  "version": "10.2.55"
                 }
               }
             },
@@ -268,7 +268,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.54"
+              "version": "10.2.55"
             }
           },
           "Bucket2": {
@@ -396,20 +396,12 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.54"
+                  "version": "10.2.55"
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_s3.Bucket",
-              "version": "0.0.0"
-            }
-          },
-          "DefaultCrNodeVersionMap": {
-            "id": "DefaultCrNodeVersionMap",
-            "path": "sqs-bucket-notifications/DefaultCrNodeVersionMap",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
               "version": "0.0.0"
             }
           },
@@ -461,6 +453,7 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::KMS::Key",
                       "aws:cdk:cloudformation:props": {
+                        "description": "Created by sqs-bucket-notifications/EncryptedQueue",
                         "keyPolicy": {
                           "Statement": [
                             {
@@ -522,8 +515,7 @@
                             }
                           ],
                           "Version": "2012-10-17"
-                        },
-                        "description": "Created by sqs-bucket-notifications/EncryptedQueue"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -645,7 +637,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.54"
+              "version": "10.2.55"
             }
           },
           "BootstrapVersion": {
@@ -683,7 +675,7 @@
                 "path": "SQSBucketNotificationsTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.54"
+                  "version": "10.2.55"
                 }
               },
               "DeployAssert": {
@@ -703,7 +695,7 @@
                             "path": "SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSpurgeQueue0080aee76c0c561f142ddb9a13ec7cc4/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.54"
+                              "version": "10.2.55"
                             }
                           }
                         },
@@ -767,7 +759,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.54"
+                      "version": "10.2.55"
                     }
                   },
                   "AwsApiCallS3putObjectfdcc2b330314993fae3423f6d19b433f": {
@@ -783,7 +775,7 @@
                             "path": "SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallS3putObjectfdcc2b330314993fae3423f6d19b433f/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.54"
+                              "version": "10.2.55"
                             }
                           }
                         },
@@ -829,7 +821,7 @@
                             "path": "SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage2339d0007bf8ec3f84ba0d037203c1f7/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.54"
+                              "version": "10.2.55"
                             }
                           }
                         },
@@ -909,7 +901,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.54"
+          "version": "10.2.55"
         }
       }
     },

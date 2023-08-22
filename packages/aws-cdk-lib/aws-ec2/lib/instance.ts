@@ -407,11 +407,17 @@ export class Instance extends Resource implements IInstance {
 
     // network interfaces array is set to configure the primary network interface if associatePublicIpAddress is true or false
     const networkInterfaces = props.associatePublicIpAddress !== undefined
-      ? [{ deviceIndex: '0', associatePublicIpAddress: props.associatePublicIpAddress, subnetId: subnet.subnetId, groupSet: securityGroupsToken }]
-      : undefined;
+      ? [{
+        deviceIndex: '0',
+        associatePublicIpAddress: props.associatePublicIpAddress,
+        subnetId: subnet.subnetId,
+        groupSet: securityGroupsToken,
+        privateIpAddress: props.privateIpAddress,
+      }] : undefined;
 
-    // if network interfaces array is configured then subnetId and securityGroupIds are configured on the network interface
-    // level and there is no need to configure them on the instance level
+    // if network interfaces array is configured then subnetId, securityGroupIds,
+    // and privateIpAddress are configured on the network interface level and
+    // there is no need to configure them on the instance leveleiifcbevnlbrbnrnjglvtebkufvkdlvlliiidflbibtf
     this.instance = new CfnInstance(this, 'Resource', {
       imageId: imageConfig.imageId,
       keyName: props.keyName,
@@ -424,7 +430,7 @@ export class Instance extends Resource implements IInstance {
       availabilityZone: subnet.availabilityZone,
       sourceDestCheck: props.sourceDestCheck,
       blockDeviceMappings: props.blockDevices !== undefined ? instanceBlockDeviceMappings(this, props.blockDevices) : undefined,
-      privateIpAddress: props.privateIpAddress,
+      privateIpAddress: networkInterfaces ? undefined : props.privateIpAddress,
       propagateTagsToVolumeOnCreation: props.propagateTagsToVolumeOnCreation,
       monitoring: props.detailedMonitoring,
     });

@@ -3077,6 +3077,49 @@ describe('function', () => {
     });
   });
 
+  test('adds ADOT instrumentation to a ZIP Lambda function for instrumentation', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Base', {
+      env: { account: '111111111111', region: 'us-west-2' },
+    });
+
+    // WHEN
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      adotInstrumentation: {
+        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_13_0),
+        execWrapper: lambda.AdotLambdaExecWrapper.INSTRUMENT_HANDLER,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-python-amd64-ver-1-13-0:1'],
+      Environment: {
+        Variables: {
+          AWS_LAMBDA_EXEC_WRAPPER: '/opt/otel-instrument',
+        },
+      },
+    });
+  });
+
+  test('Adot Instrumentation errors out when not using INSTRUMENT_HANDLER', () => {
+    const stack = new cdk.Stack();
+
+    expect(() => new lambda.Function(stack, 'Fn1', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_10,
+      adotInstrumentation: {
+        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_13_0),
+        execWrapper: lambda.AdotLambdaExecWrapper.REGULAR_HANDLER,
+      },
+    })).toThrow(/Python Adot Lambda layer requires AdotLambdaExecWrapper.INSTRUMENT_HANDLER/);
+  });
+
   test('adds ADOT instrumentation to a container image Lambda function', () => {
     // GIVEN
     const app = new cdk.App();
@@ -3198,6 +3241,68 @@ test('set SnapStart to desired value', () => {
       Runtime: 'java11',
       SnapStart: {
         ApplyOn: 'PublishedVersions',
+      },
+    },
+  });
+});
+
+test('test 2.87.0 version hash stability', () => {
+  // GIVEN
+  const app = new cdk.App({
+    context: {
+      '@aws-cdk/aws-lambda:recognizeLayerVersion': true,
+    },
+  });
+  const stack = new cdk.Stack(app, 'Stack');
+
+  // WHEN
+  const layer = new lambda.LayerVersion(stack, 'MyLayer', {
+    code: lambda.Code.fromAsset(path.join(__dirname, 'x.zip')),
+    compatibleRuntimes: [
+      lambda.Runtime.NODEJS_18_X,
+    ],
+  });
+
+  const role = new iam.Role(stack, 'MyRole', {
+    assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    managedPolicies: [
+      iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
+      iam.ManagedPolicy.fromAwsManagedPolicyName('AWSXRayDaemonWriteAccess'),
+    ],
+  });
+
+  const lambdaFn = new lambda.Function(stack, 'MyLambda', {
+    runtime: lambda.Runtime.NODEJS_18_X,
+    memorySize: 128,
+    handler: 'index.handler',
+    timeout: cdk.Duration.seconds(30),
+    environment: {
+      VARIABLE_1: 'ONE',
+    },
+    code: lambda.Code.fromAsset(path.join(__dirname, 'x.zip')),
+    role,
+    currentVersionOptions: {
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    },
+    layers: [
+      layer,
+    ],
+  });
+
+  new lambda.Alias(stack, 'MyAlias', {
+    aliasName: 'current',
+    version: lambdaFn.currentVersion,
+  });
+
+  // THEN
+  // Precalculated version hash using 2.87.0 version
+  Template.fromStack(stack).hasResource('AWS::Lambda::Alias', {
+    Properties: {
+      FunctionVersion: {
+        'Fn::GetAtt': [
+          'MyLambdaCurrentVersionE7A382CCd55a48b26bd9a860d8842137f2243c37',
+          'Version',
+        ],
       },
     },
   });

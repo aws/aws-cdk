@@ -238,6 +238,7 @@ Object.defineProperty(exports, 'aws_synthetics', { get: function () { return req
 Object.defineProperty(exports, 'aws_systemsmanagersap', { get: function () { return require('./aws-systemsmanagersap'); } });
 Object.defineProperty(exports, 'aws_timestream', { get: function () { return require('./aws-timestream'); } });
 Object.defineProperty(exports, 'aws_transfer', { get: function () { return require('./aws-transfer'); } });
+Object.defineProperty(exports, 'aws_verifiedpermissions', { get: function () { return require('./aws-verifiedpermissions'); } });
 Object.defineProperty(exports, 'aws_voiceid', { get: function () { return require('./aws-voiceid'); } });
 Object.defineProperty(exports, 'aws_vpclattice', { get: function () { return require('./aws-vpclattice'); } });
 Object.defineProperty(exports, 'aws_waf', { get: function () { return require('./aws-waf'); } });

@@ -33,11 +33,17 @@ new batch.EksJobDefinition(stack, 'EksJobDefn', {
         readonly: true,
         sizeLimit: Size.mebibytes(2048),
       }),
-      /*batch.EksVolume.secret({
-        name: 'foofoo',
-        secretName: 'foo',
+      batch.EksVolume.secret({
+        name: 'secretVolumeName',
+        secretName: 'secretName',
+        mountPath: '/secret/path',
+        optional: false,
       }),
-      */
+      batch.EksVolume.secret({
+        name: 'defaultOptionalSettingSecretVolume',
+        secretName: 'NewSecretName',
+        mountPath: '/secret/path2',
+      }),
       batch.EksVolume.hostPath({
         name: 'hostPath',
         hostPath: '/foo/bar',

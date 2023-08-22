@@ -88,6 +88,10 @@ export const EC2_RESTRICT_DEFAULT_SECURITY_GROUP = '@aws-cdk/aws-ec2:restrictDef
 export const APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID = '@aws-cdk/aws-apigateway:requestValidatorUniqueId';
 export const INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION = '@aws-cdk/core:includePrefixInUniqueNameGeneration';
 export const KMS_ALIAS_NAME_REF = '@aws-cdk/aws-kms:aliasNameRef';
+export const EFS_MOUNTTARGET_ORDERINSENSITIVE_LOGICAL_ID = '@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId';
+export const AUTOSCALING_GENERATE_LAUNCH_TEMPLATE = '@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig';
+export const ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY = '@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby';
+export const LAMBDA_NODEJS_USE_LATEST_RUNTIME = '@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -807,6 +811,27 @@ export const FLAGS: Record<string, FlagInfo> = {
   },
 
   //////////////////////////////////////////////////////////////////////
+  [AUTOSCALING_GENERATE_LAUNCH_TEMPLATE]: {
+    type: FlagType.BugFix,
+    summary: 'Generate a launch template when creating an AutoScalingGroup',
+    detailsMd: `
+      Enable this flag to allow AutoScalingGroups to generate a launch template when being created.
+      Launch configurations have been deprecated and cannot be created in AWS Accounts created after
+      December 31, 2023. Existing 'AutoScalingGroup' properties used for creating a launch configuration
+      will now create an equivalent 'launchTemplate'. Alternatively, users can provide an explicit 
+      'launchTemplate' or 'mixedInstancesPolicy'. When this flag is enabled a 'launchTemplate' will 
+      attempt to set user data according to the OS of the machine image if explicit user data is not
+      provided.
+    `,
+    introducedIn: { v2: '2.88.0' },
+    compatibilityWithOldBehaviorMd: `
+      If backwards compatibility needs to be maintained due to an existing autoscaling group
+      using a launch config, set this flag to false.
+    `,
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
   [INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION]: {
     type: FlagType.BugFix,
     summary: 'Include the stack prefix in the stack name generation process',
@@ -821,6 +846,49 @@ export const FLAGS: Record<string, FlagInfo> = {
       is not viable in some productive setups.
     `,
     introducedIn: { v2: '2.84.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY]: {
+    type: FlagType.ApiDefault,
+    summary: 'Enables support for Multi-AZ with Standby deployment for opensearch domains',
+    detailsMd: `
+      If this is set, an opensearch domain will automatically be created with 
+      multi-az with standby enabled.
+    `,
+    introducedIn: { v2: '2.88.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Pass `capacity.multiAzWithStandbyEnabled: false` to `Domain` construct to restore the old behavior.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [LAMBDA_NODEJS_USE_LATEST_RUNTIME]: {
+    type: FlagType.ApiDefault,
+    summary: 'Enables aws-lambda-nodejs.Function to use the latest available NodeJs runtime as the default',
+    detailsMd: `
+      If this is set, and a \`runtime\` prop is not passed to, Lambda NodeJs
+      functions will us the latest version of the runtime provided by the Lambda
+      service. Do not use this if you your lambda function is reliant on dependencies
+      shipped as part of the runtime environment.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Pass `runtime: lambda.Runtime.NODEJS_16_X` to `Function` construct to restore the previous behavior.',
+  },
+  //////////////////////////////////////////////////////////////////////
+  [EFS_MOUNTTARGET_ORDERINSENSITIVE_LOGICAL_ID]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, mount targets will have a stable logicalId that is linked to the associated subnet.',
+    detailsMd: `
+      When this feature flag is enabled, each mount target will have a stable
+      logicalId that is linked to the associated subnet. If the flag is set to
+      false then the logicalIds of the mount targets can change if the number of
+      subnets changes.
+
+      Set this flag to false for existing mount targets.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
   },
 

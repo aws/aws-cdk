@@ -119,6 +119,11 @@ export class InstanceType {
   public static readonly T3_MEDIUM = InstanceType.of('db.t3.medium');
 
   /**
+   * db.serverless
+   */
+  public static readonly SERVERLESS = InstanceType.of('db.serverless');
+
+  /**
    * Build an InstanceType from given string or token, such as CfnParameter.
    */
   public static of(instanceType: string): InstanceType {

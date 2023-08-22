@@ -675,4 +675,18 @@ describe('IntegTest watchIntegTest', () => {
       verbose: undefined,
     }));
   });
+
+  test('with error', () => {
+    expect(() => {
+      // WHEN
+      new IntegTestRunner({
+        cdk: cdkMock.cdk,
+        test: new IntegTest({
+          fileName: 'test/test-data/xxxxx.test-with-error.js',
+          discoveryRoot: 'test/test-data',
+        }),
+      });
+    // THEN
+    }).toThrowError('xxxxx.test-with-error is a new test. Please use the IntegTest construct to configure the test\nhttps://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/integ-tests-alpha');
+  });
 });

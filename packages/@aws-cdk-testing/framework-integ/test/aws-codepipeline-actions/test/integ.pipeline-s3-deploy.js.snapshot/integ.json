@@ -5,6 +5,7 @@
       "stacks": [
         "aws-cdk-codepipeline-s3-deploy"
       ],
+      "diffAssets": true,
       "assertionStack": "s3-deploy-test/DefaultTest/DeployAssert",
       "assertionStackName": "s3deploytestDefaultTestDeployAssert6BC61647"
     }

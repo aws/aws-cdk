@@ -963,3 +963,73 @@ test('fails if parameterName is undefined and simpleName is "false"', () => {
   // THEN
   expect(() => new ssm.StringParameter(stack, 'p', { simpleName: false, stringValue: 'foo' })).toThrow(/If "parameterName" is not explicitly defined, "simpleName" must be "true" or undefined since auto-generated parameter names always have simple names/);
 });
+
+test('When a parameter name contains a CFn intrinsic, use dynamic reference instead', () => {
+  // GIVEN
+  const app = new cdk.App();
+
+  const stack = new cdk.Stack(app, 'Stack');
+
+  // WHEN
+  const param = ssm.StringParameter.fromStringParameterAttributes(stack, 'import-string-param1', {
+    simpleName: true,
+    parameterName: cdk.Fn.importValue('some-exported-value'),
+  });
+  new cdk.CfnOutput(stack, 'OutputParamValue', {
+    value: param.stringValue,
+  });
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasOutput('OutputParamValue', {
+    Value: {
+      'Fn::Join': [
+        '',
+        [
+          '{{resolve:ssm:',
+          {
+            'Fn::ImportValue': 'some-exported-value',
+          },
+          '}}',
+        ],
+      ],
+    },
+  });
+});
+
+test('When a parameter representation overridden, use dynamic reference', () => {
+  // GIVEN
+  const app = new cdk.App();
+
+  const stack = new cdk.Stack(app, 'Stack');
+  const paramA = new ssm.StringParameter(stack, 'StringParameter', {
+    stringValue: 'Initial parameter value',
+  });
+
+  // WHEN
+  const paramB = ssm.StringParameter.fromStringParameterAttributes(stack, 'import-string-param', {
+    simpleName: true,
+    parameterName: paramA.parameterName,
+    forceDynamicReference: true,
+  });
+  new cdk.CfnOutput(stack, 'OutputParamValue', {
+    value: paramB.stringValue,
+  });
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasOutput('OutputParamValue', {
+    Value: {
+      'Fn::Join': [
+        '',
+        [
+          '{{resolve:ssm:',
+          {
+            Ref: 'StringParameter472EED0E',
+          },
+          '}}',
+        ],
+      ],
+    },
+  });
+});

@@ -614,6 +614,11 @@
      "Ref": "EcsDefaultClusterMnL3mNNYNVPC9C1EC7A3"
     },
     "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
      "MaximumPercent": 200,
      "MinimumHealthyPercent": 50
     },
@@ -692,6 +697,8 @@
       ]
      ]
     },
+    "ScalableDimension": "ecs:service:DesiredCount",
+    "ServiceNamespace": "ecs",
     "RoleARN": {
      "Fn::Join": [
       "",
@@ -707,9 +714,7 @@
        ":role/aws-service-role/ecs.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_ECSService"
       ]
      ]
-    },
-    "ScalableDimension": "ecs:service:DesiredCount",
-    "ServiceNamespace": "ecs"
+    }
    },
    "DependsOn": [
     "QueueProcessingServiceQueueProcessingTaskDefTaskRoleDefaultPolicyAE808B19",

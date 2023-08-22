@@ -26,6 +26,7 @@ class TestStack extends Stack {
       },
       capacity: {
         dataNodes: 2,
+        multiAzWithStandbyEnabled: false,
       },
     };
 

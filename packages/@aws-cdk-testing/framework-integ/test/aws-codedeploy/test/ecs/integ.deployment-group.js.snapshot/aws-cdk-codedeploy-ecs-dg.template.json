@@ -1091,15 +1091,6 @@
     }
    }
   },
-  "BlueGreenDGApplication3649479D": {
-   "Type": "AWS::CodeDeploy::Application",
-   "Properties": {
-    "ComputePlatform": "ECS"
-   },
-   "DependsOn": [
-    "CanaryConfig039778DD"
-   ]
-  },
   "BlueGreenDGServiceRole33E3BCAC": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -1129,6 +1120,15 @@
       ]
      }
     ]
+   },
+   "DependsOn": [
+    "CanaryConfig039778DD"
+   ]
+  },
+  "BlueGreenDGApplication3649479D": {
+   "Type": "AWS::CodeDeploy::Application",
+   "Properties": {
+    "ComputePlatform": "ECS"
    },
    "DependsOn": [
     "CanaryConfig039778DD"

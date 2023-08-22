@@ -12,8 +12,8 @@
             "id": "EksContainer",
             "path": "stack/EksContainer",
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch.EksContainerDefinition",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.52"
             }
           },
           "EksJobDefn": {
@@ -72,6 +72,14 @@
                                 "readOnly": true
                               },
                               {
+                                "name": "secretVolumeName",
+                                "mountPath": "/secret/path"
+                              },
+                              {
+                                "name": "defaultOptionalSettingSecretVolume",
+                                "mountPath": "/secret/path2"
+                              },
+                              {
                                 "name": "hostPath",
                                 "mountPath": "/fooasdfadfs"
                               }
@@ -84,6 +92,20 @@
                             "emptyDir": {
                               "medium": "Memory",
                               "sizeLimit": "2048Mi"
+                            }
+                          },
+                          {
+                            "name": "secretVolumeName",
+                            "secret": {
+                              "optional": false,
+                              "secretName": "secretName"
+                            }
+                          },
+                          {
+                            "name": "defaultOptionalSettingSecretVolume",
+                            "secret": {
+                              "optional": true,
+                              "secretName": "NewSecretName"
                             }
                           },
                           {
@@ -100,13 +122,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-batch.CfnJobDefinition",
+                  "fqn": "aws-cdk-lib.aws_batch.CfnJobDefinition",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch.EksJobDefinition",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
@@ -114,7 +136,7 @@
             "id": "BootstrapVersion",
             "path": "stack/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
+              "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
             }
           },
@@ -122,13 +144,13 @@
             "id": "CheckBootstrapVersion",
             "path": "stack/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
         }
       },
@@ -145,7 +167,7 @@
                 "path": "BatchEcsJobDefinitionTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.264"
+                  "version": "10.2.52"
                 }
               },
               "DeployAssert": {
@@ -156,7 +178,7 @@
                     "id": "BootstrapVersion",
                     "path": "BatchEcsJobDefinitionTest/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
                     }
                   },
@@ -164,25 +186,25 @@
                     "id": "CheckBootstrapVersion",
                     "path": "BatchEcsJobDefinitionTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnRule",
+                      "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
+                  "fqn": "aws-cdk-lib.Stack",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
           "version": "0.0.0"
         }
       },
@@ -191,12 +213,12 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.264"
+          "version": "10.2.52"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
+      "fqn": "aws-cdk-lib.App",
       "version": "0.0.0"
     }
   }

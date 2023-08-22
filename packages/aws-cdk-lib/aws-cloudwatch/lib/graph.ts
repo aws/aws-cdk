@@ -452,6 +452,15 @@ export interface SingleValueWidgetProps extends MetricWidgetProps {
   readonly metrics: IMetric[];
 
   /**
+   * The default period for all metrics in this widget.
+   * The period is the length of time represented by one data point on the graph.
+   * This default can be overridden within each metric definition.
+   *
+   * @default cdk.Duration.seconds(300)
+   */
+  readonly period?: cdk.Duration;
+
+  /**
    * Whether to show the value from the entire time range.
    *
    * @default false
@@ -505,6 +514,7 @@ export class SingleValueWidget extends ConcreteWidget {
         metrics: allMetricsGraphJson(this.props.metrics, []),
         setPeriodToTimeRange: this.props.setPeriodToTimeRange,
         singleValueFullPrecision: this.props.fullPrecision,
+        period: this.props.period?.toSeconds(),
       },
     }];
   }

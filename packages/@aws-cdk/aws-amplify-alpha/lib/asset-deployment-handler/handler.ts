@@ -1,6 +1,6 @@
-// aws-sdk available at runtime for lambdas
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { Amplify, S3 } from 'aws-sdk';
+import { Amplify } from '@aws-sdk/client-amplify';
+import { S3, GetObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { AmplifyJobId, IsCompleteResponse, ResourceEvent, ResourceHandler } from './common';
 
 export interface AmplifyAssetDeploymentProps {
@@ -38,8 +38,7 @@ export class AmplifyAssetDeploymentHandler extends ResourceHandler {
         appId: this.props.AppId,
         branchName: this.props.BranchName,
         maxResults: 1,
-      })
-      .promise();
+      });
 
     if (
       jobs.jobSummaries &&
@@ -49,10 +48,11 @@ export class AmplifyAssetDeploymentHandler extends ResourceHandler {
     }
 
     // Create a pre-signed get URL of the asset so Amplify can retrieve it.
-    const assetUrl = this.s3.getSignedUrl('getObject', {
+    const command = new GetObjectCommand({
       Bucket: this.props.S3BucketName,
       Key: this.props.S3ObjectKey,
     });
+    const assetUrl = await getSignedUrl(this.s3, command);
 
     // Deploy the asset to Amplify.
     const deployment = await this.amplify
@@ -60,11 +60,10 @@ export class AmplifyAssetDeploymentHandler extends ResourceHandler {
         appId: this.props.AppId,
         branchName: this.props.BranchName,
         sourceUrl: assetUrl,
-      })
-      .promise();
+      });
 
     return {
-      AmplifyJobId: deployment.jobSummary.jobId,
+      AmplifyJobId: deployment.jobSummary?.jobId,
     };
   }
 
@@ -110,10 +109,9 @@ export class AmplifyAssetDeploymentHandler extends ResourceHandler {
         appId: this.props.AppId,
         branchName: this.props.BranchName,
         jobId: jobId,
-      })
-      .promise();
+      });
 
-    if (job.job.summary.status === 'SUCCEED') {
+    if (job.job?.summary?.status === 'SUCCEED') {
       return {
         IsComplete: true,
         Data: {
@@ -121,8 +119,8 @@ export class AmplifyAssetDeploymentHandler extends ResourceHandler {
           Status: job.job.summary.status,
         },
       };
-    } if (job.job.summary.status === 'FAILED' || job.job.summary.status === 'CANCELLED') {
-      throw new Error(`Amplify job failed with status: ${job.job.summary.status}`);
+    } if (job.job?.summary?.status === 'FAILED' || job.job?.summary?.status === 'CANCELLED') {
+      throw new Error(`Amplify job failed with status: ${job.job?.summary?.status}`);
     } else {
       return {
         IsComplete: false,

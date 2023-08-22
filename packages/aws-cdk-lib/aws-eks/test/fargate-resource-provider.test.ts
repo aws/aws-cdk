@@ -1,3 +1,4 @@
+import * as eks from '@aws-sdk/client-eks';
 import * as sinon from 'sinon';
 import { FARGATE_PROFILE_RESOURCE_TYPE } from '../lib/cluster-resource-handler/consts';
 import { FargateProfileResourceHandler } from '../lib/cluster-resource-handler/fargate';
@@ -200,8 +201,12 @@ describe('fargate resource provider', () => {
       // GIVEN
       const client = newEksClientMock();
 
-      const resourceNotFoundError = new Error();
-      (resourceNotFoundError as any).code = 'ResourceNotFoundException';
+      const resourceNotFoundError = new eks.ResourceNotFoundException({
+        message: 'Cluster not found',
+        $metadata: {
+          httpStatusCode: 404,
+        },
+      });
       client.describeFargateProfile = sinon.fake.throws(resourceNotFoundError);
 
       // WHEN

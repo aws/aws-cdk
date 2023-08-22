@@ -84,6 +84,20 @@ class AwsCdkSdkJsStack extends cdk.Stack {
       role: customRole,
     });
 
+    new AwsCustomResource(this, 'DescribeCluster', {
+      resourceType: 'Custom::EKSClusterDescription',
+      onUpdate: {
+        service: 'EKS',
+        action: 'describeCluster',
+        parameters: {
+          name: 'fake-cluster',
+        },
+        physicalResourceId: PhysicalResourceId.of('fake-cluster'),
+        ignoreErrorCodesMatching: 'ResourceNotFoundException',
+      },
+      policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+    });
+
     new cdk.CfnOutput(this, 'MessageId', { value: snsPublish.getResponseField('MessageId') });
     new cdk.CfnOutput(this, 'TopicArn', { value: listTopics.getResponseField('Topics.0.TopicArn') });
     new cdk.CfnOutput(this, 'ParameterValue', { value: getParameter.getResponseField('Parameter.Value') });
@@ -106,6 +120,7 @@ new integ.IntegTest(app, 'AwsCustomResourceTest', {
       runtime: lambda.Runtime.NODEJS_18_X,
     }),
   ],
+  diffAssets: true,
 });
 
 app.synth();

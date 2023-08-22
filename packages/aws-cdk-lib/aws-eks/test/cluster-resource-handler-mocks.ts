@@ -1,4 +1,5 @@
-import * as sdk from 'aws-sdk';
+import * as eks from '@aws-sdk/client-eks';
+import * as sts from '@aws-sdk/client-sts';
 import { EksClient } from '../lib/cluster-resource-handler/common';
 
 /**
@@ -6,16 +7,16 @@ import { EksClient } from '../lib/cluster-resource-handler/common';
  * made.
  */
 export let actualRequest: {
-  configureAssumeRoleRequest?: sdk.STS.AssumeRoleRequest;
-  createClusterRequest?: sdk.EKS.CreateClusterRequest;
-  describeClusterRequest?: sdk.EKS.DescribeClusterRequest;
-  describeUpdateRequest?: sdk.EKS.DescribeUpdateRequest;
-  deleteClusterRequest?: sdk.EKS.DeleteClusterRequest;
-  updateClusterConfigRequest?: sdk.EKS.UpdateClusterConfigRequest;
-  updateClusterVersionRequest?: sdk.EKS.UpdateClusterVersionRequest;
-  createFargateProfile?: sdk.EKS.CreateFargateProfileRequest;
-  describeFargateProfile?: sdk.EKS.DescribeFargateProfileRequest;
-  deleteFargateProfile?: sdk.EKS.DeleteFargateProfileRequest;
+  configureAssumeRoleRequest?: sts.AssumeRoleRequest;
+  createClusterRequest?: eks.CreateClusterCommandInput;
+  describeClusterRequest?: eks.DescribeClusterCommandInput;
+  describeUpdateRequest?: eks.DescribeUpdateCommandInput;
+  deleteClusterRequest?: eks.DeleteClusterCommandInput;
+  updateClusterConfigRequest?: eks.UpdateClusterConfigCommandInput;
+  updateClusterVersionRequest?: eks.UpdateClusterVersionCommandInput;
+  createFargateProfile?: eks.CreateFargateProfileCommandInput;
+  describeFargateProfile?: eks.DescribeFargateProfileCommandInput;
+  deleteFargateProfile?: eks.DeleteFargateProfileCommandInput;
 } = { };
 
 /**
@@ -24,9 +25,9 @@ export let actualRequest: {
 export let simulateResponse: {
   describeClusterResponseMockStatus?: string;
   describeUpdateResponseMockStatus?: string;
-  describeUpdateResponseMockErrors?: sdk.EKS.ErrorDetails;
-  deleteClusterErrorCode?: string;
-  describeClusterExceptionCode?: string;
+  describeUpdateResponseMockErrors?: eks.ErrorDetail[];
+  deleteClusterError?: Error;
+  describeClusterException?: Error;
 } = { };
 
 export function reset() {
@@ -45,6 +46,7 @@ export const client: EksClient = {
   createCluster: async req => {
     actualRequest.createClusterRequest = req;
     return {
+      $metadata: {},
       cluster: {
         name: req.name,
         roleArn: req.roleArn,
@@ -58,12 +60,11 @@ export const client: EksClient = {
 
   deleteCluster: async req => {
     actualRequest.deleteClusterRequest = req;
-    if (simulateResponse.deleteClusterErrorCode) {
-      const e = new Error('mock error');
-      (e as any).code = simulateResponse.deleteClusterErrorCode;
-      throw e;
+    if (simulateResponse.deleteClusterError) {
+      throw simulateResponse.deleteClusterError;
     }
     return {
+      $metadata: {},
       cluster: {
         name: req.name,
       },
@@ -73,13 +74,12 @@ export const client: EksClient = {
   describeCluster: async req => {
     actualRequest.describeClusterRequest = req;
 
-    if (simulateResponse.describeClusterExceptionCode) {
-      const e = new Error('mock exception');
-      (e as any).code = simulateResponse.describeClusterExceptionCode;
-      throw e;
+    if (simulateResponse.describeClusterException) {
+      throw simulateResponse.describeClusterException;
     }
 
     return {
+      $metadata: {},
       cluster: {
         name: req.name,
         version: '1.0',
@@ -96,6 +96,7 @@ export const client: EksClient = {
     actualRequest.describeUpdateRequest = req;
 
     return {
+      $metadata: {},
       update: {
         id: req.updateId,
         errors: simulateResponse.describeUpdateResponseMockErrors,
@@ -107,6 +108,7 @@ export const client: EksClient = {
   updateClusterConfig: async req => {
     actualRequest.updateClusterConfigRequest = req;
     return {
+      $metadata: {},
       update: {
         id: MOCK_UPDATE_STATUS_ID,
       },
@@ -116,6 +118,7 @@ export const client: EksClient = {
   updateClusterVersion: async req => {
     actualRequest.updateClusterVersionRequest = req;
     return {
+      $metadata: {},
       update: {
         id: MOCK_UPDATE_STATUS_ID,
       },
@@ -124,17 +127,17 @@ export const client: EksClient = {
 
   createFargateProfile: async req => {
     actualRequest.createFargateProfile = req;
-    return { };
+    return { $metadata: {} };
   },
 
   describeFargateProfile: async req => {
     actualRequest.describeFargateProfile = req;
-    return { };
+    return { $metadata: {} };
   },
 
   deleteFargateProfile: async req => {
     actualRequest.deleteFargateProfile = req;
-    return { };
+    return { $metadata: {} };
   },
 };
 
@@ -150,8 +153,8 @@ export const MOCK_ASSUME_ROLE_ARN = 'assume:role:arn';
 
 export function newRequest<T extends 'Create' | 'Update' | 'Delete'>(
   requestType: T,
-  props?: Partial<sdk.EKS.CreateClusterRequest>,
-  oldProps?: Partial<sdk.EKS.CreateClusterRequest>) {
+  props?: Partial<eks.CreateClusterCommandInput>,
+  oldProps?: Partial<eks.CreateClusterCommandInput>) {
   return {
     StackId: 'fake-stack-id',
     RequestId: 'fake-request-id',

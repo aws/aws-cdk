@@ -792,7 +792,7 @@ describe('cluster', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
       ImageId: {
-        Ref: 'SsmParameterValueawsserviceecsoptimizedamiwindowsserver2019englishfullrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
+        Ref: 'SsmParameterValueawsserviceamiwindowslatestWindowsServer2019EnglishFullECSOptimizedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
       },
       InstanceType: 't2.micro',
       IamInstanceProfile: {
@@ -901,9 +901,9 @@ describe('cluster', () => {
     const assembly = app.synth();
     const template = assembly.getStackByName(stack.stackName).template;
     expect(template.Parameters).toEqual({
-      SsmParameterValueawsserviceecsoptimizedamiwindowsserver2019englishfullrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter: {
+      SsmParameterValueawsserviceamiwindowslatestWindowsServer2019EnglishFullECSOptimizedimageidC96584B6F00A464EAD1953AFF4B05118Parameter: {
         Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
-        Default: '/aws/service/ecs/optimized-ami/windows_server/2019/english/full/recommended/image_id',
+        Default: '/aws/service/ami-windows-latest/Windows_Server-2019-English-Full-ECS_Optimized/image_id',
       },
     });
 
@@ -1135,9 +1135,9 @@ describe('cluster', () => {
     const assembly = app.synth();
     const template = assembly.getStackByName(stack.stackName).template;
     expect(template.Parameters).toEqual({
-      SsmParameterValueawsserviceecsoptimizedamiwindowsserver2019englishfullrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter: {
+      SsmParameterValueawsserviceamiwindowslatestWindowsServer2019EnglishFullECSOptimizedimageidC96584B6F00A464EAD1953AFF4B05118Parameter: {
         Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
-        Default: '/aws/service/ecs/optimized-ami/windows_server/2019/english/full/recommended/image_id',
+        Default: '/aws/service/ami-windows-latest/Windows_Server-2019-English-Full-ECS_Optimized/image_id',
       },
     });
 

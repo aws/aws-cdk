@@ -1,5 +1,5 @@
 {
-  "version": "29.0.0",
+  "version": "32.0.0",
   "artifacts": {
     "aws-glue-job.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b553fef631f82898c826f3c20e1de0d155dbd3a35339ef92d0893052a5be69ce.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4ff2e5500ce87081dfbf121cb29a8c64ffc6edc276257bb420e68abbb49af40a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -229,6 +229,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "RayJob2F7864D9"
+          }
+        ],
+        "/aws-glue-job/EtlJobWithFLEX/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EtlJobWithFLEXServiceRoleBA7C99A5"
+          }
+        ],
+        "/aws-glue-job/EtlJobWithFLEX/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EtlJobWithFLEXServiceRoleDefaultPolicyEA63C5FE"
+          }
+        ],
+        "/aws-glue-job/EtlJobWithFLEX/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EtlJobWithFLEX928B4212"
           }
         ],
         "/aws-glue-job/BootstrapVersion": [

@@ -120,6 +120,13 @@ export interface StateMachineProps {
   readonly timeout?: Duration;
 
   /**
+   * Comment that describes this state machine
+   *
+   * @default - No comment
+   */
+  readonly comment?: string;
+
+  /**
    * Type of the state machine
    *
    * @default StateMachineType.STANDARD
@@ -407,6 +414,12 @@ export class StateMachine extends StateMachineBase {
    */
   public readonly stateMachineType: StateMachineType;
 
+  /**
+   * Identifier for the state machine revision, which is an immutable, read-only snapshot of a state machine’s definition and configuration.
+   * @attribute
+   */
+  public readonly stateMachineRevisionId: string;
+
   constructor(scope: Construct, id: string, props: StateMachineProps) {
     super(scope, id, {
       physicalName: props.stateMachineName,
@@ -451,6 +464,7 @@ export class StateMachine extends StateMachineBase {
       resourceName: this.physicalName,
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
+    this.stateMachineRevisionId = resource.attrStateMachineRevisionId;
   }
 
   /**
@@ -647,8 +661,7 @@ export interface DefinitionConfig {
 }
 
 export abstract class DefinitionBody {
-
-  public static fromFile(path: string, options: s3_assets.AssetOptions): DefinitionBody {
+  public static fromFile(path: string, options?: s3_assets.AssetOptions): DefinitionBody {
     return new FileDefinitionBody(path, options);
   }
 
@@ -661,11 +674,9 @@ export abstract class DefinitionBody {
   }
 
   public abstract bind(scope: Construct, sfnPrincipal: iam.IPrincipal, sfnProps: StateMachineProps): DefinitionConfig;
-
 }
 
 export class FileDefinitionBody extends DefinitionBody {
-
   constructor(public readonly path: string, private readonly options: s3_assets.AssetOptions = {}) {
     super();
   }
@@ -682,11 +693,9 @@ export class FileDefinitionBody extends DefinitionBody {
       },
     };
   }
-
 }
 
 export class StringDefinitionBody extends DefinitionBody {
-
   constructor(public readonly body: string) {
     super();
   }
@@ -699,7 +708,6 @@ export class StringDefinitionBody extends DefinitionBody {
 }
 
 export class ChainDefinitionBody extends DefinitionBody {
-
   constructor(public readonly chainable: IChainable) {
     super();
   }
@@ -710,9 +718,9 @@ export class ChainDefinitionBody extends DefinitionBody {
     for (const statement of graph.policyStatements) {
       sfnPrincipal.addToPrincipalPolicy(statement);
     }
+    const graphJson = graph.toGraphJson();
     return {
-      definitionString: Stack.of(scope).toJsonString(graph.toGraphJson()),
+      definitionString: Stack.of(scope).toJsonString({ ...graphJson, Comment: sfnProps.comment }),
     };
   }
-
 }

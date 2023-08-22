@@ -18,7 +18,14 @@
       }
      }
     },
-    "InstanceConfiguration": {},
+    "InstanceConfiguration": {
+      "InstanceRoleArn": {
+         "Fn::GetAtt": [
+           "Service4InstanceRole26B443A0",
+           "Arn"
+         ]
+       }
+    },
     "NetworkConfiguration": {
      "EgressConfiguration": {
       "EgressType": "DEFAULT"
@@ -50,11 +57,52 @@
       }
      }
     },
-    "InstanceConfiguration": {},
+    "InstanceConfiguration": {
+      "InstanceRoleArn": {
+         "Fn::GetAtt": [
+           "Service5InstanceRole94C07D84",
+           "Arn"
+         ]
+       }
+    },
     "NetworkConfiguration": {
      "EgressConfiguration": {
       "EgressType": "DEFAULT"
      }
+    }
+   }
+  },
+  "Service4InstanceRole26B443A0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "tasks.apprunner.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "Service5InstanceRole94C07D84": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "tasks.apprunner.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
     }
    }
   }

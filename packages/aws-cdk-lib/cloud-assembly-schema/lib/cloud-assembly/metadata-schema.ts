@@ -25,6 +25,14 @@ interface BaseAssetMetadataEntry {
 
 /**
  * Metadata Entry spec for files.
+ *
+ * @example
+ * const entry = {
+ *   packaging: 'file',
+ *   s3BucketParameter: 'bucket-parameter',
+ *   s3KeyParamenter: 'key-parameter',
+ *   artifactHashParameter: 'hash-parameter',
+ * }
  */
 export interface FileAssetMetadataEntry extends BaseAssetMetadataEntry {
   /**
@@ -101,6 +109,13 @@ export interface ContainerImageAssetCacheOption {
 
 /**
  * Metadata Entry spec for container images.
+ *
+ * @example
+ * const entry = {
+ *   packaging: 'container-image',
+ *   repositoryName: 'repository-name',
+ *   imageTag: 'tag',
+ * }
  */
 export interface ContainerImageAssetMetadataEntry extends BaseAssetMetadataEntry {
   /**
@@ -145,6 +160,13 @@ export interface ContainerImageAssetMetadataEntry extends BaseAssetMetadataEntry
    * @default no build args are passed
    */
   readonly buildArgs?: { [key: string]: string };
+
+  /**
+   * SSH agent socket or keys to pass to the `docker build` command
+   *
+   * @default no ssh arg is passed
+   */
+  readonly buildSsh?: string;
 
   /**
    * Build secrets to pass to the `docker build` command

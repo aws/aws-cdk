@@ -163,6 +163,16 @@ class EksClusterStack extends Stack {
       repository: 'https://helm.nginx.com/stable',
       namespace: 'nginx',
       wait: true,
+      release: 'nginx-ingress',
+      // https://github.com/nginxinc/helm-charts/tree/master/stable
+      version: '0.17.1',
+      values: {
+        controller: {
+          service: {
+            create: false,
+          },
+        },
+      },
       createNamespace: false,
       timeout: Duration.minutes(15),
     });
@@ -194,6 +204,8 @@ class EksClusterStack extends Stack {
     // deploy the Kubernetes dashboard through a helm chart
     this.cluster.addHelmChart('dashboard', {
       chart: 'kubernetes-dashboard',
+      // https://artifacthub.io/packages/helm/k8s-dashboard/kubernetes-dashboard
+      version: '6.0.8',
       repository: 'https://kubernetes.github.io/dashboard/',
     });
   }
@@ -338,7 +350,7 @@ class EksClusterStack extends Stack {
 }
 
 // this test uses both the bottlerocket image and the inf1 instance, which are only supported in these
-// regions. see https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-eks#bottlerocket
+// regions. see https://github.com/aws/aws-cdk/tree/main/packages/aws-cdk-lib/aws-eks#bottlerocket
 // and https://aws.amazon.com/about-aws/whats-new/2019/12/introducing-amazon-ec2-inf1-instances-high-performance-and-the-lowest-cost-machine-learning-inference-in-the-cloud/
 const supportedRegions = [
   'us-east-1',
@@ -349,7 +361,7 @@ const app = new App();
 
 // since the EKS optimized AMI is hard-coded here based on the region,
 // we need to actually pass in a specific region.
-const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster-test', {
+const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster-ipv6-test', {
   env: { region: 'us-east-1' },
 });
 
@@ -368,8 +380,10 @@ if (process.env.CDK_INTEG_ACCOUNT !== '12345678') {
 
 }
 
-new integ.IntegTest(app, 'aws-cdk-eks-cluster', {
+new integ.IntegTest(app, 'aws-cdk-eks-cluster-ipv6', {
   testCases: [stack],
+  // Test includes assets that are updated weekly. If not disabled, the upgrade PR will fail.
+  diffAssets: false,
   cdkCommandOptions: {
     deploy: {
       args: {

@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "33.0.0",
   "artifacts": {
     "aws-cdk-customresources-vpc.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a16cb3b905d3c8e0ea2509a438fb586b3a096637d68da469b9ec3f764b30c942.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2fce543a9b15be3ef8efef63a88ed521bcf800d891ca815b68663dfd8a19cc9a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -171,6 +171,12 @@
             "data": "VpcVPCGWBF912B6E"
           }
         ],
+        "/aws-cdk-customresources-vpc/DescribeVpcAttribute": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version."
+          }
+        ],
         "/aws-cdk-customresources-vpc/DescribeVpcAttribute/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -181,12 +187,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "DescribeVpcAttributeCustomResourcePolicyAF7C66C1"
-          }
-        ],
-        "/aws-cdk-customresources-vpc/DefaultCrNodeVersionMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DefaultCrNodeVersionMap"
           }
         ],
         "/aws-cdk-customresources-vpc/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [

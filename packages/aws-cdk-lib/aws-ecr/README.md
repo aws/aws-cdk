@@ -1,6 +1,5 @@
 # Amazon ECR Construct Library
 
-
 This package contains constructs for working with Amazon Elastic Container Registry.
 
 ## Repositories
@@ -14,7 +13,10 @@ const repository = new ecr.Repository(this, 'Repository');
 
 ## Image scanning
 
-Amazon ECR image scanning helps in identifying software vulnerabilities in your container images. You can manually scan container images stored in Amazon ECR, or you can configure your repositories to scan images when you push them to a repository. To create a new repository to scan on push, simply enable `imageScanOnPush` in the properties
+Amazon ECR image scanning helps in identifying software vulnerabilities in your container images.
+You can manually scan container images stored in Amazon ECR, or you can configure your repositories
+to scan images when you push them to a repository. To create a new repository to scan on push, simply
+enable `imageScanOnPush` in the properties.
 
 ```ts
 const repository = new ecr.Repository(this, 'Repo', {
@@ -76,6 +78,8 @@ The grantPush method grants the specified IAM entity (the grantee) permission to
 Here is an example of granting a user push permissions:
 
 ```ts
+declare const repository: ecr.Repository;
+
 const role = new iam.Role(this, 'Role', {
   assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
 });
@@ -91,6 +95,8 @@ The grantPull method grants the specified IAM entity (the grantee) permission to
 - 'ecr:GetAuthorizationToken'
 
 ```ts
+declare const repository: ecr.Repository;
+
 const role = new iam.Role(this, 'Role', {
   assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
 });
@@ -103,6 +109,8 @@ The grantPullPush method grants the specified IAM entity (the grantee) permissio
 Here is an example of granting a user both pull and push permissions:
 
 ```ts
+declare const repository: ecr.Repository;
+
 const role = new iam.Role(this, 'Role', {
   assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
 });

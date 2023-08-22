@@ -85,6 +85,11 @@
   "FKafkaEventSource838c4d5ff3c99c1a617120adfca83e5bmytesttopic1E7A7798": {
    "Type": "AWS::Lambda::EventSourceMapping",
    "Properties": {
+    "FilterCriteria": {
+      "Filters": [{
+        "Pattern":"{\"numericEquals\":[{\"numeric\":[\"=\",1]}]}"
+      }]
+    },
     "FunctionName": {
      "Ref": "FC4345940"
     },
