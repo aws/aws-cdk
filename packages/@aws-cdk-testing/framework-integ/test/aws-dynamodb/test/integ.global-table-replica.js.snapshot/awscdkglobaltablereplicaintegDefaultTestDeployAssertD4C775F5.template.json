@@ -16,7 +16,7 @@
      "FunctionName": "\"global-table-lambda\""
     },
     "flattenResponse": "false",
-    "salt": "1692724532351"
+    "salt": "1692725585656"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
