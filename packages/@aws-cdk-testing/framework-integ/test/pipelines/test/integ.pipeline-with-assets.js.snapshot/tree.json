@@ -722,7 +722,7 @@
                                   "ProjectName": {
                                     "Ref": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
                                   },
-                                  "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"51983b0b2e2ab480fd5d90c068e63373d8f0ab1a3a1da93ac53a82b8a296d34f\"}]"
+                                  "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"7f66814704b7757367a6ec706823d271fb9c6fceda866eee4260d1e76b73967b\"}]"
                                 },
                                 "runOrder": 1,
                                 "roleArn": {
@@ -1520,7 +1520,7 @@
                                     },
                                     "environment": {
                                       "type": "LINUX_CONTAINER",
-                                      "image": "aws/codebuild/standard:6.0",
+                                      "image": "aws/codebuild/standard:7.0",
                                       "imagePullCredentialsType": "CODEBUILD",
                                       "privilegedMode": false,
                                       "computeType": "BUILD_GENERAL1_SMALL",
@@ -2046,7 +2046,7 @@
                                     },
                                     "environment": {
                                       "type": "LINUX_CONTAINER",
-                                      "image": "aws/codebuild/standard:6.0",
+                                      "image": "aws/codebuild/standard:7.0",
                                       "imagePullCredentialsType": "CODEBUILD",
                                       "privilegedMode": false,
                                       "computeType": "BUILD_GENERAL1_SMALL"
@@ -2409,7 +2409,7 @@
                             },
                             "environment": {
                               "type": "LINUX_CONTAINER",
-                              "image": "aws/codebuild/standard:6.0",
+                              "image": "aws/codebuild/standard:7.0",
                               "imagePullCredentialsType": "CODEBUILD",
                               "privilegedMode": false,
                               "computeType": "BUILD_GENERAL1_SMALL"
@@ -2685,7 +2685,7 @@
                                 },
                                 "environment": {
                                   "type": "LINUX_CONTAINER",
-                                  "image": "aws/codebuild/standard:6.0",
+                                  "image": "aws/codebuild/standard:7.0",
                                   "imagePullCredentialsType": "CODEBUILD",
                                   "privilegedMode": false,
                                   "computeType": "BUILD_GENERAL1_SMALL"
@@ -2747,7 +2747,7 @@
                                 },
                                 "environment": {
                                   "type": "LINUX_CONTAINER",
-                                  "image": "aws/codebuild/standard:6.0",
+                                  "image": "aws/codebuild/standard:7.0",
                                   "imagePullCredentialsType": "CODEBUILD",
                                   "privilegedMode": false,
                                   "computeType": "BUILD_GENERAL1_SMALL"
