@@ -185,7 +185,7 @@
       "Arn"
      ]
     },
-    "Name": "cdksyntheticsca8b6fb6",
+    "Name": "next",
     "RuntimeVersion": "syn-nodejs-puppeteer-4.0",
     "Schedule": {
      "DurationInSeconds": "0",
@@ -288,7 +288,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "40129686bd15b9964212325144aa0db37ac362e1e290ab678d8679880f705e83.zip"
+     "S3Key": "086fe534b1e7545fbc662251685b8a7d91ab2061bbfe98d857b27478442487cb.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -502,7 +502,7 @@
       "Arn"
      ]
     },
-    "Name": "cdksyntheticsca2bb202",
+    "Name": "cdksyntheticscaeae9a3",
     "RuntimeVersion": "syn-nodejs-puppeteer-4.0",
     "Schedule": {
      "DurationInSeconds": "0",
@@ -558,7 +558,7 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": "false"
+    "InstallLatestAwsSdk": false
    },
    "DependsOn": [
     "DeleteCanaryCustomResourcePolicy98D0C78F"

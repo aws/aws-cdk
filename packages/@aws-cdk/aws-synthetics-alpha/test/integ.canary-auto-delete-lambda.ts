@@ -9,6 +9,7 @@ class TestStack extends Stack {
     super(scope, id, props);
 
     new synthetics.Canary(this, 'Canary', {
+      canaryName: 'next',
       runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_4_0,
       test: synthetics.Test.custom({
         handler: 'index.handler',
@@ -53,8 +54,8 @@ class TestStack extends Stack {
 
 const app = new App();
 
-new IntegTest(app, 'cdk-integ-synthetics-canary-auto-delete-lambda', {
-  testCases: [new TestStack(app, 'cdk-synthetics-canary-auto-delete-lambda')],
+new IntegTest(app, 'cdk-integ-synthetics-canary-auto-delete', {
+  testCases: [new TestStack(app, 'cdk-synthetics-canary-auto-delete')],
   diffAssets: true,
   stackUpdateWorkflow: false, // will error because this stack has a cr that deletes its own resources
 });

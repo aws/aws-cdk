@@ -1,27 +1,27 @@
 {
   "version": "33.0.0",
   "artifacts": {
-    "cdk-synthetics-canary-auto-delete-lambda.assets": {
+    "cdk-synthetics-canary-auto-delete.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "cdk-synthetics-canary-auto-delete-lambda.assets.json",
+        "file": "cdk-synthetics-canary-auto-delete.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "cdk-synthetics-canary-auto-delete-lambda": {
+    "cdk-synthetics-canary-auto-delete": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "cdk-synthetics-canary-auto-delete-lambda.template.json",
+        "templateFile": "cdk-synthetics-canary-auto-delete.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c46aab6a90e549c29bf1c4c383a61b001a08f40b38506c09b536908a3f5c7954.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b9110200a7df43e8d36405bba4dfa22124052374428d331231631a12975d93db.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "cdk-synthetics-canary-auto-delete-lambda.assets"
+          "cdk-synthetics-canary-auto-delete.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -30,175 +30,133 @@
         }
       },
       "dependencies": [
-        "cdk-synthetics-canary-auto-delete-lambda.assets"
+        "cdk-synthetics-canary-auto-delete.assets"
       ],
       "metadata": {
-        "/cdk-synthetics-canary-auto-delete-lambda/Canary/ArtifactsBucket/Resource": [
+        "/cdk-synthetics-canary-auto-delete/Canary/ArtifactsBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CanaryArtifactsBucket4A60D32B"
           }
         ],
-        "/cdk-synthetics-canary-auto-delete-lambda/Canary/ArtifactsBucket/Policy/Resource": [
+        "/cdk-synthetics-canary-auto-delete/Canary/ArtifactsBucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CanaryArtifactsBucketPolicy63096C41"
           }
         ],
-        "/cdk-synthetics-canary-auto-delete-lambda/Canary/ServiceRole/Resource": [
+        "/cdk-synthetics-canary-auto-delete/Canary/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CanaryServiceRoleD132250E"
           }
         ],
-        "/cdk-synthetics-canary-auto-delete-lambda/Canary/Resource": [
+        "/cdk-synthetics-canary-auto-delete/Canary/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Canary11957FE2"
           }
         ],
-        "/cdk-synthetics-canary-auto-delete-lambda/Canary/AutoDeleteUnderlyingResourcesCustomResource/Default": [
+        "/cdk-synthetics-canary-auto-delete/Canary/AutoDeleteUnderlyingResourcesCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CanaryAutoDeleteUnderlyingResourcesCustomResource76464216"
           }
         ],
-        "/cdk-synthetics-canary-auto-delete-lambda/Custom::SyntheticsAutoDeleteUnderlyingResourcesCustomResourceProvider/Role": [
+        "/cdk-synthetics-canary-auto-delete/Custom::SyntheticsAutoDeleteUnderlyingResourcesCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomSyntheticsAutoDeleteUnderlyingResourcesCustomResourceProviderRole2D11A112"
           }
         ],
-        "/cdk-synthetics-canary-auto-delete-lambda/Custom::SyntheticsAutoDeleteUnderlyingResourcesCustomResourceProvider/Handler": [
+        "/cdk-synthetics-canary-auto-delete/Custom::SyntheticsAutoDeleteUnderlyingResourcesCustomResourceProvider/Handler": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomSyntheticsAutoDeleteUnderlyingResourcesCustomResourceProviderHandler26776D4E"
           }
         ],
-        "/cdk-synthetics-canary-auto-delete-lambda/CanaryRemoved/ArtifactsBucket/Resource": [
+        "/cdk-synthetics-canary-auto-delete/CanaryRemoved/ArtifactsBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CanaryRemovedArtifactsBucket37DF7242"
           }
         ],
-        "/cdk-synthetics-canary-auto-delete-lambda/CanaryRemoved/ArtifactsBucket/Policy/Resource": [
+        "/cdk-synthetics-canary-auto-delete/CanaryRemoved/ArtifactsBucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CanaryRemovedArtifactsBucketPolicy29BB2D96"
           }
         ],
-        "/cdk-synthetics-canary-auto-delete-lambda/CanaryRemoved/ServiceRole/Resource": [
+        "/cdk-synthetics-canary-auto-delete/CanaryRemoved/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CanaryRemovedServiceRole11BAE4E9"
           }
         ],
-        "/cdk-synthetics-canary-auto-delete-lambda/CanaryRemoved/Resource": [
+        "/cdk-synthetics-canary-auto-delete/CanaryRemoved/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CanaryRemoved24AD6309"
           }
         ],
-        "/cdk-synthetics-canary-auto-delete-lambda/CanaryRemoved/AutoDeleteUnderlyingResourcesCustomResource/Default": [
+        "/cdk-synthetics-canary-auto-delete/CanaryRemoved/AutoDeleteUnderlyingResourcesCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CanaryRemovedAutoDeleteUnderlyingResourcesCustomResource697450B4"
           }
         ],
-        "/cdk-synthetics-canary-auto-delete-lambda/DeleteCanary": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version."
-          }
-        ],
-        "/cdk-synthetics-canary-auto-delete-lambda/DeleteCanary/Resource/Default": [
+        "/cdk-synthetics-canary-auto-delete/DeleteCanary/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DeleteCanary6ED313B0"
           }
         ],
-        "/cdk-synthetics-canary-auto-delete-lambda/DeleteCanary/CustomResourcePolicy/Resource": [
+        "/cdk-synthetics-canary-auto-delete/DeleteCanary/CustomResourcePolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DeleteCanaryCustomResourcePolicy98D0C78F"
           }
         ],
-        "/cdk-synthetics-canary-auto-delete-lambda/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
+        "/cdk-synthetics-canary-auto-delete/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
           }
         ],
-        "/cdk-synthetics-canary-auto-delete-lambda/AWS679f53fac002430cb0da5b7982bd2287/Resource": [
+        "/cdk-synthetics-canary-auto-delete/AWS679f53fac002430cb0da5b7982bd2287/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
           }
         ],
-        "/cdk-synthetics-canary-auto-delete-lambda/BootstrapVersion": [
+        "/cdk-synthetics-canary-auto-delete/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/cdk-synthetics-canary-auto-delete-lambda/CheckBootstrapVersion": [
+        "/cdk-synthetics-canary-auto-delete/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "CanaryAutoDeleteObjectsCustomResource005F7791": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CanaryAutoDeleteObjectsCustomResource005F7791",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "CustomSyntheticsAutoDeleteLambdaCustomResourceProviderRole782BDF14": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomSyntheticsAutoDeleteLambdaCustomResourceProviderRole782BDF14",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "CustomSyntheticsAutoDeleteLambdaCustomResourceProviderHandler39847E05": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomSyntheticsAutoDeleteLambdaCustomResourceProviderHandler39847E05",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "CanaryRemovedAutoDeleteObjectsCustomResourceF09F5346": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CanaryRemovedAutoDeleteObjectsCustomResourceF09F5346",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
-      "displayName": "cdk-synthetics-canary-auto-delete-lambda"
+      "displayName": "cdk-synthetics-canary-auto-delete"
     },
-    "cdkintegsyntheticscanaryautodeletelambdaDefaultTestDeployAssertA62965CE.assets": {
+    "cdkintegsyntheticscanaryautodeleteDefaultTestDeployAssert94B79CED.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "cdkintegsyntheticscanaryautodeletelambdaDefaultTestDeployAssertA62965CE.assets.json",
+        "file": "cdkintegsyntheticscanaryautodeleteDefaultTestDeployAssert94B79CED.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "cdkintegsyntheticscanaryautodeletelambdaDefaultTestDeployAssertA62965CE": {
+    "cdkintegsyntheticscanaryautodeleteDefaultTestDeployAssert94B79CED": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "cdkintegsyntheticscanaryautodeletelambdaDefaultTestDeployAssertA62965CE.template.json",
+        "templateFile": "cdkintegsyntheticscanaryautodeleteDefaultTestDeployAssert94B79CED.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -206,7 +164,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "cdkintegsyntheticscanaryautodeletelambdaDefaultTestDeployAssertA62965CE.assets"
+          "cdkintegsyntheticscanaryautodeleteDefaultTestDeployAssert94B79CED.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -215,23 +173,23 @@
         }
       },
       "dependencies": [
-        "cdkintegsyntheticscanaryautodeletelambdaDefaultTestDeployAssertA62965CE.assets"
+        "cdkintegsyntheticscanaryautodeleteDefaultTestDeployAssert94B79CED.assets"
       ],
       "metadata": {
-        "/cdk-integ-synthetics-canary-auto-delete-lambda/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/cdk-integ-synthetics-canary-auto-delete/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/cdk-integ-synthetics-canary-auto-delete-lambda/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/cdk-integ-synthetics-canary-auto-delete/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "cdk-integ-synthetics-canary-auto-delete-lambda/DefaultTest/DeployAssert"
+      "displayName": "cdk-integ-synthetics-canary-auto-delete/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

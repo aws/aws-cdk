@@ -4,7 +4,7 @@ import { LambdaClient, DeleteFunctionCommand } from '@aws-sdk/client-lambda';
 import { SyntheticsClient, GetCanaryCommand } from '@aws-sdk/client-synthetics';
 import { makeHandler } from '../../nodejs-entrypoint';
 
-const AUTO_DELETE_LAMBDA_TAG = 'aws-cdk:auto-delete-lambda';
+const AUTO_DELETE_UNDERLYING_RESOURCES_TAG = 'aws-cdk:auto-delete-underlying-resources';
 
 const lambda = new LambdaClient({});
 const synthetics = new SyntheticsClient({});
@@ -57,7 +57,7 @@ async function onDelete(canaryName: string) {
     }
 
     if (!isCanaryTaggedForDeletion(response.Canary.Tags)) {
-      console.log(`Canary does not have '${AUTO_DELETE_LAMBDA_TAG}' tag, skipping deletion.`);
+      console.log(`Canary does not have '${AUTO_DELETE_UNDERLYING_RESOURCES_TAG}' tag, skipping deletion.`);
       return;
     }
 
@@ -91,5 +91,5 @@ async function onDelete(canaryName: string) {
  */
 function isCanaryTaggedForDeletion(tags?: Record<string, string>): boolean {
   if (!tags) return false;
-  return Object.keys(tags).some((tag) => tag === AUTO_DELETE_LAMBDA_TAG && tags[tag] === 'true');
+  return Object.keys(tags).some((tag) => tag === AUTO_DELETE_UNDERLYING_RESOURCES_TAG && tags[tag] === 'true');
 }

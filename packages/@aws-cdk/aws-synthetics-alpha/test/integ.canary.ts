@@ -41,6 +41,7 @@ const inlineAsset = new Canary(stack, 'InlineAsset', {
   schedule: Schedule.rate(cdk.Duration.minutes(1)),
   artifactsBucketLocation: { bucket, prefix },
   runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_4_0,
+  cleanup: Cleanup.LAMBDA,
 });
 
 const directoryAsset = new Canary(stack, 'DirectoryAsset', {
@@ -52,6 +53,7 @@ const directoryAsset = new Canary(stack, 'DirectoryAsset', {
   environmentVariables: {
     URL: api.url,
   },
+  cleanup: Cleanup.LAMBDA,
 });
 
 const folderAsset = new Canary(stack, 'FolderAsset', {
@@ -77,6 +79,7 @@ const zipAsset = new Canary(stack, 'ZipAsset', {
     },
   ],
   runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_4_0,
+  cleanup: Cleanup.LAMBDA,
 });
 
 const kebabToPascal = (text :string )=> text.replace(/(^\w|-\w)/g, (v) => v.replace(/-/, '').toUpperCase());
@@ -90,6 +93,7 @@ const createCanaryByRuntimes = (runtime: Runtime) =>
       URL: api.url,
     },
     runtime,
+    cleanup: Cleanup.LAMBDA,
   });
 
 const puppeteer39 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9);
