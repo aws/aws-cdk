@@ -427,7 +427,7 @@
     }
    }
   },
-  "etcdataEfsMountTarget1A2665990": {
+  "etcdataEfsMountTargetPrivateSubnet1DF9D9372": {
    "Type": "AWS::EFS::MountTarget",
    "Properties": {
     "FileSystemId": {
@@ -446,7 +446,7 @@
     }
    }
   },
-  "etcdataEfsMountTarget280CEA26C": {
+  "etcdataEfsMountTargetPrivateSubnet209100FF5": {
    "Type": "AWS::EFS::MountTarget",
    "Properties": {
     "FileSystemId": {
