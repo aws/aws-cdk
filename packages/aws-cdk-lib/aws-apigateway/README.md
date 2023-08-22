@@ -969,6 +969,8 @@ You can specify the CloudWatch Role and Account sub-resources removal policy wit
 `cloudWatchRoleRemovalPolicy` property, which defaults to `RemovalPolicy.RETAIN`.
 
 ```ts
+import * as cdk from 'aws-cdk-lib/core';
+
 const api = new apigateway.RestApi(this, 'books', {
   cloudWatchRole: true,
   cloudWatchRoleRemovalPolicy: cdk.RemovalPolicy.DESTROY,
