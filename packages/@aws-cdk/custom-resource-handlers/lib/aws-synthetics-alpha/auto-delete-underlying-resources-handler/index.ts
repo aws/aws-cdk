@@ -14,9 +14,10 @@ export const handler = makeHandler(autoDeleteHandler);
 export async function autoDeleteHandler(event: AWSLambda.CloudFormationCustomResourceEvent) {
   switch (event.RequestType) {
     case 'Create':
-      break;
+      return { PhyscialResourceId: event.ResourceProperties?.CanaryName };
     case 'Update':
-      return onUpdate(event);
+      const response = await onUpdate(event);
+      return { PhysicalResourceId: response.PhysicalResourceId };
     case 'Delete':
       return onDelete(event.ResourceProperties?.CanaryName);
   }
@@ -24,20 +25,14 @@ export async function autoDeleteHandler(event: AWSLambda.CloudFormationCustomRes
 
 async function onUpdate(event: AWSLambda.CloudFormationCustomResourceEvent) {
   const updateEvent = event as AWSLambda.CloudFormationCustomResourceUpdateEvent;
-  const oldCanaryName = updateEvent.OldResourceProperties?.CanaryName;
   const newCanaryName = updateEvent.ResourceProperties?.CanaryName;
-  const canaryNameHasChanged = (newCanaryName && oldCanaryName)
-    && (newCanaryName !== oldCanaryName);
 
   // If the name of the canary has changed, CloudFormation will delete the canary
   // and create a new one with the new name. Returning a PhysicalResourceId that
   // differs from the event's PhysicalResourceId will trigger a `Delete` event
-  // for this custom resource. That `Delete` event will handle deleting the lambda
-  // associated with the deleted canary.
-  if (canaryNameHasChanged) {
-    return { PhysicalResourceId: newCanaryName };
-  }
-  return { PhysicalResourceId: (event as any).PhysicalResourceId };
+  // for this custom resource. Here, if `newCanaryName` differs from `event.PhysicalResourceId`
+  // then this will trigger a `Delete` event.
+  return { PhysicalResourceId: newCanaryName };
 }
 
 async function onDelete(canaryName: string) {

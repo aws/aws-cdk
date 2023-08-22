@@ -50,7 +50,7 @@ test('cleanup.LAMBDA introduces custom resource to delete lambda', () => {
   });
 
   // THEN
-  Template.fromStack(stack).resourceCountIs('Custom::SyntheticsAutoDeleteLambda', 1);
+  Template.fromStack(stack).resourceCountIs('Custom::SyntheticsAutoDeleteUnderlyingResources', 1);
 });
 
 test('Canary can have generated name', () => {

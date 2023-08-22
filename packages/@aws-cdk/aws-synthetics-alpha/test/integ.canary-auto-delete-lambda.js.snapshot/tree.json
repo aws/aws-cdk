@@ -269,7 +269,7 @@
                     "startCanaryAfterCreation": true,
                     "tags": [
                       {
-                        "key": "aws-cdk:auto-delete-lambda",
+                        "key": "aws-cdk:auto-delete-underlying-resources",
                         "value": "true"
                       }
                     ]
@@ -280,13 +280,13 @@
                   "version": "0.0.0"
                 }
               },
-              "AutoDeleteObjectsCustomResource": {
-                "id": "AutoDeleteObjectsCustomResource",
-                "path": "cdk-synthetics-canary-auto-delete-lambda/Canary/AutoDeleteObjectsCustomResource",
+              "AutoDeleteUnderlyingResourcesCustomResource": {
+                "id": "AutoDeleteUnderlyingResourcesCustomResource",
+                "path": "cdk-synthetics-canary-auto-delete-lambda/Canary/AutoDeleteUnderlyingResourcesCustomResource",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "cdk-synthetics-canary-auto-delete-lambda/Canary/AutoDeleteObjectsCustomResource/Default",
+                    "path": "cdk-synthetics-canary-auto-delete-lambda/Canary/AutoDeleteUnderlyingResourcesCustomResource/Default",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
                       "version": "0.0.0"
@@ -304,13 +304,13 @@
               "version": "0.0.0"
             }
           },
-          "Custom::SyntheticsAutoDeleteLambdaCustomResourceProvider": {
-            "id": "Custom::SyntheticsAutoDeleteLambdaCustomResourceProvider",
-            "path": "cdk-synthetics-canary-auto-delete-lambda/Custom::SyntheticsAutoDeleteLambdaCustomResourceProvider",
+          "Custom::SyntheticsAutoDeleteUnderlyingResourcesCustomResourceProvider": {
+            "id": "Custom::SyntheticsAutoDeleteUnderlyingResourcesCustomResourceProvider",
+            "path": "cdk-synthetics-canary-auto-delete-lambda/Custom::SyntheticsAutoDeleteUnderlyingResourcesCustomResourceProvider",
             "children": {
               "Staging": {
                 "id": "Staging",
-                "path": "cdk-synthetics-canary-auto-delete-lambda/Custom::SyntheticsAutoDeleteLambdaCustomResourceProvider/Staging",
+                "path": "cdk-synthetics-canary-auto-delete-lambda/Custom::SyntheticsAutoDeleteUnderlyingResourcesCustomResourceProvider/Staging",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.AssetStaging",
                   "version": "0.0.0"
@@ -318,7 +318,7 @@
               },
               "Role": {
                 "id": "Role",
-                "path": "cdk-synthetics-canary-auto-delete-lambda/Custom::SyntheticsAutoDeleteLambdaCustomResourceProvider/Role",
+                "path": "cdk-synthetics-canary-auto-delete-lambda/Custom::SyntheticsAutoDeleteUnderlyingResourcesCustomResourceProvider/Role",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnResource",
                   "version": "0.0.0"
@@ -326,7 +326,7 @@
               },
               "Handler": {
                 "id": "Handler",
-                "path": "cdk-synthetics-canary-auto-delete-lambda/Custom::SyntheticsAutoDeleteLambdaCustomResourceProvider/Handler",
+                "path": "cdk-synthetics-canary-auto-delete-lambda/Custom::SyntheticsAutoDeleteUnderlyingResourcesCustomResourceProvider/Handler",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnResource",
                   "version": "0.0.0"
@@ -599,7 +599,7 @@
                     "startCanaryAfterCreation": false,
                     "tags": [
                       {
-                        "key": "aws-cdk:auto-delete-lambda",
+                        "key": "aws-cdk:auto-delete-underlying-resources",
                         "value": "true"
                       }
                     ]
@@ -610,13 +610,13 @@
                   "version": "0.0.0"
                 }
               },
-              "AutoDeleteObjectsCustomResource": {
-                "id": "AutoDeleteObjectsCustomResource",
-                "path": "cdk-synthetics-canary-auto-delete-lambda/CanaryRemoved/AutoDeleteObjectsCustomResource",
+              "AutoDeleteUnderlyingResourcesCustomResource": {
+                "id": "AutoDeleteUnderlyingResourcesCustomResource",
+                "path": "cdk-synthetics-canary-auto-delete-lambda/CanaryRemoved/AutoDeleteUnderlyingResourcesCustomResource",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "cdk-synthetics-canary-auto-delete-lambda/CanaryRemoved/AutoDeleteObjectsCustomResource/Default",
+                    "path": "cdk-synthetics-canary-auto-delete-lambda/CanaryRemoved/AutoDeleteUnderlyingResourcesCustomResource/Default",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
                       "version": "0.0.0"
@@ -806,7 +806,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "c0b84d732d684c5fce61051f95051fe2b94ce6419ceed83e2fb394e7f038d340.zip"
+                      "s3Key": "66db480cb40e7e6208f01c9d9e882f4c416110a2c66dd0c6d12844e8ca9129b6.zip"
                     },
                     "handler": "index.handler",
                     "role": {

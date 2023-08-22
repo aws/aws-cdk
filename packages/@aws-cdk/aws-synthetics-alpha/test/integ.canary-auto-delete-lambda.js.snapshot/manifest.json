@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6c0688d656d56c8daab9897100d1286d0b1449a4aee98363a27f841705e1055b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c46aab6a90e549c29bf1c4c383a61b001a08f40b38506c09b536908a3f5c7954.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -57,22 +57,22 @@
             "data": "Canary11957FE2"
           }
         ],
-        "/cdk-synthetics-canary-auto-delete-lambda/Canary/AutoDeleteObjectsCustomResource/Default": [
+        "/cdk-synthetics-canary-auto-delete-lambda/Canary/AutoDeleteUnderlyingResourcesCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CanaryAutoDeleteObjectsCustomResource005F7791"
+            "data": "CanaryAutoDeleteUnderlyingResourcesCustomResource76464216"
           }
         ],
-        "/cdk-synthetics-canary-auto-delete-lambda/Custom::SyntheticsAutoDeleteLambdaCustomResourceProvider/Role": [
+        "/cdk-synthetics-canary-auto-delete-lambda/Custom::SyntheticsAutoDeleteUnderlyingResourcesCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CustomSyntheticsAutoDeleteLambdaCustomResourceProviderRole782BDF14"
+            "data": "CustomSyntheticsAutoDeleteUnderlyingResourcesCustomResourceProviderRole2D11A112"
           }
         ],
-        "/cdk-synthetics-canary-auto-delete-lambda/Custom::SyntheticsAutoDeleteLambdaCustomResourceProvider/Handler": [
+        "/cdk-synthetics-canary-auto-delete-lambda/Custom::SyntheticsAutoDeleteUnderlyingResourcesCustomResourceProvider/Handler": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CustomSyntheticsAutoDeleteLambdaCustomResourceProviderHandler39847E05"
+            "data": "CustomSyntheticsAutoDeleteUnderlyingResourcesCustomResourceProviderHandler26776D4E"
           }
         ],
         "/cdk-synthetics-canary-auto-delete-lambda/CanaryRemoved/ArtifactsBucket/Resource": [
@@ -99,10 +99,10 @@
             "data": "CanaryRemoved24AD6309"
           }
         ],
-        "/cdk-synthetics-canary-auto-delete-lambda/CanaryRemoved/AutoDeleteObjectsCustomResource/Default": [
+        "/cdk-synthetics-canary-auto-delete-lambda/CanaryRemoved/AutoDeleteUnderlyingResourcesCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CanaryRemovedAutoDeleteObjectsCustomResourceF09F5346"
+            "data": "CanaryRemovedAutoDeleteUnderlyingResourcesCustomResource697450B4"
           }
         ],
         "/cdk-synthetics-canary-auto-delete-lambda/DeleteCanary": [
@@ -145,6 +145,42 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "CanaryAutoDeleteObjectsCustomResource005F7791": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CanaryAutoDeleteObjectsCustomResource005F7791",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "CustomSyntheticsAutoDeleteLambdaCustomResourceProviderRole782BDF14": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomSyntheticsAutoDeleteLambdaCustomResourceProviderRole782BDF14",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "CustomSyntheticsAutoDeleteLambdaCustomResourceProviderHandler39847E05": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomSyntheticsAutoDeleteLambdaCustomResourceProviderHandler39847E05",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "CanaryRemovedAutoDeleteObjectsCustomResourceF09F5346": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CanaryRemovedAutoDeleteObjectsCustomResourceF09F5346",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

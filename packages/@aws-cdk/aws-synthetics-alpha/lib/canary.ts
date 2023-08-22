@@ -333,7 +333,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
 
   private cleanupUnderlyingResources() {
     const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_UNDERLYING_RESOURCES_RESOURCE_TYPE, {
-      codeDirectory: path.join(__dirname, '..', 'custom-resource-handlers', 'dist', 'aws-synthetics-alpha', 'auto-delete-lambda-handler'),
+      codeDirectory: path.join(__dirname, '..', 'custom-resource-handlers', 'dist', 'aws-synthetics-alpha', 'auto-delete-underlying-resources-handler'),
       useCfnResponseWrapper: false,
       runtime: CustomResourceProviderRuntime.NODEJS_18_X,
       description: `Lambda function for auto-deleting underlying resources created by ${this.canaryName}.`,

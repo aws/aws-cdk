@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/63513f4fbf8c7d0de1ce7be98977fd1a83459bca4a8d28494dfdd60e8482939a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a711da117ee4be9b05fd51e68d061a3cb3ca3c556a86209cbca4eb2b5e840234.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -153,22 +153,22 @@
             "data": "FolderAssetDC62ADA6"
           }
         ],
-        "/canary-one/FolderAsset/AutoDeleteObjectsCustomResource/Default": [
+        "/canary-one/FolderAsset/AutoDeleteUnderlyingResourcesCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FolderAssetAutoDeleteObjectsCustomResourceEBE27D1B"
+            "data": "FolderAssetAutoDeleteUnderlyingResourcesCustomResource9ED8468D"
           }
         ],
-        "/canary-one/Custom::SyntheticsAutoDeleteLambdaCustomResourceProvider/Role": [
+        "/canary-one/Custom::SyntheticsAutoDeleteUnderlyingResourcesCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CustomSyntheticsAutoDeleteLambdaCustomResourceProviderRole782BDF14"
+            "data": "CustomSyntheticsAutoDeleteUnderlyingResourcesCustomResourceProviderRole2D11A112"
           }
         ],
-        "/canary-one/Custom::SyntheticsAutoDeleteLambdaCustomResourceProvider/Handler": [
+        "/canary-one/Custom::SyntheticsAutoDeleteUnderlyingResourcesCustomResourceProvider/Handler": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CustomSyntheticsAutoDeleteLambdaCustomResourceProviderHandler39847E05"
+            "data": "CustomSyntheticsAutoDeleteUnderlyingResourcesCustomResourceProviderHandler26776D4E"
           }
         ],
         "/canary-one/ZipAsset/ArtifactsBucket/Resource": [
@@ -340,7 +340,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6f13c7e7c345c9fa005fd841219f771a58edf2ed3fb6a2677ed01c0e3826a53b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/532ce3268d13855e99dcd5affd0410ce6b4d10942e3ed949b7be156af79a6b68.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
