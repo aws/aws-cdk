@@ -32,8 +32,16 @@ new CrossAccountZoneDelegationRecord(stack, 'DelegationWithZoneName', {
   delegationRole: parentZone.crossAccountZoneDelegationRole!,
 });
 
+const role = new iam.Role(stack, 'Role', {
+  assumedBy: new iam.AccountRootPrincipal(),
+});
+
+const importedPublicZone = PublicHostedZone.fromPublicHostedZoneId(stack, 'ImportedPublicZone', 'imported-public-zone-id');
+importedPublicZone.grantDelegation(role);
+
 new IntegTest(app, 'Route53CrossAccountInteg', {
   testCases: [stack],
   diffAssets: true,
 });
+
 app.synth();

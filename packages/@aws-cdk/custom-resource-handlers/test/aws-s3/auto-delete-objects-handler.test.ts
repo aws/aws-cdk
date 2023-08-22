@@ -10,9 +10,12 @@ jest.mock('@aws-sdk/client-s3', () => {
   return {
     S3: jest.fn().mockImplementation(() => {
       return mockS3Client;
-    })
-  }
-})
+    }),
+    S3ServiceException: jest.fn().mockImplementation(() => {
+      return jest.requireActual('@aws-sdk/client-s3').S3ServiceException;
+    }),
+  };
+});
 
 beforeEach(() => {
   mockS3Client.listObjectVersions.mockReturnThis();
@@ -292,7 +295,14 @@ test('delete event where bucket has many objects does recurse appropriately', as
 
 test('does nothing when the bucket does not exist', async () => {
   // GIVEN
-  mockS3Client.listObjectVersions.mockRejectedValue({ code: 'NoSuchBucket' });
+  mockS3Client.listObjectVersions.mockImplementation(async () => {
+    const { S3ServiceException } = jest.requireActual('@aws-sdk/client-s3');
+    return new S3ServiceException({
+      name: 'NoSuchBucket',
+      $fault: 'client',
+      $metadata: {},
+    });
+  });
 
   // WHEN
   const event: Partial<AWSLambda.CloudFormationCustomResourceDeleteEvent> = {

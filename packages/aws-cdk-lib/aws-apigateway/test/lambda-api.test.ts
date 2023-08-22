@@ -189,7 +189,7 @@ describe('lambda api', () => {
     // THEN
     const template = Template.fromStack(stack);
     // Ensure that all methods have "AWS_PROXY" integrations.
-    const methods = template.findResources('AWS::ApiGateway::Mathod');
+    const methods = template.findResources('AWS::ApiGateway::Method');
     const hasProxyIntegration = Match.objectLike({ Integration: Match.objectLike({ Type: 'AWS_PROXY' }) });
     for (const method of Object.values(methods)) {
       expect(hasProxyIntegration.test(method)).toBeTruthy();

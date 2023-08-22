@@ -1,6 +1,7 @@
 import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
+import { bockfs } from '@aws-cdk/cdk-build-tools';
 import { callsites, exec, extractDependencies, findUp, findUpMultiple, getTsconfigCompilerOptions } from '../lib/util';
 
 beforeEach(() => {
@@ -8,71 +9,87 @@ beforeEach(() => {
 });
 
 describe('callsites', () => {
-  expect(callsites()[0].getFileName()).toMatch(/\/test\/util.test.js$/);
+  expect(callsites()[0].getFileName()).toMatch(/\/test\/util.test.ts$/);
 });
 
-describe('findUp', () => {
-  test('Starting at process.cwd()', () => {
-    expect(findUp('README.md')).toMatch(/aws-cdk-lib\/README.md$/);
+describe('findUp helpers', () => {
+  // insert contents in fake filesystem
+  bockfs({
+    '/home/project/file0': 'ARBITRARY',
+    '/home/project/file1': 'ARBITRARY',
+    '/home/project/file2': 'ARBITRARY',
+    '/home/project/subdir/.keep': 'ARBITRARY',
+    '/home/project/subdir/file3': 'ARBITRARY',
+  });
+  const bockPath = bockfs.workingDirectory('/home/project');
+
+  afterAll(() => {
+    bockfs.restore();
   });
 
-  test('Non existing file', () => {
-    expect(findUp('non-existing-file.unknown')).toBe(undefined);
+  describe('findUp', () => {
+    test('Starting at process.cwd()', () => {
+      expect(findUp('file0')).toBe(bockPath`file0`);
+    });
+
+    test('Non existing file', () => {
+      expect(findUp('non-existing-file.unknown')).toBe(undefined);
+    });
+
+    test('Starting at a specific path', () => {
+      expect(findUp('file1', bockPath`/home/project/subdir`)).toBe(bockPath`/home/project/file1`);
+    });
+
+    test('Non existing file starting at a non existing relative path', () => {
+      expect(findUp('not-to-be-found.txt', 'non-existing/relative/path')).toBe(undefined);
+    });
+
+    test('Starting at a relative path', () => {
+      expect(findUp('file1', 'subdir')).toBe(bockPath`file1`);
+    });
   });
 
-  test('Starting at a specific path', () => {
-    expect(findUp('util.test.ts', path.join(__dirname, 'integ-handlers'))).toMatch(/aws-lambda-nodejs\/test\/util.test.ts$/);
-  });
+  describe('findUpMultiple', () => {
+    test('Starting at process.cwd()', () => {
+      const files = findUpMultiple(['file0', 'file1']);
+      expect(files).toHaveLength(2);
+      expect(files[0]).toBe(bockPath`file0`);
+      expect(files[1]).toBe(bockPath`file1`);
+    });
 
-  test('Non existing file starting at a non existing relative path', () => {
-    expect(findUp('not-to-be-found.txt', 'non-existing/relative/path')).toBe(undefined);
-  });
+    test('Non existing files', () => {
+      expect(findUpMultiple(['non-existing-file.unknown', 'non-existing-file.unknown2'])).toEqual([]);
+    });
 
-  test('Starting at a relative path', () => {
-    expect(findUp('util.test.ts', 'aws-lambda-nodejs/test/integ-handlers')).toMatch(/aws-lambda-nodejs\/test\/util.test.ts$/);
-  });
-});
+    test('Existing and non existing files', () => {
+      const files = findUpMultiple(['non-existing-file.unknown', 'file0']);
+      expect(files).toHaveLength(1);
+      expect(files[0]).toMatch(bockPath`file0`);
+    });
 
-describe('findUpMultiple', () => {
-  test('Starting at process.cwd()', () => {
-    const files = findUpMultiple(['README.md', 'package.json']);
-    expect(files).toHaveLength(2);
-    expect(files[0]).toMatch(/aws-cdk-lib\/README\.md$/);
-    expect(files[1]).toMatch(/aws-cdk-lib\/package\.json$/);
-  });
+    test('Starting at a specific path', () => {
+      const files = findUpMultiple(['file1', 'file2'], bockPath`/home/project/subdir`);
+      expect(files).toHaveLength(2);
+      expect(files[0]).toBe(bockPath`file1`);
+      expect(files[1]).toBe(bockPath`file2`);
+    });
 
-  test('Non existing files', () => {
-    expect(findUpMultiple(['non-existing-file.unknown', 'non-existing-file.unknown2'])).toEqual([]);
-  });
+    test('Non existing files starting at a non existing relative path', () => {
+      expect(findUpMultiple(['not-to-be-found.txt', 'not-to-be-found2.txt'], 'non-existing/relative/path')).toEqual([]);
+    });
 
-  test('Existing and non existing files', () => {
-    const files = findUpMultiple(['non-existing-file.unknown', 'README.md']);
-    expect(files).toHaveLength(1);
-    expect(files[0]).toMatch(/aws-cdk-lib\/README\.md$/);
-  });
+    test('Starting at a relative path', () => {
+      const files = findUpMultiple(['file1', 'file2'], 'subdir');
+      expect(files).toHaveLength(2);
+      expect(files[0]).toBe(bockPath`file1`);
+      expect(files[1]).toBe(bockPath`file2`);
+    });
 
-  test('Starting at a specific path', () => {
-    const files = findUpMultiple(['util.test.ts', 'function.test.ts'], path.join(__dirname, 'integ-handlers'));
-    expect(files).toHaveLength(2);
-    expect(files[0]).toMatch(/aws-lambda-nodejs\/test\/util\.test\.ts$/);
-    expect(files[1]).toMatch(/aws-lambda-nodejs\/test\/function\.test\.ts$/);
-  });
-
-  test('Non existing files starting at a non existing relative path', () => {
-    expect(findUpMultiple(['not-to-be-found.txt', 'not-to-be-found2.txt'], 'non-existing/relative/path')).toEqual([]);
-  });
-
-  test('Starting at a relative path', () => {
-    const files = findUpMultiple(['util.test.ts', 'function.test.ts'], 'aws-lambda-nodejs/test/integ-handlers');
-    expect(files).toHaveLength(2);
-    expect(files[0]).toMatch(/aws-lambda-nodejs\/test\/util\.test\.ts$/);
-    expect(files[1]).toMatch(/aws-lambda-nodejs\/test\/function\.test\.ts$/);
-  });
-
-  test('Files on multiple levels', () => {
-    const files = findUpMultiple(['README.md', 'util.test.ts'], path.join(__dirname, 'integ-handlers'));
-    expect(files).toHaveLength(1);
-    expect(files[0]).toMatch(/aws-lambda-nodejs\/test\/util\.test\.ts$/);
+    test('Files on multiple levels', () => {
+      const files = findUpMultiple(['file0', 'file3'], bockPath`/home/project/subdir`);
+      expect(files).toHaveLength(1);
+      expect(files[0]).toBe(bockPath`subdir/file3`);
+    });
   });
 });
 

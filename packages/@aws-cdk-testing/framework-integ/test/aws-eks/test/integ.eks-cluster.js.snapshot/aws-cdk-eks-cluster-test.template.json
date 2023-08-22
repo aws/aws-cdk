@@ -3727,7 +3727,7 @@
       "Outputs.awscdkeksclustertestawscdkawseksKubectlProviderframeworkonEventC681B49AArn"
      ]
     },
-    "Manifest": "[{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"name\":\"hello-kubernetes\",\"labels\":{\"aws.cdk.eks/prune-c8f0f7140f7358e29b7f58e81b507dcf744a3908f4\":\"\"}},\"spec\":{\"type\":\"LoadBalancer\",\"ports\":[{\"port\":80,\"targetPort\":8080}],\"selector\":{\"app\":\"hello-kubernetes\"}}},{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"name\":\"hello-kubernetes\",\"labels\":{\"aws.cdk.eks/prune-c8f0f7140f7358e29b7f58e81b507dcf744a3908f4\":\"\"}},\"spec\":{\"replicas\":1,\"selector\":{\"matchLabels\":{\"app\":\"hello-kubernetes\"}},\"template\":{\"metadata\":{\"labels\":{\"app\":\"hello-kubernetes\"}},\"spec\":{\"containers\":[{\"name\":\"hello-kubernetes\",\"image\":\"paulbouwer/hello-kubernetes:1.5\",\"ports\":[{\"containerPort\":8080}]}]}}}}]",
+    "Manifest": "[{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"name\":\"hello-kubernetes\",\"labels\":{\"aws.cdk.eks/prune-c8f0f7140f7358e29b7f58e81b507dcf744a3908f4\":\"\"}},\"spec\":{\"ports\":[{\"port\":80,\"targetPort\":8080}],\"selector\":{\"app\":\"hello-kubernetes\"}}},{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"name\":\"hello-kubernetes\",\"labels\":{\"aws.cdk.eks/prune-c8f0f7140f7358e29b7f58e81b507dcf744a3908f4\":\"\"}},\"spec\":{\"replicas\":1,\"selector\":{\"matchLabels\":{\"app\":\"hello-kubernetes\"}},\"template\":{\"metadata\":{\"labels\":{\"app\":\"hello-kubernetes\"}},\"spec\":{\"containers\":[{\"name\":\"hello-kubernetes\",\"image\":\"paulbouwer/hello-kubernetes:1.5\",\"ports\":[{\"containerPort\":8080}]}]}}}}]",
     "ClusterName": {
      "Ref": "Cluster9EE0221C"
     },
@@ -3765,6 +3765,7 @@
     },
     "Release": "awscdkeksclustertestclusterchartdashboard1f3d83fe",
     "Chart": "kubernetes-dashboard",
+    "Version": "6.0.8",
     "Namespace": "default",
     "Repository": "https://kubernetes.github.io/dashboard/",
     "CreateNamespace": true
@@ -3889,10 +3890,12 @@
       "Arn"
      ]
     },
-    "Release": "awscdkeksclustertestclusterchartnginxingressa7f70129",
+    "Release": "nginx-ingress",
     "Chart": "nginx-ingress",
+    "Version": "0.17.1",
     "Wait": true,
     "Timeout": "900s",
+    "Values": "{\"controller\":{\"service\":{\"create\":false}}}",
     "Namespace": "nginx",
     "Repository": "https://helm.nginx.com/stable"
    },
@@ -4038,7 +4041,7 @@
       "OpenIdConnectIssuerUrl"
      ]
     },
-    "CodeHash": "ffa3d5f3876afed62c60735ced8dafb4db2ccbd70a8b2f6b0d9e6eaa5823d631"
+    "CodeHash": "03d2c2b0648898186dc5342981e426a3ac3bd09a96ce66df58a875bde29e4a56"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -4175,7 +4178,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/38d703160bc45251d27e806080a42e0e3e95a76199d0d1342c10c86a6a132f01.json"
+       "/10f52f7e1cae4868df3700d82e3d31b19d73ad74fa99aefab4a7e994f5752106.json"
       ]
      ]
     }
@@ -4221,7 +4224,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/c4dcedad1cadbfa87852da53c1c41533ef51e3bd1395cd2d70fffb677c3c81a9.json"
+       "/08e97a0b00ee9b6a6906cbd76cf72e1f1b83b24330d074a3bed941d837d321c2.json"
       ]
      ]
     }
@@ -4339,7 +4342,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "ffa3d5f3876afed62c60735ced8dafb4db2ccbd70a8b2f6b0d9e6eaa5823d631.zip"
+     "S3Key": "03d2c2b0648898186dc5342981e426a3ac3bd09a96ce66df58a875bde29e4a56.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -4350,7 +4353,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderRole517FED65"

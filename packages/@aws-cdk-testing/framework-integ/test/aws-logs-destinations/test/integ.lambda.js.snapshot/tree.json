@@ -148,13 +148,13 @@
                     "code": {
                       "zipFile": "exports.handler = async (event) => {\n        return 'success';\n      };"
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "MyFunctionServiceRole3C357FF2",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
                     "runtime": "nodejs16.x"
                   }
                 },
@@ -173,10 +173,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Lambda::EventInvokeConfig",
                       "aws:cdk:cloudformation:props": {
-                        "functionName": {
-                          "Ref": "MyFunction3BAA72D1"
-                        },
-                        "qualifier": "$LATEST",
                         "destinationConfig": {
                           "onSuccess": {
                             "destination": {
@@ -186,7 +182,11 @@
                               ]
                             }
                           }
-                        }
+                        },
+                        "functionName": {
+                          "Ref": "MyFunction3BAA72D1"
+                        },
+                        "qualifier": "$LATEST"
                       }
                     },
                     "constructInfo": {
@@ -531,15 +531,15 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "147814a8b95b4dc50c3d78ab1cf1a5a7fe7376d961cb2447e6a1c7184b14bd78.zip"
+                      "s3Key": "66db480cb40e7e6208f01c9d9e882f4c416110a2c66dd0c6d12844e8ca9129b6.zip"
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
                     "runtime": "nodejs18.x",
                     "timeout": 120
                   }
@@ -570,7 +570,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.55"
+              "version": "10.2.69"
             }
           },
           "BootstrapVersion": {
@@ -608,7 +608,7 @@
                 "path": "LambdaInteg/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "version": "10.2.69"
                 }
               },
               "DeployAssert": {
@@ -628,7 +628,7 @@
                             "path": "LambdaInteg/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEvents9a20df3f29597ff1b9e82b1f34c42383/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.55"
+                              "version": "10.2.69"
                             }
                           }
                         },
@@ -692,7 +692,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "version": "10.2.69"
                     }
                   },
                   "AwsApiCallSQSreceiveMessage3913742af0f68967ecd340999fcff4d0": {
@@ -708,7 +708,7 @@
                             "path": "LambdaInteg/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage3913742af0f68967ecd340999fcff4d0/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.55"
+                              "version": "10.2.69"
                             }
                           }
                         },
@@ -788,7 +788,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.55"
+          "version": "10.2.69"
         }
       }
     },

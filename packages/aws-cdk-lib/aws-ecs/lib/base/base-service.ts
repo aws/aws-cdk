@@ -1029,14 +1029,14 @@ export abstract class BaseService extends Resource
     return {
       attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
         targetGroup.registerConnectable(self, self.taskDefinition._portRangeFromPortMapping(target.portMapping));
-        return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort);
+        return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort!);
       },
       attachToNetworkTargetGroup(targetGroup: elbv2.NetworkTargetGroup): elbv2.LoadBalancerTargetProps {
-        return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort);
+        return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort!);
       },
       connections,
       attachToClassicLB(loadBalancer: elb.LoadBalancer): void {
-        return self.attachToELB(loadBalancer, target.containerName, target.portMapping.containerPort);
+        return self.attachToELB(loadBalancer, target.containerName, target.portMapping.containerPort!);
       },
     };
   }
@@ -1367,7 +1367,7 @@ export abstract class BaseService extends Resource
   }
 
   private deploymentAlarmsAvailableInRegion(): boolean {
-    const unsupportedPartitions = ['aws-cn', 'aws-us-gov', 'aws-us-iso', 'aws-us-iso-b'];
+    const unsupportedPartitions = ['aws-cn', 'aws-us-gov', 'aws-iso', 'aws-iso-b'];
     const currentRegion = RegionInfo.get(this.stack.resolve(this.stack.region));
     if (currentRegion.partition) {
       return !unsupportedPartitions.includes(currentRegion.partition);

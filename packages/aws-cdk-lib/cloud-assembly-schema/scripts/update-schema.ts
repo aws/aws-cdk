@@ -14,10 +14,32 @@ function log(message: string) {
  */
 const SCHEMA_DIR = path.resolve(__dirname, '../schema');
 
-const SCHEMA_DEFINITIONS: { [schemaName: string]: { rootTypeName: string } } = {
-  'assets': { rootTypeName: 'AssetManifest' },
-  'cloud-assembly': { rootTypeName: 'AssemblyManifest' },
-  'integ': { rootTypeName: 'IntegManifest' },
+const SCHEMA_DEFINITIONS: {
+  [schemaName: string]: {
+    /**
+     * The name of the root type.
+     */
+    rootTypeName: string;
+    /**
+     * Files loaded to generate the schema.
+     * Should be relative to `cloud-assembly-schema/lib`.
+     * Usually this is just the file containing the root type.
+     */
+    files: string[];
+  }
+} = {
+  'assets': {
+    rootTypeName: 'AssetManifest',
+    files: [path.join('assets', 'schema.ts')],
+  },
+  'cloud-assembly': {
+    rootTypeName: 'AssemblyManifest',
+    files: [path.join('cloud-assembly', 'schema.ts')],
+  },
+  'integ': {
+    rootTypeName: 'IntegManifest',
+    files: [path.join('integ-tests', 'schema.ts')],
+  },
 };
 
 export const SCHEMAS = Object.keys(SCHEMA_DEFINITIONS);
@@ -65,7 +87,7 @@ export function generateSchema(schemaName: string, saveToFile: boolean = true) {
     strictNullChecks: true,
   };
 
-  const program = tjs.getProgramFromFiles([path.join(__dirname, '../lib/index.d.ts')], compilerOptions);
+  const program = tjs.getProgramFromFiles(spec.files.map(file =>path.join(__dirname, '..', 'lib', file)), compilerOptions);
   const schema = tjs.generateSchema(program, spec.rootTypeName, settings);
 
   augmentDescription(schema);
@@ -125,5 +147,5 @@ function augmentDescription(schema: any) {
  * compatibility checks.
  */
 function addAnyMetadataEntry(schema: any) {
-  schema.definitions.MetadataEntry?.properties.data.anyOf.push({ description: 'Free form data.' });
+  schema?.definitions?.MetadataEntry?.properties.data.anyOf.push({ description: 'Free form data.' });
 }

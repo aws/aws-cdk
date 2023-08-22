@@ -12,17 +12,10 @@
     "service": "EventBridge",
     "api": "putEvents",
     "parameters": {
-     "Entries": [
-      {
-       "Detail": "{\"foo\":\"bar\"}",
-       "DetailType": "cdk-integ-custom-rule",
-       "Source": "cdk-lambda-integ"
-      }
-     ]
+     "Entries": "[{\"Detail\":\"{\\\"foo\\\":\\\"bar\\\"}\",\"DetailType\":\"cdk-integ-custom-rule\",\"Source\":\"cdk-lambda-integ\"}]"
     },
     "flattenResponse": "false",
-    "outputPaths": [],
-    "salt": "1688681222704"
+    "salt": "1692312757785"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -94,7 +87,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "032b2e4fece97305307a8662e267281db7bec3b05398ddda60963270175e6664.zip"
+     "S3Key": "54ed1902ad5ad220444041937ce65cb63c7fbccd0c11fdfd9ecbec43770cdaa5.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -120,13 +113,21 @@
     "expected": "{\"$ObjectLike\":{\"Messages\":[{\"Body\":{\"$StringLike\":\"\\\"responsePayload\\\":\\\"success\\\"\"}}]}}",
     "parameters": {
      "QueueUrl": {
-      "Fn::ImportValue": "lambda-logssubscription-integ:ExportsOutputRefQueue4A7E3555425E8BD3"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "lambda-logssubscription-integ:ExportsOutputRefQueue4A7E3555425E8BD3"
+        },
+        "\""
+       ]
+      ]
      },
-     "WaitTimeSeconds": 20
+     "WaitTimeSeconds": "20"
     },
     "flattenResponse": "false",
-    "outputPaths": [],
-    "salt": "1688681222705"
+    "salt": "1692312757785"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

@@ -3,7 +3,7 @@ import { HostedZoneProviderProps } from './hosted-zone-provider';
 import { HostedZoneAttributes, IHostedZone, PublicHostedZoneAttributes } from './hosted-zone-ref';
 import { CaaAmazonRecord, ZoneDelegationRecord } from './record-set';
 import { CfnHostedZone } from './route53.generated';
-import { makeHostedZoneArn, validateZoneName } from './util';
+import { makeGrantDelegation, makeHostedZoneArn, validateZoneName } from './util';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as cxschema from '../../cloud-assembly-schema';
@@ -238,7 +238,12 @@ export interface PublicHostedZoneProps extends CommonHostedZoneProps {
 /**
  * Represents a Route 53 public hosted zone
  */
-export interface IPublicHostedZone extends IHostedZone { }
+export interface IPublicHostedZone extends IHostedZone {
+  /**
+   * Grant permissions to add delegation records to this zone
+   */
+  grantDelegation(grantee: iam.IGrantable): iam.Grant;
+}
 
 /**
  * Create a Route53 public hosted zone.
@@ -264,6 +269,9 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }
+      public grantDelegation(grantee: iam.IGrantable): iam.Grant {
+        return makeGrantDelegation(grantee, this.hostedZoneArn);
+      };
     }
     return new Import(scope, id);
   }
@@ -284,6 +292,9 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }
+      public grantDelegation(grantee: iam.IGrantable): iam.Grant {
+        return makeGrantDelegation(grantee, this.hostedZoneArn);
+      };
     }
     return new Import(scope, id);
   }
@@ -354,28 +365,8 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
     });
   }
 
-  /**
-   * Grant permissions to add delegation records to this zone
-   */
-  public grantDelegation(grantee: iam.IGrantable) {
-    const g1 = iam.Grant.addToPrincipal({
-      grantee,
-      actions: ['route53:ChangeResourceRecordSets'],
-      resourceArns: [this.hostedZoneArn],
-      conditions: {
-        'ForAllValues:StringEquals': {
-          'route53:ChangeResourceRecordSetsRecordTypes': ['NS'],
-          'route53:ChangeResourceRecordSetsActions': ['UPSERT', 'DELETE'],
-        },
-      },
-    });
-    const g2 = iam.Grant.addToPrincipal({
-      grantee,
-      actions: ['route53:ListHostedZonesByName'],
-      resourceArns: ['*'],
-    });
-
-    return g1.combine(g2);
+  public grantDelegation(grantee: iam.IGrantable): iam.Grant {
+    return makeGrantDelegation(grantee, this.hostedZoneArn);
   }
 }
 

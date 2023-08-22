@@ -689,7 +689,7 @@ export interface ServiceProps {
    *
    * @see https://docs.aws.amazon.com/apprunner/latest/dg/security_iam_service-with-iam.html#security_iam_service-with-iam-roles-service.instance
    *
-   * @default - no instance role attached.
+   * @default - generate a new instance role.
    */
   readonly instanceRole?: iam.IRole;
 
@@ -959,7 +959,7 @@ export abstract class Secret {
 /**
  * The App Runner Service.
  */
-export class Service extends cdk.Resource {
+export class Service extends cdk.Resource implements iam.IGrantable {
   /**
    * Import from service name.
    */
@@ -993,9 +993,10 @@ export class Service extends cdk.Resource {
 
     return new Import(scope, id);
   }
+  public readonly grantPrincipal: iam.IPrincipal;
   private readonly props: ServiceProps;
   private accessRole?: iam.IRole;
-  private instanceRole?: iam.IRole;
+  private instanceRole: iam.IRole;
   private source: SourceConfig;
 
   /**
@@ -1051,7 +1052,8 @@ export class Service extends cdk.Resource {
     this.source = source;
     this.props = props;
 
-    this.instanceRole = this.props.instanceRole;
+    this.instanceRole = this.props.instanceRole ?? this.createInstanceRole();
+    this.grantPrincipal = this.instanceRole;
 
     const environmentVariables = this.getEnvironmentVariables();
     const environmentSecrets = this.getEnvironmentSecrets();
@@ -1118,6 +1120,13 @@ export class Service extends cdk.Resource {
   }
 
   /**
+   * Adds a statement to the instance role.
+   */
+  public addToRolePolicy(statement: iam.PolicyStatement) {
+    this.instanceRole.addToPrincipalPolicy(statement);
+  }
+
+  /**
    * This method adds an environment variable to the App Runner service.
    */
   public addEnvironmentVariable(name: string, value: string) {
@@ -1133,9 +1142,6 @@ export class Service extends cdk.Resource {
   public addSecret(name: string, secret: Secret) {
     if (name.startsWith('AWSAPPRUNNER')) {
       throw new Error(`Environment secret key ${name} with a prefix of AWSAPPRUNNER is not allowed`);
-    }
-    if (!this.instanceRole) {
-      this.instanceRole = this.createInstanceRole();
     }
     secret.grantRead(this.instanceRole);
     this.secrets.push({ name: name, value: secret.arn });

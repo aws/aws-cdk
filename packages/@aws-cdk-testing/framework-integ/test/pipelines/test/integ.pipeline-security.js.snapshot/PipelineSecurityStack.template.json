@@ -112,7 +112,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "89c643a8a6c919d906e0b1cb079b0c5e131cf3cc19c05126f90fc118647fb08c.zip"
+     "S3Key": "216218e507a977a1bb3592f29c1a62ab3e0a9eb25569109a395315638e154329.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -531,6 +531,23 @@
   "TestPipeline34ACDBF9": {
    "Type": "AWS::CodePipeline::Pipeline",
    "Properties": {
+    "ArtifactStore": {
+     "EncryptionKey": {
+      "Id": {
+       "Fn::GetAtt": [
+        "TestPipelineArtifactsBucketEncryptionKey13258842",
+        "Arn"
+       ]
+      },
+      "Type": "KMS"
+     },
+     "Location": {
+      "Ref": "TestPipelineArtifactsBucket026AF2F9"
+     },
+     "Type": "S3"
+    },
+    "Name": "TestPipeline",
+    "RestartExecutionOnUpdate": true,
     "RoleArn": {
      "Fn::GetAtt": [
       "TestPipelineRole63C35BBD",
@@ -583,7 +600,7 @@
          "ProjectName": {
           "Ref": "TestPipelineBuildSynthCdkBuildProject755D4B01"
          },
-         "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"55237dcb0df011e1efdb5ff9053063140a7b6d053626aea9bbb4ea1f6ea0a07e\"}]"
+         "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"8c69c5d954446d78352846c8ddc8ff911cec11c1f93f8aab1fac67556cf1a058\"}]"
         },
         "InputArtifacts": [
          {
@@ -1484,23 +1501,6 @@
       "Name": "NoSecurityCheck"
      }
     ],
-    "ArtifactStore": {
-     "EncryptionKey": {
-      "Id": {
-       "Fn::GetAtt": [
-        "TestPipelineArtifactsBucketEncryptionKey13258842",
-        "Arn"
-       ]
-      },
-      "Type": "KMS"
-     },
-     "Location": {
-      "Ref": "TestPipelineArtifactsBucket026AF2F9"
-     },
-     "Type": "S3"
-    },
-    "Name": "TestPipeline",
-    "RestartExecutionOnUpdate": true,
     "Tags": [
      {
       "Key": "SECURITY_CHECK",
@@ -1885,6 +1885,15 @@
     "Artifacts": {
      "Type": "CODEPIPELINE"
     },
+    "Cache": {
+     "Type": "NO_CACHE"
+    },
+    "EncryptionKey": {
+     "Fn::GetAtt": [
+      "TestPipelineArtifactsBucketEncryptionKey13258842",
+      "Arn"
+     ]
+    },
     "Environment": {
      "ComputeType": "BUILD_GENERAL1_SMALL",
      "EnvironmentVariables": [
@@ -1894,7 +1903,7 @@
        "Value": "true"
       }
      ],
-     "Image": "aws/codebuild/standard:6.0",
+     "Image": "aws/codebuild/standard:7.0",
      "ImagePullCredentialsType": "CODEBUILD",
      "PrivilegedMode": false,
      "Type": "LINUX_CONTAINER"
@@ -1908,15 +1917,6 @@
     "Source": {
      "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"pre_build\": {\n      \"commands\": [\n        \"yarn install --frozen-lockfile\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"yarn build\",\n        \"npx cdk synth\"\n      ]\n    }\n  },\n  \"artifacts\": {\n    \"base-directory\": \"cdk.out\",\n    \"files\": \"**/*\"\n  }\n}",
      "Type": "CODEPIPELINE"
-    },
-    "Cache": {
-     "Type": "NO_CACHE"
-    },
-    "EncryptionKey": {
-     "Fn::GetAtt": [
-      "TestPipelineArtifactsBucketEncryptionKey13258842",
-      "Arn"
-     ]
     }
    }
   },
@@ -2365,13 +2365,13 @@
      },
      "S3Key": "271a1a7bb81a361380921b21e8273a6acfe4867eba05fe530c4d05c065c17a65.zip"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "TestPipelinePipelineApplicationSecurityCheckCDKPipelinesAutoApproveServiceRole7594919D",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
     "Runtime": "nodejs18.x",
     "Timeout": 300
    },
@@ -2601,9 +2601,18 @@
     "Artifacts": {
      "Type": "NO_ARTIFACTS"
     },
+    "Cache": {
+     "Type": "NO_CACHE"
+    },
+    "EncryptionKey": {
+     "Fn::GetAtt": [
+      "TestPipelineArtifactsBucketEncryptionKey13258842",
+      "Arn"
+     ]
+    },
     "Environment": {
      "ComputeType": "BUILD_GENERAL1_SMALL",
-     "Image": "aws/codebuild/standard:6.0",
+     "Image": "aws/codebuild/standard:7.0",
      "ImagePullCredentialsType": "CODEBUILD",
      "PrivilegedMode": false,
      "Type": "LINUX_CONTAINER"
@@ -2628,15 +2637,6 @@
       ]
      },
      "Type": "NO_SOURCE"
-    },
-    "Cache": {
-     "Type": "NO_CACHE"
-    },
-    "EncryptionKey": {
-     "Fn::GetAtt": [
-      "TestPipelineArtifactsBucketEncryptionKey13258842",
-      "Arn"
-     ]
     }
    }
   },
@@ -2709,13 +2709,13 @@
      },
      "S3Key": "271a1a7bb81a361380921b21e8273a6acfe4867eba05fe530c4d05c065c17a65.zip"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "UnattachedStageStageApplicationSecurityCheckCDKPipelinesAutoApproveServiceRole1358574A",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
     "Runtime": "nodejs18.x",
     "Timeout": 300
    },
@@ -2945,9 +2945,18 @@
     "Artifacts": {
      "Type": "NO_ARTIFACTS"
     },
+    "Cache": {
+     "Type": "NO_CACHE"
+    },
+    "EncryptionKey": {
+     "Fn::GetAtt": [
+      "TestPipelineArtifactsBucketEncryptionKey13258842",
+      "Arn"
+     ]
+    },
     "Environment": {
      "ComputeType": "BUILD_GENERAL1_SMALL",
-     "Image": "aws/codebuild/standard:6.0",
+     "Image": "aws/codebuild/standard:7.0",
      "ImagePullCredentialsType": "CODEBUILD",
      "PrivilegedMode": false,
      "Type": "LINUX_CONTAINER"
@@ -2972,15 +2981,6 @@
       ]
      },
      "Type": "NO_SOURCE"
-    },
-    "Cache": {
-     "Type": "NO_CACHE"
-    },
-    "EncryptionKey": {
-     "Fn::GetAtt": [
-      "TestPipelineArtifactsBucketEncryptionKey13258842",
-      "Arn"
-     ]
     }
    }
   },
@@ -2990,11 +2990,11 @@
   "SecurityChangesTopictestemailcom7C32D452": {
    "Type": "AWS::SNS::Subscription",
    "Properties": {
+    "Endpoint": "test@email.com",
     "Protocol": "email",
     "TopicArn": {
      "Ref": "SecurityChangesTopic9762A9B3"
-    },
-    "Endpoint": "test@email.com"
+    }
    }
   }
  },

@@ -40,13 +40,13 @@
      },
      "S3Key": "deploy-time/68539effc3f7ad46fff9765606c2a01b7f7965833643ab37e62799f19a37f650.zip"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "lambdas3ServiceRoleC9EDE33A",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
     "Runtime": "python3.10"
    },
    "DependsOn": [
@@ -92,13 +92,13 @@
       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/default-resourcesmax/ecr-asset/1:16624c2a162b07c5cc0e2c59c484f638bac238ca558ccbdc2aa0e0535df3e622"
      }
     },
+    "PackageType": "Image",
     "Role": {
      "Fn::GetAtt": [
       "lambdaecr1copyServiceRole2A9FAF5F",
       "Arn"
      ]
-    },
-    "PackageType": "Image"
+    }
    },
    "DependsOn": [
     "lambdaecr1copyServiceRole2A9FAF5F"
@@ -143,13 +143,13 @@
       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/default-resourcesmax/ecr-asset-2:16624c2a162b07c5cc0e2c59c484f638bac238ca558ccbdc2aa0e0535df3e622"
      }
     },
+    "PackageType": "Image",
     "Role": {
      "Fn::GetAtt": [
       "lambdaecrtwoServiceRole13E37F90",
       "Arn"
      ]
-    },
-    "PackageType": "Image"
+    }
    },
    "DependsOn": [
     "lambdaecrtwoServiceRole13E37F90"

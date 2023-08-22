@@ -153,6 +153,7 @@
                       "dedicatedMasterEnabled": false,
                       "instanceCount": 1,
                       "instanceType": "r5.large.search",
+                      "multiAzWithStandbyEnabled": false,
                       "zoneAwarenessEnabled": false
                     },
                     "domainEndpointOptions": {
@@ -190,6 +191,18 @@
                     },
                     "nodeToNodeEncryptionOptions": {
                       "enabled": true
+                    },
+                    "offPeakWindowOptions": {
+                      "enabled": true,
+                      "offPeakWindow": {
+                        "windowStartTime": {
+                          "hours": 20,
+                          "minutes": 0
+                        }
+                      }
+                    },
+                    "softwareUpdateOptions": {
+                      "autoSoftwareUpdateEnabled": true
                     }
                   }
                 },
@@ -381,15 +394,15 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "147814a8b95b4dc50c3d78ab1cf1a5a7fe7376d961cb2447e6a1c7184b14bd78.zip"
+                      "s3Key": "66db480cb40e7e6208f01c9d9e882f4c416110a2c66dd0c6d12844e8ca9129b6.zip"
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
                     "runtime": "nodejs18.x",
                     "timeout": 120
                   }
@@ -550,6 +563,7 @@
                       "dedicatedMasterEnabled": false,
                       "instanceCount": 1,
                       "instanceType": "r5.large.search",
+                      "multiAzWithStandbyEnabled": false,
                       "zoneAwarenessEnabled": false
                     },
                     "domainEndpointOptions": {
@@ -587,6 +601,18 @@
                     },
                     "nodeToNodeEncryptionOptions": {
                       "enabled": true
+                    },
+                    "offPeakWindowOptions": {
+                      "enabled": true,
+                      "offPeakWindow": {
+                        "windowStartTime": {
+                          "hours": 20,
+                          "minutes": 0
+                        }
+                      }
+                    },
+                    "softwareUpdateOptions": {
+                      "autoSoftwareUpdateEnabled": true
                     }
                   }
                 },
@@ -716,7 +742,7 @@
                 "path": "OpenSearchInteg/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "version": "10.2.69"
                 }
               },
               "DeployAssert": {
@@ -762,7 +788,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.55"
+          "version": "10.2.69"
         }
       }
     },

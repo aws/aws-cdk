@@ -79,6 +79,9 @@ export class TypeConverter {
   private readonly typeDefinitionConverter: TypeDefinitionConverter;
   private readonly typeDefCache = new Map<TypeDefinition, StructType>();
 
+  /** Reverse mapping so we can find the original type back for every generated Type */
+  private readonly originalTypes = new WeakMap<Type, PropertyType>();
+
   constructor(options: TypeConverterOptions) {
     this.db = options.db;
     this.typeDefinitionConverter = options.typeDefinitionConverter;
@@ -101,35 +104,50 @@ export class TypeConverter {
     return new RichProperty(property).types();
   }
 
+  /**
+   * Convert a spec Type to a typewriter Type
+   */
   public typeFromSpecType(type: PropertyType): Type {
-    switch (type?.type) {
-      case 'string':
-        return Type.STRING;
-      case 'number':
-      case 'integer':
-        return Type.NUMBER;
-      case 'boolean':
-        return Type.BOOLEAN;
-      case 'date-time':
-        return Type.DATE_TIME;
-      case 'array':
-        return Type.arrayOf(this.typeFromSpecType(type.element));
-      case 'map':
-        return Type.mapOf(this.typeFromSpecType(type.element));
-      case 'ref':
-        const ref = this.db.get('typeDefinition', type.reference.$ref);
-        return this.convertTypeDefinitionType(ref).type;
-      case 'tag':
-        return CDK_CORE.CfnTag;
-      case 'union':
-        return Type.unionOf(...type.types.map((t) => this.typeFromSpecType(t)));
-      case 'null':
-        return Type.UNDEFINED;
-      case 'tag':
-        return CDK_CORE.CfnTag;
-      case 'json':
-        return Type.ANY;
+    const converted = ((): Type => {
+      switch (type?.type) {
+        case 'string':
+          return Type.STRING;
+        case 'number':
+        case 'integer':
+          return Type.NUMBER;
+        case 'boolean':
+          return Type.BOOLEAN;
+        case 'date-time':
+          return Type.DATE_TIME;
+        case 'array':
+          return Type.arrayOf(this.typeFromSpecType(type.element));
+        case 'map':
+          return Type.mapOf(this.typeFromSpecType(type.element));
+        case 'ref':
+          const ref = this.db.get('typeDefinition', type.reference.$ref);
+          return this.convertTypeDefinitionType(ref).type;
+        case 'tag':
+          return CDK_CORE.CfnTag;
+        case 'union':
+          return Type.unionOf(...type.types.map((t) => this.typeFromSpecType(t)));
+        case 'null':
+          return Type.UNDEFINED;
+        case 'tag':
+          return CDK_CORE.CfnTag;
+        case 'json':
+          return Type.ANY;
+      }
+    })();
+    this.originalTypes.set(converted, type);
+    return converted;
+  }
+
+  public originalType(type: Type): PropertyType {
+    const ret = this.originalTypes.get(type);
+    if (!ret) {
+      throw new Error(`Don't know original type for ${type}`);
     }
+    return ret;
   }
 
   public convertTypeDefinitionType(ref: TypeDefinition): TypeDeclaration {
