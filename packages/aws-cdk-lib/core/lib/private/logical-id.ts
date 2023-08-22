@@ -69,7 +69,7 @@ export class LogicalIDs {
   }
 }
 
-const VALID_LOGICALID_REGEX = /^[A-Za-z][A-Za-z0-9]{1,254}$/;
+const VALID_LOGICALID_REGEX = /^[A-Za-z0-9]{1,255}$/;
 
 /**
  * Validate logical ID is valid for CloudFormation

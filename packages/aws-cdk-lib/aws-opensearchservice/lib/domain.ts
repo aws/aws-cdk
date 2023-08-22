@@ -130,12 +130,20 @@ export interface EbsOptions {
 
   /**
    * The number of I/O operations per second (IOPS) that the volume
-   * supports. This property applies only to the Provisioned IOPS (SSD) EBS
+   * supports. This property applies only to the gp3 and Provisioned IOPS (SSD) EBS
    * volume type.
    *
    * @default - iops are not set.
    */
   readonly iops?: number;
+
+  /**
+   * The throughput (in MiB/s) of the EBS volumes attached to data nodes.
+   * This property applies only to the gp3 volume type.
+   *
+   * @default - throughput is not set.
+   */
+  readonly throughput?: number;
 
   /**
    * The size (in GiB) of the EBS volume for each data node. The minimum and
@@ -277,6 +285,60 @@ export enum TLSSecurityPolicy {
 }
 
 /**
+ * Container for information about the SAML configuration for OpenSearch Dashboards.
+ */
+export interface SAMLOptionsProperty {
+  /**
+   * The unique entity ID of the application in the SAML identity provider.
+   */
+  readonly idpEntityId: string;
+
+  /**
+   * The metadata of the SAML application, in XML format.
+   */
+  readonly idpMetadataContent: string;
+
+  /**
+   * The SAML master username, which is stored in the domain's internal user database.
+   * This SAML user receives full permission in OpenSearch Dashboards/Kibana.
+   * Creating a new master username does not delete any existing master usernames.
+   *
+   * @default - No master user name is configured
+   */
+  readonly masterUserName?: string;
+
+  /**
+   * The backend role that the SAML master user is mapped to.
+   * Any users with this backend role receives full permission in OpenSearch Dashboards/Kibana.
+   * To use a SAML master backend role, configure the `rolesKey` property.
+   *
+   * @default - The master user is not mapped to a backend role
+   */
+  readonly masterBackendRole?: string;
+
+  /**
+   * Element of the SAML assertion to use for backend roles.
+   *
+   * @default - roles
+   */
+  readonly rolesKey?: string;
+
+  /**
+   * Element of the SAML assertion to use for the user name.
+   *
+   * @default - NameID element of the SAML assertion fot the user name
+   */
+  readonly subjectKey?: string;
+
+  /**
+   * The duration, in minutes, after which a user session becomes inactive.
+   *
+   * @default - 60
+   */
+  readonly sessionTimeoutMinutes?: number;
+}
+
+/**
  * Specifies options for fine-grained access control.
  */
 export interface AdvancedSecurityOptions {
@@ -304,6 +366,23 @@ export interface AdvancedSecurityOptions {
    * @default - A Secrets Manager generated password
    */
   readonly masterUserPassword?: cdk.SecretValue;
+
+  /**
+   * True to enable SAML authentication for a domain.
+   *
+   * @see https://docs.aws.amazon.com/opensearch-service/latest/developerguide/saml.html
+   *
+   * @default - SAML authentication is disabled. Enabled if `samlAuthenticationOptions` is set.
+   */
+  readonly samlAuthenticationEnabled?: boolean;
+
+  /**
+   * Container for information about the SAML configuration for OpenSearch Dashboards.
+   * If set, `samlAuthenticationEnabled` will be enabled.
+   *
+   * @default - no SAML authentication options
+   */
+  readonly samlAuthenticationOptions?: SAMLOptionsProperty;
 }
 
 /**
@@ -1468,6 +1547,88 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       throw new Error('EBS volumes are required when using instance types other than r3, i3 or r6gd.');
     }
 
+    // Only for a valid ebs volume configuration, per
+    // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-opensearchservice-domain-ebsoptions.html
+    if (ebsEnabled) {
+      // Check if iops or throughput if general purpose is configured
+      if (volumeType == ec2.EbsDeviceVolumeType.GENERAL_PURPOSE_SSD || volumeType == ec2.EbsDeviceVolumeType.STANDARD) {
+        if (props.ebs?.iops !== undefined || props.ebs?.throughput !== undefined) {
+          throw new Error('General Purpose EBS volumes can not be used with Iops or Throughput configuration');
+        }
+      }
+
+      if (
+        volumeType &&
+        [
+          ec2.EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
+        ].includes(volumeType) &&
+        !props.ebs?.iops
+      ) {
+        throw new Error(
+          '`iops` must be specified if the `volumeType` is `PROVISIONED_IOPS_SSD`.',
+        );
+      }
+      if (props.ebs?.iops) {
+        if (
+          ![
+            ec2.EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
+            ec2.EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2,
+            ec2.EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3,
+          ].includes(volumeType)
+        ) {
+          throw new Error(
+            '`iops` may only be specified if the `volumeType` is `PROVISIONED_IOPS_SSD`, `PROVISIONED_IOPS_SSD_IO2` or `GENERAL_PURPOSE_SSD_GP3`.',
+          );
+        }
+        // Enforce minimum & maximum IOPS:
+        // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html
+        const iopsRanges: { [key: string]: { Min: number, Max: number } } = {};
+        iopsRanges[ec2.EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3] = { Min: 3000, Max: 16000 };
+        iopsRanges[ec2.EbsDeviceVolumeType.PROVISIONED_IOPS_SSD] = { Min: 100, Max: 64000 };
+        iopsRanges[ec2.EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2] = { Min: 100, Max: 64000 };
+        const { Min, Max } = iopsRanges[volumeType];
+        if (props.ebs?.iops < Min || props.ebs?.iops > Max) {
+          throw new Error(`\`${volumeType}\` volumes iops must be between ${Min} and ${Max}.`);
+        }
+
+        // Enforce maximum ratio of IOPS/GiB:
+        // https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volume-types.html
+        const maximumRatios: { [key: string]: number } = {};
+        maximumRatios[ec2.EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3] = 500;
+        maximumRatios[ec2.EbsDeviceVolumeType.PROVISIONED_IOPS_SSD] = 50;
+        maximumRatios[ec2.EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2] = 500;
+        const maximumRatio = maximumRatios[volumeType];
+        if (props.ebs?.volumeSize && (props.ebs?.iops > maximumRatio * props.ebs?.volumeSize)) {
+          throw new Error(`\`${volumeType}\` volumes iops has a maximum ratio of ${maximumRatio} IOPS/GiB.`);
+        }
+
+        const maximumThroughputRatios: { [key: string]: number } = {};
+        maximumThroughputRatios[ec2.EbsDeviceVolumeType.GP3] = 0.25;
+        const maximumThroughputRatio = maximumThroughputRatios[volumeType];
+        if (props.ebs?.throughput && props.ebs?.iops) {
+          const iopsRatio = (props.ebs?.throughput / props.ebs?.iops);
+          if (iopsRatio > maximumThroughputRatio) {
+            throw new Error(`Throughput (MiBps) to iops ratio of ${iopsRatio} is too high; maximum is ${maximumThroughputRatio} MiBps per iops.`);
+          }
+        }
+      }
+
+      if (props.ebs?.throughput) {
+        const throughputRange = { Min: 125, Max: 1000 };
+        const { Min, Max } = throughputRange;
+        if (volumeType != ec2.EbsDeviceVolumeType.GP3) {
+          throw new Error(
+            '`throughput` property requires volumeType: `EbsDeviceVolumeType.GP3`',
+          );
+        }
+        if (props.ebs?.throughput < Min || props.ebs?.throughput > Max) {
+          throw new Error(
+            `throughput property takes a minimum of ${Min} and a maximum of ${Max}.`,
+          );
+        }
+      }
+    }
+
     // Fine-grained access control requires node-to-node encryption, encryption at rest,
     // and enforced HTTPS.
     if (advancedSecurityEnabled) {
@@ -1614,6 +1775,15 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       this.validateWindowStartTime(props.offPeakWindowStart);
     }
 
+    const samlAuthenticationEnabled = props.fineGrainedAccessControl?.samlAuthenticationEnabled ??
+      props.fineGrainedAccessControl?.samlAuthenticationOptions !== undefined;
+    if (samlAuthenticationEnabled) {
+      if (!advancedSecurityEnabled) {
+        throw new Error('SAML authentication requires fine-grained access control to be enabled.');
+      }
+      this.validateSamlAuthenticationOptions(props.fineGrainedAccessControl?.samlAuthenticationOptions);
+    }
+
     // Create the domain
     this.domain = new CfnDomain(this, 'Resource', {
       domainName: this.physicalName,
@@ -1648,6 +1818,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         volumeSize: ebsEnabled ? volumeSize : undefined,
         volumeType: ebsEnabled ? volumeType : undefined,
         iops: ebsEnabled ? props.ebs?.iops : undefined,
+        throughput: ebsEnabled ? props.ebs?.throughput : undefined,
       },
       encryptionAtRestOptions: {
         enabled: encryptionAtRestEnabled,
@@ -1685,6 +1856,18 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
             masterUserName: masterUserName,
             masterUserPassword: this.masterUserPassword?.unsafeUnwrap(), // Safe usage
           },
+          samlOptions: samlAuthenticationEnabled ? {
+            enabled: true,
+            idp: props.fineGrainedAccessControl && props.fineGrainedAccessControl.samlAuthenticationOptions ? {
+              entityId: props.fineGrainedAccessControl.samlAuthenticationOptions.idpEntityId,
+              metadataContent: props.fineGrainedAccessControl.samlAuthenticationOptions.idpMetadataContent,
+            } : undefined,
+            masterUserName: props.fineGrainedAccessControl?.samlAuthenticationOptions?.masterUserName,
+            masterBackendRole: props.fineGrainedAccessControl?.samlAuthenticationOptions?.masterBackendRole,
+            rolesKey: props.fineGrainedAccessControl?.samlAuthenticationOptions?.rolesKey ?? 'roles',
+            subjectKey: props.fineGrainedAccessControl?.samlAuthenticationOptions?.subjectKey,
+            sessionTimeoutMinutes: props.fineGrainedAccessControl?.samlAuthenticationOptions?.sessionTimeoutMinutes ?? 60,
+          } : undefined,
         }
         : undefined,
       advancedOptions: props.advancedOptions,
@@ -1768,6 +1951,40 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     }
     if (windowStartTime.minutes < 0 || windowStartTime.minutes > 59) {
       throw new Error(`Minutes must be a value between 0 and 59, but got ${windowStartTime.minutes}.`);
+    }
+  }
+
+  /**
+   * Validate SAML configuration according to
+   * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-opensearchservice-domain-samloptions.html
+   */
+  private validateSamlAuthenticationOptions(samlAuthenticationOptions?: SAMLOptionsProperty) {
+    if (!samlAuthenticationOptions) {
+      throw new Error('You need to specify at least an Entity ID and Metadata content for the SAML configuration');
+    }
+    if (samlAuthenticationOptions.idpEntityId.length < 8 || samlAuthenticationOptions.idpEntityId.length > 512) {
+      throw new Error(`SAML identity provider entity ID must be between 8 and 512 characters long, received ${samlAuthenticationOptions.idpEntityId.length}.`);
+    }
+    if (samlAuthenticationOptions.idpMetadataContent.length < 1 || samlAuthenticationOptions.idpMetadataContent.length > 1048576) {
+      throw new Error(`SAML identity provider metadata content must be between 1 and 1048576 characters long, received ${samlAuthenticationOptions.idpMetadataContent.length}.`);
+    }
+    if (
+      samlAuthenticationOptions.masterUserName &&
+      (samlAuthenticationOptions.masterUserName.length < 1 || samlAuthenticationOptions.masterUserName.length > 64)
+    ) {
+      throw new Error(`SAML master username must be between 1 and 64 characters long, received ${samlAuthenticationOptions.masterUserName.length}.`);
+    }
+    if (
+      samlAuthenticationOptions.masterBackendRole &&
+      (samlAuthenticationOptions.masterBackendRole.length < 1 || samlAuthenticationOptions.masterBackendRole.length > 256)
+    ) {
+      throw new Error(`SAML backend role must be between 1 and 256 characters long, received ${samlAuthenticationOptions.masterBackendRole.length}.`);
+    }
+    if (
+      samlAuthenticationOptions.sessionTimeoutMinutes &&
+      (samlAuthenticationOptions.sessionTimeoutMinutes < 1 || samlAuthenticationOptions.sessionTimeoutMinutes > 1440)
+    ) {
+      throw new Error(`SAML session timeout must be a value between 1 and 1440, received ${samlAuthenticationOptions.sessionTimeoutMinutes}.`);
     }
   }
 

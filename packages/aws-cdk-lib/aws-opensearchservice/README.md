@@ -22,6 +22,21 @@ const devDomain = new Domain(this, 'Domain', {
 });
 ```
 
+Create a cluster with GP3 volumes:
+
+```ts
+const gp3Domain = new Domain(this, 'Domain', {
+  version: EngineVersion.OPENSEARCH_2_5,
+  ebs: {
+    volumeSize: 30,
+    volumeType: ec2.EbsDeviceVolumeType.GP3,
+    throughput: 125,
+    iops: 3000,
+  },
+});
+```
+
+
 Create a production grade cluster by also specifying things like capacity and az distribution
 
 ```ts
@@ -195,6 +210,32 @@ const domain = new Domain(this, 'Domain', {
 });
 
 const masterUserPassword = domain.masterUserPassword;
+```
+
+## SAML authentication
+
+You can enable SAML authentication to use your existing identity provider
+to offer single sign-on (SSO) for dashboards on Amazon OpenSearch Service domains
+running OpenSearch or Elasticsearch 6.7 or later.
+To use SAML authentication, fine-grained access control must be enabled.
+
+```ts
+const domain = new Domain(this, 'Domain', {
+  version: EngineVersion.OPENSEARCH_1_0,
+  enforceHttps: true,
+  nodeToNodeEncryption: true,
+  encryptionAtRest: {
+    enabled: true,
+  },
+  fineGrainedAccessControl: {
+    masterUserName: 'master-user',
+    samlAuthenticationEnabled: true,
+    samlAuthenticationOptions: {
+      idpEntityId: 'entity-id',
+      idpMetadataContent: 'metadata-content-with-quotes-escaped',
+    },
+  },
+});
 ```
 
 ## Using unsigned basic auth

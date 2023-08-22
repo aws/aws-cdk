@@ -412,7 +412,7 @@
     "ToPort": 2049
    }
   },
-  "EfsEfsMountTarget195B2DD2E": {
+  "EfsEfsMountTargetPrivateSubnet19658885C": {
    "Type": "AWS::EFS::MountTarget",
    "Properties": {
     "FileSystemId": {
@@ -431,7 +431,7 @@
     }
    }
   },
-  "EfsEfsMountTarget2315C927F": {
+  "EfsEfsMountTargetPrivateSubnet29C850A6F": {
    "Type": "AWS::EFS::MountTarget",
    "Properties": {
     "FileSystemId": {
@@ -519,8 +519,8 @@
     ]
    },
    "DependsOn": [
-    "EfsEfsMountTarget195B2DD2E",
-    "EfsEfsMountTarget2315C927F",
+    "EfsEfsMountTargetPrivateSubnet19658885C",
+    "EfsEfsMountTargetPrivateSubnet29C850A6F",
     "VpcPrivateSubnet1DefaultRouteBE02A9ED",
     "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
     "VpcPrivateSubnet2DefaultRoute060D2087",
@@ -602,8 +602,8 @@
     ]
    },
    "DependsOn": [
-    "EfsEfsMountTarget195B2DD2E",
-    "EfsEfsMountTarget2315C927F",
+    "EfsEfsMountTargetPrivateSubnet19658885C",
+    "EfsEfsMountTargetPrivateSubnet29C850A6F",
     "VpcPrivateSubnet1DefaultRouteBE02A9ED",
     "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
     "VpcPrivateSubnet2DefaultRoute060D2087",
@@ -626,8 +626,8 @@
     }
    },
    "DependsOn": [
-    "EfsEfsMountTarget195B2DD2E",
-    "EfsEfsMountTarget2315C927F",
+    "EfsEfsMountTargetPrivateSubnet19658885C",
+    "EfsEfsMountTargetPrivateSubnet29C850A6F",
     "VpcPrivateSubnet1DefaultRouteBE02A9ED",
     "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
     "VpcPrivateSubnet2DefaultRoute060D2087",
@@ -696,8 +696,8 @@
     }
    },
    "DependsOn": [
-    "EfsEfsMountTarget195B2DD2E",
-    "EfsEfsMountTarget2315C927F",
+    "EfsEfsMountTargetPrivateSubnet19658885C",
+    "EfsEfsMountTargetPrivateSubnet29C850A6F",
     "EfsEfsSecurityGroupfromawscdklambda1MyLambdaSecurityGroup86B085EE20490D9864A8",
     "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
     "MyLambdaServiceRole4539ECB6",
