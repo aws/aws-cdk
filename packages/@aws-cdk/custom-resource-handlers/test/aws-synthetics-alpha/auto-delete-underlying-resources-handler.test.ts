@@ -171,7 +171,7 @@ test('deletes lambda on delete', async () => {
   mockSyntheticsClient.send.mockReturnValue({
     Canary: {
       Tags: {
-        'aws-cdk:auto-delete-lambda': 'true',
+        'aws-cdk:auto-delete-underlying-resources': 'true',
       },
       Id: id,
       EngineArn: `arn:aws:lambda:region:account:function:cwsyn-name-${id}:1`,
