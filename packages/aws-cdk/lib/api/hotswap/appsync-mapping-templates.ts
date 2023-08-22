@@ -55,7 +55,7 @@ export async function isHotswappableAppSyncChange(
         };
 
         // if the code is set, make sure the `functionVersion` is not set
-        // otherwhise, this is a mapping template change
+        // otherwise, this is a mapping template change
         if (change.newValue.Properties?.Code) {
           delete sdkProperties.functionVersion;
           sdkProperties.code = change.newValue.Properties?.Code;
