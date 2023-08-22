@@ -1165,7 +1165,7 @@ test('render distribution behavior with realtime log config', () => {
       Endpoint.fromKinesisStream(stream, role),
     ],
     fields: ['timestamp'],
-    name: 'realtime-config',
+    realtimeLogConfigName: 'realtime-config',
     samplingRate: 50,
   });
 
