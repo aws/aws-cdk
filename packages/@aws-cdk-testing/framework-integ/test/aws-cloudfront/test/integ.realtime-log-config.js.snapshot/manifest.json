@@ -64,7 +64,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/065ae19c4c6accff85009f33f18e0ec2e2ed000b2cd704aed4eaa1778b943256.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4321b449d32806f45e09f50d8691098ef3ca0976ad11530e163311f79c48495c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -102,6 +102,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "RealtimeLog31F8FA14"
+          }
+        ],
+        "/integ-realtime-config/NameForLogConfigImportedByName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NameForLogConfigImportedByName"
           }
         ],
         "/integ-realtime-config/BootstrapVersion": [

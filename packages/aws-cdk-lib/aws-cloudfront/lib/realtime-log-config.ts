@@ -1,68 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnRealtimeLogConfig } from './cloudfront.generated';
-import * as iam from '../../aws-iam';
-import * as kinesis from '../../aws-kinesis';
-import { IResource, Lazy, Names, PhysicalName, Resource } from '../../core';
-
-/**
- * @internal
- */
-function singletonKinesisRole(scope: Construct): iam.IRole {
-  const id = 'RealtimeLogKinesisRole';
-  const existing = scope.node.tryFindChild(id) as iam.IRole;
-  if (existing) { return existing; }
-
-  const role = new iam.Role(scope, id, {
-    roleName: PhysicalName.GENERATE_IF_NEEDED,
-    assumedBy: new iam.ServicePrincipal('cloudfront.amazonaws.com'),
-  });
-
-  return role;
-}
-
-/**
- * Represents the endpoints available for targetting within a realtime log config resource
- */
-export abstract class Endpoint {
-  /**
-   * Configure a Kinesis Stream Endpoint for Realtime Log Config
-   *
-   * @default - a role will be created and used across your endpoints
-   */
-  public static fromKinesisStream(stream: kinesis.IStream, role?: iam.IRole): Endpoint {
-    return new (class extends Endpoint {
-      public _renderEndpoint(scope: Construct) {
-        const cloudfrontRole = role ?? singletonKinesisRole(scope);
-
-        stream.grant(cloudfrontRole,
-          'kinesis:DescribeStreamSummary',
-          'kinesis:DescribeStream',
-          'kinesis:PutRecord',
-          'kinesis:PutRecords',
-        );
-
-        if (stream.encryptionKey) {
-          stream.encryptionKey.grant(cloudfrontRole, 'kms:GenerateDataKey');
-        }
-
-        return {
-          kinesisStreamConfig: {
-            roleArn: cloudfrontRole.roleArn,
-            streamArn: stream.streamArn,
-          },
-          streamType: 'Kinesis',
-        };
-      }
-    });
-  }
-
-  private constructor() {}
-
-  /**
-  * @internal
-  */
-  public abstract _renderEndpoint(scope: Construct): any;
-}
+import { Endpoint } from '../';
+import { Arn, IResource, Names, Resource, Stack } from '../../core';
 
 /**
  * Represents Realtime Log Configuration
@@ -107,18 +46,92 @@ export interface RealtimeLogConfigProps {
 }
 
 /**
+ * Base class for RealTimeLogConfig
+ */
+abstract class RealtimeLogConfigBase extends Resource implements IRealtimeLogConfig {
+  public abstract readonly realtimeLogConfigName: string;
+  public abstract readonly realtimeLogConfigArn: string;
+}
+
+/**
+ * Attributes for RealtimeLogConfig
+ */
+export interface RealtimeLogConfigAttributes {
+  /**
+   * The ARN of the RealTimeLogConfig.
+   *
+   * Format: arn:<partition>:cloudfront::<account-id>:realtime-log-config/<realtime-log-config-name-with-path>
+   */
+  readonly realtimeLogConfigArn: string;
+}
+
+/**
  * A Realtime Log Config configuration
  *
  * @resource AWS::CloudFront::RealtimeLogConfig
  */
-export class RealtimeLogConfig extends Resource implements IRealtimeLogConfig {
+export class RealtimeLogConfig extends RealtimeLogConfigBase {
+
+  /**
+   * Import an existing RealtimeLogConfig from an RealtimeLogConfig name.
+   *
+   * @param scope construct scope
+   * @param id construct id
+   * @param realtimeLogConfigName the name of the existing RealtimeLogConfig to import
+   */
+  public static fromRealtimeLogConfigName(scope: Construct, id: string, realtimeLogConfigName: string): IRealtimeLogConfig {
+    const realtimeLogConfigArn = Stack.of(scope).formatArn({
+      service: 'cloudfront',
+      region: '',
+      resource: 'realtime-log-config',
+      resourceName: realtimeLogConfigName,
+    });
+    return RealtimeLogConfig.fromRealtimeLogConfigAttributes(scope, id, { realtimeLogConfigArn });
+  }
+  /**
+   * Import an existing RealtimeLogConfig from an RealtimeLogConfig ARN.
+   *
+   * If the ARN comes from a Token, the RealtimeLogConfig cannot have a path; if so, any attempt
+   * to reference its realtimeLogConfigName will fail.
+   *
+   * @param scope construct scope
+   * @param id construct id
+   * @param realtimeLogConfigArn the ARN of the exiting RealtimeLogConfig to import
+   */
+  public static fromRealtimeLogConfigArn(scope: Construct, id: string, realtimeLogConfigArn: string): IRealtimeLogConfig {
+    return RealtimeLogConfig.fromRealtimeLogConfigAttributes(scope, id, { realtimeLogConfigArn });
+  }
+
+  /**
+   * Import an existing RealtimeLogConfig from given RealtimeLogConfig attributes.
+   *
+   * If the ARN comes from a Token, the RealtimeLogConfig cannot have a path; if so, any attempt
+   * to reference its realtimeLogConfigName will fail.
+   *
+   * @param scope construct scope
+   * @param id construct id
+   * @param attrs the attributes of the RealtimeLogConfig to import
+   */
+  public static fromRealtimeLogConfigAttributes(scope: Construct, id: string, attrs: RealtimeLogConfigAttributes): IRealtimeLogConfig {
+    class Import extends RealtimeLogConfigBase {
+      public readonly realtimeLogConfigName: string = Arn.extractResourceName(attrs.realtimeLogConfigArn, 'realtime-log-config').split('/').pop()!;
+      public readonly realtimeLogConfigArn: string = attrs.realtimeLogConfigArn;
+
+      constructor(s: Construct, i: string) {
+        super(s, i);
+      }
+    }
+    return new Import(scope, id);
+  }
   public readonly realtimeLogConfigName: string;
   public readonly realtimeLogConfigArn: string;
 
   constructor(scope: Construct, id: string, props: RealtimeLogConfigProps) {
     super(scope, id, {
-      physicalName: props.realtimeLogConfigName ?? Lazy.string({ produce: () => Names.uniqueId(this) }),
+      physicalName: props.realtimeLogConfigName,
     });
+
+    this.realtimeLogConfigName = props.realtimeLogConfigName ?? Names.uniqueResourceName(this, {});
 
     if ((props.samplingRate < 1 || props.samplingRate > 100)) {
       throw new Error(`Sampling rate must be between 1 and 100 (inclusive), received ${props.samplingRate}`);
@@ -129,7 +142,7 @@ export class RealtimeLogConfig extends Resource implements IRealtimeLogConfig {
         return endpoint._renderEndpoint(this);
       }),
       fields: props.fields,
-      name: this.physicalName,
+      name: this.realtimeLogConfigName,
       samplingRate: props.samplingRate,
     });
 

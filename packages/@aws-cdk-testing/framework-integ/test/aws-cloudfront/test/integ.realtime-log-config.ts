@@ -25,6 +25,18 @@ new cloudfront.RealtimeLogConfig(stack, 'RealtimeLog', {
   samplingRate: 1,
 });
 
+const realtimeLogConfigImportedByArn = cloudfront.RealtimeLogConfig.fromRealtimeLogConfigArn(
+  stack,
+  'ImportedProfileByArn',
+  'arn:aws:iam::123456789012:realtime-log-config/MyRealtimeLogConfig',
+);
+
+new cdk.CfnOutput(
+  stack,
+  'NameForLogConfigImportedByName',
+  { value: realtimeLogConfigImportedByArn.realtimeLogConfigName },
+);
+
 new IntegTest(stack, 'realtime-log-config', {
   testCases: [stack],
 });

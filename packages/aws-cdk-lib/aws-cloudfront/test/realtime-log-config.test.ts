@@ -322,40 +322,15 @@ describe('RealtimeLogConfig', () => {
     });
   });
 
-  test('realtime config setup with both default and specified role with added policy on configured role', () => {
-    const myStream = new kinesis.Stream(stack, 'MyStream', {
-      encryption: kinesis.StreamEncryption.KMS,
-      encryptionKey: new kms.Key(stack, 'key'),
-    });
+  test('import realtime log config from arn', () => {
+    const realtimeLogConfig = RealtimeLogConfig.fromRealtimeLogConfigArn(stack, 'import', 'arn:aws:iam::123456789012:realtime-log-config/stream');
+    expect(stack.resolve(realtimeLogConfig.realtimeLogConfigArn)).toStrictEqual('arn:aws:iam::123456789012:realtime-log-config/stream');
+  });
 
-    new RealtimeLogConfig(stack, 'MyRealtimeLogConfig', {
-      endPoints: [
-        Endpoint.fromKinesisStream(stream),
-        Endpoint.fromKinesisStream(myStream, role),
-      ],
-      fields: [
-        'timestamp',
-        'c-ip',
-      ],
-      samplingRate: 1,
-    });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [{
-          Action: [
-            'kinesis:DescribeStreamSummary',
-            'kinesis:DescribeStream',
-            'kinesis:PutRecord',
-            'kinesis:PutRecords',
-          ],
-          Resource: { 'Fn::GetAtt': ['MyStream5C050E93', 'Arn'] },
-        }, {
-          Action: 'kms:GenerateDataKey',
-          Resource: { 'Fn::GetAtt': ['keyFEDD6EC0', 'Arn'] },
-        }],
-        Version: '2012-10-17',
-      },
+  test('import realtime log config from name', () => {
+    const realtimeLogConfig = RealtimeLogConfig.fromRealtimeLogConfigName(stack, 'import', 'stream');
+    expect(stack.resolve(realtimeLogConfig.realtimeLogConfigArn)).toStrictEqual({
+      'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudfront::1234:realtime-log-config/stream']],
     });
   });
 });
