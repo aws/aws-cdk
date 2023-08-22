@@ -971,7 +971,7 @@ You can specify the CloudWatch Role and Account sub-resources removal policy wit
 ```ts
 const api = new apigateway.RestApi(this, 'books', {
   cloudWatchRole: true,
-  cloudWatchRoleRemovalPolicy: RemovalPolicy.DESTROY,
+  cloudWatchRoleRemovalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 ```
 
