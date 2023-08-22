@@ -1,5 +1,5 @@
 import { Resource, TypeDefinition } from '@aws-cdk/service-spec-types';
-import { ClassType, Module, StructType } from '@cdklabs/typewriter';
+import { ClassType, Module, Stability, StructType } from '@cdklabs/typewriter';
 import { CloudFormationMapping } from './cloudformation-mapping';
 import { TypeConverter } from './type-converter';
 import { TypeDefinitionDecider } from './typedefinition-decider';
@@ -30,6 +30,7 @@ export class TypeDefinitionStruct extends StructType {
       name: structNameFromTypeDefinition(options.typeDefinition),
       docs: {
         ...splitDocumentation(options.typeDefinition.documentation),
+        stability: Stability.External,
         see: cloudFormationDocLink({
           resourceType: options.resource.cloudFormationType,
           propTypeName: options.typeDefinition.name,
