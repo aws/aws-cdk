@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3222f491727b0389ac87f972f2443b490ff3cee14d24c28f1527c3f085cab460.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/52da24cb67101152630cedcc08830f183f595580f8a7f6fcef1e0aac216c7198.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -91,6 +91,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "DelegationWithZoneNameCrossAccountZoneDelegationCustomResourceA1A1C94A"
+          }
+        ],
+        "/aws-cdk-route53-cross-account-integ/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Role1ABCC5F0"
+          }
+        ],
+        "/aws-cdk-route53-cross-account-integ/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RoleDefaultPolicy5FFB7DAB"
           }
         ],
         "/aws-cdk-route53-cross-account-integ/BootstrapVersion": [
