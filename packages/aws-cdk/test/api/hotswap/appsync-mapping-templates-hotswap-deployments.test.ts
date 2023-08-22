@@ -357,6 +357,8 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       name: 'my-function',
       requestMappingTemplate: '## original request template',
       responseMappingTemplate: '## new response template',
+      // verify code is not set
+      code: undefined,
     });
   });
 
@@ -477,5 +479,188 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       expect(mockUpdateFunction).not.toHaveBeenCalled();
       expect(mockUpdateResolver).not.toHaveBeenCalled();
     }
+  });
+
+  test('calls the updateFunction() API without passing unsupported values when it receives a change of `code` in a Function', async () => {
+    // GIVEN
+    const mockListFunctions = jest.fn().mockReturnValue({ functions: [{ name: 'my-function', functionId: 'functionId' }] });
+    hotswapMockSdkProvider.stubAppSync({ listFunctions: mockListFunctions, updateFunction: mockUpdateFunction });
+
+    setup.setCurrentCfnStackTemplate({
+      Resources: {
+        AppSyncFunction: {
+          Type: 'AWS::AppSync::FunctionConfiguration',
+          Properties: {
+            Name: 'my-function',
+            ApiId: 'apiId',
+            DataSourceName: 'my-datasource',
+            Code: '// initial code',
+          },
+          Metadata: {
+            'aws:asset:path': 'old-path',
+          },
+        },
+      },
+    });
+    const cdkStackArtifact = setup.cdkStackArtifactOf({
+      template: {
+        Resources: {
+          AppSyncFunction: {
+            Type: 'AWS::AppSync::FunctionConfiguration',
+            Properties: {
+              Name: 'my-function',
+              ApiId: 'apiId',
+              DataSourceName: 'my-datasource',
+              Code: '// updated code',
+            },
+            Metadata: {
+              'aws:asset:path': 'new-path',
+            },
+          },
+        },
+      },
+    });
+
+    // WHEN
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+
+    // THEN
+    expect(deployStackResult).not.toBeUndefined();
+    expect(mockUpdateFunction).toHaveBeenCalledWith({
+      apiId: 'apiId',
+      dataSourceName: 'my-datasource',
+      functionId: 'functionId',
+      name: 'my-function',
+      code: '// updated code',
+      // confirm that these values are not passed
+      requestMappingTemplate: undefined,
+      responseMappingTemplate: undefined,
+      functionVersion: undefined,
+    });
+  });
+
+  test('When `functionVersion` is set and `code` is updated, updateFunction() API is called without `functionVersion`', async () => {
+    // GIVEN
+    const mockListFunctions = jest.fn().mockReturnValue({ functions: [{ name: 'my-function', functionId: 'functionId' }] });
+    hotswapMockSdkProvider.stubAppSync({ listFunctions: mockListFunctions, updateFunction: mockUpdateFunction });
+
+    setup.setCurrentCfnStackTemplate({
+      Resources: {
+        AppSyncFunction: {
+          Type: 'AWS::AppSync::FunctionConfiguration',
+          Properties: {
+            Name: 'my-function',
+            ApiId: 'apiId',
+            DataSourceName: 'my-datasource',
+            FunctionVersion: '2018-05-29',
+            Code: '// initial code',
+          },
+          Metadata: {
+            'aws:asset:path': 'old-path',
+          },
+        },
+      },
+    });
+    const cdkStackArtifact = setup.cdkStackArtifactOf({
+      template: {
+        Resources: {
+          AppSyncFunction: {
+            Type: 'AWS::AppSync::FunctionConfiguration',
+            Properties: {
+              Name: 'my-function',
+              ApiId: 'apiId',
+              DataSourceName: 'my-datasource',
+              FunctionVersion: '2018-05-29',
+              Code: '// updated code',
+            },
+            Metadata: {
+              'aws:asset:path': 'new-path',
+            },
+          },
+        },
+      },
+    });
+
+    // WHEN
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+
+    // THEN
+    expect(deployStackResult).not.toBeUndefined();
+    expect(mockUpdateFunction).toHaveBeenCalledWith({
+      apiId: 'apiId',
+      dataSourceName: 'my-datasource',
+      functionId: 'functionId',
+      name: 'my-function',
+      code: '// updated code',
+      // confirm that these values are not passed
+      requestMappingTemplate: undefined,
+      responseMappingTemplate: undefined,
+      functionVersion: undefined,
+    });
+  });
+
+  test('calls the updateResolver() API when it receives only a code difference in a Unit Resolver', async () => {
+    // GIVEN
+    setup.setCurrentCfnStackTemplate({
+      Resources: {
+        AppSyncResolver: {
+          Type: 'AWS::AppSync::Resolver',
+          Properties: {
+            ApiId: 'apiId',
+            FieldName: 'myField',
+            TypeName: 'Query',
+            DataSourceName: 'my-datasource',
+            Kind: 'UNIT',
+            Code: '// original code',
+          },
+          Metadata: {
+            'aws:asset:path': 'old-path',
+          },
+        },
+      },
+    });
+    setup.pushStackResourceSummaries(
+      setup.stackSummaryOf(
+        'AppSyncResolver',
+        'AWS::AppSync::Resolver',
+        'arn:aws:appsync:us-east-1:111111111111:apis/apiId/types/Query/resolvers/myField',
+      ),
+    );
+    const cdkStackArtifact = setup.cdkStackArtifactOf({
+      template: {
+        Resources: {
+          AppSyncResolver: {
+            Type: 'AWS::AppSync::Resolver',
+            Properties: {
+              ApiId: 'apiId',
+              FieldName: 'myField',
+              TypeName: 'Query',
+              DataSourceName: 'my-datasource',
+              Kind: 'UNIT',
+              Code: '// updated code',
+            },
+            Metadata: {
+              'aws:asset:path': 'new-path',
+            },
+          },
+        },
+      },
+    });
+
+    // WHEN
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+
+    // THEN
+    expect(deployStackResult).not.toBeUndefined();
+    expect(mockUpdateResolver).toHaveBeenCalledWith({
+      apiId: 'apiId',
+      dataSourceName: 'my-datasource',
+      typeName: 'Query',
+      fieldName: 'myField',
+      kind: 'UNIT',
+      code: '// updated code',
+      requestMappingTemplate: undefined,
+      responseMappingTemplate: undefined,
+    });
   });
 });

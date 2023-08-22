@@ -161,7 +161,8 @@ export class AppsyncFunction extends Resource implements IAppsyncFunction {
       runtime: props.runtime?.toProperties(),
       codeS3Location: code?.s3Location,
       code: code?.inlineCode,
-      // function Version should not be set when Code is provided
+      // functionVersion should be set iff the function runtime is VTL (the AppSync default)
+      // when the runtime is set to APPSYNC_JS and code is specified, it should not be used.
       functionVersion: !props.code ? '2018-05-29' : undefined,
       requestMappingTemplate: props.requestMappingTemplate?.renderTemplate(),
       responseMappingTemplate: props.responseMappingTemplate?.renderTemplate(),

@@ -3,9 +3,7 @@ import { ISDK } from '../aws-auth';
 import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
 
 export async function isHotswappableAppSyncChange(
-  logicalId: string,
-  change: HotswappableChangeCandidate,
-  evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+  logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
 ): Promise<ChangeHotswapResult> {
   const isResolver = change.newValue.Type === 'AWS::AppSync::Resolver';
   const isFunction = change.newValue.Type === 'AWS::AppSync::FunctionConfiguration';
@@ -66,18 +64,20 @@ export async function isHotswappableAppSyncChange(
         const evaluatedResourceProperties = await evaluateCfnTemplate.evaluateCfnExpression(sdkProperties);
         const sdkRequestObject = transformObjectKeys(evaluatedResourceProperties, lowerCaseFirstCharacter);
 
+        // when using `code`, if the functionVersion was set on a previous deployment, we need to remove it
+        if (change.newValue.Properties?.Code) {
+          delete sdkRequestObject.functionVersion;
+        }
+
         if (isResolver) {
           await sdk.appsync().updateResolver(sdkRequestObject).promise();
         } else {
           const { functions } = await sdk.appsync().listFunctions({ apiId: sdkRequestObject.apiId }).promise();
-          const { functionId } = functions?.find((fn) => fn.name === physicalName) ?? {};
-          await sdk
-            .appsync()
-            .updateFunction({
-              ...sdkRequestObject,
-              functionId: functionId!,
-            })
-            .promise();
+          const { functionId } = functions?.find(fn => fn.name === physicalName) ?? {};
+          await sdk.appsync().updateFunction({
+            ...sdkRequestObject,
+            functionId: functionId!,
+          }).promise();
         }
       },
     });
