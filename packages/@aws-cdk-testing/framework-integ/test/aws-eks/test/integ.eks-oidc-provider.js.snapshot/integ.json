@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "33.0.0",
   "testCases": {
     "aws-cdk-eks-oidc-provider/DefaultTest": {
       "stacks": [

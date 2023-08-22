@@ -145,7 +145,7 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
 
       // defined only when using private access
       vpc: cluster.kubectlPrivateSubnets ? cluster.vpc : undefined,
-      securityGroups: cluster.kubectlSecurityGroup ? [cluster.kubectlSecurityGroup] : undefined,
+      securityGroups: cluster.kubectlPrivateSubnets && cluster.kubectlSecurityGroup ? [cluster.kubectlSecurityGroup] : undefined,
       vpcSubnets: cluster.kubectlPrivateSubnets ? { subnets: cluster.kubectlPrivateSubnets } : undefined,
     });
 
@@ -194,7 +194,7 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
       onEventHandler: handler,
       vpc: cluster.kubectlPrivateSubnets ? cluster.vpc : undefined,
       vpcSubnets: cluster.kubectlPrivateSubnets ? { subnets: cluster.kubectlPrivateSubnets } : undefined,
-      securityGroups: cluster.kubectlSecurityGroup ? [cluster.kubectlSecurityGroup] : undefined,
+      securityGroups: cluster.kubectlPrivateSubnets && cluster.kubectlSecurityGroup ? [cluster.kubectlSecurityGroup] : undefined,
     });
 
     this.serviceToken = provider.serviceToken;

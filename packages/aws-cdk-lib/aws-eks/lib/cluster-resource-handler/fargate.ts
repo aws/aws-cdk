@@ -1,6 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { ResourceNotFoundException } from '@aws-sdk/client-eks';
-import * as aws from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
+import * as EKS from '@aws-sdk/client-eks';
 import { ResourceHandler } from './common';
 
 const MAX_NAME_LEN = 63;
@@ -9,7 +8,7 @@ export class FargateProfileResourceHandler extends ResourceHandler {
   protected async onCreate() {
     const fargateProfileName = this.event.ResourceProperties.Config.fargateProfileName ?? this.generateProfileName();
 
-    const createFargateProfile: aws.EKS.CreateFargateProfileRequest = {
+    const createFargateProfile: EKS.CreateFargateProfileCommandInput = {
       fargateProfileName,
       ...this.event.ResourceProperties.Config,
     };
@@ -35,7 +34,7 @@ export class FargateProfileResourceHandler extends ResourceHandler {
       throw new Error('Cannot delete a profile without a physical id');
     }
 
-    const deleteFargateProfile: aws.EKS.DeleteFargateProfileRequest = {
+    const deleteFargateProfile: EKS.DeleteFargateProfileCommandInput = {
       clusterName: this.event.ResourceProperties.Config.clusterName,
       fargateProfileName: this.physicalResourceId,
     };
@@ -86,12 +85,12 @@ export class FargateProfileResourceHandler extends ResourceHandler {
    * Queries the Fargate profile's current status and returns the status or
    * NOT_FOUND if the profile doesn't exist (i.e. it has been deleted).
    */
-  private async queryStatus(): Promise<aws.EKS.FargateProfileStatus | 'NOT_FOUND' | undefined> {
+  private async queryStatus(): Promise<EKS.FargateProfileStatus | 'NOT_FOUND' | string | undefined> {
     if (!this.physicalResourceId) {
       throw new Error('Unable to determine status for fargate profile without a resource name');
     }
 
-    const describeFargateProfile: aws.EKS.DescribeFargateProfileRequest = {
+    const describeFargateProfile: EKS.DescribeFargateProfileCommandInput = {
       clusterName: this.event.ResourceProperties.Config.clusterName,
       fargateProfileName: this.physicalResourceId,
     };
@@ -109,7 +108,7 @@ export class FargateProfileResourceHandler extends ResourceHandler {
 
       return status;
     } catch (describeFargateProfileError: any) {
-      if (describeFargateProfileError instanceof ResourceNotFoundException) {
+      if (describeFargateProfileError instanceof EKS.ResourceNotFoundException) {
         this.log('received ResourceNotFoundException, this means the profile has been deleted (or never existed)');
         return 'NOT_FOUND';
       }

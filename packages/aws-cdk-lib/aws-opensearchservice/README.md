@@ -1,7 +1,7 @@
 # Amazon OpenSearch Service Construct Library
 
 
-See [Migrating to OpenSearch](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-elasticsearch-readme.html#migrating-to-opensearch) for migration instructions from `@aws-cdk/aws-elasticsearch` to this module, `@aws-cdk/aws-opensearchservice`.
+See [Migrating to OpenSearch](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-elasticsearch-readme.html#migrating-to-opensearch) for migration instructions from `aws-cdk-lib/aws-elasticsearch` to this module, `aws-cdk-lib/aws-opensearchservice`.
 
 ## Quick start
 
@@ -21,6 +21,21 @@ const devDomain = new Domain(this, 'Domain', {
   enableVersionUpgrade: true, // defaults to false
 });
 ```
+
+Create a cluster with GP3 volumes:
+
+```ts
+const gp3Domain = new Domain(this, 'Domain', {
+  version: EngineVersion.OPENSEARCH_2_5,
+  ebs: {
+    volumeSize: 30,
+    volumeType: ec2.EbsDeviceVolumeType.GP3,
+    throughput: 125,
+    iops: 3000,
+  },
+});
+```
+
 
 Create a production grade cluster by also specifying things like capacity and az distribution
 
@@ -195,6 +210,32 @@ const domain = new Domain(this, 'Domain', {
 });
 
 const masterUserPassword = domain.masterUserPassword;
+```
+
+## SAML authentication
+
+You can enable SAML authentication to use your existing identity provider
+to offer single sign-on (SSO) for dashboards on Amazon OpenSearch Service domains
+running OpenSearch or Elasticsearch 6.7 or later.
+To use SAML authentication, fine-grained access control must be enabled.
+
+```ts
+const domain = new Domain(this, 'Domain', {
+  version: EngineVersion.OPENSEARCH_1_0,
+  enforceHttps: true,
+  nodeToNodeEncryption: true,
+  encryptionAtRest: {
+    enabled: true,
+  },
+  fineGrainedAccessControl: {
+    masterUserName: 'master-user',
+    samlAuthenticationEnabled: true,
+    samlAuthenticationOptions: {
+      idpEntityId: 'entity-id',
+      idpMetadataContent: 'metadata-content-with-quotes-escaped',
+    },
+  },
+});
 ```
 
 ## Using unsigned basic auth
