@@ -140,10 +140,18 @@ export class CdkToolkit {
           stream.write(format('Stack %s\n', chalk.bold(stack.displayName)));
         }
 
-        const currentTemplate = await this.props.deployments.readCurrentTemplateWithNestedStacks(stack, options.compareAgainstProcessedTemplate);
-        diffs += options.securityOnly
-          ? numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening))
-          : printStackDiff(currentTemplate, stack, strict, contextLines, quiet, stream);
+        const templateWithNames = await this.props.deployments.readCurrentTemplateWithNestedStacks(
+          stack, options.compareAgainstProcessedTemplate,
+        );
+        const currentTemplate = templateWithNames.deployedTemplate;
+        const nestedStackCount = templateWithNames.nestedStackCount;
+
+        const stackCount =
+        options.securityOnly
+          ? (numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening)) > 0 ? 1 : 0)
+          : (printStackDiff(currentTemplate, stack, strict, contextLines, quiet, stream) > 0 ? 1 : 0);
+
+        diffs += stackCount + nestedStackCount;
       }
     }
 
