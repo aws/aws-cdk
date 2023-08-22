@@ -590,7 +590,11 @@ export class TaskDefinition extends TaskDefinitionBase {
     if (this.networkMode === NetworkMode.BRIDGE || this.networkMode === NetworkMode.NAT) {
       return EPHEMERAL_PORT_RANGE;
     }
-    return portMapping.protocol === Protocol.UDP ? ec2.Port.udp(portMapping.containerPort) : ec2.Port.tcp(portMapping.containerPort);
+    if (portMapping.containerPort !== ContainerDefinition.CONTAINER_PORT_USE_RANGE) {
+      return portMapping.protocol === Protocol.UDP ? ec2.Port.udp(portMapping.containerPort) : ec2.Port.tcp(portMapping.containerPort);
+    }
+    const [startPort, endPort] = portMapping.containerPortRange!.split('-', 2).map(v => Number(v));
+    return portMapping.protocol === Protocol.UDP ? ec2.Port.udpRange(startPort, endPort) : ec2.Port.tcpRange(startPort, endPort);
   }
 
   /**
