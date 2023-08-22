@@ -1329,6 +1329,197 @@ each(testedOpenSearchVersions).describe('advanced security options', (engineVers
       enforceHttps: false,
     })).toThrow(/Enforce HTTPS is required when fine-grained access control is enabled/);
   });
+
+  describe('SAML authentication', () => {
+    test('with SAML authentication enabled', () => {
+      new Domain(stack, 'Domain', {
+        version: engineVersion,
+        fineGrainedAccessControl: {
+          masterUserArn,
+          samlAuthenticationEnabled: true,
+          samlAuthenticationOptions: {
+            idpEntityId: 'entity-id',
+            idpMetadataContent: 'metadata',
+            masterBackendRole: 'backend-role',
+            masterUserName: 'master-username',
+          },
+        },
+        encryptionAtRest: {
+          enabled: true,
+        },
+        nodeToNodeEncryption: true,
+        enforceHttps: true,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+        AdvancedSecurityOptions: {
+          Enabled: true,
+          InternalUserDatabaseEnabled: false,
+          MasterUserOptions: {
+            MasterUserARN: masterUserArn,
+          },
+          SAMLOptions: {
+            Enabled: true,
+            Idp: {
+              EntityId: 'entity-id',
+              MetadataContent: 'metadata',
+            },
+            MasterBackendRole: 'backend-role',
+            MasterUserName: 'master-username',
+            RolesKey: 'roles',
+            SessionTimeoutMinutes: 60,
+          },
+        },
+      });
+    });
+
+    test('throws if SAML authentication is enabled without fine-grained access control', () => {
+      expect(() => {
+        new Domain(stack, 'Domain', {
+          version: engineVersion,
+          fineGrainedAccessControl: {
+            samlAuthenticationEnabled: true,
+            samlAuthenticationOptions: {
+              idpEntityId: 'entity-id',
+              idpMetadataContent: 'metadata',
+              masterBackendRole: 'backend-role',
+              masterUserName: 'master-username',
+            },
+          },
+          encryptionAtRest: {
+            enabled: true,
+          },
+          nodeToNodeEncryption: true,
+          enforceHttps: true,
+        });
+      }).toThrow(/SAML authentication requires fine-grained access control to be enabled./);
+    });
+
+    test('throws if SAML authentication is enabled without specifying its options', () => {
+      expect(() => {
+        new Domain(stack, 'Domain', {
+          version: engineVersion,
+          fineGrainedAccessControl: {
+            masterUserArn,
+            samlAuthenticationEnabled: true,
+          },
+          encryptionAtRest: {
+            enabled: true,
+          },
+          nodeToNodeEncryption: true,
+          enforceHttps: true,
+        });
+      }).toThrow(/You need to specify at least an Entity ID and Metadata content for the SAML configuration/);
+    });
+
+    test('validate SAML authentication options', () => {
+      expect(() => {
+        new Domain(stack, 'Domain0', {
+          version: engineVersion,
+          fineGrainedAccessControl: {
+            masterUserArn,
+            samlAuthenticationEnabled: true,
+            samlAuthenticationOptions: {
+              idpEntityId: 'short',
+              idpMetadataContent: 'metadata',
+              masterBackendRole: 'backend-role',
+              masterUserName: 'master-username',
+            },
+          },
+          encryptionAtRest: {
+            enabled: true,
+          },
+          nodeToNodeEncryption: true,
+          enforceHttps: true,
+        });
+      }).toThrow(/SAML identity provider entity ID must be between 8 and 512 characters long/);
+
+      expect(() => {
+        new Domain(stack, 'Domain1', {
+          version: engineVersion,
+          fineGrainedAccessControl: {
+            masterUserArn,
+            samlAuthenticationEnabled: true,
+            samlAuthenticationOptions: {
+              idpEntityId: 'identity-id',
+              idpMetadataContent: '',
+              masterBackendRole: 'backend-role',
+              masterUserName: 'master-username',
+            },
+          },
+          encryptionAtRest: {
+            enabled: true,
+          },
+          nodeToNodeEncryption: true,
+          enforceHttps: true,
+        });
+      }).toThrow(/SAML identity provider metadata content must be between 1 and 1048576 characters long/);
+
+      expect(() => {
+        new Domain(stack, 'Domain2', {
+          version: engineVersion,
+          fineGrainedAccessControl: {
+            masterUserArn,
+            samlAuthenticationEnabled: true,
+            samlAuthenticationOptions: {
+              idpEntityId: 'identity-id',
+              idpMetadataContent: 'metadata',
+              masterBackendRole: 'backend-role',
+              masterUserName: 'master-long'.repeat(10),
+            },
+          },
+          encryptionAtRest: {
+            enabled: true,
+          },
+          nodeToNodeEncryption: true,
+          enforceHttps: true,
+        });
+      }).toThrow(/SAML master username must be between 1 and 64 characters long/);
+
+      expect(() => {
+        new Domain(stack, 'Domain3', {
+          version: engineVersion,
+          fineGrainedAccessControl: {
+            masterUserArn,
+            samlAuthenticationEnabled: true,
+            samlAuthenticationOptions: {
+              idpEntityId: 'identity-id',
+              idpMetadataContent: 'metadata',
+              masterBackendRole: 'backend-long'.repeat(50),
+              masterUserName: 'master-username',
+            },
+          },
+          encryptionAtRest: {
+            enabled: true,
+          },
+          nodeToNodeEncryption: true,
+          enforceHttps: true,
+        });
+      }).toThrow(/SAML backend role must be between 1 and 256 characters long/);
+
+      expect(() => {
+        new Domain(stack, 'Domain4', {
+          version: engineVersion,
+          fineGrainedAccessControl: {
+            masterUserArn,
+            samlAuthenticationEnabled: true,
+            samlAuthenticationOptions: {
+              idpEntityId: 'identity-id',
+              idpMetadataContent: 'metadata',
+              masterBackendRole: 'backend-role',
+              masterUserName: 'master-username',
+              sessionTimeoutMinutes: 2000,
+            },
+          },
+          encryptionAtRest: {
+            enabled: true,
+          },
+          nodeToNodeEncryption: true,
+          enforceHttps: true,
+        });
+      }).toThrow(/SAML session timeout must be a value between 1 and 1440/);
+    });
+  });
 });
 
 each(testedOpenSearchVersions).describe('custom endpoints', (engineVersion) => {
