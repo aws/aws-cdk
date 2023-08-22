@@ -21,7 +21,7 @@ new cloudfront.RealtimeLogConfig(stack, 'RealtimeLog', {
     cloudfront.Endpoint.fromKinesisStream(kinesis, role),
   ],
   fields: ['timestamp'],
-  name: 'testing',
+  realtimeLogConfigName: 'testing',
   samplingRate: 1,
 });
 

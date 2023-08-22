@@ -625,7 +625,7 @@ const realTimeConfig = new cloudfront.RealtimeLogConfig(this, 'realtimeLog', {
     'time-to-first-byte',
     'sc-status',
   ],
-  name: 'my-delivery-stream',
+  realtimeLogConfigName: 'my-delivery-stream',
   samplingRate: 100,
 });
 

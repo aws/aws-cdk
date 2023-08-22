@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { CfnRealtimeLogConfig } from './cloudfront.generated';
 import * as iam from '../../aws-iam';
 import * as kinesis from '../../aws-kinesis';
-import { IResource, Names, PhysicalName, Resource } from '../../core';
+import { IResource, Lazy, Names, PhysicalName, Resource } from '../../core';
 
 /**
  * @internal
@@ -86,10 +86,14 @@ export interface IRealtimeLogConfig extends IResource {
 export interface RealtimeLogConfigProps {
   /**
    * The unique name of this real-time log configuration.
+   *
+   * @default - the unique construct ID
    */
-  readonly name?: string;
+  readonly realtimeLogConfigName?: string;
   /**
    * A list of fields that are included in each real-time log record.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/real-time-logs.html#understand-real-time-log-config-fields
    */
   readonly fields: string[];
   /**
@@ -113,10 +117,8 @@ export class RealtimeLogConfig extends Resource implements IRealtimeLogConfig {
 
   constructor(scope: Construct, id: string, props: RealtimeLogConfigProps) {
     super(scope, id, {
-      physicalName: props.name,
+      physicalName: props.realtimeLogConfigName ?? Lazy.string({ produce: () => Names.uniqueId(this) }),
     });
-
-    this.realtimeLogConfigName = props.name || Names.uniqueId(this);
 
     if ((props.samplingRate < 1 || props.samplingRate > 100)) {
       throw new Error(`Sampling rate must be between 1 and 100 (inclusive), received ${props.samplingRate}`);
@@ -127,7 +129,7 @@ export class RealtimeLogConfig extends Resource implements IRealtimeLogConfig {
         return endpoint._renderEndpoint(this);
       }),
       fields: props.fields,
-      name: this.realtimeLogConfigName,
+      name: this.physicalName,
       samplingRate: props.samplingRate,
     });
 

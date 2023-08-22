@@ -32,7 +32,7 @@ describe('RealtimeLogConfig', () => {
         'timestamp',
         'c-ip',
       ],
-      name: 'realtime-log-collector',
+      realtimeLogConfigName: 'realtime-log-collector',
       samplingRate: 1,
     });
 
@@ -64,7 +64,7 @@ describe('RealtimeLogConfig', () => {
           'timestamp',
           'c-ip',
         ],
-        name: 'realtime-log-collector',
+        realtimeLogConfigName: 'realtime-log-collector',
         samplingRate: 111,
       });
     }).toThrow(errorMessage);
@@ -81,7 +81,7 @@ describe('RealtimeLogConfig', () => {
           'timestamp',
           'c-ip',
         ],
-        name: 'realtime-log-collector',
+        realtimeLogConfigName: 'realtime-log-collector',
         samplingRate: 0,
       });
     }).toThrow(errorMessage);
