@@ -164,6 +164,14 @@ export interface RestApiBaseProps {
   readonly cloudWatchRole?: boolean;
 
   /**
+   * The removal policy applied to the AWS CloudWatch role when this resource
+   * is removed from the application.
+   *
+   * @default - RemovalPolicy.RETAIN
+   */
+  readonly cloudWatchRoleRemovalPolicy?: RemovalPolicy;
+
+  /**
    * Export name for the CfnOutput containing the API endpoint
    *
    * @default - when no export name is given, output will be created without export
@@ -552,17 +560,17 @@ export abstract class RestApiBase extends Resource implements IRestApi {
   /**
    * @internal
    */
-  protected _configureCloudWatchRole(apiResource: CfnRestApi) {
+  protected _configureCloudWatchRole(apiResource: CfnRestApi, removalPolicy?: RemovalPolicy) {
     const role = new iam.Role(this, 'CloudWatchRole', {
       assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
       managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonAPIGatewayPushToCloudWatchLogs')],
     });
-    role.applyRemovalPolicy(RemovalPolicy.RETAIN);
+    role.applyRemovalPolicy(removalPolicy ?? RemovalPolicy.RETAIN);
 
     this.cloudWatchAccount = new CfnAccount(this, 'Account', {
       cloudWatchRoleArn: role.roleArn,
     });
-    this.cloudWatchAccount.applyRemovalPolicy(RemovalPolicy.RETAIN);
+    this.cloudWatchAccount.applyRemovalPolicy(removalPolicy ?? RemovalPolicy.RETAIN);
 
     this.cloudWatchAccount.node.addDependency(apiResource);
   }
@@ -691,7 +699,7 @@ export class SpecRestApi extends RestApiBase {
     const cloudWatchRoleDefault = FeatureFlags.of(this).isEnabled(APIGATEWAY_DISABLE_CLOUDWATCH_ROLE) ? false : true;
     const cloudWatchRole = props.cloudWatchRole ?? cloudWatchRoleDefault;
     if (cloudWatchRole) {
-      this._configureCloudWatchRole(resource);
+      this._configureCloudWatchRole(resource, props.cloudWatchRoleRemovalPolicy);
     }
 
     this._configureDeployment(props);
@@ -807,7 +815,7 @@ export class RestApi extends RestApiBase {
     const cloudWatchRoleDefault = FeatureFlags.of(this).isEnabled(APIGATEWAY_DISABLE_CLOUDWATCH_ROLE) ? false : true;
     const cloudWatchRole = props.cloudWatchRole ?? cloudWatchRoleDefault;
     if (cloudWatchRole) {
-      this._configureCloudWatchRole(resource);
+      this._configureCloudWatchRole(resource, props.cloudWatchRoleRemovalPolicy);
     }
 
     this._configureDeployment(props);
