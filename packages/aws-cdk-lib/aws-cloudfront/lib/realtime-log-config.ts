@@ -29,24 +29,22 @@ export abstract class Endpoint {
    *
    * @default - a role will be created and used across your endpoints
    */
-  public static fromKinesisStream(scope: Construct, stream: kinesis.IStream, role?: iam.IRole): Endpoint {
-    const cloudfrontRole = role || singletonKinesisRole(scope);
-
-    if (!role) {
-      stream.grant(cloudfrontRole,
-        'kinesis:DescribeStreamSummary',
-        'kinesis:DescribeStream',
-        'kinesis:PutRecord',
-        'kinesis:PutRecords',
-      );
-
-      if (stream.encryptionKey) {
-        stream.encryptionKey.grant(cloudfrontRole, 'kms:GenerateDataKey');
-      }
-    }
-
+  public static fromKinesisStream(stream: kinesis.IStream, role?: iam.IRole): Endpoint {
     return new (class extends Endpoint {
-      public _renderEndpoint() {
+      public _renderEndpoint(scope: Construct) {
+        const cloudfrontRole = role ?? singletonKinesisRole(scope);
+
+        stream.grant(cloudfrontRole,
+          'kinesis:DescribeStreamSummary',
+          'kinesis:DescribeStream',
+          'kinesis:PutRecord',
+          'kinesis:PutRecords',
+        );
+
+        if (stream.encryptionKey) {
+          stream.encryptionKey.grant(cloudfrontRole, 'kms:GenerateDataKey');
+        }
+
         return {
           kinesisStreamConfig: {
             roleArn: cloudfrontRole.roleArn,
@@ -63,7 +61,7 @@ export abstract class Endpoint {
   /**
   * @internal
   */
-  public abstract _renderEndpoint(): any;
+  public abstract _renderEndpoint(scope: Construct): any;
 }
 
 /**
@@ -126,7 +124,7 @@ export class RealtimeLogConfig extends Resource implements IRealtimeLogConfig {
 
     const resource = new CfnRealtimeLogConfig(this, 'Resource', {
       endPoints: props.endPoints.map(endpoint => {
-        return endpoint._renderEndpoint();
+        return endpoint._renderEndpoint(this);
       }),
       fields: props.fields,
       name: this.realtimeLogConfigName,

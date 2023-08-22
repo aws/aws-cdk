@@ -1162,7 +1162,7 @@ test('render distribution behavior with realtime log config', () => {
 
   const realTimeConfig = new RealtimeLogConfig(stack, 'RealtimeConfig', {
     endPoints: [
-      Endpoint.fromKinesisStream(stack, stream, role),
+      Endpoint.fromKinesisStream(stream, role),
     ],
     fields: ['timestamp'],
     name: 'realtime-config',
