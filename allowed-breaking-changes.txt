@@ -173,3 +173,6 @@ removed:aws-cdk-lib.aws_ecs.CfnTaskSet.LoadBalancerProperty.loadBalancerName
 # Introduction of a new feature
 # Previously only BlueGreenUpdatePolicy could be set, now BlueGreenUpdatePolicy or new RollingUpdatePolicy can be provided
 weakened:aws-cdk-lib.aws_sagemaker.CfnEndpoint.DeploymentConfigProperty
+
+# Removed for being unused
+removed:@aws-cdk/region-info.FactName.DEFAULT_CR_NODE_VERSION
