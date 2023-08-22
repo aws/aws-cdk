@@ -79,7 +79,7 @@ declare const application: appconfig.Application;
 
 new appconfig.HostedConfiguration(this, 'MyHostedConfiguration', {
   application,
-  content: appconfig.ConfigurationContent.fromInline('This is my configuration content.'),
+  content: appconfig.ConfigurationContent.fromInlineText('This is my configuration content.'),
 });
 ```
 
@@ -95,7 +95,7 @@ declare const application: appconfig.Application;
 
 new appconfig.HostedConfiguration(this, 'MyHostedConfiguration', {
   application,
-  content: appconfig.ConfigurationContent.fromInline('This is my configuration content.'),
+  content: appconfig.ConfigurationContent.fromInlineText('This is my configuration content.'),
   type: appconfig.ConfigurationType.FEATURE_FLAGS,
 });
 ```
@@ -111,7 +111,7 @@ declare const fn: lambda.Function;
 
 new appconfig.HostedConfiguration(this, 'MyHostedConfiguration', {
   application,
-  content: appconfig.ConfigurationContent.fromInline('This is my configuration content.'),
+  content: appconfig.ConfigurationContent.fromInlineText('This is my configuration content.'),
   validators: [
     appconfig.JsonSchemaValidator.fromFile('schema.json'),
     appconfig.LambdaValidator.fromFunction(fn),
@@ -128,7 +128,7 @@ declare const application: appconfig.Application;
 
 new appconfig.HostedConfiguration(this, 'MyHostedConfiguration', {
   application,
-  content: appconfig.ConfigurationContent.fromInline('This is my configuration content.'),
+  content: appconfig.ConfigurationContent.fromInlineText('This is my configuration content.'),
   deploymentStrategy: new appconfig.DeploymentStrategy(this, 'MyDeploymentStrategy', {
     rolloutStrategy: appconfig.RolloutStrategy.linear({
       growthFactor: 15,
@@ -139,7 +139,7 @@ new appconfig.HostedConfiguration(this, 'MyHostedConfiguration', {
 });
 ```
 
-The `deployTo` parameter is used to specify which environments to deploy the configuration to. If this parameter is not specified, there will only be a deployment if there is one environment associated to the AWS AppConfig application.
+The `deployTo` parameter is used to specify which environments to deploy the configuration to. If this parameter is not specified, there will not be a deployment.
 
 A hosted configuration with `deployTo`:
 
@@ -149,7 +149,7 @@ declare const env: appconfig.Environment;
 
 new appconfig.HostedConfiguration(this, 'MyHostedConfiguration', {
   application,
-  content: appconfig.ConfigurationContent.fromInline('This is my configuration content.'),
+  content: appconfig.ConfigurationContent.fromInlineText('This is my configuration content.'),
   deployTo: [env],
 });
 ```
@@ -301,7 +301,7 @@ new appconfig.SourcedConfiguration(this, 'MySourcedConfiguration', {
 });
 ```
 
-The `deployTo` parameter is used to specify which environments to deploy the configuration to. If this parameter is not specified, there will only be a deployment if there is one environment associated to the AWS AppConfig application.
+The `deployTo` parameter is used to specify which environments to deploy the configuration to. If this parameter is not specified, there will not be a deployment.
 
 A sourced configuration with `deployTo`:
 
