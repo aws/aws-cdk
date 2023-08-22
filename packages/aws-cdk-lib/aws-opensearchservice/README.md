@@ -22,6 +22,21 @@ const devDomain = new Domain(this, 'Domain', {
 });
 ```
 
+Create a cluster with GP3 volumes:
+
+```ts
+const gp3Domain = new Domain(this, 'Domain', {
+  version: EngineVersion.OPENSEARCH_2_5,
+  ebs: {
+    volumeSize: 30,
+    volumeType: ec2.EbsDeviceVolumeType.GP3,
+    throughput: 125,
+    iops: 3000,
+  },
+});
+```
+
+
 Create a production grade cluster by also specifying things like capacity and az distribution
 
 ```ts
