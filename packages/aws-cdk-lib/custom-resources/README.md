@@ -648,3 +648,22 @@ const getParameter = new cr.AwsCustomResource(this, 'AssociateVPCWithHostedZone'
   }),
 });
 ```
+
+#### Using AWS SDK for JavaScript v3
+
+`AwsCustomResource` uses Node 18 and aws sdk v3 by default. You can specify the service as either the name of the sdk module, or just the service name, IE `@aws-sdk/client-ssm` or `SSM`, and the action as either the client method name or the sdk v3 command, `getParameter` or `GetParameterCommand`. It is recommended to use the v3 format for new AwsCustomResources going forward.
+
+```ts
+new cr.AwsCustomResource(this, 'GetParameter', {
+  resourceType: 'Custom::SSMParameter',
+  onUpdate: {
+    service: '@aws-sdk/client-ssm', // 'SSM' in v2
+    action: 'GetParameterCommand', // 'getParameter' in v2
+    parameters: {
+      Name: 'foo',
+      WithDecryption: true,
+    },
+    physicalResourceId: cr.PhysicalResourceId.fromResponse('Parameter.ARN'),
+  },
+});
+```

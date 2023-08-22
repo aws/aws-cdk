@@ -9,20 +9,6 @@ import * as logs from '../../../aws-logs';
 import * as cdk from '../../../core';
 import { Annotations } from '../../../core';
 import * as cxapi from '../../../cx-api';
-import { FactName } from '../../../region-info';
-
-/**
- * The lambda runtime used by default for aws-cdk vended custom resources. Can change
- * based on region.
- */
-export function builtInCustomResourceNodeRuntime(scope: Construct): lambda.Runtime {
-  // Runtime regional fact should always return a known runtime string that lambda.Runtime
-  // can index off, but for type safety we also default it here.
-  const runtimeName = cdk.Stack.of(scope).regionalFact(FactName.DEFAULT_CR_NODE_VERSION, 'nodejs18.x');
-  return runtimeName
-    ? new lambda.Runtime(runtimeName, lambda.RuntimeFamily.NODEJS, { supportsInlineCode: true })
-    : lambda.Runtime.NODEJS_18_X;
-}
 
 /**
  * Reference to the physical resource id that can be passed to the AWS operation as a parameter.

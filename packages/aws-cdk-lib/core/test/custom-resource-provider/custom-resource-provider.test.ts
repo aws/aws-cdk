@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as cxapi from '../../../cx-api';
-import { builtInCustomResourceProviderNodeRuntime, App, AssetStaging, CustomResourceProvider, CustomResourceProviderRuntime, DockerImageAssetLocation, DockerImageAssetSource, Duration, FileAssetLocation, FileAssetSource, ISynthesisSession, Size, Stack, CfnResource } from '../../lib';
+import { App, AssetStaging, CustomResourceProvider, CustomResourceProviderRuntime, DockerImageAssetLocation, DockerImageAssetSource, Duration, FileAssetLocation, FileAssetSource, ISynthesisSession, Size, Stack, CfnResource } from '../../lib';
 import { CUSTOMIZE_ROLES_CONTEXT_KEY } from '../../lib/helpers-internal';
 import { toCloudFormation } from '../util';
 
@@ -456,23 +456,6 @@ describe('custom resource provider', () => {
       ],
     });
 
-  });
-  describe('builtInCustomResourceProviderNodeRuntime', () => {
-    test('returns node18 for commercial region', () => {
-      const app = new App();
-      const stack = new Stack(app, 'MyStack', { env: { region: 'us-east-1' } });
-
-      const rt = builtInCustomResourceProviderNodeRuntime(stack);
-      expect(rt).toEqual(CustomResourceProviderRuntime.NODEJS_18_X);
-    });
-
-    test('returns node18 for iso region', () => {
-      const app = new App();
-      const stack = new Stack(app, 'MyStack', { env: { region: 'us-iso-east-1' } });
-
-      const rt = builtInCustomResourceProviderNodeRuntime(stack);
-      expect(rt).toEqual(CustomResourceProviderRuntime.NODEJS_18_X);
-    });
   });
 });
 
