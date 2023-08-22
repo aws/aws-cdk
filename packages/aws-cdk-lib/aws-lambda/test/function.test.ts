@@ -3308,6 +3308,133 @@ test('test 2.87.0 version hash stability', () => {
   });
 });
 
+describe('VPC configuration', () => {
+  test('with both securityGroup and securityGroups', () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', {
+      maxAzs: 3,
+      natGateways: 1,
+    });
+    const securityGroup = new ec2.SecurityGroup(stack, 'LambdaSG', {
+      vpc,
+      allowAllOutbound: false,
+    });
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      securityGroup,
+      securityGroups: [securityGroup],
+    })).toThrow(/Only one of the function props, securityGroup or securityGroups, is allowed/);
+  });
+
+  test('with allowAllOutbound and no VPC', () => {
+    const stack = new cdk.Stack();
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      allowAllOutbound: true,
+    })).toThrow(/Cannot configure 'allowAllOutbound' without configuring a VPC/);
+  });
+
+  test('with allowAllOutbound and no VPC', () => {
+    const stack = new cdk.Stack();
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      allowAllOutbound: true,
+    })).toThrow(/Cannot configure 'allowAllOutbound' without configuring a VPC/);
+  });
+
+  test('with securityGroup and no VPC', () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', {
+      maxAzs: 3,
+      natGateways: 1,
+    });
+    const securityGroup = new ec2.SecurityGroup(stack, 'LambdaSG', {
+      vpc,
+      allowAllOutbound: false,
+    });
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      securityGroup,
+    })).toThrow(/Cannot configure 'securityGroup' without configuring a VPC/);
+  });
+
+  test('with securityGroups and no VPC', () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', {
+      maxAzs: 3,
+      natGateways: 1,
+    });
+    const securityGroup = new ec2.SecurityGroup(stack, 'LambdaSG', {
+      vpc,
+      allowAllOutbound: false,
+    });
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      securityGroups: [securityGroup],
+    })).toThrow(/Cannot configure 'securityGroups' without configuring a VPC/);
+  });
+
+  test('with vpcSubnets and no VPC', () => {
+    const stack = new cdk.Stack();
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+    })).toThrow(/Cannot configure 'vpcSubnets' without configuring a VPC/);
+  });
+
+  test('with securityGroup and allowAllOutbound', () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', {
+      maxAzs: 3,
+      natGateways: 1,
+    });
+    const securityGroup = new ec2.SecurityGroup(stack, 'LambdaSG', {
+      vpc,
+      allowAllOutbound: false,
+    });
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      vpc,
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      securityGroup,
+      allowAllOutbound: false,
+    })).toThrow(/Configure 'allowAllOutbound' directly on the supplied SecurityGroup./);
+  });
+
+  test('with securityGroups and allowAllOutbound', () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', {
+      maxAzs: 3,
+      natGateways: 1,
+    });
+    const securityGroup = new ec2.SecurityGroup(stack, 'LambdaSG', {
+      vpc,
+      allowAllOutbound: false,
+    });
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      vpc,
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      securityGroups: [securityGroup],
+      allowAllOutbound: false,
+    })).toThrow(/Configure 'allowAllOutbound' directly on the supplied SecurityGroups./);
+  });
+});
+
 function newTestLambda(scope: constructs.Construct) {
   return new lambda.Function(scope, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
