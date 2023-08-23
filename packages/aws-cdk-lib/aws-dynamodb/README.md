@@ -1,6 +1,198 @@
 # Amazon DynamoDB Construct Library
 
 
+Here is a minimal deployable DynamoDB `GlobalTable` definition:
+
+```ts
+const globalTable = new dynamodb.GlobalTable(this, 'GlobalTable', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+});
+```
+
+By default, a `GlobalTable` will have one primary replica table in the main deployment region. The properties of the replica table in the main deployment region are configurable via the `GlobalTable` properties. For example, consider the following `GlobalTable` defined in a `Stack` being deployed to `us-west-2`:
+
+```ts
+const globalTable = new dynamodb.GlobalTable(this, 'GlobalTable', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  contributorInsights: true,
+  tableClass: dynamodb.TableClass.STANDARD_INFREQUENT_ACCESS,
+  pointInTimeRecovery: true,
+});
+```
+
+The above `GlobalTable` definition will result in the provisioning of a single table in `us-west-2` with properties that match what was defined on the `GlobalTable`.
+
+Further reading:
+https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GlobalTables.html
+
+## Keys
+
+When a table is defined, you must define it's schema using the `partitionKey` (required) and `sortKey` (optional) properties.
+
+```ts
+const globalTable = new dynamodb.GlobalTable(this, 'GlobalTable', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  sortKey: { name: 'sk', type: dynamodb.AttributeType.NUMBER },
+});
+```
+
+## Replicas
+
+A `GlobalTable` can be configured with replica tables. To do this, the `GlobalTable` must be defined in a region non-agnostic `Stack`. Additionally, the main deployment region must not be given as a replica because this is created by default with the `GlobalTable`. The following is a minimal `GlobalTable` definition with replicas defined in `us-east-1` and `us-east-2`:
+
+```ts
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-west-2' } });
+
+const globalTable = new dynamodb.GlobalTable(stack, 'GlobalTable', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  replicas: [
+    { region: 'us-east-1' },
+    { region: 'us-east-2' },
+  ],
+});
+```
+
+The following properties are configurable on a per-replica basis, but will be inherited from the `GlobalTable` properties if not specified:
+* contributorInsights
+* deletionProtection
+* pointInTimeRecovery
+* tableClass
+* kinesisStream
+* readCapacity (only configurable if the `GlobalTable` billing mode is `PROVISIONED`)
+* globalSecondaryIndexes (only `contributorInsights` and `readCapacity`)
+
+The following example shows how to define properties on a per-replica basis:
+
+```ts
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-west-2' } });
+
+const globalTable = new dynamodb.GlobalTable(stack, 'GlobalTable', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  contributorInsights: true,
+  pointInTimeRecovery: true,
+  replicas: [
+    {
+      region: 'us-east-1',
+      tableClass: dynamodb.TableClass.STANDARD_INFREQUENT_ACCESS,
+      pointInTimeRecovery: false,
+    },
+    {
+      region: 'us-east-2',
+      contributorInsights: false,
+    },
+  ],
+});
+```
+
+Note: You can create a new `GlobalTable` with as many replicas as needed as long as there is only one replica per region. After table creation you can add or remove replicas, but you can only add or remove a single replica in each update.
+
+## Table Class
+
+You can configure a `GlobalTable` with table classes:
+* STANDARD - the default mode, and is recommended for the vast majority of workloads.
+* STANDARD_INFREQUENT_ACCESS - optimized for tables where storage is the dominant cost.
+
+```ts
+const globalTable = new dynamodb.GlobalTable(this, 'GlobalTable', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  tableClass: dynamodb.TableClass.STANDARD_INFREQUENT_ACCESS,
+});
+```
+
+Further reading:
+https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.TableClasses.html
+
+## Capacity
+
+`GlobalTable` capacity options include:
+* fixed - provisioned throughput capacity is configured with a fixed number of I/O operations per second.
+* autoscaled - provisioned throughput capacity is dynamically adjusted on your behalf in response to actual traffic patterns.
+
+The following properties are used to configure autoscaled capacity:
+* minCapacity - Represents the minimum allowable capacity - optional with 1 as default.
+* maxCapacity - Represents the maximum allowable capacity - required.
+* targetUtilizationPercent - The ratio of consumed capacity units to provisioned capacity units - optional with 70 as default.
+
+```ts
+const capacity = dynamodb.Capacity.autoscaled({
+  minCapacity: 5,
+  maxCapacity: 20,
+  targetUtilizationPercent: 60,
+});
+```
+
+Note: `writeCapacity` can only be configured using autoscaled capacity.
+
+## Billing
+
+A `GlobalTable` can be configured with the following on-demand or provisioned billing:
+* on-demand - The default option - this is a flexible billing option capable of serving requests without capacity planning. The billing mode will be `PAY_PER_REQUEST`.
+* provisioned - Specify the `readCapacity` and `writeCapacity` that you need for your application. The billing mode will be `PROVISIONED`.
+
+The following example shows how to configure a `GlobalTable` with on-demand billing:
+
+```ts
+const globalTable = new dynamodb.GlobalTable(this, 'GlobalTable', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  billing: dynamodb.Billing.onDemand(),
+})
+```
+
+When using provisioned billing, you must also specify `readCapacity` and `writeCapacity`. You can choose to configure `readCapacity` with fixed capacity or autoscaled capacity, but `writeCapacity` can only be configured with autoscaled capacity. The following example shows how to configure a `GlobalTable` with provisioned billing:
+
+```ts
+const globalTable = new dynamodb.GlobalTable(this, 'GlobalTable', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  billing: dynamodb.Billing.provisioned({
+    readCapacity: dynamodb.Capacity.fixed(10),
+    writeCapacity: dynamodb.Capacity.autoscaled({ maxCapacity: 15 }),
+  }),
+});
+```
+
+When using provisioned billing, you can configure the `readCapacity` on a per-replica basis:
+
+```ts
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-west-2' } });
+
+const globalTable = new dynamodb.GlobalTable(stack, 'GlobalTable', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  billing: dynamodb.Billing.provisioned({
+    readCapacity: dynamodb.Capacity.fixed(10),
+    writeCapacity: dynamodb.Capacity.autoscaled({ maxCapacity: 15 }),
+  }),
+  replicas: [
+    {
+      region: 'us-east-1',
+    },
+    {
+      region: 'us-east-2',
+      readCapacity: dynamodb.Capacity.autoscaled({ maxCapacity: 20, targetUtilizationPercent: 50 }),
+    },
+  ],
+});
+```
+
+Further reading:
+https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadWriteCapacityMode.html
+
+## Global Secondary Indexes
+
+## Local Secondary Indexes
+
+
+
+
+
+
+
+
+
+
+
 Here is a minimal deployable DynamoDB table definition:
 
 ```ts

@@ -92,7 +92,7 @@ export interface TableOptionsV2 {
   readonly deletionProtection?: boolean;
 
   /**
-   * Whether point-in-time reocvery is enabled.
+   * Whether point-in-time recovery is enabled.
    *
    * @default false
    */
