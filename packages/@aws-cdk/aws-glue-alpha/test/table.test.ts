@@ -5,7 +5,6 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as glue from '../lib';
-import { PartitionIndex } from '../lib';
 
 test('unpartitioned JSON table', () => {
   const app = new cdk.App();
@@ -13,7 +12,7 @@ test('unpartitioned JSON table', () => {
   const database = new glue.Database(dbStack, 'Database');
 
   const tableStack = new cdk.Stack(app, 'table');
-  const table = new glue.Table(tableStack, 'Table', {
+  const table = new glue.S3Table(tableStack, 'Table', {
     database,
     columns: [{
       name: 'col',
@@ -81,7 +80,7 @@ test('partitioned JSON table', () => {
   const database = new glue.Database(dbStack, 'Database');
 
   const tableStack = new cdk.Stack(app, 'table');
-  const table = new glue.Table(tableStack, 'Table', {
+  const table = new glue.S3Table(tableStack, 'Table', {
     database,
     columns: [{
       name: 'col',
@@ -154,7 +153,7 @@ test('compressed table', () => {
   const stack = new cdk.Stack();
   const database = new glue.Database(stack, 'Database');
 
-  const table = new glue.Table(stack, 'Table', {
+  const table = new glue.S3Table(stack, 'Table', {
     database,
     columns: [{
       name: 'col',
@@ -218,7 +217,7 @@ test('table.node.defaultChild', () => {
   const database = new glue.Database(stack, 'Database');
 
   // WHEN
-  const table = new glue.Table(stack, 'Table', {
+  const table = new glue.S3Table(stack, 'Table', {
     database,
     columns: [{
       name: 'col',
@@ -236,7 +235,7 @@ test('encrypted table: SSE-S3', () => {
   const stack = new cdk.Stack();
   const database = new glue.Database(stack, 'Database');
 
-  const table = new glue.Table(stack, 'Table', {
+  const table = new glue.S3Table(stack, 'Table', {
     database,
     columns: [{
       name: 'col',
@@ -311,7 +310,7 @@ test('encrypted table: SSE-KMS (implicitly created key)', () => {
   const stack = new cdk.Stack();
   const database = new glue.Database(stack, 'Database');
 
-  const table = new glue.Table(stack, 'Table', {
+  const table = new glue.S3Table(stack, 'Table', {
     database,
     columns: [{
       name: 'col',
@@ -398,7 +397,7 @@ test('encrypted table: SSE-KMS (explicitly created key)', () => {
     description: 'OurKey',
   });
 
-  const table = new glue.Table(stack, 'Table', {
+  const table = new glue.S3Table(stack, 'Table', {
     database,
     columns: [{
       name: 'col',
@@ -484,7 +483,7 @@ test('encrypted table: SSE-KMS_MANAGED', () => {
   const stack = new cdk.Stack();
   const database = new glue.Database(stack, 'Database');
 
-  const table = new glue.Table(stack, 'Table', {
+  const table = new glue.S3Table(stack, 'Table', {
     database,
     columns: [{
       name: 'col',
@@ -559,7 +558,7 @@ test('encrypted table: CSE-KMS (implicitly created key)', () => {
   const stack = new cdk.Stack();
   const database = new glue.Database(stack, 'Database');
 
-  const table = new glue.Table(stack, 'Table', {
+  const table = new glue.S3Table(stack, 'Table', {
     database,
     columns: [{
       name: 'col',
@@ -627,7 +626,7 @@ test('encrypted table: CSE-KMS (explicitly created key)', () => {
     description: 'MyKey',
   });
 
-  const table = new glue.Table(stack, 'Table', {
+  const table = new glue.S3Table(stack, 'Table', {
     database,
     columns: [{
       name: 'col',
@@ -699,7 +698,7 @@ test('encrypted table: CSE-KMS (explicitly passed bucket and key)', () => {
     description: 'MyKey',
   });
 
-  const table = new glue.Table(stack, 'Table', {
+  const table = new glue.S3Table(stack, 'Table', {
     database,
     columns: [{
       name: 'col',
@@ -771,7 +770,7 @@ test('explicit s3 bucket and prefix', () => {
   const bucket = new s3.Bucket(stack, 'ExplicitBucket');
   const database = new glue.Database(dbStack, 'Database');
 
-  new glue.Table(stack, 'Table', {
+  new glue.S3Table(stack, 'Table', {
     database,
     bucket,
     s3Prefix: 'prefix/',
@@ -835,7 +834,7 @@ test('explicit s3 bucket and with empty prefix', () => {
   const bucket = new s3.Bucket(stack, 'ExplicitBucket');
   const database = new glue.Database(dbStack, 'Database');
 
-  new glue.Table(stack, 'Table', {
+  new glue.S3Table(stack, 'Table', {
     database,
     bucket,
     s3Prefix: '',
@@ -897,7 +896,7 @@ describe('add partition index', () => {
     const stack = new cdk.Stack();
     const database = new glue.Database(stack, 'Database');
 
-    const table = new glue.Table(stack, 'Table', {
+    const table = new glue.S3Table(stack, 'Table', {
       database,
       columns: [{
         name: 'col',
@@ -916,7 +915,7 @@ describe('add partition index', () => {
     const stack = new cdk.Stack();
     const database = new glue.Database(stack, 'Database');
 
-    const table = new glue.Table(stack, 'Table', {
+    const table = new glue.S3Table(stack, 'Table', {
       database,
       columns: [{
         name: 'col',
@@ -939,7 +938,7 @@ describe('add partition index', () => {
     const stack = new cdk.Stack();
     const database = new glue.Database(stack, 'Database');
 
-    const table = new glue.Table(stack, 'Table', {
+    const table = new glue.S3Table(stack, 'Table', {
       database,
       columns: [{
         name: 'col',
@@ -962,7 +961,7 @@ describe('add partition index', () => {
     const stack = new cdk.Stack();
     const database = new glue.Database(stack, 'Database');
 
-    const indexes: PartitionIndex[] = [{
+    const indexes: glue.PartitionIndex[] = [{
       indexName: 'ind1',
       keyNames: ['part'],
     }, {
@@ -976,7 +975,7 @@ describe('add partition index', () => {
       keyNames: ['part'],
     }];
 
-    expect(() => new glue.Table(stack, 'Table', {
+    expect(() => new glue.S3Table(stack, 'Table', {
       database,
       columns: [{
         name: 'col',
@@ -998,7 +997,7 @@ describe('grants', () => {
     const user = new iam.User(stack, 'User');
     const database = new glue.Database(stack, 'Database');
 
-    const table = new glue.Table(stack, 'Table', {
+    const table = new glue.S3Table(stack, 'Table', {
       database,
       columns: [{
         name: 'col',
@@ -1061,7 +1060,7 @@ describe('grants', () => {
     const user = new iam.User(stack, 'User');
     const database = new glue.Database(stack, 'Database');
 
-    const table = new glue.Table(stack, 'Table', {
+    const table = new glue.S3Table(stack, 'Table', {
       database,
       columns: [{
         name: 'col',
@@ -1162,7 +1161,7 @@ describe('grants', () => {
     const user = new iam.User(stack, 'User');
     const database = new glue.Database(stack, 'Database');
 
-    const table = new glue.Table(stack, 'Table', {
+    const table = new glue.S3Table(stack, 'Table', {
       database,
       columns: [{
         name: 'col',
@@ -1265,7 +1264,7 @@ describe('grants', () => {
     const user = new iam.User(stack, 'User');
     const database = new glue.Database(stack, 'Database');
 
-    const table = new glue.Table(stack, 'Table', {
+    const table = new glue.S3Table(stack, 'Table', {
       database,
       columns: [{
         name: 'col',
@@ -1485,7 +1484,7 @@ describe('validate', () => {
     const stack = new cdk.Stack(app, 'Stack');
     const database = new glue.Database(stack, 'Database');
 
-    expect(() => new glue.Table(stack, 'Table', {
+    expect(() => new glue.S3Table(stack, 'Table', {
       database,
       columns: [{
         name: 'col',
@@ -1523,7 +1522,7 @@ test.each([
   const database = new glue.Database(dbStack, 'Database');
 
   const tableStack = new cdk.Stack(app, 'table');
-  new glue.Table(tableStack, 'Table', {
+  new glue.S3Table(tableStack, 'Table', {
     database,
     columns: [{
       name: 'col',
@@ -1565,7 +1564,7 @@ test('Partition filtering on table is not defined (default behavior)', () => {
   const database = new glue.Database(dbStack, 'Database');
 
   const tableStack = new cdk.Stack(app, 'table');
-  new glue.Table(tableStack, 'Table', {
+  new glue.S3Table(tableStack, 'Table', {
     database,
     columns: [{
       name: 'col',
@@ -1604,7 +1603,7 @@ test('can specify a physical name', () => {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'Stack');
   const database = new glue.Database(stack, 'Database');
-  new glue.Table(stack, 'Table', {
+  new glue.S3Table(stack, 'Table', {
     database,
     tableName: 'my_table',
     columns: [{
@@ -1626,7 +1625,7 @@ test('storage descriptor parameters', () => {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'Stack');
   const database = new glue.Database(stack, 'Database');
-  new glue.Table(stack, 'Table', {
+  new glue.S3Table(stack, 'Table', {
     database,
     columns: [{
       name: 'col',
@@ -1655,7 +1654,7 @@ test('storage descriptor parameters', () => {
   });
 });
 
-test('can associate a connection with the glue table', () => {
+test('can associate an external location with the glue table', () => {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'Stack');
   const database = new glue.Database(stack, 'Database');
@@ -1668,33 +1667,10 @@ test('can associate a connection with the glue table', () => {
       PASSWORD: 'password',
     },
   });
-  new glue.Table(stack, 'Table', {
+  new glue.ExternalTable(stack, 'Table', {
     database,
     tableName: 'my_table',
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
-    dataFormat: glue.DataFormat.JSON,
     connection,
-  });
-
-  Template.fromStack(stack).hasResourceProperties('AWS::Glue::Table', {
-    TableInput: {
-      Parameters: {
-        connectionName: { Ref: 'Connection89AD5CF5' },
-      },
-    },
-  });
-});
-
-test('can associate an external location with the glue table', () => {
-  const app = new cdk.App();
-  const stack = new cdk.Stack(app, 'Stack');
-  const database = new glue.Database(stack, 'Database');
-  new glue.Table(stack, 'Table', {
-    database,
-    tableName: 'my_table',
     columns: [{
       name: 'col',
       type: glue.Schema.STRING,
@@ -1714,7 +1690,7 @@ test('can associate an external location with the glue table', () => {
 
 function createTable(props: Pick<glue.TableProps, Exclude<keyof glue.TableProps, 'database' | 'dataFormat'>>): void {
   const stack = new cdk.Stack();
-  new glue.Table(stack, 'table', {
+  new glue.S3Table(stack, 'table', {
     ...props,
     database: new glue.Database(stack, 'db'),
     dataFormat: glue.DataFormat.JSON,
