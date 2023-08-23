@@ -18,7 +18,7 @@ function asyncTest(cb: () => Promise<void>): () => void {
   };
 }
 
-const nonEmptyString = fc.string({ minLength: 1, maxLength: 16 });
+const nonEmptyString = fc.string({ minLength: 1, maxLength: 16 }).filter((x) => x !== '__proto__');
 const tokenish = fc.array(nonEmptyString, { minLength: 2, maxLength: 2 }).map(arr => ({ [arr[0]]: arr[1] }));
 const anyValue = fc.oneof<any>(nonEmptyString, tokenish);
 
@@ -122,7 +122,7 @@ describe('fn', () => {
             _.isEqual(stack.resolve(Fn.join(delimiter, [...prefix, stringToken(obj), ...suffix])),
               { 'Fn::Join': [delimiter, [prefix.join(delimiter), obj, suffix.join(delimiter)]] }),
         ),
-        { verbose: true, seed: 1539874645005, path: '0:0:0:0:0:0:0:0:0' },
+        { verbose: true },
       );
     }));
 

@@ -1087,7 +1087,7 @@ export class Stack extends Construct implements ITaggable {
 
       const message = `Template size ${verb} limit: ${templateData.length}/${TEMPLATE_BODY_MAXIMUM_SIZE}. ${advice}.`;
 
-      Annotations.of(this).addWarning(message);
+      Annotations.of(this).addWarningV2('@aws-cdk/core:Stack.templateSize', message);
     }
 
     fs.writeFileSync(outPath, templateData);
@@ -1342,7 +1342,7 @@ export class Stack extends Construct implements ITaggable {
 
     if (this.templateOptions.transform) {
       // eslint-disable-next-line max-len
-      Annotations.of(this).addWarning('This stack is using the deprecated `templateOptions.transform` property. Consider switching to `addTransform()`.');
+      Annotations.of(this).addWarningV2('@aws-cdk/core:stackDeprecatedTransform', 'This stack is using the deprecated `templateOptions.transform` property. Consider switching to `addTransform()`.');
       this.addTransform(this.templateOptions.transform);
     }
 
