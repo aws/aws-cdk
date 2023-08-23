@@ -231,9 +231,8 @@ Setting the `platform` field on the Amplify `App` construct can be used to contr
 
 ```ts
 const amplifyApp = new amplify.App(this, 'MyApp', {
-  platform: Platform.WEB_COMPUTE,
-})
-
+  platform: amplify.Platform.WEB_COMPUTE,
+});
 ```
 
 ## Deploying Assets
