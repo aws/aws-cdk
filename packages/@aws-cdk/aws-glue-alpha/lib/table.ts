@@ -231,7 +231,7 @@ export interface TableProps {
 /**
  * A Glue table.
  *
- * @deprecate Use {@link S3Table} instead.
+ * @deprecated Use {@link S3Table} instead.
  */
 export class Table extends Resource implements ITable {
 
