@@ -22,7 +22,7 @@ jobs:
           # Git commit details
           branch: automation/update-contributors
           author: aws-cdk-automation <aws-cdk-automation@users.noreply.github.com>
-          commit-message: chore: update Contributors File
+          commit-message: 'chore: update Contributors File'
           # Pull Request details
           title: 'chore: update Contributors File'
           labels: auto-approve
