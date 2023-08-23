@@ -27,13 +27,15 @@
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^29.5.3",
-    "jest": "^29.6.2",
-    "esbuild": "^0.19.1"
+    "@types/jest": "^29.5.4",
+    "jest": "^29.6.3",
+    "esbuild": "^0.19.2"
   },
   "dependencies": {
-    "@aws-sdk/client-ecr": "^3.388.0",
-    "@aws-sdk/client-s3": "^3.388.0"
+    "@aws-sdk/client-lambda": "^3.395.0",
+    "@aws-sdk/client-synthetics": "^3.395.0",
+    "@aws-sdk/client-ecr": "^3.395.0",
+    "@aws-sdk/client-s3": "^3.397.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
