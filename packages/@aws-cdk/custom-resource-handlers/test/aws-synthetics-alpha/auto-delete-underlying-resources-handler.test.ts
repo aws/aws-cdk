@@ -140,7 +140,7 @@ test('deletes lambda when the name changes on update event', async () => {
   mockSyntheticsClient.send.mockReturnValue({
     Canary: {
       Tags: {
-        'aws-cdk:auto-delete-lambda': 'true',
+        'aws-cdk:auto-delete-underlying-resources': 'true',
       },
       Id: id,
     },
