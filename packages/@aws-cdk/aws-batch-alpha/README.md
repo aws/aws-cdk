@@ -466,9 +466,12 @@ This example creates a `JobDefinition` that runs a single container with ECS:
 
 ```ts
 import * as cdk from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import * as efs from 'aws-cdk-lib/aws-efs';
 
 declare const myFileSystem: efs.IFileSystem;
+declare const myJobRole: iam.Role;
+myFileSystem.grantRead(myJobRole);
 
 const jobDefn = new batch.EcsJobDefinition(this, 'JobDefn', {
   container: new batch.EcsEc2ContainerDefinition(this, 'containerDefn', {
@@ -479,7 +482,9 @@ const jobDefn = new batch.EcsJobDefinition(this, 'JobDefn', {
       name: 'myVolume',
       fileSystem: myFileSystem,
       containerPath: '/Volumes/myVolume',
+      useJobRole: true,
     })],
+    jobRole: myJobRole,
   }),
 });
 ```
