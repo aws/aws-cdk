@@ -1222,11 +1222,20 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
    * Lambda creation properties.
    */
   private configureVpc(props: FunctionProps): CfnFunction.VpcConfigProperty | undefined {
-    if ((props.securityGroup || props.allowAllOutbound !== undefined) && !props.vpc) {
-      throw new Error('Cannot configure \'securityGroup\' or \'allowAllOutbound\' without configuring a VPC');
+    if (props.securityGroup && props.securityGroups) {
+      throw new Error('Only one of the function props, securityGroup or securityGroups, is allowed');
     }
 
     if (!props.vpc) {
+      if (props.allowAllOutbound !== undefined) {
+        throw new Error('Cannot configure \'allowAllOutbound\' without configuring a VPC');
+      }
+      if (props.securityGroup) {
+        throw new Error('Cannot configure \'securityGroup\' without configuring a VPC');
+      }
+      if (props.securityGroups) {
+        throw new Error('Cannot configure \'securityGroups\' without configuring a VPC');
+      }
       if (props.vpcSubnets) {
         throw new Error('Cannot configure \'vpcSubnets\' without configuring a VPC');
       }
@@ -1237,11 +1246,11 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       throw new Error('Configure \'allowAllOutbound\' directly on the supplied SecurityGroup.');
     }
 
-    let securityGroups: ec2.ISecurityGroup[];
-
-    if (props.securityGroup && props.securityGroups) {
-      throw new Error('Only one of the function props, securityGroup or securityGroups, is allowed');
+    if (props.securityGroups && props.allowAllOutbound !== undefined) {
+      throw new Error('Configure \'allowAllOutbound\' directly on the supplied SecurityGroups.');
     }
+
+    let securityGroups: ec2.ISecurityGroup[];
 
     if (props.securityGroups) {
       securityGroups = props.securityGroups;

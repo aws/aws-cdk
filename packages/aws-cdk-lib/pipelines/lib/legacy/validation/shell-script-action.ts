@@ -60,7 +60,7 @@ export interface ShellScriptActionProps {
   /**
    * The CodeBuild environment where scripts are executed.
    *
-   * @default LinuxBuildImage.STANDARD_6_0
+   * @default LinuxBuildImage.STANDARD_7_0
    */
   readonly environment?: codebuild.BuildEnvironment
 
