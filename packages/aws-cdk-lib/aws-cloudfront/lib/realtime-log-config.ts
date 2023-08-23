@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnRealtimeLogConfig } from './cloudfront.generated';
 import { Endpoint } from '../';
-import { Arn, IResource, Names, Resource, Stack } from '../../core';
+import { Arn, IResource, Lazy, Names, Resource, Stack } from '../../core';
 
 /**
  * Represents Realtime Log Configuration
@@ -128,10 +128,8 @@ export class RealtimeLogConfig extends RealtimeLogConfigBase {
 
   constructor(scope: Construct, id: string, props: RealtimeLogConfigProps) {
     super(scope, id, {
-      physicalName: props.realtimeLogConfigName,
+      physicalName: props.realtimeLogConfigName ?? Lazy.string({ produce: () => Names.uniqueResourceName(this, {}) }),
     });
-
-    this.realtimeLogConfigName = props.realtimeLogConfigName ?? Names.uniqueResourceName(this, {});
 
     if ((props.samplingRate < 1 || props.samplingRate > 100)) {
       throw new Error(`Sampling rate must be between 1 and 100 (inclusive), received ${props.samplingRate}`);
@@ -142,7 +140,7 @@ export class RealtimeLogConfig extends RealtimeLogConfigBase {
         return endpoint._renderEndpoint(this);
       }),
       fields: props.fields,
-      name: this.realtimeLogConfigName,
+      name: this.physicalName,
       samplingRate: props.samplingRate,
     });
 
