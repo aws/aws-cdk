@@ -1040,4 +1040,22 @@ describe('repository', () => {
       }).toThrowError('Cannot use \'autoDeleteImages\' property on a repository without setting removal policy to \'DESTROY\'.');
     });
   });
+
+  test('repo name is embedded in CustomResourceProvider description', () => {
+    const stack = new cdk.Stack();
+    new ecr.Repository(stack, 'Repo', {
+      autoDeleteImages: true,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Description: {
+        'Fn::Join': ['', [
+          'Lambda function for auto-deleting images in ',
+          { Ref: 'Repo02AC86CF' },
+          ' repository.',
+        ]],
+      },
+    });
+  });
 });
