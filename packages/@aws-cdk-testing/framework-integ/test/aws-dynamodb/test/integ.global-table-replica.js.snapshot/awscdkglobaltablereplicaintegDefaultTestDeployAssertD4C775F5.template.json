@@ -11,12 +11,12 @@
     },
     "service": "Lambda",
     "api": "invoke",
-    "expected": "{\"$ObjectLike\":{\"StatusCode\":200}}",
+    "expected": "{\"$ObjectLike\":{\"Payload\":{\"status_code\":200}}}",
     "parameters": {
      "FunctionName": "\"global-table-lambda\""
     },
     "flattenResponse": "false",
-    "salt": "1692747861911"
+    "salt": "1692829133106"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

@@ -164,7 +164,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
                       },
-                      "s3Key": "c18113b4de2a824414ce1fee0fe23ec882169117060896b1c8b75ce5a1af8526.zip"
+                      "s3Key": "7605c78d81246ac4a63b646e0f39ae3e697626ced7d652a031ea3f9dba4c613e.zip"
                     },
                     "functionName": "global-table-lambda",
                     "handler": "index.handler",

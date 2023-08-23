@@ -7,4 +7,6 @@ def handler(event, context):
       Item={ 'pk': 'value' }
   )
   print(response['ResponseMetadata'])
-  return response['ResponseMetadata']
+  return {
+    'status_code': response['ResponseMetadata']['HTTPStatusCode']
+  }

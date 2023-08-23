@@ -40,5 +40,7 @@ const integTest = new IntegTest(app, 'aws-cdk-global-table-replica-integ', {
 
 const invoke = integTest.assertions.invokeFunction({ functionName: 'global-table-lambda' });
 invoke.expect(ExpectedResult.objectLike({
-  HTTPStatusCode: 200,
+  Payload: {
+    status_code: 200,
+  },
 }));
