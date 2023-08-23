@@ -119,7 +119,7 @@ describe('cfn resource', () => {
       expect(getWarnings(app.synth())).toEqual([
         {
           path: '/Default/Resource',
-          message: 'AWS::Lambda::Function does not support snapshot removal policy. This policy will be ignored.',
+          message: 'AWS::Lambda::Function does not support snapshot removal policy. This policy will be ignored. [ack: @aws-cdk/core:AWS::Lambda::FunctionSnapshotRemovalPolicyIgnored]',
         },
       ]);
     });
