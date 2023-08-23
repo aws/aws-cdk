@@ -564,7 +564,7 @@ const globalTable = new dynamodb.GlobalTable(stack, 'GlobalTable', {
 });
 
 // metric is only for the table in us-west-2 and the tableKey
-const metric = globalTable.metricConsumerReadCapacityUnits();
+const metric = globalTable.metricConsumedReadCapacityUnits();
 
 new cloudwatch.Alarm(this, 'Alarm', {
   metric: metric,
