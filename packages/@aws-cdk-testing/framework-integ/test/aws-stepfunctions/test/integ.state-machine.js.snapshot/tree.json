@@ -12,7 +12,7 @@
             "id": "wait time",
             "path": "aws-stepfunctions-integ/wait time",
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions.Wait",
+              "fqn": "aws-cdk-lib.aws_stepfunctions.Wait",
               "version": "0.0.0"
             }
           },
@@ -24,7 +24,7 @@
                 "id": "ImportRole",
                 "path": "aws-stepfunctions-integ/Role/ImportRole",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               },
@@ -49,7 +49,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.CfnRole",
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                   "version": "0.0.0"
                 }
               },
@@ -139,19 +139,19 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Policy",
+                  "fqn": "aws-cdk-lib.aws_iam.Policy",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-iam.Role",
+              "fqn": "aws-cdk-lib.aws_iam.Role",
               "version": "0.0.0"
             }
           },
@@ -167,7 +167,7 @@
                     "id": "ImportRole",
                     "path": "aws-stepfunctions-integ/StateMachine/Role/ImportRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -192,13 +192,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -214,17 +214,17 @@
                         "Arn"
                       ]
                     },
-                    "definitionString": "{\"StartAt\":\"wait time\",\"States\":{\"wait time\":{\"Type\":\"Wait\",\"SecondsPath\":\"$.waitSeconds\",\"End\":true}}}"
+                    "definitionString": "{\"StartAt\":\"wait time\",\"States\":{\"wait time\":{\"Type\":\"Wait\",\"SecondsPath\":\"$.waitSeconds\",\"End\":true}},\"Comment\":\"a super cool state machine\"}"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-stepfunctions.CfnStateMachine",
+                  "fqn": "aws-cdk-lib.aws_stepfunctions.CfnStateMachine",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions.StateMachine",
+              "fqn": "aws-cdk-lib.aws_stepfunctions.StateMachine",
               "version": "0.0.0"
             }
           },
@@ -232,7 +232,7 @@
             "id": "BootstrapVersion",
             "path": "aws-stepfunctions-integ/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
+              "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
             }
           },
@@ -240,13 +240,13 @@
             "id": "CheckBootstrapVersion",
             "path": "aws-stepfunctions-integ/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
         }
       },
@@ -255,12 +255,12 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.237"
+          "version": "10.2.26"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
+      "fqn": "aws-cdk-lib.App",
       "version": "0.0.0"
     }
   }

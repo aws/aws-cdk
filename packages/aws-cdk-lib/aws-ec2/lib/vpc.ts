@@ -1700,7 +1700,7 @@ export class Vpc extends VpcBase {
     const id = 'Custom::VpcRestrictDefaultSG';
     const provider = CustomResourceProvider.getOrCreateProvider(this, id, {
       codeDirectory: path.join(__dirname, 'restrict-default-security-group-handler'),
-      runtime: CustomResourceProviderRuntime.NODEJS_16_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_18_X,
       description: 'Lambda function for removing all inbound/outbound rules from the VPC default security group',
     });
     provider.addToRolePolicy({

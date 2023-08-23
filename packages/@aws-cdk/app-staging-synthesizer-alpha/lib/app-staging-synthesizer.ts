@@ -257,8 +257,8 @@ export class AppStagingSynthesizer extends StackSynthesizer implements IReusable
       throw new Error([
         'It is not safe to use AppStagingSynthesizer for both environment-agnostic and environment-aware stacks at the same time.',
         'Please either specify environments for all stacks or no stacks in the CDK App.',
-        `Stacks with environment: ${describeStacks(agnosticStacks)}.`,
-        `Stacks without environment: ${describeStacks(envAwareStacks)}.`,
+        `At least these stacks with environment: ${describeStacks(envAwareStacks)}.`,
+        `At least these stacks without environment: ${describeStacks(agnosticStacks)}.`,
       ].join(' '));
     }
   }
