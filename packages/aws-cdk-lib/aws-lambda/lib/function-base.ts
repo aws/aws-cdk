@@ -325,7 +325,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
   }
 
   protected warnInvokeFunctionPermissions(scope: Construct): void {
-    Annotations.of(scope).addWarning([
+    Annotations.of(scope).addWarningV2('@aws-cdk/aws-lambda:addPermissionsToVersionOrAlias', [
       "AWS Lambda has changed their authorization strategy, which may cause client invocations using the 'Qualifier' parameter of the lambda function to fail with Access Denied errors.",
       "If you are using a lambda Version or Alias, make sure to call 'grantInvoke' or 'addPermission' on the Version or Alias, not the underlying Function",
       'See: https://github.com/aws/aws-cdk/issues/19273',
