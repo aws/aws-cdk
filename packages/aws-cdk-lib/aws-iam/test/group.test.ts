@@ -126,7 +126,7 @@ test('throw warning if attached managed policies exceed 10 in constructor', () =
     ],
   });
 
-  Annotations.fromStack(stack).hasWarning('*', 'You added 11 to IAM Group MyGroup. The maximum number of managed policies attached to an IAM group is 10.');
+  Annotations.fromStack(stack).hasWarning('*', 'You added 11 to IAM Group MyGroup. The maximum number of managed policies attached to an IAM group is 10. [ack: @aws-cdk/aws-iam:groupMaxPoliciesExceeded]');
 });
 
 test('throw warning if attached managed policies exceed 10 when calling `addManagedPolicy`', () => {
@@ -142,5 +142,5 @@ test('throw warning if attached managed policies exceed 10 when calling `addMana
     group.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName(i.toString()));
   }
 
-  Annotations.fromStack(stack).hasWarning('/Default/MyGroup', 'You added 11 to IAM Group MyGroup. The maximum number of managed policies attached to an IAM group is 10.');
+  Annotations.fromStack(stack).hasWarning('/Default/MyGroup', 'You added 12 to IAM Group MyGroup. The maximum number of managed policies attached to an IAM group is 10. [ack: @aws-cdk/aws-iam:groupMaxPoliciesExceeded]');
 });
