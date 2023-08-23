@@ -1,14 +1,12 @@
 {
-  "version": "30.1.0",
+  "version": "33.0.0",
   "testCases": {
-    "integ.efs": {
+    "test-efs-integ-test/DefaultTest": {
       "stacks": [
         "test-efs-integ"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "test-efs-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "testefsintegtestDefaultTestDeployAssert7E1529D5"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }
