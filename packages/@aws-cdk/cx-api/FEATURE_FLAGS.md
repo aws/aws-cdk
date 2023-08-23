@@ -56,9 +56,8 @@ Flags come in three types:
 | [@aws-cdk/core:includePrefixInUniqueNameGeneration](#aws-cdkcoreincludeprefixinuniquenamegeneration) | Include the stack prefix in the stack name generation process | 2.84.0 | (fix) |
 | [@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig](#aws-cdkaws-autoscalinggeneratelaunchtemplateinsteadoflaunchconfig) | Generate a launch template when creating an AutoScalingGroup | 2.88.0 | (fix) |
 | [@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby](#aws-cdkaws-opensearchserviceenableopensearchmultiazwithstandby) | Enables support for Multi-AZ with Standby deployment for opensearch domains | 2.88.0 | (default) |
-| [@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion](#aws-cdkaws-lambda-nodejsuselatestruntimeversion) | Enables aws-lambda-nodejs.Function to use the latest available NodeJs runtime as the default | V2NEXT | (default) |
-| [@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig](#aws-cdkaws-autoscalinggeneratelaunchtemplateinsteadoflaunchconfig) | Generate a launch template when creating an AutoScalingGroup | V2NEXT | (fix) |
 | [@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId](#aws-cdkaws-efsmounttargetorderinsensitivelogicalid) | When enabled, mount targets will have a stable logicalId that is linked to the associated subnet. | V2NEXT | (fix) |
+| [@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion](#aws-cdkaws-lambda-nodejsuselatestruntimeversion) | Enables aws-lambda-nodejs.Function to use the latest available NodeJs runtime as the default | V2NEXT | (default) |
 
 <!-- END table -->
 
@@ -103,7 +102,6 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ec2:restrictDefaultSecurityGroup": true,
     "@aws-cdk/aws-apigateway:requestValidatorUniqueId": true,
     "@aws-cdk/aws-kms:aliasNameRef": true,
-    "@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig": true,
     "@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig": true,
     "@aws-cdk/core:includePrefixInUniqueNameGeneration": true,
     "@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby": true,
@@ -1058,48 +1056,6 @@ multi-az with standby enabled.
 **Compatibility with old behavior:** Pass `capacity.multiAzWithStandbyEnabled: false` to `Domain` construct to restore the old behavior.
 
 
-### @aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion
-
-*Enables aws-lambda-nodejs.Function to use the latest available NodeJs runtime as the default* (default)
-
-If this is set, and a `runtime` prop is not passed to, Lambda NodeJs
-functions will us the latest version of the runtime provided by the Lambda
-service. Do not use this if you your lambda function is reliant on dependencies
-shipped as part of the runtime environment.
-
-
-| Since | Default | Recommended |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
-
-**Compatibility with old behavior:** Pass `runtime: lambda.Runtime.NODEJS_16_X` to `Function` construct to restore the previous behavior.
-
-
-### @aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig
-
-*Generate a launch template when creating an AutoScalingGroup* (fix)
-
-Enable this flag to allow AutoScalingGroups to generate a launch template when being created.
-Launch configurations have been deprecated and cannot be created in AWS Accounts created after
-December 31, 2023. Existing 'AutoScalingGroup' properties used for creating a launch configuration
-will now create an equivalent 'launchTemplate'. Alternatively, users can provide an explicit 
-'launchTemplate' or 'mixedInstancesPolicy'. When this flag is enabled a 'launchTemplate' will 
-attempt to set user data according to the OS of the machine image if explicit user data is not
-provided.
-
-
-| Since | Default | Recommended |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
-
-**Compatibility with old behavior:** 
-      If backwards compatibility needs to be maintained due to an existing autoscaling group
-      using a launch config, set this flag to false.
-    
-
-
 ### @aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId
 
 *When enabled, mount targets will have a stable logicalId that is linked to the associated subnet.* (fix)
@@ -1116,6 +1072,24 @@ Set this flag to false for existing mount targets.
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | V2NEXT | `false` | `true` |
+
+
+### @aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion
+
+*Enables aws-lambda-nodejs.Function to use the latest available NodeJs runtime as the default* (default)
+
+If this is set, and a `runtime` prop is not passed to, Lambda NodeJs
+functions will us the latest version of the runtime provided by the Lambda
+service. Do not use this if you your lambda function is reliant on dependencies
+shipped as part of the runtime environment.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Pass `runtime: lambda.Runtime.NODEJS_16_X` to `Function` construct to restore the previous behavior.
 
 
 <!-- END details -->
