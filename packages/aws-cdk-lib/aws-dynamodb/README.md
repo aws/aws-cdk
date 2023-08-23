@@ -27,7 +27,7 @@ https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GlobalTables.ht
 
 ## Keys
 
-When a table is defined, you must define it's schema using the `partitionKey` (required) and `sortKey` (optional) properties.
+When a `GlobalTable` is defined, you must define it's schema using the `partitionKey` (required) and `sortKey` (optional) properties.
 
 ```ts
 const globalTable = new dynamodb.GlobalTable(this, 'GlobalTable', {
@@ -35,6 +35,60 @@ const globalTable = new dynamodb.GlobalTable(this, 'GlobalTable', {
   sortKey: { name: 'sk', type: dynamodb.AttributeType.NUMBER },
 });
 ```
+
+## Contributor Insights
+
+Enabling `contributorInsights` for a `GlobalTable` will provide information about the most accessed and throttled items in a table or `globalSecondaryIndex`. DynamoDB delivers this information to you via CloudWatch Contributor Insights rules, reports, and graphs of report data.
+
+```ts
+const globalTable = new dynamodb.GlobalTable(this, 'GlobalTable', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  contributorInsights: true,
+});
+```
+
+Further reading:
+https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/contributorinsights_HowItWorks.html
+
+## Deletion Protection
+
+`deletionProtection` determines if your `GlobalTable` is protected from deletion. When enabled, the `GlobalTable` cannot be deleted by any user or process.
+
+```ts
+const globalTable = new dynamodb.GlobalTable(this, 'GlobalTable', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  deletionProtection: true,
+});
+```
+
+## Point-in-Time Recovery
+
+`pointInTimeRecovery` provides automatic backups of your `GlobalTable` data which helps protect your `GlobalTable` from accidental write or delete operations.
+
+```ts
+const globalTable = new dynamodb.GlobalTable(this, 'GlobalTable', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  pointInTimeRecovery: true,
+});
+```
+
+## Table Class
+
+You can configure a `GlobalTable` with table classes:
+* STANDARD - the default mode, and is recommended for the vast majority of workloads.
+* STANDARD_INFREQUENT_ACCESS - optimized for tables where storage is the dominant cost.
+
+```ts
+const globalTable = new dynamodb.GlobalTable(this, 'GlobalTable', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  tableClass: dynamodb.TableClass.STANDARD_INFREQUENT_ACCESS,
+});
+```
+
+Further reading:
+https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.TableClasses.html
+
+## Kinesis Stream
 
 ## Replicas
 
@@ -51,6 +105,20 @@ const globalTable = new dynamodb.GlobalTable(stack, 'GlobalTable', {
     { region: 'us-east-2' },
   ],
 });
+```
+
+Alternatively, you can add new replicas to a `GlobalTable` using the `addReplica` method:
+
+```ts
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-west-2' } });
+
+const globalTable = new dynamodb.GlobalTable(stack, 'GlobalTable', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  replicas: [{ region: 'us-east-1' }],
+});
+
+globalTable.addReplica({ region: 'us-east-2', deletionProtection: true });
 ```
 
 The following properties are configurable on a per-replica basis, but will be inherited from the `GlobalTable` properties if not specified:
@@ -86,23 +154,24 @@ const globalTable = new dynamodb.GlobalTable(stack, 'GlobalTable', {
 });
 ```
 
-Note: You can create a new `GlobalTable` with as many replicas as needed as long as there is only one replica per region. After table creation you can add or remove replicas, but you can only add or remove a single replica in each update.
-
-## Table Class
-
-You can configure a `GlobalTable` with table classes:
-* STANDARD - the default mode, and is recommended for the vast majority of workloads.
-* STANDARD_INFREQUENT_ACCESS - optimized for tables where storage is the dominant cost.
+You can retrieve a single replica from a `GlobalTable` using the `replica` method:
 
 ```ts
-const globalTable = new dynamodb.GlobalTable(this, 'GlobalTable', {
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-west-2' } });
+
+const globalTable = new dynamodb.GlobalTable(stack, 'GlobalTable', {
   partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
-  tableClass: dynamodb.TableClass.STANDARD_INFREQUENT_ACCESS,
+  replicas: [
+    { region: 'us-east-1' },
+    { region: 'us-east-2' },
+  ],
 });
+
+const replicaTable = globalTable.replica('us-east-2');
 ```
 
-Further reading:
-https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.TableClasses.html
+Note: You can create a new `GlobalTable` with as many replicas as needed as long as there is only one replica per region. After table creation you can add or remove replicas, but you can only add or remove a single replica in each update.
 
 ## Capacity
 
@@ -127,8 +196,8 @@ Note: `writeCapacity` can only be configured using autoscaled capacity.
 
 ## Billing
 
-A `GlobalTable` can be configured with the following on-demand or provisioned billing:
-* on-demand - The default option - this is a flexible billing option capable of serving requests without capacity planning. The billing mode will be `PAY_PER_REQUEST`.
+A `GlobalTable` can be configured with on-demand or provisioned billing:
+* on-demand - The default option. This is a flexible billing option capable of serving requests without capacity planning. The billing mode will be `PAY_PER_REQUEST`.
 * provisioned - Specify the `readCapacity` and `writeCapacity` that you need for your application. The billing mode will be `PROVISIONED`.
 
 The following example shows how to configure a `GlobalTable` with on-demand billing:
@@ -179,19 +248,360 @@ const globalTable = new dynamodb.GlobalTable(stack, 'GlobalTable', {
 Further reading:
 https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadWriteCapacityMode.html
 
+## Encryption
+
+All user data stored in a `GlobalTable` is fully encrypted at rest. When creating a new `GlobalTable`, you can select the following table encryption options:
+* AWS owned keys - Default encryption type. The keys are owned by DynamoDB (no additional charge).
+* AWS managed keys - The keys are stored in your account and are managed by AWS KMS (AWS KMS charges apply).
+* Customer managed keys - The keys are stored in your account and are created, owned, and managed by you. You have full control over the KMS keys (AWS KMS charges apply).
+
+The following is an example of how to configure `GlobalTable` encryption using an AWS owned key:
+
+```ts
+const globalTable = new dynamodb.GlobalTable(this, 'GlobalTable', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  encryption: dynamodb.TableEncryptionV2.dynamoOwnedKey(),
+})
+```
+
+The following is an example of how to configure `GlobalTable` encryption using an AWS managed key:
+
+```ts
+const globalTable = new dynamodb.GlobalTable(this, 'GlobalTable', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  encryption: dynamodb.TableEncryptionV2.awsManagedKey(),
+})
+```
+
+When configuring `GlobalTable` encryption using customer managed keys, you must specify the KMS key for the table in the main deployment region as the `tableKey`. A map of `replicaKeyArns` must be provided containing each replica region and the associated KMS key ARN:
+
+```ts
+import * as kms from 'aws-cdk-lib/aws-kms';
+
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-west-2' } });
+
+const tableKey = new kms.Key(stack, 'Key');
+const replicaKeyArns = {
+  'us-east-1': 'arn:aws:kms:us-east-1:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
+  'us-east-2': 'arn:aws:kms:us-east-2:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
+};
+
+const globalTable = new dynamodb.GlobalTable(stack, 'GlobalTable', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  encryption: dynamodb.TableEncryptionV2.customerManagedKey(tableKey, replicaKeyArns),
+  replicas: [
+    { region: 'us-east-1' },
+    { region: 'us-east-2' },
+  ],
+});
+
+```
+
+Note: When encryption is configured with customer managed keys, you must have a key already created in each replica region.
+
+Further reading:
+https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#key-mgmt
+
 ## Global Secondary Indexes
+
+You can configure a `GlobalTable` with `globalSecondaryIndexes`:
+
+```ts
+const globalTable = new dynamodb.GlobalTable(this, 'GlobalTable', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  globalSecondaryIndexes: [
+    {
+      indexName: 'gsi',
+      partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+    },
+  ],
+});
+```
+
+Alternatively, you can add a `globalSecondaryIndex` using the `addGlobalSecondaryIndex` method:
+
+```ts
+const globalTable = new dynamodb.GlobalTable(this, 'GlobalTable', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  globalSecondaryIndexes: [
+    {
+      indexName: 'gsi1',
+      partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+    },
+  ],
+});
+
+globalTable.addGlobalSecondaryIndex({
+  indexName: 'gsi2',
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+});
+```
+
+You can configure `readCapacity` and `writeCapacity` on a `globalSecondaryIndex` when the `GlobalTable` is configured with provisioned billing. In the event that the `GlobalTable` is configured with provisioned billing but `readCapacity` or `writeCapacity` are not configured on a `globalSecondaryIndex`, then they will be inherited from the `GlobalTable`:
+
+```ts
+const globalTable = new dynamodb.GlobalTable(this, 'GlobalTable', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  billing: dynamodb.Billing.provisioned({
+    readCapacity: dynamodb.Capacity.fixed(10),
+    writeCapacity: dynamodb.Capacity.autoscaled({ maxCapacity: 10 }),
+  }),
+  globalSecondaryIndexes: [
+    {
+      indexName: 'gsi1',
+      partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+      readCapacity: dynamodb.Capacity.fixed(15),
+      // write capacity inherited from global table - dynamodb.Capacity.autoscaled({ maxCapacity: 10 })
+    },
+    {
+      indexName: 'gsi2',
+      partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+      writeCapacity: dynamodb.Capacity.autoscaled({ minCapacity: 5, maxCapacity: 20 }),
+      // read capacity inherited from global table - dynamodb.Capacity.fixed(10)
+    },
+  ],
+});
+```
+
+All `globalSecondaryIndexes` for replica tables are inherited from the `GlobalTable`. You can configure `contributorInsights` and `readCapacity` for each `globalSecondaryIndex` on a per-replica basis:
+
+```ts
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-west-2' } });
+
+const globalTable = new dynamodb.GlobalTable(stack, 'GlobalTable', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  contributorInsights: true,
+  billing: dynamodb.Billing.provisioned({
+    readCapacity: dynamodb.Capacity.fixed(10),
+    writeCapacity: dynamodb.Capacity.autoscaled({ maxCapacity: 10 }),
+  }),
+  // each global secondary index will have contributor insights set to true
+  globalSecondaryIndexes: [
+    {
+      indexName: 'gsi1',
+      partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+      readCapacity: dynamodb.Capacity.fixed(15),
+    },
+    {
+      indexName: 'gsi2',
+      partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+      writeCapacity: dynamodb.Capacity.autoscaled({ minCapacity: 5, maxCapacity: 20 }),
+    },
+  ],
+  replicas: [
+    {
+      region: 'us-east-1',
+      globalSecondaryIndexOptions: {
+        gsi1: {
+          readCapacity: dynamodb.Capacity.autoscaled({ minCapacity: 1, maxCapacity: 10 })
+        },
+      },
+    },
+    {
+      region: 'us-east-2',
+      globalSecondaryIndexOptions: {
+        gsi2: {
+          contributorInsights: false,
+        },
+      },
+    },
+  ],
+});
+```
+
+Note: `contributorInsights` for `globalSecondaryIndexes` are inherited from the `GlobalTable`.
 
 ## Local Secondary Indexes
 
+A `GlobalTable` can be configured with `localSecondaryIndexes` when the `GlobalTable` also has a `sortKey`:
 
+```ts
+const globalTable = new dynamodb.GlobalTable(this, 'GlobalTable', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  sortKey: { name: 'sk', type: dynamodb.AttributeType.NUMBER },
+  localSecondaryIndexes: [
+    {
+      indexName: 'lsi',
+      sortKey: { name: 'sk', type: dynamodb.AttributeType.NUMBER },
+    },
+  ],
+});
+```
 
+Alternatively, you can add a `localSecondaryIndex` using the `addLocalSecondaryIndex` method:
 
+```ts
+const globalTable = new dynamodb.GlobalTable(this, 'GlobalTable', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  sortKey: { name: 'sk', type: dynamodb.AttributeType.NUMBER },
+  localSecondaryIndexes: [
+    {
+      indexName: 'lsi1',
+      sortKey: { name: 'sk', type: dynamodb.AttributeType.NUMBER },
+    },
+  ],
+});
 
+globalTable.addLocalSecondaryIndex({
+  indexName: 'lsi2',
+  sortKey: { name: 'sk', type: dynamodb.AttributeType.NUMBER },
+});
+```
 
+## Importing Existing Global Tables
 
+To import an existing `GlobalTable` into your CDK application, use one of the `GlobalTable.fromTableName`, `GlobalTable.fromTableArn` or `GlobalTable.fromTableAttributes`
+factory methods:
 
+```ts
+declare const user: iam.User;
 
+const globalTable = dynamodb.GlobalTable.fromTableArn(this, 'ImportedGlobalTable', 'arn:aws:dynamodb:us-east-1:123456789012:table/my-global-table');
+// now you can call methods on the imported global table
+globalTable.grantReadWriteData(user);
+```
 
+If you intend to use the `tableStreamArn` (including indirectly, for example by creating an
+`aws-cdk-lib/aws-lambda-event-sources.DynamoEventSource` on the imported `GlobalTable`), you *must* use the
+`GlobalTable.fromTableAttributes` method and the `tableStreamArn` property *must* be populated.
+
+To grant permissions to indexes an imported `GlobalTable` you can either set `grantIndexPermissions` to `true`, or you can provide the indexes via the `globalIndexes` or `localIndexes` properties. This will enable `grant*` methods to also grant permissions to *all* table indexes.
+
+## Grants
+
+Using any of the `grant*` methods on a `GlobalTable` will only apply to the table in the main deployment region, its indexes, and any associated `encryptionKey`. As an example, `grantRead` used below will only apply the table in `us-west-2`:
+
+```ts
+import * as kms from 'aws-cdk-lib/aws-kms';
+
+declare const user: iam.User;
+
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-west-2' } });
+
+const tableKey = new kms.Key(stack, 'Key');
+const replicaKeyArns = {
+  'us-east-1': 'arn:aws:kms:us-east-1:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
+  'us-east-2': 'arn:aws:kms:us-east-2:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
+};
+
+const globalTable = new dynamodb.GlobalTable(stack, 'GlobalTable', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  encryption: dynamodb.TableEncryptionV2.customerManagedKey(tableKey, replicaKeyArns),
+  replicas: [
+    { region: 'us-east-1' },
+    { region: 'us-east-2' },
+  ],
+});
+
+// grantRead only applys to the table in us-west-2 and the tableKey
+globalTable.grantRead(user);
+```
+
+The `replica` method can be used to grant to a specific replica table:
+
+```ts
+import * as kms from 'aws-cdk-lib/aws-kms';
+
+declare const user: iam.User;
+
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-west-2' } });
+
+const tableKey = new kms.Key(stack, 'Key');
+const replicaKeyArns = {
+  'us-east-1': 'arn:aws:kms:us-east-1:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
+  'us-east-2': 'arn:aws:kms:us-east-2:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
+};
+
+const globalTable = new dynamodb.GlobalTable(stack, 'GlobalTable', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  encryption: dynamodb.TableEncryptionV2.customerManagedKey(tableKey, replicaKeyArns),
+  replicas: [
+    { region: 'us-east-1' },
+    { region: 'us-east-2' },
+  ],
+});
+
+// grantRead applys to the table in us-east-2 and the key arn for the key in us-east-2
+globalTable.replica('us-east-2').grantRead(user);
+```
+
+## Metrics
+
+You can use `metric*` methods to generate metrics for a `GlobalTable` that can be used when configuring an `Alarm` or `Graphs`. The `metric*` methods only apply to the table in the main deployment region for a `GlobalTable`. As an example, `metricConsumedReadCapacityUnits` used below is only for the table in `us-west-2`:
+
+```ts
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-west-2' } });
+
+const globalTable = new dynamodb.GlobalTable(stack, 'GlobalTable', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  replicas: [
+    { region: 'us-east-1' },
+    { region: 'us-east-2' },
+  ],
+});
+
+// metric is only for the table in us-west-2 and the tableKey
+const metric = globalTable.metricConsumerReadCapacityUnits();
+
+new cloudwatch.Alarm(this, 'Alarm', {
+  metric: metric,
+  evaluationPeriods: 1,
+  threshold: 1,
+});
+```
+
+The `replica` method can be used to generate a metric for a specific replica table:
+
+```ts
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+
+class FooStack extends cdk.Stack {
+  public readonly globalTable: dynamodb.GlobalTable;
+
+  public constructor(scope: Construct, id: string, props: cdk.StackProps) {
+    this.globalTable = new dynamodb.GlobalTable(this, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+      replicas: [
+        { region: 'us-east-1' },
+        { region: 'us-east-2' },
+      ],
+    });
+  }
+}
+
+interface BarStack extends cdk.StackProps {
+  readonly replicaTable: dynamodb.IGlobalTable;
+}
+
+class BarStack extends cdk.Stack {
+  public constructor(scope: Construct, id: string, props: BarStackProps) {
+    // metric is only for the table in us-east-1
+    const metric = props.replicaTable.metricConsumedReadCapacityUnits();
+
+    new cloudwatch.Alarm(this, 'Alarm', {
+      metric: metric,
+      evaluationPeriods: 1,
+      threshold: 1,
+    });
+  }
+}
+
+const app = new cdk.App();
+const fooStack = new FooStack(app, 'FooStack', { env: { region: 'us-west-2' } });
+const barStack = new BarStack(app, 'BarStack', {
+  replicaTable: fooStack.globalTable.replica('us-east-1'),
+  env: { region: 'us-east-1' },
+});
+```
+
+---
 
 Here is a minimal deployable DynamoDB table definition:
 
