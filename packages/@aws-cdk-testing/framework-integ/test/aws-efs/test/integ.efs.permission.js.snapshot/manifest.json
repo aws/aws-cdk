@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "33.0.0",
   "artifacts": {
     "test-efs-permission-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3662bf534533f7b6d566e58f6186f46a8e818f5b2fa63443d38612636f9cdb5e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/05f3c52783d6c78fee3bb802603f716c49200a127a1121831c8aa08acb6ff86a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -219,16 +219,16 @@
             "data": "FileSystemEfsSecurityGroupfromtestefspermissionintegAnonymousInstanceInstanceSecurityGroup64A7B2BD2049AF74717E"
           }
         ],
-        "/test-efs-permission-integ/FileSystem/EfsMountTarget1": [
+        "/test-efs-permission-integ/FileSystem/EfsMountTarget-PrivateSubnet1": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FileSystemEfsMountTarget1586453F0"
+            "data": "FileSystemEfsMountTargetPrivateSubnet1BB305AF3"
           }
         ],
-        "/test-efs-permission-integ/FileSystem/EfsMountTarget2": [
+        "/test-efs-permission-integ/FileSystem/EfsMountTarget-PrivateSubnet2": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FileSystemEfsMountTarget24B8EBB43"
+            "data": "FileSystemEfsMountTargetPrivateSubnet265F3ED67"
           }
         ],
         "/test-efs-permission-integ/WriteInstance/InstanceSecurityGroup/Resource": [
@@ -356,6 +356,24 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "FileSystemEfsMountTarget1586453F0": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FileSystemEfsMountTarget1586453F0",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "FileSystemEfsMountTarget24B8EBB43": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FileSystemEfsMountTarget24B8EBB43",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "test-efs-permission-integ"
@@ -376,7 +394,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/87de7de4b9002cdc637530d0d4d59564485000f4f906e9752ab3e63424020183.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b58a1e0223b778282f5cf47307c51a5e737ba1e3b640d3f97767e0a0391a2b16.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

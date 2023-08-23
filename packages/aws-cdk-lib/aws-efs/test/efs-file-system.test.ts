@@ -562,6 +562,64 @@ test('imported file system can not add statements to file system policy', () => 
   });
 });
 
+test('mountTargetOrderInsensitiveLogicalId flag is true', () => {
+  // WHEN
+  const customStack = new Stack();
+  customStack.node.setContext('@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId', true);
+
+  const customVpc = new ec2.Vpc(customStack, 'VPC');
+
+  new FileSystem(customVpc, 'EfsFileSystem', {
+    vpc: customVpc,
+  });
+
+  // THEN
+  Template.fromStack(customStack).templateMatches({
+    Resources: {
+      VPCEfsFileSystemEfsMountTargetPrivateSubnet1D8128D53: {
+        Type: 'AWS::EFS::MountTarget',
+        Properties: {
+          SubnetId: { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
+        },
+      },
+      VPCEfsFileSystemEfsMountTargetPrivateSubnet283880431: {
+        Type: 'AWS::EFS::MountTarget',
+        Properties: {
+          SubnetId: { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
+        },
+      },
+    },
+  });
+});
+
+test('mountTargetOrderInsensitiveLogicalId flag is false', () => {
+  // WHEN
+  const customStack = new Stack();
+  const customVpc = new ec2.Vpc(customStack, 'VPC');
+
+  new FileSystem(customVpc, 'EfsFileSystem', {
+    vpc: customVpc,
+  });
+
+  // THEN
+  Template.fromStack(customStack).templateMatches({
+    Resources: {
+      VPCEfsFileSystemEfsMountTarget143787C9B: {
+        Type: 'AWS::EFS::MountTarget',
+        Properties: {
+          SubnetId: { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
+        },
+      },
+      VPCEfsFileSystemEfsMountTarget297D688BB: {
+        Type: 'AWS::EFS::MountTarget',
+        Properties: {
+          SubnetId: { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
+        },
+      },
+    },
+  });
+});
+
 test('anonymous access is prohibited by default when using GrantRead', () => {
   // WHEN
   const clientRole = new iam.Role(stack, 'ClientRole', { assumedBy: new iam.AnyPrincipal() });

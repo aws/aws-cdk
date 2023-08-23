@@ -12,31 +12,37 @@
     "service": "SSM",
     "api": "sendCommand",
     "parameters": {
-     "InstanceIds": [
-      {
-       "Fn::ImportValue": "test-efs-permission-integ:ExportsOutputRefAnonymousInstance51D4C7152602e043eee6300d7C50D25E"
-      }
-     ],
-     "DocumentName": "AWS-RunShellScript",
+     "InstanceIds": {
+      "Fn::Join": [
+       "",
+       [
+        "[\"",
+        {
+         "Fn::ImportValue": "test-efs-permission-integ:ExportsOutputRefAnonymousInstance51D4C7152602e043eee6300d7C50D25E"
+        },
+        "\"]"
+       ]
+      ]
+     },
+     "DocumentName": "\"AWS-RunShellScript\"",
      "Parameters": {
-      "commands": [
-       {
-        "Fn::Join": [
-         "",
-         [
-          "mount -t efs -o tls,iam ",
-          {
-           "Fn::ImportValue": "test-efs-permission-integ:ExportsOutputRefFileSystem8A8E25C0B454ACF3"
-          },
-          " /mnt/efs"
-         ]
-        ]
-       }
+      "Fn::Join": [
+       "",
+       [
+        "{\"commands\":[\"mount -t efs -o tls,iam ",
+        {
+         "Fn::ImportValue": "test-efs-permission-integ:ExportsOutputRefFileSystem8A8E25C0B454ACF3"
+        },
+        " /mnt/efs\"]}"
+       ]
       ]
      }
     },
     "flattenResponse": "true",
-    "salt": "1684484624042"
+    "outputPaths": [
+     "Command.CommandId"
+    ],
+    "salt": "1692793074720"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -130,12 +136,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs18.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "36618132bd37b6b15f9987b57ad1fbf613f1ad937aec72381232b163ed9c44c4.zip"
+     "S3Key": "54ed1902ad5ad220444041937ce65cb63c7fbccd0c11fdfd9ecbec43770cdaa5.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -164,17 +170,35 @@
     },
     "parameters": {
      "CommandId": {
-      "Fn::GetAtt": [
-       "AwsApiCallSSMsendCommand03c1b116df63115fe31278034644bb0d",
-       "apiCallResponse.Command.CommandId"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::GetAtt": [
+          "AwsApiCallSSMsendCommand03c1b116df63115fe31278034644bb0d",
+          "apiCallResponse.Command.CommandId"
+         ]
+        },
+        "\""
+       ]
       ]
      },
      "InstanceId": {
-      "Fn::ImportValue": "test-efs-permission-integ:ExportsOutputRefAnonymousInstance51D4C7152602e043eee6300d7C50D25E"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-efs-permission-integ:ExportsOutputRefAnonymousInstance51D4C7152602e043eee6300d7C50D25E"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "false",
-    "salt": "1684484624043"
+    "salt": "1692793074722"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -349,12 +373,12 @@
   "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs18.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "36618132bd37b6b15f9987b57ad1fbf613f1ad937aec72381232b163ed9c44c4.zip"
+     "S3Key": "54ed1902ad5ad220444041937ce65cb63c7fbccd0c11fdfd9ecbec43770cdaa5.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -391,12 +415,12 @@
   "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs18.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "36618132bd37b6b15f9987b57ad1fbf613f1ad937aec72381232b163ed9c44c4.zip"
+     "S3Key": "54ed1902ad5ad220444041937ce65cb63c7fbccd0c11fdfd9ecbec43770cdaa5.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",
@@ -420,20 +444,26 @@
     "service": "SSM",
     "api": "sendCommand",
     "parameters": {
-     "InstanceIds": [
-      {
-       "Fn::ImportValue": "test-efs-permission-integ:ExportsOutputRefReadInstanceE94183C76867391ec2104698F9816D55"
-      }
-     ],
-     "DocumentName": "AWS-RunShellScript",
-     "Parameters": {
-      "commands": [
-       "cat /mnt/efs/integ-test.txt"
+     "InstanceIds": {
+      "Fn::Join": [
+       "",
+       [
+        "[\"",
+        {
+         "Fn::ImportValue": "test-efs-permission-integ:ExportsOutputRefReadInstanceE94183C76867391ec2104698F9816D55"
+        },
+        "\"]"
+       ]
       ]
-     }
+     },
+     "DocumentName": "\"AWS-RunShellScript\"",
+     "Parameters": "{\"commands\":[\"cat /mnt/efs/integ-test.txt\"]}"
     },
     "flattenResponse": "true",
-    "salt": "1684484624045"
+    "outputPaths": [
+     "Command.CommandId"
+    ],
+    "salt": "1692793074724"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -455,17 +485,35 @@
     },
     "parameters": {
      "CommandId": {
-      "Fn::GetAtt": [
-       "AwsApiCallSSMsendCommand1c27023c69a32461de2a0ddfc884d23f",
-       "apiCallResponse.Command.CommandId"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::GetAtt": [
+          "AwsApiCallSSMsendCommand1c27023c69a32461de2a0ddfc884d23f",
+          "apiCallResponse.Command.CommandId"
+         ]
+        },
+        "\""
+       ]
       ]
      },
      "InstanceId": {
-      "Fn::ImportValue": "test-efs-permission-integ:ExportsOutputRefReadInstanceE94183C76867391ec2104698F9816D55"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-efs-permission-integ:ExportsOutputRefReadInstanceE94183C76867391ec2104698F9816D55"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "false",
-    "salt": "1684484624046"
+    "salt": "1692793074725"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
