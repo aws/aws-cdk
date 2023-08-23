@@ -414,7 +414,7 @@ const globalTable = new dynamodb.GlobalTable(stack, 'GlobalTable', {
     readCapacity: dynamodb.Capacity.fixed(10),
     writeCapacity: dynamodb.Capacity.autoscaled({ maxCapacity: 10 }),
   }),
-  // each global secondary index will have contributor insights set to true
+  // each global secondary index will inherit contributor insights as true from the global table
   globalSecondaryIndexes: [
     {
       indexName: 'gsi1',
@@ -587,7 +587,7 @@ const globalTable = new dynamodb.GlobalTable(stack, 'GlobalTable', {
   ],
 });
 
-// metric is only for the table in us-west-2 and the tableKey
+// metric is only for the table in us-west-2
 const metric = globalTable.metricConsumedReadCapacityUnits();
 
 new cloudwatch.Alarm(this, 'Alarm', {
