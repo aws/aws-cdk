@@ -77,13 +77,13 @@ export abstract class ResourceHandler {
 
 export interface EksClient {
   configureAssumeRole(request: sts.AssumeRoleCommandInput): void;
-  createCluster(request: _eks.CreateClusterCommandInput): Promise<_eks.CreateClusterResponse>;
-  deleteCluster(request: _eks.DeleteClusterCommandInput): Promise<_eks.DeleteClusterResponse>;
-  describeCluster(request: _eks.DescribeClusterCommandInput): Promise<_eks.DescribeClusterResponse>;
-  updateClusterConfig(request: _eks.UpdateClusterConfigCommandInput): Promise<_eks.UpdateClusterConfigResponse>;
-  updateClusterVersion(request: _eks.UpdateClusterVersionCommandInput): Promise<_eks.UpdateClusterVersionResponse>;
-  describeUpdate(req: _eks.DescribeUpdateCommandInput): Promise<_eks.DescribeUpdateResponse>;
-  createFargateProfile(request: _eks.CreateFargateProfileCommandInput): Promise<_eks.CreateFargateProfileResponse>;
-  describeFargateProfile(request: _eks.DescribeFargateProfileCommandInput): Promise<_eks.DescribeFargateProfileResponse>;
-  deleteFargateProfile(request: _eks.DeleteFargateProfileCommandInput): Promise<_eks.DeleteFargateProfileResponse>;
+  createCluster(request: _eks.CreateClusterCommandInput): Promise<_eks.CreateClusterCommandOutput>;
+  deleteCluster(request: _eks.DeleteClusterCommandInput): Promise<_eks.DeleteClusterCommandOutput>;
+  describeCluster(request: _eks.DescribeClusterCommandInput): Promise<_eks.DescribeClusterCommandOutput>;
+  updateClusterConfig(request: _eks.UpdateClusterConfigCommandInput): Promise<_eks.UpdateClusterConfigCommandOutput>;
+  updateClusterVersion(request: _eks.UpdateClusterVersionCommandInput): Promise<_eks.UpdateClusterVersionCommandOutput>;
+  describeUpdate(req: _eks.DescribeUpdateCommandInput): Promise<_eks.DescribeUpdateCommandOutput>;
+  createFargateProfile(request: _eks.CreateFargateProfileCommandInput): Promise<_eks.CreateFargateProfileCommandOutput>;
+  describeFargateProfile(request: _eks.DescribeFargateProfileCommandInput): Promise<_eks.DescribeFargateProfileCommandOutput>;
+  deleteFargateProfile(request: _eks.DeleteFargateProfileCommandInput): Promise<_eks.DeleteFargateProfileCommandOutput>;
 }

@@ -451,7 +451,7 @@ test('Scheduled Fargate Task shows warning when minute is not defined in cron', 
   });
 
   // THEN
-  Annotations.fromStack(stack).hasWarning('/Default', "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead.");
+  Annotations.fromStack(stack).hasWarning('/Default', "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead. [ack: @aws-cdk/aws-events:scheduleWillRunEveryMinute]");
 });
 
 test('Scheduled Fargate Task shows no warning when minute is * in cron', () => {
@@ -548,3 +548,35 @@ test('Scheduled Fargate Task - with list of tags', () => {
     ],
   });
 });
+
+test('Scheduled Fargate Task - with unused properties', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+  new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
+    cluster,
+    scheduledFargateTaskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('henk'),
+      memoryLimitMiB: 512,
+    },
+    schedule: events.Schedule.expression('rate(1 minute)'),
+    taskDefinition: new ecs.FargateTaskDefinition(stack, 'ScheduledFargateTaskDefinition'),
+    cpu: 256,
+    memoryLimitMiB: 512,
+    runtimePlatform: {
+      cpuArchitecture: ecs.CpuArchitecture.X86_64,
+    },
+  });
+
+  // THEN
+  Annotations.fromStack(stack).hasWarning(
+    '/Default/ScheduledFargateTask',
+    Match.stringLikeRegexp('Property \'taskDefinition\' is ignored, use \'scheduledFargateTaskDefinitionOptions\' or \'scheduledFargateTaskImageOptions\' instead.'),
+  );
+  Annotations.fromStack(stack).hasWarning('/Default/ScheduledFargateTask', Match.stringLikeRegexp('Property \'cpu\' is ignored, use \'scheduledFargateTaskImageOptions.cpu\' instead.'));
+  Annotations.fromStack(stack).hasWarning('/Default/ScheduledFargateTask', Match.stringLikeRegexp('Property \'memoryLimitMiB\' is ignored, use \'scheduledFargateTaskImageOptions.memoryLimitMiB\' instead.'));
+  Annotations.fromStack(stack).hasWarning('/Default/ScheduledFargateTask', Match.stringLikeRegexp('Property \'runtimePlatform\' is ignored.'));
+});
+

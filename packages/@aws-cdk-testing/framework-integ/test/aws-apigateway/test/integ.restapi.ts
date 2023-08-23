@@ -12,6 +12,7 @@ class Test extends cdk.Stack {
       retainDeployments: true,
       cloudWatchRole: true,
       minCompressionSize: Size.bytes(1024),
+      description: 'api description',
       deployOptions: {
         cacheClusterEnabled: true,
         stageName: 'beta',

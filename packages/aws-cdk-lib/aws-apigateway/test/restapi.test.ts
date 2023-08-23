@@ -1,7 +1,7 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../assertions';
 import { GatewayVpcEndpoint } from '../../aws-ec2';
-import { App, CfnElement, CfnResource, Lazy, Size, Stack } from '../../core';
+import { App, CfnElement, CfnResource, Lazy, RemovalPolicy, Size, Stack } from '../../core';
 import * as apigw from '../lib';
 
 describe('restapi', () => {
@@ -322,6 +322,25 @@ describe('restapi', () => {
       deploy: false,
       deployOptions: { cachingEnabled: true },
     })).toThrow(/Cannot set 'deployOptions' if 'deploy' is disabled/);
+  });
+
+  test('uses correct description for Deployment from "deployOptions"', () => {
+    // GIVEN
+    const stack = new Stack();
+    const api = new apigw.RestApi(stack, 'restapi', {
+      description: 'Api description',
+      deployOptions: { description: 'Deployment description' },
+    });
+    api.root.addMethod('GET');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Deployment', {
+      Description: 'Deployment description',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+      Description: 'Api description',
+    });
   });
 
   test('CloudWatch role is created for API Gateway', () => {
@@ -930,6 +949,42 @@ describe('restapi', () => {
       minCompressionSize: Size.bytes(500),
       minimumCompressionSize: 1024,
     })).toThrow(/both properties minCompressionSize and minimumCompressionSize cannot be set at once./);
+  });
+
+  test('can specify CloudWatch Role and Account removal policy', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const api = new apigw.RestApi(stack, 'myapi', {
+      cloudWatchRole: true,
+      cloudWatchRoleRemovalPolicy: RemovalPolicy.DESTROY,
+    });
+
+    api.root.addMethod('GET');
+
+    // THEN
+    Template.fromStack(stack).templateMatches({
+      Resources: {
+        myapiCloudWatchRoleEB425128: {
+          Type: 'AWS::IAM::Role',
+          DeletionPolicy: 'Delete',
+        },
+        myapiAccountC3A4750C: {
+          Type: 'AWS::ApiGateway::Account',
+          DeletionPolicy: 'Delete',
+        },
+      },
+    });
+  });
+
+  test('cloudWatchRole must be enabled for specifying specify CloudWatch Role and Account removal policy', () => {
+    expect(() => {
+      new apigw.RestApi(new Stack(), 'myapi', {
+        cloudWatchRole: false,
+        cloudWatchRoleRemovalPolicy: RemovalPolicy.DESTROY,
+      });
+    }).toThrow(/'cloudWatchRole' must be enabled for 'cloudWatchRoleRemovalPolicy' to be applied./);
   });
 });
 

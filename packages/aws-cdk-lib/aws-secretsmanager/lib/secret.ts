@@ -601,6 +601,8 @@ export class Secret extends SecretBase {
       public readonly secretName = parseSecretName(scope, secretArn);
       protected readonly autoCreatePolicy = false;
       public get secretFullArn() { return secretArnIsPartial ? undefined : secretArn; }
+      protected get arnForPolicies() { return secretArnIsPartial ? `${secretArn}-??????` : secretArn; }
+
     }(scope, id, { environmentFromArn: secretArn });
   }
 

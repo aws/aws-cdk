@@ -138,7 +138,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 ----------------
 
-** archiver@5.3.1 - https://www.npmjs.com/package/archiver/v/5.3.1 | MIT
+** archiver@5.3.2 - https://www.npmjs.com/package/archiver/v/5.3.2 | MIT
 Copyright (c) 2012-2014 Chris Talkington, contributors.
 
 Permission is hereby granted, free of charge, to any person
@@ -238,7 +238,7 @@ THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH RE
 
 ----------------
 
-** aws-sdk@2.1435.0 - https://www.npmjs.com/package/aws-sdk/v/2.1435.0 | Apache-2.0
+** aws-sdk@2.1442.0 - https://www.npmjs.com/package/aws-sdk/v/2.1442.0 | Apache-2.0
 AWS SDK for JavaScript
 Copyright 2012-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
@@ -3087,7 +3087,7 @@ THE SOFTWARE.
 
 ----------------
 
-** tslib@2.6.1 - https://www.npmjs.com/package/tslib/v/2.6.1 | 0BSD
+** tslib@2.6.2 - https://www.npmjs.com/package/tslib/v/2.6.2 | 0BSD
 Copyright (c) Microsoft Corporation.
 
 Permission to use, copy, modify, and/or distribute this software for any

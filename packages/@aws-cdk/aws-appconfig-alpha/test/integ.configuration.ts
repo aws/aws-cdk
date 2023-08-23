@@ -52,7 +52,7 @@ const deploymentStrategy = new DeploymentStrategy(stack, 'MyDeployStrategy', {
 const hostedEnv = appConfigApp.addEnvironment('HostedEnv');
 new HostedConfiguration(stack, 'MyHostedConfig', {
   application: appConfigApp,
-  content: ConfigurationContent.fromInline('This is my configuration content.'),
+  content: ConfigurationContent.fromInlineText('This is my configuration content.'),
   deployTo: [hostedEnv],
   validators: [
     JsonSchemaValidator.fromInline(SCHEMA_STR),
@@ -65,7 +65,7 @@ new HostedConfiguration(stack, 'MyHostedConfig', {
 const hostedEnvFromJson = appConfigApp.addEnvironment('HostedEnvFromJson');
 new HostedConfiguration(stack, 'MyHostedConfigFromJson', {
   application: appConfigApp,
-  content: ConfigurationContent.fromInline('This is the configuration content'),
+  content: ConfigurationContent.fromInlineText('This is the configuration content'),
   deployTo: [hostedEnvFromJson],
   deploymentStrategy,
 });

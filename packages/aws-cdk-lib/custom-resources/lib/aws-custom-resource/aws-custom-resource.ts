@@ -9,20 +9,6 @@ import * as logs from '../../../aws-logs';
 import * as cdk from '../../../core';
 import { Annotations } from '../../../core';
 import * as cxapi from '../../../cx-api';
-import { FactName } from '../../../region-info';
-
-/**
- * The lambda runtime used by default for aws-cdk vended custom resources. Can change
- * based on region.
- */
-export function builtInCustomResourceNodeRuntime(scope: Construct): lambda.Runtime {
-  // Runtime regional fact should always return a known runtime string that lambda.Runtime
-  // can index off, but for type safety we also default it here.
-  const runtimeName = cdk.Stack.of(scope).regionalFact(FactName.DEFAULT_CR_NODE_VERSION, 'nodejs18.x');
-  return runtimeName
-    ? new lambda.Runtime(runtimeName, lambda.RuntimeFamily.NODEJS, { supportsInlineCode: true })
-    : lambda.Runtime.NODEJS_18_X;
-}
 
 /**
  * Reference to the physical resource id that can be passed to the AWS operation as a parameter.
@@ -467,7 +453,7 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
 
     if (installLatestAwsSdk && props.installLatestAwsSdk === undefined) {
       // This is dangerous. Add a warning.
-      Annotations.of(this).addWarning([
+      Annotations.of(this).addWarningV2('@aws-cdk/custom-resources:installLatestAwsSdkNotSpecified', [
         'installLatestAwsSdk was not specified, and defaults to true. You probably do not want this.',
         `Set the global context flag \'${cxapi.AWS_CUSTOM_RESOURCE_LATEST_SDK_DEFAULT}\' to false to switch this behavior off project-wide,`,
         'or set the property explicitly to true if you know you need to call APIs that are not in Lambda\'s built-in SDK version.',

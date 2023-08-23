@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "33.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "aws-ecs-fargate-efs.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b1edd83a738f14bf7faf27a98a7ff437aa9b1a003f15e438e837a28247d7a45b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/63486a0554805ca4072510e265297dd8bf9ff2a0cf9819ae857eebfe1e6f89f9.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -189,16 +183,16 @@
             "data": "etcdataEfsSecurityGroupB0A9B014"
           }
         ],
-        "/aws-ecs-fargate-efs/etcdata/EfsMountTarget1": [
+        "/aws-ecs-fargate-efs/etcdata/EfsMountTarget-PrivateSubnet1": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "etcdataEfsMountTarget1A2665990"
+            "data": "etcdataEfsMountTargetPrivateSubnet1DF9D9372"
           }
         ],
-        "/aws-ecs-fargate-efs/etcdata/EfsMountTarget2": [
+        "/aws-ecs-fargate-efs/etcdata/EfsMountTarget-PrivateSubnet2": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "etcdataEfsMountTarget280CEA26C"
+            "data": "etcdataEfsMountTargetPrivateSubnet209100FF5"
           }
         ],
         "/aws-ecs-fargate-efs/TaskDef/TaskRole/Resource": [
@@ -227,6 +221,59 @@
         ]
       },
       "displayName": "aws-ecs-fargate-efs"
+    },
+    "awsecsfargatetestDefaultTestDeployAssert78ECD46B.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "awsecsfargatetestDefaultTestDeployAssert78ECD46B.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "awsecsfargatetestDefaultTestDeployAssert78ECD46B": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "awsecsfargatetestDefaultTestDeployAssert78ECD46B.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "awsecsfargatetestDefaultTestDeployAssert78ECD46B.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "awsecsfargatetestDefaultTestDeployAssert78ECD46B.assets"
+      ],
+      "metadata": {
+        "/aws-ecs-fargate-test/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-ecs-fargate-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-ecs-fargate-test/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

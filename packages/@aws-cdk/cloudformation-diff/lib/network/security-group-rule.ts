@@ -121,8 +121,12 @@ function peerEqual(a?: RulePeer, b?: RulePeer) {
 
 function findFirst<T>(obj: any, keys: string[], fn: (x: string) => T): T | undefined {
   for (const key of keys) {
-    if (key in obj) {
-      return fn(obj[key]);
+    try {
+      if (key in obj) {
+        return fn(obj[key]);
+      }
+    } catch (e) {
+      debugger;
     }
   }
   return undefined;

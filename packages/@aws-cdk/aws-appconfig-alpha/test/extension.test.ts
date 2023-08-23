@@ -497,7 +497,7 @@ describe('extension', () => {
     const app = new Application(stack, 'MyApplication');
     const configProfile = new HostedConfiguration(stack, 'MyConfiguration', {
       application: app,
-      content: ConfigurationContent.fromInline('This is my content.'),
+      content: ConfigurationContent.fromInlineJson('This is my content.'),
     });
     const ext = new Extension(stack, 'MyExtension', {
       actions: [

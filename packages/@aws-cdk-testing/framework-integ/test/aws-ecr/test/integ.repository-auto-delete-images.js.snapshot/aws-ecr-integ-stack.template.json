@@ -69,12 +69,31 @@
          ],
          "Resource": [
           {
-           "Fn::GetAtt": [
-            "Repo02AC86CF",
-            "Arn"
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":ecr:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":repository/*"
+            ]
            ]
           }
-         ]
+         ],
+         "Condition": {
+          "StringEquals": {
+           "ecr:ResourceTag/aws-cdk:auto-delete-images": "true"
+          }
+         }
         }
        ]
       }
@@ -101,7 +120,18 @@
      ]
     },
     "Runtime": "nodejs18.x",
-    "Description": "Lambda function for auto-deleting images in undefined repository."
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Lambda function for auto-deleting images in ",
+       {
+        "Ref": "Repo02AC86CF"
+       },
+       " repository."
+      ]
+     ]
+    }
    },
    "DependsOn": [
     "CustomECRAutoDeleteImagesCustomResourceProviderRole665F2773"

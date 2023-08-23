@@ -155,7 +155,7 @@ export class FargateProfile extends Construct implements ITaggable {
     this.podExecutionRole.grantPassRole(props.cluster.adminRole);
 
     if (props.subnetSelection && !props.vpc) {
-      Annotations.of(this).addWarning('Vpc must be defined to use a custom subnet selection. All private subnets belonging to the EKS cluster will be used by default');
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-eks:fargateProfileDefaultToPrivateSubnets', 'Vpc must be defined to use a custom subnet selection. All private subnets belonging to the EKS cluster will be used by default');
     }
 
     let subnets: string[] | undefined;

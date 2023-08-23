@@ -384,21 +384,21 @@ describe('update', () => {
       }));
     });
 
-    test('replaces if distKey is added', async () => {
+    test('adds key without creating table if distKey is added', async () => {
       const newResourceProperties: ResourcePropertiesType = {
         ...resourceProperties,
         tableColumns: [{ name: 'col1', dataType: 'varchar(1)', distKey: true }],
       };
 
-      await expect(manageTable(newResourceProperties, event)).resolves.not.toMatchObject({
+      await expect(manageTable(newResourceProperties, event)).resolves.toMatchObject({
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (col1 varchar(1)) DISTKEY(col1)`,
+        Sql: `ALTER TABLE ${physicalResourceId} ALTER DISTSTYLE KEY DISTKEY col1`,
       }));
     });
 
-    test('replaces if distKey is removed', async () => {
+    test('removes key without replacing table if distKey is removed', async () => {
       const newEvent: AWSLambda.CloudFormationCustomResourceEvent = {
         ...event,
         OldResourceProperties: {
@@ -410,11 +410,11 @@ describe('update', () => {
         ...resourceProperties,
       };
 
-      await expect(manageTable(newResourceProperties, newEvent)).resolves.not.toMatchObject({
+      await expect(manageTable(newResourceProperties, newEvent)).resolves.toMatchObject({
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (col1 varchar(1))`,
+        Sql: `ALTER TABLE ${physicalResourceId} ALTER DISTSTYLE AUTO`,
       }));
     });
 

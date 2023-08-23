@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { FargateTaskDefinition } from '../../../aws-ecs';
 import { EcsTask } from '../../../aws-events-targets';
+import { Annotations } from '../../../core';
 import { FargateServiceBaseProps } from '../base/fargate-service-base';
 import { ScheduledTaskBase, ScheduledTaskBaseProps, ScheduledTaskImageProps } from '../base/scheduled-task-base';
 
@@ -23,7 +24,6 @@ export interface ScheduledFargateTaskProps extends ScheduledTaskBaseProps, Farga
    * @default none
    */
   readonly scheduledFargateTaskImageOptions?: ScheduledFargateTaskImageOptions;
-
 }
 
 /**
@@ -86,6 +86,19 @@ export class ScheduledFargateTask extends ScheduledTaskBase {
       });
     } else {
       throw new Error('You must specify one of: taskDefinition or image');
+    }
+
+    if (props.taskDefinition) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs-patterns:propertyIgnored', 'Property \'taskDefinition\' is ignored, use \'scheduledFargateTaskDefinitionOptions\' or \'scheduledFargateTaskImageOptions\' instead.');
+    }
+    if (props.cpu) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs-patterns:propertyIgnored', 'Property \'cpu\' is ignored, use \'scheduledFargateTaskImageOptions.cpu\' instead.');
+    }
+    if (props.memoryLimitMiB) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs-patterns:propertyIgnored', 'Property \'memoryLimitMiB\' is ignored, use \'scheduledFargateTaskImageOptions.memoryLimitMiB\' instead.');
+    }
+    if (props.runtimePlatform) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs-patterns:propertyIgnored', 'Property \'runtimePlatform\' is ignored.');
     }
 
     // Use the EcsTask as the target of the EventRule

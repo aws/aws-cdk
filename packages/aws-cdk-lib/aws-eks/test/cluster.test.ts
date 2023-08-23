@@ -3066,7 +3066,7 @@ describe('cluster', () => {
       return [
         `You created a cluster with Kubernetes Version 1.${version} without specifying the kubectlLayer property.`,
         'This may cause failures as the kubectl version provided with aws-cdk-lib is 1.20, which is only guaranteed to be compatible with Kubernetes versions 1.19-1.21.',
-        `Please provide a kubectlLayer from @aws-cdk/lambda-layer-kubectl-v${version}.`,
+        `Please provide a kubectlLayer from @aws-cdk/lambda-layer-kubectl-v${version}. [ack: @aws-cdk/aws-eks:clusterKubectlLayerNotSpecified]`,
       ].join(' ');
     }
 

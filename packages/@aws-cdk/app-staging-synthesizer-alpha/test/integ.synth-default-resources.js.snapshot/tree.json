@@ -12,8 +12,8 @@
             "id": "UsingAppStagingSynthesizer--synthesize-default-resources",
             "path": "synthesize-default-resources/UsingAppStagingSynthesizer--synthesize-default-resources",
             "constructInfo": {
-              "fqn": "@aws-cdk/app-staging-synthesizer-alpha.UsingAppStagingSynthesizer",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.69"
             }
           },
           "lambda-s3": {
@@ -1082,6 +1082,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECR::Repository",
                   "aws:cdk:cloudformation:props": {
+                    "imageTagMutability": "IMMUTABLE",
                     "lifecyclePolicy": {
                       "lifecyclePolicyText": "{\"rules\":[{\"rulePriority\":1,\"description\":\"Garbage collect old image versions\",\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":3},\"action\":{\"type\":\"expire\"}}]}"
                     },
@@ -1159,6 +1160,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECR::Repository",
                   "aws:cdk:cloudformation:props": {
+                    "imageTagMutability": "IMMUTABLE",
                     "lifecyclePolicy": {
                       "lifecyclePolicyText": "{\"rules\":[{\"rulePriority\":1,\"description\":\"Garbage collect old image versions\",\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":3},\"action\":{\"type\":\"expire\"}}]}"
                     },
@@ -1202,8 +1204,8 @@
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/app-staging-synthesizer-alpha.DefaultStagingStack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.2.69"
         }
       },
       "integ-tests": {

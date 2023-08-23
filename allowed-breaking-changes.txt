@@ -173,3 +173,18 @@ removed:aws-cdk-lib.aws_ecs.CfnTaskSet.LoadBalancerProperty.loadBalancerName
 # Introduction of a new feature
 # Previously only BlueGreenUpdatePolicy could be set, now BlueGreenUpdatePolicy or new RollingUpdatePolicy can be provided
 weakened:aws-cdk-lib.aws_sagemaker.CfnEndpoint.DeploymentConfigProperty
+
+# Removed for being unused
+removed:@aws-cdk/region-info.FactName.DEFAULT_CR_NODE_VERSION
+removed:aws-cdk-lib.region_info.FactName.DEFAULT_CR_NODE_VERSION
+
+# These should have been marked external
+weakened:aws-cdk-lib.aws_events.CfnRule.RedshiftDataParametersProperty
+weakened:aws-cdk-lib.aws_ivs.CfnRecordingConfiguration.DestinationConfigurationProperty
+weakened:aws-cdk-lib.aws_ivs.CfnRecordingConfiguration.ThumbnailConfigurationProperty
+removed:aws-cdk-lib.aws_sam.CfnFunction.AlexaSkillEventProperty.variables
+strengthened:aws-cdk-lib.aws_sam.CfnFunction.AlexaSkillEventProperty
+removed:aws-cdk-lib.aws_cloudwatch.CfnAlarm.attrId
+removed:aws-cdk-lib.aws_ec2.CfnNetworkInterface.enablePrimaryIpv6
+removed:aws-cdk-lib.aws_ec2.CfnNetworkInterfaceAttachment.attrId
+removed:aws-cdk-lib.aws_ec2.CfnNetworkInterfaceProps.enablePrimaryIpv6

@@ -71,7 +71,7 @@ export class Lambda implements ses.IReceiptRuleAction {
       rule.node.addDependency(permission);
     } else {
       // eslint-disable-next-line max-len
-      cdk.Annotations.of(rule).addWarning('This rule is using a Lambda action with an imported function. Ensure permission is given to SES to invoke that function.');
+      cdk.Annotations.of(rule).addWarningV2('@aws-cdk/aws-ses-actions:lambdaAddInvokePermissions', 'This rule is using a Lambda action with an imported function. Ensure permission is given to SES to invoke that function.');
     }
 
     return {

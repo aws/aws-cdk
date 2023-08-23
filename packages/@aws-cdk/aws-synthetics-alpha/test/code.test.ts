@@ -1,6 +1,5 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { App, Stack, DockerImage } from 'aws-cdk-lib';
@@ -42,7 +41,7 @@ describe(synthetics.Code.fromInline, () => {
 });
 
 describe(synthetics.Code.fromAsset, () => {
-  testDeprecated('fromAsset works for node runtimes', () => {
+  test('fromAsset works for node runtimes', () => {
     // GIVEN
     const stack = new Stack(new App(), 'canaries');
 
@@ -66,7 +65,7 @@ describe(synthetics.Code.fromAsset, () => {
     });
   });
 
-  testDeprecated('fromAsset works for python runtimes', () => {
+  test('fromAsset works for python runtimes', () => {
     // GIVEN
     const stack = new Stack(new App(), 'canaries');
 
@@ -90,7 +89,7 @@ describe(synthetics.Code.fromAsset, () => {
     });
   });
 
-  testDeprecated('only one Asset object gets created even if multiple canaries use the same AssetCode', () => {
+  test('only one Asset object gets created even if multiple canaries use the same AssetCode', () => {
     // GIVEN
     const app = new App({
       context: {

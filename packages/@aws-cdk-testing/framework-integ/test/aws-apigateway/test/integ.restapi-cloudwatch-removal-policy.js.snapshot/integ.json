@@ -1,0 +1,12 @@
+{
+  "version": "33.0.0",
+  "testCases": {
+    "apigateway-restapi-cloudwatch-removal-policy/DefaultTest": {
+      "stacks": [
+        "test-apigateway-restapi-cloudwatch-removal-policy"
+      ],
+      "assertionStack": "apigateway-restapi-cloudwatch-removal-policy/DefaultTest/DeployAssert",
+      "assertionStackName": "apigatewayrestapicloudwatchremovalpolicyDefaultTestDeployAssert35AFDA9A"
+    }
+  }
+}

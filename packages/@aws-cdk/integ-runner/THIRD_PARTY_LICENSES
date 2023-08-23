@@ -101,7 +101,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 ----------------
 
-** archiver@5.3.1 - https://www.npmjs.com/package/archiver/v/5.3.1 | MIT
+** archiver@5.3.2 - https://www.npmjs.com/package/archiver/v/5.3.2 | MIT
 Copyright (c) 2012-2014 Chris Talkington, contributors.
 
 Permission is hereby granted, free of charge, to any person
@@ -176,7 +176,7 @@ THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH RE
 
 ----------------
 
-** aws-sdk@2.1435.0 - https://www.npmjs.com/package/aws-sdk/v/2.1435.0 | Apache-2.0
+** aws-sdk@2.1442.0 - https://www.npmjs.com/package/aws-sdk/v/2.1442.0 | Apache-2.0
 AWS SDK for JavaScript
 Copyright 2012-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
@@ -2565,7 +2565,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 ----------------
 
-** workerpool@6.4.0 - https://www.npmjs.com/package/workerpool/v/6.4.0 | Apache-2.0
+** workerpool@6.4.2 - https://www.npmjs.com/package/workerpool/v/6.4.2 | Apache-2.0
 Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/

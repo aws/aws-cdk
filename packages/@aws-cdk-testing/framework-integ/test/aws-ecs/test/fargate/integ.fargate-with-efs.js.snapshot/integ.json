@@ -1,14 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "33.0.0",
   "testCases": {
-    "integ.fargate-with-efs": {
+    "aws-ecs-fargate-test/DefaultTest": {
       "stacks": [
         "aws-ecs-fargate-efs"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "aws-ecs-fargate-test/DefaultTest/DeployAssert",
+      "assertionStackName": "awsecsfargatetestDefaultTestDeployAssert78ECD46B"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

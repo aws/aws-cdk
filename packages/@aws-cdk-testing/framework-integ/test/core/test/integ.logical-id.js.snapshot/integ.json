@@ -1,0 +1,12 @@
+{
+  "version": "33.0.0",
+  "testCases": {
+    "LogicalIdTest/DefaultTest": {
+      "stacks": [
+        "Default"
+      ],
+      "assertionStack": "LogicalIdTest/DefaultTest/DeployAssert",
+      "assertionStackName": "LogicalIdTestDefaultTestDeployAssert178196BF"
+    }
+  }
+}

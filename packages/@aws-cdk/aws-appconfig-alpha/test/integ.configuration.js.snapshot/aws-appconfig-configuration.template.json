@@ -105,7 +105,7 @@
      "Ref": "MyHostedConfigConfigurationProfile2E1A2BBC"
     },
     "Content": "This is my configuration content.",
-    "ContentType": "application/json"
+    "ContentType": "text/plain"
    },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
@@ -150,7 +150,7 @@
      "Ref": "MyHostedConfigFromJsonConfigurationProfile863E1E42"
     },
     "Content": "This is the configuration content",
-    "ContentType": "application/json"
+    "ContentType": "text/plain"
    },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"

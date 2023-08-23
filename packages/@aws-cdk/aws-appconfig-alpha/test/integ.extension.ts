@@ -102,7 +102,7 @@ app.addExtension(busExtension);
 const env = app.addEnvironment('MyEnv');
 const hostedConfig = new HostedConfiguration(stack, 'HostedConfiguration', {
   application: app,
-  content: ConfigurationContent.fromInline('This is my configuration content'),
+  content: ConfigurationContent.fromInlineJson('This is my configuration content'),
   deployTo: [env],
   deploymentStrategy: new DeploymentStrategy(stack, 'MyDeployStrategy', {
     rolloutStrategy: RolloutStrategy.linear({

@@ -2,7 +2,7 @@ import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Construct, ConstructOrder, IConstruct } from 'constructs';
 import { reEnableStackTraceCollection, restoreStackTraceColection } from './util';
 import * as cxschema from '../../cloud-assembly-schema';
-import { Names } from '../lib';
+import { App, Names } from '../lib';
 import { Annotations } from '../lib/annotations';
 
 /* eslint-disable @typescript-eslint/naming-convention */
@@ -247,13 +247,14 @@ describe('construct', () => {
 
   test('addWarning(message) can be used to add a "WARNING" message entry to the construct', () => {
     const previousValue = reEnableStackTraceCollection();
-    const root = new Root();
+    const root = new App();
     const con = new Construct(root, 'MyConstruct');
-    Annotations.of(con).addWarning('This construct is deprecated, use the other one instead');
+    Annotations.of(con).addWarningV2('WARNING1', 'This construct is deprecated, use the other one instead');
     restoreStackTraceColection(previousValue);
+    root.synth();
 
     expect(con.node.metadata[0].type).toEqual(cxschema.ArtifactMetadataEntryType.WARN);
-    expect(con.node.metadata[0].data).toEqual('This construct is deprecated, use the other one instead');
+    expect(con.node.metadata[0].data).toEqual('This construct is deprecated, use the other one instead [ack: WARNING1]');
     expect(con.node.metadata[0].trace && con.node.metadata[0].trace.length > 0).toEqual(true);
   });
 
