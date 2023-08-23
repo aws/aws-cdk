@@ -963,7 +963,7 @@ Alternatively, existing security groups can be used by specifying the `securityG
 
 ### VPC endpoint services
 
-A VPC endpoint service enables you to expose a Network Load Balancer(s) as a provider service to consumers, who connect to your service over a VPC endpoint. You can restrict access to your service via allowed principals (anything that extends ArnPrincipal), and require that new connections be manually accepted. You can also enable Contributor insight rules on Vpc ednpoint service.
+A VPC endpoint service enables you to expose a Network Load Balancer(s) as a provider service to consumers, who connect to your service over a VPC endpoint. You can restrict access to your service via allowed principals (anything that extends ArnPrincipal), and require that new connections be manually accepted. You can also enable Contributor Insight rules.
 
 ```ts
 declare const networkLoadBalancer1: elbv2.NetworkLoadBalancer;
@@ -972,7 +972,7 @@ declare const networkLoadBalancer2: elbv2.NetworkLoadBalancer;
 new ec2.VpcEndpointService(this, 'EndpointService', {
   vpcEndpointServiceLoadBalancers: [networkLoadBalancer1, networkLoadBalancer2],
   acceptanceRequired: true,
-  allowedPrincipals: [new iam.ArnPrincipal('arn:aws:iam::123456789012:root')]
+  allowedPrincipals: [new iam.ArnPrincipal('arn:aws:iam::123456789012:root')],
   contributorInsights: true
 });
 ```
