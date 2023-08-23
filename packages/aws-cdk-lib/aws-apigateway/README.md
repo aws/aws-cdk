@@ -967,6 +967,7 @@ and only create a single CloudWatch role and account per environment.
 
 You can specify the CloudWatch Role and Account sub-resources removal policy with the
 `cloudWatchRoleRemovalPolicy` property, which defaults to `RemovalPolicy.RETAIN`.
+This option requires `cloudWatchRole` to be enabled.
 
 ```ts
 import * as cdk from 'aws-cdk-lib/core';

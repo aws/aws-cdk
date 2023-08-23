@@ -932,7 +932,7 @@ describe('restapi', () => {
     })).toThrow(/both properties minCompressionSize and minimumCompressionSize cannot be set at once./);
   });
 
-  test('can specify CloudWatch Role and Account sub-resources removal policy', () => {
+  test('can specify CloudWatch Role and Account removal policy', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -957,6 +957,15 @@ describe('restapi', () => {
         },
       },
     });
+  });
+
+  test('cloudWatchRole must be enabled for specifying specify CloudWatch Role and Account removal policy', () => {
+    expect(() => {
+      new apigw.RestApi(new Stack(), 'myapi', {
+        cloudWatchRole: false,
+        cloudWatchRoleRemovalPolicy: RemovalPolicy.DESTROY,
+      });
+    }).toThrow(/'cloudWatchRole' must be enabled for 'cloudWatchRoleRemovalPolicy' to be applied./);
   });
 });
 
