@@ -37,7 +37,7 @@ export class TreeMetadata extends Construct {
         try {
           return visit(c);
         } catch (e) {
-          Annotations.of(this).addWarning(`Failed to render tree metadata for node [${c.node.id}]. Reason: ${e}`);
+          Annotations.of(this).addWarningV2(`@aws-cdk/core:failedToRenderTreeMetadata-${c.node.id}`, `Failed to render tree metadata for node [${c.node.id}]. Reason: ${e}`);
           return undefined;
         }
       });

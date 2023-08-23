@@ -119,5 +119,5 @@ test('if the queue is encrypted with a imported kms key, printout warning', () =
       Service: 's3.amazonaws.com',
     },
     Resource: '*',
-  }, null, 2)}`);
+  }, null, 2)} [ack: @aws-cdk/aws-s3-notifications:sqsKMSPermissionsNotAdded]`);
 });

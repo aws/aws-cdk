@@ -65,7 +65,7 @@ export class S3 implements ses.IReceiptRuleAction {
     if (policy) { // The bucket could be imported
       rule.node.addDependency(policy);
     } else {
-      cdk.Annotations.of(rule).addWarning('This rule is using a S3 action with an imported bucket. Ensure permission is given to SES to write to that bucket.');
+      cdk.Annotations.of(rule).addWarningV2('@aws-cdk/s3:AddBucketPermissions', 'This rule is using a S3 action with an imported bucket. Ensure permission is given to SES to write to that bucket.');
     }
 
     // Allow SES to use KMS master key

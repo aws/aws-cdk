@@ -639,7 +639,7 @@ export abstract class FleetBase extends cdk.Resource implements IFleet {
   }
 
   protected warnVpcPeeringAuthorizations(scope: Construct): void {
-    cdk.Annotations.of(scope).addWarning([
+    cdk.Annotations.of(scope).addWarningV2('@aws-cdk/aws-gamelift:fleetAutorizeVpcPeering', [
       'To authorize the VPC peering, call the GameLift service API CreateVpcPeeringAuthorization() or use the AWS CLI command create-vpc-peering-authorization.',
       'Make this call using the account that manages your non-GameLift resources.',
       'See: https://docs.aws.amazon.com/gamelift/latest/developerguide/vpc-peering.html',

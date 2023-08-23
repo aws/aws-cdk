@@ -878,7 +878,7 @@ test('bundling with <= Node16 warns when sdk v3 is external', () => {
   });
 
   Annotations.fromStack(stack).hasWarning('*',
-    'If you are relying on AWS SDK v3 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 18 or higher.',
+    'If you are relying on AWS SDK v3 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 18 or higher. [ack: @aws-cdk/aws-lambda-nodejs:sdkV3NotInRuntime]',
   );
 });
 
@@ -893,7 +893,7 @@ test('bundling with >= Node18 warns when sdk v3 is external', () => {
   });
 
   Annotations.fromStack(stack).hasWarning('*',
-    'If you are relying on AWS SDK v2 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 16 or lower.',
+    'If you are relying on AWS SDK v2 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 16 or lower. [ack: @aws-cdk/aws-lambda-nodejs:sdkV2NotInRuntime]',
   );
 });
 
@@ -908,7 +908,7 @@ test('bundling with NODEJS_LATEST warns when any dependencies are external', () 
   });
 
   Annotations.fromStack(stack).hasWarning('*',
-    'When using NODEJS_LATEST the runtime version may change as new runtimes are released, this may affect the availability of packages shipped with the environment. Ensure that any external dependencies are available through layers or specify a specific runtime version.',
+    'When using NODEJS_LATEST the runtime version may change as new runtimes are released, this may affect the availability of packages shipped with the environment. Ensure that any external dependencies are available through layers or specify a specific runtime version. [ack: @aws-cdk/aws-lambda-nodejs:variableRuntimeExternals]',
   );
 });
 

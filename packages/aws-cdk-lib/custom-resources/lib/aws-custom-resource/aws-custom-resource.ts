@@ -453,7 +453,7 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
 
     if (installLatestAwsSdk && props.installLatestAwsSdk === undefined) {
       // This is dangerous. Add a warning.
-      Annotations.of(this).addWarning([
+      Annotations.of(this).addWarningV2('@aws-cdk/custom-resources:installLatestAwsSdkNotSpecified', [
         'installLatestAwsSdk was not specified, and defaults to true. You probably do not want this.',
         `Set the global context flag \'${cxapi.AWS_CUSTOM_RESOURCE_LATEST_SDK_DEFAULT}\' to false to switch this behavior off project-wide,`,
         'or set the property explicitly to true if you know you need to call APIs that are not in Lambda\'s built-in SDK version.',

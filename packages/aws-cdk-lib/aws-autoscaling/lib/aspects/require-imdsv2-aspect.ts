@@ -34,6 +34,6 @@ export class AutoScalingGroupRequireImdsv2Aspect implements cdk.IAspect {
    * @param message The warning message.
    */
   protected warn(node: IConstruct, message: string) {
-    cdk.Annotations.of(node).addWarning(`${AutoScalingGroupRequireImdsv2Aspect.name} failed on node ${node.node.id}: ${message}`);
+    cdk.Annotations.of(node).addWarningV2(`@aws-cdk/aws-autoscaling:imdsv2${AutoScalingGroupRequireImdsv2Aspect.name}`, `${AutoScalingGroupRequireImdsv2Aspect.name} failed on node ${node.node.id}: ${message}`);
   }
 }

@@ -688,7 +688,7 @@ describe('ec2 task definition', () => {
       });
 
       // THEN
-      Annotations.fromStack(stack).hasWarning('/Default/Ec2TaskDef/web', "Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
+      Annotations.fromStack(stack).hasWarning('/Default/Ec2TaskDef/web', "Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'. [ack: @aws-cdk/aws-ecs:ecrImageRequiresPolicy]");
     });
 
     test('warns when setting containers from ECR repository by creating a RepositoryImage class', () => {
@@ -706,7 +706,7 @@ describe('ec2 task definition', () => {
       });
 
       // THEN
-      Annotations.fromStack(stack).hasWarning('/Default/Ec2TaskDef/web', "Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
+      Annotations.fromStack(stack).hasWarning('/Default/Ec2TaskDef/web', "Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'. [ack: @aws-cdk/aws-ecs:ecrImageRequiresPolicy]");
     });
 
     test('correctly sets containers from asset using all props', () => {

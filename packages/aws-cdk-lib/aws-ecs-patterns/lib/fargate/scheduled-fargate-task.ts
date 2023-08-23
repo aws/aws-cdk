@@ -89,16 +89,16 @@ export class ScheduledFargateTask extends ScheduledTaskBase {
     }
 
     if (props.taskDefinition) {
-      Annotations.of(this).addWarning('Property \'taskDefinition\' is ignored, use \'scheduledFargateTaskDefinitionOptions\' or \'scheduledFargateTaskImageOptions\' instead.');
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs-patterns:propertyIgnored', 'Property \'taskDefinition\' is ignored, use \'scheduledFargateTaskDefinitionOptions\' or \'scheduledFargateTaskImageOptions\' instead.');
     }
     if (props.cpu) {
-      Annotations.of(this).addWarning('Property \'cpu\' is ignored, use \'scheduledFargateTaskImageOptions.cpu\' instead.');
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs-patterns:propertyIgnored', 'Property \'cpu\' is ignored, use \'scheduledFargateTaskImageOptions.cpu\' instead.');
     }
     if (props.memoryLimitMiB) {
-      Annotations.of(this).addWarning('Property \'memoryLimitMiB\' is ignored, use \'scheduledFargateTaskImageOptions.memoryLimitMiB\' instead.');
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs-patterns:propertyIgnored', 'Property \'memoryLimitMiB\' is ignored, use \'scheduledFargateTaskImageOptions.memoryLimitMiB\' instead.');
     }
     if (props.runtimePlatform) {
-      Annotations.of(this).addWarning('Property \'runtimePlatform\' is ignored.');
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs-patterns:propertyIgnored', 'Property \'runtimePlatform\' is ignored.');
     }
 
     // Use the EcsTask as the target of the EventRule
