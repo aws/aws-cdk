@@ -8,10 +8,10 @@ import { AwsCustomResource } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 import { DataFormat } from './data-format';
 import { IDatabase } from './database';
-import { S3Table } from './s3-table';
+import { S3Table, S3TableProps } from './s3-table';
 import { Column } from './schema';
 import { StorageParameter } from './storage-parameter';
-import { ITable, PartitionIndex, TableAttributes, TableBase, TableEncryption, TableProps } from './table-base';
+import { ITable, PartitionIndex, TableAttributes, TableBase, TableEncryption } from './table-base';
 
 /**
  * A Glue table.
@@ -122,7 +122,7 @@ export class Table extends Resource implements ITable {
    */
   private partitionIndexCustomResources: AwsCustomResource[] = [];
 
-  constructor(scope: Construct, id: string, props: TableProps) {
+  constructor(scope: Construct, id: string, props: S3TableProps) {
     super(scope, id, {
       physicalName: props.tableName ??
         Lazy.string({
@@ -278,7 +278,7 @@ export class Table extends Resource implements ITable {
     const ret = this.grant(grantee, readPermissions);
     if (this.bucket) {
       if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantDecrypt(grantee); }
-      this.bucket.grantRead(grantee, this.getS3PrefixForGrant());
+      this.bucket.grantRead(grantee, this.generateS3PrefixForGrant());
     }
     return ret;
   }
@@ -292,7 +292,7 @@ export class Table extends Resource implements ITable {
     const ret = this.grant(grantee, writePermissions);
     if (this.bucket) {
       if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantEncrypt(grantee); }
-      this.bucket.grantWrite(grantee, this.getS3PrefixForGrant());
+      this.bucket.grantWrite(grantee, this.generateS3PrefixForGrant());
     }
     return ret;
   }
@@ -306,7 +306,7 @@ export class Table extends Resource implements ITable {
     const ret = this.grant(grantee, [...readPermissions, ...writePermissions]);
     if (this.bucket) {
       if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantEncryptDecrypt(grantee); }
-      this.bucket.grantReadWrite(grantee, this.getS3PrefixForGrant());
+      this.bucket.grantReadWrite(grantee, this.generateS3PrefixForGrant());
     }
     return ret;
   }
@@ -338,7 +338,7 @@ export class Table extends Resource implements ITable {
     });
   }
 
-  protected getS3PrefixForGrant() {
+  protected generateS3PrefixForGrant() {
     return this.s3Prefix + '*';
   }
 }
@@ -366,7 +366,7 @@ const encryptionMappings = {
 };
 
 // create the bucket to store a table's data depending on the `encryption` and `encryptionKey` properties.
-function createBucket(table: Table, props: TableProps) {
+function createBucket(table: Table, props: S3TableProps) {
   let bucket = props.bucket;
 
   if (bucket && (props.encryption !== undefined && props.encryption !== TableEncryption.CLIENT_SIDE_KMS)) {
