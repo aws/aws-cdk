@@ -1,0 +1,12 @@
+{
+  "version": "32.0.0",
+  "testCases": {
+    "ClusterServerlessTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-neptune-serverless-integ"
+      ],
+      "assertionStack": "ClusterServerlessTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ClusterServerlessTestDefaultTestDeployAssert8C9220E6"
+    }
+  }
+}

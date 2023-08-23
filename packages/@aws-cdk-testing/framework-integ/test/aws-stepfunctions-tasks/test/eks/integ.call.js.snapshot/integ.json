@@ -5,6 +5,7 @@
       "stacks": [
         "aws-stepfunctions-tasks-eks-call-integ-test"
       ],
+      "diffAssets": true,
       "cdkCommandOptions": {
         "deploy": {
           "args": {

@@ -1,3 +1,39 @@
+# CloudFormation Resource Specification v130.1.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::HealthLake::FHIRDatastore IdentityProviderConfiguration (__added__)
+* AWS::S3Outposts::Endpoint FailedReason (__added__)
+
+## Property Type Changes
+
+* AWS::HealthLake::FHIRDatastore.IdentityProviderConfiguration (__added__)
+* AWS::S3Outposts::Endpoint.FailedReason (__added__)
+* AWS::AppFlow::ConnectorProfile.SAPODataConnectorProfileProperties DisableSSO (__added__)
+* AWS::CleanRooms::ConfiguredTable.AnalysisRuleAggregation AllowedJoinOperators (__added__)
+* AWS::CleanRooms::ConfiguredTable.AnalysisRuleList AllowedJoinOperators (__added__)
+
+# CloudFormation Resource Specification (us-west-2) v130.1.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+
+
 # CloudFormation Resource Specification v130.0.0
 
 ## New Resource Types

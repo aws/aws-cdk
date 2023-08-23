@@ -1,6 +1,7 @@
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import { IFileSystem } from 'aws-cdk-lib/aws-efs';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as ssm from 'aws-cdk-lib/aws-ssm';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import { Lazy, PhysicalName, Size } from 'aws-cdk-lib/core';
 import { Construct, IConstruct } from 'constructs';
@@ -10,6 +11,92 @@ import { LogGroup } from 'aws-cdk-lib/aws-logs';
 
 const EFS_VOLUME_SYMBOL = Symbol.for('aws-cdk-lib/aws-batch/lib/container-definition.EfsVolume');
 const HOST_VOLUME_SYMBOL = Symbol.for('aws-cdk-lib/aws-batch/lib/container-definition.HostVolume');
+
+/**
+ * Specify the secret's version id or version stage
+ */
+export interface SecretVersionInfo {
+  /**
+   * version id of the secret
+   *
+   * @default - use default version id
+   */
+  readonly versionId?: string;
+  /**
+   * version stage of the secret
+   *
+   * @default - use default version stage
+   */
+  readonly versionStage?: string;
+}
+
+/**
+ * A secret environment variable.
+ */
+export abstract class Secret {
+  /**
+   * Creates an environment variable value from a parameter stored in AWS
+   * Systems Manager Parameter Store.
+   */
+  public static fromSsmParameter(parameter: ssm.IParameter): Secret {
+    return {
+      arn: parameter.parameterArn,
+      grantRead: grantee => parameter.grantRead(grantee),
+    };
+  }
+
+  /**
+   * Creates a environment variable value from a secret stored in AWS Secrets
+   * Manager.
+   *
+   * @param secret the secret stored in AWS Secrets Manager
+   * @param field the name of the field with the value that you want to set as
+   * the environment variable value. Only values in JSON format are supported.
+   * If you do not specify a JSON field, then the full content of the secret is
+   * used.
+   */
+  public static fromSecretsManager(secret: secretsmanager.ISecret, field?: string): Secret {
+    return {
+      arn: field ? `${secret.secretArn}:${field}::` : secret.secretArn,
+      hasField: !!field,
+      grantRead: grantee => secret.grantRead(grantee),
+    };
+  }
+
+  /**
+   * Creates a environment variable value from a secret stored in AWS Secrets
+   * Manager.
+   *
+   * @param secret the secret stored in AWS Secrets Manager
+   * @param versionInfo the version information to reference the secret
+   * @param field the name of the field with the value that you want to set as
+   * the environment variable value. Only values in JSON format are supported.
+   * If you do not specify a JSON field, then the full content of the secret is
+   * used.
+   */
+  public static fromSecretsManagerVersion(secret: secretsmanager.ISecret, versionInfo: SecretVersionInfo, field?: string): Secret {
+    return {
+      arn: `${secret.secretArn}:${field ?? ''}:${versionInfo.versionStage ?? ''}:${versionInfo.versionId ?? ''}`,
+      hasField: !!field,
+      grantRead: grantee => secret.grantRead(grantee),
+    };
+  }
+
+  /**
+   * The ARN of the secret
+   */
+  public abstract readonly arn: string;
+
+  /**
+   * Whether this secret uses a specific JSON field
+   */
+  public abstract readonly hasField?: boolean;
+
+  /**
+   * Grants reading the secret to a principal
+   */
+  public abstract grantRead(grantee: iam.IGrantable): iam.Grant;
+}
 
 /**
  * Options to configure an EcsVolume
@@ -350,7 +437,7 @@ export interface IEcsContainerDefinition extends IConstruct {
    *
    * @default - no secrets
    */
-  readonly secrets?: { [envVarName: string]: secretsmanager.ISecret };
+  readonly secrets?: { [envVarName: string]: Secret };
 
   /**
    * The user name to use inside the container
@@ -467,7 +554,7 @@ export interface EcsContainerDefinitionProps {
    *
    * @default - no secrets
    */
-  readonly secrets?: { [envVarName: string]: secretsmanager.ISecret };
+  readonly secrets?: { [envVarName: string]: Secret };
 
   /**
    * The user name to use inside the container
@@ -498,7 +585,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
   public readonly linuxParameters?: LinuxParameters;
   public readonly logDriverConfig?: ecs.LogDriverConfig;
   public readonly readonlyRootFilesystem?: boolean;
-  public readonly secrets?: { [envVarName: string]: secretsmanager.ISecret };
+  public readonly secrets?: { [envVarName: string]: Secret };
   public readonly user?: string;
   public readonly volumes: EcsVolume[];
 
@@ -557,9 +644,11 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
       readonlyRootFilesystem: this.readonlyRootFilesystem,
       resourceRequirements: this._renderResourceRequirements(),
       secrets: this.secrets ? Object.entries(this.secrets).map(([name, secret]) => {
+        secret.grantRead(this.executionRole);
+
         return {
           name,
-          valueFrom: secret.secretArn,
+          valueFrom: secret.arn,
         };
       }) : undefined,
       mountPoints: Lazy.any({

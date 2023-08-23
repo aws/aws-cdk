@@ -1,5 +1,5 @@
 {
-  "$version": "130.0.0",
+  "$version": "130.1.0",
   "PropertyTypes": {},
   "ResourceTypes": {
     "AWS::CUR::ReportDefinition": {

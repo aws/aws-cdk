@@ -143,13 +143,13 @@
                               "s3Bucket": "asset-bucket-12345678-test-region",
                               "s3Key": "d3833f63e813b3a96ea04c8c50ca98209330867f5f6ac358efca11f85a3476c2.zip"
                             },
+                            "handler": "index.handler",
                             "role": {
                               "Fn::GetAtt": [
                                 "HelloHandlerServiceRole11EF7C63",
                                 "Arn"
                               ]
                             },
-                            "handler": "index.handler",
                             "runtime": "python3.9"
                           }
                         },
@@ -261,13 +261,13 @@
                               "s3Bucket": "asset-bucket-12345678-test-region",
                               "s3Key": "e2204c9fddfc339ea362dec9143b4c22f883d4c18dd38c456f8f6a7161c1073d.zip"
                             },
+                            "handler": "index.handler",
                             "role": {
                               "Fn::GetAtt": [
                                 "HelloHandler2ServiceRole37B1402D",
                                 "Arn"
                               ]
                             },
-                            "handler": "index.handler",
                             "runtime": "python3.9"
                           }
                         },
@@ -310,7 +310,7 @@
                               {
                                 "Ref": "AWS::URLSuffix"
                               },
-                              "/asset-bucket-12345678-test-region/f9ff6c6c057913ad2646bc0ae7d4fc4a9a1682382db55fbf5302b79c66c580c3.json"
+                              "/asset-bucket-12345678-test-region/75d608df75f61dac3fdadd6450401e430ffcdcc3face2dbe3c656ebf102bb8c1.json"
                             ]
                           ]
                         }
@@ -633,12 +633,6 @@
                       "s3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
                       "s3Key": "9eb41a5505d37607ac419321497a4f8c21cf0ee1f9b4a6b29aa04301aea5c7fd.zip"
                     },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
-                        "Arn"
-                      ]
-                    },
                     "environment": {
                       "variables": {
                         "AWS_CA_BUNDLE": "/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem"
@@ -650,6 +644,12 @@
                         "Ref": "AssetsBucketDeploymentAwsCliLayer9BCEE17F"
                       }
                     ],
+                    "role": {
+                      "Fn::GetAtt": [
+                        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
+                        "Arn"
+                      ]
+                    },
                     "runtime": "python3.9",
                     "timeout": 900
                   }
@@ -683,7 +683,7 @@
                         "disableTemplateValidation": false,
                         "info": {
                           "LoadTemplateFromURL": {
-                            "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/6bae96d8b7b79d7e7a5e68867bb5b17cf9404dfbe9fd390ca4d80368350bcff2.json"
+                            "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/b19855fc4d79148d4a4bcf46bdec84d2838a1ff6787e8aa2eaa98c0f7d8b9ac8.json"
                           }
                         }
                       }

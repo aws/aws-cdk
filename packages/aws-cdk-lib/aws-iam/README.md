@@ -382,28 +382,28 @@ const policyDocument = {
       "Sid": "FirstStatement",
       "Effect": "Allow",
       "Action": ["iam:ChangePassword"],
-      "Resource": "*"
+      "Resource": ["*"],
     },
     {
       "Sid": "SecondStatement",
       "Effect": "Allow",
-      "Action": "s3:ListAllMyBuckets",
-      "Resource": "*"
+      "Action": ["s3:ListAllMyBuckets"],
+      "Resource": ["*"],
     },
     {
       "Sid": "ThirdStatement",
       "Effect": "Allow",
       "Action": [
         "s3:List*",
-        "s3:Get*"
+        "s3:Get*",
       ],
       "Resource": [
         "arn:aws:s3:::confidential-data",
-        "arn:aws:s3:::confidential-data/*"
+        "arn:aws:s3:::confidential-data/*",
       ],
-      "Condition": {"Bool": {"aws:MultiFactorAuthPresent": "true"}}
-    }
-  ]
+      "Condition": {"Bool": {"aws:MultiFactorAuthPresent": "true"}},
+    },
+  ],
 };
 
 const customPolicyDocument = iam.PolicyDocument.fromJson(policyDocument);
@@ -785,7 +785,7 @@ const role = new iam.Role(this, 'Role', {
   assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
 });
 
-const instanceProfile = iam.InstanceProfile.fromInstanceAttributes(this, 'ImportedInstanceProfile', {
+const instanceProfile = iam.InstanceProfile.fromInstanceProfileAttributes(this, 'ImportedInstanceProfile', {
   instanceProfileArn: 'arn:aws:iam::account-id:instance-profile/MyInstanceProfile',
   role,
 });
@@ -794,8 +794,8 @@ const instanceProfile = iam.InstanceProfile.fromInstanceAttributes(this, 'Import
 ## Features
 
 * Policy name uniqueness is enforced. If two policies by the same name are attached to the same
-    principal, the attachment will fail.
+  principal, the attachment will fail.
 * Policy names are not required - the CDK logical ID will be used and ensured to be unique.
 * Policies are validated during synthesis to ensure that they have actions, and that policies
-    attached to IAM principals specify relevant resources, while policies attached to resources
-    specify which IAM principals they apply to.
+  attached to IAM principals specify relevant resources, while policies attached to resources
+  specify which IAM principals they apply to.

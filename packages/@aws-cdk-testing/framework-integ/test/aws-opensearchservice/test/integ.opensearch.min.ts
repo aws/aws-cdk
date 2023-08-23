@@ -11,6 +11,9 @@ class TestStack extends Stack {
     const domainProps: opensearch.DomainProps = {
       version: opensearch.EngineVersion.OPENSEARCH_2_7,
       removalPolicy: RemovalPolicy.DESTROY,
+      capacity: {
+        multiAzWithStandbyEnabled: false,
+      },
     };
 
     new opensearch.Domain(this, 'Domain', domainProps);

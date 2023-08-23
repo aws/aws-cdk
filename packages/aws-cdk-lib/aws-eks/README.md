@@ -654,6 +654,12 @@ You can optionally choose to configure your cluster to use IPv6 using the [`ipFa
 ```ts
 declare const vpc: ec2.Vpc;
 
+function associateSubnetWithV6Cidr(vpc: ec2.Vpc, count: number, subnet: ec2.ISubnet) {
+  const cfnSubnet = subnet.node.defaultChild as ec2.CfnSubnet;
+  cfnSubnet.ipv6CidrBlock = Fn.select(count, Fn.cidr(Fn.select(0, vpc.vpcIpv6CidrBlocks), 256, (128 - 64).toString()));
+  cfnSubnet.assignIpv6AddressOnCreation = true;
+}
+
 // make an ipv6 cidr
 const ipv6cidr = new ec2.CfnVPCCidrBlock(this, 'CIDR6', {
   vpcId: vpc.vpcId,
@@ -662,20 +668,20 @@ const ipv6cidr = new ec2.CfnVPCCidrBlock(this, 'CIDR6', {
 
 // connect the ipv6 cidr to all vpc subnets
 let subnetcount = 0;
-let subnets = [...vpc.publicSubnets, ...vpc.privateSubnets];
-for ( let subnet of subnets) {
+const subnets = vpc.publicSubnets.concat(vpc.privateSubnets);
+for (let subnet of subnets) {
   // Wait for the ipv6 cidr to complete
   subnet.node.addDependency(ipv6cidr);
-  this._associate_subnet_with_v6_cidr(subnetcount, subnet);
-  subnetcount++;
+  associateSubnetWithV6Cidr(vpc, subnetcount, subnet);
+  subnetcount = subnetcount + 1;
 }
 
 const cluster = new eks.Cluster(this, 'hello-eks', {
+  version: eks.KubernetesVersion.V1_27,
   vpc: vpc,
   ipFamily: eks.IpFamily.IP_V6,
-  vpcSubnets: [{ subnets: [...vpc.publicSubnets] }],
+  vpcSubnets: [{ subnets: vpc.publicSubnets }],
 });
-
 ```
 
 ### Kubectl Support
@@ -922,6 +928,74 @@ declare const role: iam.Role;
 cluster.awsAuth.addMastersRole(role);
 ```
 
+To access the Kubernetes resources from the console, make sure your viewing principal is defined
+in the `aws-auth` ConfigMap. Some options to consider:
+
+```ts
+import { KubectlV27Layer } from '@aws-cdk/lambda-layer-kubectl-v27';
+declare const cluster: eks.Cluster;
+declare const your_current_role: iam.Role;
+declare const vpc: ec2.Vpc;
+
+// Option 1: Add your current assumed IAM role to system:masters. Make sure to add relevant policies.
+cluster.awsAuth.addMastersRole(your_current_role);
+
+your_current_role.addToPolicy(new iam.PolicyStatement({
+  actions: [
+    'eks:AccessKubernetesApi',
+    'eks:Describe*',
+    'eks:List*',
+],
+  resources: [ cluster.clusterArn ],
+}));
+```
+
+```ts
+// Option 2: create your custom mastersRole with scoped assumeBy arn as the Cluster prop. Switch to this role from the AWS console.
+import { KubectlV27Layer } from '@aws-cdk/lambda-layer-kubectl-v27';
+declare const vpc: ec2.Vpc;
+
+const mastersRole = new iam.Role(this, 'MastersRole', {
+  assumedBy: new iam.ArnPrincipal('arn_for_trusted_principal'),
+});
+
+const cluster = new eks.Cluster(this, 'EksCluster', {
+  vpc,
+  version: eks.KubernetesVersion.V1_27,
+  kubectlLayer: new KubectlV27Layer(this, 'KubectlLayer'),
+  mastersRole,
+});
+
+mastersRole.addToPolicy(new iam.PolicyStatement({
+  actions: [
+    'eks:AccessKubernetesApi',
+    'eks:Describe*',
+    'eks:List*',
+],
+  resources: [ cluster.clusterArn ],
+}));
+```
+
+```ts
+// Option 3: Create a new role that allows the account root principal to assume. Add this role in the `system:masters` and witch to this role from the AWS console.
+declare const cluster: eks.Cluster;
+
+const consoleReadOnlyRole = new iam.Role(this, 'ConsoleReadOnlyRole', {
+  assumedBy: new iam.ArnPrincipal('arn_for_trusted_principal'),
+});
+consoleReadOnlyRole.addToPolicy(new iam.PolicyStatement({
+  actions: [
+    'eks:AccessKubernetesApi',
+    'eks:Describe*',
+    'eks:List*',
+],
+  resources: [ cluster.clusterArn ],
+}));
+
+// Add this role to system:masters RBAC group
+cluster.awsAuth.addMastersRole(consoleReadOnlyRole)
+```
+
 ### Cluster Security Group
 
 When you create an Amazon EKS cluster, a [cluster security group](https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html)
@@ -1026,7 +1100,7 @@ bucket.grantReadWrite(serviceAccount);
 
 Note that adding service accounts requires running `kubectl` commands against the cluster.
 This means you must also pass the `kubectlRoleArn` when importing the cluster.
-See [Using existing Clusters](https://github.com/aws/aws-cdk/tree/main/packages/@aws-cdk/aws-eks#using-existing-clusters).
+See [Using existing Clusters](https://github.com/aws/aws-cdk/tree/main/packages/aws-cdk-lib/aws-eks#using-existing-clusters).
 
 ## Applying Kubernetes Resources
 

@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c8dd0c72ae74118e7b13f5ad3ad3bd3daaa9115456be74990c685759252458a6.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4c2c5be0c984c7727839ce1c8317ff866f53e08c586077ca24ffebb2db889325.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -183,22 +183,34 @@
             "data": "myFileSystemEfsSecurityGroup5809542D"
           }
         ],
-        "/stack/myFileSystem/EfsMountTarget1": [
+        "/stack/myFileSystem/EfsMountTarget-PrivateSubnet1": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myFileSystemEfsMountTarget154A20479"
+            "data": "myFileSystemEfsMountTargetPrivateSubnet1752908A7"
           }
         ],
-        "/stack/myFileSystem/EfsMountTarget2": [
+        "/stack/myFileSystem/EfsMountTarget-PrivateSubnet2": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myFileSystemEfsMountTarget2E187D733"
+            "data": "myFileSystemEfsMountTargetPrivateSubnet245A93748"
           }
         ],
         "/stack/mySecret/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "mySecretE4D0A59C"
+          }
+        ],
+        "/stack/anotherSecret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "anotherSecret11974229"
+          }
+        ],
+        "/stack/ssm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ssm85049941"
           }
         ],
         "/stack/myContainer/ExecutionRole/Resource": [

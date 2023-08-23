@@ -1,5 +1,6 @@
 # AWS CDK Custom Resources
 
+This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ## Provider Framework
 
@@ -344,7 +345,10 @@ This sample demonstrates the following concepts:
 
 #### S3Assert
 
-Checks that the textual contents of an S3 object matches a certain value. The check will be retried for 5 minutes as long as the object is not found or the value is different. See the source code for the [construct](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.ts) and [handler](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert-handler/index.py).
+Checks that the textual contents of an S3 object matches a certain value. The check will be retried
+for 5 minutes as long as the object is not found or the value is different. See the source code for the
+[construct](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.ts)
+and [handler](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert-handler/index.py).
 
 The following example defines an `S3Assert` resource which waits until
 `myfile.txt` in `myBucket` exists and includes the contents `foo bar`:
@@ -384,7 +388,6 @@ const myProvider = new cr.Provider(this, 'MyProvider', {
   role: myRole,
   providerFunctionName: 'the-lambda-name',   // Optional
 });
-
 ```
 
 ### Customizing Provider Function environment encryption key
@@ -393,6 +396,8 @@ Sometimes it may be useful to manually set a AWS KMS key for the Provider Functi
 be able to view, manage and audit the key usage.
 
 ```ts
+import * as kms from 'aws-cdk-lib/aws-kms';
+
 declare const onEvent: lambda.Function;
 declare const isComplete: lambda.Function;
 declare const myRole: iam.Role;
@@ -405,7 +410,6 @@ const myProvider = new cr.Provider(this, 'MyProvider', {
   role: myRole,
   providerFunctionEnvEncryption: key,   // Optional
 });
-
 ```
 
 ## Custom Resources for AWS APIs
@@ -427,7 +431,7 @@ Path to data must be specified using a dot notation, e.g. to get the string valu
 of the `Title` attribute for the first item returned by `dynamodb.query` it should
 be `Items.0.Title.S`.
 
-To make sure that the newest API calls are available the latest AWS SDK v2 is installed
+To make sure that the newest API calls are available the latest AWS SDK v3 is installed
 in the Lambda function implementing the custom resource. The installation takes around 60
 seconds. If you prefer to optimize for speed, you can disable the installation by setting
 the `installLatestAwsSdk` prop to `false`.
@@ -647,18 +651,10 @@ const getParameter = new cr.AwsCustomResource(this, 'AssociateVPCWithHostedZone'
 
 #### Using AWS SDK for JavaScript v3
 
-`AwsCustomResource` experimentally supports AWS SDK for JavaScript v3 (NODEJS_18_X or higher). In AWS SDK for JavaScript v3, packages are installed for each service. Therefore, specify the package name for `service`. Also, `action` specifies the XxxClient operations provided in the package. This example is the same as `SSM.getParameter` in v2.
+`AwsCustomResource` uses Node 18 and aws sdk v3 by default. You can specify the service as either the name of the sdk module, or just the service name, IE `@aws-sdk/client-ssm` or `SSM`, and the action as either the client method name or the sdk v3 command, `getParameter` or `GetParameterCommand`. It is recommended to use the v3 format for new AwsCustomResources going forward.
 
 ```ts
-import * as regionInfo from 'aws-cdk-lib/region-info';
-
-// change custom resource default runtime
-regionInfo.Fact.register({
-  region: 'us-east-1', // your region
-  name: regionInfo.FactName.DEFAULT_CR_NODE_VERSION,
-  value: lambda.Runtime.NODEJS_18_X.name,
-}, true);
-new AwsCustomResource(this, 'GetParameter', {
+new cr.AwsCustomResource(this, 'GetParameter', {
   resourceType: 'Custom::SSMParameter',
   onUpdate: {
     service: '@aws-sdk/client-ssm', // 'SSM' in v2
@@ -667,13 +663,7 @@ new AwsCustomResource(this, 'GetParameter', {
       Name: 'foo',
       WithDecryption: true,
     },
-    physicalResourceId: PhysicalResourceId.fromResponse('Parameter.ARN'),
+    physicalResourceId: cr.PhysicalResourceId.fromResponse('Parameter.ARN'),
   },
 });
 ```
-
-If you are using `NODEJS_18_X` or higher, you can also use the existing AWS SDK for JavaScript v2 style.
-
----
-
-This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.

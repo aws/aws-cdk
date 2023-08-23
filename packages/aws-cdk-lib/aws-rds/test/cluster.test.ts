@@ -207,7 +207,7 @@ describe('cluster new api', () => {
   });
 
   describe('migrate from instanceProps', () => {
-    test('template contains no changes', () => {
+    test('template contains no changes (provisioned instances)', () => {
       // GIVEN
       const stack1 = testStack();
       const stack2 = testStack();
@@ -267,6 +267,85 @@ describe('cluster new api', () => {
       expect(
         test1Template,
       ).toEqual(Template.fromStack(stack2).toJSON());
+    });
+
+    test('template contains no changes (serverless instances)', () => {
+      // GIVEN
+      const stack1 = testStack();
+      const stack2 = testStack();
+
+      function createCase(stack: Stack) {
+        const vpc = new ec2.Vpc(stack, 'VPC');
+
+        // WHEN
+        const pg = new ParameterGroup(stack, 'pg', {
+          engine: DatabaseClusterEngine.AURORA,
+        });
+        const sg = new ec2.SecurityGroup(stack, 'sg', {
+          vpc,
+        });
+        const instanceProps = {
+          instanceType: new ec2.InstanceType('serverless'),
+          vpc,
+          allowMajorVersionUpgrade: true,
+          autoMinorVersionUpgrade: true,
+          deleteAutomatedBackups: true,
+          enablePerformanceInsights: true,
+          parameterGroup: pg,
+          securityGroups: [sg],
+        };
+        return instanceProps;
+      }
+      const test1 = createCase(stack1);
+      const test2 = createCase(stack2);
+
+      // Create serverless cluster using workaround described here:
+      // https://github.com/aws/aws-cdk/issues/20197#issuecomment-1284485844
+      const workaroundCluster = new DatabaseCluster(stack1, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        instanceProps: test1,
+        iamAuthentication: true,
+      });
+
+      cdk.Aspects.of(workaroundCluster).add({
+        visit(node) {
+          if (node instanceof CfnDBCluster) {
+            node.serverlessV2ScalingConfiguration = {
+              minCapacity: 1,
+              maxCapacity: 12,
+            };
+          }
+        },
+      });
+
+      // Create serverless cluster using new/official approach.
+      // This should provide a non-breaking migration path from the workaround.
+      new DatabaseCluster(stack2, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc: test2.vpc,
+        securityGroups: test2.securityGroups,
+        writer: ClusterInstance.serverlessV2('Instance1', {
+          ...test2,
+          isFromLegacyInstanceProps: true,
+        }),
+        readers: [
+          ClusterInstance.serverlessV2('Instance2', {
+            ...test2,
+            scaleWithWriter: true,
+            isFromLegacyInstanceProps: true,
+          }),
+        ],
+        iamAuthentication: true,
+        serverlessV2MinCapacity: 1,
+        serverlessV2MaxCapacity: 12,
+      });
+
+      // THEN
+      const test1Template = Template.fromStack(stack1).toJSON();
+      // deleteAutomatedBackups is not needed on the instance, it is set on the cluster
+      delete test1Template.Resources.DatabaseInstance1844F58FD.Properties.DeleteAutomatedBackups;
+      delete test1Template.Resources.DatabaseInstance2AA380DEE.Properties.DeleteAutomatedBackups;
+      expect(test1Template).toEqual(Template.fromStack(stack2).toJSON());
     });
   });
 
@@ -1926,6 +2005,72 @@ describe('cluster', () => {
         },
         excludeCharacters: " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
       },
+    });
+  });
+
+  test('addRotationSingleUser() without immediate rotation', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      writer: ClusterInstance.serverlessV2('writer'),
+      vpc,
+    });
+
+    // WHEN
+    cluster.addRotationSingleUser({ rotateImmediatelyOnUpdate: false });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
+      SecretId: {
+        Ref: 'DatabaseSecretAttachmentE5D1B020',
+      },
+      RotationLambdaARN: {
+        'Fn::GetAtt': [
+          'DatabaseRotationSingleUser65F55654',
+          'Outputs.RotationLambdaARN',
+        ],
+      },
+      RotationRules: {
+        AutomaticallyAfterDays: 30,
+      },
+      RotateImmediatelyOnUpdate: false,
+    });
+  });
+
+  test('addRotationMultiUser() without immediate rotation', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      writer: ClusterInstance.serverlessV2('writer'),
+      vpc,
+    });
+    const userSecret = new DatabaseSecret(stack, 'UserSecret', { username: 'user' });
+
+    // WHEN
+    cluster.addRotationMultiUser('user', {
+      secret: userSecret.attach(cluster),
+      rotateImmediatelyOnUpdate: false,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
+      SecretId: {
+        Ref: 'UserSecretAttachment16ACBE6D',
+      },
+      RotationLambdaARN: {
+        'Fn::GetAtt': [
+          'DatabaseuserECD1FB0C',
+          'Outputs.RotationLambdaARN',
+        ],
+      },
+      RotationRules: {
+        AutomaticallyAfterDays: 30,
+      },
+      RotateImmediatelyOnUpdate: false,
     });
   });
 

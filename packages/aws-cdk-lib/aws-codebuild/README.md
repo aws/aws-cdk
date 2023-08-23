@@ -326,6 +326,7 @@ or one of the corresponding methods on `WindowsBuildImage`:
 
 or one of the corresponding methods on `LinuxArmBuildImage`:
 
+* `LinuxArmBuildImage.fromDockerRegistry(image[, { secretsManagerCredentials }])`
 * `LinuxArmBuildImage.fromEcrRepository(repo[, tag])`
 
 Note that the `WindowsBuildImage` version of the static methods accepts an optional parameter of type `WindowsImageType`,
@@ -604,7 +605,7 @@ by events via an event rule.
 
 ### Using Project as an event target
 
-The `@aws-cdk/aws-events-targets.CodeBuildProject` allows using an AWS CodeBuild
+The `aws-cdk-lib/aws-events-targets.CodeBuildProject` allows using an AWS CodeBuild
 project as a AWS CloudWatch event rule target:
 
 ```ts

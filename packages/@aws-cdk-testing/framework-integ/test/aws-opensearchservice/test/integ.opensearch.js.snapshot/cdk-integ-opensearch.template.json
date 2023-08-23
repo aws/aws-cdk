@@ -70,7 +70,7 @@
      ]
     },
     "Delete": "{\"service\":\"CloudWatchLogs\",\"action\":\"deleteResourcePolicy\",\"parameters\":{\"policyName\":\"ESLogPolicyc881416c4fcb1ec2b4bf7f47a5cde4097f01ec50fc\"},\"ignoreErrorCodesMatching\":\"ResourceNotFoundException\"}",
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [
     "Domain1ESLogGroupPolicyc881416c4fcb1ec2b4bf7f47a5cde4097f01ec50fcCustomResourcePolicyBE9BFE5D"
@@ -114,6 +114,7 @@
      "DedicatedMasterEnabled": false,
      "InstanceCount": 1,
      "InstanceType": "r5.large.search",
+     "MultiAZWithStandbyEnabled": false,
      "ZoneAwarenessEnabled": false
     },
     "DomainEndpointOptions": {
@@ -151,6 +152,18 @@
     },
     "NodeToNodeEncryptionOptions": {
      "Enabled": true
+    },
+    "OffPeakWindowOptions": {
+     "Enabled": true,
+     "OffPeakWindow": {
+      "WindowStartTime": {
+       "Hours": 20,
+       "Minutes": 0
+      }
+     }
+    },
+    "SoftwareUpdateOptions": {
+     "AutoSoftwareUpdateEnabled": true
     }
    },
    "DependsOn": [
@@ -217,7 +230,7 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [
     "Domain1AccessPolicyCustomResourcePolicy3BA04487"
@@ -289,15 +302,15 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "147814a8b95b4dc50c3d78ab1cf1a5a7fe7376d961cb2447e6a1c7184b14bd78.zip"
+     "S3Key": "66db480cb40e7e6208f01c9d9e882f4c416110a2c66dd0c6d12844e8ca9129b6.zip"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
     "Runtime": "nodejs18.x",
     "Timeout": 120
    },
@@ -375,7 +388,7 @@
      ]
     },
     "Delete": "{\"service\":\"CloudWatchLogs\",\"action\":\"deleteResourcePolicy\",\"parameters\":{\"policyName\":\"ESLogPolicyc80140a7754e9c0dd4e81167ef19e15da5b55dca02\"},\"ignoreErrorCodesMatching\":\"ResourceNotFoundException\"}",
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [
     "Domain2ESLogGroupPolicyc80140a7754e9c0dd4e81167ef19e15da5b55dca02CustomResourcePolicy2DB46870"
@@ -419,6 +432,7 @@
      "DedicatedMasterEnabled": false,
      "InstanceCount": 1,
      "InstanceType": "r5.large.search",
+     "MultiAZWithStandbyEnabled": false,
      "ZoneAwarenessEnabled": false
     },
     "DomainEndpointOptions": {
@@ -456,6 +470,18 @@
     },
     "NodeToNodeEncryptionOptions": {
      "Enabled": true
+    },
+    "OffPeakWindowOptions": {
+     "Enabled": true,
+     "OffPeakWindow": {
+      "WindowStartTime": {
+       "Hours": 20,
+       "Minutes": 0
+      }
+     }
+    },
+    "SoftwareUpdateOptions": {
+     "AutoSoftwareUpdateEnabled": true
     }
    },
    "DependsOn": [
@@ -522,7 +548,7 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [
     "Domain2AccessPolicyCustomResourcePolicy7C8260FD"

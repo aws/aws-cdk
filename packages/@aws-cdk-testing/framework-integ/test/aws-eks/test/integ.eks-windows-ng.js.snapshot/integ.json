@@ -5,6 +5,7 @@
       "stacks": [
         "aws-cdk-eks-cluster-windows-ng-test"
       ],
+      "diffAssets": true,
       "assertionStack": "aws-cdk-eks-cluster-windows-ng/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkeksclusterwindowsngDefaultTestDeployAssert22077693"
     }

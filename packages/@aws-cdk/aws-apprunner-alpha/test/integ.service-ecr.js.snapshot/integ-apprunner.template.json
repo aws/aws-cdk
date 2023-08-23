@@ -92,7 +92,14 @@
       "ImageRepositoryType": "ECR"
      }
     },
-    "InstanceConfiguration": {},
+    "InstanceConfiguration": {
+      "InstanceRoleArn": {
+        "Fn::GetAtt": [
+          "Service3InstanceRoleD40BEE82",
+          "Arn"
+        ]
+      }
+    },
     "NetworkConfiguration": {
      "EgressConfiguration": {
       "EgressType": "DEFAULT"
@@ -211,14 +218,55 @@
       "ImageRepositoryType": "ECR"
      }
     },
-    "InstanceConfiguration": {},
+    "InstanceConfiguration": {
+      "InstanceRoleArn": {
+        "Fn::GetAtt": [
+          "Service2InstanceRole3F57F2AA",
+          "Arn"
+        ]
+      }
+    },
     "NetworkConfiguration": {
      "EgressConfiguration": {
       "EgressType": "DEFAULT"
      }
     }
    }
-  }
+  },
+  "Service3InstanceRoleD40BEE82": {
+    "Type": "AWS::IAM::Role",
+    "Properties": {
+     "AssumeRolePolicyDocument": {
+      "Statement": [
+       {
+        "Action": "sts:AssumeRole",
+        "Effect": "Allow",
+        "Principal": {
+         "Service": "tasks.apprunner.amazonaws.com"
+        }
+       }
+      ],
+      "Version": "2012-10-17"
+     }
+    }
+   },
+   "Service2InstanceRole3F57F2AA": {
+    "Type": "AWS::IAM::Role",
+    "Properties": {
+     "AssumeRolePolicyDocument": {
+      "Statement": [
+       {
+        "Action": "sts:AssumeRole",
+        "Effect": "Allow",
+        "Principal": {
+         "Service": "tasks.apprunner.amazonaws.com"
+        }
+       }
+      ],
+      "Version": "2012-10-17"
+     }
+    }
+   }
  },
  "Outputs": {
   "URL3": {

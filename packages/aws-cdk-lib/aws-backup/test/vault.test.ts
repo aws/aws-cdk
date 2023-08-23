@@ -2,7 +2,7 @@ import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as sns from '../../aws-sns';
-import { ArnFormat, Duration, Stack } from '../../core';
+import { ArnFormat, Duration, Stack, Fn } from '../../core';
 import { BackupVault, BackupVaultEvents } from '../lib';
 
 let stack: Stack;
@@ -301,6 +301,21 @@ test('import from name', () => {
     resourceName: 'myVaultName',
     arnFormat: ArnFormat.COLON_RESOURCE_NAME,
   }));
+});
+
+test('specify imported value as vault name', () => {
+  // WHEN
+  const vaultName = Fn.importValue('VaultName');
+  new BackupVault(stack, 'Vault', {
+    backupVaultName: vaultName,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupVault', {
+    BackupVaultName: {
+      'Fn::ImportValue': 'VaultName',
+    },
+  });
 });
 
 test('grant action', () => {

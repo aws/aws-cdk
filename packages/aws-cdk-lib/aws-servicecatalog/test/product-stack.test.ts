@@ -192,7 +192,7 @@ describe('ProductStack', () => {
       ],
       SourceObjectKeys: [
         'd3833f63e813b3a96ea04c8c50ca98209330867f5f6ac358efca11f85a3476c2.zip',
-        '419729a667a59c05d7d1dc036e0c3abb0b3a8156040c30ab824cb77a8172e55c.json',
+        'da185071753dd5fcd7bd1ff5f2882a5449980d60ed72cf65fe2b779dbbb30eeb.json',
       ],
       DestinationBucketName: {
         Ref: 'AssetBucket1D025086',

@@ -5,6 +5,7 @@
       "stacks": [
         "aws-stepfunctions-tasks-emr-containers-all-services-test"
       ],
+      "diffAssets": true,
       "cdkCommandOptions": {
         "deploy": {
           "args": {

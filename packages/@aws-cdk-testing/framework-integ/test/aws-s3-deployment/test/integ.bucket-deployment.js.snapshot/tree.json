@@ -221,7 +221,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "292870ae2617f1c4d62ff18422e009afd534a342c17877fd1b931fb8d8a62abc.zip"
+                          "s3Key": "e2277687077a2abf9ae1af1cc9565e6715e2ebb62f79ec53aa75a1af9298f642.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -586,12 +586,6 @@
                       },
                       "s3Key": "9eb41a5505d37607ac419321497a4f8c21cf0ee1f9b4a6b29aa04301aea5c7fd.zip"
                     },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
-                        "Arn"
-                      ]
-                    },
                     "environment": {
                       "variables": {
                         "AWS_CA_BUNDLE": "/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem"
@@ -603,6 +597,12 @@
                         "Ref": "DeployMeAwsCliLayer5F9219E9"
                       }
                     ],
+                    "role": {
+                      "Fn::GetAtt": [
+                        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
+                        "Arn"
+                      ]
+                    },
                     "runtime": "python3.9",
                     "timeout": 900
                   }
@@ -655,9 +655,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "InlineVpc2605A3C4"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             0,
@@ -681,7 +678,10 @@
                             "key": "Name",
                             "value": "test-bucket-deployments-2/InlineVpc/PublicSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "InlineVpc2605A3C4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -703,15 +703,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "InlineVpc2605A3C4"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "test-bucket-deployments-2/InlineVpc/PublicSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "InlineVpc2605A3C4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -744,12 +744,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "InlineVpcPublicSubnet1RouteTable67856EA2"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
                           "Ref": "InlineVpcIGW515300DC"
+                        },
+                        "routeTableId": {
+                          "Ref": "InlineVpcPublicSubnet1RouteTable67856EA2"
                         }
                       }
                     },
@@ -784,14 +784,14 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
-                        "subnetId": {
-                          "Ref": "InlineVpcPublicSubnet1Subnet2EDC574A"
-                        },
                         "allocationId": {
                           "Fn::GetAtt": [
                             "InlineVpcPublicSubnet1EIPCB8385DA",
                             "AllocationId"
                           ]
+                        },
+                        "subnetId": {
+                          "Ref": "InlineVpcPublicSubnet1Subnet2EDC574A"
                         },
                         "tags": [
                           {
@@ -822,9 +822,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "InlineVpc2605A3C4"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             1,
@@ -848,7 +845,10 @@
                             "key": "Name",
                             "value": "test-bucket-deployments-2/InlineVpc/PublicSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "InlineVpc2605A3C4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -870,15 +870,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "InlineVpc2605A3C4"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "test-bucket-deployments-2/InlineVpc/PublicSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "InlineVpc2605A3C4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -911,12 +911,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "InlineVpcPublicSubnet2RouteTable053CA1F8"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
                           "Ref": "InlineVpcIGW515300DC"
+                        },
+                        "routeTableId": {
+                          "Ref": "InlineVpcPublicSubnet2RouteTable053CA1F8"
                         }
                       }
                     },
@@ -951,14 +951,14 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
-                        "subnetId": {
-                          "Ref": "InlineVpcPublicSubnet2SubnetAB52037C"
-                        },
                         "allocationId": {
                           "Fn::GetAtt": [
                             "InlineVpcPublicSubnet2EIPFCFD7982",
                             "AllocationId"
                           ]
+                        },
+                        "subnetId": {
+                          "Ref": "InlineVpcPublicSubnet2SubnetAB52037C"
                         },
                         "tags": [
                           {
@@ -989,9 +989,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "InlineVpc2605A3C4"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             0,
@@ -1015,7 +1012,10 @@
                             "key": "Name",
                             "value": "test-bucket-deployments-2/InlineVpc/PrivateSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "InlineVpc2605A3C4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -1037,15 +1037,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "InlineVpc2605A3C4"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "test-bucket-deployments-2/InlineVpc/PrivateSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "InlineVpc2605A3C4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -1078,12 +1078,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "InlineVpcPrivateSubnet1RouteTable19DB57E6"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "natGatewayId": {
                           "Ref": "InlineVpcPublicSubnet1NATGateway88242629"
+                        },
+                        "routeTableId": {
+                          "Ref": "InlineVpcPrivateSubnet1RouteTable19DB57E6"
                         }
                       }
                     },
@@ -1108,9 +1108,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "InlineVpc2605A3C4"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             1,
@@ -1134,7 +1131,10 @@
                             "key": "Name",
                             "value": "test-bucket-deployments-2/InlineVpc/PrivateSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "InlineVpc2605A3C4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -1156,15 +1156,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "InlineVpc2605A3C4"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "test-bucket-deployments-2/InlineVpc/PrivateSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "InlineVpc2605A3C4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -1197,12 +1197,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "InlineVpcPrivateSubnet2RouteTableE3C67EFF"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "natGatewayId": {
                           "Ref": "InlineVpcPublicSubnet2NATGatewayB5A60DA8"
+                        },
+                        "routeTableId": {
+                          "Ref": "InlineVpcPrivateSubnet2RouteTableE3C67EFF"
                         }
                       }
                     },
@@ -1242,11 +1242,11 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
-                    "vpcId": {
-                      "Ref": "InlineVpc2605A3C4"
-                    },
                     "internetGatewayId": {
                       "Ref": "InlineVpcIGW515300DC"
+                    },
+                    "vpcId": {
+                      "Ref": "InlineVpc2605A3C4"
                     }
                   }
                 },
@@ -1305,7 +1305,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "292870ae2617f1c4d62ff18422e009afd534a342c17877fd1b931fb8d8a62abc.zip"
+                          "s3Key": "e2277687077a2abf9ae1af1cc9565e6715e2ebb62f79ec53aa75a1af9298f642.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -1443,7 +1443,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
                       "aws:cdk:cloudformation:props": {
-                        "ipProtocol": "tcp",
                         "description": "from testbucketdeployments2CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faSecurityGroupBDC138BF:2049",
                         "fromPort": 2049,
                         "groupId": {
@@ -1452,6 +1451,7 @@
                             "GroupId"
                           ]
                         },
+                        "ipProtocol": "tcp",
                         "sourceSecurityGroupId": {
                           "Fn::GetAtt": [
                             "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faSecurityGroupD7C1D75A",
@@ -1472,9 +1472,9 @@
                   "version": "0.0.0"
                 }
               },
-              "EfsMountTarget1": {
-                "id": "EfsMountTarget1",
-                "path": "test-bucket-deployments-2/BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/EfsMountTarget1",
+              "EfsMountTarget-PrivateSubnet1": {
+                "id": "EfsMountTarget-PrivateSubnet1",
+                "path": "test-bucket-deployments-2/BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/EfsMountTarget-PrivateSubnet1",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EFS::MountTarget",
                   "aws:cdk:cloudformation:props": {
@@ -1499,9 +1499,9 @@
                   "version": "0.0.0"
                 }
               },
-              "EfsMountTarget2": {
-                "id": "EfsMountTarget2",
-                "path": "test-bucket-deployments-2/BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/EfsMountTarget2",
+              "EfsMountTarget-PrivateSubnet2": {
+                "id": "EfsMountTarget-PrivateSubnet2",
+                "path": "test-bucket-deployments-2/BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/EfsMountTarget-PrivateSubnet2",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EFS::MountTarget",
                   "aws:cdk:cloudformation:props": {
@@ -1539,12 +1539,6 @@
                         "fileSystemId": {
                           "Ref": "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faDE9EC34B"
                         },
-                        "accessPointTags": [
-                          {
-                            "key": "Name",
-                            "value": "test-bucket-deployments-2/BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/AccessPoint"
-                          }
-                        ],
                         "posixUser": {
                           "uid": "1001",
                           "gid": "1001"
@@ -1556,7 +1550,13 @@
                             "permissions": "0777"
                           },
                           "path": "/lambda"
-                        }
+                        },
+                        "accessPointTags": [
+                          {
+                            "key": "Name",
+                            "value": "test-bucket-deployments-2/BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/AccessPoint"
+                          }
+                        ]
                       }
                     },
                     "constructInfo": {
@@ -1892,12 +1892,6 @@
                       },
                       "s3Key": "9eb41a5505d37607ac419321497a4f8c21cf0ee1f9b4a6b29aa04301aea5c7fd.zip"
                     },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faServiceRole1F2E85D4",
-                        "Arn"
-                      ]
-                    },
                     "environment": {
                       "variables": {
                         "MOUNT_PATH": "/mnt/lambda",
@@ -1938,6 +1932,12 @@
                         "Ref": "DeployMeWithEfsStorageAwsCliLayer1619A3EE"
                       }
                     ],
+                    "role": {
+                      "Fn::GetAtt": [
+                        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faServiceRole1F2E85D4",
+                        "Arn"
+                      ]
+                    },
                     "runtime": "python3.9",
                     "timeout": 900,
                     "vpcConfig": {
@@ -2135,7 +2135,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "292870ae2617f1c4d62ff18422e009afd534a342c17877fd1b931fb8d8a62abc.zip"
+                          "s3Key": "e2277687077a2abf9ae1af1cc9565e6715e2ebb62f79ec53aa75a1af9298f642.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -2373,7 +2373,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "292870ae2617f1c4d62ff18422e009afd534a342c17877fd1b931fb8d8a62abc.zip"
+                          "s3Key": "e2277687077a2abf9ae1af1cc9565e6715e2ebb62f79ec53aa75a1af9298f642.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -2491,7 +2491,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "292870ae2617f1c4d62ff18422e009afd534a342c17877fd1b931fb8d8a62abc.zip"
+                          "s3Key": "e2277687077a2abf9ae1af1cc9565e6715e2ebb62f79ec53aa75a1af9298f642.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -2609,7 +2609,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "292870ae2617f1c4d62ff18422e009afd534a342c17877fd1b931fb8d8a62abc.zip"
+                          "s3Key": "e2277687077a2abf9ae1af1cc9565e6715e2ebb62f79ec53aa75a1af9298f642.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -2847,7 +2847,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "292870ae2617f1c4d62ff18422e009afd534a342c17877fd1b931fb8d8a62abc.zip"
+                          "s3Key": "e2277687077a2abf9ae1af1cc9565e6715e2ebb62f79ec53aa75a1af9298f642.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -3085,7 +3085,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "292870ae2617f1c4d62ff18422e009afd534a342c17877fd1b931fb8d8a62abc.zip"
+                          "s3Key": "e2277687077a2abf9ae1af1cc9565e6715e2ebb62f79ec53aa75a1af9298f642.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }

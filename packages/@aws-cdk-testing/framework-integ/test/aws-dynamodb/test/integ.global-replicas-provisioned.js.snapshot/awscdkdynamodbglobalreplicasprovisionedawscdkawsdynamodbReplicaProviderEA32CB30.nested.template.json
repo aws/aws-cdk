@@ -128,13 +128,13 @@
      },
      "S3Key": "760886bc5e09df8d8ecf794d3b9604739062c355e50ca5ae1b07e70ec9233e8b.zip"
     },
+    "Handler": "index.onEventHandler",
     "Role": {
      "Fn::GetAtt": [
       "OnEventHandlerServiceRole15A26729",
       "Arn"
      ]
     },
-    "Handler": "index.onEventHandler",
     "Runtime": "nodejs18.x",
     "Timeout": 300
    },
@@ -183,13 +183,13 @@
      },
      "S3Key": "760886bc5e09df8d8ecf794d3b9604739062c355e50ca5ae1b07e70ec9233e8b.zip"
     },
+    "Handler": "index.isCompleteHandler",
     "Role": {
      "Fn::GetAtt": [
       "IsCompleteHandlerServiceRole5810CC58",
       "Arn"
      ]
     },
-    "Handler": "index.isCompleteHandler",
     "Runtime": "nodejs18.x",
     "Timeout": 30
    },
@@ -306,12 +306,6 @@
      },
      "S3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "ProviderframeworkonEventServiceRole9FF04296",
-      "Arn"
-     ]
-    },
     "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider)",
     "Environment": {
      "Variables": {
@@ -333,6 +327,12 @@
      }
     },
     "Handler": "framework.onEvent",
+    "Role": {
+     "Fn::GetAtt": [
+      "ProviderframeworkonEventServiceRole9FF04296",
+      "Arn"
+     ]
+    },
     "Runtime": "nodejs18.x",
     "Timeout": 900
    },
@@ -443,12 +443,6 @@
      },
      "S3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "ProviderframeworkisCompleteServiceRoleB1087139",
-      "Arn"
-     ]
-    },
     "Description": "AWS CDK resource provider framework - isComplete (aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider)",
     "Environment": {
      "Variables": {
@@ -467,6 +461,12 @@
      }
     },
     "Handler": "framework.isComplete",
+    "Role": {
+     "Fn::GetAtt": [
+      "ProviderframeworkisCompleteServiceRoleB1087139",
+      "Arn"
+     ]
+    },
     "Runtime": "nodejs18.x",
     "Timeout": 900
    },
@@ -577,12 +577,6 @@
      },
      "S3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "ProviderframeworkonTimeoutServiceRole28643D26",
-      "Arn"
-     ]
-    },
     "Description": "AWS CDK resource provider framework - onTimeout (aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider)",
     "Environment": {
      "Variables": {
@@ -601,6 +595,12 @@
      }
     },
     "Handler": "framework.onTimeout",
+    "Role": {
+     "Fn::GetAtt": [
+      "ProviderframeworkonTimeoutServiceRole28643D26",
+      "Arn"
+     ]
+    },
     "Runtime": "nodejs18.x",
     "Timeout": 900
    },

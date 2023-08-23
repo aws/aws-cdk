@@ -245,14 +245,13 @@ export interface LaunchTemplateProps {
   /**
    * An IAM role to associate with the instance profile that is used by instances.
    *
-   * The role must be assumable by the service principal `ec2.amazonaws.com`:
+   * The role must be assumable by the service principal `ec2.amazonaws.com`.
+   * Note: You can provide an instanceProfile or a role, but not both.
    *
    * @example
    * const role = new iam.Role(this, 'MyRole', {
    *   assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
    * });
-   *
-   * Note: You can provide an instanceProfile or a role, but not both.
    *
    * @default - No new role is created.
    */

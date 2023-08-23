@@ -633,27 +633,6 @@ describe('fargate service', () => {
           Type: 'EXTERNAL',
         },
         EnableECSManagedTags: false,
-        NetworkConfiguration: {
-          AwsvpcConfiguration: {
-            AssignPublicIp: 'DISABLED',
-            SecurityGroups: [
-              {
-                'Fn::GetAtt': [
-                  'FargateServiceSecurityGroup0A0E79CB',
-                  'GroupId',
-                ],
-              },
-            ],
-            Subnets: [
-              {
-                Ref: 'MyVpcPrivateSubnet1Subnet5057CF7E',
-              },
-              {
-                Ref: 'MyVpcPrivateSubnet2Subnet0040C983',
-              },
-            ],
-          },
-        },
       });
     });
 
@@ -984,6 +963,74 @@ describe('fargate service', () => {
             Enable: true,
             Rollback: true,
             AlarmNames: [myAlarm.alarmName],
+          },
+        },
+      });
+    });
+
+    test('no network configuration with external deployment controller', () => {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      new ecs.FargateService(stack, 'ExternalService', {
+        cluster,
+        taskDefinition,
+        deploymentController: {
+          type: ecs.DeploymentControllerType.EXTERNAL,
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        NetworkConfiguration: Match.absent(),
+      });
+    });
+
+    test('network configuration exists when explicitly specifying a deployment controller type other than EXTERNAL', () => {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      new ecs.FargateService(stack, 'ExternalService', {
+        cluster,
+        taskDefinition,
+        deploymentController: {
+          type: ecs.DeploymentControllerType.ECS,
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        NetworkConfiguration: {
+          AwsvpcConfiguration: {
+            AssignPublicIp: 'DISABLED',
+            SecurityGroups: [
+              {
+                'Fn::GetAtt': [
+                  'ExternalServiceSecurityGroup45E0A4FC',
+                  'GroupId',
+                ],
+              },
+            ],
+            Subnets: [
+              {
+                Ref: 'MyVpcPrivateSubnet1Subnet5057CF7E',
+              },
+              {
+                Ref: 'MyVpcPrivateSubnet2Subnet0040C983',
+              },
+            ],
           },
         },
       });
@@ -1613,7 +1660,7 @@ describe('fargate service', () => {
         });
       });
 
-      test('with TCP protocol', () => {
+      test('with TCP protocol and container hostPort unset', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1634,7 +1681,6 @@ describe('fargate service', () => {
         const lb = new elbv2.ApplicationLoadBalancer(stack, 'lb', { vpc });
         const listener = lb.addListener('listener', { port: 80 });
 
-        // THEN
         listener.addTargets('target', {
           port: 80,
           targets: [service.loadBalancerTarget({
@@ -1643,9 +1689,54 @@ describe('fargate service', () => {
             protocol: ecs.Protocol.TCP,
           })],
         });
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+          Port: 80,
+          Protocol: 'HTTP',
+        });
       });
 
-      test('with UDP protocol', () => {
+      test('with TCP protocol and container hostPort set', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+        const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+        const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+        const service = new ecs.FargateService(stack, 'Service', {
+          cluster,
+          taskDefinition,
+        });
+
+        taskDefinition.addContainer('MainContainer', {
+          image: ecs.ContainerImage.fromRegistry('hello'),
+          portMappings: [{
+            containerPort: 8000,
+            hostPort: 8000,
+          }],
+        });
+
+        // WHEN
+        const lb = new elbv2.ApplicationLoadBalancer(stack, 'lb', { vpc });
+        const listener = lb.addListener('listener', { port: 80 });
+
+        listener.addTargets('target', {
+          port: 80,
+          targets: [service.loadBalancerTarget({
+            containerName: 'MainContainer',
+            containerPort: 8000,
+            protocol: ecs.Protocol.TCP,
+          })],
+        });
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+          Port: 80,
+          Protocol: 'HTTP',
+        });
+      });
+
+      test('with UDP protocol and container hostPort unset', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1666,7 +1757,6 @@ describe('fargate service', () => {
         const lb = new elbv2.ApplicationLoadBalancer(stack, 'lb', { vpc });
         const listener = lb.addListener('listener', { port: 80 });
 
-        // THEN
         listener.addTargets('target', {
           port: 80,
           targets: [service.loadBalancerTarget({
@@ -1674,6 +1764,52 @@ describe('fargate service', () => {
             containerPort: 8001,
             protocol: ecs.Protocol.UDP,
           })],
+        });
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+          Port: 80,
+          Protocol: 'HTTP',
+        });
+      });
+
+      test('with UDP protocol and container hostPort set', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+        const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+        const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+        const service = new ecs.FargateService(stack, 'Service', {
+          cluster,
+          taskDefinition,
+        });
+
+        taskDefinition.addContainer('MainContainer', {
+          image: ecs.ContainerImage.fromRegistry('hello'),
+          portMappings: [{
+            containerPort: 8000,
+            hostPort: 8000,
+            protocol: ecs.Protocol.UDP,
+          }],
+        });
+
+        // WHEN
+        const lb = new elbv2.ApplicationLoadBalancer(stack, 'lb', { vpc });
+        const listener = lb.addListener('listener', { port: 80 });
+
+        listener.addTargets('target', {
+          port: 80,
+          targets: [service.loadBalancerTarget({
+            containerName: 'MainContainer',
+            containerPort: 8000,
+            protocol: ecs.Protocol.UDP,
+          })],
+        });
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+          Port: 80,
+          Protocol: 'HTTP',
         });
       });
 
@@ -1978,6 +2114,38 @@ describe('fargate service', () => {
             Protocol: 'HTTP',
           });
         });
+
+        test('throws when containerPortRange is used instead of containerPort', () => {
+          // GIVEN
+          const stack = new cdk.Stack();
+          const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+          const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+          const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+          const service = new ecs.FargateService(stack, 'Service', {
+            cluster,
+            taskDefinition,
+          });
+
+          taskDefinition.addContainer('MainContainer', {
+            image: ecs.ContainerImage.fromRegistry('hello'),
+            portMappings: [{
+              containerPort: ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE,
+              containerPortRange: '8000-8001',
+            }],
+          });
+
+          // WHEN
+          const lb = new elbv2.ApplicationLoadBalancer(stack, 'lb', { vpc });
+          const listener = lb.addListener('listener', { port: 80 });
+
+          // THEN
+          expect(() => service.registerLoadBalancerTargets({
+            containerName: 'MainContainer',
+            containerPort: 8000,
+            listener: ecs.ListenerConfig.applicationListener(listener),
+            newTargetGroupId: 'target1',
+          })).toThrow(/Container 'Default\/FargateTaskDef\/MainContainer' has no mapping for port 8000 and protocol tcp. Did you call "container.addPortMappings\(\)"\?/);
+        });
       });
 
       describe('with network load balancers', () => {
@@ -2077,6 +2245,38 @@ describe('fargate service', () => {
             Port: 81,
             Protocol: 'TCP',
           });
+        });
+
+        test('throws when containerPortRange is used instead of containerPort', () => {
+          // GIVEN
+          const stack = new cdk.Stack();
+          const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+          const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+          const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+          const service = new ecs.FargateService(stack, 'Service', {
+            cluster,
+            taskDefinition,
+          });
+
+          taskDefinition.addContainer('MainContainer', {
+            image: ecs.ContainerImage.fromRegistry('hello'),
+            portMappings: [{
+              containerPort: ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE,
+              containerPortRange: '8000-8001',
+            }],
+          });
+
+          // WHEN
+          const lb = new elbv2.NetworkLoadBalancer(stack, 'lb', { vpc });
+          const listener = lb.addListener('listener', { port: 80 });
+
+          // THEN
+          expect(() => service.registerLoadBalancerTargets({
+            containerName: 'MainContainer',
+            containerPort: 8000,
+            listener: ecs.ListenerConfig.networkListener(listener),
+            newTargetGroupId: 'target1',
+          })).toThrow(/Container 'Default\/FargateTaskDef\/MainContainer' has no mapping for port 8000 and protocol tcp. Did you call "container.addPortMappings\(\)"\?/);
         });
       });
     });
