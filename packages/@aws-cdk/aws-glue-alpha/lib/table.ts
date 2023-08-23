@@ -6,7 +6,6 @@ import { ArnFormat, Fn, IResource, Lazy, Names, Resource, Stack } from 'aws-cdk-
 import * as cr from 'aws-cdk-lib/custom-resources';
 import { AwsCustomResource } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
-import { IConnection } from './connection';
 import { DataFormat } from './data-format';
 import { IDatabase } from './database';
 import { S3Table } from './s3-table';
@@ -184,13 +183,6 @@ export interface TableProps {
    * @default - The parameter is not defined
    */
   readonly enablePartitionFiltering?: boolean;
-
-  /**
-   * The connection the table will use when performing reads and writes.
-   *
-   * @default - No connection
-   */
-  readonly connection?: IConnection;
 
   /**
    * The user-supplied properties for the description of the physical storage of this table. These properties help describe the format of the data that is stored within the crawled data sources.
@@ -377,7 +369,6 @@ export class Table extends Resource implements ITable {
           'classification': props.dataFormat.classificationString?.value,
           'has_encrypted_data': true,
           'partition_filtering.enabled': props.enablePartitionFiltering,
-          'connectionName': props.connection?.connectionName,
         },
         storageDescriptor: {
           location: this.location,
