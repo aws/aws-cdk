@@ -484,7 +484,7 @@ To grant permissions to indexes an imported `GlobalTable` you can either set `gr
 
 ## Grants
 
-Using any of the `grant*` methods on a `GlobalTable` will only apply to the table in the main deployment region, its indexes, and any associated `encryptionKey`. As an example, `grantRead` used below will only apply the table in `us-west-2`:
+Using any of the `grant*` methods on a `GlobalTable` will only apply to the table in the main deployment region, its indexes, and any associated `encryptionKey`. As an example, `grantReadData` used below will only apply the table in `us-west-2`:
 
 ```ts
 import * as cdk from 'aws-cdk-lib';
@@ -510,8 +510,8 @@ const globalTable = new dynamodb.GlobalTable(stack, 'GlobalTable', {
   ],
 });
 
-// grantRead only applys to the table in us-west-2 and the tableKey
-globalTable.grantRead(user);
+// grantReadData only applys to the table in us-west-2 and the tableKey
+globalTable.grantReadData(user);
 ```
 
 The `replica` method can be used to grant to a specific replica table:
@@ -540,8 +540,8 @@ const globalTable = new dynamodb.GlobalTable(stack, 'GlobalTable', {
   ],
 });
 
-// grantRead applys to the table in us-east-2 and the key arn for the key in us-east-2
-globalTable.replica('us-east-2').grantRead(user);
+// grantReadData applys to the table in us-east-2 and the key arn for the key in us-east-2
+globalTable.replica('us-east-2').grantReadData(user);
 ```
 
 ## Metrics
