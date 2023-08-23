@@ -19,9 +19,9 @@ module.exports = {
         "text-summary",
     ],
     coveragePathIgnorePatterns: [
-        "<rootDir>/lib/.*\\.generated\\.[jt]s",
-        "<rootDir>/test/.*\\.[jt]s",
-        "<rootDir>/.warnings.jsii.js",
+        "\\.generated\\.[jt]s$",
+        "<rootDir>/test/",
+        ".warnings.jsii.js$",
     ],
 	reporters: [
         "default",
