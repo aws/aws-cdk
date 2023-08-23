@@ -396,7 +396,7 @@ describe('repository', () => {
     }));
 
     // THEN
-    Annotations.fromStack(stack).hasWarning('*', 'ECR resource policy does not allow resource statements.');
+    Annotations.fromStack(stack).hasWarning('*', 'ECR resource policy does not allow resource statements. [ack: @aws-cdk/aws-ecr:noResourceStatements]');
   });
 
   test('does not warn if repository policy does not have resources', () => {
@@ -412,7 +412,7 @@ describe('repository', () => {
     }));
 
     // THEN
-    Annotations.fromStack(stack).hasNoWarning('*', 'ECR resource policy does not allow resource statements.');
+    Annotations.fromStack(stack).hasNoWarning('*', 'ECR resource policy does not allow resource statements. [ack: @aws-cdk/aws-ecr:noResourceStatements]');
   });
 
   test('default encryption configuration', () => {
@@ -1038,6 +1038,24 @@ describe('repository', () => {
           removalPolicy: cdk.RemovalPolicy.RETAIN,
         });
       }).toThrowError('Cannot use \'autoDeleteImages\' property on a repository without setting removal policy to \'DESTROY\'.');
+    });
+  });
+
+  test('repo name is embedded in CustomResourceProvider description', () => {
+    const stack = new cdk.Stack();
+    new ecr.Repository(stack, 'Repo', {
+      autoDeleteImages: true,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Description: {
+        'Fn::Join': ['', [
+          'Lambda function for auto-deleting images in ',
+          { Ref: 'Repo02AC86CF' },
+          ' repository.',
+        ]],
+      },
     });
   });
 });

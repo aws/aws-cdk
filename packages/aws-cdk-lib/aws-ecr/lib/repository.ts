@@ -705,13 +705,6 @@ export class Repository extends RepositoryBase {
     });
     this._resource = resource;
 
-    if (props.autoDeleteImages) {
-      if (props.removalPolicy !== RemovalPolicy.DESTROY) {
-        throw new Error('Cannot use \'autoDeleteImages\' property on a repository without setting removal policy to \'DESTROY\'.');
-      }
-      this.enableAutoDeleteImages();
-    }
-
     resource.applyRemovalPolicy(props.removalPolicy);
 
     this.registryId = props.lifecycleRegistryId;
@@ -726,6 +719,13 @@ export class Repository extends RepositoryBase {
       resourceName: this.physicalName,
     });
 
+    if (props.autoDeleteImages) {
+      if (props.removalPolicy !== RemovalPolicy.DESTROY) {
+        throw new Error('Cannot use \'autoDeleteImages\' property on a repository without setting removal policy to \'DESTROY\'.');
+      }
+      this.enableAutoDeleteImages();
+    }
+
     this.node.addValidation({ validate: () => this.policyDocument?.validateForResourcePolicy() ?? [] });
   }
 
@@ -738,7 +738,7 @@ export class Repository extends RepositoryBase {
    */
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     if (statement.resources.length) {
-      Annotations.of(this).addWarning('ECR resource policy does not allow resource statements.');
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecr:noResourceStatements', 'ECR resource policy does not allow resource statements.');
     }
     if (this.policyDocument === undefined) {
       this.policyDocument = new iam.PolicyDocument();
@@ -890,7 +890,7 @@ export class Repository extends RepositoryBase {
       resourceType: AUTO_DELETE_IMAGES_RESOURCE_TYPE,
       serviceToken: provider.serviceToken,
       properties: {
-        RepositoryName: Lazy.any({ produce: () => this.repositoryName }),
+        RepositoryName: this.repositoryName,
       },
     });
     customResource.node.addDependency(this);
