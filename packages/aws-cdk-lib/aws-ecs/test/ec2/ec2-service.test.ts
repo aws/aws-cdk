@@ -1216,7 +1216,7 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      Annotations.fromStack(stack).hasWarning('/Default/Ec2Service', 'taskDefinition and launchType are blanked out when using external deployment controller.');
+      Annotations.fromStack(stack).hasWarning('/Default/Ec2Service', 'taskDefinition and launchType are blanked out when using external deployment controller. [ack: @aws-cdk/aws-ecs:externalDeploymentController]');
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         Cluster: {
           Ref: 'EcsCluster97242B84',
@@ -1233,7 +1233,8 @@ describe('ec2 service', () => {
 
     test('add warning to annotations if circuitBreaker is specified with a non-ECS DeploymentControllerType', () => {
       // GIVEN
-      const stack = new cdk.Stack();
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app);
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       addDefaultCapacityProvider(cluster, stack, vpc);
@@ -1252,10 +1253,12 @@ describe('ec2 service', () => {
         },
         circuitBreaker: { rollback: true },
       });
+      app.synth();
 
       // THEN
-      expect(service.node.metadata[0].data).toEqual('taskDefinition and launchType are blanked out when using external deployment controller.');
+      expect(service.node.metadata[0].data).toEqual('taskDefinition and launchType are blanked out when using external deployment controller. [ack: @aws-cdk/aws-ecs:externalDeploymentController]');
       expect(service.node.metadata[1].data).toEqual('Deployment circuit breaker requires the ECS deployment controller.');
+
     });
 
     test('errors if daemon and desiredCount both specified', () => {
@@ -2705,6 +2708,38 @@ describe('ec2 service', () => {
 
     });
 
+    test('throws when the first port mapping added to the container does not expose a single port', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+      const container = taskDefinition.addContainer('MainContainer', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+      });
+      container.addPortMappings({
+        containerPort: ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE,
+        containerPortRange: '8000-8001',
+      });
+
+      const service = new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition,
+      });
+
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'lb', { vpc });
+      const listener = lb.addListener('listener', { port: 80 });
+      const targetGroup = listener.addTargets('target', {
+        port: 80,
+      });
+
+      // THEN
+      expect(() => {
+        service.attachToApplicationTargetGroup(targetGroup);
+      }).toThrow(/The first port mapping of the container MainContainer must expose a single port./);
+
+    });
+
     describe('correctly setting ingress and egress port', () => {
       test('with bridge/NAT network mode and 0 host port', () => {
         [ecs.NetworkMode.BRIDGE, ecs.NetworkMode.NAT].forEach((networkMode: ecs.NetworkMode) => {
@@ -2947,6 +2982,38 @@ describe('ec2 service', () => {
       expect(() => {
         service.attachToNetworkTargetGroup(targetGroup);
       }).toThrow(/Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead./);
+
+    });
+
+    test('throws when the first port mapping added to the container does not expose a single port', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+      const container = taskDefinition.addContainer('MainContainer', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+      });
+      container.addPortMappings({
+        containerPort: ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE,
+        containerPortRange: '8000-8001',
+      });
+
+      const service = new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition,
+      });
+
+      const lb = new elbv2.NetworkLoadBalancer(stack, 'lb', { vpc });
+      const listener = lb.addListener('listener', { port: 80 });
+      const targetGroup = listener.addTargets('target', {
+        port: 80,
+      });
+
+      // THEN
+      expect(() => {
+        service.attachToNetworkTargetGroup(targetGroup);
+      }).toThrow(/The first port mapping of the container MainContainer must expose a single port./);
 
     });
   });

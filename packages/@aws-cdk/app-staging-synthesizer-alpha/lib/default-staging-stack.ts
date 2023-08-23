@@ -422,6 +422,7 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
     if (this.stagingRepos[asset.assetName] === undefined) {
       this.stagingRepos[asset.assetName] = new ecr.Repository(this, repoName, {
         repositoryName: repoName,
+        imageTagMutability: ecr.TagMutability.IMMUTABLE,
         lifecycleRules: [{
           description: 'Garbage collect old image versions',
           maxImageCount: this.props.imageAssetVersionCount ?? 3,
