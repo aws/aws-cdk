@@ -17,6 +17,7 @@ Flags come in three types:
 
 | Flag | Summary | Since | Type |
 | ----- | ----- | ----- | ----- |
+| [@aws-cdk/aws-efs:denyAnonymousAccess](#aws-cdkaws-efsdenyanonymousaccess) | EFS denies anonymous clients accesses | V2·NEXT | (default) |
 | [@aws-cdk/core:newStyleStackSynthesis](#aws-cdkcorenewstylestacksynthesis) | Switch to new stack synthesis method which enables CI/CD | 2.0.0 | (fix) |
 | [@aws-cdk/core:stackRelativeExports](#aws-cdkcorestackrelativeexports) | Name exports based on the construct paths relative to the stack, rather than the global construct path | 2.0.0 | (fix) |
 | [@aws-cdk/aws-rds:lowercaseDbIdentifier](#aws-cdkaws-rdslowercasedbidentifier) | Force lowercasing of RDS Cluster names in CDK | 2.0.0 | (fix) |
@@ -104,6 +105,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-kms:aliasNameRef": true,
     "@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig": true,
     "@aws-cdk/core:includePrefixInUniqueNameGeneration": true,
+    "@aws-cdk/aws-efs:denyAnonymousAccess": true,
     "@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby": true,
     "@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion": true,
     "@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId": true
@@ -334,6 +336,25 @@ Encryption can also be configured explicitly using the `encrypted` property.
 | (default in v2) | `true` |  |
 
 **Compatibility with old behavior:** Pass the `encrypted: false` property to the `FileSystem` construct to disable encryption.
+
+
+### @aws-cdk/aws-efs:denyAnonymousAccess
+
+*EFS denies anonymous clients accesses* (default)
+
+This flag adds the file system policy that denies anonymous clients
+access to `efs.FileSystem`.
+
+If this flag is not set, `efs.FileSystem` will allow all anonymous clients
+that can access over the network.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2·NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** You can pass `allowAnonymousAccess: true` so allow anonymous clients access.
 
 
 ### @aws-cdk/core:newStyleStackSynthesis
