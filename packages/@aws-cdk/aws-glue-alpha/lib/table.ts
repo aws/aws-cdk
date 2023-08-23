@@ -9,6 +9,7 @@ import { Construct } from 'constructs';
 import { IConnection } from './connection';
 import { DataFormat } from './data-format';
 import { IDatabase } from './database';
+import { S3Table } from './s3-table';
 import { Column } from './schema';
 import { StorageParameter } from './storage-parameter';
 
@@ -192,15 +193,6 @@ export interface TableProps {
   readonly connection?: IConnection;
 
   /**
-   * The data source location of the glue table, (e.g. `default_db_public_example` for Redshift).
-   *
-   * If this property is set, it will override both `bucket` and `s3Prefix`.
-   *
-   * @default - No outsourced data source location
-   */
-  readonly externalDataLocation?: string;
-
-  /**
    * The user-supplied properties for the description of the physical storage of this table. These properties help describe the format of the data that is stored within the crawled data sources.
    *
    * The key/value pairs that are allowed to be submitted are not limited, however their functionality is not guaranteed.
@@ -238,6 +230,8 @@ export interface TableProps {
 
 /**
  * A Glue table.
+ *
+ * @deprecate Use {@link S3Table} instead.
  */
 export class Table extends Resource implements ITable {
 
@@ -327,11 +321,6 @@ export class Table extends Resource implements ITable {
   public readonly partitionIndexes?: PartitionIndex[];
 
   /**
-   * The connection this table is associated with.
-   */
-  public readonly connection?: IConnection;
-
-  /**
    * The location of the tables' data.
    */
   readonly location?: string;
@@ -358,7 +347,6 @@ export class Table extends Resource implements ITable {
 
     this.database = props.database;
     this.dataFormat = props.dataFormat;
-    this.connection = props.connection;
 
     validateSchema(props.columns, props.partitionKeys);
     this.columns = props.columns;
@@ -366,16 +354,13 @@ export class Table extends Resource implements ITable {
     this.storageParameters = props.storageParameters;
 
     this.compressed = props.compressed ?? false;
-    if (props.externalDataLocation) {
-      this.location = props.externalDataLocation;
-    } else {
-      this.s3Prefix = props.s3Prefix ?? '';
-      const { bucket, encryption, encryptionKey } = createBucket(this, props);
-      this.bucket = bucket;
-      this.encryption = encryption;
-      this.encryptionKey = encryptionKey;
-      this.location = `s3://${bucket.bucketName}/${this.s3Prefix}`;
-    }
+
+    this.s3Prefix = props.s3Prefix ?? '';
+    const { bucket, encryption, encryptionKey } = createBucket(this, props);
+    this.bucket = bucket;
+    this.encryption = encryption;
+    this.encryptionKey = encryptionKey;
+    this.location = `s3://${bucket.bucketName}/${this.s3Prefix}`;
 
     const tableResource = new CfnTable(this, 'Table', {
       catalogId: props.database.catalogId,
@@ -569,7 +554,7 @@ export class Table extends Resource implements ITable {
     });
   }
 
-  private getS3PrefixForGrant() {
+  protected getS3PrefixForGrant() {
     return this.s3Prefix + '*';
   }
 }
