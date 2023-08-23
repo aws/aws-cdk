@@ -32,8 +32,8 @@ export class Annotations {
    * The acknowledgement will apply to all child scopes
    *
    * @example
-   * declare const stack: Stack;
-   * Annotations.of(stack).acknowledgeWarning('SomeWarningId', 'This warning can be ignored because...');
+   * declare const myConstruct: Construct;
+   * Annotations.of(myConstruct).acknowledgeWarning('SomeWarningId', 'This warning can be ignored because...');
    *
    * @param id - the id of the warning message to acknowledge
    * @param message optional message to explain the reason for acknowledgement
@@ -60,8 +60,8 @@ export class Annotations {
    * the CLI, and will not cause `--strict` mode to fail synthesis.
    *
    * @example
-   * declare const construct: Construct;
-   * Annotations.of(construct).addWarningV2('my-library:Construct.someWarning', 'Some message explaining the warning');
+   * declare const myConstruct: Construct;
+   * Annotations.of(myConstruct).addWarningV2('my-library:Construct.someWarning', 'Some message explaining the warning');
    *
    * @param id the unique identifier for the warning. This can be used to acknowledge the warning
    * @param message The warning message.
