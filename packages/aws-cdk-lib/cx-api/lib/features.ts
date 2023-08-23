@@ -860,7 +860,7 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       If this flag is not set, \`efs.FileSystem\` will allow all anonymous clients
       that can access over the network.`,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.93.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'You can pass `allowAnonymousAccess: true` so allow anonymous clients access.',
   },
@@ -888,7 +888,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       service. Do not use this if you your lambda function is reliant on dependencies
       shipped as part of the runtime environment.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.93.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Pass `runtime: lambda.Runtime.NODEJS_16_X` to `Function` construct to restore the previous behavior.',
   },
@@ -904,7 +904,7 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       Set this flag to false for existing mount targets.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.93.0' },
     recommendedValue: true,
   },
 
