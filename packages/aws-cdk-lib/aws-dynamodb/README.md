@@ -95,6 +95,8 @@ https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.Tabl
 A `GlobalTable` can be configured with replica tables. To do this, the `GlobalTable` must be defined in a region non-agnostic `Stack`. Additionally, the main deployment region must not be given as a replica because this is created by default with the `GlobalTable`. The following is a minimal `GlobalTable` definition with replicas defined in `us-east-1` and `us-east-2`:
 
 ```ts
+import * as cdk from 'aws-cdk-lib';
+
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-west-2' } });
 
@@ -110,6 +112,8 @@ const globalTable = new dynamodb.GlobalTable(stack, 'GlobalTable', {
 Alternatively, you can add new replicas to a `GlobalTable` using the `addReplica` method:
 
 ```ts
+import * as cdk from 'aws-cdk-lib';
+
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-west-2' } });
 
@@ -133,6 +137,8 @@ The following properties are configurable on a per-replica basis, but will be in
 The following example shows how to define properties on a per-replica basis:
 
 ```ts
+import * as cdk from 'aws-cdk-lib';
+
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-west-2' } });
 
@@ -157,6 +163,8 @@ const globalTable = new dynamodb.GlobalTable(stack, 'GlobalTable', {
 You can retrieve a single replica from a `GlobalTable` using the `replica` method:
 
 ```ts
+import * as cdk from 'aws-cdk-lib';
+
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-west-2' } });
 
@@ -224,6 +232,8 @@ const globalTable = new dynamodb.GlobalTable(this, 'GlobalTable', {
 When using provisioned billing, you can configure the `readCapacity` on a per-replica basis:
 
 ```ts
+import * as cdk from 'aws-cdk-lib';
+
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-west-2' } });
 
@@ -276,6 +286,7 @@ const globalTable = new dynamodb.GlobalTable(this, 'GlobalTable', {
 When configuring `GlobalTable` encryption using customer managed keys, you must specify the KMS key for the table in the main deployment region as the `tableKey`. A map of `replicaKeyArns` must be provided containing each replica region and the associated KMS key ARN:
 
 ```ts
+import * as cdk from 'aws-cdk-lib';
 import * as kms from 'aws-cdk-lib/aws-kms';
 
 const app = new cdk.App();
@@ -367,6 +378,8 @@ const globalTable = new dynamodb.GlobalTable(this, 'GlobalTable', {
 All `globalSecondaryIndexes` for replica tables are inherited from the `GlobalTable`. You can configure `contributorInsights` and `readCapacity` for each `globalSecondaryIndex` on a per-replica basis:
 
 ```ts
+import * as cdk from 'aws-cdk-lib';
+
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-west-2' } });
 
@@ -474,6 +487,7 @@ To grant permissions to indexes an imported `GlobalTable` you can either set `gr
 Using any of the `grant*` methods on a `GlobalTable` will only apply to the table in the main deployment region, its indexes, and any associated `encryptionKey`. As an example, `grantRead` used below will only apply the table in `us-west-2`:
 
 ```ts
+import * as cdk from 'aws-cdk-lib';
 import * as kms from 'aws-cdk-lib/aws-kms';
 
 declare const user: iam.User;
@@ -503,6 +517,7 @@ globalTable.grantRead(user);
 The `replica` method can be used to grant to a specific replica table:
 
 ```ts
+import * as cdk from 'aws-cdk-lib';
 import * as kms from 'aws-cdk-lib/aws-kms';
 
 declare const user: iam.User;
@@ -534,6 +549,7 @@ globalTable.replica('us-east-2').grantRead(user);
 You can use `metric*` methods to generate metrics for a `GlobalTable` that can be used when configuring an `Alarm` or `Graphs`. The `metric*` methods only apply to the table in the main deployment region for a `GlobalTable`. As an example, `metricConsumedReadCapacityUnits` used below is only for the table in `us-west-2`:
 
 ```ts
+import * as cdk from 'aws-cdk-lib';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 
 const app = new cdk.App();
@@ -560,12 +576,15 @@ new cloudwatch.Alarm(this, 'Alarm', {
 The `replica` method can be used to generate a metric for a specific replica table:
 
 ```ts
+import * as cdk form 'aws-cdk-lib';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 
 class FooStack extends cdk.Stack {
   public readonly globalTable: dynamodb.GlobalTable;
 
   public constructor(scope: Construct, id: string, props: cdk.StackProps) {
+    super(scope, id, props);
+
     this.globalTable = new dynamodb.GlobalTable(this, 'GlobalTable', {
       partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
       replicas: [
@@ -582,6 +601,8 @@ interface BarStack extends cdk.StackProps {
 
 class BarStack extends cdk.Stack {
   public constructor(scope: Construct, id: string, props: BarStackProps) {
+    super(scope, id, props);
+
     // metric is only for the table in us-east-1
     const metric = props.replicaTable.metricConsumedReadCapacityUnits();
 
