@@ -108,10 +108,10 @@ export class HelmChart extends Construct {
    * The CloudFormation resource type.
    */
   public static readonly RESOURCE_TYPE = 'Custom::AWSCDK-EKS-HelmChart';
-  public readonly chart: string | undefined;
-  public readonly repository: string | undefined;
-  public readonly version: string | undefined;
-  public readonly chartAsset: Asset | undefined;
+  public readonly chart?: string;
+  public readonly repository?: string;
+  public readonly version?: string;
+  public readonly chartAsset?: Asset;
 
   constructor(scope: Construct, id: string, props: HelmChartProps) {
     super(scope, id);
