@@ -6,23 +6,41 @@ import * as AWSLambda from 'aws-lambda';
 export const PHYSICAL_RESOURCE_ID_REFERENCE = 'PHYSICAL:RESOURCEID:';
 
 /**
+ * Text decoder used for Uint8Array response parsing
+ */
+const decoder = new TextDecoder();
+
+/**
+ * Parse both buffers and ArrayBuffers which can be returned by sdkv3
+ */
+function parseField(value: any): any {
+  if (Buffer.isBuffer(value)) {
+    return value.toString('utf8');
+  } else if (ArrayBuffer.isView(value)) {
+    return decoder.decode(value.buffer);
+  }
+
+  return value;
+}
+/**
  * Flattens a nested object
  *
  * @param object the object to be flattened
  * @returns a flat object with path as keys
  */
 export function flatten(object: object): { [key: string]: any } {
+  function _flatten(child: any, path: string[] = []): any {
+    return [].concat(...Object.keys(child)
+      .map(key => {
+        const childKey = parseField(child[key]);
+        return typeof childKey === 'object' && childKey !== null
+          ? _flatten(childKey, path.concat([key]))
+          : ({ [path.concat([key]).join('.')]: childKey });
+      }));
+  }
   return Object.assign(
     {},
-    ...function _flatten(child: any, path: string[] = []): any {
-      return [].concat(...Object.keys(child)
-        .map(key => {
-          const childKey = Buffer.isBuffer(child[key]) ? child[key].toString('utf8') : child[key];
-          return typeof childKey === 'object' && childKey !== null
-            ? _flatten(childKey, path.concat([key]))
-            : ({ [path.concat([key]).join('.')]: childKey });
-        }));
-    }(object),
+    ..._flatten(object),
   );
 }
 
