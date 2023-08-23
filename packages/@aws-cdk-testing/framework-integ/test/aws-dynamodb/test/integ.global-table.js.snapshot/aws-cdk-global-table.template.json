@@ -1,5 +1,24 @@
 {
  "Resources": {
+  "Stream790BDEE4": {
+   "Type": "AWS::Kinesis::Stream",
+   "Properties": {
+    "RetentionPeriodHours": 24,
+    "ShardCount": 1,
+    "StreamEncryption": {
+     "Fn::If": [
+      "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
+      {
+       "Ref": "AWS::NoValue"
+      },
+      {
+       "EncryptionType": "KMS",
+       "KeyId": "alias/aws/kinesis"
+      }
+     ]
+    }
+   }
+  },
   "Resource": {
    "Type": "AWS::DynamoDB::GlobalTable",
    "Properties": {
@@ -180,6 +199,14 @@
         }
        }
       ],
+      "KinesisStreamSpecification": {
+       "StreamArn": {
+        "Fn::GetAtt": [
+         "Stream790BDEE4",
+         "Arn"
+        ]
+       }
+      },
       "PointInTimeRecoverySpecification": {
        "PointInTimeRecoveryEnabled": true
       },
@@ -214,6 +241,28 @@
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  }
+ },
+ "Conditions": {
+  "AwsCdkKinesisEncryptedStreamsUnsupportedRegions": {
+   "Fn::Or": [
+    {
+     "Fn::Equals": [
+      {
+       "Ref": "AWS::Region"
+      },
+      "cn-north-1"
+     ]
+    },
+    {
+     "Fn::Equals": [
+      {
+       "Ref": "AWS::Region"
+      },
+      "cn-northwest-1"
+     ]
+    }
+   ]
   }
  },
  "Parameters": {

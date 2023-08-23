@@ -1,11 +1,14 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import { AttributeType, Billing, Capacity, GlobalTable, TableClass, TableEncryptionV2 } from 'aws-cdk-lib/aws-dynamodb';
+import { Stream } from 'aws-cdk-lib/aws-kinesis';
 import { Construct } from 'constructs';
 
 class TestStack extends Stack {
   public constructor(scope: Construct, id: string, props: StackProps) {
     super(scope, id, props);
+
+    const stream = new Stream(this, 'Stream');
 
     new GlobalTable(this, 'GlobalTable', {
       tableName: 'my-global-table',
@@ -21,6 +24,7 @@ class TestStack extends Stack {
       tableClass: TableClass.STANDARD_INFREQUENT_ACCESS,
       timeToLiveAttribute: 'attr',
       removalPolicy: RemovalPolicy.DESTROY,
+      kinesisStream: stream,
       globalSecondaryIndexes: [
         {
           indexName: 'gsi1',
@@ -67,4 +71,6 @@ class TestStack extends Stack {
 const app = new App();
 new IntegTest(app, 'aws-cdk-global-table-integ', {
   testCases: [new TestStack(app, 'aws-cdk-global-table', { env: { region: 'us-east-1' } })],
+  regions: ['us-east-1'],
+  stackUpdateWorkflow: false,
 });

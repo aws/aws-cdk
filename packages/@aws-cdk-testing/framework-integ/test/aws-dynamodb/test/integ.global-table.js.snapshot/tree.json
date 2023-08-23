@@ -8,6 +8,51 @@
         "id": "aws-cdk-global-table",
         "path": "aws-cdk-global-table",
         "children": {
+          "Stream": {
+            "id": "Stream",
+            "path": "aws-cdk-global-table/Stream",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-global-table/Stream/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Kinesis::Stream",
+                  "aws:cdk:cloudformation:props": {
+                    "retentionPeriodHours": 24,
+                    "shardCount": 1,
+                    "streamEncryption": {
+                      "Fn::If": [
+                        "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
+                        {
+                          "Ref": "AWS::NoValue"
+                        },
+                        {
+                          "EncryptionType": "KMS",
+                          "KeyId": "alias/aws/kinesis"
+                        }
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_kinesis.CfnStream",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_kinesis.Stream",
+              "version": "0.0.0"
+            }
+          },
+          "AwsCdkKinesisEncryptedStreamsUnsupportedRegions": {
+            "id": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
+            "path": "aws-cdk-global-table/AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnCondition",
+              "version": "0.0.0"
+            }
+          },
           "GlobalTable": {
             "id": "GlobalTable",
             "path": "aws-cdk-global-table/GlobalTable",
@@ -198,6 +243,14 @@
                       }
                     ],
                     "tableClass": "STANDARD_INFREQUENT_ACCESS",
+                    "kinesisStreamSpecification": {
+                      "streamArn": {
+                        "Fn::GetAtt": [
+                          "Stream790BDEE4",
+                          "Arn"
+                        ]
+                      }
+                    },
                     "contributorInsightsSpecification": {
                       "enabled": true
                     },

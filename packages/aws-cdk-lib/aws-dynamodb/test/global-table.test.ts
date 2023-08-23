@@ -1068,12 +1068,7 @@ describe('replica tables', () => {
         {
           Region: 'us-east-1',
           KinesisStreamSpecification: {
-            StreamArn: {
-              'Fn::GetAtt': [
-                'Stream29F70ED08',
-                'Arn',
-              ],
-            },
+            StreamArn: 'arn:aws:kinesis:us-east-1:123456789012:stream/my-stream',
           },
         },
         {
@@ -1083,7 +1078,12 @@ describe('replica tables', () => {
         {
           Region: 'us-west-2',
           KinesisStreamSpecification: {
-            StreamArn: 'arn:aws:kinesis:us-east-1:123456789012:stream/my-stream',
+            StreamArn: {
+              'Fn::GetAtt': [
+                'Stream16C8F97AF',
+                'Arn',
+              ],
+            },
           },
         },
       ],

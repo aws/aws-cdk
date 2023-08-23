@@ -6,5 +6,5 @@ def handler(event, context):
   response = table.put_item(
       Item={ 'pk': 'value' }
   )
-  print(response)
-  return response.status_code
+  print(response['ResponseMetadata'])
+  return response['ResponseMetadata']
