@@ -1506,7 +1506,7 @@ test('Table.fromTableArn', () => {
   const stack = new cdk.Stack();
 
   // WHEN
-  const table = glue.Table.fromTableArn(stack, 'boom', 'arn:aws:glue:us-east-1:123456789012:table/db1/tbl1');
+  const table = glue.S3Table.fromTableArn(stack, 'boom', 'arn:aws:glue:us-east-1:123456789012:table/db1/tbl1');
 
   // THEN
   expect(table.tableArn).toEqual('arn:aws:glue:us-east-1:123456789012:table/db1/tbl1');
@@ -1688,7 +1688,7 @@ test('can associate an external location with the glue table', () => {
   });
 });
 
-function createTable(props: Pick<glue.TableProps, Exclude<keyof glue.TableProps, 'database' | 'dataFormat'>>): void {
+function createTable(props: Pick<glue.S3TableProps, Exclude<keyof glue.S3TableProps, 'database' | 'dataFormat'>>): void {
   const stack = new cdk.Stack();
   new glue.S3Table(stack, 'table', {
     ...props,
