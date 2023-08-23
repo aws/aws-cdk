@@ -31,8 +31,11 @@ class TestStack extends Stack {
 }
 
 const app = new App();
+
 const integTest = new IntegTest(app, 'aws-cdk-global-table-replica-integ', {
-  testCases: [new TestStack(app, 'TestStack', { env: { region: 'us-east-1' } })],
+  testCases: [new TestStack(app, 'BarStack', { env: { region: 'us-east-1' } })],
+  regions: ['us-east-1'],
+  stackUpdateWorkflow: false,
 });
 
 const invoke = integTest.assertions.invokeFunction({ functionName: 'global-table-lambda' });

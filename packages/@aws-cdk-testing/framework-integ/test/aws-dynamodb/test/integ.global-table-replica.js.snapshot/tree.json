@@ -4,21 +4,21 @@
     "id": "App",
     "path": "",
     "children": {
-      "TestStack": {
-        "id": "TestStack",
-        "path": "TestStack",
+      "BarStack": {
+        "id": "BarStack",
+        "path": "BarStack",
         "children": {
           "Function": {
             "id": "Function",
-            "path": "TestStack/Function",
+            "path": "BarStack/Function",
             "children": {
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "TestStack/Function/ServiceRole",
+                "path": "BarStack/Function/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "TestStack/Function/ServiceRole/ImportServiceRole",
+                    "path": "BarStack/Function/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -26,7 +26,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "TestStack/Function/ServiceRole/Resource",
+                    "path": "BarStack/Function/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -65,11 +65,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "TestStack/Function/ServiceRole/DefaultPolicy",
+                    "path": "BarStack/Function/ServiceRole/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "TestStack/Function/ServiceRole/DefaultPolicy/Resource",
+                        "path": "BarStack/Function/ServiceRole/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -130,11 +130,11 @@
               },
               "Code": {
                 "id": "Code",
-                "path": "TestStack/Function/Code",
+                "path": "BarStack/Function/Code",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "TestStack/Function/Code/Stage",
+                    "path": "BarStack/Function/Code/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -142,7 +142,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "TestStack/Function/Code/AssetBucket",
+                    "path": "BarStack/Function/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
@@ -156,7 +156,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "TestStack/Function/Resource",
+                "path": "BarStack/Function/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
@@ -164,7 +164,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
                       },
-                      "s3Key": "a3d86eaa04e97d9162f3eb66b7b269bc6b2bd9a2c755a5f86bff4c80be6421d5.zip"
+                      "s3Key": "c18113b4de2a824414ce1fee0fe23ec882169117060896b1c8b75ce5a1af8526.zip"
                     },
                     "functionName": "global-table-lambda",
                     "handler": "index.handler",
@@ -190,11 +190,11 @@
           },
           "GlobalTable": {
             "id": "GlobalTable",
-            "path": "TestStack/GlobalTable",
+            "path": "BarStack/GlobalTable",
             "children": {
               "ReplicaTableus-west-1": {
                 "id": "ReplicaTableus-west-1",
-                "path": "TestStack/GlobalTable/ReplicaTableus-west-1",
+                "path": "BarStack/GlobalTable/ReplicaTableus-west-1",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_dynamodb.GlobalTableBase",
                   "version": "0.0.0"
@@ -208,7 +208,7 @@
           },
           "Resource": {
             "id": "Resource",
-            "path": "TestStack/Resource",
+            "path": "BarStack/Resource",
             "attributes": {
               "aws:cdk:cloudformation:type": "AWS::DynamoDB::GlobalTable",
               "aws:cdk:cloudformation:props": {
@@ -249,7 +249,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "TestStack/BootstrapVersion",
+            "path": "BarStack/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -257,7 +257,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "TestStack/CheckBootstrapVersion",
+            "path": "BarStack/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"

@@ -1,27 +1,27 @@
 {
   "version": "33.0.0",
   "artifacts": {
-    "TestStack.assets": {
+    "BarStack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "TestStack.assets.json",
+        "file": "BarStack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "TestStack": {
+    "BarStack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/us-east-1",
       "properties": {
-        "templateFile": "TestStack.template.json",
+        "templateFile": "BarStack.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/5739c11c626d46fcea75621615402791934e876ed345b9c1947614760285d18d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/af2857008c6553ad61aa5aea5c9e067046fe703e4cbe50fc01aefc04445d2f2c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "TestStack.assets"
+          "BarStack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-east-1",
@@ -30,28 +30,28 @@
         }
       },
       "dependencies": [
-        "TestStack.assets"
+        "BarStack.assets"
       ],
       "metadata": {
-        "/TestStack/Function/ServiceRole/Resource": [
+        "/BarStack/Function/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FunctionServiceRole675BB04A"
           }
         ],
-        "/TestStack/Function/ServiceRole/DefaultPolicy/Resource": [
+        "/BarStack/Function/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FunctionServiceRoleDefaultPolicy2F49994A"
           }
         ],
-        "/TestStack/Function/Resource": [
+        "/BarStack/Function/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Function76856677"
           }
         ],
-        "/TestStack/GlobalTable": [
+        "/BarStack/GlobalTable": [
           {
             "type": "aws:cdk:hasPhysicalName",
             "data": {
@@ -59,26 +59,26 @@
             }
           }
         ],
-        "/TestStack/Resource": [
+        "/BarStack/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Resource"
           }
         ],
-        "/TestStack/BootstrapVersion": [
+        "/BarStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/TestStack/CheckBootstrapVersion": [
+        "/BarStack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "TestStack"
+      "displayName": "BarStack"
     },
     "awscdkglobaltablereplicaintegDefaultTestDeployAssertD4C775F5.assets": {
       "type": "cdk:asset-manifest",
@@ -96,7 +96,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6d9752199732785958b7c314445fae599df35aa45764fd48c0672791e4dab805.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2d7457ffc98706b8e10b5019a4935fc04f1abb7e4e072f8a478c08650950c4e8.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

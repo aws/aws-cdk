@@ -3,8 +3,12 @@
   "testCases": {
     "aws-cdk-global-table-replica-integ/DefaultTest": {
       "stacks": [
-        "TestStack"
+        "BarStack"
       ],
+      "regions": [
+        "us-east-1"
+      ],
+      "stackUpdateWorkflow": false,
       "assertionStack": "aws-cdk-global-table-replica-integ/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkglobaltablereplicaintegDefaultTestDeployAssertD4C775F5"
     }

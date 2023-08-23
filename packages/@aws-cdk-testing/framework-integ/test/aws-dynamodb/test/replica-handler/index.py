@@ -6,4 +6,5 @@ def handler(event, context):
   response = table.put_item(
       Item={ 'pk': 'value' }
   )
-  return response
+  print(response)
+  return response.status_code
