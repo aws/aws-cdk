@@ -574,7 +574,6 @@ export class GlobalTable extends GlobalTableBase {
   private configureReplicaTable(props: ReplicaTableProps): CfnGlobalTable.ReplicaSpecificationProperty {
     const pointInTimeRecovery = props.pointInTimeRecovery ?? this.tableOptions.pointInTimeRecovery;
     const contributorInsights = props.contributorInsights ?? this.tableOptions.contributorInsights;
-    const kinesisStream = props.kinesisStream ?? this.tableOptions.kinesisStream;
 
     return {
       region: props.region,
@@ -582,8 +581,8 @@ export class GlobalTable extends GlobalTableBase {
       deletionProtectionEnabled: props.deletionProtection ?? this.tableOptions.deletionProtection,
       tableClass: props.tableClass ?? this.tableOptions.tableClass,
       sseSpecification: this.encryption?._renderReplicaSseSpecification(this, props.region),
-      kinesisStreamSpecification: kinesisStream
-        ? { streamArn: kinesisStream.streamArn }
+      kinesisStreamSpecification: props.kinesisStream
+        ? { streamArn: props.kinesisStream.streamArn }
         : undefined,
       contributorInsightsSpecification: contributorInsights !== undefined
         ? { enabled: contributorInsights }
@@ -695,7 +694,10 @@ export class GlobalTable extends GlobalTableBase {
     for (const replicaTable of this.replicaTables.values()) {
       replicaTables.push(this.configureReplicaTable(replicaTable));
     }
-    replicaTables.push(this.configureReplicaTable({ region: this.stack.region }));
+    replicaTables.push(this.configureReplicaTable({
+      region: this.stack.region,
+      kinesisStream: this.tableOptions.kinesisStream,
+    }));
 
     return replicaTables;
   }
