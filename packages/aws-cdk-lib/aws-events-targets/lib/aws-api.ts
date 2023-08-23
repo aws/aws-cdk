@@ -129,7 +129,7 @@ export class AwsApi implements events.IRuleTarget {
 function checkServiceExists(service: string, handler: lambda.SingletonFunction) {
   const sdkService = awsSdkMetadata[service.toLowerCase()];
   if (!sdkService) {
-    Annotations.of(handler).addWarning(`Service ${service} does not exist in the AWS SDK. Check the list of available \
+    Annotations.of(handler).addWarningV2(`@aws-cdk/aws-events-targets:${service}DoesNotExist`, `Service ${service} does not exist in the AWS SDK. Check the list of available \
 services and actions from https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html`);
   }
 }

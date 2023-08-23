@@ -334,6 +334,7 @@ describe('code', () => {
       const dockerfilePath = 'Dockerfile';
       const dockerBuildTarget = 'stage';
       const dockerBuildArgs = { arg1: 'val1', arg2: 'val2' };
+      const dockerBuildSsh = 'default';
 
       // when
       new lambda.Function(stack, 'Fn', {
@@ -341,6 +342,7 @@ describe('code', () => {
           file: dockerfilePath,
           target: dockerBuildTarget,
           buildArgs: dockerBuildArgs,
+          buildSsh: dockerBuildSsh,
         }),
         handler: lambda.Handler.FROM_IMAGE,
         runtime: lambda.Runtime.FROM_IMAGE,
@@ -349,9 +351,10 @@ describe('code', () => {
       // then
       Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
         Metadata: {
-          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.a8922a1fd787021d071844bc2b1fe3622372bbdfda823528c00983a806ba0e26',
+          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.4d4e274f69ea222694c68ac0cea32b855247d6bdad3074a5987e3a7a907c4745',
           [cxapi.ASSET_RESOURCE_METADATA_DOCKERFILE_PATH_KEY]: dockerfilePath,
           [cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_ARGS_KEY]: dockerBuildArgs,
+          [cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_SSH_KEY]: dockerBuildSsh,
           [cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_TARGET_KEY]: dockerBuildTarget,
           [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code.ImageUri',
         },

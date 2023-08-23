@@ -620,7 +620,7 @@ describe('fargate service', () => {
       });
 
       // THEN
-      Annotations.fromStack(stack).hasWarning('/Default/FargateService', 'taskDefinition and launchType are blanked out when using external deployment controller.');
+      Annotations.fromStack(stack).hasWarning('/Default/FargateService', 'taskDefinition and launchType are blanked out when using external deployment controller. [ack: @aws-cdk/aws-ecs:externalDeploymentController]');
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         Cluster: {
           Ref: 'EcsCluster97242B84',
@@ -638,7 +638,8 @@ describe('fargate service', () => {
 
     test('add warning to annotations if circuitBreaker is specified with a non-ECS DeploymentControllerType', () => {
       // GIVEN
-      const stack = new cdk.Stack();
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app);
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
@@ -655,10 +656,11 @@ describe('fargate service', () => {
         },
         circuitBreaker: { rollback: true },
       });
+      app.synth();
 
       // THEN
-      expect(service.node.metadata[0].data).toEqual('taskDefinition and launchType are blanked out when using external deployment controller.');
       expect(service.node.metadata[1].data).toEqual('Deployment circuit breaker requires the ECS deployment controller.');
+      expect(service.node.metadata[0].data).toEqual('taskDefinition and launchType are blanked out when using external deployment controller. [ack: @aws-cdk/aws-ecs:externalDeploymentController]');
 
     });
 
@@ -2491,7 +2493,7 @@ describe('fargate service', () => {
       });
 
       // THEN
-      Annotations.fromStack(stack).hasWarning('/Default/Service/TaskCount/Target', "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead.");
+      Annotations.fromStack(stack).hasWarning('/Default/Service/TaskCount/Target', "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead. [ack: @aws-cdk/aws-applicationautoscaling:defaultRunEveryMinute]");
     });
 
     test('scheduled scaling shows no warning when minute is * in cron', () => {
