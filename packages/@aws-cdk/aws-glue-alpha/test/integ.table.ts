@@ -119,14 +119,6 @@ new glue.S3Table(stack, 'MyTableWithConnection', {
   dataFormat: glue.DataFormat.JSON,
 });
 
-new glue.S3Table(stack, 'MyTableWithCustomLocation', {
-  database,
-  bucket,
-  tableName: 'custom_location_table',
-  columns,
-  dataFormat: glue.DataFormat.JSON,
-});
-
 new glue.S3Table(stack, 'MyTableWithStorageDescriptorParameters', {
   database,
   bucket,
