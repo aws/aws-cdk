@@ -90,6 +90,31 @@ https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.Tabl
 
 ## Kinesis Stream
 
+A Kinesis Data Stream can be configured on a `GlobalTable` to capture item-level changes. The Kinesis Data Stream configured on a `GlobalTable` will only apply to the table in the primary deployment region and will not be inherited by any replica tables. Replica specific Kinesis Data Streams should be configured on a per-replica basis.
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+import * as kinesis from 'aws-cdk-lib/aws-kinesis';
+
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-west-2' } });
+
+const stream1 = new kinesis.Stream(stack, 'Stream1');
+const stream2 = kinesis.Stream.fromStreamArn(stack, 'Stream2', 'arn:aws:kinesis:us-east-2:123456789012:stream/my-stream');
+
+const globalTable = new dynamodb.GlobalTable(this, 'GlobalTable', {
+  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+  kinesisStream: stream1,
+  replicas: [
+    { region: 'us-east-1' }, // no kinesis data stream will be set for this replica
+    {
+      region: 'us-east-2',
+      kinesisStream: stream2,
+    },
+  ],
+});
+```
+
 ## Replicas
 
 A `GlobalTable` can be configured with replica tables. To do this, the `GlobalTable` must be defined in a region non-agnostic `Stack`. Additionally, the main deployment region must not be given as a replica because this is created by default with the `GlobalTable`. The following is a minimal `GlobalTable` definition with replicas defined in `us-east-1` and `us-east-2`:
@@ -130,7 +155,6 @@ The following properties are configurable on a per-replica basis, but will be in
 * deletionProtection
 * pointInTimeRecovery
 * tableClass
-* kinesisStream
 * readCapacity (only configurable if the `GlobalTable` billing mode is `PROVISIONED`)
 * globalSecondaryIndexes (only `contributorInsights` and `readCapacity`)
 

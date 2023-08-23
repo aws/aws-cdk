@@ -1,4 +1,4 @@
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import { Stream } from '../../aws-kinesis';
 import { Key } from '../../aws-kms';
 import { CfnDeletionPolicy, Lazy, RemovalPolicy, Stack } from '../../core';
@@ -711,14 +711,7 @@ describe('global table', () => {
               },
             },
           ],
-          KinesisStreamSpecification: {
-            StreamArn: {
-              'Fn::GetAtt': [
-                'Stream790BDEE4',
-                'Arn',
-              ],
-            },
-          },
+          KinesisStreamSpecification: Match.absent(),
           PointInTimeRecoverySpecification: {
             PointInTimeRecoveryEnabled: true,
           },
@@ -759,14 +752,7 @@ describe('global table', () => {
               },
             },
           ],
-          KinesisStreamSpecification: {
-            StreamArn: {
-              'Fn::GetAtt': [
-                'Stream790BDEE4',
-                'Arn',
-              ],
-            },
-          },
+          KinesisStreamSpecification: Match.absent(),
           PointInTimeRecoverySpecification: {
             PointInTimeRecoveryEnabled: true,
           },
@@ -1059,7 +1045,7 @@ describe('replica tables', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
     const kinesisStream1 = new Stream(stack, 'Stream1');
-    const kinesisStream2 = new Stream(stack, 'Stream2');
+    const kinesisStream2 = Stream.fromStreamArn(stack, 'Stream2', 'arn:aws:kinesis:us-east-1:123456789012:stream/my-stream');
 
     // WHEN
     new GlobalTable(stack, 'GlobalTable', {
@@ -1069,6 +1055,9 @@ describe('replica tables', () => {
         {
           region: 'us-east-1',
           kinesisStream: kinesisStream2,
+        },
+        {
+          region: 'us-east-2',
         },
       ],
     });
@@ -1088,14 +1077,13 @@ describe('replica tables', () => {
           },
         },
         {
+          Region: 'us-east-2',
+          KinesisStreamSpecification: Match.absent(),
+        },
+        {
           Region: 'us-west-2',
           KinesisStreamSpecification: {
-            StreamArn: {
-              'Fn::GetAtt': [
-                'Stream16C8F97AF',
-                'Arn',
-              ],
-            },
+            StreamArn: 'arn:aws:kinesis:us-east-1:123456789012:stream/my-stream',
           },
         },
       ],
