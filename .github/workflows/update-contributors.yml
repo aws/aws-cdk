@@ -16,6 +16,7 @@ jobs:
         env:
           CONTRIB_REPOSITORY: 'aws/aws-cdk'
           CONTRIB_OUTPUT_FILE: 'CONTRIBUTORS.md'
+          CONTRIB_IGNORE: 'github-actions[bot],mergify[bot],dependabot[bot],dependabot-preview[bot],aws-cdk-automation'
       - name: Create a PR
         uses: peter-evans/create-pull-request@v5
         with:
