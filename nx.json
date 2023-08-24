@@ -12,7 +12,7 @@
         "!{workspaceRoot}/**/tsconfig.json",
         "!{workspaceRoot}/tsconfig.base.json",
         "!{workspaceRoot}/**/tsconfig.tsbuildinfo",
-        "!{workspaceRoot}/jest.config.js"
+        "!{workspaceRoot}/**/jest.config.js"
       ],
       "outputs": [
         "{projectRoot}/**/*.integ.*.js.snapshot/*",
