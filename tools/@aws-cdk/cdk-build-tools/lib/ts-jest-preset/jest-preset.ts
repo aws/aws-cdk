@@ -5,6 +5,7 @@ import type { Config } from 'jest';
 
 module.exports = {
   moduleFileExtensions: [
+    // .ts first to prefer a ts over a js if present
     'ts',
     'js',
   ],
@@ -32,5 +33,5 @@ module.exports = {
   // compilation. Jest will hook into all require() calls, and if both a `.ts`
   // and `.js` file are available the original implementation will always load
   // the `.js` file (so if the `.ts` file has changed, we won't see the changes).
-  resolver: '@aws-cdk/cdk-build-tools/ts-jest-preset/ts-resolver',
+  // resolver: '@aws-cdk/cdk-build-tools/ts-jest-preset/ts-resolver',
 } satisfies Config;
