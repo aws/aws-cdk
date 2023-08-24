@@ -1187,3 +1187,57 @@ test('render distribution behavior with realtime log config', () => {
       },
     }));
 });
+
+test('render distribution behavior with realtime log config - multiple behaviors', () => {
+  const role = new iam.Role(stack, 'Role', {
+    assumedBy: new iam.ServicePrincipal('cloudfront.amazonaws.com'),
+  });
+
+  const stream = new kinesis.Stream(stack, 'stream', {
+    streamMode: kinesis.StreamMode.ON_DEMAND,
+    encryption: kinesis.StreamEncryption.MANAGED,
+  });
+
+  const realTimeConfig = new RealtimeLogConfig(stack, 'RealtimeConfig', {
+    endPoints: [
+      Endpoint.fromKinesisStream(stream, role),
+    ],
+    fields: ['timestamp'],
+    realtimeLogConfigName: 'realtime-config',
+    samplingRate: 50,
+  });
+
+  const origin2 = defaultOrigin('origin2.example.com');
+
+  new Distribution(stack, 'MyDist', {
+    defaultBehavior: {
+      origin: defaultOrigin(),
+      realtimeLogConfig: realTimeConfig,
+    },
+    additionalBehaviors: {
+      '/api/*': {
+        origin: origin2,
+        realtimeLogConfig: realTimeConfig,
+      },
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution',
+    Match.objectLike({
+      DistributionConfig: {
+        DefaultCacheBehavior: {
+          RealtimeLogConfigArn: {
+            'Fn::GetAtt': ['RealtimeConfigB6004E8E', 'Arn'],
+          },
+          TargetOriginId: 'StackMyDistOrigin1D6D5E535',
+        },
+        CacheBehaviors: [{
+          PathPattern: '/api/*',
+          RealtimeLogConfigArn: {
+            'Fn::GetAtt': ['RealtimeConfigB6004E8E', 'Arn'],
+          },
+          TargetOriginId: 'StackMyDistOrigin20B96F3AD',
+        }],
+      },
+    }));
+});
