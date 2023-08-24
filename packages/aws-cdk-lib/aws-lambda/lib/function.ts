@@ -18,6 +18,7 @@ import { LogRetentionRetryOptions } from './log-retention';
 import { ParamsAndSecretsLayerVersion } from './params-and-secrets-layers';
 import { Runtime, RuntimeFamily } from './runtime';
 import { RuntimeManagementMode } from './runtime-management';
+import { SnapStartConf } from './snapstart-config';
 import { addAlias } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import { IProfilingGroup, ProfilingGroup, ComputePlatform } from '../../aws-codeguruprofiler';
@@ -224,6 +225,14 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default Tracing.Disabled
    */
   readonly tracing?: Tracing;
+
+  /**
+  * Enable SnapStart for Lambda Function.
+  * SnapStart is currently supported only for Java 11, 17 runtime
+  *
+  * @default - No snapstart
+  */
+  readonly snapStart?: SnapStartConf;
 
   /**
    * Enable profiling.
@@ -832,6 +841,7 @@ export class Function extends FunctionBase {
       codeSigningConfigArn: props.codeSigningConfig?.codeSigningConfigArn,
       architectures: this._architecture ? [this._architecture.name] : undefined,
       runtimeManagementConfig: props.runtimeManagementMode?.runtimeManagementConfig,
+      snapStart: this.configureSnapStart(props),
     });
 
     if ((props.tracing !== undefined) || (props.adotInstrumentation !== undefined)) {
@@ -1290,6 +1300,38 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       subnetIds: selectedSubnets.subnetIds,
       securityGroupIds: securityGroups.map(sg => sg.securityGroupId),
     };
+  }
+
+  private configureSnapStart(props: FunctionProps): CfnFunction.SnapStartProperty | undefined {
+    // return/exit if no snapStart included
+    if (!props.snapStart) {
+      return undefined;
+    }
+
+    // SnapStart does not support arm64 architecture, Amazon Elastic File System (Amazon EFS), or ephemeral storage greater than 512 MB.
+    // SnapStart doesn't support provisioned concurrency either, but that's configured at the version level,
+    // so it can't be checked at function set up time
+    // SnapStart supports the Java 11 and Java 17 (java11 and java17) managed runtimes.
+    // See https://docs.aws.amazon.com/lambda/latest/dg/snapstart.html
+    Annotations.of(this).addWarningV2('@aws-cdk/aws-lambda:snapStartRequirePublish', 'SnapStart only support published Lambda versions. Ignore if function already have published versions');
+
+    if (!props.runtime.supportsSnapStart ) {
+      throw new Error(`SnapStart currently not supported by runtime ${props.runtime.name}`);
+    }
+
+    if (props.architecture == Architecture.ARM_64) {
+      throw new Error('SnapStart is currently not supported on Arm_64');
+    }
+
+    if (props.filesystem) {
+      throw new Error('SnapStart is currently not supported using EFS');
+    }
+
+    if (props.ephemeralStorageSize && props.ephemeralStorageSize?.toMebibytes() > 512) {
+      throw new Error('SnapStart is currently not supported using more than 512 MiB Ephemeral Storage');
+    }
+
+    return props.snapStart._render();
   }
 
   private isQueue(deadLetterQueue: sqs.IQueue | sns.ITopic): deadLetterQueue is sqs.IQueue {

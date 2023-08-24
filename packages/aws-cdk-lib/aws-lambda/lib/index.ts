@@ -25,6 +25,7 @@ export * from './architecture';
 export * from './function-url';
 export * from './runtime-management';
 export * from './params-and-secrets-layers';
+export * from './snapstart-config';
 
 // AWS::Lambda CloudFormation Resources:
 export * from './lambda.generated';

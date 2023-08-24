@@ -24,6 +24,12 @@ export interface LambdaRuntimeProps {
    * @default false
    */
   readonly supportsCodeGuruProfiling?: boolean;
+
+  /**
+   * Whether this runtime supports SnapStart.
+   * @default false
+   */
+  readonly supportsSnapStart?: boolean;
 }
 
 export enum RuntimeFamily {
@@ -179,6 +185,7 @@ export class Runtime {
    */
   public static readonly JAVA_11 = new Runtime('java11', RuntimeFamily.JAVA, {
     supportsCodeGuruProfiling: true,
+    supportsSnapStart: true,
   });
 
   /**
@@ -186,6 +193,7 @@ export class Runtime {
    */
   public static readonly JAVA_17 = new Runtime('java17', RuntimeFamily.JAVA, {
     supportsCodeGuruProfiling: true,
+    supportsSnapStart: true,
   });
 
   /**
@@ -270,6 +278,11 @@ export class Runtime {
   public readonly supportsCodeGuruProfiling: boolean;
 
   /**
+   * Whether this runtime supports snapstart.
+   */
+  public readonly supportsSnapStart: boolean;
+
+  /**
    * The runtime family.
    */
   public readonly family?: RuntimeFamily;
@@ -300,6 +313,7 @@ export class Runtime {
     this.bundlingDockerImage = DockerImage.fromRegistry(imageName);
     this.bundlingImage = this.bundlingDockerImage;
     this.supportsCodeGuruProfiling = props.supportsCodeGuruProfiling ?? false;
+    this.supportsSnapStart = props.supportsSnapStart ?? false;
 
     Runtime.ALL.push(this);
   }
