@@ -44,7 +44,7 @@ As an API Gateway API developer, you can create APIs for use in your own client 
 
 This module supports features under [API Gateway v2](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_ApiGatewayV2.html)
 that lets users set up Websocket and HTTP APIs.
-REST APIs can be created using the `@aws-cdk/aws-apigateway` module.
+REST APIs can be created using the `aws-cdk-lib/aws-apigateway` module.
 
 ## HTTP API
 

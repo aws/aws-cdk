@@ -1058,6 +1058,31 @@ declare const regionTable: CfnMapping;
 regionTable.findInMap(Aws.REGION, 'regionName');
 ```
 
+An optional default value can also be passed to `findInMap`. If either key is not found in the map and the mapping is lazy, `findInMap` will return the default value and not render the mapping.
+If the mapping is not lazy or either key is an unresolved token, the call to `findInMap` will return a token that resolves to 
+`{ "Fn::FindInMap": [ "MapName", "TopLevelKey", "SecondLevelKey", { "DefaultValue": "DefaultValue" } ] }`, and the mapping will be rendered.
+Note that the `AWS::LanguageExtentions` transform is added to enable the default value functionality.
+
+For example, the following code will again not produce anything in the "Mappings" section. The
+call to `findInMap` will be able to resolve the value during synthesis and simply return
+`'Region not found'`.
+
+```ts
+const regionTable = new CfnMapping(this, 'RegionTable', {
+  mapping: {
+    'us-east-1': {
+      regionName: 'US East (N. Virginia)',
+    },
+    'us-east-2': {
+      regionName: 'US East (Ohio)',
+    },
+  },
+  lazy: true,
+});
+
+regionTable.findInMap('us-west-1', 'regionName', 'Region not found');
+```
+
 [cfn-mappings]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/mappings-section-structure.html
 
 ### Dynamic References
@@ -1427,5 +1452,41 @@ part of the installation of your package. With `npm`, for example, you can run
 add it to the `postinstall`
 [script](https://docs.npmjs.com/cli/v9/using-npm/scripts) in the `package.json`
 file.
+
+## Annotations
+
+Construct authors can add annotations to constructs to report at three different
+levels: `ERROR`, `WARN`, `INFO`.
+
+Typically warnings are added for things that are important for the user to be
+aware of, but will not cause deployment errors in all cases. Some common
+scenarios are (non-exhaustive list):
+
+- Warn when the user needs to take a manual action, e.g. IAM policy should be
+  added to an referenced resource.
+- Warn if the user configuration might not follow best practices (but is still
+  valid)
+- Warn if the user is using a deprecated API
+
+### Acknowledging Warnings
+
+If you would like to run with `--strict` mode enabled (warnings will throw
+errors) it is possible to `acknowledge` warnings to make the warning go away.
+
+For example, if > 10 IAM managed policies are added to an IAM Group, a warning
+will be created:
+
+```
+IAM:Group:MaxPoliciesExceeded: You added 11 to IAM Group my-group. The maximum number of managed policies attached to an IAM group is 10.
+```
+
+If you have requested a [quota increase](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_iam-quotas.html#reference_iam-quotas-entities)
+you may have the ability to add > 10 managed policies which means that this
+warning does not apply to you. You can acknowledge this by `acknowledging` the
+warning by the `id`.
+
+```ts
+Annotations.of(this).acknowledgeWarning('IAM:Group:MaxPoliciesExceeded', 'Account has quota increased to 20');
+```
 
 <!--END CORE DOCUMENTATION-->

@@ -157,6 +157,13 @@ $ # Diff against a specific template document
 $ cdk diff --app='node bin/main.js' MyStackName --template=path/to/template.yml
 ```
 
+The `quiet` flag can also be passed to the `cdk diff` command. Assuming there are no differences detected the output to the console will **not** contain strings such as the *Stack* `MyStackName` and `There were no differences`.
+
+```console
+$ # Diff against the currently deployed stack with quiet parameter enabled
+$ cdk diff --quiet --app='node bin/main.js' MyStackName
+```
+
 ### `cdk deploy`
 
 Deploys a stack of your CDK app to its environment. During the deployment, the toolkit will output progress

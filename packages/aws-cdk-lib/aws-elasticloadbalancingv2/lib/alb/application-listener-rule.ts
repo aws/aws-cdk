@@ -306,7 +306,7 @@ export class ApplicationListenerRule extends Construct {
     // Instead, signal this through a warning.
     // @deprecate: upon the next major version bump, replace this with a `throw`
     if (this.action) {
-      cdk.Annotations.of(this).addWarning('An Action already existed on this ListenerRule and was replaced. Configure exactly one default Action.');
+      cdk.Annotations.of(this).addWarningV2('@aws-cdk/aws-elbv2:albListnerRuleDefaultActionReplaced', 'An Action already existed on this ListenerRule and was replaced. Configure exactly one default Action.');
     }
 
     action.bind(this, this.listener, this);

@@ -134,7 +134,7 @@ test('create complex training job', () => {
     role,
     algorithmSpecification: {
       algorithmName: 'BlazingText',
-      trainingInputMode: tasks.InputMode.FILE,
+      trainingInputMode: tasks.InputMode.FAST_FILE,
       metricDefinitions: [
         {
           name: 'mymetric', regex: 'regex_pattern',
@@ -218,7 +218,7 @@ test('create complex training job', () => {
       TrainingJobName: 'MyTrainJob',
       RoleArn: { 'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'] },
       AlgorithmSpecification: {
-        TrainingInputMode: 'File',
+        TrainingInputMode: 'FastFile',
         AlgorithmName: 'BlazingText',
         MetricDefinitions: [
           { Name: 'mymetric', Regex: 'regex_pattern' },
