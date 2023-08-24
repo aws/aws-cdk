@@ -134,6 +134,13 @@ export interface DeployOptions extends DefaultCdkOptions {
    * Deployment method
    */
   readonly deploymentMethod?: DeploymentMethod;
+
+  /**
+   * Deploy multiple stacks in parallel
+   *
+   * @default 1
+   */
+  readonly concurrency?: number;
 }
 export type DeploymentMethod = 'direct' | 'change-set';
 

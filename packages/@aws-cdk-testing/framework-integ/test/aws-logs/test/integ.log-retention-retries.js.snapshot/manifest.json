@@ -1,0 +1,2728 @@
+{
+  "version": "33.0.0",
+  "artifacts": {
+    "aws-cdk-log-retention-integ-retries0.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-log-retention-integ-retries0.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-log-retention-integ-retries0": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-log-retention-integ-retries0.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9990a29f03d0c5431a972aeb27fc605359cf0093ddd08bfbdf611189e8116726.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-log-retention-integ-retries0.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-log-retention-integ-retries0.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-log-retention-integ-retries0/LogRetention0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention0486EBFA5"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention1EE2E6696"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention21F957075"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention3148A75BA"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention4/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention494231F51"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention5/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention591D77AE3"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention6/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention6DF401EB9"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention7/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention72657EF61"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention8/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention880A4B8CA"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention9/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention90199550D"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention10/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention10F7ED9810"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention11/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention1122CC85FD"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention12/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention12FBA31490"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention13/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention136977A520"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention14/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention14731EBD69"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention15/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention153278A425"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention16/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention161FF830E5"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention17/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention176155FBE0"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention18/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention1831457E29"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention19/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention193D6F7E14"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention20/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention2029711E62"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention21/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention21F0A3EBF1"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention22/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention2233E364BF"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention23/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention2397FB44A4"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention24/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention24A64A1B58"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ],
+        "hello0ServiceRole18B87FED": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello0ServiceRole18B87FED",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello0FDC1C7D4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello0FDC1C7D4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello0LogRetentionC8F721AC": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello0LogRetentionC8F721AC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello1ServiceRole61803EDF": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello1ServiceRole61803EDF",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello1B794CF5A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello1B794CF5A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello1LogRetention8E9D08B2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello1LogRetention8E9D08B2",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello2ServiceRole5C9CD8EE": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello2ServiceRole5C9CD8EE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello2C049BA39": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello2C049BA39",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello2LogRetentionA2123D9B": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello2LogRetentionA2123D9B",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello3ServiceRoleCD1C0951": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello3ServiceRoleCD1C0951",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello35665AF4E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello35665AF4E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello3LogRetention8F4AE9E4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello3LogRetention8F4AE9E4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello4ServiceRole1A0FA08C": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello4ServiceRole1A0FA08C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello4EE4D48AC": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello4EE4D48AC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello4LogRetention80AF2389": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello4LogRetention80AF2389",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello5ServiceRole005C05EC": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello5ServiceRole005C05EC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello5CFB46198": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello5CFB46198",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello5LogRetention5D258C6A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello5LogRetention5D258C6A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello6ServiceRoleCB5A5511": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello6ServiceRoleCB5A5511",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello626F003DB": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello626F003DB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello6LogRetention143EB32C": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello6LogRetention143EB32C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello7ServiceRole1C2C58D2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello7ServiceRole1C2C58D2",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello75E0B3E8C": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello75E0B3E8C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello7LogRetentionB08781CE": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello7LogRetentionB08781CE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello8ServiceRole35753BB4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello8ServiceRole35753BB4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello8801993F8": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello8801993F8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello8LogRetentionF5960D3A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello8LogRetentionF5960D3A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello9ServiceRoleBD9E97CC": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello9ServiceRoleBD9E97CC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello9BFC0B703": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello9BFC0B703",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello9LogRetentionE34A4125": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello9LogRetentionE34A4125",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello10ServiceRole474868C9": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello10ServiceRole474868C9",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello1062D33987": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello1062D33987",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello10LogRetention39275264": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello10LogRetention39275264",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello11ServiceRoleA7F4A2AF": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello11ServiceRoleA7F4A2AF",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello1171FEC9AC": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello1171FEC9AC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello11LogRetention0EC20DD0": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello11LogRetention0EC20DD0",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello12ServiceRoleA76D5180": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello12ServiceRoleA76D5180",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello120B96E81D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello120B96E81D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello12LogRetentionD7164F3E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello12LogRetentionD7164F3E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello13ServiceRole8CA1C9B1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello13ServiceRole8CA1C9B1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello1364C47B79": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello1364C47B79",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello13LogRetention82EB7E45": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello13LogRetention82EB7E45",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello14ServiceRoleC31043C0": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello14ServiceRoleC31043C0",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello140C25FB09": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello140C25FB09",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello14LogRetention637A6A38": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello14LogRetention637A6A38",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello15ServiceRole57E5496A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello15ServiceRole57E5496A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello1590886C17": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello1590886C17",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello15LogRetentionEE365DDD": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello15LogRetentionEE365DDD",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello16ServiceRole1F31EA8F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello16ServiceRole1F31EA8F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello165FD177B6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello165FD177B6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello16LogRetention2C237DA7": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello16LogRetention2C237DA7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello17ServiceRole85B6FE68": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello17ServiceRole85B6FE68",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello17BE899C71": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello17BE899C71",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello17LogRetentionCF72C750": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello17LogRetentionCF72C750",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello18ServiceRole631ABDC6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello18ServiceRole631ABDC6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello183853BDDA": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello183853BDDA",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello18LogRetentionF558E7A5": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello18LogRetentionF558E7A5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello19ServiceRole30A31A1E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello19ServiceRole30A31A1E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello19E68A0C7A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello19E68A0C7A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello19LogRetention2FC87D23": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello19LogRetention2FC87D23",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello20ServiceRole49BC2091": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello20ServiceRole49BC2091",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello2096F721E2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello2096F721E2",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello20LogRetention7406AE13": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello20LogRetention7406AE13",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello21ServiceRoleEB093398": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello21ServiceRoleEB093398",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello21B8049B0D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello21B8049B0D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello21LogRetention0F88CB8A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello21LogRetention0F88CB8A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello22ServiceRole22CED113": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello22ServiceRole22CED113",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello22ADC7BF12": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello22ADC7BF12",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello22LogRetention2A902D73": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello22LogRetention2A902D73",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello23ServiceRoleBC985940": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello23ServiceRoleBC985940",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello232450EA9D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello232450EA9D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello23LogRetentionF35EA7AE": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello23LogRetentionF35EA7AE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello24ServiceRoleB669597E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello24ServiceRoleB669597E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello24A051F98A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello24A051F98A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello24LogRetention2F02EEBB": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello24LogRetention2F02EEBB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ]
+      },
+      "displayName": "aws-cdk-log-retention-integ-retries0"
+    },
+    "aws-cdk-log-retention-integ-retries1.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-log-retention-integ-retries1.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-log-retention-integ-retries1": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-log-retention-integ-retries1.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/86fd666939456783b17c970c3813e5a8ee324e05254c7487cabdcb039c586db9.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-log-retention-integ-retries1.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-log-retention-integ-retries1.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-log-retention-integ-retries1/LogRetention0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention0486EBFA5"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention1EE2E6696"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention21F957075"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention3148A75BA"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention4/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention494231F51"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention5/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention591D77AE3"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention6/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention6DF401EB9"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention7/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention72657EF61"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention8/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention880A4B8CA"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention9/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention90199550D"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention10/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention10F7ED9810"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention11/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention1122CC85FD"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention12/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention12FBA31490"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention13/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention136977A520"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention14/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention14731EBD69"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention15/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention153278A425"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention16/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention161FF830E5"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention17/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention176155FBE0"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention18/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention1831457E29"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention19/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention193D6F7E14"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention20/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention2029711E62"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention21/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention21F0A3EBF1"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention22/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention2233E364BF"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention23/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention2397FB44A4"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention24/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention24A64A1B58"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ],
+        "hello0ServiceRole18B87FED": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello0ServiceRole18B87FED",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello0FDC1C7D4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello0FDC1C7D4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello0LogRetentionC8F721AC": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello0LogRetentionC8F721AC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello1ServiceRole61803EDF": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello1ServiceRole61803EDF",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello1B794CF5A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello1B794CF5A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello1LogRetention8E9D08B2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello1LogRetention8E9D08B2",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello2ServiceRole5C9CD8EE": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello2ServiceRole5C9CD8EE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello2C049BA39": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello2C049BA39",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello2LogRetentionA2123D9B": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello2LogRetentionA2123D9B",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello3ServiceRoleCD1C0951": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello3ServiceRoleCD1C0951",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello35665AF4E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello35665AF4E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello3LogRetention8F4AE9E4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello3LogRetention8F4AE9E4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello4ServiceRole1A0FA08C": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello4ServiceRole1A0FA08C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello4EE4D48AC": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello4EE4D48AC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello4LogRetention80AF2389": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello4LogRetention80AF2389",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello5ServiceRole005C05EC": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello5ServiceRole005C05EC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello5CFB46198": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello5CFB46198",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello5LogRetention5D258C6A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello5LogRetention5D258C6A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello6ServiceRoleCB5A5511": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello6ServiceRoleCB5A5511",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello626F003DB": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello626F003DB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello6LogRetention143EB32C": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello6LogRetention143EB32C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello7ServiceRole1C2C58D2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello7ServiceRole1C2C58D2",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello75E0B3E8C": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello75E0B3E8C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello7LogRetentionB08781CE": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello7LogRetentionB08781CE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello8ServiceRole35753BB4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello8ServiceRole35753BB4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello8801993F8": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello8801993F8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello8LogRetentionF5960D3A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello8LogRetentionF5960D3A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello9ServiceRoleBD9E97CC": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello9ServiceRoleBD9E97CC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello9BFC0B703": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello9BFC0B703",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello9LogRetentionE34A4125": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello9LogRetentionE34A4125",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello10ServiceRole474868C9": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello10ServiceRole474868C9",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello1062D33987": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello1062D33987",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello10LogRetention39275264": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello10LogRetention39275264",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello11ServiceRoleA7F4A2AF": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello11ServiceRoleA7F4A2AF",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello1171FEC9AC": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello1171FEC9AC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello11LogRetention0EC20DD0": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello11LogRetention0EC20DD0",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello12ServiceRoleA76D5180": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello12ServiceRoleA76D5180",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello120B96E81D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello120B96E81D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello12LogRetentionD7164F3E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello12LogRetentionD7164F3E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello13ServiceRole8CA1C9B1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello13ServiceRole8CA1C9B1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello1364C47B79": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello1364C47B79",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello13LogRetention82EB7E45": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello13LogRetention82EB7E45",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello14ServiceRoleC31043C0": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello14ServiceRoleC31043C0",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello140C25FB09": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello140C25FB09",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello14LogRetention637A6A38": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello14LogRetention637A6A38",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello15ServiceRole57E5496A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello15ServiceRole57E5496A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello1590886C17": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello1590886C17",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello15LogRetentionEE365DDD": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello15LogRetentionEE365DDD",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello16ServiceRole1F31EA8F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello16ServiceRole1F31EA8F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello165FD177B6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello165FD177B6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello16LogRetention2C237DA7": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello16LogRetention2C237DA7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello17ServiceRole85B6FE68": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello17ServiceRole85B6FE68",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello17BE899C71": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello17BE899C71",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello17LogRetentionCF72C750": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello17LogRetentionCF72C750",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello18ServiceRole631ABDC6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello18ServiceRole631ABDC6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello183853BDDA": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello183853BDDA",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello18LogRetentionF558E7A5": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello18LogRetentionF558E7A5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello19ServiceRole30A31A1E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello19ServiceRole30A31A1E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello19E68A0C7A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello19E68A0C7A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello19LogRetention2FC87D23": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello19LogRetention2FC87D23",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello20ServiceRole49BC2091": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello20ServiceRole49BC2091",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello2096F721E2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello2096F721E2",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello20LogRetention7406AE13": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello20LogRetention7406AE13",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello21ServiceRoleEB093398": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello21ServiceRoleEB093398",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello21B8049B0D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello21B8049B0D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello21LogRetention0F88CB8A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello21LogRetention0F88CB8A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello22ServiceRole22CED113": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello22ServiceRole22CED113",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello22ADC7BF12": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello22ADC7BF12",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello22LogRetention2A902D73": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello22LogRetention2A902D73",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello23ServiceRoleBC985940": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello23ServiceRoleBC985940",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello232450EA9D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello232450EA9D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello23LogRetentionF35EA7AE": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello23LogRetentionF35EA7AE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello24ServiceRoleB669597E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello24ServiceRoleB669597E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello24A051F98A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello24A051F98A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello24LogRetention2F02EEBB": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello24LogRetention2F02EEBB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ]
+      },
+      "displayName": "aws-cdk-log-retention-integ-retries1"
+    },
+    "aws-cdk-log-retention-integ-retries2.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-log-retention-integ-retries2.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-log-retention-integ-retries2": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-log-retention-integ-retries2.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/80155830078966c61d22e5166c107e5a9a1e6bdc892902f37610c6bef961e7c4.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-log-retention-integ-retries2.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-log-retention-integ-retries2.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-log-retention-integ-retries2/LogRetention0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention0486EBFA5"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention1EE2E6696"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention21F957075"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention3148A75BA"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention4/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention494231F51"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention5/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention591D77AE3"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention6/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention6DF401EB9"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention7/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention72657EF61"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention8/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention880A4B8CA"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention9/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention90199550D"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention10/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention10F7ED9810"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention11/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention1122CC85FD"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention12/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention12FBA31490"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention13/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention136977A520"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention14/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention14731EBD69"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention15/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention153278A425"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention16/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention161FF830E5"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention17/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention176155FBE0"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention18/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention1831457E29"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention19/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention193D6F7E14"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention20/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention2029711E62"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention21/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention21F0A3EBF1"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention22/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention2233E364BF"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention23/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention2397FB44A4"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention24/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention24A64A1B58"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ],
+        "hello0ServiceRole18B87FED": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello0ServiceRole18B87FED",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello0FDC1C7D4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello0FDC1C7D4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello0LogRetentionC8F721AC": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello0LogRetentionC8F721AC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello1ServiceRole61803EDF": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello1ServiceRole61803EDF",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello1B794CF5A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello1B794CF5A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello1LogRetention8E9D08B2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello1LogRetention8E9D08B2",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello2ServiceRole5C9CD8EE": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello2ServiceRole5C9CD8EE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello2C049BA39": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello2C049BA39",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello2LogRetentionA2123D9B": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello2LogRetentionA2123D9B",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello3ServiceRoleCD1C0951": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello3ServiceRoleCD1C0951",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello35665AF4E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello35665AF4E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello3LogRetention8F4AE9E4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello3LogRetention8F4AE9E4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello4ServiceRole1A0FA08C": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello4ServiceRole1A0FA08C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello4EE4D48AC": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello4EE4D48AC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello4LogRetention80AF2389": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello4LogRetention80AF2389",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello5ServiceRole005C05EC": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello5ServiceRole005C05EC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello5CFB46198": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello5CFB46198",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello5LogRetention5D258C6A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello5LogRetention5D258C6A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello6ServiceRoleCB5A5511": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello6ServiceRoleCB5A5511",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello626F003DB": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello626F003DB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello6LogRetention143EB32C": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello6LogRetention143EB32C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello7ServiceRole1C2C58D2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello7ServiceRole1C2C58D2",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello75E0B3E8C": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello75E0B3E8C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello7LogRetentionB08781CE": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello7LogRetentionB08781CE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello8ServiceRole35753BB4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello8ServiceRole35753BB4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello8801993F8": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello8801993F8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello8LogRetentionF5960D3A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello8LogRetentionF5960D3A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello9ServiceRoleBD9E97CC": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello9ServiceRoleBD9E97CC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello9BFC0B703": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello9BFC0B703",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello9LogRetentionE34A4125": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello9LogRetentionE34A4125",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello10ServiceRole474868C9": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello10ServiceRole474868C9",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello1062D33987": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello1062D33987",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello10LogRetention39275264": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello10LogRetention39275264",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello11ServiceRoleA7F4A2AF": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello11ServiceRoleA7F4A2AF",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello1171FEC9AC": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello1171FEC9AC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello11LogRetention0EC20DD0": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello11LogRetention0EC20DD0",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello12ServiceRoleA76D5180": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello12ServiceRoleA76D5180",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello120B96E81D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello120B96E81D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello12LogRetentionD7164F3E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello12LogRetentionD7164F3E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello13ServiceRole8CA1C9B1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello13ServiceRole8CA1C9B1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello1364C47B79": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello1364C47B79",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello13LogRetention82EB7E45": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello13LogRetention82EB7E45",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello14ServiceRoleC31043C0": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello14ServiceRoleC31043C0",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello140C25FB09": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello140C25FB09",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello14LogRetention637A6A38": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello14LogRetention637A6A38",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello15ServiceRole57E5496A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello15ServiceRole57E5496A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello1590886C17": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello1590886C17",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello15LogRetentionEE365DDD": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello15LogRetentionEE365DDD",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello16ServiceRole1F31EA8F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello16ServiceRole1F31EA8F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello165FD177B6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello165FD177B6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello16LogRetention2C237DA7": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello16LogRetention2C237DA7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello17ServiceRole85B6FE68": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello17ServiceRole85B6FE68",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello17BE899C71": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello17BE899C71",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello17LogRetentionCF72C750": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello17LogRetentionCF72C750",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello18ServiceRole631ABDC6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello18ServiceRole631ABDC6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello183853BDDA": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello183853BDDA",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello18LogRetentionF558E7A5": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello18LogRetentionF558E7A5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello19ServiceRole30A31A1E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello19ServiceRole30A31A1E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello19E68A0C7A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello19E68A0C7A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello19LogRetention2FC87D23": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello19LogRetention2FC87D23",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello20ServiceRole49BC2091": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello20ServiceRole49BC2091",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello2096F721E2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello2096F721E2",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello20LogRetention7406AE13": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello20LogRetention7406AE13",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello21ServiceRoleEB093398": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello21ServiceRoleEB093398",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello21B8049B0D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello21B8049B0D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello21LogRetention0F88CB8A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello21LogRetention0F88CB8A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello22ServiceRole22CED113": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello22ServiceRole22CED113",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello22ADC7BF12": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello22ADC7BF12",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello22LogRetention2A902D73": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello22LogRetention2A902D73",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello23ServiceRoleBC985940": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello23ServiceRoleBC985940",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello232450EA9D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello232450EA9D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello23LogRetentionF35EA7AE": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello23LogRetentionF35EA7AE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello24ServiceRoleB669597E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello24ServiceRoleB669597E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello24A051F98A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello24A051F98A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "hello24LogRetention2F02EEBB": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "hello24LogRetention2F02EEBB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ]
+      },
+      "displayName": "aws-cdk-log-retention-integ-retries2"
+    },
+    "LogRetentionIntegRetriesDefaultTestDeployAssert6D1A1A1C.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "LogRetentionIntegRetriesDefaultTestDeployAssert6D1A1A1C.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "LogRetentionIntegRetriesDefaultTestDeployAssert6D1A1A1C": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "LogRetentionIntegRetriesDefaultTestDeployAssert6D1A1A1C.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "LogRetentionIntegRetriesDefaultTestDeployAssert6D1A1A1C.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "LogRetentionIntegRetriesDefaultTestDeployAssert6D1A1A1C.assets"
+      ],
+      "metadata": {
+        "/LogRetentionIntegRetries/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/LogRetentionIntegRetries/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "LogRetentionIntegRetries/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
