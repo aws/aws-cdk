@@ -1316,9 +1316,10 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     if (props.snapStart != SnapStartConf.ON_PUBLISHED_VERSIONS) {
       throw new Error('SnapStart currently only support published versions');
     }
+    Annotations.of(this).addWarning('SnapStart only support published Lambda versions. Ignore if function already have published versions');
 
-    if (props.runtime != Runtime.JAVA_11 && props.runtime != Runtime.JAVA_17 ) {
-      throw new Error('SnapStart currently only support Java 11/Java 17 runtime');
+    if (!props.runtime.supportsSnapStart ) {
+      throw new Error(`SnapStart currently not supported by runtime ${props.runtime.name}`);
     }
 
     if (props.architecture == Architecture.ARM_64) {

@@ -3037,7 +3037,7 @@ describe('function', () => {
         handler: 'bar',
         runtime: lambda.Runtime.NODEJS_14_X,
         snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
-      })).toThrowError('SnapStart currently only support Java 11/Java 17 runtime');
+      })).toThrowError('SnapStart currently not supported by runtime nodejs14.x');
     });
 
     test('arm64 validation for snapStart', () => {
