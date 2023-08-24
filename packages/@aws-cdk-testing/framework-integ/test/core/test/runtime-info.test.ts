@@ -1,8 +1,11 @@
+/**
+ * Unit tests that depend on 'aws-cdk-lib' having been compiled using jsii
+ */
 import * as fs from 'fs';
 import * as path from 'path';
 import { Construct } from 'constructs';
-import { App, NestedStack, Stack, Stage, IPolicyValidationPluginBeta1, PolicyViolationBeta1, PolicyValidationPluginReportBeta1, IPolicyValidationContextBeta1 } from '../lib';
-import { constructInfoFromConstruct, constructInfoFromStack } from '../lib/private/runtime-info';
+import { App, NestedStack, Stack, Stage, IPolicyValidationPluginBeta1, PolicyViolationBeta1, PolicyValidationPluginReportBeta1, IPolicyValidationContextBeta1 } from 'aws-cdk-lib';
+import { constructInfoFromConstruct, constructInfoFromStack } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 const JSII_RUNTIME_SYMBOL = Symbol.for('jsii.rtti');
 
