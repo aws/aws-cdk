@@ -213,7 +213,12 @@ export class AdotLambdaLayerJavaSdkVersion extends AdotLambdaLayerVersion {
    * The latest layer version available in this CDK version. New versions could
    * introduce incompatible changes. Make sure to test them before deploying to production.
    */
-  public static readonly LATEST = new AdotLambdaLayerJavaSdkVersion('1.19.0');
+  public static readonly LATEST = new AdotLambdaLayerJavaSdkVersion('1.28.1');
+
+  /**
+   * Version 1.28.1
+   */
+  public static readonly V1_28_1 = new AdotLambdaLayerJavaSdkVersion('1.28.1');
 
   /**
    * Version 1.19.0
@@ -233,7 +238,12 @@ export class AdotLambdaLayerJavaAutoInstrumentationVersion extends AdotLambdaLay
    * The latest layer version available in this CDK version. New versions could
    * introduce incompatible changes. Make sure to test them before deploying to production.
    */
-  public static readonly LATEST = new AdotLambdaLayerJavaAutoInstrumentationVersion('1.19.2');
+  public static readonly LATEST = new AdotLambdaLayerJavaAutoInstrumentationVersion('1.28.1');
+
+  /**
+   * Version 1.28.1
+   */
+  public static readonly V1_28_1 = new AdotLambdaLayerJavaAutoInstrumentationVersion('1.28.1');
 
   /**
    * Version 1.19.2
@@ -253,7 +263,12 @@ export class AdotLambdaLayerPythonSdkVersion extends AdotLambdaLayerVersion {
    * The latest layer version available in this CDK version. New versions could
    * introduce incompatible changes. Make sure to test them before deploying to production.
    */
-  public static readonly LATEST = new AdotLambdaLayerPythonSdkVersion('1.18.0');
+  public static readonly LATEST = new AdotLambdaLayerPythonSdkVersion('1.19.0-1');
+
+  /**
+   * Version 1.19.0
+   */
+  public static readonly V1_19_0_1 = new AdotLambdaLayerPythonSdkVersion('1.19.0-1');
 
   /**
    * Version 1.18.0
@@ -298,7 +313,12 @@ export class AdotLambdaLayerJavaScriptSdkVersion extends AdotLambdaLayerVersion 
    * The latest layer version available in this CDK version. New versions could
    * introduce incompatible changes. Make sure to test them before deploying to production.
    */
-  public static readonly LATEST = new AdotLambdaLayerJavaScriptSdkVersion('1.7.0');
+  public static readonly LATEST = new AdotLambdaLayerJavaScriptSdkVersion('1.15.0-1');
+
+  /**
+   * Version 1.15.0
+   */
+  public static readonly V1_15_0_1 = new AdotLambdaLayerJavaScriptSdkVersion('1.15.0-1');
 
   /**
    * Version 1.7.0
@@ -318,7 +338,12 @@ export class AdotLambdaLayerGenericVersion extends AdotLambdaLayerVersion {
    * The latest layer version available in this CDK version. New versions could
    * introduce incompatible changes. Make sure to test them before deploying to production.
    */
-  public static readonly LATEST = new AdotLambdaLayerGenericVersion('0.62.1');
+  public static readonly LATEST = new AdotLambdaLayerGenericVersion('0.82.0');
+
+  /**
+   * Version 0.82.0
+   */
+  public static readonly V0_82_0 = new AdotLambdaLayerGenericVersion('0.82.0');
 
   /**
    * Version 0.62.1
