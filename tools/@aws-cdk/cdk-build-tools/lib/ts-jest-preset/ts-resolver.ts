@@ -3,7 +3,7 @@ import type { ResolverOptions } from 'jest-resolve';
 /**
  * Resolver that prefers `.ts` file to a `.js` file if both are present
  */
-export default function resolver(p: string, options: ResolverOptions): string {
+function resolver(p: string, options: ResolverOptions): string {
   const defaultResolve = options.defaultResolver;
 
   const defaultResolution = defaultResolve(p, options);
@@ -25,3 +25,5 @@ export default function resolver(p: string, options: ResolverOptions): string {
     }
   }
 }
+
+module.exports = resolver;

@@ -1,10 +1,6 @@
 module.exports = {
-    moduleFileExtensions: [
-        "js",
-    ],
-    testMatch: [
-        "<rootDir>/test/**/?(*.)+(test).js",
-    ],
+    // The preset deals with preferring TS over JS
+    preset: '@aws-cdk/cdk-build-tools/ts-jest-preset',
     testEnvironment: "node",
     coverageThreshold: {
         global: {
