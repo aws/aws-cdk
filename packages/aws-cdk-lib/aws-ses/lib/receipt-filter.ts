@@ -1,6 +1,6 @@
-import { Resource } from '../../core';
 import { Construct } from 'constructs';
 import { CfnReceiptFilter } from './ses.generated';
+import { Resource } from '../../core';
 
 /**
  * The policy for the receipt filter.

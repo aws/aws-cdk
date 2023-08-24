@@ -1,5 +1,3 @@
-import * as iam from '../../aws-iam';
-import * as cdk from '../../core';
 import { Construct } from 'constructs';
 import { CfnVirtualGateway } from './appmesh.generated';
 import { GatewayRoute, GatewayRouteBaseProps } from './gateway-route';
@@ -7,6 +5,8 @@ import { IMesh, Mesh } from './mesh';
 import { renderTlsClientPolicy, renderMeshOwner } from './private/utils';
 import { AccessLog, BackendDefaults } from './shared-interfaces';
 import { VirtualGatewayListener, VirtualGatewayListenerConfig } from './virtual-gateway-listener';
+import * as iam from '../../aws-iam';
+import * as cdk from '../../core';
 
 /**
  * Interface which all Virtual Gateway based classes must implement

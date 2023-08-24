@@ -1,6 +1,6 @@
+import { Construct } from 'constructs';
 import * as s3 from '../../aws-s3';
 import { App, Stack } from '../../core';
-import { Construct } from 'constructs';
 import * as cloudfront from '../lib';
 
 class AcmCertificateAliasStack extends Stack {

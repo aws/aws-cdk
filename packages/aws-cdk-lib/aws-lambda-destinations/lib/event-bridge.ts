@@ -1,7 +1,7 @@
+import { Construct } from 'constructs';
 import * as events from '../../aws-events';
 import * as lambda from '../../aws-lambda';
 import { Stack } from '../../core';
-import { Construct } from 'constructs';
 
 /**
  * Use an Event Bridge event bus as a Lambda destination.

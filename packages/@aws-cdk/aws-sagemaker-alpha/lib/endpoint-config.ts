@@ -1,6 +1,6 @@
 import { EOL } from 'os';
 import * as kms from 'aws-cdk-lib/aws-kms';
-import * as cdk from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { AcceleratorType } from './accelerator-type';
 import { InstanceType } from './instance-type';

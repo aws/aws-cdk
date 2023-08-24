@@ -18,7 +18,6 @@ describe('ecs deploy action', () => {
         });
       }).toThrow(/one of 'input' or 'imageFile' is required/);
 
-
     });
 
     test('can be created just by specifying the inputArtifact', () => {
@@ -33,7 +32,6 @@ describe('ecs deploy action', () => {
         });
       }).not.toThrow();
 
-
     });
 
     test('can be created just by specifying the imageFile', () => {
@@ -47,7 +45,6 @@ describe('ecs deploy action', () => {
           imageFile: artifact.atPath('imageFile.json'),
         });
       }).not.toThrow();
-
 
     });
 
@@ -64,7 +61,6 @@ describe('ecs deploy action', () => {
         });
       }).toThrow(/one of 'input' or 'imageFile' can be provided/);
 
-
     });
 
     test('can be created with deploymentTimeout between 1-60 minutes', () => {
@@ -79,7 +75,6 @@ describe('ecs deploy action', () => {
           deploymentTimeout: cdk.Duration.minutes(30),
         });
       }).not.toThrow();
-
 
     });
 
@@ -114,7 +109,6 @@ describe('ecs deploy action', () => {
         });
       }).toThrow(/cannot be converted into a whole number/);
 
-
     });
 
     test("sets the target service as the action's backing resource", () => {
@@ -128,7 +122,6 @@ describe('ecs deploy action', () => {
       });
 
       expect(action.actionProperties.resource).toEqual(service);
-
 
     });
 
@@ -193,7 +186,6 @@ describe('ecs deploy action', () => {
           },
         ],
       });
-
 
     });
 

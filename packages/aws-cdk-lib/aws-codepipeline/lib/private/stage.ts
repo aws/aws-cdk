@@ -1,9 +1,9 @@
-import * as events from '../../../aws-events';
-import * as cdk from '../../../core';
-import { Token } from '../../../core';
 import { Construct, Node } from 'constructs';
 import { FullActionDescriptor } from './full-action-descriptor';
 import * as validation from './validation';
+import * as events from '../../../aws-events';
+import * as cdk from '../../../core';
+import { Token } from '../../../core';
 import { IAction, IPipeline, IStage } from '../action';
 import { Artifact } from '../artifact';
 import { CfnPipeline } from '../codepipeline.generated';

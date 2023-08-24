@@ -331,7 +331,6 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       ? { _PROJECT_CONFIG_HASH: projectConfigHash }
       : {};
 
-
     // Start all CodeBuild projects from a single (shared) Action Role, so that we don't have to generate an Action Role for each
     // individual CodeBuild Project and blow out the pipeline policy size (and potentially # of resources in the stack).
     const actionRoleCid = 'CodeBuildActionRole';

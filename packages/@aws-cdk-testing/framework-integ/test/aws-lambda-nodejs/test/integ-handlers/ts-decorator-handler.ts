@@ -16,7 +16,6 @@ class Greeter {
   }
 }
 
-
 export async function handler(): Promise<void> {
   const message = new Greeter('World').greet();
   console.log(message); // eslint-disable-line no-console

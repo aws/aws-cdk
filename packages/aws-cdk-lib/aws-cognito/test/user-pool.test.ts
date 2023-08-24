@@ -1,10 +1,10 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { Construct } from 'constructs';
 import { Match, Template } from '../../assertions';
 import { Role, ServicePrincipal } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { CfnParameter, Duration, Stack, Tags } from '../../core';
-import { Construct } from 'constructs';
 import { AccountRecovery, Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle, UserPoolEmail, AdvancedSecurityMode } from '../lib';
 
 describe('User Pool', () => {

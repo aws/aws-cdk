@@ -1,5 +1,5 @@
-import { IResource, Names, Resource } from '../../core';
 import { IService } from './service';
+import { IResource, Names, Resource } from '../../core';
 
 export interface IInstance extends IResource {
   /**

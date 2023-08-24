@@ -1,4 +1,3 @@
-import { Annotations, ArnFormat, Lazy, Resource, Stack } from '../../core';
 import { Construct } from 'constructs';
 import { CfnGroup } from './iam.generated';
 import { IIdentity } from './identity-base';
@@ -8,6 +7,7 @@ import { PolicyStatement } from './policy-statement';
 import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { AttachedPolicies } from './private/util';
 import { IUser } from './user';
+import { Annotations, ArnFormat, Lazy, Resource, Stack } from '../../core';
 
 /**
  * Represents an IAM Group.
@@ -218,7 +218,7 @@ export class Group extends GroupBase {
 
   private managedPoliciesExceededWarning() {
     if (this.managedPolicies.length > 10) {
-      Annotations.of(this).addWarning(`You added ${this.managedPolicies.length} to IAM Group ${this.physicalName}. The maximum number of managed policies attached to an IAM group is 10.`);
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-iam:groupMaxPoliciesExceeded', `You added ${this.managedPolicies.length} to IAM Group ${this.physicalName}. The maximum number of managed policies attached to an IAM group is 10.`);
     }
   }
 }

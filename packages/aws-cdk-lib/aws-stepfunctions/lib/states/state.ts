@@ -1,5 +1,5 @@
-import { Token } from '../../../core';
 import { IConstruct, Construct, Node } from 'constructs';
+import { Token } from '../../../core';
 import { Condition } from '../condition';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
@@ -574,7 +574,7 @@ export function renderList<T>(xs: T[], mapFn: (x: T) => any, sortFn?: (a: T, b: 
 }
 
 /**
- * Render JSON path, respecting the special value DISCARD
+ * Render JSON path, respecting the special value JsonPath.DISCARD
  */
 export function renderJsonPath(jsonPath?: string): undefined | null | string {
   if (jsonPath === undefined) { return undefined; }

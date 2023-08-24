@@ -1,9 +1,8 @@
-import { Lazy, Stack, Token } from '../../core';
-import { FactName, RegionInfo } from '../../region-info';
 import { Construct, IConstruct } from 'constructs';
 import { Architecture } from './architecture';
 import { IFunction } from './function-base';
-
+import { Lazy, Stack, Token } from '../../core';
+import { FactName, RegionInfo } from '../../region-info';
 
 /**
  * Config returned from `LambdaInsightsVersion._bind`
@@ -60,6 +59,11 @@ export abstract class LambdaInsightsVersion {
    * Version 1.0.178.0
    */
   public static readonly VERSION_1_0_178_0 = LambdaInsightsVersion.fromInsightsVersion('1.0.178.0');
+
+  /**
+   * Version 1.0.229.0
+   */
+  public static readonly VERSION_1_0_229_0 = LambdaInsightsVersion.fromInsightsVersion('1.0.229.0');
 
   /**
    * Use the insights extension associated with the provided ARN. Make sure the ARN is associated

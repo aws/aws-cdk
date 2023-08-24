@@ -5,7 +5,6 @@ import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import * as cdk from 'aws-cdk-lib';
 import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
 
-
 /*
  * Creates a state machine with a task states needed to deploy the SageMaker Endpoint
  *
@@ -19,7 +18,6 @@ import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
  * -- aws stepfunctions start-execution --state-machine-arn <state-machine-arn-from-output> provides execution arn
  * -- aws stepfunctions describe-execution --execution-arn <state-machine-arn-from-output> returns a status of `Succeeded`
  */
-
 
 class CallSageMakerStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props: cdk.StackProps = {}) {

@@ -1,6 +1,6 @@
+import { testFixtureNoVpc, testFixtureCluster } from './util';
 import { Template } from '../../assertions';
 import { CfnResource, Stack } from '../../core';
-import { testFixtureNoVpc, testFixtureCluster } from './util';
 import { Cluster, KubernetesManifest, KubernetesVersion, HelmChart } from '../lib';
 
 /* eslint-disable max-len */

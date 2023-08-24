@@ -1,25 +1,11 @@
 {
-  "extends": "@nrwl/workspace/presets/npm.json",
-  "workspaceLayout": { },
-  "tasksRunnerOptions": {
-    "default": {
-      "runner": "@nrwl/workspace/tasks-runners/default",
-      "options": {
-        "cacheableOperations": [
-          "build",
-          "test",
-          "lint",
-          "package",
-          "prepare"
-        ]
-      }
-    }
-  },
   "targetDefaults": {
     "build": {
-      "implicitDependencies": ["aws-cdk-lib"],
-      "dependsOn": ["^build"],
+      "dependsOn": [
+        "^build"
+      ],
       "inputs": [
+        "{projectRoot}/**/bin/!(*.d|*.generated).ts",
         "{projectRoot}/**/lib/!(*.d|*.generated).ts",
         "{projectRoot}/**/test/!(*.d).ts",
         "!{workspaceRoot}/**/tsconfig.json",
@@ -28,7 +14,7 @@
         "!{workspaceRoot}/**/tsconfig.tsbuildinfo"
       ],
       "outputs": [
-        "!{projectRoot}/**/*.integ.*.js.snapshot/*",
+        "{projectRoot}/**/*.integ.*.js.snapshot/*",
         "{projectRoot}/tsconfig.json",
         "{projectRoot}/**/lib/aws-custom-resource/sdk-api-metadata.json",
         "{projectRoot}/**/build-info.json",
@@ -46,7 +32,28 @@
       ]
     },
     "test": {
-      "dependsOn": ["build"]
+      "dependsOn": [
+        "build"
+      ],
+      "inputs": [
+        "{projectRoot}/**/test/!(*.d|*.generated).ts"
+      ]
+    }
+  },
+  "extends": "@nrwl/workspace/presets/npm.json",
+  "workspaceLayout": {},
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "@nx/workspace/tasks-runners/default",
+      "options": {
+        "cacheableOperations": [
+          "build",
+          "test",
+          "lint",
+          "package",
+          "prepare"
+        ]
+      }
     }
   },
   "affected": {
@@ -56,5 +63,16 @@
     "@nrwl/js": {
       "analyzeSourceFiles": false
     }
+  },
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "namedInputs": {
+    "default": [
+      "{projectRoot}/**/*",
+      "sharedGlobals"
+    ],
+    "sharedGlobals": [],
+    "production": [
+      "default"
+    ]
   }
 }

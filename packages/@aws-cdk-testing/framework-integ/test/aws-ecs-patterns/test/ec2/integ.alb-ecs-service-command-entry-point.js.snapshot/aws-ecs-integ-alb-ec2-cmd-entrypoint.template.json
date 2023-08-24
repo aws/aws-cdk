@@ -847,6 +847,11 @@
      "Ref": "Ec2ClusterEE43E89D"
     },
     "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
      "MaximumPercent": 200,
      "MinimumHealthyPercent": 50
     },
@@ -868,7 +873,8 @@
    },
    "DependsOn": [
     "ALBECSServiceWithCommandEntryPointLBPublicListenerECSGroup7271102D",
-    "ALBECSServiceWithCommandEntryPointLBPublicListener1DCF0F84"
+    "ALBECSServiceWithCommandEntryPointLBPublicListener1DCF0F84",
+    "ALBECSServiceWithCommandEntryPointTaskDefTaskRoleD0EE621C"
    ]
   }
  },

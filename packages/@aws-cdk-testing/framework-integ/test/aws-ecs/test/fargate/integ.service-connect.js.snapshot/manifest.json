@@ -1,12 +1,6 @@
 {
-  "version": "21.0.0",
+  "version": "32.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "aws-ecs-service-connect.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e9571a8d510167c0dab7107a964034a2a26011d7b8b714adbd3cc0a445a68cfa.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cccfa4b6658f0a1e046a418058267119f9653a89a28555a80113a14e38e4018c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -198,10 +192,7 @@
         "/aws-ecs-service-connect/TaskDef/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TaskDef54694570",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "TaskDef54694570"
           }
         ],
         "/aws-ecs-service-connect/TaskDef/container/LogGroup/Resource": [
@@ -240,6 +231,24 @@
             "data": "svcSecurityGroup205CC2DA"
           }
         ],
+        "/aws-ecs-service-connect/ns/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ns7AAD7A1A"
+          }
+        ],
+        "/aws-ecs-service-connect/svc-two/Service": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "svctwoService5892185E"
+          }
+        ],
+        "/aws-ecs-service-connect/svc-two/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "svctwoSecurityGroup7B696927"
+          }
+        ],
         "/aws-ecs-service-connect/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -271,7 +280,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/57beccfa7a84417600bea715a7ee7dd234ca9e816e5c036eb47c80003dfb631b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -287,6 +296,30 @@
         "ServiceConnectDefaultTestDeployAssert88F6A66F.assets"
       ],
       "metadata": {
+        "/ServiceConnect/DefaultTest/DeployAssert/AwsApiCallServiceDiscoverylistNamespaces/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallServiceDiscoverylistNamespaces"
+          }
+        ],
+        "/ServiceConnect/DefaultTest/DeployAssert/AwsApiCallServiceDiscoverylistNamespaces/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallServiceDiscoverylistNamespaces"
+          }
+        ],
+        "/ServiceConnect/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/ServiceConnect/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
         "/ServiceConnect/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -301,6 +334,12 @@
         ]
       },
       "displayName": "ServiceConnect/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

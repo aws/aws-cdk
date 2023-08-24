@@ -1,8 +1,8 @@
+import * as fc from 'fast-check';
+import { arbitrary_input_intervals, createScalableTarget } from './util';
 import { Template } from '../../assertions';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as cdk from '../../core';
-import * as fc from 'fast-check';
-import { arbitrary_input_intervals, createScalableTarget } from './util';
 import * as appscaling from '../lib';
 
 describe('step scaling policy', () => {
@@ -23,7 +23,6 @@ describe('step scaling policy', () => {
       },
     ));
 
-
   });
 
   test('generated step intervals are valid intervals', () => {
@@ -38,7 +37,6 @@ describe('step scaling policy', () => {
         }), steps, 'template', JSON.stringify(template, undefined, 2));
       },
     ));
-
 
   });
 
@@ -59,7 +57,6 @@ describe('step scaling policy', () => {
         return true;
       },
     ), { verbose: true });
-
 
   });
 
@@ -82,7 +79,6 @@ describe('step scaling policy', () => {
       },
     ));
 
-
   });
 
   test('lower alarm uses lower policy', () => {
@@ -97,7 +93,6 @@ describe('step scaling policy', () => {
       },
     ));
 
-
   });
 
   test('upper alarm uses upper policy', () => {
@@ -111,7 +106,6 @@ describe('step scaling policy', () => {
         return reportFalse(alarm.Properties.AlarmActions[0].Ref === template.upperPolicy, alarm);
       },
     ));
-
 
   });
 
@@ -148,7 +142,6 @@ describe('step scaling policy', () => {
       },
 
     });
-
 
   });
 
@@ -187,7 +180,6 @@ describe('step scaling policy', () => {
       Threshold: 100,
     });
 
-
   });
 
   test('step scaling with evaluation period configured', () => {
@@ -223,7 +215,6 @@ describe('step scaling policy', () => {
       Namespace: 'Test',
       Threshold: 100,
     });
-
 
   });
 
@@ -281,6 +272,47 @@ describe('step scaling policy', () => {
         metricAggregationType: appscaling.MetricAggregationType.MAXIMUM,
       });
     }).toThrow('datapointsToAlarm cannot be less than 1, got: 0');
+  });
+
+  test('scalingSteps must have at least 2 steps', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const target = createScalableTarget(stack);
+
+    expect(() => {
+      target.scaleOnMetric('Tracking', {
+        metric: new cloudwatch.Metric({ namespace: 'Test', metricName: 'Metric' }),
+        scalingSteps: [
+          { lower: 0, upper: 2, change: +1 },
+        ],
+      });
+    }).toThrow(/must supply at least 2/);
+  });
+
+  test('scalingSteps has a maximum of 40 steps', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const target = createScalableTarget(stack);
+
+    const numSteps = 41;
+    const messagesPerTask = 20;
+    let steps: appscaling.ScalingInterval[] = [];
+
+    for (let i = 0; i < numSteps; ++i) {
+      const step: appscaling.ScalingInterval = {
+        lower: i * messagesPerTask,
+        upper: i * (messagesPerTask + 1) - 1,
+        change: i + 1,
+      };
+      steps.push(step);
+    }
+
+    expect(() => {
+      target.scaleOnMetric('Tracking', {
+        metric: new cloudwatch.Metric({ namespace: 'Test', metricName: 'Metric' }),
+        scalingSteps: steps,
+      });
+    }).toThrow('\'scalingSteps\' can have at most 40 steps, got 41');
   });
 });
 

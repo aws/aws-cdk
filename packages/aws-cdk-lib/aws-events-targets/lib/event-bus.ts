@@ -1,7 +1,7 @@
+import { singletonEventRole, addToDeadLetterQueueResourcePolicy } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as sqs from '../../aws-sqs';
-import { singletonEventRole, addToDeadLetterQueueResourcePolicy } from './util';
 
 /**
  * Configuration properties of an Event Bus event

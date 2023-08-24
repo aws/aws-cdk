@@ -1,12 +1,12 @@
 import * as path from 'path';
+import { Construct } from 'constructs';
+import { toSymlinkFollow } from './compat';
 import { CopyOptions } from '../../assets';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
-import { Construct } from 'constructs';
-import { toSymlinkFollow } from './compat';
 
 export interface AssetOptions extends CopyOptions, cdk.FileCopyOptions, cdk.AssetOptions {
   /**
@@ -34,6 +34,21 @@ export interface AssetOptions extends CopyOptions, cdk.FileCopyOptions, cdk.Asse
    * @deprecated see `assetHash` and `assetHashType`
    */
   readonly sourceHash?: string;
+
+  /**
+   * Whether or not the asset needs to exist beyond deployment time; i.e.
+   * are copied over to a different location and not needed afterwards.
+   * Setting this property to true has an impact on the lifecycle of the asset,
+   * because we will assume that it is safe to delete after the CloudFormation
+   * deployment succeeds.
+   *
+   * For example, Lambda Function assets are copied over to Lambda during
+   * deployment. Therefore, it is not necessary to store the asset in S3, so
+   * we consider those deployTime assets.
+   *
+   * @default false
+   */
+  readonly deployTime?: boolean;
 }
 
 export interface AssetProps extends AssetOptions {
@@ -147,6 +162,7 @@ export class Asset extends Construct implements cdk.IAsset {
       packaging: staging.packaging,
       sourceHash: this.sourceHash,
       fileName: this.assetPath,
+      deployTime: props.deployTime,
     });
 
     this.s3BucketName = location.bucketName;

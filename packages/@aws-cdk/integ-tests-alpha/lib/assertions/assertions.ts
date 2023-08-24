@@ -1,4 +1,4 @@
-import { CustomResource, CfnOutput } from 'aws-cdk-lib';
+import { CustomResource, CfnOutput } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { ExpectedResult, ActualResult } from './common';
 import { md5hash } from './private/hash';

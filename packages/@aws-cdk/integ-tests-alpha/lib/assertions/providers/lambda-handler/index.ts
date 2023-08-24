@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import { AssertionHandler } from './assertion';
+import { HttpHandler } from './http';
 import { AwsApiCallHandler } from './sdk';
 import * as types from './types';
 
@@ -147,6 +148,8 @@ function createResourceHandler(event: AWSLambda.CloudFormationCustomResourceEven
     return new AwsApiCallHandler(event, context);
   } else if (event.ResourceType.startsWith(types.ASSERT_RESOURCE_TYPE)) {
     return new AssertionHandler(event, context);
+  } else if (event.ResourceType.startsWith(types.HTTP_RESOURCE_TYPE)) {
+    return new HttpHandler(event, context);
   } else {
     throw new Error(`Unsupported resource type "${event.ResourceType}`);
   }

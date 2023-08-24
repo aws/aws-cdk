@@ -1,5 +1,3 @@
-import { IRole, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
-import { App, IResource, Lazy, Names, Resource, Stack, Token, TokenComparison, PhysicalName, ArnFormat, Annotations } from '../../core';
 import { Node, Construct } from 'constructs';
 import { IEventBus } from './event-bus';
 import { EventPattern } from './event-pattern';
@@ -9,6 +7,8 @@ import { IRule } from './rule-ref';
 import { Schedule } from './schedule';
 import { IRuleTarget } from './target';
 import { mergeEventPattern, renderEventPattern } from './util';
+import { IRole, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
+import { App, IResource, Lazy, Names, Resource, Stack, Token, TokenComparison, PhysicalName, ArnFormat, Annotations } from '../../core';
 
 /**
  * Properties for defining an EventBridge Rule
@@ -439,7 +439,6 @@ export class Rule extends Resource implements IRule {
     return role;
   }
 
-
   /**
    * Whether two string probably contain the same environment dimension (region or account)
    *
@@ -449,7 +448,7 @@ export class Rule extends Resource implements IRule {
   private sameEnvDimension(dim1: string, dim2: string) {
     switch (Token.compareStrings(dim1, dim2)) {
       case TokenComparison.ONE_UNRESOLVED:
-        Annotations.of(this).addWarning('Either the Event Rule or target has an unresolved environment. \n \
+        Annotations.of(this).addWarningV2('@aws-cdk/aws-events:ruleUnresolvedEnvironment', 'Either the Event Rule or target has an unresolved environment. \n \
           If they are being used in a cross-environment setup you need to specify the environment for both.');
         return true;
       case TokenComparison.BOTH_UNRESOLVED:

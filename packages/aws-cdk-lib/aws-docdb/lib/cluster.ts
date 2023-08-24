@@ -1,9 +1,3 @@
-import * as ec2 from '../../aws-ec2';
-import { IRole } from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import * as logs from '../../aws-logs';
-import * as secretsmanager from '../../aws-secretsmanager';
-import { CfnResource, Duration, RemovalPolicy, Resource, Token } from '../../core';
 import { Construct } from 'constructs';
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { DatabaseSecret } from './database-secret';
@@ -11,6 +5,12 @@ import { CfnDBCluster, CfnDBInstance, CfnDBSubnetGroup } from './docdb.generated
 import { Endpoint } from './endpoint';
 import { IClusterParameterGroup } from './parameter-group';
 import { BackupProps, Login, RotationMultiUserOptions } from './props';
+import * as ec2 from '../../aws-ec2';
+import { IRole } from '../../aws-iam';
+import * as kms from '../../aws-kms';
+import * as logs from '../../aws-logs';
+import * as secretsmanager from '../../aws-secretsmanager';
+import { CfnResource, Duration, RemovalPolicy, Resource, Token } from '../../core';
 
 /**
  * Properties for a new database cluster

@@ -1,8 +1,8 @@
-import * as cdk from '../../core';
 import { Construct } from 'constructs';
 import { IAccelerator } from './accelerator';
 import { EndpointGroup, EndpointGroupOptions } from './endpoint-group';
 import * as ga from './globalaccelerator.generated';
+import * as cdk from '../../core';
 
 /**
  * Interface of the Listener

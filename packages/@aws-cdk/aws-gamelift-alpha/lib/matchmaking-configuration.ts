@@ -1,6 +1,6 @@
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as sns from 'aws-cdk-lib/aws-sns';
-import * as cdk from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { IMatchmakingRuleSet } from '.';
 
@@ -47,7 +47,6 @@ export interface IMatchmakingConfiguration extends cdk.IResource {
    * @attribute
    */
   readonly notificationTarget?: sns.ITopic;
-
 
   /**
      * Return the given named metric for this matchmaking configuration.
@@ -194,7 +193,6 @@ export interface MatchmakingConfigurationProps {
  * Base class for new and imported GameLift Matchmaking configuration.
  */
 export abstract class MatchmakingConfigurationBase extends cdk.Resource implements IMatchmakingConfiguration {
-
 
   /**
    * Import an existing matchmaking configuration from its attributes.

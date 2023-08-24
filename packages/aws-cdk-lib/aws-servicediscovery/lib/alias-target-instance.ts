@@ -1,9 +1,9 @@
-import { Names } from '../../core';
 import { Construct } from 'constructs';
 import { BaseInstanceProps, InstanceBase } from './instance';
 import { NamespaceType } from './namespace';
 import { DnsRecordType, IService, RoutingPolicy } from './service';
 import { CfnInstance } from './servicediscovery.generated';
+import { Names } from '../../core';
 
 /*
  * Properties for an AliasTargetInstance

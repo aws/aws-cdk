@@ -241,12 +241,43 @@ integ.assertions.expect(
 In the above example an assertion is created that will trigger a user defined `CustomResource`
 and assert that the `data` attribute is equal to `{ foo: 'bar' }`.
 
-### AwsApiCall
+### API Calls
 
 A common method to retrieve the "actual" results to compare with what is expected is to make an
-AWS API call to receive some data. This library does this by utilizing CloudFormation custom resources
+API call to receive some data. This library does this by utilizing CloudFormation custom resources
 which means that CloudFormation will call out to a Lambda Function which will
-use the AWS JavaScript SDK to make the API call.
+make the API call.
+
+#### HttpApiCall
+
+Using the `HttpApiCall` will use the
+[node-fetch](https://github.com/node-fetch/node-fetch) JavaScript library to
+make the HTTP call.
+
+This can be done by using the class directory (in the case of a normal deployment):
+
+```ts
+declare const stack: Stack;
+
+new HttpApiCall(stack, 'MyAsssertion', {
+  url: 'https://example-api.com/abc',
+});
+```
+
+Or by using the `httpApiCall` method on `DeployAssert` (when writing integration tests):
+
+```ts
+declare const app: App;
+declare const stack: Stack;
+const integ = new IntegTest(app, 'Integ', {
+  testCases: [stack],
+});
+integ.assertions.httpApiCall('https://example-api.com/abc');
+```
+
+#### AwsApiCall
+
+Using the `AwsApiCall` construct will use the AWS JavaScript SDK to make the API call.
 
 This can be done by using the class directory (in the case of a normal deployment):
 

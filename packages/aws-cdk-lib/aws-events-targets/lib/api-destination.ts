@@ -1,6 +1,6 @@
+import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
-import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
 
 /**
  * Customize the EventBridge Api Destinations Target

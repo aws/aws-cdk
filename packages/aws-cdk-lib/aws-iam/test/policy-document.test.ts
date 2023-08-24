@@ -1,5 +1,5 @@
-import { Template } from '../../assertions';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { Template } from '../../assertions';
 import { Lazy, Stack, Token } from '../../core';
 import {
   AccountPrincipal, Anyone, AnyPrincipal, ArnPrincipal, CanonicalUserPrincipal, CompositePrincipal,
@@ -41,6 +41,29 @@ describe('IAM policy document', () => {
          },
       },
       Condition: { StringEquals: { 'sts:ExternalId': '12221121221' } },
+    });
+  });
+
+  test('addSourceAccountCondition and addSourceArnCondition for cross-service resource access', () => {
+    const stack = new Stack();
+
+    const p = new PolicyStatement();
+    p.addActions('sns:Publish');
+    p.addResources('myTopic');
+    p.addAllResources();
+    p.addServicePrincipal('s3.amazonaws.com');
+    p.addSourceAccountCondition('12221121221');
+    p.addSourceArnCondition('bucketArn');
+
+    expect(stack.resolve(p.toStatementJson())).toEqual({
+      Action: 'sns:Publish',
+      Resource: ['myTopic', '*'],
+      Effect: 'Allow',
+      Principal: { Service: 's3.amazonaws.com' },
+      Condition: {
+        StringEquals: { 'aws:SourceAccount': '12221121221' },
+        ArnEquals: { 'aws:SourceArn': 'bucketArn' },
+      },
     });
   });
 

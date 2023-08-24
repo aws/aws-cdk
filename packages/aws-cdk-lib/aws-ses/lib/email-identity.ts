@@ -1,10 +1,10 @@
-import * as route53 from '../../aws-route53';
-import { IPublicHostedZone } from '../../aws-route53';
-import { IResource, Lazy, Resource, SecretValue, Stack } from '../../core';
 import { Construct } from 'constructs';
 import { IConfigurationSet } from './configuration-set';
 import { undefinedIfNoKeys } from './private/utils';
 import { CfnEmailIdentity } from './ses.generated';
+import { IPublicHostedZone } from '../../aws-route53';
+import * as route53 from '../../aws-route53';
+import { IResource, Lazy, Resource, SecretValue, Stack } from '../../core';
 
 /**
  * An email identity
@@ -219,7 +219,7 @@ class EasyDkim extends DkimIdentity {
   public bind(emailIdentity: EmailIdentity, hostedZone?: route53.IPublicHostedZone): DkimIdentityConfig | undefined {
     if (hostedZone) {
       // Use CfnRecordSet instead of CnameRecord to avoid current bad handling of
-      // tokens in route53.determineFullyQualifiedDomainName() at https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-route53/lib/util.ts
+      // tokens in route53.determineFullyQualifiedDomainName() at https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-route53/lib/util.ts
       new route53.CfnRecordSet(emailIdentity, 'DkimDnsToken1', {
         hostedZoneId: hostedZone.hostedZoneId,
         name: Lazy.string({ produce: () => emailIdentity.dkimDnsTokenName1 }),

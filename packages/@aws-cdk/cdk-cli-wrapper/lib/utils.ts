@@ -1,5 +1,5 @@
 // Helper functions for CDK Exec
-import { spawnSync } from 'child_process';
+import { spawn, spawnSync } from 'child_process';
 
 /**
  * Our own execute function which doesn't use shells and strings.
@@ -36,4 +36,23 @@ export function exec(commandLine: string[], options: { cwd?: string, json?: bool
     console.error('Not JSON: ' + output);
     throw new Error('Command output is not JSON');
   }
+}
+
+/**
+ * For use with `cdk deploy --watch`
+ */
+export function watch(commandLine: string[], options: { cwd?: string, verbose?: boolean, env?: any } = { }) {
+  const proc = spawn(commandLine[0], commandLine.slice(1), {
+    stdio: ['ignore', 'pipe', options.verbose ? 'inherit' : 'pipe'], // inherit STDERR in verbose mode
+    env: {
+      ...process.env,
+      ...options.env,
+    },
+    cwd: options.cwd,
+  });
+  proc.on('error', (err: Error) => {
+    throw err;
+  });
+
+  return proc;
 }

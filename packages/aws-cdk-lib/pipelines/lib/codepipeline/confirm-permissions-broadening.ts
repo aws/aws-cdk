@@ -1,10 +1,10 @@
+import { Node } from 'constructs';
+import { CodePipeline } from './codepipeline';
+import { CodePipelineActionFactoryResult, ICodePipelineActionFactory, ProduceActionOptions } from './codepipeline-action-factory';
 import { IStage } from '../../../aws-codepipeline';
 import * as cpa from '../../../aws-codepipeline-actions';
 import * as sns from '../../../aws-sns';
 import { Stage } from '../../../core';
-import { Node } from 'constructs';
-import { CodePipeline } from './codepipeline';
-import { CodePipelineActionFactoryResult, ICodePipelineActionFactory, ProduceActionOptions } from './codepipeline-action-factory';
 import { Step } from '../blueprint';
 import { ApplicationSecurityCheck } from '../private/application-security-check';
 

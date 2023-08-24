@@ -756,6 +756,11 @@
      "Ref": "ClusterEB0386A7"
     },
     "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
      "MaximumPercent": 200,
      "MinimumHealthyPercent": 50
     },
@@ -807,7 +812,8 @@
     "myServicelb1listener1ECSTargetGroupweb80GroupC3F9339A",
     "myServicelb1listener15ED0E805",
     "myServicelb2listener2ECSTargetGroupweb90Group6841F924",
-    "myServicelb2listener2AA6970EB"
+    "myServicelb2listener2AA6970EB",
+    "myServiceTaskDefTaskRole1C1DE6CC"
    ]
   },
   "myServiceSecurityGroupC3B9D4E0": {
@@ -824,7 +830,10 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   }
+   },
+   "DependsOn": [
+    "myServiceTaskDefTaskRole1C1DE6CC"
+   ]
   },
   "myServiceSecurityGroupfromawsecsintegfargatemultialbhealthmyServicelb1SecurityGroupF186685F80E1471E22": {
    "Type": "AWS::EC2::SecurityGroupIngress",
@@ -845,7 +854,10 @@
      ]
     },
     "ToPort": 80
-   }
+   },
+   "DependsOn": [
+    "myServiceTaskDefTaskRole1C1DE6CC"
+   ]
   },
   "myServiceSecurityGroupfromawsecsintegfargatemultialbhealthmyServicelb2SecurityGroup271B292A9014BC1AF0": {
    "Type": "AWS::EC2::SecurityGroupIngress",
@@ -866,7 +878,10 @@
      ]
     },
     "ToPort": 90
-   }
+   },
+   "DependsOn": [
+    "myServiceTaskDefTaskRole1C1DE6CC"
+   ]
   }
  },
  "Outputs": {

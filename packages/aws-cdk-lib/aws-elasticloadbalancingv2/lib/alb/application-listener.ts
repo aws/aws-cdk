@@ -1,7 +1,3 @@
-import * as ec2 from '../../../aws-ec2';
-import * as cxschema from '../../../cloud-assembly-schema';
-import { Duration, Lazy, Resource, Token } from '../../../core';
-import * as cxapi from '../../../cx-api';
 import { Construct } from 'constructs';
 import { ListenerAction } from './application-listener-action';
 import { ApplicationListenerCertificate } from './application-listener-certificate';
@@ -9,6 +5,10 @@ import { ApplicationListenerRule, FixedResponse, RedirectResponse } from './appl
 import { IApplicationLoadBalancer } from './application-load-balancer';
 import { ApplicationTargetGroup, IApplicationLoadBalancerTarget, IApplicationTargetGroup } from './application-target-group';
 import { ListenerCondition } from './conditions';
+import * as ec2 from '../../../aws-ec2';
+import * as cxschema from '../../../cloud-assembly-schema';
+import { Duration, Lazy, Resource, Token } from '../../../core';
+import * as cxapi from '../../../cx-api';
 import { BaseListener, BaseListenerLookupOptions, IListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
 import { ApplicationProtocol, ApplicationProtocolVersion, TargetGroupLoadBalancingAlgorithmType, IpAddressType, SslPolicy } from '../shared/enums';

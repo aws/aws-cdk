@@ -1,6 +1,3 @@
-import * as iam from '../../aws-iam';
-import * as cxschema from '../../cloud-assembly-schema';
-import { Aws, ContextProvider, IResource, Lazy, Resource, Stack, Token } from '../../core';
 import { Construct } from 'constructs';
 import { Connections, IConnectable } from './connections';
 import { CfnVPCEndpoint } from './ec2.generated';
@@ -9,6 +6,9 @@ import { Port } from './port';
 import { ISecurityGroup, SecurityGroup } from './security-group';
 import { allRouteTableIds, flatten } from './util';
 import { ISubnet, IVpc, SubnetSelection } from './vpc';
+import * as iam from '../../aws-iam';
+import * as cxschema from '../../cloud-assembly-schema';
+import { Aws, ContextProvider, IResource, Lazy, Resource, Stack, Token } from '../../core';
 
 /**
  * A VPC endpoint.
@@ -266,6 +266,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly APP_MESH = new InterfaceVpcEndpointAwsService('appmesh-envoy-management');
   public static readonly APP_RUNNER = new InterfaceVpcEndpointAwsService('apprunner');
   public static readonly APP_RUNNER_REQUESTS = new InterfaceVpcEndpointAwsService('apprunner.requests');
+  public static readonly APP_SYNC = new InterfaceVpcEndpointAwsService('appsync-api');
   public static readonly APPLICATION_MIGRATION_SERVICE = new InterfaceVpcEndpointAwsService('mgn');
   public static readonly APPSTREAM_API = new InterfaceVpcEndpointAwsService('appstream.api');
   public static readonly APPSTREAM_STREAMING = new InterfaceVpcEndpointAwsService('appstream.streaming');

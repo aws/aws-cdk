@@ -1,9 +1,9 @@
 import * as path from 'path';
+import { Construct, Node } from 'constructs';
 import * as iam from '../../../../aws-iam';
 import * as lambda from '../../../../aws-lambda';
 import * as s3 from '../../../../aws-s3';
 import { CustomResource, Duration, Stack } from '../../../../core';
-import { Construct, Node } from 'constructs';
 import * as cr from '../../../lib';
 
 export interface S3AssertProps {

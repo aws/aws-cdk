@@ -1,4 +1,4 @@
-import { ArnFormat, Resource, Stack, IResource, Lazy } from 'aws-cdk-lib';
+import { ArnFormat, Resource, Stack, IResource, Lazy } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { IAction } from './action';
 import { IotSql } from './iot-sql';

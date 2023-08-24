@@ -1,10 +1,10 @@
+import { Construct } from 'constructs';
+import { BatchStrategy, ModelClientOptions, S3DataType, TransformInput, TransformOutput, TransformResources } from './base-types';
+import { renderEnvironment, renderTags } from './private/utils';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import { Size, Stack, Token } from '../../../core';
-import { Construct } from 'constructs';
-import { BatchStrategy, ModelClientOptions, S3DataType, TransformInput, TransformOutput, TransformResources } from './base-types';
-import { renderEnvironment, renderTags } from './private/utils';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**

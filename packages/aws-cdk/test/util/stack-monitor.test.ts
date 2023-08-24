@@ -146,7 +146,6 @@ async function testMonitorWithEventCalls(
   await monitor.stop();
 }
 
-
 class FakePrinter implements IActivityPrinter {
   public updateSleep: number = 0;
   public readonly activities: StackActivity[] = [];

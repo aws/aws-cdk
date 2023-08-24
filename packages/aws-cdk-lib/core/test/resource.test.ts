@@ -1,6 +1,6 @@
-import * as cxapi from '../../cx-api';
 import { Construct } from 'constructs';
 import { toCloudFormation } from './util';
+import * as cxapi from '../../cx-api';
 import {
   App, App as Root, CfnCondition,
   CfnDeletionPolicy, CfnResource,
@@ -817,6 +817,36 @@ describe('resource', () => {
               ],
             },
           },
+        },
+      });
+    });
+
+    test('overrides allow cross-stack references', () => {
+      // GIVEN
+      const app = new App();
+      const stack1 = new Stack(app, 'Stack1');
+      const stack2 = new Stack(app, 'Stack2');
+      const res1 = new CfnResource(stack1, 'SomeResource1', {
+        type: 'Some::Resource1',
+      });
+      const res2 = new CfnResource(stack2, 'SomeResource2', {
+        type: 'Some::Resource2',
+      });
+
+      // WHEN
+      res2.addPropertyOverride('Key', res1.getAtt('Value'));
+
+      // THEN
+      expect(
+        app.synth().getStackByName(stack2.stackName).template?.Resources,
+      ).toEqual({
+        SomeResource2: {
+          Properties: {
+            Key: {
+              'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttSomeResource1Value50DD3EF0',
+            },
+          },
+          Type: 'Some::Resource2',
         },
       });
     });

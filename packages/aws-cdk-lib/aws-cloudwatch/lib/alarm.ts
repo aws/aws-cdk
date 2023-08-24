@@ -1,4 +1,3 @@
-import { ArnFormat, Lazy, Stack, Token, Annotations } from '../../core';
 import { Construct } from 'constructs';
 import { IAlarmAction } from './alarm-action';
 import { AlarmBase, IAlarm } from './alarm-base';
@@ -10,6 +9,7 @@ import { dispatchMetric, metricPeriod } from './private/metric-util';
 import { dropUndefined } from './private/object';
 import { MetricSet } from './private/rendering';
 import { normalizeStatistic, parseStatistic } from './private/statistic';
+import { ArnFormat, Lazy, Stack, Token, Annotations } from '../../core';
 
 /**
  * Properties for Alarms
@@ -222,8 +222,8 @@ export class Alarm extends AlarmBase {
       value: props.threshold,
     };
 
-    for (const w of this.metric.warnings ?? []) {
-      Annotations.of(this).addWarning(w);
+    for (const [i, message] of Object.entries(this.metric.warningsV2 ?? {})) {
+      Annotations.of(this).addWarningV2(i, message);
     }
   }
 
@@ -250,7 +250,7 @@ export class Alarm extends AlarmBase {
   /**
    * Trigger this action if the alarm fires
    *
-   * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
+   * Typically SnsAcion or AutoScalingAction.
    */
   public addAlarmAction(...actions: IAlarmAction[]) {
     if (this.alarmActionArns === undefined) {

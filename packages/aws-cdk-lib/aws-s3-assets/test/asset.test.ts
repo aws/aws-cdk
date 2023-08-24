@@ -300,7 +300,6 @@ test('nested assemblies share assets: default synth edition', () => {
   }
 });
 
-
 describe('staging', () => {
   test('copy file assets under <outdir>/${fingerprint}.ext', () => {
     const tempdir = mkdtempSync();

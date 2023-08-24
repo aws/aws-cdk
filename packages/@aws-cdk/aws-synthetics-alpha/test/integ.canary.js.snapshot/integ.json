@@ -1,14 +1,12 @@
 {
-  "version": "29.0.0",
+  "version": "33.0.0",
   "testCases": {
-    "integ.canary": {
+    "IntegCanaryTest/DefaultTest": {
       "stacks": [
         "canary-one"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "IntegCanaryTest/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegCanaryTestDefaultTestDeployAssert3AD5A094"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

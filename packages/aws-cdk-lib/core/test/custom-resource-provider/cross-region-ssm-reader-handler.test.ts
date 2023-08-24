@@ -1,33 +1,24 @@
+import { InvalidResourceId } from '@aws-sdk/client-ssm';
 import { handler } from '../../lib/custom-resource-provider/cross-region-export-providers/cross-region-ssm-reader-handler';
 import { SSM_EXPORT_PATH_PREFIX } from '../../lib/custom-resource-provider/cross-region-export-providers/types';
 
 let mockDeleteParameters: jest.Mock ;
 let mockAddTagsToResource: jest.Mock;
-let mockGetParametersByPath: jest.Mock;
+let mockGetParametersByPath: jest.Mock = jest.fn();
 let mockRemoveTagsFromResource: jest.Mock;
-jest.mock('aws-sdk', () => {
+
+jest.mock('@aws-sdk/client-ssm', () => {
+  const actual = jest.requireActual('@aws-sdk/client-ssm');
   return {
-    SSM: jest.fn(() => {
-      return {
-        addTagsToResource: jest.fn((params) => {
-          return {
-            promise: () => mockAddTagsToResource(params),
-          };
-        }),
-        removeTagsFromResource: jest.fn((params) => {
-          return {
-            promise: () => mockRemoveTagsFromResource(params),
-          };
-        }),
-        getParametersByPath: jest.fn((params) => {
-          return {
-            promise: () => mockGetParametersByPath(params),
-          };
-        }),
-      };
-    }),
+    ...actual,
+    SSM: jest.fn().mockImplementation(() => ({
+      addTagsToResource: mockAddTagsToResource,
+      removeTagsFromResource: mockRemoveTagsFromResource,
+      getParametersByPath: mockGetParametersByPath,
+    })),
   };
 });
+
 beforeEach(() => {
   jest.spyOn(console, 'info').mockImplementation(() => {});
   jest.spyOn(console, 'error').mockImplementation(() => {});
@@ -192,6 +183,35 @@ describe('cross-region-ssm-reader entrypoint', () => {
         }],
       });
     });
+    await handler(event);
+
+    // THEN
+    expect(mockRemoveTagsFromResource).toHaveBeenCalledTimes(1);
+    expect(mockRemoveTagsFromResource).toHaveBeenCalledWith({
+      ResourceType: 'Parameter',
+      ResourceId: '/cdk/exports/MyStack/RemovedExport',
+      TagKeys: ['aws-cdk:strong-ref:MyStack'],
+    });
+  });
+
+  test('Does not throw when parameters do not exit', async () => {
+    // GIVEN
+    const event = makeEvent({
+      RequestType: 'Delete',
+      ResourceProperties: {
+        ServiceToken: '<ServiceToken>',
+        ReaderProps: {
+          region: 'us-east-1',
+          prefix: 'MyStack',
+          imports: {
+            '/cdk/exports/MyStack/RemovedExport': 'abc',
+          },
+        },
+      },
+    });
+
+    // WHEN
+    mockGetParametersByPath.mockRejectedValue(new InvalidResourceId({ message: 'Error Message', $metadata: {} }));
     await handler(event);
 
     // THEN

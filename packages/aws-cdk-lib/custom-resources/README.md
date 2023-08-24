@@ -1,5 +1,6 @@
 # AWS CDK Custom Resources
 
+This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ## Provider Framework
 
@@ -314,8 +315,8 @@ This module includes a few examples for custom resource implementations:
 
 Provisions an object in an S3 bucket with textual contents. See the source code
 for the
-[construct](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.ts) and
-[handler](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file-handler/index.ts).
+[construct](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.ts) and
+[handler](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/custom-resources/test/provider-framework/integration-test-fixtures/s3-file-handler/index.ts).
 
 The following example will create the file `folder/file1.txt` inside `myBucket`
 with the contents `hello!`.
@@ -344,7 +345,10 @@ This sample demonstrates the following concepts:
 
 #### S3Assert
 
-Checks that the textual contents of an S3 object matches a certain value. The check will be retried for 5 minutes as long as the object is not found or the value is different. See the source code for the [construct](test/provider-framework/integration-test-fixtures/s3-assert.ts) and [handler](test/provider-framework/integration-test-fixtures/s3-assert-handler/index.py).
+Checks that the textual contents of an S3 object matches a certain value. The check will be retried
+for 5 minutes as long as the object is not found or the value is different. See the source code for the
+[construct](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.ts)
+and [handler](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert-handler/index.py).
 
 The following example defines an `S3Assert` resource which waits until
 `myfile.txt` in `myBucket` exists and includes the contents `foo bar`:
@@ -384,7 +388,28 @@ const myProvider = new cr.Provider(this, 'MyProvider', {
   role: myRole,
   providerFunctionName: 'the-lambda-name',   // Optional
 });
+```
 
+### Customizing Provider Function environment encryption key
+
+Sometimes it may be useful to manually set a AWS KMS key for the Provider Function Lambda and therefore
+be able to view, manage and audit the key usage.
+
+```ts
+import * as kms from 'aws-cdk-lib/aws-kms';
+
+declare const onEvent: lambda.Function;
+declare const isComplete: lambda.Function;
+declare const myRole: iam.Role;
+
+const key = new kms.Key(this, 'MyKey');
+const myProvider = new cr.Provider(this, 'MyProvider', {
+  onEventHandler: onEvent,
+  isCompleteHandler: isComplete,
+  logRetention: logs.RetentionDays.ONE_DAY,
+  role: myRole,
+  providerFunctionEnvEncryption: key,   // Optional
+});
 ```
 
 ## Custom Resources for AWS APIs
@@ -406,7 +431,7 @@ Path to data must be specified using a dot notation, e.g. to get the string valu
 of the `Title` attribute for the first item returned by `dynamodb.query` it should
 be `Items.0.Title.S`.
 
-To make sure that the newest API calls are available the latest AWS SDK v2 is installed
+To make sure that the newest API calls are available the latest AWS SDK v3 is installed
 in the Lambda function implementing the custom resource. The installation takes around 60
 seconds. If you prefer to optimize for speed, you can disable the installation by setting
 the `installLatestAwsSdk` prop to `false`.
@@ -624,6 +649,21 @@ const getParameter = new cr.AwsCustomResource(this, 'AssociateVPCWithHostedZone'
 });
 ```
 
----
+#### Using AWS SDK for JavaScript v3
 
-This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
+`AwsCustomResource` uses Node 18 and aws sdk v3 by default. You can specify the service as either the name of the sdk module, or just the service name, IE `@aws-sdk/client-ssm` or `SSM`, and the action as either the client method name or the sdk v3 command, `getParameter` or `GetParameterCommand`. It is recommended to use the v3 format for new AwsCustomResources going forward.
+
+```ts
+new cr.AwsCustomResource(this, 'GetParameter', {
+  resourceType: 'Custom::SSMParameter',
+  onUpdate: {
+    service: '@aws-sdk/client-ssm', // 'SSM' in v2
+    action: 'GetParameterCommand', // 'getParameter' in v2
+    parameters: {
+      Name: 'foo',
+      WithDecryption: true,
+    },
+    physicalResourceId: cr.PhysicalResourceId.fromResponse('Parameter.ARN'),
+  },
+});
+```

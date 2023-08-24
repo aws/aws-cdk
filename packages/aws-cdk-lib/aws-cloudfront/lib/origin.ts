@@ -1,6 +1,6 @@
-import { Duration, Token } from '../../core';
 import { Construct } from 'constructs';
 import { CfnDistribution } from './cloudfront.generated';
+import { Duration, Token } from '../../core';
 
 /**
  * The failover configuration used for Origin Groups,
@@ -120,7 +120,6 @@ export interface OriginBindOptions {
    */
   readonly originId: string;
 }
-
 
 /**
  * Represents a distribution origin, that describes the Amazon S3 bucket, HTTP server (for example, a web server),

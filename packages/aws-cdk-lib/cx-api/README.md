@@ -183,3 +183,43 @@ _cdk.json_
   }
 }
 ```
+
+* `@aws-cdk/core:includePrefixInUniqueNameGeneration`
+
+Enable this feature flag to include the stack's prefixes to the name generation process.
+
+Not doing so can cause the name of stack to exceed 128 characters:
+- The name generation ensures it doesn't exceed 128 characters
+- Without this feature flag, the prefix is prepended to the generated name, which result can exceed 128 characters
+
+This is a feature flag as it changes the name generated for stacks. Any CDK application deployed prior this fix will
+most likely be generated with a new name, causing the stack to be recreated with the new name, and then deleting the old one.
+For applications running on production environments this can be unmanageable.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/core:includePrefixInUniqueNameGeneration": true
+  }
+}
+```
+
+* `@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion`
+
+Enable this feature flag to automatically use the latest available NodeJS version in the aws-lambda-nodejse.Function construct.
+
+This allows creation of new functions using a version that will automatically stay up to date without breaking bundling of existing functions that externalize packages included in their environemnt such as `aws-sdk`.
+
+Functions defined previously will continue to function correctly as long as they pass an explicit runtime version, or do not exclude packages during bundling.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion": true
+  }
+}
+```

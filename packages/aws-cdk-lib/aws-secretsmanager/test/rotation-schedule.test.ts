@@ -43,6 +43,34 @@ test('create a rotation schedule with a rotation Lambda', () => {
   });
 });
 
+test('create a rotation schedule without immediate rotation', () => {
+  // GIVEN
+  const secret = new secretsmanager.Secret(stack, 'Secret');
+  const rotationLambda = new lambda.Function(stack, 'Lambda', {
+    runtime: lambda.Runtime.NODEJS_14_X,
+    code: lambda.Code.fromInline('export.handler = event => event;'),
+    handler: 'index.handler',
+  });
+
+  // WHEN
+  new secretsmanager.RotationSchedule(stack, 'RotationSchedule', {
+    secret,
+    rotationLambda,
+    rotateImmediatelyOnUpdate: false,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
+    SecretId: {
+      Ref: 'SecretA720EF05',
+    },
+    RotationRules: {
+      AutomaticallyAfterDays: 30,
+    },
+    RotateImmediatelyOnUpdate: false,
+  });
+});
+
 test('assign permissions for rotation schedule with a rotation Lambda', () => {
   // GIVEN
   const secret = new secretsmanager.Secret(stack, 'Secret');
@@ -599,5 +627,27 @@ describe('manual rotations', () => {
     checkRotationNotSet(Duration.minutes(0));
     checkRotationNotSet(Duration.seconds(0));
     checkRotationNotSet(Duration.millis(0));
+  });
+});
+
+test('rotation schedule should have a dependency on lambda permissions', () => {
+  // GIVEN
+  const secret = new secretsmanager.Secret(stack, 'Secret');
+  const rotationLambda = new lambda.Function(stack, 'Lambda', {
+    runtime: lambda.Runtime.NODEJS_14_X,
+    code: lambda.Code.fromInline('export.handler = event => event;'),
+    handler: 'index.handler',
+  });
+
+  // WHEN
+  secret.addRotationSchedule('RotationSchedule', {
+    rotationLambda,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResource('AWS::SecretsManager::RotationSchedule', {
+    DependsOn: [
+      'LambdaInvokeN0a2GKfZP0JmDqDEVhhu6A0TUv3NyNbk4YMFKNc69846677',
+    ],
   });
 });

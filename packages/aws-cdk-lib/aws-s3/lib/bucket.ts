@@ -27,7 +27,7 @@ import {
   Token,
   Tokenization,
   Annotations,
-  builtInCustomResourceProviderNodeRuntime,
+  CustomResourceProviderRuntime,
 } from '../../core';
 import { CfnReference } from '../../core/lib/private/cfn-reference';
 import * as cxapi from '../../cx-api';
@@ -370,7 +370,6 @@ export interface IBucket extends IResource {
    * @param filters Filters (see onEvent)
    */
   addObjectRemovedNotification(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]): void;
-
 
   /**
    * Enables event bridge notification, causing all events below to be sent to EventBridge:
@@ -1306,7 +1305,6 @@ export interface IntelligentTieringConfiguration {
    */
   readonly name: string;
 
-
   /**
    * Add a filter to limit the scope of this configuration to a single prefix.
    *
@@ -1346,18 +1344,18 @@ export interface BucketProps {
    * If you choose KMS, you can specify a KMS key via `encryptionKey`. If
    * encryption key is not specified, a key will automatically be created.
    *
-   * @default - `Kms` if `encryptionKey` is specified, or `Managed` otherwise.
+   * @default - `KMS` if `encryptionKey` is specified, or `UNENCRYPTED` otherwise.
+   * But if `UNENCRYPTED` is specified, the bucket will be encrypted as `S3_MANAGED` automatically.
    */
   readonly encryption?: BucketEncryption;
 
   /**
    * External KMS key to use for bucket encryption.
    *
-   * The 'encryption' property must be either not specified or set to "Kms".
-   * An error will be emitted if encryption is set to "Unencrypted" or
-   * "Managed".
+   * The `encryption` property must be either not specified or set to `KMS` or `DSSE`.
+   * An error will be emitted if `encryption` is set to `UNENCRYPTED` or `S3_MANAGED`.
    *
-   * @default - If encryption is set to "Kms" and this property is undefined,
+   * @default - If `encryption` is set to `KMS` and this property is undefined,
    * a new KMS key will be created and associated with this bucket.
    */
   readonly encryptionKey?: kms.IKey;
@@ -1588,7 +1586,6 @@ export interface BucketProps {
    */
   readonly intelligentTieringConfigurations?: IntelligentTieringConfiguration[];
 }
-
 
 /**
  * Tag
@@ -1896,7 +1893,7 @@ export class Bucket extends BucketBase {
     } else if (props.serverAccessLogsBucket) {
       // A `serverAccessLogsBucket` was provided but it is not a concrete `Bucket` and it
       // may not be possible to configure the ACLs or bucket policy as required.
-      Annotations.of(this).addWarning(
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-s3:accessLogsPolicyNotAdded',
         `Unable to add necessary logging permissions to imported target bucket: ${props.serverAccessLogsBucket}`,
       );
     }
@@ -2015,14 +2012,17 @@ export class Bucket extends BucketBase {
       encryptionType = props.encryptionKey ? BucketEncryption.KMS : BucketEncryption.UNENCRYPTED;
     }
 
-    // if encryption key is set, encryption must be set to KMS.
-    if (encryptionType !== BucketEncryption.KMS && props.encryptionKey) {
-      throw new Error(`encryptionKey is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`);
+    // if encryption key is set, encryption must be set to KMS or DSSE.
+    if (encryptionType !== BucketEncryption.DSSE && encryptionType !== BucketEncryption.KMS && props.encryptionKey) {
+      throw new Error(`encryptionKey is specified, so 'encryption' must be set to KMS or DSSE (value: ${encryptionType})`);
     }
 
-    // if bucketKeyEnabled is set, encryption must be set to KMS.
-    if (props.bucketKeyEnabled && ![BucketEncryption.KMS, BucketEncryption.KMS_MANAGED].includes(encryptionType)) {
-      throw new Error(`bucketKeyEnabled is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`);
+    // if bucketKeyEnabled is set, encryption must be set to KMS or DSSE.
+    if (
+      props.bucketKeyEnabled &&
+      ![BucketEncryption.KMS, BucketEncryption.KMS_MANAGED, BucketEncryption.DSSE, BucketEncryption.DSSE_MANAGED].includes(encryptionType)
+    ) {
+      throw new Error(`bucketKeyEnabled is specified, so 'encryption' must be set to KMS or DSSE (value: ${encryptionType})`);
     }
 
     if (encryptionType === BucketEncryption.UNENCRYPTED) {
@@ -2070,6 +2070,37 @@ export class Bucket extends BucketBase {
       return { bucketEncryption };
     }
 
+    if (encryptionType === BucketEncryption.DSSE) {
+      const encryptionKey = props.encryptionKey || new kms.Key(this, 'Key', {
+        description: `Created by ${this.node.path}`,
+      });
+
+      const bucketEncryption = {
+        serverSideEncryptionConfiguration: [
+          {
+            bucketKeyEnabled: props.bucketKeyEnabled,
+            serverSideEncryptionByDefault: {
+              sseAlgorithm: 'aws:kms:dsse',
+              kmsMasterKeyId: encryptionKey.keyArn,
+            },
+          },
+        ],
+      };
+      return { encryptionKey, bucketEncryption };
+    }
+
+    if (encryptionType === BucketEncryption.DSSE_MANAGED) {
+      const bucketEncryption = {
+        serverSideEncryptionConfiguration: [
+          {
+            bucketKeyEnabled: props.bucketKeyEnabled,
+            serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms:dsse' },
+          },
+        ],
+      };
+      return { bucketEncryption };
+    }
+
     throw new Error(`Unexpected 'encryptionType': ${encryptionType}`);
   }
 
@@ -2088,6 +2119,11 @@ export class Bucket extends BucketBase {
 
     function parseLifecycleRule(rule: LifecycleRule): CfnBucket.RuleProperty {
       const enabled = rule.enabled ?? true;
+      if ((rule.expiredObjectDeleteMarker)
+      && (rule.expiration || rule.expirationDate || self.parseTagFilters(rule.tagFilters))) {
+        // ExpiredObjectDeleteMarker cannot be specified with ExpirationInDays, ExpirationDate, or TagFilters.
+        throw new Error('ExpiredObjectDeleteMarker cannot be specified with expiration, ExpirationDate, or TagFilters.');
+      }
 
       const x: CfnBucket.RuleProperty = {
         // eslint-disable-next-line max-len
@@ -2126,17 +2162,18 @@ export class Bucket extends BucketBase {
       return undefined;
     }
 
+    // KMS_MANAGED can't be used for logging since the account can't access the logging service key - account can't read logs
     if (
-      // KMS can't be used for logging since the logging service can't use the key - logs don't write
-      // KMS_MANAGED can't be used for logging since the account can't access the logging service key - account can't read logs
-      (!props.serverAccessLogsBucket && (
-        props.encryptionKey ||
-        props.encryption === BucketEncryption.KMS_MANAGED ||
-        props.encryption === BucketEncryption.KMS )) ||
-      // Another bucket is being used that is configured for default SSE-KMS
-      props.serverAccessLogsBucket?.encryptionKey
+      !props.serverAccessLogsBucket &&
+      props.encryption &&
+      [BucketEncryption.KMS_MANAGED, BucketEncryption.DSSE_MANAGED].includes(props.encryption)
     ) {
-      throw new Error('SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets');
+      throw new Error('Default bucket encryption with KMS managed or DSSE managed key is not supported for Server Access Logging target buckets');
+    }
+
+    // When there is an encryption key exists for the server access logs bucket, grant permission to the S3 logging SP.
+    if (props.serverAccessLogsBucket?.encryptionKey) {
+      props.serverAccessLogsBucket.encryptionKey.grantEncryptDecrypt(new iam.ServicePrincipal('logging.s3.amazonaws.com'));
     }
 
     return {
@@ -2281,7 +2318,7 @@ export class Bucket extends BucketBase {
     }
 
     const routingRules = props.websiteRoutingRules ? props.websiteRoutingRules.map<CfnBucket.RoutingRuleProperty>((rule) => {
-      if (rule.condition && !rule.condition.httpErrorCodeReturnedEquals && !rule.condition.keyPrefixEquals) {
+      if (rule.condition && rule.condition.httpErrorCodeReturnedEquals == null && rule.condition.keyPrefixEquals == null) {
         throw new Error('The condition property cannot be an empty object');
       }
 
@@ -2390,8 +2427,9 @@ export class Bucket extends BucketBase {
 
   private enableAutoDeleteObjects() {
     const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, {
-      codeDirectory: path.join(__dirname, 'auto-delete-objects-handler'),
-      runtime: builtInCustomResourceProviderNodeRuntime(this),
+      codeDirectory: path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-s3', 'auto-delete-objects-handler'),
+      useCfnResponseWrapper: false,
+      runtime: CustomResourceProviderRuntime.NODEJS_18_X,
       description: `Lambda function for auto-deleting objects in ${this.bucketName} S3 bucket.`,
     });
 
@@ -2461,6 +2499,17 @@ export enum BucketEncryption {
    * If `encryptionKey` is specified, this key will be used, otherwise, one will be defined.
    */
   KMS = 'KMS',
+
+  /**
+   * Double server-side KMS encryption with a master key managed by KMS.
+   */
+  DSSE_MANAGED = 'DSSE_MANAGED',
+
+  /**
+   * Double server-side encryption with a KMS key managed by the user.
+   * If `encryptionKey` is specified, this key will be used, otherwise, one will be defined.
+   */
+  DSSE = 'DSSE',
 }
 
 /**

@@ -1,6 +1,6 @@
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { IResource, Lazy, Resource, SecretValue } from 'aws-cdk-lib';
+import { IResource, Lazy, Resource, SecretValue } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnApp } from 'aws-cdk-lib/aws-amplify';
 import { BasicAuth } from './basic-auth';
@@ -117,7 +117,6 @@ export interface AppProps {
    * @default - no build spec
    */
   readonly buildSpec?: codebuild.BuildSpec;
-
 
   /**
    * The custom HTTP response headers for an Amplify app.

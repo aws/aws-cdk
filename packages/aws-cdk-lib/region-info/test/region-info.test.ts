@@ -54,7 +54,6 @@ test('limitedRegionMap only returns information for certain regions', () => {
   expect(map2['cn-north-1']).toBeDefined();
 });
 
-
 test.each([
   ['us-east-1', false],
   ['me-south-1', true],

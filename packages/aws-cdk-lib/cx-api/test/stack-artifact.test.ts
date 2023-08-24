@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as cxschema from '../../cloud-assembly-schema';
 import { rimraf } from './util';
+import * as cxschema from '../../cloud-assembly-schema';
 import * as cxapi from '../lib';
 
 const stackBase = {
@@ -107,7 +107,6 @@ test('already uppercased stack tags get left alone', () => {
     },
   ]);
 });
-
 
 test('read tags from stack metadata', () => {
   // Backwards compatibility test

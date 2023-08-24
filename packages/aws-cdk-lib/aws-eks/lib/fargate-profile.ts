@@ -1,10 +1,10 @@
-import * as ec2 from '../../aws-ec2';
-import * as iam from '../../aws-iam';
-import { Annotations, CustomResource, ITaggable, Lazy, TagManager, TagType } from '../../core';
 import { Construct } from 'constructs';
 import { Cluster } from './cluster';
 import { FARGATE_PROFILE_RESOURCE_TYPE } from './cluster-resource-handler/consts';
 import { ClusterResourceProvider } from './cluster-resource-provider';
+import * as ec2 from '../../aws-ec2';
+import * as iam from '../../aws-iam';
+import { Annotations, CustomResource, ITaggable, Lazy, TagManager, TagType } from '../../core';
 
 /**
  * Options for defining EKS Fargate Profiles.
@@ -144,7 +144,6 @@ export class FargateProfile extends Construct implements ITaggable {
     super(scope, id);
 
     const provider = ClusterResourceProvider.getOrCreate(this, {
-      adminRole: props.cluster.adminRole,
       onEventLayer: props.cluster.onEventLayer,
     });
 
@@ -156,7 +155,7 @@ export class FargateProfile extends Construct implements ITaggable {
     this.podExecutionRole.grantPassRole(props.cluster.adminRole);
 
     if (props.subnetSelection && !props.vpc) {
-      Annotations.of(this).addWarning('Vpc must be defined to use a custom subnet selection. All private subnets belonging to the EKS cluster will be used by default');
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-eks:fargateProfileDefaultToPrivateSubnets', 'Vpc must be defined to use a custom subnet selection. All private subnets belonging to the EKS cluster will be used by default');
     }
 
     let subnets: string[] | undefined;

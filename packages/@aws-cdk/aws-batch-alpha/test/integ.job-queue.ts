@@ -4,7 +4,6 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as batch from '../lib';
 import { ManagedEc2EcsComputeEnvironment } from '../lib';
 
-
 const app = new App();
 const stack = new Stack(app, 'stack');
 const vpc = new Vpc(stack, 'vpc', { restrictDefaultSecurityGroup: false });

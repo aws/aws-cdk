@@ -103,7 +103,6 @@ export interface NamedValidationPluginReport extends report.PolicyValidationPlug
   readonly pluginName: string;
 }
 
-
 /**
  * The report emitted by the plugin after evaluation.
  */
@@ -112,7 +111,6 @@ export class PolicyValidationReportFormatter {
   constructor(private readonly tree: ConstructTree) {
     this.reportTrace = new ReportTrace(tree);
   }
-
 
   public formatPrettyPrinted(reps: NamedValidationPluginReport[]): string {
     const json = this.formatJson(reps);
@@ -226,7 +224,6 @@ export class PolicyValidationReportFormatter {
     };
   }
 }
-
 
 function reset(s: string) {
   return `${s}\x1b[0m`;

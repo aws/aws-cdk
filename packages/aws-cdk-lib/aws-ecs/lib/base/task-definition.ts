@@ -1,8 +1,8 @@
+import { Construct } from 'constructs';
+import { ImportedTaskDefinition } from './_imported-task-definition';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import { IResource, Lazy, Names, PhysicalName, Resource } from '../../../core';
-import { Construct } from 'constructs';
-import { ImportedTaskDefinition } from './_imported-task-definition';
 import { ContainerDefinition, ContainerDefinitionOptions, PortMapping, Protocol } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
 import { FirelensLogRouter, FirelensLogRouterDefinitionOptions, FirelensLogRouterType, obtainDefaultFluentBitECRImage } from '../firelens-log-router';
@@ -45,7 +45,6 @@ export interface ITaskDefinition extends IResource {
    * Return true if the task definition can be run on a ECS Anywhere cluster
    */
   readonly isExternalCompatible: boolean;
-
 
   /**
    * The networking mode to use for the containers in the task.
@@ -401,6 +400,8 @@ export class TaskDefinition extends TaskDefinitionBase {
 
   private readonly _cpu?: string;
 
+  private readonly _memory?: string;
+
   /**
    * Constructs a new instance of the TaskDefinition class.
    */
@@ -462,6 +463,7 @@ export class TaskDefinition extends TaskDefinitionBase {
 
     this.runtimePlatform = props.runtimePlatform;
     this._cpu = props.cpu;
+    this._memory = props.memoryMiB;
 
     const taskDef = new CfnTaskDefinition(this, 'Resource', {
       containerDefinitions: Lazy.any({ produce: () => this.renderContainers() }, { omitEmptyArray: true }),
@@ -588,7 +590,11 @@ export class TaskDefinition extends TaskDefinitionBase {
     if (this.networkMode === NetworkMode.BRIDGE || this.networkMode === NetworkMode.NAT) {
       return EPHEMERAL_PORT_RANGE;
     }
-    return portMapping.protocol === Protocol.UDP ? ec2.Port.udp(portMapping.containerPort) : ec2.Port.tcp(portMapping.containerPort);
+    if (portMapping.containerPort !== ContainerDefinition.CONTAINER_PORT_USE_RANGE) {
+      return portMapping.protocol === Protocol.UDP ? ec2.Port.udp(portMapping.containerPort) : ec2.Port.tcp(portMapping.containerPort);
+    }
+    const [startPort, endPort] = portMapping.containerPortRange!.split('-', 2).map(v => Number(v));
+    return portMapping.protocol === Protocol.UDP ? ec2.Port.udpRange(startPort, endPort) : ec2.Port.tcpRange(startPort, endPort);
   }
 
   /**
@@ -737,9 +743,11 @@ export class TaskDefinition extends TaskDefinitionBase {
       // EC2 mode validations
 
       // Container sizes
-      for (const container of this.containers) {
-        if (!container.memoryLimitSpecified) {
-          ret.push(`ECS Container ${container.containerName} must have at least one of 'memoryLimitMiB' or 'memoryReservationMiB' specified`);
+      if (!this._memory) {
+        for (const container of this.containers) {
+          if (!container.memoryLimitSpecified) {
+            ret.push(`ECS Container ${container.containerName} must have at least one of 'memoryLimitMiB' or 'memoryReservationMiB' specified`);
+          }
         }
       }
     }
@@ -756,7 +764,6 @@ export class TaskDefinition extends TaskDefinitionBase {
         }
       }
     });
-
 
     return ret;
   }

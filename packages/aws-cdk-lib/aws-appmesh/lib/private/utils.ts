@@ -1,5 +1,5 @@
-import { Token, TokenComparison } from '../../../core';
 import { Construct } from 'constructs';
+import { Token, TokenComparison } from '../../../core';
 import { CfnVirtualNode } from '../appmesh.generated';
 import { GrpcGatewayRouteMatch } from '../gateway-route-spec';
 import { HeaderMatch } from '../header-match';
@@ -126,7 +126,7 @@ export function validateGrpcMatchArrayLength(metadata?: HeaderMatch[]): void {
  * This is the helper method to validate at least one of gRPC route match type is defined.
  */
 export function validateGrpcRouteMatch(match: GrpcRouteMatch): void {
-  if (match.serviceName === undefined && match.metadata === undefined && match.methodName === undefined) {
+  if (match.serviceName === undefined && match.metadata === undefined && match.methodName === undefined && match.port === undefined) {
     throw new Error('At least one gRPC route match property must be provided');
   }
 }
@@ -135,7 +135,7 @@ export function validateGrpcRouteMatch(match: GrpcRouteMatch): void {
  * This is the helper method to validate at least one of gRPC gateway route match type is defined.
  */
 export function validateGrpcGatewayRouteMatch(match: GrpcGatewayRouteMatch): void {
-  if (match.serviceName === undefined && match.metadata === undefined && match.hostname === undefined) {
+  if (match.serviceName === undefined && match.metadata === undefined && match.hostname === undefined && match.port === undefined) {
     throw new Error('At least one gRPC gateway route match property beside rewriteRequestHostname must be provided');
   }
 }

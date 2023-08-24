@@ -1,6 +1,7 @@
 import { Alarm } from 'aws-cdk-lib/aws-cloudwatch';
 import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import { FilterPattern, LogGroup, MetricFilter } from 'aws-cdk-lib/aws-logs';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 /*
  * Stack verification steps:
@@ -37,5 +38,10 @@ class ExposeMetricIntegStack extends Stack {
 }
 
 const app = new App();
-new ExposeMetricIntegStack(app, 'aws-cdk-expose-metric-integ');
+const stack = new ExposeMetricIntegStack(app, 'aws-cdk-expose-metric-integ');
+
+new IntegTest(app, 'LambdaTest', {
+  testCases: [stack],
+});
+
 app.synth();

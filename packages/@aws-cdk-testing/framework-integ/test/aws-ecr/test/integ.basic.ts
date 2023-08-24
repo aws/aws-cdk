@@ -13,6 +13,10 @@ repo.addToResourcePolicy(new iam.PolicyStatement({
   principals: [new iam.AnyPrincipal()],
 }));
 
+const user = new iam.User(stack, 'MyUser');
+repo.grantRead(user);
+repo.grantPullPush(user);
+
 new cdk.CfnOutput(stack, 'RepositoryURI', {
   value: repo.repositoryUri,
 });

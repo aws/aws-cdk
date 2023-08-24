@@ -211,6 +211,9 @@
    "ap-south-1": {
     "FirehoseCidrBlock": "13.232.67.32/27"
    },
+   "ap-south-2": {
+    "FirehoseCidrBlock": "18.60.192.128/27"
+   },
    "ap-southeast-1": {
     "FirehoseCidrBlock": "13.228.64.192/27"
    },
@@ -252,6 +255,9 @@
    },
    "eu-west-3": {
     "FirehoseCidrBlock": "35.180.1.96/27"
+   },
+   "me-central-1": {
+    "FirehoseCidrBlock": "3.28.159.32/27"
    },
    "me-south-1": {
     "FirehoseCidrBlock": "15.185.91.0/27"

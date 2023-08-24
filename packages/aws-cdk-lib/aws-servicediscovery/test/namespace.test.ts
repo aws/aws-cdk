@@ -23,7 +23,6 @@ describe('namespace', () => {
       },
     });
 
-
   });
 
   test('Public DNS namespace', () => {
@@ -44,7 +43,6 @@ describe('namespace', () => {
       },
     });
 
-
   });
 
   test('Private DNS namespace', () => {
@@ -62,7 +60,6 @@ describe('namespace', () => {
         Ref: 'MyVpcF9F0CA6F',
       },
     });
-
 
   });
 

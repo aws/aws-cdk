@@ -1,3 +1,4 @@
+import * as path from 'path';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -34,7 +35,7 @@ test('Basic canary properties work', () => {
   });
 });
 
-test('Can set `DeleteLambdaResourceOnCanaryDeletion`', () => {
+test('cleanup.LAMBDA introduces custom resource to delete lambda', () => {
   // GIVEN
   const stack = new Stack();
 
@@ -44,14 +45,12 @@ test('Can set `DeleteLambdaResourceOnCanaryDeletion`', () => {
       handler: 'index.handler',
       code: synthetics.Code.fromInline('/* Synthetics handler code'),
     }),
-    enableAutoDeleteLambdas: true,
+    cleanup: synthetics.Cleanup.LAMBDA,
     runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
   });
 
   // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
-    DeleteLambdaResourcesOnCanaryDeletion: true,
-  });
+  Template.fromStack(stack).resourceCountIs('Custom::SyntheticsAutoDeleteUnderlyingResources', 1);
 });
 
 test('Canary can have generated name', () => {
@@ -146,6 +145,35 @@ test('An existing role can be specified instead of auto-created', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
     ExecutionRoleArn: stack.resolve(role.roleArn),
+  });
+});
+
+test('An auto-generated bucket can have lifecycle rules', () => {
+  // GIVEN
+  const stack = new Stack();
+  const lifecycleRules = [{
+    expiration: Duration.days(30),
+  }];
+
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    artifactsBucketLifecycleRules: lifecycleRules,
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+    LifecycleConfiguration: {
+      Rules: [
+        {
+          ExpirationInDays: 30,
+        },
+      ],
+    },
   });
 });
 
@@ -332,7 +360,6 @@ test('Schedule can be set with Cron', () => {
     Schedule: Match.objectLike({ Expression: 'cron(30 * * * ? *)' }),
   });
 });
-
 
 test('Schedule can be set with Expression', () => {
   // GIVEN
@@ -672,5 +699,91 @@ test('Role policy generated as expected', () => {
         ],
       },
     }],
+  });
+});
+
+test('Should create handler with path for recent runtimes', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    canaryName: 'mycanary',
+    test: synthetics.Test.custom({
+      handler: 'folder/canary.functionName',
+      code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
+    }),
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+    Name: 'mycanary',
+    Code: {
+      Handler: 'folder/canary.functionName',
+    },
+    RuntimeVersion: 'syn-nodejs-puppeteer-3.8',
+  });
+});
+
+describe('handler validation', () => {
+  test('legacy runtimes', () => {
+    const stack = new Stack();
+    expect(() => {
+      new synthetics.Canary(stack, 'Canary', {
+        test: synthetics.Test.custom({
+          handler: 'index.functionName',
+          code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
+        }),
+        runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_1_0,
+      });
+    }).toThrow(/Canary Handler must be specified as 'fileName.handler' for legacy runtimes/);
+  });
+
+  test('recent runtimes', () => {
+    const stack = new Stack();
+
+    expect(() => {
+      new synthetics.Canary(stack, 'Canary', {
+        test: synthetics.Test.custom({
+          handler: 'invalidHandler',
+          code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
+        }),
+        runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
+      });
+    }).toThrow(/Canary Handler must be specified either as 'fileName.handler', 'fileName.functionName', or 'folder\/fileName.functionName'/);
+
+    expect(() => {
+      new synthetics.Canary(stack, 'Canary1', {
+        test: synthetics.Test.custom({
+          handler: 'canary.functionName',
+          code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
+        }),
+        runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
+      });
+    }).not.toThrow();
+
+    expect(() => {
+      new synthetics.Canary(stack, 'Canary2', {
+        test: synthetics.Test.custom({
+          handler: 'folder/canary.functionName',
+          code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
+        }),
+        runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
+      });
+    }).not.toThrow();
+  });
+
+  test('handler length', () => {
+    const stack = new Stack();
+    expect(() => {
+      new synthetics.Canary(stack, 'Canary1', {
+        test: synthetics.Test.custom({
+          handler: 'longHandlerName'.repeat(10) + '.handler',
+          code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
+        }),
+        runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
+      });
+    }).toThrow(/Canary Handler length must be between 1 and 128/);
   });
 });

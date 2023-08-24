@@ -1,9 +1,9 @@
-import { PolicyDocument } from '../../aws-iam';
-import { RemovalPolicy, Resource, Token, Tokenization } from '../../core';
-import { CfnReference } from '../../core/lib/private/cfn-reference';
 import { Construct } from 'constructs';
 import { Bucket, IBucket } from './bucket';
 import { CfnBucket, CfnBucketPolicy } from './s3.generated';
+import { PolicyDocument } from '../../aws-iam';
+import { RemovalPolicy, Resource, Token, Tokenization } from '../../core';
+import { CfnReference } from '../../core/lib/private/cfn-reference';
 
 export interface BucketPolicyProps {
   /**

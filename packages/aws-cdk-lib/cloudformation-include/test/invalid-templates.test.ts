@@ -1,8 +1,8 @@
 import * as path from 'path';
+import * as constructs from 'constructs';
 import { Template } from '../../assertions';
 import * as core from '../../core';
 import * as cxapi from '../../cx-api';
-import * as constructs from 'constructs';
 import * as inc from '../lib';
 
 describe('CDK Include', () => {

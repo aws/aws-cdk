@@ -80,7 +80,6 @@ describe('WebSocketRoute', () => {
     });
   });
 
-
   test('integration cannot be used across WebSocketApis', () => {
     // GIVEN
     const integration = new DummyIntegration();
@@ -165,7 +164,6 @@ describe('WebSocketRoute', () => {
     });
   });
 });
-
 
 class DummyIntegration extends WebSocketRouteIntegration {
   constructor(name?: string) {

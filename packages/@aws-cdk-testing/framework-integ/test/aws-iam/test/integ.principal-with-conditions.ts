@@ -16,7 +16,6 @@ new iam.Role(stack, 'TestRole', {
   assumedBy: principal,
 });
 
-
 new IntegTest(app, 'PrincipalWithCondition', {
   testCases: [stack],
 });

@@ -513,6 +513,11 @@
      "Ref": "EcsDefaultClusterMnL3mNNYNVpc18E0451A"
     },
     "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
      "MaximumPercent": 200,
      "MinimumHealthyPercent": 50
     },
@@ -555,7 +560,8 @@
    },
    "DependsOn": [
     "ServiceLBPublicListenerECSGroup0CC8688C",
-    "ServiceLBPublicListener46709EAA"
+    "ServiceLBPublicListener46709EAA",
+    "TaskTaskRoleE98524A1"
    ]
   },
   "ServiceSecurityGroupEEA09B68": {
@@ -572,7 +578,10 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   }
+   },
+   "DependsOn": [
+    "TaskTaskRoleE98524A1"
+   ]
   },
   "ServiceSecurityGroupfromTestStackServiceLBSecurityGroup76260E3B8004FB511A": {
    "Type": "AWS::EC2::SecurityGroupIngress",
@@ -593,7 +602,10 @@
      ]
     },
     "ToPort": 80
-   }
+   },
+   "DependsOn": [
+    "TaskTaskRoleE98524A1"
+   ]
   },
   "EcsDefaultClusterMnL3mNNYNVpc18E0451A": {
    "Type": "AWS::ECS::Cluster"

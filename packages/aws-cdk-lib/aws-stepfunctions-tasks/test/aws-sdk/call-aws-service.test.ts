@@ -24,7 +24,7 @@ test('CallAwsService task', () => {
   });
 
   new sfn.StateMachine(stack, 'StateMachine', {
-    definition: task,
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
   });
 
   // THEN
@@ -73,7 +73,7 @@ test('with custom IAM action', () => {
   });
 
   new sfn.StateMachine(stack, 'StateMachine', {
-    definition: task,
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
   });
 
   // THEN
@@ -118,7 +118,7 @@ test('with unresolved tokens', () => {
   });
 
   new sfn.StateMachine(stack, 'StateMachine', {
-    definition: task,
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
   });
 
   // THEN
@@ -176,7 +176,7 @@ test('can pass additional IAM statements', () => {
   });
 
   new sfn.StateMachine(stack, 'StateMachine', {
-    definition: task,
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
   });
 
   // THEN
@@ -212,7 +212,7 @@ test('IAM policy for sfn', () => {
   });
 
   new sfn.StateMachine(stack, 'StateMachine', {
-    definition: task,
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
   });
 
   // THEN

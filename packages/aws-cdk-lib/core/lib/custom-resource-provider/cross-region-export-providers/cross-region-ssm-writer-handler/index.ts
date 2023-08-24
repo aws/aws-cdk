@@ -1,6 +1,6 @@
 /*eslint-disable no-console*/
 /* eslint-disable import/no-extraneous-dependencies */
-import { SSM } from 'aws-sdk';
+import { InvalidResourceId, SSM } from '@aws-sdk/client-ssm';
 import { CrossRegionExports, ExportWriterCRProps } from '../types';
 
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
@@ -35,7 +35,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         if (removedExportsNames.length > 0) {
           await ssm.deleteParameters({
             Names: removedExportsNames,
-          }).promise();
+          });
         }
 
         // also throw an error if we are creating a new export that already exists for some reason
@@ -50,7 +50,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         // if none are in use then delete all of them
         await ssm.deleteParameters({
           Names: Object.keys(exports),
-        }).promise();
+        });
         return;
       default:
         return;
@@ -70,7 +70,7 @@ async function putParameters(ssm: SSM, parameters: CrossRegionExports): Promise<
       Name: name,
       Value: value,
       Type: 'String',
-    }).promise();
+    });
   }));
 }
 
@@ -103,9 +103,9 @@ async function isInUse(ssm: SSM, parameterName: string): Promise<Set<string>> {
     const result = await ssm.listTagsForResource({
       ResourceId: parameterName,
       ResourceType: 'Parameter',
-    }).promise();
+    });
     result.TagList?.forEach(tag => {
-      const tagParts = tag.Key.split(':');
+      const tagParts = tag.Key?.split(':') ?? [];
       if (tagParts[0] === 'aws-cdk' && tagParts[1] === 'strong-ref') {
         tagResults.add(tagParts[2]);
       }
@@ -113,7 +113,7 @@ async function isInUse(ssm: SSM, parameterName: string): Promise<Set<string>> {
   } catch (e: any) {
     // an InvalidResourceId means that the parameter doesn't exist
     // which we should ignore since that means it's not in use
-    if (e.code === 'InvalidResourceId') {
+    if (e instanceof InvalidResourceId) {
       return new Set();
     }
     throw e;

@@ -1,9 +1,9 @@
+import { Construct } from 'constructs';
 import { Template } from '../../assertions';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import * as cdk from '../../core';
-import { Construct } from 'constructs';
 import * as autoscaling from '../lib';
 
 describe('scaling', () => {
@@ -324,6 +324,60 @@ test('step scaling with evaluation period configured', () => {
     MetricName: 'Metric',
     Namespace: 'Test',
     Threshold: 100,
+  });
+});
+
+describe('step-scaling-policy scalingSteps length validation checks', () => {
+  test('scalingSteps must have at least 2 steps', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fixture = new ASGFixture(stack, 'Fixture');
+
+    expect(() => {
+      fixture.asg.scaleOnMetric('Metric', {
+        metric: new cloudwatch.Metric({
+          metricName: 'Legs',
+          namespace: 'Henk',
+          dimensionsMap: { Mustache: 'Bushy' },
+        }),
+        estimatedInstanceWarmup: cdk.Duration.seconds(150),
+        // only one scaling step throws an error.
+        scalingSteps: [
+          { lower: 0, upper: 2, change: +1 },
+        ],
+      });
+    }).toThrow(/must supply at least 2/);
+  });
+
+  test('scalingSteps has a maximum of 40 steps', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fixture = new ASGFixture(stack, 'Fixture');
+
+    const numSteps = 41;
+    const messagesPerTask = 20;
+    let steps: autoscaling.ScalingInterval[] = [];
+
+    for (let i = 0; i < numSteps; ++i) {
+      const step: autoscaling.ScalingInterval = {
+        lower: i * messagesPerTask,
+        upper: i * (messagesPerTask + 1) - 1,
+        change: i + 1,
+      };
+      steps.push(step);
+    }
+
+    expect(() => {
+      fixture.asg.scaleOnMetric('Metric', {
+        metric: new cloudwatch.Metric({
+          metricName: 'Legs',
+          namespace: 'Henk',
+          dimensionsMap: { Mustache: 'Bushy' },
+        }),
+        estimatedInstanceWarmup: cdk.Duration.seconds(150),
+        scalingSteps: steps,
+      });
+    }).toThrow('\'scalingSteps\' can have at most 40 steps, got 41');
   });
 });
 

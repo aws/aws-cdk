@@ -371,7 +371,6 @@ function isConcatable(obj: any): boolean {
   return ['string', 'number'].includes(typeof obj) && !Token.isUnresolved(obj);
 }
 
-
 /**
  * Return whether the given value represents a CloudFormation intrinsic
  */

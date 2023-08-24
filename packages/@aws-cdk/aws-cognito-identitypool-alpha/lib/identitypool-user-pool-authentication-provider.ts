@@ -2,7 +2,7 @@ import {
   IUserPool,
   IUserPoolClient,
 } from 'aws-cdk-lib/aws-cognito';
-import { Stack } from 'aws-cdk-lib';
+import { Stack } from 'aws-cdk-lib/core';
 import {
   Construct, Node,
 } from 'constructs';

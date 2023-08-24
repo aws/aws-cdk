@@ -1,4 +1,3 @@
-import * as cdk from '../../core';
 import { IConstruct } from 'constructs';
 import { Group } from './group';
 import {
@@ -7,6 +6,7 @@ import {
 } from './principals';
 import { normalizeStatement } from './private/postprocess-policy-document';
 import { LITERAL_STRING_KEY, mergePrincipal, sum } from './private/util';
+import * as cdk from '../../core';
 
 const ensureArrayOrUndefined = (field: any) => {
   if (field === undefined) {
@@ -402,12 +402,36 @@ export class PolicyStatement {
   }
 
   /**
-   * Add a condition that limits to a given account
+   * Add a `StringEquals` condition that limits to a given account from `sts:ExternalId`.
    *
    * This method can only be called once: subsequent calls will overwrite earlier calls.
+   *
+   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-user_externalid.html
    */
   public addAccountCondition(accountId: string) {
     this.addCondition('StringEquals', { 'sts:ExternalId': accountId });
+  }
+
+  /**
+   * Add an `StringEquals` condition that limits to a given account from `aws:SourceAccount`.
+   *
+   * This method can only be called once: subsequent calls will overwrite earlier calls.
+   *
+   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html#condition-keys-sourceaccount
+   */
+  public addSourceAccountCondition(accountId: string) {
+    this.addCondition('StringEquals', { 'aws:SourceAccount': accountId });
+  }
+
+  /**
+   * Add an `ArnEquals` condition that limits to a given resource arn from `aws:SourceArn`.
+   *
+   * This method can only be called once: subsequent calls will overwrite earlier calls.
+   *
+   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html#condition-keys-sourcearn
+   */
+  public addSourceArnCondition(arn: string) {
+    this.addCondition('ArnEquals', { 'aws:SourceArn': arn });
   }
 
   /**

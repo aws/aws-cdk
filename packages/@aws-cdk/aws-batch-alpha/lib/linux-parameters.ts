@@ -1,4 +1,4 @@
-import * as cdk from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnJobDefinition } from 'aws-cdk-lib/aws-batch';
 
@@ -120,7 +120,6 @@ export class LinuxParameters extends Construct {
   public addTmpfs(...tmpfs: Tmpfs[]) {
     this.tmpfs.push(...tmpfs);
   }
-
 
   /**
    * Renders the Linux parameters to the Batch version of this resource,

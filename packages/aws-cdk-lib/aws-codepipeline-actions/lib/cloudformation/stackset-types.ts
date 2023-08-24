@@ -1,7 +1,7 @@
+import { Construct } from 'constructs';
 import * as codepipeline from '../../../aws-codepipeline';
 import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
-import { Construct } from 'constructs';
 
 /**
  * Options in common between both StackSet actions
@@ -177,7 +177,6 @@ export abstract class StackInstances {
       }
     }();
   }
-
 
   /**
    * The artifacts referenced by the properties of this deployment target
@@ -469,7 +468,6 @@ export enum StackSetOrganizationsAutoDeployment {
    */
   ENABLED_WITH_STACK_RETENTION = 'EnabledWithStackRetention'
 }
-
 
 /**
  * Properties for configuring self-managed permissions

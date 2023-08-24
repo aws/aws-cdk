@@ -1,6 +1,6 @@
 import { HttpAuthorizer, HttpAuthorizerType, HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig, IHttpRouteAuthorizer } from '@aws-cdk/aws-apigatewayv2-alpha';
 import { IUserPool, IUserPoolClient } from 'aws-cdk-lib/aws-cognito';
-import { Stack } from 'aws-cdk-lib';
+import { Stack } from 'aws-cdk-lib/core';
 
 /**
  * Properties to initialize HttpUserPoolAuthorizer.

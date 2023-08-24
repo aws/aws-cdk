@@ -1,13 +1,13 @@
-import * as ec2 from '../../aws-ec2';
-import * as iam from '../../aws-iam';
-import * as cxschema from '../../cloud-assembly-schema';
-import { ContextProvider, Duration, Lazy, Resource, Stack } from '../../core';
 import { Construct } from 'constructs';
 import { HostedZoneProviderProps } from './hosted-zone-provider';
 import { HostedZoneAttributes, IHostedZone, PublicHostedZoneAttributes } from './hosted-zone-ref';
 import { CaaAmazonRecord, ZoneDelegationRecord } from './record-set';
 import { CfnHostedZone } from './route53.generated';
-import { makeHostedZoneArn, validateZoneName } from './util';
+import { makeGrantDelegation, makeHostedZoneArn, validateZoneName } from './util';
+import * as ec2 from '../../aws-ec2';
+import * as iam from '../../aws-iam';
+import * as cxschema from '../../cloud-assembly-schema';
+import { ContextProvider, Duration, Lazy, Resource, Stack } from '../../core';
 
 /**
  * Common properties to create a Route 53 hosted zone
@@ -18,6 +18,13 @@ export interface CommonHostedZoneProps {
    * name, specify a fully qualified domain name.
    */
   readonly zoneName: string;
+
+  /**
+   * Whether to add a trailing dot to the zone name.
+   *
+   * @default true
+   */
+  readonly addTrailingDot?: boolean;
 
   /**
    * Any comments that you want to include about the hosted zone.
@@ -136,7 +143,6 @@ export class HostedZone extends Resource implements IHostedZone {
     if (response.Name.endsWith('.')) {
       response.Name = response.Name.substring(0, response.Name.length - 1);
     }
-
     response.Id = response.Id.replace('/hostedzone/', '');
 
     return HostedZone.fromHostedZoneAttributes(scope, id, {
@@ -159,8 +165,11 @@ export class HostedZone extends Resource implements IHostedZone {
 
     validateZoneName(props.zoneName);
 
+    // Add a dot at the end if the addTrailingDot property is not false.
+    const zoneName = (props.addTrailingDot === false || props.zoneName.endsWith('.')) ? props.zoneName : `${props.zoneName}.`;
+
     const resource = new CfnHostedZone(this, 'Resource', {
-      name: props.zoneName + '.',
+      name: zoneName,
       hostedZoneConfig: props.comment ? { comment: props.comment } : undefined,
       queryLoggingConfig: props.queryLogsLogGroupArn ? { cloudWatchLogsLogGroupArn: props.queryLogsLogGroupArn } : undefined,
       vpcs: Lazy.any({ produce: () => this.vpcs.length === 0 ? undefined : this.vpcs }),
@@ -229,7 +238,12 @@ export interface PublicHostedZoneProps extends CommonHostedZoneProps {
 /**
  * Represents a Route 53 public hosted zone
  */
-export interface IPublicHostedZone extends IHostedZone { }
+export interface IPublicHostedZone extends IHostedZone {
+  /**
+   * Grant permissions to add delegation records to this zone
+   */
+  grantDelegation(grantee: iam.IGrantable): iam.Grant;
+}
 
 /**
  * Create a Route53 public hosted zone.
@@ -255,6 +269,9 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }
+      public grantDelegation(grantee: iam.IGrantable): iam.Grant {
+        return makeGrantDelegation(grantee, this.hostedZoneArn);
+      };
     }
     return new Import(scope, id);
   }
@@ -275,6 +292,9 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }
+      public grantDelegation(grantee: iam.IGrantable): iam.Grant {
+        return makeGrantDelegation(grantee, this.hostedZoneArn);
+      };
     }
     return new Import(scope, id);
   }
@@ -345,28 +365,8 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
     });
   }
 
-  /**
-   * Grant permissions to add delegation records to this zone
-   */
-  public grantDelegation(grantee: iam.IGrantable) {
-    const g1 = iam.Grant.addToPrincipal({
-      grantee,
-      actions: ['route53:ChangeResourceRecordSets'],
-      resourceArns: [this.hostedZoneArn],
-      conditions: {
-        'ForAllValues:StringEquals': {
-          'route53:ChangeResourceRecordSetsRecordTypes': ['NS'],
-          'route53:ChangeResourceRecordSetsActions': ['UPSERT', 'DELETE'],
-        },
-      },
-    });
-    const g2 = iam.Grant.addToPrincipal({
-      grantee,
-      actions: ['route53:ListHostedZonesByName'],
-      resourceArns: ['*'],
-    });
-
-    return g1.combine(g2);
+  public grantDelegation(grantee: iam.IGrantable): iam.Grant {
+    return makeGrantDelegation(grantee, this.hostedZoneArn);
   }
 }
 

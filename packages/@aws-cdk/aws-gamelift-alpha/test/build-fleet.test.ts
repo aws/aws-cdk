@@ -680,5 +680,4 @@ describe('build fleet', () => {
     });
   });
 
-
 });

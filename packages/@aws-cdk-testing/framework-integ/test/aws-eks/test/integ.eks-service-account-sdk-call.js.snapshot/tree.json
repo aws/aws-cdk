@@ -71,9 +71,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             0,
@@ -101,7 +98,10 @@
                             "key": "Name",
                             "value": "aws-eks-service-account-sdk-calls-test/Vpc/PublicSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -123,9 +123,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "tags": [
                           {
                             "key": "kubernetes.io/role/elb",
@@ -135,7 +132,10 @@
                             "key": "Name",
                             "value": "aws-eks-service-account-sdk-calls-test/Vpc/PublicSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -168,12 +168,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
                           "Ref": "VpcIGWD7BA715C"
+                        },
+                        "routeTableId": {
+                          "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
                         }
                       }
                     },
@@ -212,14 +212,14 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
-                        "subnetId": {
-                          "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
-                        },
                         "allocationId": {
                           "Fn::GetAtt": [
                             "VpcPublicSubnet1EIPD7E02669",
                             "AllocationId"
                           ]
+                        },
+                        "subnetId": {
+                          "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
                         },
                         "tags": [
                           {
@@ -254,9 +254,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             1,
@@ -284,7 +281,10 @@
                             "key": "Name",
                             "value": "aws-eks-service-account-sdk-calls-test/Vpc/PublicSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -306,9 +306,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "tags": [
                           {
                             "key": "kubernetes.io/role/elb",
@@ -318,7 +315,10 @@
                             "key": "Name",
                             "value": "aws-eks-service-account-sdk-calls-test/Vpc/PublicSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -351,12 +351,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VpcPublicSubnet2RouteTable94F7E489"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
                           "Ref": "VpcIGWD7BA715C"
+                        },
+                        "routeTableId": {
+                          "Ref": "VpcPublicSubnet2RouteTable94F7E489"
                         }
                       }
                     },
@@ -381,9 +381,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             0,
@@ -411,7 +408,10 @@
                             "key": "Name",
                             "value": "aws-eks-service-account-sdk-calls-test/Vpc/PrivateSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -433,9 +433,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "tags": [
                           {
                             "key": "kubernetes.io/role/internal-elb",
@@ -445,7 +442,10 @@
                             "key": "Name",
                             "value": "aws-eks-service-account-sdk-calls-test/Vpc/PrivateSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -478,12 +478,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "natGatewayId": {
                           "Ref": "VpcPublicSubnet1NATGateway4D7517AA"
+                        },
+                        "routeTableId": {
+                          "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
                         }
                       }
                     },
@@ -508,9 +508,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             1,
@@ -538,7 +535,10 @@
                             "key": "Name",
                             "value": "aws-eks-service-account-sdk-calls-test/Vpc/PrivateSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -560,9 +560,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "tags": [
                           {
                             "key": "kubernetes.io/role/internal-elb",
@@ -572,7 +569,10 @@
                             "key": "Name",
                             "value": "aws-eks-service-account-sdk-calls-test/Vpc/PrivateSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -605,12 +605,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VpcPrivateSubnet2RouteTableA678073B"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "natGatewayId": {
                           "Ref": "VpcPublicSubnet1NATGateway4D7517AA"
+                        },
+                        "routeTableId": {
+                          "Ref": "VpcPrivateSubnet2RouteTableA678073B"
                         }
                       }
                     },
@@ -650,11 +650,11 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
-                    "vpcId": {
-                      "Ref": "Vpc8378EB38"
-                    },
                     "internetGatewayId": {
                       "Ref": "VpcIGWD7BA715C"
+                    },
+                    "vpcId": {
+                      "Ref": "Vpc8378EB38"
                     }
                   }
                 },
@@ -669,10 +669,222 @@
               "version": "0.0.0"
             }
           },
+          "KubectlLayer": {
+            "id": "KubectlLayer",
+            "path": "aws-eks-service-account-sdk-calls-test/KubectlLayer",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "aws-eks-service-account-sdk-calls-test/KubectlLayer/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "aws-eks-service-account-sdk-calls-test/KubectlLayer/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "aws-eks-service-account-sdk-calls-test/KubectlLayer/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-eks-service-account-sdk-calls-test/KubectlLayer/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::LayerVersion",
+                  "aws:cdk:cloudformation:props": {
+                    "content": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "c475180f5b1bbabac165414da13a9b843b111cd3b6d5fae9c954c006640c4064.zip"
+                    },
+                    "description": "/opt/kubectl/kubectl 1.24; /opt/helm/helm 3.9",
+                    "licenseInfo": "Apache-2.0"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnLayerVersion",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/lambda-layer-kubectl-v24.KubectlV24Layer",
+              "version": "2.0.242"
+            }
+          },
           "Cluster": {
             "id": "Cluster",
             "path": "aws-eks-service-account-sdk-calls-test/Cluster",
             "children": {
+              "KubectlHandlerRole": {
+                "id": "KubectlHandlerRole",
+                "path": "aws-eks-service-account-sdk-calls-test/Cluster/KubectlHandlerRole",
+                "children": {
+                  "ImportKubectlHandlerRole": {
+                    "id": "ImportKubectlHandlerRole",
+                    "path": "aws-eks-service-account-sdk-calls-test/Cluster/KubectlHandlerRole/ImportKubectlHandlerRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-eks-service-account-sdk-calls-test/Cluster/KubectlHandlerRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          },
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+                              ]
+                            ]
+                          },
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+                              ]
+                            ]
+                          },
+                          {
+                            "Fn::If": [
+                              "ClusterHasEcrPublic8EE1114E",
+                              {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly"
+                                  ]
+                                ]
+                              },
+                              {
+                                "Ref": "AWS::NoValue"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-eks-service-account-sdk-calls-test/Cluster/KubectlHandlerRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-eks-service-account-sdk-calls-test/Cluster/KubectlHandlerRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "eks:DescribeCluster",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "Cluster9EE0221C",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "ClusterCreationRole360249B6",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "ClusterKubectlHandlerRoleDefaultPolicyE44083DD",
+                            "roles": [
+                              {
+                                "Ref": "ClusterKubectlHandlerRole94549F93"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
               "Role": {
                 "id": "Role",
                 "path": "aws-eks-service-account-sdk-calls-test/Cluster/Role",
@@ -792,22 +1004,26 @@
                                   "Action": "sts:AssumeRole",
                                   "Effect": "Allow",
                                   "Principal": {
-                                    "AWS": {
-                                      "Fn::Join": [
-                                        "",
-                                        [
-                                          "arn:",
-                                          {
-                                            "Ref": "AWS::Partition"
-                                          },
-                                          ":iam::",
-                                          {
-                                            "Ref": "AWS::AccountId"
-                                          },
-                                          ":root"
+                                    "AWS": [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "ClusterKubectlHandlerRole94549F93",
+                                          "Arn"
                                         ]
-                                      ]
-                                    }
+                                      },
+                                      {
+                                        "Fn::GetAtt": [
+                                          "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
+                                          "Outputs.awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole82EF064DArn"
+                                        ]
+                                      },
+                                      {
+                                        "Fn::GetAtt": [
+                                          "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
+                                          "Outputs.awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderOnEventHandlerServiceRole771D2C89Arn"
+                                        ]
+                                      }
+                                    ]
                                   }
                                 }
                               ],
@@ -930,7 +1146,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.2.69"
                 }
               },
               "KubectlReadyBarrier": {
@@ -949,99 +1165,11 @@
                   "version": "0.0.0"
                 }
               },
-              "MastersRole": {
-                "id": "MastersRole",
-                "path": "aws-eks-service-account-sdk-calls-test/Cluster/MastersRole",
-                "children": {
-                  "ImportMastersRole": {
-                    "id": "ImportMastersRole",
-                    "path": "aws-eks-service-account-sdk-calls-test/Cluster/MastersRole/ImportMastersRole",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-eks-service-account-sdk-calls-test/Cluster/MastersRole/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                      "aws:cdk:cloudformation:props": {
-                        "assumeRolePolicyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sts:AssumeRole",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "AWS": {
-                                  "Fn::Join": [
-                                    "",
-                                    [
-                                      "arn:",
-                                      {
-                                        "Ref": "AWS::Partition"
-                                      },
-                                      ":iam::",
-                                      {
-                                        "Ref": "AWS::AccountId"
-                                      },
-                                      ":root"
-                                    ]
-                                  ]
-                                }
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
+              "HasEcrPublic": {
+                "id": "HasEcrPublic",
+                "path": "aws-eks-service-account-sdk-calls-test/Cluster/HasEcrPublic",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
-                }
-              },
-              "AwsAuth": {
-                "id": "AwsAuth",
-                "path": "aws-eks-service-account-sdk-calls-test/Cluster/AwsAuth",
-                "children": {
-                  "manifest": {
-                    "id": "manifest",
-                    "path": "aws-eks-service-account-sdk-calls-test/Cluster/AwsAuth/manifest",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-eks-service-account-sdk-calls-test/Cluster/AwsAuth/manifest/Resource",
-                        "children": {
-                          "Default": {
-                            "id": "Default",
-                            "path": "aws-eks-service-account-sdk-calls-test/Cluster/AwsAuth/manifest/Resource/Default",
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.CfnResource",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.CustomResource",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_eks.KubernetesManifest",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_eks.AwsAuth",
+                  "fqn": "aws-cdk-lib.CfnCondition",
                   "version": "0.0.0"
                 }
               },
@@ -1136,14 +1264,24 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EKS::Nodegroup",
                       "aws:cdk:cloudformation:props": {
+                        "amiType": "AL2_x86_64",
                         "clusterName": {
                           "Ref": "Cluster9EE0221C"
                         },
+                        "forceUpdateEnabled": true,
+                        "instanceTypes": [
+                          "m5.large"
+                        ],
                         "nodeRole": {
                           "Fn::GetAtt": [
                             "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04",
                             "Arn"
                           ]
+                        },
+                        "scalingConfig": {
+                          "desiredSize": 2,
+                          "maxSize": 2,
+                          "minSize": 2
                         },
                         "subnets": [
                           {
@@ -1152,17 +1290,7 @@
                           {
                             "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
                           }
-                        ],
-                        "amiType": "AL2_x86_64",
-                        "forceUpdateEnabled": true,
-                        "instanceTypes": [
-                          "m5.large"
-                        ],
-                        "scalingConfig": {
-                          "desiredSize": 2,
-                          "maxSize": 2,
-                          "minSize": 2
-                        }
+                        ]
                       }
                     },
                     "constructInfo": {
@@ -1176,19 +1304,41 @@
                   "version": "0.0.0"
                 }
               },
-              "ConfigCommand": {
-                "id": "ConfigCommand",
-                "path": "aws-eks-service-account-sdk-calls-test/Cluster/ConfigCommand",
+              "AwsAuth": {
+                "id": "AwsAuth",
+                "path": "aws-eks-service-account-sdk-calls-test/Cluster/AwsAuth",
+                "children": {
+                  "manifest": {
+                    "id": "manifest",
+                    "path": "aws-eks-service-account-sdk-calls-test/Cluster/AwsAuth/manifest",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-eks-service-account-sdk-calls-test/Cluster/AwsAuth/manifest/Resource",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "aws-eks-service-account-sdk-calls-test/Cluster/AwsAuth/manifest/Resource/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_eks.KubernetesManifest",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnOutput",
-                  "version": "0.0.0"
-                }
-              },
-              "GetTokenCommand": {
-                "id": "GetTokenCommand",
-                "path": "aws-eks-service-account-sdk-calls-test/Cluster/GetTokenCommand",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "fqn": "aws-cdk-lib.aws_eks.AwsAuth",
                   "version": "0.0.0"
                 }
               },
@@ -1470,7 +1620,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "ad44c2b0638f04871c889d78e71dea90ffae67b9cc4aa4366d5102db42435ee1.zip"
+                          "s3Key": "3f579d6c1ab146cac713730c96809dd4a9c5d9750440fb835ab20fd6925e528c.zip"
                         },
                         "description": "/opt/nodejs/node_modules/proxy-agent"
                       }
@@ -1540,47 +1690,6 @@
                           "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                           "version": "0.0.0"
                         }
-                      },
-                      "DefaultPolicy": {
-                        "id": "DefaultPolicy",
-                        "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/DefaultPolicy",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/DefaultPolicy/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                              "aws:cdk:cloudformation:props": {
-                                "policyDocument": {
-                                  "Statement": [
-                                    {
-                                      "Action": "sts:AssumeRole",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Ref": "referencetoawseksserviceaccountsdkcallstestClusterCreationRoleABCB465FArn"
-                                      }
-                                    }
-                                  ],
-                                  "Version": "2012-10-17"
-                                },
-                                "policyName": "OnEventHandlerServiceRoleDefaultPolicyC57085D4",
-                                "roles": [
-                                  {
-                                    "Ref": "OnEventHandlerServiceRole15A26729"
-                                  }
-                                ]
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Policy",
-                          "version": "0.0.0"
-                        }
                       }
                     },
                     "constructInfo": {
@@ -1624,13 +1733,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "68b8fc42fe6d1eb6e6c39212ce770fac02511440fecfc5b69a904fe8a19f6b8e.zip"
-                        },
-                        "role": {
-                          "Fn::GetAtt": [
-                            "OnEventHandlerServiceRole15A26729",
-                            "Arn"
-                          ]
+                          "s3Key": "bb544555825b6abfdf2cf0c13f9410a77d62ad0fe0bf5c38cef55631cf427f31.zip"
                         },
                         "description": "onEvent handler for EKS cluster resource provider",
                         "environment": {
@@ -1644,7 +1747,13 @@
                             "Ref": "NodeProxyAgentLayer924C1971"
                           }
                         ],
-                        "runtime": "nodejs14.x",
+                        "role": {
+                          "Fn::GetAtt": [
+                            "OnEventHandlerServiceRole15A26729",
+                            "Arn"
+                          ]
+                        },
+                        "runtime": "nodejs18.x",
                         "timeout": 60
                       }
                     },
@@ -1713,47 +1822,6 @@
                           "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                           "version": "0.0.0"
                         }
-                      },
-                      "DefaultPolicy": {
-                        "id": "DefaultPolicy",
-                        "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/DefaultPolicy",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/DefaultPolicy/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                              "aws:cdk:cloudformation:props": {
-                                "policyDocument": {
-                                  "Statement": [
-                                    {
-                                      "Action": "sts:AssumeRole",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Ref": "referencetoawseksserviceaccountsdkcallstestClusterCreationRoleABCB465FArn"
-                                      }
-                                    }
-                                  ],
-                                  "Version": "2012-10-17"
-                                },
-                                "policyName": "IsCompleteHandlerServiceRoleDefaultPolicy8F64197B",
-                                "roles": [
-                                  {
-                                    "Ref": "IsCompleteHandlerServiceRole5810CC58"
-                                  }
-                                ]
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Policy",
-                          "version": "0.0.0"
-                        }
                       }
                     },
                     "constructInfo": {
@@ -1797,13 +1865,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "68b8fc42fe6d1eb6e6c39212ce770fac02511440fecfc5b69a904fe8a19f6b8e.zip"
-                        },
-                        "role": {
-                          "Fn::GetAtt": [
-                            "IsCompleteHandlerServiceRole5810CC58",
-                            "Arn"
-                          ]
+                          "s3Key": "bb544555825b6abfdf2cf0c13f9410a77d62ad0fe0bf5c38cef55631cf427f31.zip"
                         },
                         "description": "isComplete handler for EKS cluster resource provider",
                         "environment": {
@@ -1817,7 +1879,13 @@
                             "Ref": "NodeProxyAgentLayer924C1971"
                           }
                         ],
-                        "runtime": "nodejs14.x",
+                        "role": {
+                          "Fn::GetAtt": [
+                            "IsCompleteHandlerServiceRole5810CC58",
+                            "Arn"
+                          ]
+                        },
+                        "runtime": "nodejs18.x",
                         "timeout": 60
                       }
                     },
@@ -2020,13 +2088,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
-                            },
-                            "role": {
-                              "Fn::GetAtt": [
-                                "ProviderframeworkonEventServiceRole9FF04296",
-                                "Arn"
-                              ]
+                              "s3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
                             },
                             "description": "AWS CDK resource provider framework - onEvent (aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
@@ -2049,7 +2111,13 @@
                               }
                             },
                             "handler": "framework.onEvent",
-                            "runtime": "nodejs14.x",
+                            "role": {
+                              "Fn::GetAtt": [
+                                "ProviderframeworkonEventServiceRole9FF04296",
+                                "Arn"
+                              ]
+                            },
+                            "runtime": "nodejs18.x",
                             "timeout": 900
                           }
                         },
@@ -2241,13 +2309,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
-                            },
-                            "role": {
-                              "Fn::GetAtt": [
-                                "ProviderframeworkisCompleteServiceRoleB1087139",
-                                "Arn"
-                              ]
+                              "s3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
                             },
                             "description": "AWS CDK resource provider framework - isComplete (aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
@@ -2267,7 +2329,13 @@
                               }
                             },
                             "handler": "framework.isComplete",
-                            "runtime": "nodejs14.x",
+                            "role": {
+                              "Fn::GetAtt": [
+                                "ProviderframeworkisCompleteServiceRoleB1087139",
+                                "Arn"
+                              ]
+                            },
+                            "runtime": "nodejs18.x",
                             "timeout": 900
                           }
                         },
@@ -2459,13 +2527,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
-                            },
-                            "role": {
-                              "Fn::GetAtt": [
-                                "ProviderframeworkonTimeoutServiceRole28643D26",
-                                "Arn"
-                              ]
+                              "s3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
                             },
                             "description": "AWS CDK resource provider framework - onTimeout (aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
@@ -2485,7 +2547,13 @@
                               }
                             },
                             "handler": "framework.onTimeout",
-                            "runtime": "nodejs14.x",
+                            "role": {
+                              "Fn::GetAtt": [
+                                "ProviderframeworkonTimeoutServiceRole28643D26",
+                                "Arn"
+                              ]
+                            },
+                            "runtime": "nodejs18.x",
                             "timeout": 900
                           }
                         },
@@ -2638,7 +2706,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.2.69"
                     }
                   }
                 },
@@ -2647,19 +2715,27 @@
                   "version": "0.0.0"
                 }
               },
-              "awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderframeworkonEvent2557A061Arn": {
-                "id": "awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderframeworkonEvent2557A061Arn",
-                "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderframeworkonEvent2557A061Arn",
+              "awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderOnEventHandlerServiceRole771D2C89Arn": {
+                "id": "awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderOnEventHandlerServiceRole771D2C89Arn",
+                "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderOnEventHandlerServiceRole771D2C89Arn",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
                 }
               },
-              "reference-to-awseksserviceaccountsdkcallstestClusterCreationRoleABCB465FArn": {
-                "id": "reference-to-awseksserviceaccountsdkcallstestClusterCreationRoleABCB465FArn",
-                "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/reference-to-awseksserviceaccountsdkcallstestClusterCreationRoleABCB465FArn",
+              "awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole82EF064DArn": {
+                "id": "awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole82EF064DArn",
+                "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole82EF064DArn",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnParameter",
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderframeworkonEvent2557A061Arn": {
+                "id": "awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderframeworkonEvent2557A061Arn",
+                "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderframeworkonEvent2557A061Arn",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
                 }
               }
@@ -2695,17 +2771,9 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/7997706026c4687dcb39e865cf51cdd88da0fdeac17085b623fbe71ca950de53.json"
+                          "/2943b40bb9c544c5846912c9d002545dba57f14bc7cd3ebdd5d83b53b8845c74.json"
                         ]
                       ]
-                    },
-                    "parameters": {
-                      "referencetoawseksserviceaccountsdkcallstestClusterCreationRoleABCB465FArn": {
-                        "Fn::GetAtt": [
-                          "ClusterCreationRole360249B6",
-                          "Arn"
-                        ]
-                      }
                     }
                   }
                 },
@@ -2717,7 +2785,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.270"
+              "version": "10.2.69"
             }
           },
           "@aws-cdk--aws-eks.KubectlProvider": {
@@ -2728,155 +2796,6 @@
                 "id": "Handler",
                 "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/Handler",
                 "children": {
-                  "ServiceRole": {
-                    "id": "ServiceRole",
-                    "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole",
-                    "children": {
-                      "ImportServiceRole": {
-                        "id": "ImportServiceRole",
-                        "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole/ImportServiceRole",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.Resource",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                          "aws:cdk:cloudformation:props": {
-                            "assumeRolePolicyDocument": {
-                              "Statement": [
-                                {
-                                  "Action": "sts:AssumeRole",
-                                  "Effect": "Allow",
-                                  "Principal": {
-                                    "Service": "lambda.amazonaws.com"
-                                  }
-                                }
-                              ],
-                              "Version": "2012-10-17"
-                            },
-                            "managedPolicyArns": [
-                              {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:",
-                                    {
-                                      "Ref": "AWS::Partition"
-                                    },
-                                    ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-                                  ]
-                                ]
-                              },
-                              {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:",
-                                    {
-                                      "Ref": "AWS::Partition"
-                                    },
-                                    ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
-                                  ]
-                                ]
-                              },
-                              {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:",
-                                    {
-                                      "Ref": "AWS::Partition"
-                                    },
-                                    ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-                                  ]
-                                ]
-                              },
-                              {
-                                "Fn::If": [
-                                  "HasEcrPublic",
-                                  {
-                                    "Fn::Join": [
-                                      "",
-                                      [
-                                        "arn:",
-                                        {
-                                          "Ref": "AWS::Partition"
-                                        },
-                                        ":iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly"
-                                      ]
-                                    ]
-                                  },
-                                  {
-                                    "Ref": "AWS::NoValue"
-                                  }
-                                ]
-                              }
-                            ]
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "DefaultPolicy": {
-                        "id": "DefaultPolicy",
-                        "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole/DefaultPolicy",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole/DefaultPolicy/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                              "aws:cdk:cloudformation:props": {
-                                "policyDocument": {
-                                  "Statement": [
-                                    {
-                                      "Action": "eks:DescribeCluster",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Ref": "referencetoawseksserviceaccountsdkcallstestCluster5552283BArn"
-                                      }
-                                    },
-                                    {
-                                      "Action": "sts:AssumeRole",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Ref": "referencetoawseksserviceaccountsdkcallstestClusterCreationRoleABCB465FArn"
-                                      }
-                                    }
-                                  ],
-                                  "Version": "2012-10-17"
-                                },
-                                "policyName": "HandlerServiceRoleDefaultPolicyCBD0CC91",
-                                "roles": [
-                                  {
-                                    "Ref": "HandlerServiceRoleFCDC14AE"
-                                  }
-                                ]
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Policy",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Role",
-                      "version": "0.0.0"
-                    }
-                  },
                   "Code": {
                     "id": "Code",
                     "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/Handler/Code",
@@ -2915,12 +2834,6 @@
                           },
                           "s3Key": "9017774b84ae2457b1b2ad6fcbb4860d8ce2537062c77010b24d9b156ced5a1b.zip"
                         },
-                        "role": {
-                          "Fn::GetAtt": [
-                            "HandlerServiceRoleFCDC14AE",
-                            "Arn"
-                          ]
-                        },
                         "description": "onEvent handler for EKS kubectl resource provider",
                         "handler": "index.handler",
                         "layers": [
@@ -2928,10 +2841,13 @@
                             "Ref": "AwsCliLayerF44AAF94"
                           },
                           {
-                            "Ref": "KubectlLayer600207B5"
+                            "Ref": "referencetoawseksserviceaccountsdkcallstestKubectlLayer470A83D3Ref"
                           }
                         ],
                         "memorySize": 1024,
+                        "role": {
+                          "Ref": "referencetoawseksserviceaccountsdkcallstestClusterKubectlHandlerRole7777F0B9Arn"
+                        },
                         "runtime": "python3.7",
                         "timeout": 900,
                         "vpcConfig": {
@@ -3002,7 +2918,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "68b22621fff135f9e3f225bad7ff80fdf2f45c3d9910af601206a0d9b279933a.zip"
+                          "s3Key": "e2277687077a2abf9ae1af1cc9565e6715e2ebb62f79ec53aa75a1af9298f642.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -3015,70 +2931,6 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.lambda_layer_awscli.AwsCliLayer",
-                  "version": "0.0.0"
-                }
-              },
-              "KubectlLayer": {
-                "id": "KubectlLayer",
-                "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/KubectlLayer",
-                "children": {
-                  "Code": {
-                    "id": "Code",
-                    "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/KubectlLayer/Code",
-                    "children": {
-                      "Stage": {
-                        "id": "Stage",
-                        "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/KubectlLayer/Code/Stage",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.AssetStaging",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "AssetBucket": {
-                        "id": "AssetBucket",
-                        "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/KubectlLayer/Code/AssetBucket",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/KubectlLayer/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::Lambda::LayerVersion",
-                      "aws:cdk:cloudformation:props": {
-                        "content": {
-                          "s3Bucket": {
-                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-                          },
-                          "s3Key": "7e5f48d1e79c915595d938c932b6f0101715a162780d01a55845367e014fbcda.zip"
-                        },
-                        "description": "/opt/kubectl/kubectl and /opt/helm/helm"
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_lambda.CfnLayerVersion",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.lambda_layer_kubectl.KubectlLayer",
-                  "version": "0.0.0"
-                }
-              },
-              "HasEcrPublic": {
-                "id": "HasEcrPublic",
-                "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/HasEcrPublic",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnCondition",
                   "version": "0.0.0"
                 }
               },
@@ -3271,13 +3123,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
-                            },
-                            "role": {
-                              "Fn::GetAtt": [
-                                "ProviderframeworkonEventServiceRole9FF04296",
-                                "Arn"
-                              ]
+                              "s3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
                             },
                             "description": "AWS CDK resource provider framework - onEvent (aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/Provider)",
                             "environment": {
@@ -3291,7 +3137,13 @@
                               }
                             },
                             "handler": "framework.onEvent",
-                            "runtime": "nodejs14.x",
+                            "role": {
+                              "Fn::GetAtt": [
+                                "ProviderframeworkonEventServiceRole9FF04296",
+                                "Arn"
+                              ]
+                            },
+                            "runtime": "nodejs18.x",
                             "timeout": 900,
                             "vpcConfig": {
                               "subnetIds": [
@@ -3335,17 +3187,17 @@
                   "version": "0.0.0"
                 }
               },
-              "reference-to-awseksserviceaccountsdkcallstestCluster5552283BArn": {
-                "id": "reference-to-awseksserviceaccountsdkcallstestCluster5552283BArn",
-                "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awseksserviceaccountsdkcallstestCluster5552283BArn",
+              "reference-to-awseksserviceaccountsdkcallstestKubectlLayer470A83D3Ref": {
+                "id": "reference-to-awseksserviceaccountsdkcallstestKubectlLayer470A83D3Ref",
+                "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awseksserviceaccountsdkcallstestKubectlLayer470A83D3Ref",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnParameter",
                   "version": "0.0.0"
                 }
               },
-              "reference-to-awseksserviceaccountsdkcallstestClusterCreationRoleABCB465FArn": {
-                "id": "reference-to-awseksserviceaccountsdkcallstestClusterCreationRoleABCB465FArn",
-                "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awseksserviceaccountsdkcallstestClusterCreationRoleABCB465FArn",
+              "reference-to-awseksserviceaccountsdkcallstestClusterKubectlHandlerRole7777F0B9Arn": {
+                "id": "reference-to-awseksserviceaccountsdkcallstestClusterKubectlHandlerRole7777F0B9Arn",
+                "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awseksserviceaccountsdkcallstestClusterKubectlHandlerRole7777F0B9Arn",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnParameter",
                   "version": "0.0.0"
@@ -3391,6 +3243,29 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::CloudFormation::Stack",
                   "aws:cdk:cloudformation:props": {
+                    "parameters": {
+                      "referencetoawseksserviceaccountsdkcallstestKubectlLayer470A83D3Ref": {
+                        "Ref": "KubectlLayer600207B5"
+                      },
+                      "referencetoawseksserviceaccountsdkcallstestClusterKubectlHandlerRole7777F0B9Arn": {
+                        "Fn::GetAtt": [
+                          "ClusterKubectlHandlerRole94549F93",
+                          "Arn"
+                        ]
+                      },
+                      "referencetoawseksserviceaccountsdkcallstestVpcPrivateSubnet1Subnet0C10F776Ref": {
+                        "Ref": "VpcPrivateSubnet1Subnet536B997A"
+                      },
+                      "referencetoawseksserviceaccountsdkcallstestVpcPrivateSubnet2Subnet7D533057Ref": {
+                        "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+                      },
+                      "referencetoawseksserviceaccountsdkcallstestCluster5552283BClusterSecurityGroupId": {
+                        "Fn::GetAtt": [
+                          "Cluster9EE0221C",
+                          "ClusterSecurityGroupId"
+                        ]
+                      }
+                    },
                     "templateUrl": {
                       "Fn::Join": [
                         "",
@@ -3407,35 +3282,9 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/2b220c3944d9dd5abfa0fce03a17ea63db03d81914a12497afa609e4b43efd77.json"
+                          "/6f5e60f351acef96ab72b976a6a5e37f1e8577a01a2bb9c447d23f11514b3736.json"
                         ]
                       ]
-                    },
-                    "parameters": {
-                      "referencetoawseksserviceaccountsdkcallstestCluster5552283BArn": {
-                        "Fn::GetAtt": [
-                          "Cluster9EE0221C",
-                          "Arn"
-                        ]
-                      },
-                      "referencetoawseksserviceaccountsdkcallstestClusterCreationRoleABCB465FArn": {
-                        "Fn::GetAtt": [
-                          "ClusterCreationRole360249B6",
-                          "Arn"
-                        ]
-                      },
-                      "referencetoawseksserviceaccountsdkcallstestVpcPrivateSubnet1Subnet0C10F776Ref": {
-                        "Ref": "VpcPrivateSubnet1Subnet536B997A"
-                      },
-                      "referencetoawseksserviceaccountsdkcallstestVpcPrivateSubnet2Subnet7D533057Ref": {
-                        "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
-                      },
-                      "referencetoawseksserviceaccountsdkcallstestCluster5552283BClusterSecurityGroupId": {
-                        "Fn::GetAtt": [
-                          "Cluster9EE0221C",
-                          "ClusterSecurityGroupId"
-                        ]
-                      }
                     }
                   }
                 },
@@ -3447,7 +3296,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.270"
+              "version": "10.2.69"
             }
           },
           "Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider": {
@@ -3481,14 +3330,6 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.CustomResourceProvider",
-              "version": "0.0.0"
-            }
-          },
-          "DefaultCrNodeVersionMap": {
-            "id": "DefaultCrNodeVersionMap",
-            "path": "aws-eks-service-account-sdk-calls-test/DefaultCrNodeVersionMap",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
               "version": "0.0.0"
             }
           },
@@ -3531,7 +3372,7 @@
             "path": "aws-eks-service-account-sdk-calls-test/kplus-sa",
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.270"
+              "version": "10.2.69"
             }
           },
           "S3BucketPinger": {
@@ -3693,12 +3534,6 @@
                           },
                           "s3Key": "52afb3e2686860c4a72b179852db125e37824bbfccee63ff90cd7b45b9560da1.zip"
                         },
-                        "role": {
-                          "Fn::GetAtt": [
-                            "S3BucketPingerFunctionServiceRole37E5E83A",
-                            "Arn"
-                          ]
-                        },
                         "environment": {
                           "variables": {
                             "BUCKET_NAME": {
@@ -3719,6 +3554,12 @@
                           }
                         },
                         "handler": "index.handler",
+                        "role": {
+                          "Fn::GetAtt": [
+                            "S3BucketPingerFunctionServiceRole37E5E83A",
+                            "Arn"
+                          ]
+                        },
                         "runtime": "python3.9",
                         "timeout": 180
                       }
@@ -3895,13 +3736,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
-                            },
-                            "role": {
-                              "Fn::GetAtt": [
-                                "S3BucketPingerProviderframeworkonEventServiceRole3DD0DF8B",
-                                "Arn"
-                              ]
+                              "s3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
                             },
                             "description": "AWS CDK resource provider framework - onEvent (aws-eks-service-account-sdk-calls-test/S3BucketPinger/Provider)",
                             "environment": {
@@ -3915,7 +3750,13 @@
                               }
                             },
                             "handler": "framework.onEvent",
-                            "runtime": "nodejs14.x",
+                            "role": {
+                              "Fn::GetAtt": [
+                                "S3BucketPingerProviderframeworkonEventServiceRole3DD0DF8B",
+                                "Arn"
+                              ]
+                            },
+                            "runtime": "nodejs18.x",
                             "timeout": 900
                           }
                         },
@@ -3957,7 +3798,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.270"
+              "version": "10.2.69"
             }
           },
           "PingerResponse": {
@@ -4003,7 +3844,7 @@
                 "path": "aws-cdk-eks-service-account-sdk-call/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.2.69"
                 }
               },
               "DeployAssert": {
@@ -4049,7 +3890,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.2.69"
         }
       }
     },

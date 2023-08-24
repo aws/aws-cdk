@@ -1,6 +1,7 @@
-import { Stack } from '../../core';
 import { Construct } from 'constructs';
 import { IHostedZone } from './hosted-zone-ref';
+import * as iam from '../../aws-iam';
+import { Stack } from '../../core';
 
 /**
  * Validates a zone name is valid by Route53 specifc naming rules,
@@ -11,9 +12,6 @@ import { IHostedZone } from './hosted-zone-ref';
  * @throws ValidationError if the name is not valid.
  */
 export function validateZoneName(zoneName: string) {
-  if (zoneName.endsWith('.')) {
-    throw new ValidationError('zone name must not end with a trailing dot');
-  }
   if (zoneName.length > 255) {
     throw new ValidationError('zone name cannot be more than 255 bytes long');
   }
@@ -71,4 +69,25 @@ export function makeHostedZoneArn(construct: Construct, hostedZoneId: string): s
     resource: 'hostedzone',
     resourceName: hostedZoneId,
   });
+}
+
+export function makeGrantDelegation(grantee: iam.IGrantable, hostedZoneArn: string): iam.Grant {
+  const g1 = iam.Grant.addToPrincipal({
+    grantee,
+    actions: ['route53:ChangeResourceRecordSets'],
+    resourceArns: [hostedZoneArn],
+    conditions: {
+      'ForAllValues:StringEquals': {
+        'route53:ChangeResourceRecordSetsRecordTypes': ['NS'],
+        'route53:ChangeResourceRecordSetsActions': ['UPSERT', 'DELETE'],
+      },
+    },
+  });
+  const g2 = iam.Grant.addToPrincipal({
+    grantee,
+    actions: ['route53:ListHostedZonesByName'],
+    resourceArns: ['*'],
+  });
+
+  return g1.combine(g2);
 }

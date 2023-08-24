@@ -74,10 +74,10 @@ test('throws if region agnostic', () => {
   }).toThrow(/Cannot use an S3 record alias in region-agnostic stacks/);
 });
 
-test('throws if bucket website hosting is unavailable (cn-north-1)', () => {
+test('throws if bucket website hosting is unavailable (us-iso-east-1)', () => {
   // GIVEN
   const app = new App();
-  const stack = new Stack(app, 'test', { env: { region: 'cn-north-1' } });
+  const stack = new Stack(app, 'test', { env: { region: 'us-iso-east-1' } });
 
   const bucketWebsite = new s3.Bucket(stack, 'Bucket');
 

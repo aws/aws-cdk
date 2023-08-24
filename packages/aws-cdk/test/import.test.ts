@@ -10,7 +10,7 @@ jest.mock('promptly', () => {
 import * as promptly from 'promptly';
 import { testStack } from './util';
 import { MockSdkProvider } from './util/mock-sdk';
-import { CloudFormationDeployments } from '../lib/api/cloudformation-deployments';
+import { Deployments } from '../lib/api/deployments';
 import { ResourceImporter, ImportMap } from '../lib/import';
 
 const promptlyConfirm = promptly.confirm as jest.Mock;
@@ -67,11 +67,11 @@ function stackWithKeySigningKey(props: Record<string, unknown>) {
 }
 
 let sdkProvider: MockSdkProvider;
-let deployments: CloudFormationDeployments;
+let deployments: Deployments;
 beforeEach(() => {
   jest.resetAllMocks();
   sdkProvider = new MockSdkProvider({ realSdk: false });
-  deployments = new CloudFormationDeployments({ sdkProvider });
+  deployments = new Deployments({ sdkProvider });
   createChangeSetInput = undefined;
 });
 

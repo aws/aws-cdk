@@ -1,6 +1,6 @@
-import * as acm from '../../aws-certificatemanager';
 import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
+import * as acm from '../../aws-certificatemanager';
 
 /**
  * A wrapper for the tls config returned by `TlsCertificate.bind`

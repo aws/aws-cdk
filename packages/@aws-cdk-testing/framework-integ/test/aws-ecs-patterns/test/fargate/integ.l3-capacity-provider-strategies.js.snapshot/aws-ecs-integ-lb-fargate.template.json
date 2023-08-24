@@ -652,6 +652,11 @@
      "Ref": "FargateCluster7CCD5F93"
     },
     "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
      "MaximumPercent": 200,
      "MinimumHealthyPercent": 50
     },
@@ -693,7 +698,8 @@
    },
    "DependsOn": [
     "ALBFargateServiceLBPublicListenerECSGroup6871FB8C",
-    "ALBFargateServiceLBPublicListener3489002A"
+    "ALBFargateServiceLBPublicListener3489002A",
+    "ALBFargateServiceTaskDefTaskRole11408723"
    ]
   },
   "ALBFargateServiceSecurityGroup82F7A67E": {
@@ -710,7 +716,10 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   }
+   },
+   "DependsOn": [
+    "ALBFargateServiceTaskDefTaskRole11408723"
+   ]
   },
   "ALBFargateServiceSecurityGroupfromawsecsinteglbfargateALBFargateServiceLBSecurityGroupCD911D2880462ECC11": {
    "Type": "AWS::EC2::SecurityGroupIngress",
@@ -731,7 +740,10 @@
      ]
     },
     "ToPort": 80
-   }
+   },
+   "DependsOn": [
+    "ALBFargateServiceTaskDefTaskRole11408723"
+   ]
   },
   "NLBFargateServiceLB659EC17C": {
    "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
@@ -925,6 +937,11 @@
      "Ref": "FargateCluster7CCD5F93"
     },
     "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
      "MaximumPercent": 200,
      "MinimumHealthyPercent": 50
     },
@@ -966,7 +983,8 @@
    },
    "DependsOn": [
     "NLBFargateServiceLBPublicListenerECSGroupC469CAA2",
-    "NLBFargateServiceLBPublicListenerB0DCA73C"
+    "NLBFargateServiceLBPublicListenerB0DCA73C",
+    "NLBFargateServiceTaskDefTaskRole6C88F40B"
    ]
   },
   "NLBFargateServiceSecurityGroup9D81388B": {
@@ -983,7 +1001,10 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   }
+   },
+   "DependsOn": [
+    "NLBFargateServiceTaskDefTaskRole6C88F40B"
+   ]
   }
  },
  "Outputs": {

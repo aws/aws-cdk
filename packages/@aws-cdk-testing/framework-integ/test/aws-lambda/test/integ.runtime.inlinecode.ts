@@ -43,7 +43,6 @@ const python310 = new Function(stack, 'PYTHON_3_10', {
 });
 new CfnOutput(stack, 'PYTHON_3_10-functionName', { value: python310.functionName });
 
-
 const node14xfn = new Function(stack, 'NODEJS_14_X', {
   code: new InlineCode('exports.handler = async function(event) { return "success" }'),
   handler: 'index.handler',

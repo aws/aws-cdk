@@ -1,5 +1,5 @@
-import * as cdk from '../../core';
 import { render } from './private/render-util';
+import * as cdk from '../../core';
 import * as sfn from '../lib';
 
 describe('Custom State', () => {

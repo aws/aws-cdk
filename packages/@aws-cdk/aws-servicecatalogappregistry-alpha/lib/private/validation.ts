@@ -1,4 +1,4 @@
-import * as cdk from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
 
 /**
  * Class to validate that inputs match requirements.

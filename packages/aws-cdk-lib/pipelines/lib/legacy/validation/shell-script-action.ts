@@ -1,10 +1,10 @@
+import { Construct } from 'constructs';
 import * as codebuild from '../../../../aws-codebuild';
 import * as codepipeline from '../../../../aws-codepipeline';
 import * as codepipeline_actions from '../../../../aws-codepipeline-actions';
 import * as ec2 from '../../../../aws-ec2';
 import * as events from '../../../../aws-events';
 import * as iam from '../../../../aws-iam';
-import { Construct } from 'constructs';
 import { CDKP_DEFAULT_CODEBUILD_IMAGE } from '../../private/default-codebuild-image';
 import { StackOutput } from '../stage';
 
@@ -60,7 +60,7 @@ export interface ShellScriptActionProps {
   /**
    * The CodeBuild environment where scripts are executed.
    *
-   * @default LinuxBuildImage.STANDARD_6_0
+   * @default LinuxBuildImage.STANDARD_7_0
    */
   readonly environment?: codebuild.BuildEnvironment
 

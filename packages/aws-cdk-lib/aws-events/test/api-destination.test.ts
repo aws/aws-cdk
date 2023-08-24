@@ -2,7 +2,6 @@ import { Template } from '../../assertions';
 import { Stack, SecretValue } from '../../core';
 import * as events from '../lib';
 
-
 test('creates an api destination for an EventBus', () => {
   // GIVEN
   const stack = new Stack();

@@ -1,8 +1,8 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '../../core';
 import * as lambda from '../lib';
 

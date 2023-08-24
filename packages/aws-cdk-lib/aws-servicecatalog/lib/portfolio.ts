@@ -1,7 +1,3 @@
-import * as iam from '../../aws-iam';
-import { IBucket } from '../../aws-s3';
-import * as sns from '../../aws-sns';
-import * as cdk from '../../core';
 import { Construct, IConstruct } from 'constructs';
 import { MessageLanguage } from './common';
 import {
@@ -14,6 +10,10 @@ import { InputValidator } from './private/validation';
 import { IProduct } from './product';
 import { CfnPortfolio, CfnPortfolioPrincipalAssociation, CfnPortfolioShare } from './servicecatalog.generated';
 import { TagOptions } from './tag-options';
+import * as iam from '../../aws-iam';
+import { IBucket } from '../../aws-s3';
+import * as sns from '../../aws-sns';
+import * as cdk from '../../core';
 
 /**
  * Options for portfolio share.

@@ -1,9 +1,9 @@
-import { RegionInfo } from '../../region-info';
 import { IConstruct } from 'constructs';
 import { Architecture } from './architecture';
 import { IFunction } from './function-base';
 import { Stack } from '../../core/lib/stack';
 import { Token } from '../../core/lib/token';
+import { RegionInfo } from '../../region-info';
 import { FactName } from '../../region-info/lib/fact';
 
 /**
@@ -184,6 +184,11 @@ export enum AdotLambdaExecWrapper {
    * propagation for HTTP requests.
    */
   STREAM_HANDLER = '/opt/otel-stream-handler',
+
+  /**
+   * Wrapping python lambda handlers see https://aws-otel.github.io/docs/getting-started/lambda/lambda-python
+   */
+  INSTRUMENT_HANDLER = '/opt/otel-instrument',
 }
 
 abstract class AdotLambdaLayerVersion {
@@ -208,7 +213,12 @@ export class AdotLambdaLayerJavaSdkVersion extends AdotLambdaLayerVersion {
    * The latest layer version available in this CDK version. New versions could
    * introduce incompatible changes. Make sure to test them before deploying to production.
    */
-  public static readonly LATEST = new AdotLambdaLayerJavaSdkVersion('1.19.0');
+  public static readonly LATEST = new AdotLambdaLayerJavaSdkVersion('1.28.1');
+
+  /**
+   * Version 1.28.1
+   */
+  public static readonly V1_28_1 = new AdotLambdaLayerJavaSdkVersion('1.28.1');
 
   /**
    * Version 1.19.0
@@ -228,7 +238,12 @@ export class AdotLambdaLayerJavaAutoInstrumentationVersion extends AdotLambdaLay
    * The latest layer version available in this CDK version. New versions could
    * introduce incompatible changes. Make sure to test them before deploying to production.
    */
-  public static readonly LATEST = new AdotLambdaLayerJavaAutoInstrumentationVersion('1.19.2');
+  public static readonly LATEST = new AdotLambdaLayerJavaAutoInstrumentationVersion('1.28.1');
+
+  /**
+   * Version 1.28.1
+   */
+  public static readonly V1_28_1 = new AdotLambdaLayerJavaAutoInstrumentationVersion('1.28.1');
 
   /**
    * Version 1.19.2
@@ -248,7 +263,37 @@ export class AdotLambdaLayerPythonSdkVersion extends AdotLambdaLayerVersion {
    * The latest layer version available in this CDK version. New versions could
    * introduce incompatible changes. Make sure to test them before deploying to production.
    */
-  public static readonly LATEST = new AdotLambdaLayerPythonSdkVersion('1.13.0');
+  public static readonly LATEST = new AdotLambdaLayerPythonSdkVersion('1.19.0-1');
+
+  /**
+   * Version 1.19.0
+   */
+  public static readonly V1_19_0_1 = new AdotLambdaLayerPythonSdkVersion('1.19.0-1');
+
+  /**
+   * Version 1.18.0
+   */
+  public static readonly V1_18_0 = new AdotLambdaLayerPythonSdkVersion('1.18.0');
+
+  /**
+   * Version 1.17.0
+   */
+  public static readonly V1_17_0 = new AdotLambdaLayerPythonSdkVersion('1.17.0');
+
+  /**
+   * Version 1.16.0
+   */
+  public static readonly V1_16_0 = new AdotLambdaLayerPythonSdkVersion('1.16.0');
+
+  /**
+   * Version 1.15.0
+   */
+  public static readonly V1_15_0 = new AdotLambdaLayerPythonSdkVersion('1.15.0');
+
+  /**
+   * Version 1.14.0
+   */
+  public static readonly V1_14_0 = new AdotLambdaLayerPythonSdkVersion('1.14.0');
 
   /**
    * Version 1.13.0
@@ -268,7 +313,12 @@ export class AdotLambdaLayerJavaScriptSdkVersion extends AdotLambdaLayerVersion 
    * The latest layer version available in this CDK version. New versions could
    * introduce incompatible changes. Make sure to test them before deploying to production.
    */
-  public static readonly LATEST = new AdotLambdaLayerJavaScriptSdkVersion('1.7.0');
+  public static readonly LATEST = new AdotLambdaLayerJavaScriptSdkVersion('1.15.0-1');
+
+  /**
+   * Version 1.15.0
+   */
+  public static readonly V1_15_0_1 = new AdotLambdaLayerJavaScriptSdkVersion('1.15.0-1');
 
   /**
    * Version 1.7.0
@@ -288,7 +338,12 @@ export class AdotLambdaLayerGenericVersion extends AdotLambdaLayerVersion {
    * The latest layer version available in this CDK version. New versions could
    * introduce incompatible changes. Make sure to test them before deploying to production.
    */
-  public static readonly LATEST = new AdotLambdaLayerGenericVersion('0.62.1');
+  public static readonly LATEST = new AdotLambdaLayerGenericVersion('0.82.0');
+
+  /**
+   * Version 0.82.0
+   */
+  public static readonly V0_82_0 = new AdotLambdaLayerGenericVersion('0.82.0');
 
   /**
    * Version 0.62.1

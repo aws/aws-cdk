@@ -569,7 +569,6 @@ describe('managed policy', () => {
     expect(() => app.synth()).toThrow(/A PolicyStatement used in an identity-based policy must specify at least one resource/);
   });
 
-
   test('fails if policy document specifies principals', () => {
     new ManagedPolicy(stack, 'MyManagedPolicy', {
       statements: [

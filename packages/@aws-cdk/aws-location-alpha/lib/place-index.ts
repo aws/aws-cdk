@@ -1,5 +1,5 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { ArnFormat, IResource, Lazy, Names, Resource, Stack, Token } from 'aws-cdk-lib';
+import { ArnFormat, IResource, Lazy, Names, Resource, Stack, Token } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnPlaceIndex } from 'aws-cdk-lib/aws-location';
 
@@ -173,7 +173,6 @@ export class PlaceIndex extends PlaceIndexBase {
    * @attribute
    */
   public readonly placeIndexUpdateTime: string;
-
 
   constructor(scope: Construct, id: string, props: PlaceIndexProps = {}) {
     if (props.placeIndexName && !Token.isUnresolved(props.placeIndexName) && !/^[-.\w]{1,100}$/.test(props.placeIndexName)) {

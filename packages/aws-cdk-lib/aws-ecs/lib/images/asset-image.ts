@@ -1,5 +1,5 @@
-import { DockerImageAsset, DockerImageAssetOptions } from '../../../aws-ecr-assets';
 import { Construct } from 'constructs';
+import { DockerImageAsset, DockerImageAssetOptions } from '../../../aws-ecr-assets';
 import { ContainerDefinition } from '../container-definition';
 import { ContainerImage, ContainerImageConfig } from '../container-image';
 

@@ -1,9 +1,9 @@
-import * as ec2 from '../../aws-ec2';
-import { Resource } from '../../core';
 import { Construct } from 'constructs';
 import { BaseNamespaceProps, INamespace, NamespaceType } from './namespace';
 import { DnsServiceProps, Service } from './service';
 import { CfnPrivateDnsNamespace } from './servicediscovery.generated';
+import * as ec2 from '../../aws-ec2';
+import { Resource } from '../../core';
 
 export interface PrivateDnsNamespaceProps extends BaseNamespaceProps {
   /**

@@ -24,7 +24,6 @@ describe('Graphs', () => {
       },
     }]);
 
-
   });
 
   test('add metrics to graphs on either axis', () => {
@@ -57,7 +56,6 @@ describe('Graphs', () => {
       },
     }]);
 
-
   });
 
   test('add metrics to graphs on either axis lazily', () => {
@@ -86,7 +84,6 @@ describe('Graphs', () => {
       },
     }]);
 
-
   });
 
   test('label and color are respected in constructor', () => {
@@ -111,7 +108,6 @@ describe('Graphs', () => {
       },
     }]);
 
-
   });
 
   test('bar view', () => {
@@ -134,7 +130,6 @@ describe('Graphs', () => {
         yAxis: {},
       },
     }]);
-
 
   });
 
@@ -161,7 +156,6 @@ describe('Graphs', () => {
         ],
       },
     }]);
-
 
   });
 
@@ -190,7 +184,6 @@ describe('Graphs', () => {
         query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
       },
     }]);
-
 
   });
 
@@ -221,7 +214,6 @@ describe('Graphs', () => {
       },
     }]);
 
-
   });
 
   test('query result widget - pie', () => {
@@ -250,7 +242,6 @@ describe('Graphs', () => {
         query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
       },
     }]);
-
 
   });
 
@@ -282,7 +273,6 @@ describe('Graphs', () => {
       },
     }]);
 
-
   });
 
   test('query result widget - stackedarea', () => {
@@ -312,7 +302,6 @@ describe('Graphs', () => {
         query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
       },
     }]);
-
 
   });
 
@@ -344,7 +333,6 @@ describe('Graphs', () => {
         yAxis: {},
       },
     }]);
-
 
   });
 
@@ -454,7 +442,6 @@ describe('Graphs', () => {
       },
     }]);
 
-
   });
 
   test('convert alarm to annotation', () => {
@@ -496,7 +483,6 @@ describe('Graphs', () => {
         yAxis: {},
       },
     }]);
-
 
   });
 
@@ -542,7 +528,6 @@ describe('Graphs', () => {
       },
     }]);
 
-
   });
 
   test('specify liveData property on graph', () => {
@@ -573,7 +558,6 @@ describe('Graphs', () => {
       },
     }]);
 
-
   });
 
   test('can use imported alarm with graph', () => {
@@ -588,7 +572,6 @@ describe('Graphs', () => {
     });
 
     // THEN: Compiles
-
 
   });
 
@@ -618,7 +601,6 @@ describe('Graphs', () => {
       },
     }]);
 
-
   });
 
   test('add sparkline to singleValueWidget', () => {
@@ -646,7 +628,6 @@ describe('Graphs', () => {
         sparkline: true,
       },
     }]);
-
 
   });
 
@@ -694,6 +675,33 @@ describe('Graphs', () => {
       },
     }]);
 
+  });
+
+  test('add period to singleValueWidget', () => {
+    // GIVEN
+    const stack = new Stack();
+    const metric = new Metric({ namespace: 'CDK', metricName: 'Test' });
+
+    // WHEN
+    const widget = new SingleValueWidget({
+      metrics: [metric],
+      period: Duration.days(2),
+    });
+
+    // THEN
+    expect(stack.resolve(widget.toJson())).toEqual([{
+      type: 'metric',
+      width: 6,
+      height: 3,
+      properties: {
+        view: 'singleValue',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          ['CDK', 'Test'],
+        ],
+        period: 172800,
+      },
+    }]);
 
   });
 
@@ -716,7 +724,6 @@ describe('Graphs', () => {
 
     expect(stack.resolve(widget.toJson())[0].properties.metrics[0])
       .toEqual(['CDK', 'Test', { visible: false }]);
-
 
   });
 
@@ -765,7 +772,6 @@ describe('Graphs', () => {
         },
       },
     }]);
-
 
   });
 

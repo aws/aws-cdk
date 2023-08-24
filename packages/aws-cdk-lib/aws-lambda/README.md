@@ -483,6 +483,21 @@ fn.addFunctionUrl({
 });
 ```
 
+### Invoke Mode for Function URLs
+
+Invoke mode determines how AWS Lambda invokes your function. You can configure the invoke mode when creating a Function URL using the invokeMode property
+
+```ts
+declare const fn: lambda.Function;
+
+fn.addFunctionUrl({
+  authType: lambda.FunctionUrlAuthType.NONE,
+  invokeMode: lambda.InvokeMode.RESPONSE_STREAM,
+});
+```
+
+If the invokeMode property is not specified, the default BUFFERED mode will be used.
+
 ## Layers
 
 The `lambda.LayerVersion` class can be used to define Lambda layers and manage
@@ -566,6 +581,66 @@ new lambda.Function(this, 'MyFunction', {
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
   insightsVersion: lambda.LambdaInsightsVersion.VERSION_1_0_119_0,
 });
+```
+
+### Parameters and Secrets Extension
+
+Lambda functions can be configured to use the Parameters and Secrets Extension. The Parameters and Secrets Extension can be used to retrieve and cache [secrets](https://docs.aws.amazon.com/secretsmanager/latest/userguide/retrieving-secrets_lambda.html) from Secrets Manager or [parameters](https://docs.aws.amazon.com/systems-manager/latest/userguide/ps-integration-lambda-extensions.html) from Parameter Store in Lambda functions without using an SDK.
+
+```ts
+import * as sm from 'aws-cdk-lib/aws-secretsmanager';
+import * as ssm from 'aws-cdk-lib/aws-ssm';
+
+const secret = new sm.Secret(this, 'Secret');
+const parameter = new ssm.StringParameter(this, 'Parameter', {
+  parameterName: 'mySsmParameterName',
+  stringValue: 'mySsmParameterValue',
+});
+
+const paramsAndSecrets = lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V1_0_103, {
+  cacheSize: 500,
+  logLevel: lambda.ParamsAndSecretsLogLevel.DEBUG,
+});
+
+const lambdaFunction = new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_18_X,
+  handler: 'index.handler',
+  architecture: lambda.Architecture.ARM_64,
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+  paramsAndSecrets,
+});
+
+secret.grantRead(lambdaFunction);
+parameter.grantRead(lambdaFunction);
+```
+
+If the version of Parameters and Secrets Extension is not yet available in the CDK, you can also provide the ARN directly as so:
+
+```ts
+import * as sm from 'aws-cdk-lib/aws-secretsmanager';
+import * as ssm from 'aws-cdk-lib/aws-ssm';
+
+const secret = new sm.Secret(this, 'Secret');
+const parameter = new ssm.StringParameter(this, 'Parameter', {
+  parameterName: 'mySsmParameterName',
+  stringValue: 'mySsmParameterValue',
+});
+
+const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
+const paramsAndSecrets = lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn, {
+  cacheSize: 500,
+});
+
+const lambdaFunction = new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_18_X,
+  handler: 'index.handler',
+  architecture: lambda.Architecture.ARM_64,
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+  paramsAndSecrets,
+});
+
+secret.grantRead(lambdaFunction);
+parameter.grantRead(lambdaFunction);
 ```
 
 ## Event Rule Target
@@ -790,6 +865,8 @@ declare const fn: lambda.Function;
 const layerArn = lambda.AdotLambdaLayerJavaSdkVersion.V1_19_0.layerArn(fn.stack, fn.architecture);
 ```
 
+When using the `AdotLambdaLayerPythonSdkVersion` the `AdotLambdaExecWrapper` needs to be `AdotLambdaExecWrapper.INSTRUMENT_HANDLER` as per [AWS Distro for OpenTelemetry Lambda Support For Python](https://aws-otel.github.io/docs/getting-started/lambda/lambda-python)
+
 ## Lambda with Profiling
 
 The following code configures the lambda function with CodeGuru profiling. By default, this creates a new CodeGuru
@@ -824,6 +901,23 @@ const fn = new lambda.Function(this, 'MyFunction', {
 
 See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/concurrent-executions.html)
 managing concurrency.
+
+## Lambda with SnapStart
+
+SnapStart is currently supported only on Java 11/Java 17 runtime. SnapStart does not support provisioned concurrency, the arm64 architecture, Amazon Elastic File System (Amazon EFS), or ephemeral storage greater than 512 MB. After you enable Lambda SnapStart for a particular Lambda function, publishing a new version of the function will trigger an optimization process.
+
+See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/snapstart.html) to learn more about AWS Lambda SnapStart
+
+```ts
+const fn = new lambda.Function(this, 'MyFunction', {
+  code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+  runtime: lambda.Runtime.JAVA_11,
+  handler: 'example.Handler::handleRequest',
+  snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
+  });
+
+const version = fn.currentVersion;
+```
 
 ## AutoScaling
 
@@ -1004,8 +1098,8 @@ new lambda.Function(this, 'Function', {
 
 Language-specific higher level constructs are provided in separate modules:
 
-* `@aws-cdk/aws-lambda-nodejs`: [Github](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-lambda-nodejs) & [CDK Docs](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-lambda-nodejs-readme.html)
-* `@aws-cdk/aws-lambda-python`: [Github](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-lambda-python) & [CDK Docs](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-lambda-python-readme.html)
+* `aws-cdk-lib/aws-lambda-nodejs`: [Github](https://github.com/aws/aws-cdk/tree/main/packages/aws-cdk-lib/aws-lambda-nodejs) & [CDK Docs](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_lambda_nodejs-readme.html)
+* `@aws-cdk/aws-lambda-python-alpha`: [Github](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-lambda-python-alpha) & [CDK Docs](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-lambda-python-alpha-readme.html)
 
 ## Code Signing
 
@@ -1055,5 +1149,34 @@ new lambda.Function(this, 'Lambda', {
   runtime: lambda.Runtime.NODEJS_18_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+});
+```
+
+## Exclude Patterns for Assets
+
+When using `lambda.Code.fromAsset(path)` an `exclude` property allows you to ignore particular files for assets by providing patterns for file paths to exclude. Note that this has no effect on `Assets` bundled using the `bundling` property.
+
+The `ignoreMode` property can be used with the `exclude` property to specify the file paths to ignore based on the [.gitignore specification](https://git-scm.com/docs/gitignore) or the [.dockerignore specification](https://docs.docker.com/engine/reference/builder/#dockerignore-file). The default behavior is to ignore file paths based on simple glob patterns.
+
+```ts
+new lambda.Function(this, 'Function', {
+  code: lambda.Code.fromAsset(path.join(__dirname, 'my-python-handler'), {
+    exclude: ['*.ignore'],
+    ignoreMode: IgnoreMode.DOCKER, // Default is IgnoreMode.GLOB
+  }),
+  runtime: lambda.Runtime.PYTHON_3_9,
+  handler: 'index.handler',
+});
+```
+
+You can also write to include only certain files by using a negation.
+
+```ts
+new lambda.Function(this, 'Function', {
+  code: lambda.Code.fromAsset(path.join(__dirname, 'my-python-handler'), {
+    exclude: ['*', '!index.py'],
+  }),
+  runtime: lambda.Runtime.PYTHON_3_9,
+  handler: 'index.handler',
 });
 ```

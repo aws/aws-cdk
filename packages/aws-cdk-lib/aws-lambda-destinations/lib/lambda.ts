@@ -1,8 +1,8 @@
+import { Construct } from 'constructs';
+import { EventBridgeDestination } from './event-bridge';
 import * as events from '../../aws-events';
 import * as targets from '../../aws-events-targets';
 import * as lambda from '../../aws-lambda';
-import { Construct } from 'constructs';
-import { EventBridgeDestination } from './event-bridge';
 
 /**
  * Options for a Lambda destination

@@ -11,7 +11,7 @@ test('Activity can be used in a Task', () => {
   const activity = new sfn.Activity(stack, 'Activity');
   const task = new StepFunctionsInvokeActivity(stack, 'Task', { activity });
   new sfn.StateMachine(stack, 'SM', {
-    definition: task,
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
   });
 
   // THEN

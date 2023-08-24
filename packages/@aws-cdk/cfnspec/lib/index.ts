@@ -29,7 +29,6 @@ export function docs(): schema.CloudFormationDocsFile {
   return require('../spec/cfn-docs.json');
 }
 
-
 /**
  * Return the resource specification for the given typename
  *

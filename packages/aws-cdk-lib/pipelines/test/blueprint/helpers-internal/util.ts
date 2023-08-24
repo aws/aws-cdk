@@ -21,12 +21,10 @@ export function mkGraph(name: string, block: (b: GraphBuilder) => void) {
   return graph;
 }
 
-
 interface GraphBuilder {
   graph(name: string, deps: GraphNode<any>[], block: (b: GraphBuilder) => void): Graph<any>;
   node(name: string, deps?: GraphNode<any>[]): GraphNode<any>;
 }
-
 
 export function nodeNames(n: GraphNode<any>): string;
 export function nodeNames(ns: GraphNode<any>[]): string[];

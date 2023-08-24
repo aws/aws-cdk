@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { Template } from '../../assertions';
 import { testDeprecated, describeDeprecated } from '@aws-cdk/cdk-build-tools';
+import { Template } from '../../assertions';
 import { App, CfnResource, Stack } from '../../core';
 import * as cxapi from '../../cx-api';
 import { NestedStack } from '../lib';

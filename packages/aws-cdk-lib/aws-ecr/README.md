@@ -1,6 +1,5 @@
 # Amazon ECR Construct Library
 
-
 This package contains constructs for working with Amazon Elastic Container Registry.
 
 ## Repositories
@@ -14,7 +13,10 @@ const repository = new ecr.Repository(this, 'Repository');
 
 ## Image scanning
 
-Amazon ECR image scanning helps in identifying software vulnerabilities in your container images. You can manually scan container images stored in Amazon ECR, or you can configure your repositories to scan images when you push them to a repository. To create a new repository to scan on push, simply enable `imageScanOnPush` in the properties
+Amazon ECR image scanning helps in identifying software vulnerabilities in your container images.
+You can manually scan container images stored in Amazon ECR, or you can configure your repositories
+to scan images when you push them to a repository. To create a new repository to scan on push, simply
+enable `imageScanOnPush` in the properties.
 
 ```ts
 const repository = new ecr.Repository(this, 'Repo', {
@@ -60,6 +62,62 @@ ecr.PublicGalleryAuthorizationToken.grantRead(user);
 ```
 
 This user can then proceed to login to the registry using one of the [authentication methods](https://docs.aws.amazon.com/AmazonECR/latest/public/public-registries.html#public-registry-auth).
+
+### Other Grantee
+
+#### grantPush
+The grantPush method grants the specified IAM entity (the grantee) permission to push images to the ECR repository. Specifically, it grants permissions for the following actions:
+
+- 'ecr:CompleteLayerUpload'
+- 'ecr:UploadLayerPart'
+- 'ecr:InitiateLayerUpload'
+- 'ecr:BatchCheckLayerAvailability'
+- 'ecr:PutImage'
+- 'ecr:GetAuthorizationToken'
+
+Here is an example of granting a user push permissions:
+
+```ts
+declare const repository: ecr.Repository;
+
+const role = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
+});
+repository.grantPush(role);
+```
+
+#### grantPull
+The grantPull method grants the specified IAM entity (the grantee) permission to pull images from the ECR repository. Specifically, it grants permissions for the following actions:
+
+- 'ecr:BatchCheckLayerAvailability'
+- 'ecr:GetDownloadUrlForLayer'
+- 'ecr:BatchGetImage'
+- 'ecr:GetAuthorizationToken'
+
+```ts
+declare const repository: ecr.Repository;
+
+const role = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
+});
+repository.grantPull(role);
+```
+
+#### grantPullPush
+The grantPullPush method grants the specified IAM entity (the grantee) permission to both pull and push images from/to the ECR repository. Specifically, it grants permissions for all the actions required for pull and push permissions.
+
+Here is an example of granting a user both pull and push permissions:
+
+```ts
+declare const repository: ecr.Repository;
+
+const role = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
+});
+repository.grantPullPush(role);
+```
+
+By using these methods, you can grant specific operational permissions on the ECR repository to IAM entities. This allows for proper management of access to the repository and ensures security.
 
 ### Image tag immutability
 

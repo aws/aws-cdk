@@ -1,8 +1,8 @@
-import { SecretValue } from '../../../core';
 import { Construct } from 'constructs';
 import { BaseLogDriverProps } from './base-log-driver';
 import { LogDriver, LogDriverConfig } from './log-driver';
 import { ensureInRange, renderCommonLogDriverOptions, renderLogDriverSecretOptions, stringifyOptions } from './utils';
+import { SecretValue } from '../../../core';
 import { ContainerDefinition, Secret } from '../container-definition';
 
 /**

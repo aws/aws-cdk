@@ -90,7 +90,104 @@ describe('virtual node', () => {
         });
       });
     });
+    describe('when file access logging is added', () => {
+      test('can add json format logging to the resource', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
 
+        // WHEN
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        const node = mesh.addVirtualNode('test-node', {
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+          accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout',
+            appmesh.LoggingFormat.fromJson(
+              { testKey1: 'testValue1', testKey2: 'testValue2' })),
+        });
+
+        node.addListener(appmesh.VirtualNodeListener.tcp({
+          port: 8081,
+        }));
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualNode', {
+          Spec: {
+            Listeners: [
+              {
+                PortMapping: {
+                  Port: 8081,
+                  Protocol: 'tcp',
+                },
+              },
+            ],
+            Logging: {
+              AccessLog: {
+                File: {
+                  Path: '/dev/stdout',
+                  Format: {
+                    Json: [
+                      {
+                        Key: 'testKey1',
+                        Value: 'testValue1',
+                      },
+                      {
+                        Key: 'testKey2',
+                        Value: 'testValue2',
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+          },
+        });
+      });
+
+      test('can add text format logging to the resource', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        const node = mesh.addVirtualNode('test-node', {
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+          accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout', appmesh.LoggingFormat.fromText('test_pattern')),
+        });
+
+        node.addListener(appmesh.VirtualNodeListener.tcp({
+          port: 8081,
+        }));
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualNode', {
+          Spec: {
+            Listeners: [
+              {
+                PortMapping: {
+                  Port: 8081,
+                  Protocol: 'tcp',
+                },
+              },
+            ],
+            Logging: {
+              AccessLog: {
+                File: {
+                  Path: '/dev/stdout',
+                  Format: {
+                    Text: 'test_pattern',
+                  },
+                },
+              },
+            },
+          },
+        });
+      });
+    });
     describe('when a listener is added with timeout', () => {
       test('should add the listener timeout to the resource', () => {
         // GIVEN

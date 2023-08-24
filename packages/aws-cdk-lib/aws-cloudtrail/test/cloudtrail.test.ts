@@ -1,3 +1,4 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -5,7 +6,6 @@ import * as lambda from '../../aws-lambda';
 import { LogGroup, RetentionDays } from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as sns from '../../aws-sns';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Stack } from '../../core';
 import { ManagementEventSources, ReadWriteType, Trail, InsightType } from '../lib';
 
@@ -136,7 +136,6 @@ describe('cloudtrail', () => {
     test('with sns topic', () => {
       const stack = getTestStack();
       const topic = new sns.Topic(stack, 'Topic');
-
 
       new Trail(stack, 'Trail', { snsTopic: topic });
 

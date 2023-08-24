@@ -1,9 +1,9 @@
+import { Construct, IConstruct, Node } from 'constructs';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as sqs from '../../aws-sqs';
 import { Annotations, Names, Token, TokenComparison, Duration, PhysicalName } from '../../core';
-import { Construct, IConstruct, Node } from 'constructs';
 
 /**
  * The generic properties for an RuleTarget
@@ -59,7 +59,6 @@ export function bindBaseTargetConfig(props: TargetBaseProps) {
       : undefined,
   };
 }
-
 
 /**
  * Obtain the Role for the EventBridge event
@@ -134,10 +133,9 @@ export function addToDeadLetterQueueResourcePolicy(rule: events.IRule, queue: sq
       },
     }));
   } else {
-    Annotations.of(rule).addWarning(`Cannot add a resource policy to your dead letter queue associated with rule ${rule.ruleName} because the queue is in a different account. You must add the resource policy manually to the dead letter queue in account ${queue.env.account}.`);
+    Annotations.of(rule).addWarningV2('@aws-cdk/aws-events-targets:manuallyAddDLQResourcePolicy', `Cannot add a resource policy to your dead letter queue associated with rule ${rule.ruleName} because the queue is in a different account. You must add the resource policy manually to the dead letter queue in account ${queue.env.account}.`);
   }
 }
-
 
 /**
  * Whether two string probably contain the same environment dimension (region or account)

@@ -184,7 +184,6 @@ describe('tree metadata', () => {
       }),
     });
 
-
   });
 
   test('token resolution & cfn parameter', () => {
@@ -393,7 +392,6 @@ describe('tree metadata', () => {
         },
       }),
     });
-
 
   });
 });

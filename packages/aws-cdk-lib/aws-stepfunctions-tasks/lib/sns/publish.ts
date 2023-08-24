@@ -1,8 +1,8 @@
+import { Construct } from 'constructs';
 import * as iam from '../../../aws-iam';
 import * as sns from '../../../aws-sns';
 import * as sfn from '../../../aws-stepfunctions';
 import { Token } from '../../../core';
-import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**

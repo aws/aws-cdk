@@ -1,7 +1,7 @@
-import { ArnFormat, Lazy, Names, Stack, Duration } from '../../core';
 import { Construct } from 'constructs';
 import { AlarmBase, IAlarm, IAlarmRule } from './alarm-base';
 import { CfnCompositeAlarm } from './cloudwatch.generated';
+import { ArnFormat, Lazy, Names, Stack, Duration } from '../../core';
 
 /**
  * Properties for creating a Composite Alarm

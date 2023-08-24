@@ -1,4 +1,4 @@
-import * as cdk from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
 
 /**
  * Supported Elastic Inference (EI) instance types for SageMaker instance-based production variants.

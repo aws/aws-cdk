@@ -55,14 +55,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnLayerVersion",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "@aws-cdk/lambda-layer-kubectl-v24.KubectlV24Layer",
-              "version": "2.0.149"
+              "version": "2.0.242"
             }
           },
           "FargateCluster": {
@@ -92,7 +92,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnVPC",
                       "version": "0.0.0"
                     }
                   },
@@ -106,9 +106,6 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                           "aws:cdk:cloudformation:props": {
-                            "vpcId": {
-                              "Ref": "FargateClusterDefaultVpcE69D3A13"
-                            },
                             "availabilityZone": {
                               "Fn::Select": [
                                 0,
@@ -136,11 +133,14 @@
                                 "key": "Name",
                                 "value": "aws-cdk-eks-fargate-cluster-test/FargateCluster/DefaultVpc/PublicSubnet1"
                               }
-                            ]
+                            ],
+                            "vpcId": {
+                              "Ref": "FargateClusterDefaultVpcE69D3A13"
+                            }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                           "version": "0.0.0"
                         }
                       },
@@ -158,9 +158,6 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                           "aws:cdk:cloudformation:props": {
-                            "vpcId": {
-                              "Ref": "FargateClusterDefaultVpcE69D3A13"
-                            },
                             "tags": [
                               {
                                 "key": "kubernetes.io/role/elb",
@@ -170,11 +167,14 @@
                                 "key": "Name",
                                 "value": "aws-cdk-eks-fargate-cluster-test/FargateCluster/DefaultVpc/PublicSubnet1"
                               }
-                            ]
+                            ],
+                            "vpcId": {
+                              "Ref": "FargateClusterDefaultVpcE69D3A13"
+                            }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                           "version": "0.0.0"
                         }
                       },
@@ -193,7 +193,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                           "version": "0.0.0"
                         }
                       },
@@ -203,17 +203,17 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                           "aws:cdk:cloudformation:props": {
-                            "routeTableId": {
-                              "Ref": "FargateClusterDefaultVpcPublicSubnet1RouteTableC2D2B434"
-                            },
                             "destinationCidrBlock": "0.0.0.0/0",
                             "gatewayId": {
                               "Ref": "FargateClusterDefaultVpcIGWFD9278DA"
+                            },
+                            "routeTableId": {
+                              "Ref": "FargateClusterDefaultVpcPublicSubnet1RouteTableC2D2B434"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                           "version": "0.0.0"
                         }
                       },
@@ -237,7 +237,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnEIP",
                           "version": "0.0.0"
                         }
                       },
@@ -247,14 +247,14 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                           "aws:cdk:cloudformation:props": {
-                            "subnetId": {
-                              "Ref": "FargateClusterDefaultVpcPublicSubnet1Subnet96AFDABC"
-                            },
                             "allocationId": {
                               "Fn::GetAtt": [
                                 "FargateClusterDefaultVpcPublicSubnet1EIP0093A4E0",
                                 "AllocationId"
                               ]
+                            },
+                            "subnetId": {
+                              "Ref": "FargateClusterDefaultVpcPublicSubnet1Subnet96AFDABC"
                             },
                             "tags": [
                               {
@@ -269,7 +269,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnNatGateway",
                           "version": "0.0.0"
                         }
                       }
@@ -289,9 +289,6 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                           "aws:cdk:cloudformation:props": {
-                            "vpcId": {
-                              "Ref": "FargateClusterDefaultVpcE69D3A13"
-                            },
                             "availabilityZone": {
                               "Fn::Select": [
                                 1,
@@ -319,11 +316,14 @@
                                 "key": "Name",
                                 "value": "aws-cdk-eks-fargate-cluster-test/FargateCluster/DefaultVpc/PublicSubnet2"
                               }
-                            ]
+                            ],
+                            "vpcId": {
+                              "Ref": "FargateClusterDefaultVpcE69D3A13"
+                            }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                           "version": "0.0.0"
                         }
                       },
@@ -341,9 +341,6 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                           "aws:cdk:cloudformation:props": {
-                            "vpcId": {
-                              "Ref": "FargateClusterDefaultVpcE69D3A13"
-                            },
                             "tags": [
                               {
                                 "key": "kubernetes.io/role/elb",
@@ -353,11 +350,14 @@
                                 "key": "Name",
                                 "value": "aws-cdk-eks-fargate-cluster-test/FargateCluster/DefaultVpc/PublicSubnet2"
                               }
-                            ]
+                            ],
+                            "vpcId": {
+                              "Ref": "FargateClusterDefaultVpcE69D3A13"
+                            }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                           "version": "0.0.0"
                         }
                       },
@@ -376,7 +376,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                           "version": "0.0.0"
                         }
                       },
@@ -386,17 +386,17 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                           "aws:cdk:cloudformation:props": {
-                            "routeTableId": {
-                              "Ref": "FargateClusterDefaultVpcPublicSubnet2RouteTableEDDB89D9"
-                            },
                             "destinationCidrBlock": "0.0.0.0/0",
                             "gatewayId": {
                               "Ref": "FargateClusterDefaultVpcIGWFD9278DA"
+                            },
+                            "routeTableId": {
+                              "Ref": "FargateClusterDefaultVpcPublicSubnet2RouteTableEDDB89D9"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                           "version": "0.0.0"
                         }
                       },
@@ -420,7 +420,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnEIP",
                           "version": "0.0.0"
                         }
                       },
@@ -430,14 +430,14 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                           "aws:cdk:cloudformation:props": {
-                            "subnetId": {
-                              "Ref": "FargateClusterDefaultVpcPublicSubnet2Subnet92A9CC93"
-                            },
                             "allocationId": {
                               "Fn::GetAtt": [
                                 "FargateClusterDefaultVpcPublicSubnet2EIPA4C07B68",
                                 "AllocationId"
                               ]
+                            },
+                            "subnetId": {
+                              "Ref": "FargateClusterDefaultVpcPublicSubnet2Subnet92A9CC93"
                             },
                             "tags": [
                               {
@@ -452,7 +452,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnNatGateway",
                           "version": "0.0.0"
                         }
                       }
@@ -472,9 +472,6 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                           "aws:cdk:cloudformation:props": {
-                            "vpcId": {
-                              "Ref": "FargateClusterDefaultVpcE69D3A13"
-                            },
                             "availabilityZone": {
                               "Fn::Select": [
                                 0,
@@ -502,11 +499,14 @@
                                 "key": "Name",
                                 "value": "aws-cdk-eks-fargate-cluster-test/FargateCluster/DefaultVpc/PrivateSubnet1"
                               }
-                            ]
+                            ],
+                            "vpcId": {
+                              "Ref": "FargateClusterDefaultVpcE69D3A13"
+                            }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                           "version": "0.0.0"
                         }
                       },
@@ -524,9 +524,6 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                           "aws:cdk:cloudformation:props": {
-                            "vpcId": {
-                              "Ref": "FargateClusterDefaultVpcE69D3A13"
-                            },
                             "tags": [
                               {
                                 "key": "kubernetes.io/role/internal-elb",
@@ -536,11 +533,14 @@
                                 "key": "Name",
                                 "value": "aws-cdk-eks-fargate-cluster-test/FargateCluster/DefaultVpc/PrivateSubnet1"
                               }
-                            ]
+                            ],
+                            "vpcId": {
+                              "Ref": "FargateClusterDefaultVpcE69D3A13"
+                            }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                           "version": "0.0.0"
                         }
                       },
@@ -559,7 +559,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                           "version": "0.0.0"
                         }
                       },
@@ -569,17 +569,17 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                           "aws:cdk:cloudformation:props": {
-                            "routeTableId": {
-                              "Ref": "FargateClusterDefaultVpcPrivateSubnet1RouteTableA42013EB"
-                            },
                             "destinationCidrBlock": "0.0.0.0/0",
                             "natGatewayId": {
                               "Ref": "FargateClusterDefaultVpcPublicSubnet1NATGatewayEC4DEB51"
+                            },
+                            "routeTableId": {
+                              "Ref": "FargateClusterDefaultVpcPrivateSubnet1RouteTableA42013EB"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                           "version": "0.0.0"
                         }
                       }
@@ -599,9 +599,6 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                           "aws:cdk:cloudformation:props": {
-                            "vpcId": {
-                              "Ref": "FargateClusterDefaultVpcE69D3A13"
-                            },
                             "availabilityZone": {
                               "Fn::Select": [
                                 1,
@@ -629,11 +626,14 @@
                                 "key": "Name",
                                 "value": "aws-cdk-eks-fargate-cluster-test/FargateCluster/DefaultVpc/PrivateSubnet2"
                               }
-                            ]
+                            ],
+                            "vpcId": {
+                              "Ref": "FargateClusterDefaultVpcE69D3A13"
+                            }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                           "version": "0.0.0"
                         }
                       },
@@ -651,9 +651,6 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                           "aws:cdk:cloudformation:props": {
-                            "vpcId": {
-                              "Ref": "FargateClusterDefaultVpcE69D3A13"
-                            },
                             "tags": [
                               {
                                 "key": "kubernetes.io/role/internal-elb",
@@ -663,11 +660,14 @@
                                 "key": "Name",
                                 "value": "aws-cdk-eks-fargate-cluster-test/FargateCluster/DefaultVpc/PrivateSubnet2"
                               }
-                            ]
+                            ],
+                            "vpcId": {
+                              "Ref": "FargateClusterDefaultVpcE69D3A13"
+                            }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                           "version": "0.0.0"
                         }
                       },
@@ -686,7 +686,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                           "version": "0.0.0"
                         }
                       },
@@ -696,17 +696,17 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                           "aws:cdk:cloudformation:props": {
-                            "routeTableId": {
-                              "Ref": "FargateClusterDefaultVpcPrivateSubnet2RouteTable1691B33C"
-                            },
                             "destinationCidrBlock": "0.0.0.0/0",
                             "natGatewayId": {
                               "Ref": "FargateClusterDefaultVpcPublicSubnet2NATGateway77D6A579"
+                            },
+                            "routeTableId": {
+                              "Ref": "FargateClusterDefaultVpcPrivateSubnet2RouteTable1691B33C"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                           "version": "0.0.0"
                         }
                       }
@@ -731,7 +731,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnInternetGateway",
                       "version": "0.0.0"
                     }
                   },
@@ -741,22 +741,177 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "FargateClusterDefaultVpcE69D3A13"
-                        },
                         "internetGatewayId": {
                           "Ref": "FargateClusterDefaultVpcIGWFD9278DA"
+                        },
+                        "vpcId": {
+                          "Ref": "FargateClusterDefaultVpcE69D3A13"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnVPCGatewayAttachment",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.Vpc",
+                  "version": "0.0.0"
+                }
+              },
+              "KubectlHandlerRole": {
+                "id": "KubectlHandlerRole",
+                "path": "aws-cdk-eks-fargate-cluster-test/FargateCluster/KubectlHandlerRole",
+                "children": {
+                  "ImportKubectlHandlerRole": {
+                    "id": "ImportKubectlHandlerRole",
+                    "path": "aws-cdk-eks-fargate-cluster-test/FargateCluster/KubectlHandlerRole/ImportKubectlHandlerRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-eks-fargate-cluster-test/FargateCluster/KubectlHandlerRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          },
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+                              ]
+                            ]
+                          },
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+                              ]
+                            ]
+                          },
+                          {
+                            "Fn::If": [
+                              "FargateClusterHasEcrPublic3641FEA6",
+                              {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly"
+                                  ]
+                                ]
+                              },
+                              {
+                                "Ref": "AWS::NoValue"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-cdk-eks-fargate-cluster-test/FargateCluster/KubectlHandlerRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-eks-fargate-cluster-test/FargateCluster/KubectlHandlerRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "eks:DescribeCluster",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "FargateCluster019F03E8",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "FargateClusterCreationRole8C524AD8",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "FargateClusterKubectlHandlerRoleDefaultPolicy3F5DBBB0",
+                            "roles": [
+                              {
+                                "Ref": "FargateClusterKubectlHandlerRole93DCDA21"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -807,7 +962,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   }
@@ -841,7 +996,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
                       "version": "0.0.0"
                     }
                   }
@@ -879,22 +1034,26 @@
                                   "Action": "sts:AssumeRole",
                                   "Effect": "Allow",
                                   "Principal": {
-                                    "AWS": {
-                                      "Fn::Join": [
-                                        "",
-                                        [
-                                          "arn:",
-                                          {
-                                            "Ref": "AWS::Partition"
-                                          },
-                                          ":iam::",
-                                          {
-                                            "Ref": "AWS::AccountId"
-                                          },
-                                          ":root"
+                                    "AWS": [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "FargateClusterKubectlHandlerRole93DCDA21",
+                                          "Arn"
                                         ]
-                                      ]
-                                    }
+                                      },
+                                      {
+                                        "Fn::GetAtt": [
+                                          "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
+                                          "Outputs.awscdkeksfargateclustertestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRoleAC5AFF2AArn"
+                                        ]
+                                      },
+                                      {
+                                        "Fn::GetAtt": [
+                                          "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
+                                          "Outputs.awscdkeksfargateclustertestawscdkawseksClusterResourceProviderOnEventHandlerServiceRoleB261F10EArn"
+                                        ]
+                                      }
+                                    ]
                                   }
                                 }
                               ],
@@ -903,7 +1062,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                           "version": "0.0.0"
                         }
                       },
@@ -988,7 +1147,7 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.CfnResource",
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                               "version": "0.0.0"
                             }
                           }
@@ -1025,7 +1184,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.2.55"
                 }
               },
               "KubectlReadyBarrier": {
@@ -1044,115 +1203,11 @@
                   "version": "0.0.0"
                 }
               },
-              "MastersRole": {
-                "id": "MastersRole",
-                "path": "aws-cdk-eks-fargate-cluster-test/FargateCluster/MastersRole",
-                "children": {
-                  "ImportMastersRole": {
-                    "id": "ImportMastersRole",
-                    "path": "aws-cdk-eks-fargate-cluster-test/FargateCluster/MastersRole/ImportMastersRole",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-eks-fargate-cluster-test/FargateCluster/MastersRole/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                      "aws:cdk:cloudformation:props": {
-                        "assumeRolePolicyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sts:AssumeRole",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "AWS": {
-                                  "Fn::Join": [
-                                    "",
-                                    [
-                                      "arn:",
-                                      {
-                                        "Ref": "AWS::Partition"
-                                      },
-                                      ":iam::",
-                                      {
-                                        "Ref": "AWS::AccountId"
-                                      },
-                                      ":root"
-                                    ]
-                                  ]
-                                }
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
+              "HasEcrPublic": {
+                "id": "HasEcrPublic",
+                "path": "aws-cdk-eks-fargate-cluster-test/FargateCluster/HasEcrPublic",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
-                }
-              },
-              "AwsAuth": {
-                "id": "AwsAuth",
-                "path": "aws-cdk-eks-fargate-cluster-test/FargateCluster/AwsAuth",
-                "children": {
-                  "manifest": {
-                    "id": "manifest",
-                    "path": "aws-cdk-eks-fargate-cluster-test/FargateCluster/AwsAuth/manifest",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-cdk-eks-fargate-cluster-test/FargateCluster/AwsAuth/manifest/Resource",
-                        "children": {
-                          "Default": {
-                            "id": "Default",
-                            "path": "aws-cdk-eks-fargate-cluster-test/FargateCluster/AwsAuth/manifest/Resource/Default",
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.CfnResource",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.CustomResource",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_eks.KubernetesManifest",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_eks.AwsAuth",
-                  "version": "0.0.0"
-                }
-              },
-              "ConfigCommand": {
-                "id": "ConfigCommand",
-                "path": "aws-cdk-eks-fargate-cluster-test/FargateCluster/ConfigCommand",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnOutput",
-                  "version": "0.0.0"
-                }
-              },
-              "GetTokenCommand": {
-                "id": "GetTokenCommand",
-                "path": "aws-cdk-eks-fargate-cluster-test/FargateCluster/GetTokenCommand",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "fqn": "aws-cdk-lib.CfnCondition",
                   "version": "0.0.0"
                 }
               },
@@ -1235,7 +1290,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                           "version": "0.0.0"
                         }
                       }
@@ -1266,6 +1321,44 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_eks.FargateProfile",
+                  "version": "0.0.0"
+                }
+              },
+              "AwsAuth": {
+                "id": "AwsAuth",
+                "path": "aws-cdk-eks-fargate-cluster-test/FargateCluster/AwsAuth",
+                "children": {
+                  "manifest": {
+                    "id": "manifest",
+                    "path": "aws-cdk-eks-fargate-cluster-test/FargateCluster/AwsAuth/manifest",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-eks-fargate-cluster-test/FargateCluster/AwsAuth/manifest/Resource",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "aws-cdk-eks-fargate-cluster-test/FargateCluster/AwsAuth/manifest/Resource/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_eks.KubernetesManifest",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_eks.AwsAuth",
                   "version": "0.0.0"
                 }
               }
@@ -1319,13 +1412,13 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "ad44c2b0638f04871c889d78e71dea90ffae67b9cc4aa4366d5102db42435ee1.zip"
+                          "s3Key": "25f7dc8c7a6d65604d70050f2d9d19d6bfc5060a3d74662fc86589f4385e3a1b.zip"
                         },
                         "description": "/opt/nodejs/node_modules/proxy-agent"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnLayerVersion",
                       "version": "0.0.0"
                     }
                   }
@@ -1386,48 +1479,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "DefaultPolicy": {
-                        "id": "DefaultPolicy",
-                        "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/DefaultPolicy",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/DefaultPolicy/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                              "aws:cdk:cloudformation:props": {
-                                "policyDocument": {
-                                  "Statement": [
-                                    {
-                                      "Action": "sts:AssumeRole",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Ref": "referencetoawscdkeksfargateclustertestFargateClusterCreationRoleFB2229CFArn"
-                                      }
-                                    }
-                                  ],
-                                  "Version": "2012-10-17"
-                                },
-                                "policyName": "OnEventHandlerServiceRoleDefaultPolicyC57085D4",
-                                "roles": [
-                                  {
-                                    "Ref": "OnEventHandlerServiceRole15A26729"
-                                  }
-                                ]
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.CfnResource",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                           "version": "0.0.0"
                         }
                       }
@@ -1473,13 +1525,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "68b8fc42fe6d1eb6e6c39212ce770fac02511440fecfc5b69a904fe8a19f6b8e.zip"
-                        },
-                        "role": {
-                          "Fn::GetAtt": [
-                            "OnEventHandlerServiceRole15A26729",
-                            "Arn"
-                          ]
+                          "s3Key": "bb544555825b6abfdf2cf0c13f9410a77d62ad0fe0bf5c38cef55631cf427f31.zip"
                         },
                         "description": "onEvent handler for EKS cluster resource provider",
                         "environment": {
@@ -1493,12 +1539,18 @@
                             "Ref": "NodeProxyAgentLayer924C1971"
                           }
                         ],
-                        "runtime": "nodejs14.x",
+                        "role": {
+                          "Fn::GetAtt": [
+                            "OnEventHandlerServiceRole15A26729",
+                            "Arn"
+                          ]
+                        },
+                        "runtime": "nodejs18.x",
                         "timeout": 60
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                       "version": "0.0.0"
                     }
                   }
@@ -1559,48 +1611,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "DefaultPolicy": {
-                        "id": "DefaultPolicy",
-                        "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/DefaultPolicy",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/DefaultPolicy/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                              "aws:cdk:cloudformation:props": {
-                                "policyDocument": {
-                                  "Statement": [
-                                    {
-                                      "Action": "sts:AssumeRole",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Ref": "referencetoawscdkeksfargateclustertestFargateClusterCreationRoleFB2229CFArn"
-                                      }
-                                    }
-                                  ],
-                                  "Version": "2012-10-17"
-                                },
-                                "policyName": "IsCompleteHandlerServiceRoleDefaultPolicy8F64197B",
-                                "roles": [
-                                  {
-                                    "Ref": "IsCompleteHandlerServiceRole5810CC58"
-                                  }
-                                ]
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.CfnResource",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                           "version": "0.0.0"
                         }
                       }
@@ -1646,13 +1657,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "68b8fc42fe6d1eb6e6c39212ce770fac02511440fecfc5b69a904fe8a19f6b8e.zip"
-                        },
-                        "role": {
-                          "Fn::GetAtt": [
-                            "IsCompleteHandlerServiceRole5810CC58",
-                            "Arn"
-                          ]
+                          "s3Key": "bb544555825b6abfdf2cf0c13f9410a77d62ad0fe0bf5c38cef55631cf427f31.zip"
                         },
                         "description": "isComplete handler for EKS cluster resource provider",
                         "environment": {
@@ -1666,12 +1671,18 @@
                             "Ref": "NodeProxyAgentLayer924C1971"
                           }
                         ],
-                        "runtime": "nodejs14.x",
+                        "role": {
+                          "Fn::GetAtt": [
+                            "IsCompleteHandlerServiceRole5810CC58",
+                            "Arn"
+                          ]
+                        },
+                        "runtime": "nodejs18.x",
                         "timeout": 60
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                       "version": "0.0.0"
                     }
                   }
@@ -1736,7 +1747,7 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.CfnResource",
+                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                               "version": "0.0.0"
                             }
                           },
@@ -1817,7 +1828,7 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.CfnResource",
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                                   "version": "0.0.0"
                                 }
                               }
@@ -1869,13 +1880,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "1eabd374284db340b74179e3429008132f5b6b0b7b28d472d852807d7f5f9746.zip"
-                            },
-                            "role": {
-                              "Fn::GetAtt": [
-                                "ProviderframeworkonEventServiceRole9FF04296",
-                                "Arn"
-                              ]
+                              "s3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
                             },
                             "description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
@@ -1898,12 +1903,18 @@
                               }
                             },
                             "handler": "framework.onEvent",
-                            "runtime": "nodejs14.x",
+                            "role": {
+                              "Fn::GetAtt": [
+                                "ProviderframeworkonEventServiceRole9FF04296",
+                                "Arn"
+                              ]
+                            },
+                            "runtime": "nodejs18.x",
                             "timeout": 900
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                           "version": "0.0.0"
                         }
                       }
@@ -1964,7 +1975,7 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.CfnResource",
+                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                               "version": "0.0.0"
                             }
                           },
@@ -2038,7 +2049,7 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.CfnResource",
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                                   "version": "0.0.0"
                                 }
                               }
@@ -2090,13 +2101,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "1eabd374284db340b74179e3429008132f5b6b0b7b28d472d852807d7f5f9746.zip"
-                            },
-                            "role": {
-                              "Fn::GetAtt": [
-                                "ProviderframeworkisCompleteServiceRoleB1087139",
-                                "Arn"
-                              ]
+                              "s3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
                             },
                             "description": "AWS CDK resource provider framework - isComplete (aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
@@ -2116,12 +2121,18 @@
                               }
                             },
                             "handler": "framework.isComplete",
-                            "runtime": "nodejs14.x",
+                            "role": {
+                              "Fn::GetAtt": [
+                                "ProviderframeworkisCompleteServiceRoleB1087139",
+                                "Arn"
+                              ]
+                            },
+                            "runtime": "nodejs18.x",
                             "timeout": 900
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                           "version": "0.0.0"
                         }
                       }
@@ -2182,7 +2193,7 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.CfnResource",
+                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                               "version": "0.0.0"
                             }
                           },
@@ -2256,7 +2267,7 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.CfnResource",
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                                   "version": "0.0.0"
                                 }
                               }
@@ -2308,13 +2319,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "1eabd374284db340b74179e3429008132f5b6b0b7b28d472d852807d7f5f9746.zip"
-                            },
-                            "role": {
-                              "Fn::GetAtt": [
-                                "ProviderframeworkonTimeoutServiceRole28643D26",
-                                "Arn"
-                              ]
+                              "s3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
                             },
                             "description": "AWS CDK resource provider framework - onTimeout (aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
@@ -2334,12 +2339,18 @@
                               }
                             },
                             "handler": "framework.onTimeout",
-                            "runtime": "nodejs14.x",
+                            "role": {
+                              "Fn::GetAtt": [
+                                "ProviderframeworkonTimeoutServiceRole28643D26",
+                                "Arn"
+                              ]
+                            },
+                            "runtime": "nodejs18.x",
                             "timeout": 900
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                           "version": "0.0.0"
                         }
                       }
@@ -2386,7 +2397,7 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.CfnResource",
+                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                               "version": "0.0.0"
                             }
                           },
@@ -2460,7 +2471,7 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.CfnResource",
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                                   "version": "0.0.0"
                                 }
                               }
@@ -2487,7 +2498,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.2.55"
                     }
                   }
                 },
@@ -2496,19 +2507,27 @@
                   "version": "0.0.0"
                 }
               },
-              "awscdkeksfargateclustertestawscdkawseksClusterResourceProviderframeworkonEventC85EBDF3Arn": {
-                "id": "awscdkeksfargateclustertestawscdkawseksClusterResourceProviderframeworkonEventC85EBDF3Arn",
-                "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkeksfargateclustertestawscdkawseksClusterResourceProviderframeworkonEventC85EBDF3Arn",
+              "awscdkeksfargateclustertestawscdkawseksClusterResourceProviderOnEventHandlerServiceRoleB261F10EArn": {
+                "id": "awscdkeksfargateclustertestawscdkawseksClusterResourceProviderOnEventHandlerServiceRoleB261F10EArn",
+                "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkeksfargateclustertestawscdkawseksClusterResourceProviderOnEventHandlerServiceRoleB261F10EArn",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
                 }
               },
-              "reference-to-awscdkeksfargateclustertestFargateClusterCreationRoleFB2229CFArn": {
-                "id": "reference-to-awscdkeksfargateclustertestFargateClusterCreationRoleFB2229CFArn",
-                "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.ClusterResourceProvider/reference-to-awscdkeksfargateclustertestFargateClusterCreationRoleFB2229CFArn",
+              "awscdkeksfargateclustertestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRoleAC5AFF2AArn": {
+                "id": "awscdkeksfargateclustertestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRoleAC5AFF2AArn",
+                "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkeksfargateclustertestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRoleAC5AFF2AArn",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnParameter",
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "awscdkeksfargateclustertestawscdkawseksClusterResourceProviderframeworkonEventC85EBDF3Arn": {
+                "id": "awscdkeksfargateclustertestawscdkawseksClusterResourceProviderframeworkonEventC85EBDF3Arn",
+                "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkeksfargateclustertestawscdkawseksClusterResourceProviderframeworkonEventC85EBDF3Arn",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
                 }
               }
@@ -2544,29 +2563,21 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/1fc8fa92c1040d12c63cf9dbeb24184cebb75b9c569efc7ade7e9bba6256baf4.json"
+                          "/02d6d3451012fee958d31d0cb1dd9b1512fa61ffdf8133c636c17264d43abb81.json"
                         ]
                       ]
-                    },
-                    "parameters": {
-                      "referencetoawscdkeksfargateclustertestFargateClusterCreationRoleFB2229CFArn": {
-                        "Fn::GetAtt": [
-                          "FargateClusterCreationRole8C524AD8",
-                          "Arn"
-                        ]
-                      }
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
+                  "fqn": "aws-cdk-lib.CfnStack",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.270"
+              "version": "10.2.55"
             }
           },
           "@aws-cdk--aws-eks.KubectlProvider": {
@@ -2577,135 +2588,6 @@
                 "id": "Handler",
                 "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.KubectlProvider/Handler",
                 "children": {
-                  "ServiceRole": {
-                    "id": "ServiceRole",
-                    "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole",
-                    "children": {
-                      "ImportServiceRole": {
-                        "id": "ImportServiceRole",
-                        "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole/ImportServiceRole",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.Resource",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                          "aws:cdk:cloudformation:props": {
-                            "assumeRolePolicyDocument": {
-                              "Statement": [
-                                {
-                                  "Action": "sts:AssumeRole",
-                                  "Effect": "Allow",
-                                  "Principal": {
-                                    "Service": "lambda.amazonaws.com"
-                                  }
-                                }
-                              ],
-                              "Version": "2012-10-17"
-                            },
-                            "managedPolicyArns": [
-                              {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:",
-                                    {
-                                      "Ref": "AWS::Partition"
-                                    },
-                                    ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-                                  ]
-                                ]
-                              },
-                              {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:",
-                                    {
-                                      "Ref": "AWS::Partition"
-                                    },
-                                    ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
-                                  ]
-                                ]
-                              },
-                              {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:",
-                                    {
-                                      "Ref": "AWS::Partition"
-                                    },
-                                    ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-                                  ]
-                                ]
-                              }
-                            ]
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "DefaultPolicy": {
-                        "id": "DefaultPolicy",
-                        "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole/DefaultPolicy",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole/DefaultPolicy/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                              "aws:cdk:cloudformation:props": {
-                                "policyDocument": {
-                                  "Statement": [
-                                    {
-                                      "Action": "eks:DescribeCluster",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Ref": "referencetoawscdkeksfargateclustertestFargateCluster8588769EArn"
-                                      }
-                                    },
-                                    {
-                                      "Action": "sts:AssumeRole",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Ref": "referencetoawscdkeksfargateclustertestFargateClusterCreationRoleFB2229CFArn"
-                                      }
-                                    }
-                                  ],
-                                  "Version": "2012-10-17"
-                                },
-                                "policyName": "HandlerServiceRoleDefaultPolicyCBD0CC91",
-                                "roles": [
-                                  {
-                                    "Ref": "HandlerServiceRoleFCDC14AE"
-                                  }
-                                ]
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.CfnResource",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Policy",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Role",
-                      "version": "0.0.0"
-                    }
-                  },
                   "Code": {
                     "id": "Code",
                     "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.KubectlProvider/Handler/Code",
@@ -2742,13 +2624,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "2427a81588377445b76031dc4adb9190776c951949a535cb32fde3ba6db8ee92.zip"
-                        },
-                        "role": {
-                          "Fn::GetAtt": [
-                            "HandlerServiceRoleFCDC14AE",
-                            "Arn"
-                          ]
+                          "s3Key": "9017774b84ae2457b1b2ad6fcbb4860d8ce2537062c77010b24d9b156ced5a1b.zip"
                         },
                         "description": "onEvent handler for EKS kubectl resource provider",
                         "handler": "index.handler",
@@ -2761,6 +2637,9 @@
                           }
                         ],
                         "memorySize": 1024,
+                        "role": {
+                          "Ref": "referencetoawscdkeksfargateclustertestFargateClusterKubectlHandlerRole4192664CArn"
+                        },
                         "runtime": "python3.7",
                         "timeout": 900,
                         "vpcConfig": {
@@ -2781,7 +2660,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                       "version": "0.0.0"
                     }
                   }
@@ -2831,13 +2710,13 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "68b22621fff135f9e3f225bad7ff80fdf2f45c3d9910af601206a0d9b279933a.zip"
+                          "s3Key": "e2277687077a2abf9ae1af1cc9565e6715e2ebb62f79ec53aa75a1af9298f642.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnLayerVersion",
                       "version": "0.0.0"
                     }
                   }
@@ -2847,11 +2726,19 @@
                   "version": "0.0.0"
                 }
               },
-              "HasEcrPublic": {
-                "id": "HasEcrPublic",
-                "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.KubectlProvider/HasEcrPublic",
+              "ConditionalPolicyArn": {
+                "id": "ConditionalPolicyArn",
+                "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.KubectlProvider/ConditionalPolicyArn",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnCondition",
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "conditionalPolicy": {
+                "id": "conditionalPolicy",
+                "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.KubectlProvider/conditionalPolicy",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               },
@@ -2922,7 +2809,7 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.CfnResource",
+                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                               "version": "0.0.0"
                             }
                           },
@@ -2976,7 +2863,7 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.CfnResource",
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                                   "version": "0.0.0"
                                 }
                               }
@@ -3028,13 +2915,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "1eabd374284db340b74179e3429008132f5b6b0b7b28d472d852807d7f5f9746.zip"
-                            },
-                            "role": {
-                              "Fn::GetAtt": [
-                                "ProviderframeworkonEventServiceRole9FF04296",
-                                "Arn"
-                              ]
+                              "s3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
                             },
                             "description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.KubectlProvider/Provider)",
                             "environment": {
@@ -3048,7 +2929,13 @@
                               }
                             },
                             "handler": "framework.onEvent",
-                            "runtime": "nodejs14.x",
+                            "role": {
+                              "Fn::GetAtt": [
+                                "ProviderframeworkonEventServiceRole9FF04296",
+                                "Arn"
+                              ]
+                            },
+                            "runtime": "nodejs18.x",
                             "timeout": 900,
                             "vpcConfig": {
                               "subnetIds": [
@@ -3068,7 +2955,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                           "version": "0.0.0"
                         }
                       }
@@ -3092,25 +2979,17 @@
                   "version": "0.0.0"
                 }
               },
-              "reference-to-awscdkeksfargateclustertestFargateCluster8588769EArn": {
-                "id": "reference-to-awscdkeksfargateclustertestFargateCluster8588769EArn",
-                "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksfargateclustertestFargateCluster8588769EArn",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnParameter",
-                  "version": "0.0.0"
-                }
-              },
-              "reference-to-awscdkeksfargateclustertestFargateClusterCreationRoleFB2229CFArn": {
-                "id": "reference-to-awscdkeksfargateclustertestFargateClusterCreationRoleFB2229CFArn",
-                "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksfargateclustertestFargateClusterCreationRoleFB2229CFArn",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnParameter",
-                  "version": "0.0.0"
-                }
-              },
               "reference-to-awscdkeksfargateclustertestKubectlLayer821D4586Ref": {
                 "id": "reference-to-awscdkeksfargateclustertestKubectlLayer821D4586Ref",
                 "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksfargateclustertestKubectlLayer821D4586Ref",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnParameter",
+                  "version": "0.0.0"
+                }
+              },
+              "reference-to-awscdkeksfargateclustertestFargateClusterKubectlHandlerRole4192664CArn": {
+                "id": "reference-to-awscdkeksfargateclustertestFargateClusterKubectlHandlerRole4192664CArn",
+                "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksfargateclustertestFargateClusterKubectlHandlerRole4192664CArn",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnParameter",
                   "version": "0.0.0"
@@ -3156,6 +3035,29 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::CloudFormation::Stack",
                   "aws:cdk:cloudformation:props": {
+                    "parameters": {
+                      "referencetoawscdkeksfargateclustertestKubectlLayer821D4586Ref": {
+                        "Ref": "KubectlLayer600207B5"
+                      },
+                      "referencetoawscdkeksfargateclustertestFargateClusterKubectlHandlerRole4192664CArn": {
+                        "Fn::GetAtt": [
+                          "FargateClusterKubectlHandlerRole93DCDA21",
+                          "Arn"
+                        ]
+                      },
+                      "referencetoawscdkeksfargateclustertestFargateClusterDefaultVpcPrivateSubnet1Subnet0278E6BCRef": {
+                        "Ref": "FargateClusterDefaultVpcPrivateSubnet1Subnet50EA43AA"
+                      },
+                      "referencetoawscdkeksfargateclustertestFargateClusterDefaultVpcPrivateSubnet2Subnet1F1EC575Ref": {
+                        "Ref": "FargateClusterDefaultVpcPrivateSubnet2Subnet0C9D6154"
+                      },
+                      "referencetoawscdkeksfargateclustertestFargateCluster8588769EClusterSecurityGroupId": {
+                        "Fn::GetAtt": [
+                          "FargateCluster019F03E8",
+                          "ClusterSecurityGroupId"
+                        ]
+                      }
+                    },
                     "templateUrl": {
                       "Fn::Join": [
                         "",
@@ -3172,50 +3074,21 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/ceae80cee4b2f3806ab1b38635b91e2ee263f6cff16c9f79884e9caaf6e66489.json"
+                          "/1db955fe9d2a178468903f48964b1561f473ef2bf0a0dad20e3298dd7c49919d.json"
                         ]
                       ]
-                    },
-                    "parameters": {
-                      "referencetoawscdkeksfargateclustertestFargateCluster8588769EArn": {
-                        "Fn::GetAtt": [
-                          "FargateCluster019F03E8",
-                          "Arn"
-                        ]
-                      },
-                      "referencetoawscdkeksfargateclustertestFargateClusterCreationRoleFB2229CFArn": {
-                        "Fn::GetAtt": [
-                          "FargateClusterCreationRole8C524AD8",
-                          "Arn"
-                        ]
-                      },
-                      "referencetoawscdkeksfargateclustertestKubectlLayer821D4586Ref": {
-                        "Ref": "KubectlLayer600207B5"
-                      },
-                      "referencetoawscdkeksfargateclustertestFargateClusterDefaultVpcPrivateSubnet1Subnet0278E6BCRef": {
-                        "Ref": "FargateClusterDefaultVpcPrivateSubnet1Subnet50EA43AA"
-                      },
-                      "referencetoawscdkeksfargateclustertestFargateClusterDefaultVpcPrivateSubnet2Subnet1F1EC575Ref": {
-                        "Ref": "FargateClusterDefaultVpcPrivateSubnet2Subnet0C9D6154"
-                      },
-                      "referencetoawscdkeksfargateclustertestFargateCluster8588769EClusterSecurityGroupId": {
-                        "Fn::GetAtt": [
-                          "FargateCluster019F03E8",
-                          "ClusterSecurityGroupId"
-                        ]
-                      }
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
+                  "fqn": "aws-cdk-lib.CfnStack",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.270"
+              "version": "10.2.55"
             }
           },
           "BootstrapVersion": {
@@ -3253,7 +3126,7 @@
                 "path": "aws-cdk-eks-fargate-cluster/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.2.55"
                 }
               },
               "DeployAssert": {
@@ -3299,7 +3172,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.2.55"
         }
       }
     },

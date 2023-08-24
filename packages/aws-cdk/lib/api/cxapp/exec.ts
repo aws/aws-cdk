@@ -130,7 +130,10 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
  */
 export function createAssembly(appDir: string) {
   try {
-    return new cxapi.CloudAssembly(appDir);
+    return new cxapi.CloudAssembly(appDir, {
+      // We sort as we deploy
+      topoSort: false,
+    });
   } catch (error: any) {
     if (error.message.includes(cxschema.VERSION_MISMATCH)) {
       // this means the CLI version is too old.

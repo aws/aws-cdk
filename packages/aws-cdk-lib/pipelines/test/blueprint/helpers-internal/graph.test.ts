@@ -2,7 +2,6 @@ import { mkGraph } from './util';
 import { GraphNode } from '../../../lib/helpers-internal';
 import { flatten } from '../../../lib/private/javascript';
 
-
 test('"uniqueId" renders a graph-wide unique id for each node', () => {
   const g = mkGraph('MyGraph', G => {
     G.graph('g1', [], G1 => {

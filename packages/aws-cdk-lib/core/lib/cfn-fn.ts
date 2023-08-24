@@ -233,10 +233,12 @@ export class Fn {
   /**
    * The intrinsic function ``Fn::FindInMap`` returns the value corresponding to
    * keys in a two-level map that is declared in the Mappings section.
+   * Warning: do not use with lazy mappings as this function will not guarentee a lazy mapping to render in the template.
+   * Prefer to use `CfnMapping.findInMap` in general.
    * @returns a token represented as a string
    */
-  public static findInMap(mapName: string, topLevelKey: string, secondLevelKey: string): string {
-    return Fn._findInMap(mapName, topLevelKey, secondLevelKey).toString();
+  public static findInMap(mapName: string, topLevelKey: string, secondLevelKey: string, defaultValue?: string): string {
+    return Fn._findInMap(mapName, topLevelKey, secondLevelKey, defaultValue).toString();
   }
 
   /**
@@ -245,8 +247,8 @@ export class Fn {
    *
    * @internal
    */
-  public static _findInMap(mapName: string, topLevelKey: string, secondLevelKey: string): IResolvable {
-    return new FnFindInMap(mapName, topLevelKey, secondLevelKey);
+  public static _findInMap(mapName: string, topLevelKey: string, secondLevelKey: string, defaultValue?: string): IResolvable {
+    return new FnFindInMap(mapName, topLevelKey, secondLevelKey, defaultValue);
   }
 
   /**
@@ -275,7 +277,10 @@ export class Fn {
     if (conditions.length === 1) {
       return conditions[0] as ICfnRuleConditionExpression;
     }
-    return Fn.conditionAnd(..._inGroupsOf(conditions, 10).map(group => new FnAnd(...group)));
+    if (conditions.length <= 10) {
+      return new FnAnd(...conditions);
+    }
+    return Fn.conditionAnd(..._inGroupsOf(conditions, 10).map(group => Fn.conditionAnd(...group)));
   }
 
   /**
@@ -334,7 +339,10 @@ export class Fn {
     if (conditions.length === 1) {
       return conditions[0] as ICfnRuleConditionExpression;
     }
-    return Fn.conditionOr(..._inGroupsOf(conditions, 10).map(group => new FnOr(...group)));
+    if (conditions.length <= 10) {
+      return new FnOr(...conditions);
+    }
+    return Fn.conditionOr(..._inGroupsOf(conditions, 10).map(group => Fn.conditionOr(...group)));
   }
 
   /**
@@ -444,8 +452,19 @@ export class Fn {
     return Token.asNumber(new FnLength(array));
   }
 
+  /**
+   * Test whether the given object extends FnBase class.
+   *
+   * @internal
+   */
+  public static _isFnBase(x: any): x is FnBase {
+    return x !== null && typeof(x) === 'object' && FN_BASE_SYMBOL in x;
+  }
+
   private constructor() { }
 }
+
+const FN_BASE_SYMBOL = Symbol.for('@aws-cdk/core.CfnFnBase');
 
 /**
  * Base class for tokens that represent CloudFormation intrinsic functions.
@@ -453,6 +472,8 @@ export class Fn {
 class FnBase extends Intrinsic {
   constructor(name: string, value: any) {
     super({ [name]: value });
+
+    Object.defineProperty(this, FN_BASE_SYMBOL, { value: true });
   }
 }
 
@@ -481,9 +502,27 @@ class FnFindInMap extends FnBase {
    * @param mapName The logical name of a mapping declared in the Mappings section that contains the keys and values.
    * @param topLevelKey The top-level key name. Its value is a list of key-value pairs.
    * @param secondLevelKey The second-level key name, which is set to one of the keys from the list assigned to TopLevelKey.
+   * @param defaultValue The value of the default value returned if either the key is not found in the map
    */
-  constructor(mapName: string, topLevelKey: any, secondLevelKey: any) {
-    super('Fn::FindInMap', [mapName, topLevelKey, secondLevelKey]);
+
+  private readonly mapName: string;
+  private readonly topLevelKey: string;
+  private readonly secondLevelKey: string;
+  private readonly defaultValue?: string;
+
+  constructor(mapName: string, topLevelKey: any, secondLevelKey: any, defaultValue?: string) {
+    super('Fn::FindInMap', [mapName, topLevelKey, secondLevelKey, defaultValue !== undefined ? { DefaultValue: defaultValue } : undefined]);
+    this.mapName = mapName;
+    this.topLevelKey = topLevelKey;
+    this.secondLevelKey = secondLevelKey;
+    this.defaultValue = defaultValue;
+  }
+
+  public resolve(context: IResolveContext): any {
+    if (this.defaultValue !== undefined) {
+      Stack.of(context.scope).addTransform('AWS::LanguageExtensions');
+    }
+    return { 'Fn::FindInMap': [this.mapName, this.topLevelKey, this.secondLevelKey, this.defaultValue !== undefined ? { DefaultValue: this.defaultValue } : undefined] };
   }
 }
 

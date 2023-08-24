@@ -1,4 +1,4 @@
-import * as cdk from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { IApplication, Application } from './application';
 import { hashValues } from './common';
@@ -24,7 +24,6 @@ export interface TargetApplicationCommonOptions extends cdk.StackProps {
     */
   readonly associateCrossAccountStacks?: boolean;
 }
-
 
 /**
   * Properties used to define New TargetApplication.

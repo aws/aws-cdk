@@ -1,7 +1,7 @@
+import { Construct, IDependable } from 'constructs';
 import * as iam from '../../../aws-iam';
 import { PolicyStatement } from '../../../aws-iam';
 import { ArnFormat, Stack } from '../../../core';
-import { Construct, IDependable } from 'constructs';
 
 /**
  * Role which will be reused across asset jobs

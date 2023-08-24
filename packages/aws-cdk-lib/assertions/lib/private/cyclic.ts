@@ -104,7 +104,6 @@ function logicalIdsInSubString(x: string): string[] {
   });
 }
 
-
 function analyzeSubPattern(pattern: string): SubFragment[] {
   const ret: SubFragment[] = [];
   let start = 0;
@@ -150,7 +149,6 @@ type SubFragment =
   | { readonly type: 'ref'; readonly logicalId: string }
   | { readonly type: 'getatt'; readonly logicalId: string; readonly attr: string };
 
-
 function intersect<A>(xs: Set<A>, ys: Set<A>): Set<A> {
   return new Set<A>(Array.from(xs).filter(x => ys.has(x)));
 }
@@ -169,7 +167,7 @@ function findCycle(deps: ReadonlyMap<string, ReadonlySet<string>>): string[] {
 
   function recurse(node: string, path: string[]): string[] | undefined {
     for (const dep of deps.get(node) ?? []) {
-      if (dep === path[0]) { return [...path, dep]; }
+      if (path.includes(dep)) { return [...path, dep]; }
 
       const cycle = recurse(dep, [...path, dep]);
       if (cycle) { return cycle; }

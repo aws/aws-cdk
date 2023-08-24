@@ -24,9 +24,9 @@ bucket2.addObjectCreatedNotification(new s3n.SqsDestination(queue), { suffix: '.
 const encryptedQueue = new sqs.Queue(stack, 'EncryptedQueue', { encryption: sqs.QueueEncryption.KMS });
 bucket1.addObjectRemovedNotification(new s3n.SqsDestination(encryptedQueue));
 
-
 const integTest = new integ.IntegTest(app, 'SQSBucketNotificationsTest', {
   testCases: [stack],
+  diffAssets: true,
 });
 
 integTest.assertions

@@ -1,0 +1,19 @@
+{
+  "version": "32.0.0",
+  "files": {
+    "591ab3589c0620b6953fda9e284aa7d8fe4e472d41d449192bee0bcbec043c31": {
+      "source": {
+        "path": "aws-cdk-s3-bucket-encryption.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "591ab3589c0620b6953fda9e284aa7d8fe4e472d41d449192bee0bcbec043c31.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

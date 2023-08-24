@@ -1,0 +1,12 @@
+{
+  "version": "32.0.0",
+  "testCases": {
+    "AsgFromLaunchConfigTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-asg-integ"
+      ],
+      "assertionStack": "AsgFromLaunchConfigTest/DefaultTest/DeployAssert",
+      "assertionStackName": "AsgFromLaunchConfigTestDefaultTestDeployAssert4F0C1C7C"
+    }
+  }
+}

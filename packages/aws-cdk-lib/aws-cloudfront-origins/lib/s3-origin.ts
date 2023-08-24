@@ -1,9 +1,9 @@
+import { Construct } from 'constructs';
+import { HttpOrigin } from './http-origin';
 import * as cloudfront from '../../aws-cloudfront';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
-import { Construct } from 'constructs';
-import { HttpOrigin } from './http-origin';
 
 /**
  * Properties to use to customize an S3 Origin.

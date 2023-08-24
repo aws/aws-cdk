@@ -1,5 +1,5 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { Duration, Size } from 'aws-cdk-lib';
+import { Duration, Size } from 'aws-cdk-lib/core';
 
 import { Construct } from 'constructs';
 

@@ -4,7 +4,6 @@ import * as iam from '../../../aws-iam';
 import { Duration, SecretValue, Stack } from '../../../core';
 import * as targets from '../../lib';
 
-
 describe('with basic auth connection', () => {
   let stack: Stack;
   let connection: events.Connection;

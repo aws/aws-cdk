@@ -1,3 +1,6 @@
+import { Construct, Node } from 'constructs';
+import { DeployCdkStackAction } from './actions';
+import { CdkPipeline } from './pipeline';
 import * as codebuild from '../../../aws-codebuild';
 import * as codepipeline from '../../../aws-codepipeline';
 import * as cpactions from '../../../aws-codepipeline-actions';
@@ -5,9 +8,6 @@ import { CodeBuildAction } from '../../../aws-codepipeline-actions';
 import * as sns from '../../../aws-sns';
 import { Stage, Aspects } from '../../../core';
 import * as cxapi from '../../../cx-api';
-import { Construct, Node } from 'constructs';
-import { DeployCdkStackAction } from './actions';
-import { CdkPipeline } from './pipeline';
 import { AssetType } from '../blueprint/asset-type';
 import { ApplicationSecurityCheck } from '../private/application-security-check';
 import { AssetManifestReader, DockerImageManifestEntry, FileManifestEntry } from '../private/asset-manifest';
@@ -61,7 +61,6 @@ export interface CdkStageProps {
    */
   readonly securityNotificationTopic?: sns.ITopic;
 }
-
 
 /**
  * Stage in a CdkPipeline

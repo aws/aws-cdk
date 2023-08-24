@@ -31,7 +31,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.CfnVPC",
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPC",
                   "version": "0.0.0"
                 }
               },
@@ -75,7 +75,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -83,7 +83,7 @@
                     "id": "Acl",
                     "path": "aws-cdk-rds-cluster-rotation/VPC/PublicSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -105,7 +105,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -124,7 +124,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -144,7 +144,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   },
@@ -164,7 +164,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnEIP",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnEIP",
                       "version": "0.0.0"
                     }
                   },
@@ -192,13 +192,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnNatGateway",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnNatGateway",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.PublicSubnet",
+                  "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -242,7 +242,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -250,7 +250,7 @@
                     "id": "Acl",
                     "path": "aws-cdk-rds-cluster-rotation/VPC/PublicSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -272,7 +272,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -291,7 +291,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -311,7 +311,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   },
@@ -331,7 +331,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnEIP",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnEIP",
                       "version": "0.0.0"
                     }
                   },
@@ -359,13 +359,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnNatGateway",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnNatGateway",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.PublicSubnet",
+                  "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -409,7 +409,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -417,7 +417,7 @@
                     "id": "Acl",
                     "path": "aws-cdk-rds-cluster-rotation/VPC/PrivateSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -439,7 +439,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -458,7 +458,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -478,13 +478,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.PrivateSubnet",
+                  "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -528,7 +528,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -536,7 +536,7 @@
                     "id": "Acl",
                     "path": "aws-cdk-rds-cluster-rotation/VPC/PrivateSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -558,7 +558,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -577,7 +577,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -597,13 +597,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.PrivateSubnet",
+                  "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -622,7 +622,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.CfnInternetGateway",
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnInternetGateway",
                   "version": "0.0.0"
                 }
               },
@@ -641,13 +641,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.CfnVPCGatewayAttachment",
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCGatewayAttachment",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-ec2.Vpc",
+              "fqn": "aws-cdk-lib.aws_ec2.Vpc",
               "version": "0.0.0"
             }
           },
@@ -675,13 +675,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+              "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
               "version": "0.0.0"
             }
           },
@@ -741,13 +741,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
                   "version": "0.0.0"
                 }
               },
@@ -793,13 +793,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.CfnVPCEndpoint",
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCEndpoint",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-ec2.InterfaceVpcEndpoint",
+              "fqn": "aws-cdk-lib.aws_ec2.InterfaceVpcEndpoint",
               "version": "0.0.0"
             }
           },
@@ -829,13 +829,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-rds.CfnDBSubnetGroup",
+                      "fqn": "aws-cdk-lib.aws_rds.CfnDBSubnetGroup",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-rds.SubnetGroup",
+                  "fqn": "aws-cdk-lib.aws_rds.SubnetGroup",
                   "version": "0.0.0"
                 }
               },
@@ -863,7 +863,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
                       "version": "0.0.0"
                     }
                   },
@@ -902,13 +902,21 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroupIngress",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "AuroraMySqlDatabaseClusterEngineDefaultParameterGroup": {
+                "id": "AuroraMySqlDatabaseClusterEngineDefaultParameterGroup",
+                "path": "aws-cdk-rds-cluster-rotation/Database/AuroraMySqlDatabaseClusterEngineDefaultParameterGroup",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               },
@@ -942,7 +950,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-secretsmanager.CfnSecret",
+                      "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecret",
                       "version": "0.0.0"
                     }
                   },
@@ -966,7 +974,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-secretsmanager.CfnSecretTargetAttachment",
+                          "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecretTargetAttachment",
                           "version": "0.0.0"
                         }
                       },
@@ -995,19 +1003,19 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-secretsmanager.CfnRotationSchedule",
+                              "fqn": "aws-cdk-lib.aws_secretsmanager.CfnRotationSchedule",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-secretsmanager.RotationSchedule",
+                          "fqn": "aws-cdk-lib.aws_secretsmanager.RotationSchedule",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-secretsmanager.SecretTargetAttachment",
+                      "fqn": "aws-cdk-lib.aws_secretsmanager.SecretTargetAttachment",
                       "version": "0.0.0"
                     }
                   },
@@ -1055,19 +1063,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-secretsmanager.CfnResourcePolicy",
+                          "fqn": "aws-cdk-lib.aws_secretsmanager.CfnResourcePolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-secretsmanager.ResourcePolicy",
+                      "fqn": "aws-cdk-lib.aws_secretsmanager.ResourcePolicy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-rds.DatabaseSecret",
+                  "fqn": "aws-cdk-lib.aws_rds.DatabaseSecret",
                   "version": "0.0.0"
                 }
               },
@@ -1078,10 +1086,12 @@
                   "aws:cdk:cloudformation:type": "AWS::RDS::DBCluster",
                   "aws:cdk:cloudformation:props": {
                     "copyTagsToSnapshot": true,
+                    "dbClusterParameterGroupName": "default.aurora-mysql8.0",
                     "dbSubnetGroupName": {
                       "Ref": "DatabaseSubnets56F17B9A"
                     },
-                    "engine": "aurora",
+                    "engine": "aurora-mysql",
+                    "engineVersion": "8.0.mysql_aurora.3.03.0",
                     "masterUsername": {
                       "Fn::Join": [
                         "",
@@ -1117,7 +1127,15 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-rds.CfnDBCluster",
+                  "fqn": "aws-cdk-lib.aws_rds.CfnDBCluster",
+                  "version": "0.0.0"
+                }
+              },
+              "Instance1Wrapper": {
+                "id": "Instance1Wrapper",
+                "path": "aws-cdk-rds-cluster-rotation/Database/Instance1Wrapper",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               },
@@ -1130,15 +1148,23 @@
                     "dbClusterIdentifier": {
                       "Ref": "DatabaseB269D8BB"
                     },
-                    "dbInstanceClass": "db.t3.small",
+                    "dbInstanceClass": "db.t3.medium",
                     "dbSubnetGroupName": {
                       "Ref": "DatabaseSubnets56F17B9A"
                     },
-                    "engine": "aurora"
+                    "engine": "aurora-mysql"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-rds.CfnDBInstance",
+                  "fqn": "aws-cdk-lib.aws_rds.CfnDBInstance",
+                  "version": "0.0.0"
+                }
+              },
+              "Instance2Wrapper": {
+                "id": "Instance2Wrapper",
+                "path": "aws-cdk-rds-cluster-rotation/Database/Instance2Wrapper",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               },
@@ -1151,15 +1177,15 @@
                     "dbClusterIdentifier": {
                       "Ref": "DatabaseB269D8BB"
                     },
-                    "dbInstanceClass": "db.t3.small",
+                    "dbInstanceClass": "db.t3.medium",
                     "dbSubnetGroupName": {
                       "Ref": "DatabaseSubnets56F17B9A"
                     },
-                    "engine": "aurora"
+                    "engine": "aurora-mysql"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-rds.CfnDBInstance",
+                  "fqn": "aws-cdk-lib.aws_rds.CfnDBInstance",
                   "version": "0.0.0"
                 }
               },
@@ -1191,13 +1217,13 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                      "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
                       "version": "0.0.0"
                     }
                   },
@@ -1205,7 +1231,7 @@
                     "id": "SARMapping",
                     "path": "aws-cdk-rds-cluster-rotation/Database/RotationSingleUser/SARMapping",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnMapping",
+                      "fqn": "aws-cdk-lib.CfnMapping",
                       "version": "0.0.0"
                     }
                   },
@@ -1277,7 +1303,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-sam.CfnApplication",
+                      "fqn": "aws-cdk-lib.aws_sam.CfnApplication",
                       "version": "0.0.0"
                     }
                   },
@@ -1285,19 +1311,19 @@
                     "id": "RotationLambda",
                     "path": "aws-cdk-rds-cluster-rotation/Database/RotationSingleUser/RotationLambda",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-lambda.FunctionBase",
+                      "fqn": "aws-cdk-lib.aws_lambda.FunctionBase",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-secretsmanager.SecretRotation",
+                  "fqn": "aws-cdk-lib.aws_secretsmanager.SecretRotation",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-rds.DatabaseCluster",
+              "fqn": "aws-cdk-lib.aws_rds.DatabaseCluster",
               "version": "0.0.0"
             }
           },
@@ -1327,13 +1353,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-rds.CfnDBSubnetGroup",
+                      "fqn": "aws-cdk-lib.aws_rds.CfnDBSubnetGroup",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-rds.SubnetGroup",
+                  "fqn": "aws-cdk-lib.aws_rds.SubnetGroup",
                   "version": "0.0.0"
                 }
               },
@@ -1361,7 +1387,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
                       "version": "0.0.0"
                     }
                   },
@@ -1400,13 +1426,21 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroupIngress",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "AuroraMySqlDatabaseClusterEngineDefaultParameterGroup": {
+                "id": "AuroraMySqlDatabaseClusterEngineDefaultParameterGroup",
+                "path": "aws-cdk-rds-cluster-rotation/CustomRotationOptions/AuroraMySqlDatabaseClusterEngineDefaultParameterGroup",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               },
@@ -1440,7 +1474,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-secretsmanager.CfnSecret",
+                      "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecret",
                       "version": "0.0.0"
                     }
                   },
@@ -1464,7 +1498,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-secretsmanager.CfnSecretTargetAttachment",
+                          "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecretTargetAttachment",
                           "version": "0.0.0"
                         }
                       },
@@ -1481,6 +1515,7 @@
                                 "secretId": {
                                   "Ref": "CustomRotationOptionsSecretAttachment697A23BF"
                                 },
+                                "rotateImmediatelyOnUpdate": false,
                                 "rotationLambdaArn": {
                                   "Fn::GetAtt": [
                                     "CustomRotationOptionsRotationSingleUserC555446F",
@@ -1493,19 +1528,19 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-secretsmanager.CfnRotationSchedule",
+                              "fqn": "aws-cdk-lib.aws_secretsmanager.CfnRotationSchedule",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-secretsmanager.RotationSchedule",
+                          "fqn": "aws-cdk-lib.aws_secretsmanager.RotationSchedule",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-secretsmanager.SecretTargetAttachment",
+                      "fqn": "aws-cdk-lib.aws_secretsmanager.SecretTargetAttachment",
                       "version": "0.0.0"
                     }
                   },
@@ -1553,19 +1588,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-secretsmanager.CfnResourcePolicy",
+                          "fqn": "aws-cdk-lib.aws_secretsmanager.CfnResourcePolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-secretsmanager.ResourcePolicy",
+                      "fqn": "aws-cdk-lib.aws_secretsmanager.ResourcePolicy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-rds.DatabaseSecret",
+                  "fqn": "aws-cdk-lib.aws_rds.DatabaseSecret",
                   "version": "0.0.0"
                 }
               },
@@ -1576,10 +1611,12 @@
                   "aws:cdk:cloudformation:type": "AWS::RDS::DBCluster",
                   "aws:cdk:cloudformation:props": {
                     "copyTagsToSnapshot": true,
+                    "dbClusterParameterGroupName": "default.aurora-mysql8.0",
                     "dbSubnetGroupName": {
                       "Ref": "CustomRotationOptionsSubnets52AEBCED"
                     },
-                    "engine": "aurora",
+                    "engine": "aurora-mysql",
+                    "engineVersion": "8.0.mysql_aurora.3.03.0",
                     "masterUsername": {
                       "Fn::Join": [
                         "",
@@ -1615,7 +1652,15 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-rds.CfnDBCluster",
+                  "fqn": "aws-cdk-lib.aws_rds.CfnDBCluster",
+                  "version": "0.0.0"
+                }
+              },
+              "Instance1Wrapper": {
+                "id": "Instance1Wrapper",
+                "path": "aws-cdk-rds-cluster-rotation/CustomRotationOptions/Instance1Wrapper",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               },
@@ -1628,15 +1673,23 @@
                     "dbClusterIdentifier": {
                       "Ref": "CustomRotationOptions7CA9E132"
                     },
-                    "dbInstanceClass": "db.t3.small",
+                    "dbInstanceClass": "db.t3.medium",
                     "dbSubnetGroupName": {
                       "Ref": "CustomRotationOptionsSubnets52AEBCED"
                     },
-                    "engine": "aurora"
+                    "engine": "aurora-mysql"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-rds.CfnDBInstance",
+                  "fqn": "aws-cdk-lib.aws_rds.CfnDBInstance",
+                  "version": "0.0.0"
+                }
+              },
+              "Instance2Wrapper": {
+                "id": "Instance2Wrapper",
+                "path": "aws-cdk-rds-cluster-rotation/CustomRotationOptions/Instance2Wrapper",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               },
@@ -1649,15 +1702,15 @@
                     "dbClusterIdentifier": {
                       "Ref": "CustomRotationOptions7CA9E132"
                     },
-                    "dbInstanceClass": "db.t3.small",
+                    "dbInstanceClass": "db.t3.medium",
                     "dbSubnetGroupName": {
                       "Ref": "CustomRotationOptionsSubnets52AEBCED"
                     },
-                    "engine": "aurora"
+                    "engine": "aurora-mysql"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-rds.CfnDBInstance",
+                  "fqn": "aws-cdk-lib.aws_rds.CfnDBInstance",
                   "version": "0.0.0"
                 }
               },
@@ -1669,7 +1722,7 @@
                     "id": "SARMapping",
                     "path": "aws-cdk-rds-cluster-rotation/CustomRotationOptions/RotationSingleUser/SARMapping",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnMapping",
+                      "fqn": "aws-cdk-lib.CfnMapping",
                       "version": "0.0.0"
                     }
                   },
@@ -1745,7 +1798,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-sam.CfnApplication",
+                      "fqn": "aws-cdk-lib.aws_sam.CfnApplication",
                       "version": "0.0.0"
                     }
                   },
@@ -1753,19 +1806,19 @@
                     "id": "RotationLambda",
                     "path": "aws-cdk-rds-cluster-rotation/CustomRotationOptions/RotationSingleUser/RotationLambda",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-lambda.FunctionBase",
+                      "fqn": "aws-cdk-lib.aws_lambda.FunctionBase",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-secretsmanager.SecretRotation",
+                  "fqn": "aws-cdk-lib.aws_secretsmanager.SecretRotation",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-rds.DatabaseCluster",
+              "fqn": "aws-cdk-lib.aws_rds.DatabaseCluster",
               "version": "0.0.0"
             }
           },
@@ -1773,7 +1826,7 @@
             "id": "BootstrapVersion",
             "path": "aws-cdk-rds-cluster-rotation/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
+              "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
             }
           },
@@ -1781,13 +1834,13 @@
             "id": "CheckBootstrapVersion",
             "path": "aws-cdk-rds-cluster-rotation/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
         }
       },
@@ -1796,12 +1849,12 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.252"
+          "version": "10.2.55"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
+      "fqn": "aws-cdk-lib.App",
       "version": "0.0.0"
     }
   }

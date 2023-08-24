@@ -1,14 +1,13 @@
 {
-  "version": "31.0.0",
+  "version": "33.0.0",
   "testCases": {
-    "integ.esm": {
+    "LambdaNodeJsEsmInteg/DefaultTest": {
       "stacks": [
         "cdk-integ-lambda-nodejs-esm"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "diffAssets": true,
+      "assertionStack": "LambdaNodeJsEsmInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "LambdaNodeJsEsmIntegDefaultTestDeployAssert03DFA015"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

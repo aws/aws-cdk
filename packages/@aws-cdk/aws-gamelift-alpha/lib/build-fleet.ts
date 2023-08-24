@@ -1,5 +1,5 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as cdk from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { IBuild } from './build';
 import { FleetBase, FleetProps, IFleet } from './fleet-base';
@@ -121,7 +121,6 @@ export class BuildFleet extends FleetBase implements IBuildFleet {
       throw new Error(`No more than 100 locations are allowed per fleet, given ${props.locations.length}`);
     }
     (props.locations || []).forEach(this.addInternalLocation.bind(this));
-
 
     // Add all Ingress rules
     if (props.ingressRules && props.ingressRules?.length > 50) {

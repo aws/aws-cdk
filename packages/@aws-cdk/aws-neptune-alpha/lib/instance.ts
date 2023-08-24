@@ -1,6 +1,6 @@
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as cdk from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { IDatabaseCluster } from './cluster';
 import { Endpoint } from './endpoint';
@@ -117,6 +117,11 @@ export class InstanceType {
    * db.t3.medium
    */
   public static readonly T3_MEDIUM = InstanceType.of('db.t3.medium');
+
+  /**
+   * db.serverless
+   */
+  public static readonly SERVERLESS = InstanceType.of('db.serverless');
 
   /**
    * Build an InstanceType from given string or token, such as CfnParameter.

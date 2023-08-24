@@ -4,7 +4,6 @@ import { makeUniqueResourceName } from './private/unique-resource-name';
 import { makeUniqueId } from './private/uniqueid';
 import { Stack } from './stack';
 
-
 /**
  * Options for creating a unique resource name.
 */

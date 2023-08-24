@@ -1,3 +1,5 @@
+import { Construct } from 'constructs';
+import { CfnTrail } from './cloudtrail.generated';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -6,8 +8,6 @@ import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as sns from '../../aws-sns';
 import { Resource, Stack } from '../../core';
-import { Construct } from 'constructs';
-import { CfnTrail } from './cloudtrail.generated';
 
 /**
  * Properties for an AWS CloudTrail trail
@@ -186,7 +186,7 @@ export class InsightType {
  * Cloud trail allows you to log events that happen in your AWS account
  * For example:
  *
- * import { CloudTrail } from '@aws-cdk/aws-cloudtrail'
+ * import { CloudTrail } from 'aws-cdk-lib/aws-cloudtrail'
  *
  * const cloudTrail = new CloudTrail(this, 'MyTrail');
  *

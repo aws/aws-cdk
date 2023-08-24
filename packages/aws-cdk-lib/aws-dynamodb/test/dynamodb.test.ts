@@ -1,13 +1,13 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { Construct } from 'constructs';
 import { Annotations, Match, Template } from '../../assertions';
 import * as appscaling from '../../aws-applicationautoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as kinesis from '../../aws-kinesis';
 import * as kms from '../../aws-kms';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { App, Aws, CfnDeletionPolicy, Duration, PhysicalName, RemovalPolicy, Resource, Stack, Tags } from '../../core';
 import * as cr from '../../custom-resources';
-import { Construct } from 'constructs';
 import {
   Attribute,
   AttributeType,
@@ -24,7 +24,15 @@ import {
 } from '../lib';
 import { ReplicaProvider } from '../lib/replica-provider';
 
-jest.mock('../../custom-resources');
+jest.mock('../../custom-resources', () => {
+  const autoMock = jest.createMockFromModule('../../custom-resources');
+  const { builtInCustomResourceNodeRuntime } = jest.requireActual('../../custom-resources');
+  return {
+    // @ts-ignore
+    ...autoMock,
+    builtInCustomResourceNodeRuntime,
+  };
+});
 
 /* eslint-disable quote-props */
 
@@ -1540,7 +1548,7 @@ test('scheduled scaling shows warning when minute is not defined in cron', () =>
   });
 
   // THEN
-  Annotations.fromStack(stack).hasWarning('/Default/MyTable/ReadScaling/Target', "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead.");
+  Annotations.fromStack(stack).hasWarning('/Default/MyTable/ReadScaling/Target', "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead. [ack: @aws-cdk/aws-applicationautoscaling:defaultRunEveryMinute]");
 });
 
 test('scheduled scaling shows no warning when minute is * in cron', () => {

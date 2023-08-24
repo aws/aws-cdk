@@ -1,7 +1,7 @@
+import { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import * as cr from '../../custom-resources';
-import { Construct } from 'constructs';
 
 /**
  * Properties to configure a log group resource policy
@@ -45,7 +45,7 @@ export class LogGroupResourcePolicy extends cr.AwsCustomResource {
         parameters: {
           policyName: policyName,
         },
-        ignoreErrorCodesMatching: '400',
+        ignoreErrorCodesMatching: 'ResourceNotFoundException',
       },
       policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
         // putResourcePolicy and deleteResourcePolicy don't support resource-level permissions. We must specify all resources ("*").

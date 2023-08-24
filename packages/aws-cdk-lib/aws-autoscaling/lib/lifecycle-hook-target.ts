@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/order
+import * as constructs from 'constructs';
 import { LifecycleHook } from './lifecycle-hook';
 import * as iam from '../../aws-iam';
-import * as constructs from 'constructs';
 
 /**
  * Options needed to bind a target to a lifecycle hook.

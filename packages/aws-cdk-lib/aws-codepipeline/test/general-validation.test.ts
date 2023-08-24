@@ -1,5 +1,5 @@
-import * as cdk from '../../core';
 import { FakeSourceAction } from './fake-source-action';
+import * as cdk from '../../core';
 import { IStage } from '../lib/action';
 import { Artifact } from '../lib/artifact';
 import { Pipeline } from '../lib/pipeline';

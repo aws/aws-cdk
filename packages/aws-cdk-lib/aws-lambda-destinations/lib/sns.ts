@@ -1,6 +1,6 @@
+import { Construct } from 'constructs';
 import * as lambda from '../../aws-lambda';
 import * as sns from '../../aws-sns';
-import { Construct } from 'constructs';
 
 /**
  * Use a SNS topic as a Lambda destination

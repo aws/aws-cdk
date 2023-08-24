@@ -1,6 +1,6 @@
+import { Construct } from 'constructs';
 import * as cloudwatch from '../../aws-cloudwatch';
 import { Stack } from '../../core';
-import { Construct } from 'constructs';
 
 /**
  * Types of EC2 actions available

@@ -4,7 +4,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
-import { CloudFormationDeployments, DeployStackOptions } from './api/cloudformation-deployments';
+import { Deployments, DeployStackOptions } from './api/deployments';
 import { ResourceIdentifierProperties, ResourcesToImport } from './api/util/cloudformation';
 import { error, print, success, warning } from './logging';
 
@@ -63,7 +63,7 @@ export class ResourceImporter {
 
   constructor(
     private readonly stack: cxapi.CloudFormationStackArtifact,
-    private readonly cfn: CloudFormationDeployments,
+    private readonly cfn: Deployments,
     private readonly options: ResourceImporterOptions = {}) { }
 
   /**

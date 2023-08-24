@@ -1,9 +1,9 @@
 # AWS Step Functions Construct Library
 
 
-The `@aws-cdk/aws-stepfunctions` package contains constructs for building
+The `aws-cdk-lib/aws-stepfunctions` package contains constructs for building
 serverless workflows using objects. Use this in conjunction with the
-`@aws-cdk/aws-stepfunctions-tasks` package, which contains classes used
+`aws-cdk-lib/aws-stepfunctions-tasks` package, which contains classes used
 to call other AWS services.
 
 Defining a workflow looks like this (for the [Step Functions Job Poller
@@ -59,11 +59,12 @@ const definition = submitJob
 new sfn.StateMachine(this, 'StateMachine', {
   definition,
   timeout: Duration.minutes(5),
+  comment: 'a super cool state machine',
 });
 ```
 
 You can find more sample snippets and learn more about the service integrations
-in the `@aws-cdk/aws-stepfunctions-tasks` package.
+in the `aws-cdk-lib/aws-stepfunctions-tasks` package.
 
 ## State Machine
 
@@ -94,6 +95,18 @@ existing one as well.
 
 Set the `removalPolicy` prop to `RemovalPolicy.RETAIN` if you want to retain the execution
 history when CloudFormation deletes your state machine.
+
+Alternatively you can specify an existing step functions definition by providing a string or a file that contains the ASL JSON.
+
+```ts
+new sfn.StateMachine(this, 'StateMachineFromString', {
+  definitionBody: sfn.DefinitionBody.fromString('{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}'),
+});
+
+new sfn.StateMachine(this, 'StateMachineFromFile', {
+  definitionBody: sfn.DefinitionBody.fromFile('./asl.json'),
+});
+```
 
 ## State Machine Data
 
@@ -179,6 +192,17 @@ The following methods are available:
 | `JsonPath.objectAt('$.Field')` | reference a field, return the type as an `IResolvable`. Use this for functions that expect an object argument. |
 | `JsonPath.entirePayload` | reference the entire data object (equivalent to a path of `$`). |
 | `JsonPath.taskToken` | reference the [Task Token](https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html#connect-wait-token), used for integration patterns that need to run for a long time. |
+| `JsonPath.executionId` | reference the Execution Id field of the context object. |
+| `JsonPath.executionInput` | reference the Execution Input object of the context object. |
+| `JsonPath.executionName` | reference the Execution Name field of the context object. |
+| `JsonPath.executionRoleArn` | reference the Execution RoleArn field of the context object. |
+| `JsonPath.executionStartTime` | reference the Execution StartTime field of the context object. |
+| `JsonPath.stateEnteredTime` | reference the State EnteredTime field of the context object. |
+| `JsonPath.stateName` | reference the State Name field of the context object. |
+| `JsonPath.stateRetryCount` | reference the State RetryCount field of the context object. |
+| `JsonPath.stateMachineId` | reference the StateMachine Id field of the context object. |
+| `JsonPath.stateMachineName` | reference the StateMachine Name field of the context object. |
+
 
 You can also call [intrinsic functions](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html) using the methods on `JsonPath`:
 
@@ -227,7 +251,7 @@ information, see the States Language spec.
 
 A `Task` represents some work that needs to be done. Do not use the `Task` class directly.
 
-Instead, use one of the classes in the `@aws-cdk/aws-stepfunctions-tasks` module,
+Instead, use one of the classes in the `aws-cdk-lib/aws-stepfunctions-tasks` module,
 which provide a much more ergonomic way to integrate with various AWS services.
 
 ### Pass
@@ -509,6 +533,7 @@ const chain = sfn.Chain.start(custom)
 const sm = new sfn.StateMachine(this, 'StateMachine', {
   definition: chain,
   timeout: Duration.seconds(30),
+  comment: 'a super cool state machine',
 });
 
 // don't forget permissions. You need to assign them

@@ -41,7 +41,7 @@ export async function runBumpHooks(args: BumpOptions): Promise<Set<string>> {
           cwd: args.repoRoot,
         });
       } catch (e: any) {
-        notify(args, '%s', e.message);
+        notify(args, '%s', [e.message]);
       }
 
       if (gitStatus) {

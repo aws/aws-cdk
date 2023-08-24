@@ -507,38 +507,79 @@
     ]
    }
   },
-  "EcsClusterDefaultAutoScalingGroupLaunchConfigB7E376C1": {
-   "Type": "AWS::AutoScaling::LaunchConfiguration",
+  "EcsClusterDefaultAutoScalingGroupLaunchTemplate3719972A": {
+   "Type": "AWS::EC2::LaunchTemplate",
    "Properties": {
-    "ImageId": {
-     "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
-    },
-    "InstanceType": "t2.micro",
-    "IamInstanceProfile": {
-     "Ref": "EcsClusterDefaultAutoScalingGroupInstanceProfile2CE606B3"
-    },
-    "SecurityGroups": [
-     {
-      "Fn::GetAtt": [
-       "EcsClusterDefaultAutoScalingGroupInstanceSecurityGroup912E1231",
-       "GroupId"
-      ]
-     }
-    ],
-    "UserData": {
-     "Fn::Base64": {
-      "Fn::Join": [
-       "",
-       [
-        "#!/bin/bash\necho ECS_CLUSTER=",
-        {
-         "Ref": "EcsCluster97242B84"
-        },
-        " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
+    "LaunchTemplateData": {
+     "IamInstanceProfile": {
+      "Arn": {
+       "Fn::GetAtt": [
+        "EcsClusterDefaultAutoScalingGroupInstanceProfile2CE606B3",
+        "Arn"
        ]
+      }
+     },
+     "ImageId": {
+      "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+     },
+     "InstanceType": "t2.micro",
+     "Monitoring": {
+      "Enabled": false
+     },
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "EcsClusterDefaultAutoScalingGroupInstanceSecurityGroup912E1231",
+        "GroupId"
+       ]
+      }
+     ],
+     "TagSpecifications": [
+      {
+       "ResourceType": "instance",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/LaunchTemplate"
+        }
+       ]
+      },
+      {
+       "ResourceType": "volume",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/LaunchTemplate"
+        }
+       ]
+      }
+     ],
+     "UserData": {
+      "Fn::Base64": {
+       "Fn::Join": [
+        "",
+        [
+         "#!/bin/bash\necho ECS_CLUSTER=",
+         {
+          "Ref": "EcsCluster97242B84"
+         },
+         " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
+        ]
+       ]
+      }
+     }
+    },
+    "TagSpecifications": [
+     {
+      "ResourceType": "launch-template",
+      "Tags": [
+       {
+        "Key": "Name",
+        "Value": "aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/LaunchTemplate"
+       }
       ]
      }
-    }
+    ]
    },
    "DependsOn": [
     "EcsClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy04DC6C80",
@@ -550,8 +591,16 @@
    "Properties": {
     "MaxSize": "1",
     "MinSize": "1",
-    "LaunchConfigurationName": {
-     "Ref": "EcsClusterDefaultAutoScalingGroupLaunchConfigB7E376C1"
+    "LaunchTemplate": {
+     "LaunchTemplateId": {
+      "Ref": "EcsClusterDefaultAutoScalingGroupLaunchTemplate3719972A"
+     },
+     "Version": {
+      "Fn::GetAtt": [
+       "EcsClusterDefaultAutoScalingGroupLaunchTemplate3719972A",
+       "LatestVersionNumber"
+      ]
+     }
     },
     "Tags": [
      {
@@ -901,6 +950,11 @@
      "Ref": "EcsCluster97242B84"
     },
     "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
      "MaximumPercent": 200,
      "MinimumHealthyPercent": 50
     },
@@ -931,7 +985,10 @@
     "TaskDefinition": {
      "Ref": "TaskDefinitionB36D86D9"
     }
-   }
+   },
+   "DependsOn": [
+    "TaskDefinitionTaskRoleFD40A61D"
+   ]
   },
   "ServiceSecurityGroupC96ED6A7": {
    "Type": "AWS::EC2::SecurityGroup",
@@ -947,7 +1004,10 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   }
+   },
+   "DependsOn": [
+    "TaskDefinitionTaskRoleFD40A61D"
+   ]
   }
  },
  "Parameters": {

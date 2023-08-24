@@ -1,12 +1,3 @@
-import * as ec2 from '../../aws-ec2';
-import * as events from '../../aws-events';
-import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import * as logs from '../../aws-logs';
-import * as s3 from '../../aws-s3';
-import * as secretsmanager from '../../aws-secretsmanager';
-import { ArnComponents, ArnFormat, Duration, FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Token, Tokenization } from '../../core';
-import * as cxapi from '../../cx-api';
 import { Construct } from 'constructs';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
@@ -18,6 +9,15 @@ import { Credentials, PerformanceInsightRetention, RotationMultiUserOptions, Rot
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBInstance, CfnDBInstanceProps } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
+import * as ec2 from '../../aws-ec2';
+import * as events from '../../aws-events';
+import * as iam from '../../aws-iam';
+import * as kms from '../../aws-kms';
+import * as logs from '../../aws-logs';
+import * as s3 from '../../aws-s3';
+import * as secretsmanager from '../../aws-secretsmanager';
+import { ArnComponents, ArnFormat, Duration, FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Token, Tokenization } from '../../core';
+import * as cxapi from '../../cx-api';
 
 /**
  * A database instance
@@ -1070,9 +1070,8 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
    * Grant the given identity connection access to the database.
    *
    * @param grantee the Principal to grant the permissions to
-   * @param dbUser the name of the database user to allow connecting as to the db instance
-   *
-   * @default the default user, obtained from the Secret
+   * @param dbUser the name of the database user to allow connecting as to the db instance,
+   * or the default database user, obtained from the Secret, if not specified
    */
   public grantConnect(grantee: iam.IGrantable, dbUser?: string): iam.Grant {
     if (!dbUser) {
@@ -1080,7 +1079,7 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
         throw new Error('A secret or dbUser is required to grantConnect()');
       }
 
-      dbUser = this.secret.secretValueFromJson('username').toString();
+      dbUser = this.secret.secretValueFromJson('username').unsafeUnwrap();
     }
 
     return super.grantConnect(grantee, dbUser);

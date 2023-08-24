@@ -133,6 +133,15 @@ export interface BundlingOptions {
    * @default - BundlingFileAccess.BIND_MOUNT
    */
   readonly bundlingFileAccess?: BundlingFileAccess;
+
+  /**
+   * Platform to build for. _Requires Docker Buildx_.
+   *
+   * Specify this property to build images on a specific platform.
+   *
+   * @default - no platform specified (the current machine architecture will be used)
+   */
+  readonly platform?: string;
 }
 
 /**
@@ -158,6 +167,15 @@ export enum BundlingOutput {
    * it will be used as the bundle output as-is. Otherwise, all the files in the bundling output directory will be zipped.
    */
   AUTO_DISCOVER = 'auto-discover',
+
+  /**
+   * The bundling output directory includes a single file which
+   * will be used as the final bundle. If the output directory does not
+   * include exactly a single file, bundling will fail.
+   *
+   * Similar to ARCHIVED but for non-archive files
+   */
+  SINGLE_FILE = 'single-file',
 }
 
 /**
@@ -255,6 +273,9 @@ export class BundlingDockerImage {
         : [],
       ...options.network
         ? ['--network', options.network]
+        : [],
+      ...options.platform
+        ? ['--platform', options.platform]
         : [],
       ...options.user
         ? ['-u', options.user]
@@ -535,6 +556,15 @@ export interface DockerRunOptions {
    * @default - no networking options
    */
   readonly network?: string;
+
+  /**
+   * Set platform if server is multi-platform capable. _Requires Docker Engine API v1.38+_.
+   *
+   * Example value: `linux/amd64`
+   *
+   * @default - no platform specified
+   */
+  readonly platform?: string;
 }
 
 /**

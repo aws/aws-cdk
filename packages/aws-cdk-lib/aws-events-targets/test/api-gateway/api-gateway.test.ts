@@ -1,3 +1,4 @@
+import * as constructs from 'constructs';
 import { Template } from '../../../assertions';
 import * as api from '../../../aws-apigateway';
 import * as events from '../../../aws-events';
@@ -5,7 +6,6 @@ import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
 import * as sqs from '../../../aws-sqs';
 import * as cdk from '../../../core';
-import * as constructs from 'constructs';
 import * as targets from '../../lib';
 
 test('use api gateway rest api as an event rule target', () => {

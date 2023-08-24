@@ -1,7 +1,7 @@
-import { IResource, Names, Resource } from '../../core';
 import { Construct } from 'constructs';
 import { CfnKeyGroup } from './cloudfront.generated';
 import { IPublicKey } from './public-key';
+import { IResource, Names, Resource } from '../../core';
 
 /**
  * Represents a Key Group

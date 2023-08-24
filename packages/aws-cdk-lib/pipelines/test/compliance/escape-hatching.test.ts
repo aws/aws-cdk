@@ -1,7 +1,7 @@
+import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Match, Template } from '../../../assertions';
 import * as cp from '../../../aws-codepipeline';
 import * as cpa from '../../../aws-codepipeline-actions';
-import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import { SecretValue, Stack } from '../../../core';
 import * as cdkp from '../../lib';
 import { CodePipelineFileSet } from '../../lib';
@@ -220,7 +220,6 @@ behavior('can add another action to an existing stage', (suite) => {
     });
   }
 });
-
 
 behavior('assets stage inserted after existing pipeline actions', (suite) => {
   let existingCodePipeline: cp.Pipeline;

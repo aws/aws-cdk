@@ -1,14 +1,3 @@
-import * as cloudwatch from '../../aws-cloudwatch';
-import * as notifications from '../../aws-codestarnotifications';
-import * as ec2 from '../../aws-ec2';
-import * as ecr from '../../aws-ecr';
-import { DockerImageAsset, DockerImageAssetProps } from '../../aws-ecr-assets';
-import * as events from '../../aws-events';
-import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import * as s3 from '../../aws-s3';
-import * as secretsmanager from '../../aws-secretsmanager';
-import { ArnFormat, Aws, Duration, IResource, Lazy, Names, PhysicalName, Reference, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization } from '../../core';
 import { Construct, IConstruct } from 'constructs';
 import { IArtifacts } from './artifacts';
 import { BuildSpec } from './build-spec';
@@ -24,6 +13,17 @@ import { LoggingOptions } from './project-logs';
 import { renderReportGroupArn } from './report-group-utils';
 import { ISource } from './source';
 import { CODEPIPELINE_SOURCE_ARTIFACTS_TYPE, NO_SOURCE_TYPE } from './source-types';
+import * as cloudwatch from '../../aws-cloudwatch';
+import * as notifications from '../../aws-codestarnotifications';
+import * as ec2 from '../../aws-ec2';
+import * as ecr from '../../aws-ecr';
+import { DockerImageAsset, DockerImageAssetProps } from '../../aws-ecr-assets';
+import * as events from '../../aws-events';
+import * as iam from '../../aws-iam';
+import * as kms from '../../aws-kms';
+import * as s3 from '../../aws-s3';
+import * as secretsmanager from '../../aws-secretsmanager';
+import { ArnFormat, Aws, Duration, IResource, Lazy, Names, PhysicalName, Reference, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization } from '../../core';
 
 const VPC_POLICY_SYM = Symbol.for('@aws-cdk/aws-codebuild.roleVpcPolicy');
 
@@ -616,9 +616,18 @@ export interface CommonProjectProps {
   /**
    * Where to place the network interfaces within the VPC.
    *
-   * Only used if 'vpc' is supplied.
+   * To access AWS services, your CodeBuild project needs to be in one of the following types of subnets:
    *
-   * @default - All private subnets.
+   * 1. Subnets with access to the internet (of type PRIVATE_WITH_EGRESS).
+   * 2. Private subnets unconnected to the internet, but with [VPC endpoints](https://docs.aws.amazon.com/codebuild/latest/userguide/use-vpc-endpoints-with-codebuild.html) for the necessary services.
+   *
+   * If you don't specify a subnet selection, the default behavior is to use PRIVATE_WITH_EGRESS subnets first if they exist,
+   * then PRIVATE_WITHOUT_EGRESS, and finally PUBLIC subnets. If your VPC doesn't have PRIVATE_WITH_EGRESS subnets but you need
+   * AWS service access, add VPC Endpoints to your private subnets.
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/vpc-support.html for more details.
+   *
+   * @default - private subnets if available else public subnets
    */
   readonly subnetSelection?: ec2.SubnetSelection;
 
@@ -1742,6 +1751,8 @@ export class LinuxBuildImage implements IBuildImage {
   public static readonly AMAZON_LINUX_2_3 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:3.0');
   /** The Amazon Linux 2 x86_64 standard image, version `4.0`. */
   public static readonly AMAZON_LINUX_2_4 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:4.0');
+  /** The Amazon Linux 2 x86_64 standard image, version `5.0`. */
+  public static readonly AMAZON_LINUX_2_5 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:5.0');
 
   /** @deprecated Use LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_1_0 instead. */
   public static readonly AMAZON_LINUX_2_ARM = LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_1_0;

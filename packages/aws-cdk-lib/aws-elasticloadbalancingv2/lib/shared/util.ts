@@ -1,6 +1,6 @@
+import { ApplicationProtocol, Protocol } from './enums';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { Arn, ArnFormat, Fn, Token } from '../../../core';
-import { ApplicationProtocol, Protocol } from './enums';
 
 export type Attributes = { [key: string]: string | undefined };
 

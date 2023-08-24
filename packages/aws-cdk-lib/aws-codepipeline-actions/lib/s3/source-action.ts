@@ -1,8 +1,8 @@
+import { Construct } from 'constructs';
 import * as codepipeline from '../../../aws-codepipeline';
 import * as targets from '../../../aws-events-targets';
 import * as s3 from '../../../aws-s3';
 import { Names, Token } from '../../../core';
-import { Construct } from 'constructs';
 import { Action } from '../action';
 import { sourceArtifactBounds } from '../common';
 

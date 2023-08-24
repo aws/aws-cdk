@@ -25,7 +25,6 @@ export function* enumerate<A>(xs: Iterable<A>): IterableIterator<[number, A]> {
   }
 }
 
-
 export function expectProp<A extends object, B extends keyof A>(obj: A, key: B): NonNullable<A[B]> {
   if (!obj[key]) { throw new Error(`Expecting '${String(key)}' to be set!`); }
   return obj[key] as any;

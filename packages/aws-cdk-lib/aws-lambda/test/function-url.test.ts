@@ -140,6 +140,26 @@ describe('FunctionUrl', () => {
     }).toThrow(/FunctionUrl cannot be used with a Version/);
   });
 
+  test('throws when CORS maxAge is greater than 86400 secs', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_14_X,
+    });
+
+    // WHEN
+    expect(() => {
+      new lambda.FunctionUrl(stack, 'FunctionUrl', {
+        function: fn,
+        cors: {
+          maxAge: cdk.Duration.seconds(86401),
+        },
+      });
+    }).toThrow(/FunctionUrl CORS maxAge should be less than or equal to 86400 secs/);
+  });
+
   test('grantInvokeUrl: adds appropriate permissions', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -177,4 +197,52 @@ describe('FunctionUrl', () => {
       },
     });
   });
+
+  test('function url Invoke Mode', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_18_X,
+    });
+
+    // WHEN
+    new lambda.FunctionUrl(stack, 'FunctionUrl', {
+      function: fn,
+      invokeMode: lambda.InvokeMode.RESPONSE_STREAM,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Url', {
+      Properties: {
+        TargetFunctionArn: { 'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'] },
+        InvokeMode: 'RESPONSE_STREAM',
+      },
+    });
+  });
+  test('Invoke Mode add url', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_18_X,
+    });
+
+    // WHEN
+    fn.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.NONE,
+      invokeMode: lambda.InvokeMode.BUFFERED,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Url', {
+      Properties: {
+        TargetFunctionArn: { 'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'] },
+        InvokeMode: 'BUFFERED',
+      },
+    });
+  });
+
 });

@@ -1,8 +1,9 @@
-import * as ecr from '../../aws-ecr';
-import { DockerImageAsset, TarballImageAsset } from '../../aws-ecr-assets';
+/* eslint-disable import/order */
 import { Construct } from 'constructs';
 import { ContainerDefinition } from './container-definition';
 import { CfnTaskDefinition } from './ecs.generated';
+import * as ecr from '../../aws-ecr';
+import { DockerImageAsset, TarballImageAsset } from '../../aws-ecr-assets';
 
 /**
  * Constructs for types of container images
@@ -94,7 +95,7 @@ export interface ContainerImageConfig {
   readonly repositoryCredentials?: CfnTaskDefinition.RepositoryCredentialsProperty;
 }
 
+// These imports have to be at the end to prevent circular imports
 import { AssetImage, AssetImageProps } from './images/asset-image';
 import { EcrImage } from './images/ecr';
 import { RepositoryImage, RepositoryImageProps } from './images/repository';
-

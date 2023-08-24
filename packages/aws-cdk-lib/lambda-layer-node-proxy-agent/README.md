@@ -1,6 +1,5 @@
 # AWS Lambda Layer with the NPM dependency proxy-agent
 
-
 This module exports a single class called `NodeProxyAgentLayer` which is a `lambda.Layer` that bundles the NPM dependency [`proxy-agent`](https://www.npmjs.com/package/proxy-agent).
 
 > - proxy-agent Version: 5.0.0

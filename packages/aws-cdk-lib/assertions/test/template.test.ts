@@ -1,17 +1,17 @@
-import {
-    App,
-    CfnCondition,
-    CfnMapping,
-    CfnOutput,
-    CfnParameter,
-    CfnResource,
-    Fn,
-    LegacyStackSynthesizer,
-    NestedStack,
-    Stack,
-    Stage
-} from '../../core';
 import { Construct } from 'constructs';
+import {
+  App,
+  CfnCondition,
+  CfnMapping,
+  CfnOutput,
+  CfnParameter,
+  CfnResource,
+  Fn,
+  LegacyStackSynthesizer,
+  NestedStack,
+  Stack,
+  Stage,
+} from '../../core';
 import { Capture, Match, Template } from '../lib';
 
 describe('Template', () => {
@@ -1345,6 +1345,29 @@ describe('Template', () => {
     }).toThrow(/dependency cycle/);
   });
 
+  test('throws when given a more complex template with cyclic dependencies', () => {
+    expect(() => {
+      Template.fromJSON({
+        Resources: {
+          Res1: {
+            Type: 'Foo',
+            Properties: {
+              Thing: { Ref: 'Res2' },
+            },
+          },
+          Res2: {
+            Type: 'Foo',
+            DependsOn: ['Res3'],
+          },
+          Res3: {
+            Type: 'Foo',
+            DependsOn: ['Res2'],
+          },
+        },
+      });
+    }).toThrow(/dependency cycle/);
+  });
+
   test('does not throw when given a template with cyclic dependencies if check is skipped', () => {
     expect(() => {
       Template.fromJSON({
@@ -1366,28 +1389,28 @@ describe('Template', () => {
     }).not.toThrow(/dependency cycle/);
   });
 
-    test('nested stack inside a Stage in an App', () => {
-        const app = new App();
-        const stage = new Stage(app, 'Stage');
-        const stack = new Stack(stage);
-        const nested = new NestedStack(stack, 'MyNestedStack');
-        new CfnResource(nested, 'Bar', {
-            type: 'Bar::Baz',
-            properties: {
-                Qux: 'Foo',
-            },
-        });
-        const template = Template.fromStack(nested);
-
-        expect(template.toJSON()).toEqual({
-            Resources: {
-                Bar: {
-                    Type: 'Bar::Baz',
-                    Properties: { Qux: 'Foo' },
-                },
-            },
-        });
+  test('nested stack inside a Stage in an App', () => {
+    const app = new App();
+    const stage = new Stage(app, 'Stage');
+    const stack = new Stack(stage);
+    const nested = new NestedStack(stack, 'MyNestedStack');
+    new CfnResource(nested, 'Bar', {
+      type: 'Bar::Baz',
+      properties: {
+        Qux: 'Foo',
+      },
     });
+    const template = Template.fromStack(nested);
+
+    expect(template.toJSON()).toEqual({
+      Resources: {
+        Bar: {
+          Type: 'Bar::Baz',
+          Properties: { Qux: 'Foo' },
+        },
+      },
+    });
+  });
 });
 
 function expectToThrow(fn: () => void, msgs: (RegExp | string)[]): void {

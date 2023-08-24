@@ -1,6 +1,6 @@
-import * as cloudmap from '../../aws-servicediscovery';
 import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
+import * as cloudmap from '../../aws-servicediscovery';
 
 /**
  * Enum of supported IP preferences.

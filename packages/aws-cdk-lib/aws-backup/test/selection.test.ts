@@ -1,10 +1,10 @@
+import { Construct } from 'constructs';
 import { Template } from '../../assertions';
 import * as dynamodb from '../../aws-dynamodb';
 import * as ec2 from '../../aws-ec2';
 import * as efs from '../../aws-efs';
 import * as rds from '../../aws-rds';
 import { RemovalPolicy, Stack } from '../../core';
-import { Construct } from 'constructs';
 import { BackupPlan, BackupResource, BackupSelection } from '../lib';
 
 let stack: Stack;

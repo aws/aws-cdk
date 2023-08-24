@@ -634,6 +634,11 @@
      "Ref": "ClusterEB0386A7"
     },
     "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
      "MaximumPercent": 200,
      "MinimumHealthyPercent": 50
     },
@@ -685,7 +690,8 @@
     "myServicelb1listener1ECSTargetGroupweb80GroupC3F9339A",
     "myServicelb1listener15ED0E805",
     "myServicelb2listener2ECSTargetGroupweb90Group6841F924",
-    "myServicelb2listener2AA6970EB"
+    "myServicelb2listener2AA6970EB",
+    "myServiceTaskDefTaskRole1C1DE6CC"
    ]
   },
   "myServiceSecurityGroupC3B9D4E0": {
@@ -702,7 +708,10 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   }
+   },
+   "DependsOn": [
+    "myServiceTaskDefTaskRole1C1DE6CC"
+   ]
   }
  },
  "Outputs": {

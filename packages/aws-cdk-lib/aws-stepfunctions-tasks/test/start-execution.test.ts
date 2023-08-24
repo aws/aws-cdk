@@ -1,6 +1,6 @@
+import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../assertions';
 import * as sfn from '../../aws-stepfunctions';
-import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Stack } from '../../core';
 import * as tasks from '../lib';
 
@@ -9,7 +9,7 @@ let child: sfn.StateMachine;
 beforeEach(() => {
   stack = new Stack();
   child = new sfn.StateMachine(stack, 'ChildStateMachine', {
-    definition: sfn.Chain.start(new sfn.Pass(stack, 'PassState')),
+    definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'PassState'))),
   });
 });
 
@@ -25,7 +25,7 @@ describeDeprecated('StartExecution', () => {
     });
 
     new sfn.StateMachine(stack, 'ParentStateMachine', {
-      definition: task,
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
     });
 
     expect(stack.resolve(task.toStateJson())).toEqual({
@@ -63,7 +63,7 @@ describeDeprecated('StartExecution', () => {
     });
 
     new sfn.StateMachine(stack, 'ParentStateMachine', {
-      definition: task,
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
     });
 
     expect(stack.resolve(task.toStateJson())).toEqual({
@@ -189,7 +189,7 @@ describeDeprecated('StartExecution', () => {
     });
 
     new sfn.StateMachine(stack, 'ParentStateMachine', {
-      definition: task,
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
     });
 
     expect(stack.resolve(task.toStateJson())).toEqual({

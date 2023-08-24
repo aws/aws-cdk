@@ -1,8 +1,8 @@
+import { Construct } from 'constructs';
 import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
-import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
@@ -128,7 +128,7 @@ export class LambdaInvoke extends sfn.TaskStateBase {
     if (props.retryOnServiceExceptions ?? true) {
       // Best practice from https://docs.aws.amazon.com/step-functions/latest/dg/bp-lambda-serviceexception.html
       this.addRetry({
-        errors: ['Lambda.ServiceException', 'Lambda.AWSLambdaException', 'Lambda.SdkClientException'],
+        errors: ['Lambda.ClientExecutionTimeoutException', 'Lambda.ServiceException', 'Lambda.AWSLambdaException', 'Lambda.SdkClientException'],
         interval: cdk.Duration.seconds(2),
         maxAttempts: 6,
         backoffRate: 2,

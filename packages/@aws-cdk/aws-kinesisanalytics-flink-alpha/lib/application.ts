@@ -3,7 +3,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnApplicationCloudWatchLoggingOptionV2, CfnApplicationV2 } from 'aws-cdk-lib/aws-kinesisanalytics';
 import * as logs from 'aws-cdk-lib/aws-logs';
-import * as core from 'aws-cdk-lib';
+import * as core from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { ApplicationCode } from './application-code';
 import { environmentProperties } from './private/environment-properties';
@@ -405,7 +405,6 @@ abstract class ApplicationBase extends core.Resource implements IApplication {
   metricKpus(props?: cloudwatch.MetricOptions) {
     return this.metric('KPUs', { statistic: 'Average', ...props });
   }
-
 
   /**
    * The time elapsed during an outage for failing/recovering jobs.

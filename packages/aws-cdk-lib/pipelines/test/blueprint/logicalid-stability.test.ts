@@ -83,7 +83,6 @@ describeDeprecated('logical id stability', () => {
   });
 });
 
-
 const STATEFUL_TYPES = [
   // Holds state
   'AWS::S3::Bucket',

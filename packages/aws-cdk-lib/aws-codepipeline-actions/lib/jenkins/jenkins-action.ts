@@ -1,6 +1,6 @@
-import * as codepipeline from '../../../aws-codepipeline';
 import { Construct } from 'constructs';
 import { IJenkinsProvider, jenkinsArtifactsBounds } from './jenkins-provider';
+import * as codepipeline from '../../../aws-codepipeline';
 import { Action } from '../action';
 
 /**

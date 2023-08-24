@@ -19,7 +19,6 @@ describe('receipt rule set', () => {
       RuleSetName: 'MyRuleSet',
     });
 
-
   });
 
   test('can create a receipt rule set with drop spam', () => {
@@ -53,7 +52,6 @@ describe('receipt rule set', () => {
     });
 
     Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 1);
-
 
   });
 
@@ -89,7 +87,6 @@ describe('receipt rule set', () => {
 
     Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 1);
 
-
   });
 
   test('import receipt rule set', () => {
@@ -115,7 +112,6 @@ describe('receipt rule set', () => {
         },
       },
     });
-
 
   });
 });

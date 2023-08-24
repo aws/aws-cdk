@@ -3,7 +3,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kinesis from 'aws-cdk-lib/aws-kinesis';
 import * as kms from 'aws-cdk-lib/aws-kms';
-import * as cdk from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
 import { RegionInfo } from 'aws-cdk-lib/region-info';
 import { Construct, Node } from 'constructs';
 import { IDestination } from './destination';

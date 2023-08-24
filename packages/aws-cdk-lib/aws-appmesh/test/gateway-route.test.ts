@@ -549,6 +549,77 @@ describe('gateway route', () => {
       });
     });
 
+    describe('with port match', () => {
+      test('should match based on port', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        const virtualGateway = new appmesh.VirtualGateway(stack, 'gateway-1', {
+          listeners: [appmesh.VirtualGatewayListener.http()],
+          mesh: mesh,
+        });
+
+        const virtualService = new appmesh.VirtualService(stack, 'vs-1', {
+          virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
+          virtualServiceName: 'target.local',
+        });
+
+        // Add an HTTP Route
+        virtualGateway.addGatewayRoute('gateway-http-route', {
+          routeSpec: appmesh.GatewayRouteSpec.http({
+            routeTarget: virtualService,
+            match: {
+              hostname: appmesh.GatewayRouteHostnameMatch.exactly('example.com'),
+            },
+          }),
+          gatewayRouteName: 'gateway-http-route',
+        });
+
+        virtualGateway.addGatewayRoute('gateway-grpc-route', {
+          routeSpec: appmesh.GatewayRouteSpec.grpc({
+            routeTarget: virtualService,
+            match: {
+              port: 1234,
+            },
+          }),
+          gatewayRouteName: 'gateway-grpc-route',
+        });
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::GatewayRoute', {
+          GatewayRouteName: 'gateway-http-route',
+          Spec: {
+            HttpRoute: {
+              Match: {
+                Hostname: {
+                  Exact: 'example.com',
+                },
+              },
+              Action: {
+                Rewrite: Match.absent(),
+              },
+            },
+          },
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::GatewayRoute', {
+          GatewayRouteName: 'gateway-grpc-route',
+          Spec: {
+            GrpcRoute: {
+              Match: {
+                Port: 1234,
+              },
+            },
+          },
+        });
+      });
+    });
+
     describe('with metadata match', () => {
       test('should match based on metadata', () => {
         // GIVEN

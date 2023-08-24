@@ -1,10 +1,10 @@
-import * as cdk from '../../core';
 import { Construct } from 'constructs';
 import { CfnVirtualService } from './appmesh.generated';
 import { IMesh, Mesh } from './mesh';
 import { renderMeshOwner } from './private/utils';
 import { IVirtualNode } from './virtual-node';
 import { IVirtualRouter } from './virtual-router';
+import * as cdk from '../../core';
 
 /**
  * Represents the interface which all VirtualService based classes MUST implement

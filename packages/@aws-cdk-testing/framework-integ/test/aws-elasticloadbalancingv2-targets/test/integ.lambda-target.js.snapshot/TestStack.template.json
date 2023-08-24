@@ -489,7 +489,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "ZipFile": "\ndef handler(event, context):\n  return {\n    \"isBase64Encoded\": False,\n    \"statusCode\": 200,\n    \"statusDescription\": \"200 OK\",\n    \"headers\": {\n        \"Set-cookie\": \"cookies\",\n        \"Content-Type\": \"application/json\"\n    },\n    \"body\": \"Hello from Lambda\"\n  }\n      "
+     "ZipFile": "\nimport json\ndef handler(event, context):\n  return {\n    \"isBase64Encoded\": False,\n    \"statusCode\": 200,\n    \"statusDescription\": \"200 OK\",\n    \"headers\": {\n        \"Set-cookie\": \"cookies\",\n        \"Content-Type\": \"application/json\"\n    },\n    \"body\": json.dumps({ \"message\": \"Hello from Lambda\" })\n  }\n      "
     },
     "Role": {
      "Fn::GetAtt": [
@@ -515,6 +515,19 @@
      ]
     },
     "Principal": "elasticloadbalancing.amazonaws.com"
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttLB8A12904CDNSName5EFD7323": {
+   "Value": {
+    "Fn::GetAtt": [
+     "LB8A12904C",
+     "DNSName"
+    ]
+   },
+   "Export": {
+    "Name": "TestStack:ExportsOutputFnGetAttLB8A12904CDNSName5EFD7323"
    }
   }
  },

@@ -8,7 +8,7 @@ import {
 } from '@aws-cdk/aws-apigatewayv2-alpha';
 import { ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
-import { Stack } from 'aws-cdk-lib';
+import { Stack } from 'aws-cdk-lib/core';
 
 /**
  * Lambda Proxy integration properties
@@ -63,7 +63,7 @@ export class HttpLambdaIntegration extends HttpRouteIntegration {
     });
   }
 
-  public bind(_: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
+  public bind(_options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
     return {
       type: HttpIntegrationType.AWS_PROXY,
       uri: this.handler.functionArn,

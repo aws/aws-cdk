@@ -243,7 +243,6 @@ describe('standaloneMatchmakingConfiguration', () => {
       });
     });
 
-
   });
 
   describe('test import methods', () => {

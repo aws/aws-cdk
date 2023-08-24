@@ -3,7 +3,11 @@
  */
 export class KafkaVersion {
   /**
+   * **Deprecated by Amazon MSK. You can't create a Kafka cluster with a deprecated version.**
+   *
    * Kafka version 1.1.1
+   *
+   * @deprecated use the latest runtime instead
    */
   public static readonly V1_1_1 = KafkaVersion.of('1.1.1');
 
@@ -91,6 +95,12 @@ export class KafkaVersion {
    * Kafka version 3.3.2
    */
   public static readonly V3_3_2 = KafkaVersion.of('3.3.2');
+
+  /**
+   * Kafka version 3.4.0
+   */
+  public static readonly V3_4_0 = KafkaVersion.of('3.4.0');
+
   /**
    * Custom cluster version
    * @param version custom version number

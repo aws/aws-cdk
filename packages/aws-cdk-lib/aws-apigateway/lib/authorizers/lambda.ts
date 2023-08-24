@@ -1,12 +1,11 @@
+import { Construct } from 'constructs';
 import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
 import { Arn, ArnFormat, Duration, FeatureFlags, Lazy, Names, Stack } from '../../../core';
 import { APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID } from '../../../cx-api';
-import { Construct } from 'constructs';
 import { CfnAuthorizer, CfnAuthorizerProps } from '../apigateway.generated';
 import { Authorizer, IAuthorizer } from '../authorizer';
 import { IRestApi } from '../restapi';
-
 
 /**
  * Base properties for all lambda authorizers

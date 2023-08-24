@@ -398,7 +398,6 @@ abstract class ActivityPrinterBase implements IActivityPrinter {
 
   protected readonly failures = new Array<StackActivity>();
 
-
   protected hookFailureMap = new Map<string, Map<string, string>>();
 
   protected readonly stream: NodeJS.WriteStream;
@@ -755,7 +754,6 @@ function hasErrorMessage(status: string) {
   return status.endsWith('_FAILED') || status === 'ROLLBACK_IN_PROGRESS' || status === 'UPDATE_ROLLBACK_IN_PROGRESS';
 }
 
-
 function colorFromStatusResult(status?: string) {
   if (!status) {
     return chalk.reset;
@@ -805,5 +803,4 @@ function shorten(maxWidth: number, p: string) {
 
 const TIMESTAMP_WIDTH = 12;
 const STATUS_WIDTH = 20;
-
 

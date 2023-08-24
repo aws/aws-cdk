@@ -1,5 +1,5 @@
-import { Lazy } from '../../core';
 import { Construct } from 'constructs';
+import { Lazy } from '../../core';
 import * as codepipeline from '../lib';
 
 export interface IFakeSourceActionVariables {

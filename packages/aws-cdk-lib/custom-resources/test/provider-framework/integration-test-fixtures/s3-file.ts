@@ -1,10 +1,10 @@
 import * as path from 'path';
+import { Construct, Node } from 'constructs';
+import * as api from './s3-file-handler/api';
 import * as iam from '../../../../aws-iam';
 import * as lambda from '../../../../aws-lambda';
 import * as s3 from '../../../../aws-s3';
 import { CustomResource, Stack } from '../../../../core';
-import { Construct, Node } from 'constructs';
-import * as api from './s3-file-handler/api';
 import * as cr from '../../../lib';
 
 interface S3FileProps {

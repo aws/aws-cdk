@@ -1,6 +1,6 @@
+import * as validation from './private/validation';
 import * as s3 from '../../aws-s3';
 import { Lazy, Token } from '../../core';
-import * as validation from './private/validation';
 
 /**
  * An output artifact of an action. Artifacts can be used as input by some actions.

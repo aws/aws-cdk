@@ -6,7 +6,6 @@ import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 
 const app = new App();
 
-
 class TestStack extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
@@ -70,11 +69,11 @@ class TestStack extends Stack {
   }
 }
 
-
 new IntegTest(app, 'FlowLogs', {
   testCases: [
     new TestStack(app, 'FlowLogsTestStack'),
   ],
+  diffAssets: true,
 });
 
 app.synth();

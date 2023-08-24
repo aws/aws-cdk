@@ -27,7 +27,6 @@ describe('ApiEventSource', () => {
       ResourceId: { Ref: 'MyFuncApiEventSourceA7A86A4FfooCA6F87E4' },
     });
 
-
   });
 
   test('disjoint routes', () => {
@@ -63,7 +62,6 @@ describe('ApiEventSource', () => {
       HttpMethod: 'POST',
       ResourceId: { Ref: 'MyFuncApiEventSourceA7A86A4FbarDFB0F21B' },
     });
-
 
   });
 
@@ -101,7 +99,6 @@ describe('ApiEventSource', () => {
       HttpMethod: 'POST',
       ResourceId: { Ref: 'MyFuncApiEventSourceA7A86A4Ffoobar028FFFDE' },
     });
-
 
   });
 });

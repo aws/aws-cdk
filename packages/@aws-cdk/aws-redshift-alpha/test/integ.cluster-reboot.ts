@@ -16,7 +16,6 @@ import * as redshift from '../lib';
 
 const app = new cdk.App();
 
-
 interface RedshiftRebootStackProps extends cdk.StackProps {
   parameterGroupParams: { [name: string]: string },
 }
@@ -80,7 +79,7 @@ stacks.forEach(s => {
 const test = new integ.IntegTest(app, 'aws-cdk-redshift-reboot-test', {
   testCases: stacks,
   stackUpdateWorkflow: false,
-  // diffAssets: true,
+  diffAssets: true,
 });
 
 const describeClusters = test.assertions.awsApiCall('Redshift', 'describeClusters', { ClusterIdentifier: updateStack.cluster.clusterName });

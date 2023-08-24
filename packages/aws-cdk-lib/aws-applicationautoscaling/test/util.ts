@@ -1,6 +1,6 @@
-import * as scalingcommon from '../../aws-autoscaling-common';
 import * as constructs from 'constructs';
 import * as fc from 'fast-check';
+import * as scalingcommon from '../../aws-autoscaling-common';
 import * as appscaling from '../lib';
 
 export function createScalableTarget(scope: constructs.Construct) {
@@ -14,9 +14,17 @@ export function createScalableTarget(scope: constructs.Construct) {
 }
 
 export class ArbitraryInputIntervals extends fc.Arbitrary<appscaling.ScalingInterval[]> {
-  public generate(mrng: fc.Random): fc.Shrinkable<appscaling.ScalingInterval[]> {
+  public generate(mrng: fc.Random): fc.Value<appscaling.ScalingInterval[]> {
     const ret = scalingcommon.generateArbitraryIntervals(mrng);
-    return new fc.Shrinkable(ret.intervals);
+    return new fc.Value(ret.intervals, {});
+  }
+
+  public canShrinkWithoutContext(_value: unknown): _value is appscaling.ScalingInterval[] {
+    return false;
+  }
+
+  public shrink(_value: appscaling.ScalingInterval[], _context: unknown): fc.Stream<fc.Value<appscaling.ScalingInterval[]>> {
+    return fc.Stream.nil();
   }
 }
 

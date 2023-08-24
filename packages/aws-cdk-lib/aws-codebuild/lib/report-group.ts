@@ -1,9 +1,9 @@
-import * as iam from '../../aws-iam';
-import * as s3 from '../../aws-s3';
-import * as cdk from '../../core';
 import { Construct } from 'constructs';
 import { CfnReportGroup } from './codebuild.generated';
 import { renderReportGroupArn, reportGroupArnComponents } from './report-group-utils';
+import * as iam from '../../aws-iam';
+import * as s3 from '../../aws-s3';
+import * as cdk from '../../core';
 
 /**
  * The interface representing the ReportGroup resource -

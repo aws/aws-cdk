@@ -25,7 +25,7 @@ class TestStack extends Stack {
         minify: true,
         sourceMap: true,
         sourceMapMode: lambda.SourceMapMode.BOTH,
-        tsconfig: path.join(__dirname, '..', 'tsconfig.json'),
+        tsconfig: path.join(__dirname, '..', 'tsconfig-custom.json'),
         preCompilation: true,
       },
       runtime: Runtime.NODEJS_16_X,

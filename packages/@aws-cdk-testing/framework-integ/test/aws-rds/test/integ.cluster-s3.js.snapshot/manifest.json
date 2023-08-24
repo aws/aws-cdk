@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "31.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "aws-cdk-rds-s3-integ.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8182c8bf4e17962cb28aa684c91f0d422b58d2f454a7088dc2ceebd8f32e89d7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/847a7253a365d747181fde2a1ce016fb160617357972f277a1dc32b6a4e60587.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -225,40 +219,40 @@
             "data": "DatabaseS3ImportRoleDefaultPolicyA60A7342"
           }
         ],
-        "/aws-cdk-rds-s3-integ/Database/S3ExportRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DatabaseS3ExportRole9E328562"
-          }
-        ],
-        "/aws-cdk-rds-s3-integ/Database/S3ExportRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DatabaseS3ExportRoleDefaultPolicy8FEADB68"
-          }
-        ],
         "/aws-cdk-rds-s3-integ/Database/ClusterParameterGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DatabaseClusterParameterGroupF2A52087"
+            "data": "DatabaseClusterParameterGroupF2A52087",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-rds-s3-integ/Database/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DatabaseB269D8BB"
+            "data": "DatabaseB269D8BB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: MAY_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-rds-s3-integ/Database/Instance1": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DatabaseInstance1844F58FD"
+            "data": "DatabaseInstance1844F58FD",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: MAY_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-rds-s3-integ/Database/Instance2": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DatabaseInstance2AA380DEE"
+            "data": "DatabaseInstance2AA380DEE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: MAY_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-rds-s3-integ/BootstrapVersion": [
@@ -272,9 +266,33 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "DatabaseS3ExportRole9E328562": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseS3ExportRole9E328562",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "DatabaseS3ExportRoleDefaultPolicy8FEADB68": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseS3ExportRoleDefaultPolicy8FEADB68",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "aws-cdk-rds-s3-integ"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

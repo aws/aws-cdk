@@ -1,5 +1,5 @@
-import { App, Stack, Duration } from '../../core';
 import { TestOrigin } from './test-origin';
+import { App, Stack, Duration } from '../../core';
 
 let app: App;
 let stack: Stack;
@@ -53,7 +53,6 @@ test.each(['api', '/api', '/api/', 'api/'])
   expect(originBindConfig.originProperty?.originPath).toEqual('/api');
 });
 
-
 test.each(['us-east-1', 'ap-southeast-2', 'eu-west-3', 'me-south-1'])
 ('ensures that originShieldRegion is a valid aws region', (originShieldRegion) => {
   const origin = new TestOrigin('www.example.com', {
@@ -67,7 +66,6 @@ test.each(['us-east-1', 'ap-southeast-2', 'eu-west-3', 'me-south-1'])
   });
 });
 
-
 test('ensures originShield doesnt return false if undefined', () => {
   const origin = new TestOrigin('www.example.com', {
 
@@ -76,7 +74,6 @@ test('ensures originShield doesnt return false if undefined', () => {
 
   expect(originBindConfig.originProperty?.originShield).toBeUndefined();
 });
-
 
 test('ensures originShield is disabled if originShieldEnabled equals false', () => {
   const origin = new TestOrigin('www.example.com', {
@@ -88,7 +85,6 @@ test('ensures originShield is disabled if originShieldEnabled equals false', () 
     enabled: false,
   });
 });
-
 
 test('throw an error if Custom Headers keys are not permitted', () => {
   // case sensitive

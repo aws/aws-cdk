@@ -150,6 +150,13 @@ export interface GrpcGatewayRouteMatch {
    * @default true
    */
   readonly rewriteRequestHostname?: boolean;
+
+  /**
+   * The port to match from the request.
+   *
+   * @default - do not match on port
+   */
+  readonly port?: number;
 }
 
 /**
@@ -365,6 +372,7 @@ class GrpcGatewayRouteSpec extends GatewayRouteSpec {
         match: {
           serviceName: this.match.serviceName,
           hostname: this.match.hostname?.bind(scope).hostnameMatch,
+          port: this.match.port,
           metadata: metadataMatch?.map(metadata => metadata.bind(scope).headerMatch),
         },
         action: {

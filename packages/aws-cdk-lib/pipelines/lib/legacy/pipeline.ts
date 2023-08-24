@@ -1,13 +1,13 @@
 import * as path from 'path';
+import { Construct } from 'constructs';
+import { DeployCdkStackAction, PublishAssetsAction, UpdatePipelineAction } from './actions';
+import { AddStageOptions, AssetPublishingCommand, BaseStageOptions, CdkStage, StackOutput } from './stage';
+import { SimpleSynthAction } from './synths';
 import * as codebuild from '../../../aws-codebuild';
 import * as codepipeline from '../../../aws-codepipeline';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import { Annotations, App, CfnOutput, PhysicalName, Stack, Stage } from '../../../core';
-import { Construct } from 'constructs';
-import { DeployCdkStackAction, PublishAssetsAction, UpdatePipelineAction } from './actions';
-import { AddStageOptions, AssetPublishingCommand, BaseStageOptions, CdkStage, StackOutput } from './stage';
-import { SimpleSynthAction } from './synths';
 import { AssetType } from '../blueprint/asset-type';
 import { dockerCredentialsInstallCommands, DockerCredential, DockerCredentialUsage } from '../docker-credentials';
 import { ApplicationSecurityCheck } from '../private/application-security-check';
@@ -87,7 +87,6 @@ export interface CdkPipelineProps {
   readonly crossAccountKeys?: boolean;
   // @deprecated(v2): switch to default false
 
-
   /**
    * Enables KMS key rotation for cross-account keys.
    *
@@ -98,7 +97,6 @@ export interface CdkPipelineProps {
    * @default - false (key rotation is disabled)
    */
   readonly enableKeyRotation?: boolean;
-
 
   /**
    * CDK CLI version to use in pipeline
@@ -439,7 +437,7 @@ export class CdkPipeline extends Construct {
         const depAction = stackActions.find(s => s.stackArtifactId === depId);
 
         if (depAction === undefined) {
-          Annotations.of(this).addWarning(`Stack '${stackAction.stackName}' depends on stack ` +
+          Annotations.of(this).addWarningV2('@aws-cdk/pipelines:dependencyOnNonPipelineStack', `Stack '${stackAction.stackName}' depends on stack ` +
             `'${depId}', but that dependency is not deployed through the pipeline!`);
         } else if (!(depAction.executeRunOrder < stackAction.prepareRunOrder)) {
           yield `Stack '${stackAction.stackName}' depends on stack ` +

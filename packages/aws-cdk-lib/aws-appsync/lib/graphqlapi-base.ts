@@ -1,10 +1,3 @@
-import { ITable } from '../../aws-dynamodb';
-import { IDomain as IElasticsearchDomain } from '../../aws-elasticsearch';
-import { IFunction } from '../../aws-lambda';
-import { IDomain as IOpenSearchDomain } from '../../aws-opensearchservice';
-import { IServerlessCluster } from '../../aws-rds';
-import { ISecret } from '../../aws-secretsmanager';
-import { CfnResource, IResource, Resource } from '../../core';
 import {
   DynamoDbDataSource,
   HttpDataSource,
@@ -14,10 +7,17 @@ import {
   AwsIamConfig,
   ElasticsearchDataSource,
   OpenSearchDataSource,
-  EventBridgeDataSource
+  EventBridgeDataSource,
 } from './data-source';
 import { Resolver, ExtendedResolverProps } from './resolver';
-import { IEventBus } from "../../aws-events";
+import { ITable } from '../../aws-dynamodb';
+import { IDomain as IElasticsearchDomain } from '../../aws-elasticsearch';
+import { IEventBus } from '../../aws-events';
+import { IFunction } from '../../aws-lambda';
+import { IDomain as IOpenSearchDomain } from '../../aws-opensearchservice';
+import { IServerlessCluster } from '../../aws-rds';
+import { ISecret } from '../../aws-secretsmanager';
+import { CfnResource, IResource, Resource } from '../../core';
 
 /**
  * Optional configuration for data sources
@@ -96,7 +96,6 @@ export interface IGraphqlApi extends IResource {
    * @param options The optional configuration for this data source
    */
   addHttpDataSource(id: string, endpoint: string, options?: HttpDataSourceOptions): HttpDataSource;
-
 
   /**
    * Add an EventBridge data source to this api
@@ -297,7 +296,7 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
       api: this,
       eventBus,
       name: options?.name,
-      description: options?.description
+      description: options?.description,
     });
   }
 

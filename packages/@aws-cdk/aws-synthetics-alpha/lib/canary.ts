@@ -3,13 +3,18 @@ import { Metric, MetricOptions, MetricProps } from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as cdk from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { Code } from './code';
 import { Runtime } from './runtime';
 import { Schedule } from './schedule';
 import { CloudWatchSyntheticsMetrics } from 'aws-cdk-lib/aws-synthetics/lib/synthetics-canned-metrics.generated';
 import { CfnCanary } from 'aws-cdk-lib/aws-synthetics';
+import { CustomResource, CustomResourceProvider, CustomResourceProviderRuntime } from 'aws-cdk-lib/core';
+import * as path from 'path';
+
+const AUTO_DELETE_UNDERLYING_RESOURCES_RESOURCE_TYPE = 'Custom::SyntheticsAutoDeleteUnderlyingResources';
+const AUTO_DELETE_UNDERLYING_RESOURCES_TAG = 'aws-cdk:auto-delete-underlying-resources';
 
 /**
  * Specify a test that the canary should run
@@ -22,23 +27,7 @@ export class Test {
    * @param options The configuration options
    */
   public static custom(options: CustomTestOptions): Test {
-    Test.validateHandler(options.handler);
     return new Test(options.code, options.handler);
-  }
-
-  /**
-   * Verifies that the given handler ends in '.handler'. Returns the handler if successful and
-   * throws an error if not.
-   *
-   * @param handler - the handler given by the user
-   */
-  private static validateHandler(handler: string) {
-    if (!handler.endsWith('.handler')) {
-      throw new Error(`Canary Handler must end in '.handler' (${handler})`);
-    }
-    if (handler.length > 21) {
-      throw new Error(`Canary Handler must be less than 21 characters (${handler})`);
-    }
   }
 
   /**
@@ -64,6 +53,25 @@ export interface CustomTestOptions {
    * The handler for the code. Must end with `.handler`.
    */
   readonly handler: string,
+}
+
+/**
+ * Different ways to clean up underlying Canary resources
+ * when the Canary is deleted.
+ */
+export enum Cleanup {
+  /**
+   * Clean up nothing. The user is responsible for cleaning up
+   * all resources left behind by the Canary.
+   */
+  NOTHING = 'nothing',
+
+  /**
+   * Clean up the underlying Lambda function only. The user is
+   * responsible for cleaning up all other resources left behind
+   * by the Canary.
+   */
+  LAMBDA = 'lambda',
 }
 
 /**
@@ -211,8 +219,27 @@ export interface CanaryProps {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-synthetics-canary.html#cfn-synthetics-canary-deletelambdaresourcesoncanarydeletion
    *
    * @default false
+   * @deprecated this feature has been deprecated by the service team, use `cleanup: Cleanup.LAMBDA` instead which will use a Custom Resource to achieve the same effect.
    */
   readonly enableAutoDeleteLambdas?: boolean;
+
+  /**
+   * Specify the underlying resources to be cleaned up when the canary is deleted.
+   * Using `Cleanup.LAMBDA` will create a Custom Resource to achieve this.
+   *
+   * @default Cleanup.NOTHING
+   */
+  readonly cleanup?: Cleanup;
+
+  /**
+   * Lifecycle rules for the generated canary artifact bucket. Has no effect
+   * if a bucket is passed to `artifactsBucketLocation`. If you pass a bucket
+   * to `artifactsBucketLocation`, you can add lifecycle rules to the bucket
+   * itself.
+   *
+   * @default - no rules applied to the generated bucket.
+   */
+  readonly artifactsBucketLifecycleRules?: Array<s3.LifecycleRule>;
 }
 
 /**
@@ -254,6 +281,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
    * @internal
    */
   private readonly _connections?: ec2.Connections;
+  private readonly _resource: CfnCanary;
 
   public constructor(scope: Construct, id: string, props: CanaryProps) {
     if (props.canaryName && !cdk.Token.isUnresolved(props.canaryName)) {
@@ -269,6 +297,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     this.artifactsBucket = props.artifactsBucketLocation?.bucket ?? new s3.Bucket(this, 'ArtifactsBucket', {
       encryption: s3.BucketEncryption.KMS_MANAGED,
       enforceSSL: true,
+      lifecycleRules: props.artifactsBucketLifecycleRules,
     });
 
     this.role = props.role ?? this.createDefaultRole(props);
@@ -290,12 +319,49 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
       code: this.createCode(props),
       runConfig: this.createRunConfig(props),
       vpcConfig: this.createVpcConfig(props),
-      deleteLambdaResourcesOnCanaryDeletion: props.enableAutoDeleteLambdas,
     });
+    this._resource = resource;
 
     this.canaryId = resource.attrId;
     this.canaryState = resource.attrState;
     this.canaryName = this.getResourceNameAttribute(resource.ref);
+
+    if (props.cleanup === Cleanup.LAMBDA ?? props.enableAutoDeleteLambdas) {
+      this.cleanupUnderlyingResources();
+    }
+  }
+
+  private cleanupUnderlyingResources() {
+    const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_UNDERLYING_RESOURCES_RESOURCE_TYPE, {
+      codeDirectory: path.join(__dirname, '..', 'custom-resource-handlers', 'dist', 'aws-synthetics-alpha', 'auto-delete-underlying-resources-handler'),
+      useCfnResponseWrapper: false,
+      runtime: CustomResourceProviderRuntime.NODEJS_18_X,
+      description: `Lambda function for auto-deleting underlying resources created by ${this.canaryName}.`,
+      policyStatements: [{
+        Effect: 'Allow',
+        Action: ['lambda:DeleteFunction'],
+        Resource: this.lambdaArn(),
+      }, {
+        Effect: 'Allow',
+        Action: ['synthetics:GetCanary'],
+        Resource: '*',
+      }],
+    });
+
+    new CustomResource(this, 'AutoDeleteUnderlyingResourcesCustomResource', {
+      resourceType: AUTO_DELETE_UNDERLYING_RESOURCES_RESOURCE_TYPE,
+      serviceToken: provider.serviceToken,
+      properties: {
+        CanaryName: this.canaryName,
+      },
+    });
+
+    // We also tag the canary to record the fact that we want it autodeleted.
+    // The custom resource will check this tag before actually doing the delete.
+    // Because tagging and untagging will ALWAYS happen before the CR is deleted,
+    // we can set `autoDeleteLambda: false` without the removal of the CR emptying
+    // the lambda as a side effect.
+    cdk.Tags.of(this._resource).add(AUTO_DELETE_UNDERLYING_RESOURCES_TAG, 'true');
   }
 
   /**
@@ -407,10 +473,20 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     });
   }
 
+  private lambdaArn() {
+    return cdk.Stack.of(this).formatArn({
+      service: 'lambda',
+      resource: 'function',
+      arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
+      resourceName: 'cwsyn-*',
+    });
+  }
+
   /**
    * Returns the code object taken in by the canary resource.
    */
   private createCode(props: CanaryProps): CfnCanary.CodeProperty {
+    this.validateHandler(props.test.handler, props.runtime);
     const codeConfig = {
       handler: props.test.handler,
       ...props.test.code.bind(this, props.test.handler, props.runtime.family),
@@ -422,6 +498,35 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
       s3Key: codeConfig.s3Location?.objectKey,
       s3ObjectVersion: codeConfig.s3Location?.objectVersion,
     };
+  }
+
+  /**
+   * Verifies that the handler name matches the conventions given a certain runtime.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-synthetics-canary-code.html#cfn-synthetics-canary-code-handler
+   * @param handler - the name of the handler
+   * @param runtime - the runtime version
+   */
+  private validateHandler(handler: string, runtime: Runtime) {
+    const oldRuntimes = [
+      Runtime.SYNTHETICS_PYTHON_SELENIUM_1_0,
+      Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_0,
+      Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_1,
+      Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_2,
+      Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_3,
+    ];
+    if (oldRuntimes.includes(runtime)) {
+      if (!handler.match(/^[0-9A-Za-z_\\-]+\.handler*$/)) {
+        throw new Error(`Canary Handler must be specified as \'fileName.handler\' for legacy runtimes, received ${handler}`);
+      }
+    } else {
+      if (!handler.match(/^([0-9a-zA-Z_-]+\/)*[0-9A-Za-z_\\-]+\.[A-Za-z_][A-Za-z0-9_]*$/)) {
+        throw new Error(`Canary Handler must be specified either as \'fileName.handler\', \'fileName.functionName\', or \'folder/fileName.functionName\', received ${handler}`);
+      }
+    }
+    if (handler.length < 1 || handler.length > 128) {
+      throw new Error(`Canary Handler length must be between 1 and 128, received ${handler.length}`);
+    }
   }
 
   private createRunConfig(props: CanaryProps): CfnCanary.RunConfigProperty | undefined {

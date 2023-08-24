@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "cdk-integ-secret-hosted-rotation": {
         "id": "cdk-integ-secret-hosted-rotation",
         "path": "cdk-integ-secret-hosted-rotation",
@@ -30,7 +22,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-secretsmanager.CfnSecret",
+                  "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecret",
                   "version": "0.0.0"
                 }
               },
@@ -57,13 +49,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-secretsmanager.CfnRotationSchedule",
+                      "fqn": "aws-cdk-lib.aws_secretsmanager.CfnRotationSchedule",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-secretsmanager.RotationSchedule",
+                  "fqn": "aws-cdk-lib.aws_secretsmanager.RotationSchedule",
                   "version": "0.0.0"
                 }
               },
@@ -111,19 +103,19 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-secretsmanager.CfnResourcePolicy",
+                      "fqn": "aws-cdk-lib.aws_secretsmanager.CfnResourcePolicy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-secretsmanager.ResourcePolicy",
+                  "fqn": "aws-cdk-lib.aws_secretsmanager.ResourcePolicy",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-secretsmanager.Secret",
+              "fqn": "aws-cdk-lib.aws_secretsmanager.Secret",
               "version": "0.0.0"
             }
           },
@@ -143,7 +135,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-secretsmanager.CfnSecret",
+                  "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecret",
                   "version": "0.0.0"
                 }
               },
@@ -164,19 +156,20 @@
                           "rotationType": "MySQLSingleUser",
                           "excludeCharacters": "&@/"
                         },
+                        "rotateImmediatelyOnUpdate": false,
                         "rotationRules": {
                           "automaticallyAfterDays": 30
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-secretsmanager.CfnRotationSchedule",
+                      "fqn": "aws-cdk-lib.aws_secretsmanager.CfnRotationSchedule",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-secretsmanager.RotationSchedule",
+                  "fqn": "aws-cdk-lib.aws_secretsmanager.RotationSchedule",
                   "version": "0.0.0"
                 }
               },
@@ -224,32 +217,56 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-secretsmanager.CfnResourcePolicy",
+                      "fqn": "aws-cdk-lib.aws_secretsmanager.CfnResourcePolicy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-secretsmanager.ResourcePolicy",
+                  "fqn": "aws-cdk-lib.aws_secretsmanager.ResourcePolicy",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-secretsmanager.Secret",
+              "fqn": "aws-cdk-lib.aws_secretsmanager.Secret",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "cdk-integ-secret-hosted-rotation/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "cdk-integ-secret-hosted-rotation/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.2.26"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
     }
   }
 }

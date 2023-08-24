@@ -1,8 +1,8 @@
+import { TestFunction } from './test-function';
 import { Template } from '../../assertions';
 import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
 import * as cdk from '../../core';
-import { TestFunction } from './test-function';
 import * as sources from '../lib';
 
 /* eslint-disable quote-props */
@@ -44,7 +44,6 @@ describe('SNSEventSource', () => {
         'Ref': 'TD925BC7E',
       },
     });
-
 
   });
 
@@ -107,7 +106,6 @@ describe('SNSEventSource', () => {
         },
       },
     });
-
 
   });
 });

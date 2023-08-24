@@ -12,14 +12,12 @@ To have SecretsManager generate a new secret value automatically,
 follow this example:
 
 ```ts
-declare const vpc: ec2.Vpc;
+declare const vpc: ec2.IVpc;
 
-// Simple secret
-const secret = new secretsmanager.Secret(this, 'Secret');
-// Using the secret
 const instance1 = new rds.DatabaseInstance(this, "PostgresInstance1", {
   engine: rds.DatabaseInstanceEngine.POSTGRES,
-  credentials: rds.Credentials.fromSecret(secret),
+  // Generate the secret with admin username `postgres` and random password
+  credentials: rds.Credentials.fromGeneratedSecret('postgres'),
   vpc
 });
 // Templated secret with username and password fields
@@ -27,6 +25,7 @@ const templatedSecret = new secretsmanager.Secret(this, 'TemplatedSecret', {
   generateSecretString: {
     secretStringTemplate: JSON.stringify({ username: 'postgres' }),
     generateStringKey: 'password',
+    excludeCharacters: '/@"',
   },
 });
 // Using the templated secret as credentials
@@ -94,8 +93,6 @@ const secret = new secretsmanager.Secret(this, 'Secret', { encryptionKey: key })
 secret.grantRead(otherAccount);
 ```
 
-## Rotating a Secret
-
 ### Using a Custom Lambda Function
 
 A rotation schedule can be added to a Secret using a custom Lambda function:
@@ -109,6 +106,7 @@ const secret = new secretsmanager.Secret(this, 'Secret');
 secret.addRotationSchedule('RotationSchedule', {
   rotationLambda: fn,
   automaticallyAfter: Duration.days(15),
+  rotateImmediatelyOnUpdate: false, // default is true
 });
 ```
 
@@ -134,7 +132,7 @@ MariaDB, SQLServer, Redshift and MongoDB (both for the single and multi user sch
 When deployed in a VPC, the hosted rotation implements `ec2.IConnectable`:
 
 ```ts
-declare const myVpc: ec2.Vpc;
+declare const myVpc: ec2.IVpc;
 declare const dbConnections: ec2.Connections;
 declare const secret: secretsmanager.Secret;
 
@@ -202,7 +200,26 @@ new secretsmanager.SecretRotation(this, 'SecretRotation', {
 });
 ```
 
-See also [aws-rds](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-rds/README.md) where
+By default, any stack updates will cause AWS Secrets Manager to rotate a secret immediately. To prevent this behavior and wait until the next scheduled rotation window specified via the `automaticallyAfter` property, set the `rotateImmediatelyOnUpdate` property to false:
+
+```ts
+declare const myUserSecret: secretsmanager.Secret;
+declare const myMasterSecret: secretsmanager.Secret;
+declare const myDatabase: ec2.IConnectable;
+declare const myVpc: ec2.Vpc;
+
+new secretsmanager.SecretRotation(this, 'SecretRotation', {
+  application: secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER,
+  secret: myUserSecret, // The secret that will be rotated
+  masterSecret: myMasterSecret, // The secret used for the rotation
+  target: myDatabase,
+  vpc: myVpc,
+  automaticallyAfter: Duration.days(7),
+  rotateImmediatelyOnUpdate: false,
+});
+```
+
+See also [aws-rds](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-rds/README.md) where
 credentials generation and rotation is integrated.
 
 ## Importing Secrets

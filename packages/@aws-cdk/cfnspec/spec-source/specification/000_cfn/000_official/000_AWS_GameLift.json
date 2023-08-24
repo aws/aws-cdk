@@ -1,5 +1,5 @@
 {
-  "$version": "120.0.0",
+  "$version": "130.1.0",
   "PropertyTypes": {
     "AWS::GameLift::Alias.RoutingStrategy": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-gamelift-alias-routingstrategy.html",
@@ -428,6 +428,12 @@
         },
         "OperatingSystem": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-gamelift-build.html#cfn-gamelift-build-operatingsystem",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Immutable"
+        },
+        "ServerSdkVersion": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-gamelift-build.html#cfn-gamelift-build-serversdkversion",
           "PrimitiveType": "String",
           "Required": false,
           "UpdateType": "Immutable"

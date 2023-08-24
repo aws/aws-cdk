@@ -1,8 +1,8 @@
-import * as iam from '../../aws-iam';
-import { Resource } from '../../core';
 import { Construct } from 'constructs';
 import { ISecret } from './secret';
 import { CfnResourcePolicy } from './secretsmanager.generated';
+import * as iam from '../../aws-iam';
+import { Resource } from '../../core';
 
 /**
  * Construction properties for a ResourcePolicy

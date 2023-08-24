@@ -1,9 +1,9 @@
+import * as constructs from 'constructs';
 import { Annotations, Template, Match } from '../../../assertions';
 import * as events from '../../../aws-events';
 import * as lambda from '../../../aws-lambda';
 import * as sqs from '../../../aws-sqs';
 import * as cdk from '../../../core';
-import * as constructs from 'constructs';
 import * as targets from '../../lib';
 
 test('use lambda as an event rule target', () => {
@@ -257,7 +257,6 @@ test('throw an error when using a Dead Letter Queue for the rule target in a dif
     schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
   });
 
-
   expect(() => {
     rule.addTarget(new targets.LambdaFunction(fn, {
       deadLetterQueue: queue,
@@ -329,7 +328,6 @@ test('must display a warning when using a Dead Letter Queue from another account
     ]),
   }));
 });
-
 
 test('specifying retry policy', () => {
   // GIVEN

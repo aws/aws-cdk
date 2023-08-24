@@ -1,4 +1,4 @@
-import * as cdk from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
 
 // This file contains utility functions used in the implementation of ExampleResource
 // which we don't want to make part of the public API of this module

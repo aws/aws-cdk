@@ -64,7 +64,7 @@ describe('CLI creds synthesis', () => {
 
     // THEN - we have a fixed asset location with region placeholders
     expect(evalCFN(location.bucketName)).toEqual('cdk-hnb659fds-assets-the_account-the_region');
-    expect(evalCFN(location.s3Url)).toEqual('https://s3.the_region.domain.aws/cdk-hnb659fds-assets-the_account-the_region/abcdef.js');
+    expect(evalCFN(location.s3Url)).toEqual('https://s3.the_region.domain.aws/cdk-hnb659fds-assets-the_account-the_region/abcdef.ts');
 
     // THEN - object key contains source hash somewhere
     expect(location.objectKey.indexOf('abcdef')).toBeGreaterThan(-1);
@@ -80,7 +80,6 @@ describe('CLI creds synthesis', () => {
     // THEN - we have a fixed asset location with region placeholders
     expect(evalCFN(location.repositoryName)).toEqual('cdk-hnb659fds-container-assets-the_account-the_region');
     expect(evalCFN(location.imageUri)).toEqual('the_account.dkr.ecr.the_region.domain.aws/cdk-hnb659fds-container-assets-the_account-the_region:abcdef');
-
 
   });
 
@@ -136,7 +135,7 @@ describe('CLI creds synthesis', () => {
 
     expect(manifest.files?.['file-asset-hash']?.destinations?.['current_account-current_region']).toEqual({
       bucketName: 'file-asset-bucket',
-      objectKey: 'file-asset-hash.js',
+      objectKey: 'file-asset-hash.ts',
     });
 
     expect(manifest.dockerImages?.['docker-asset-hash']?.destinations?.['current_account-current_region']).toEqual({
@@ -175,7 +174,7 @@ describe('CLI creds synthesis', () => {
     // THEN
     expect(manifest.files?.['file-asset-hash-with-prefix']?.destinations?.['current_account-current_region']).toEqual({
       bucketName: 'file-asset-bucket',
-      objectKey: '000000000000/file-asset-hash-with-prefix.js',
+      objectKey: '000000000000/file-asset-hash-with-prefix.ts',
     });
 
     const templateHash = last(stackArtifact.stackTemplateAssetObjectUrl?.split('/'));

@@ -1,5 +1,5 @@
 {
-  "version": "20.0.0",
+  "version": "33.0.0",
   "files": {
     "c7bba0d9d477c86c6dc2adb0eb95842634a1c040dd3a66b42eec2bb604644d4f": {
       "source": {
@@ -14,7 +14,7 @@
         }
       }
     },
-    "ba5dee6e1f1d18e08b8875856fa71d14724d042519cd5803e3176d4ec31e83b3": {
+    "d6fea47c1f0462158dff41f11b88b1cc5a13df20fda1d39aa230bae47a50ae63": {
       "source": {
         "path": "cors-twitch-test.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "ba5dee6e1f1d18e08b8875856fa71d14724d042519cd5803e3176d4ec31e83b3.json",
+          "objectKey": "d6fea47c1f0462158dff41f11b88b1cc5a13df20fda1d39aa230bae47a50ae63.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

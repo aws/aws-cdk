@@ -1,10 +1,10 @@
+import { Construct } from 'constructs';
+import { SubscriptionProps } from './subscription';
 import * as iam from '../../aws-iam';
 import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
 import { ArnFormat, FeatureFlags, Names, Stack, Token } from '../../core';
 import * as cxapi from '../../cx-api';
-import { Construct } from 'constructs';
-import { SubscriptionProps } from './subscription';
 
 /**
  * Properties for an SQS subscription
@@ -37,6 +37,18 @@ export class SqsSubscription implements sns.ITopicSubscription {
       throw new Error('The supplied Queue object must be an instance of Construct');
     }
     const snsServicePrincipal = new iam.ServicePrincipal('sns.amazonaws.com');
+
+    // if the queue is encrypted by AWS managed KMS key (alias/aws/sqs),
+    // throw error message
+    if (this.queue.encryptionType === sqs.QueueEncryption.KMS_MANAGED) {
+      throw new Error('SQS queue encrypted by AWS managed KMS key cannot be used as SNS subscription');
+    }
+
+    // if the dead-letter queue is encrypted by AWS managed KMS key (alias/aws/sqs),
+    // throw error message
+    if (this.props.deadLetterQueue && this.props.deadLetterQueue.encryptionType === sqs.QueueEncryption.KMS_MANAGED) {
+      throw new Error('SQS queue encrypted by AWS managed KMS key cannot be used as dead-letter queue');
+    }
 
     // add a statement to the queue resource policy which allows this topic
     // to send messages to the queue.

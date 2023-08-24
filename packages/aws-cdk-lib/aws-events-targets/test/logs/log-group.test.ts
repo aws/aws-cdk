@@ -1,8 +1,8 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../../assertions';
 import * as events from '../../../aws-events';
 import * as logs from '../../../aws-logs';
 import * as sqs from '../../../aws-sqs';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '../../../core';
 import * as targets from '../../lib';
 import { LogGroupTargetInput } from '../../lib';
@@ -72,7 +72,6 @@ testDeprecated('use log group as an event rule target with rule target input', (
       message: events.EventField.fromPath('$'),
     }),
   }));
-
 
   // THEN
   expect(() => {

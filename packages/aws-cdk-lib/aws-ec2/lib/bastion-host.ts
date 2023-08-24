@@ -1,7 +1,5 @@
-import { IPrincipal, IRole, PolicyStatement } from '../../aws-iam';
-import { CfnOutput, Resource, Stack } from '../../core';
 import { Construct } from 'constructs';
-import { AmazonLinuxGeneration, InstanceArchitecture, InstanceClass, InstanceSize, InstanceType } from '.';
+import { InstanceArchitecture, InstanceClass, InstanceSize, InstanceType } from '.';
 import { CloudFormationInit } from './cfn-init';
 import { Connections } from './connections';
 import { ApplyCloudFormationInitOptions, IInstance, Instance } from './instance';
@@ -11,6 +9,8 @@ import { Port } from './port';
 import { ISecurityGroup } from './security-group';
 import { BlockDevice } from './volume';
 import { IVpc, SubnetSelection } from './vpc';
+import { IPrincipal, IRole, PolicyStatement } from '../../aws-iam';
+import { CfnOutput, Resource, Stack } from '../../core';
 
 /**
  * Properties of the bastion host
@@ -180,8 +180,7 @@ export class BastionHostLinux extends Resource implements IInstance {
       securityGroup: props.securityGroup,
       instanceName: props.instanceName ?? 'BastionHost',
       instanceType,
-      machineImage: props.machineImage ?? MachineImage.latestAmazonLinux({
-        generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
+      machineImage: props.machineImage ?? MachineImage.latestAmazonLinux2({
         cpuType: this.toAmazonLinuxCpuType(instanceType.architecture),
       }),
       vpcSubnets: props.subnetSelection ?? {},

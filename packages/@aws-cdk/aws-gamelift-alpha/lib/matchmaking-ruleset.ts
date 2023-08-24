@@ -1,9 +1,8 @@
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
-import * as cdk from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnMatchmakingRuleSet } from 'aws-cdk-lib/aws-gamelift';
 import { RuleSetContent } from './matchmaking-ruleset-body';
-
 
 /**
  * Represents a Gamelift matchmaking ruleset
@@ -34,7 +33,6 @@ export interface IMatchmakingRuleSet extends cdk.IResource {
    * This metric is limited to the top 50 rules.
    */
   metricRuleEvaluationsPassed(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
-
 
   /**
    * Rule evaluations during matchmaking that failed since the last report.
@@ -223,6 +221,5 @@ export class MatchmakingRuleSet extends MatchmakingRuleSetBase {
       arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
     });
   }
-
 
 }

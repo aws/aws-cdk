@@ -2,6 +2,7 @@ import * as child_process from 'child_process';
 import { CdkCliWrapper } from '../lib/cdk-wrapper';
 import { RequireApproval, StackActivityProgress } from '../lib/commands';
 let spawnSyncMock: jest.SpyInstance;
+let spawnMock: jest.SpyInstance;
 
 beforeEach(() => {
   spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
@@ -12,6 +13,11 @@ beforeEach(() => {
     output: ['stdout', 'stderr'],
     signal: null,
   });
+  spawnMock = jest.spyOn(child_process, 'spawn').mockImplementation(jest.fn(() => {
+    return {
+      on: jest.fn(() => {}),
+    } as unknown as child_process.ChildProcess;
+  }));
 });
 
 afterEach(() => {
@@ -317,7 +323,33 @@ test('default synth', () => {
   );
 });
 
-test('synth arguments', () => {
+test('watch arguments', () => {
+  // WHEN
+  const cdk = new CdkCliWrapper({
+    directory: '/project',
+    env: {
+      KEY: 'value',
+    },
+  });
+  cdk.watch({
+    app: 'node bin/my-app.js',
+    stacks: ['test-stack1'],
+  });
+
+  // THEN
+  expect(spawnMock).toHaveBeenCalledWith(
+    expect.stringMatching(/cdk/),
+    ['deploy', '--watch', '--hotswap-fallback', '--progress', 'events', '--app', 'node bin/my-app.js', 'test-stack1'],
+    expect.objectContaining({
+      env: expect.objectContaining({
+        KEY: 'value',
+      }),
+      cwd: '/project',
+    }),
+  );
+});
+
+test('destroy arguments', () => {
   // WHEN
   const cdk = new CdkCliWrapper({
     directory: '/project',

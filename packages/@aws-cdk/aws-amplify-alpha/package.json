@@ -85,10 +85,11 @@
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
-    "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^29.5.0",
-    "aws-sdk": "^2.1329.0",
+    "@aws-sdk/client-amplify": "^3.395.0",
+    "@aws-sdk/client-s3": "^3.397.0",
+    "@aws-sdk/s3-request-presigner": "^3.397.0",
+    "@types/jest": "^29.5.4",
     "aws-cdk-lib": "0.0.0",
     "constructs": "^10.0.0"
   },

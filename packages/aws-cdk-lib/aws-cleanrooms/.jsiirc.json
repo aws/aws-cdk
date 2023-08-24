@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "services.cleanrooms"
+    },
+    "dotnet": {
+      "package": "Amazon.CDK.AWS.CleanRooms"
+    },
+    "python": {
+      "module": "aws_cdk.aws_cleanrooms"
+    }
+  }
+}

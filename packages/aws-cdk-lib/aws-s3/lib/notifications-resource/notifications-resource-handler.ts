@@ -1,8 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { Construct } from 'constructs';
 import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
-import { Construct } from 'constructs';
 
 export class NotificationsResourceHandlerProps {
   role?: iam.IRole;
@@ -22,7 +22,7 @@ export class NotificationsResourceHandlerProps {
  * For 'Delete' operations, we send an empty NotificationConfiguration as
  * required. We propagate errors and results as-is.
  *
- * Sadly, we can't use @aws-cdk/aws-lambda as it will introduce a dependency
+ * Sadly, we can't use aws-cdk-lib/aws-lambda as it will introduce a dependency
  * cycle, so this uses raw `cdk.Resource`s.
  */
 export class NotificationsResourceHandler extends Construct {

@@ -1,4 +1,5 @@
 /* eslint-disable jest/expect-expect */
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Match, Template } from '../../assertions';
 import * as acm from '../../aws-certificatemanager';
 import { Metric, Statistic } from '../../aws-cloudwatch';
@@ -7,7 +8,6 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as route53 from '../../aws-route53';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { App, Stack, Duration, SecretValue, CfnParameter, Token } from '../../core';
 
 import { Domain, ElasticsearchVersion } from '../lib/domain';
@@ -261,7 +261,6 @@ testDeprecated('can set a self-referencing custom policy', () => {
     Update: expectedPolicy,
   });
 });
-
 
 describe('UltraWarm instances', () => {
 

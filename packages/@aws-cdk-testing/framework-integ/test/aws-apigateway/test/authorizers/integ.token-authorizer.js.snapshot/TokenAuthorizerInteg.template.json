@@ -38,7 +38,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "fec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3.zip"
+     "S3Key": "6ef24b26328dec9135be0bd32fff8f588f9a4564f32df911d1de82cfb78183f0.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -208,7 +208,7 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "MyRestApiDeploymentB555B5822d29e7cc325d84a3264c658c75a9d43a": {
+  "MyRestApiDeploymentB555B582e0e53f2547b469b538202de55968eaf0": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "RestApiId": {
@@ -229,7 +229,7 @@
      "Ref": "MyRestApi2D1F47A9"
     },
     "DeploymentId": {
-     "Ref": "MyRestApiDeploymentB555B5822d29e7cc325d84a3264c658c75a9d43a"
+     "Ref": "MyRestApiDeploymentB555B582e0e53f2547b469b538202de55968eaf0"
     },
     "StageName": "prod"
    },
@@ -250,6 +250,7 @@
     "RestApiId": {
      "Ref": "MyRestApi2D1F47A9"
     },
+    "ApiKeyRequired": false,
     "AuthorizationType": "NONE",
     "Integration": {
      "IntegrationResponses": [

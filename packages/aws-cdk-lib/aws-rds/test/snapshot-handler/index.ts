@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
-import * as AWSCDKAsyncCustomResource from '../../../custom-resources/lib/provider-framework/types';
 import { RDS } from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
+import * as AWSCDKAsyncCustomResource from '../../../custom-resources/lib/provider-framework/types';
 
 export async function onEventHandler(event: AWSCDKAsyncCustomResource.OnEventRequest): Promise<AWSCDKAsyncCustomResource.OnEventResponse> {
   console.log('Event: %j', event);

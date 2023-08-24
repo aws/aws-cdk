@@ -1,6 +1,6 @@
+import { IConstruct } from 'constructs';
 import * as cdk from '../../../core';
 import * as cxapi from '../../../cx-api';
-import { IConstruct } from 'constructs';
 import { CfnLaunchTemplate } from '../ec2.generated';
 import { Instance } from '../instance';
 import { LaunchTemplate } from '../launch-template';
@@ -37,7 +37,7 @@ abstract class RequireImdsv2Aspect implements cdk.IAspect {
    */
   protected warn(node: IConstruct, message: string) {
     if (this.suppressWarnings !== true) {
-      cdk.Annotations.of(node).addWarning(`${RequireImdsv2Aspect.name} failed on node ${node.node.id}: ${message}`);
+      cdk.Annotations.of(node).addWarningV2(`@aws-cdk/aws-ec2:imdsv2${RequireImdsv2Aspect.name}`, `${RequireImdsv2Aspect.name} failed on node ${node.node.id}: ${message}`);
     }
   }
 }

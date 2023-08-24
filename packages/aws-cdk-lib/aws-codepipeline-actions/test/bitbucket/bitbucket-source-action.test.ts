@@ -1,7 +1,7 @@
+import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template, Match } from '../../../assertions';
 import * as codebuild from '../../../aws-codebuild';
 import * as codepipeline from '../../../aws-codepipeline';
-import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Stack } from '../../../core';
 import * as cpactions from '../../lib';
 
@@ -46,7 +46,6 @@ describeDeprecated('BitBucket source Action', () => {
         ],
       });
 
-
     });
   });
 
@@ -79,7 +78,6 @@ describeDeprecated('BitBucket source Action', () => {
         ],
       },
     });
-
 
   });
   test('grant s3 putObjectACL to the following CodeBuild Project', () => {
@@ -153,7 +151,6 @@ describeDeprecated('BitBucket source Action', () => {
         },
       ],
     });
-
 
   });
 });

@@ -1,10 +1,10 @@
-import * as cdk from '../../core';
 import { Construct } from 'constructs';
 import { CfnMesh } from './appmesh.generated';
 import { MeshServiceDiscovery } from './service-discovery';
 import { VirtualGateway, VirtualGatewayBaseProps } from './virtual-gateway';
 import { VirtualNode, VirtualNodeBaseProps } from './virtual-node';
 import { VirtualRouter, VirtualRouterBaseProps } from './virtual-router';
+import * as cdk from '../../core';
 
 /**
  * A utility enum defined for the egressFilter type property, the default of DROP_ALL,

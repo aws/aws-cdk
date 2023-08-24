@@ -1,8 +1,8 @@
-import { IKey } from '../../aws-kms';
-import { ArnFormat, Names, Stack } from '../../core';
 import { Construct } from 'constructs';
 import { CfnTopic } from './sns.generated';
 import { ITopic, TopicBase } from './topic-base';
+import { IKey } from '../../aws-kms';
+import { ArnFormat, Names, Stack } from '../../core';
 
 /**
  * Properties for a new SNS topic

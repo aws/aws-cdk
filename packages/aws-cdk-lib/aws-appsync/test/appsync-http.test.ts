@@ -101,7 +101,6 @@ describe('Http Data Source configuration', () => {
     });
     machine.grantRead(ds);
 
-
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {

@@ -1,6 +1,6 @@
-import { IResource, Resource } from '../../core';
 import { Construct } from 'constructs';
 import { CfnDBClusterParameterGroup } from './docdb.generated';
+import { IResource, Resource } from '../../core';
 
 /**
  * A parameter group

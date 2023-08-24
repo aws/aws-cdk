@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallCloudFormationdeleteStack": {
+  "AwsApiCallCloudFormationdeleteStacke9f2151ae7c85063016d04dca4a05a09": {
    "Type": "Custom::DeployAssert@SdkCallCloudFormationdeleteStack",
    "Properties": {
     "ServiceToken": {
@@ -12,10 +12,10 @@
     "service": "CloudFormation",
     "api": "deleteStack",
     "parameters": {
-     "StackName": "cross-region-producer"
+     "StackName": "\"cross-region-producer\""
     },
     "flattenResponse": "false",
-    "salt": "1682942114901"
+    "salt": "1689763071718"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -82,12 +82,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs18.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "ae370e1010629b78f494346f49ceef3ab2875718f20e6c808114e6aa770c7bf3.zip"
+     "S3Key": "31dc77c600dd475c9b26f5702fabd7508d84bec599ba5b973691d69745c7b775.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -99,7 +99,7 @@
     }
    }
   },
-  "AwsApiCallCloudFormationdescribeStacks": {
+  "AwsApiCallCloudFormationdescribeStackse9f2151ae7c85063016d04dca4a05a09": {
    "Type": "Custom::DeployAssert@SdkCallCloudFormationdescribeStacks",
    "Properties": {
     "ServiceToken": {
@@ -112,21 +112,21 @@
     "api": "describeStacks",
     "expected": "{\"$ObjectLike\":{\"Stacks\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"StackName\":\"cross-region-producer\",\"StackStatus\":\"DELETE_FAILED\"}}]}}}",
     "stateMachineArn": {
-     "Ref": "AwsApiCallCloudFormationdescribeStacksWaitFor1D722558"
+     "Ref": "AwsApiCallCloudFormationdescribeStackse9f2151ae7c85063016d04dca4a05a09WaitForFE8EC68F"
     },
     "parameters": {
-     "StackName": "cross-region-producer"
+     "StackName": "\"cross-region-producer\""
     },
     "flattenResponse": "false",
-    "salt": "1682942114901"
+    "salt": "1689763071718"
    },
    "DependsOn": [
-    "AwsApiCallCloudFormationdeleteStack"
+    "AwsApiCallCloudFormationdeleteStacke9f2151ae7c85063016d04dca4a05a09"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AwsApiCallCloudFormationdescribeStacksWaitForIsCompleteProviderInvokeD8EB59C7": {
+  "AwsApiCallCloudFormationdescribeStackse9f2151ae7c85063016d04dca4a05a09WaitForIsCompleteProviderInvoke65C209A2": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -138,16 +138,16 @@
     },
     "Principal": {
      "Fn::GetAtt": [
-      "AwsApiCallCloudFormationdescribeStacksWaitForRoleEC9EDBA0",
+      "AwsApiCallCloudFormationdescribeStackse9f2151ae7c85063016d04dca4a05a09WaitForRole0FD90858",
       "Arn"
      ]
     }
    },
    "DependsOn": [
-    "AwsApiCallCloudFormationdeleteStack"
+    "AwsApiCallCloudFormationdeleteStacke9f2151ae7c85063016d04dca4a05a09"
    ]
   },
-  "AwsApiCallCloudFormationdescribeStacksWaitForTimeoutProviderInvokeA2598EF3": {
+  "AwsApiCallCloudFormationdescribeStackse9f2151ae7c85063016d04dca4a05a09WaitForTimeoutProviderInvoke2965DD2A": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -159,16 +159,16 @@
     },
     "Principal": {
      "Fn::GetAtt": [
-      "AwsApiCallCloudFormationdescribeStacksWaitForRoleEC9EDBA0",
+      "AwsApiCallCloudFormationdescribeStackse9f2151ae7c85063016d04dca4a05a09WaitForRole0FD90858",
       "Arn"
      ]
     }
    },
    "DependsOn": [
-    "AwsApiCallCloudFormationdeleteStack"
+    "AwsApiCallCloudFormationdeleteStacke9f2151ae7c85063016d04dca4a05a09"
    ]
   },
-  "AwsApiCallCloudFormationdescribeStacksWaitForRoleEC9EDBA0": {
+  "AwsApiCallCloudFormationdescribeStackse9f2151ae7c85063016d04dca4a05a09WaitForRole0FD90858": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -213,10 +213,10 @@
     ]
    },
    "DependsOn": [
-    "AwsApiCallCloudFormationdeleteStack"
+    "AwsApiCallCloudFormationdeleteStacke9f2151ae7c85063016d04dca4a05a09"
    ]
   },
-  "AwsApiCallCloudFormationdescribeStacksWaitFor1D722558": {
+  "AwsApiCallCloudFormationdescribeStackse9f2151ae7c85063016d04dca4a05a09WaitForFE8EC68F": {
    "Type": "AWS::StepFunctions::StateMachine",
    "Properties": {
     "DefinitionString": {
@@ -243,14 +243,14 @@
     },
     "RoleArn": {
      "Fn::GetAtt": [
-      "AwsApiCallCloudFormationdescribeStacksWaitForRoleEC9EDBA0",
+      "AwsApiCallCloudFormationdescribeStackse9f2151ae7c85063016d04dca4a05a09WaitForRole0FD90858",
       "Arn"
      ]
     }
    },
    "DependsOn": [
-    "AwsApiCallCloudFormationdeleteStack",
-    "AwsApiCallCloudFormationdescribeStacksWaitForRoleEC9EDBA0"
+    "AwsApiCallCloudFormationdeleteStacke9f2151ae7c85063016d04dca4a05a09",
+    "AwsApiCallCloudFormationdescribeStackse9f2151ae7c85063016d04dca4a05a09WaitForRole0FD90858"
    ]
   },
   "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB": {
@@ -297,12 +297,12 @@
   "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs18.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "ae370e1010629b78f494346f49ceef3ab2875718f20e6c808114e6aa770c7bf3.zip"
+     "S3Key": "31dc77c600dd475c9b26f5702fabd7508d84bec599ba5b973691d69745c7b775.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -339,12 +339,12 @@
   "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs18.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "ae370e1010629b78f494346f49ceef3ab2875718f20e6c808114e6aa770c7bf3.zip"
+     "S3Key": "31dc77c600dd475c9b26f5702fabd7508d84bec599ba5b973691d69745c7b775.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",
@@ -358,10 +358,10 @@
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallCloudFormationdescribeStacks": {
+  "AssertionResultsAwsApiCallCloudFormationdescribeStackse9f2151ae7c85063016d04dca4a05a09": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallCloudFormationdescribeStacks",
+     "AwsApiCallCloudFormationdescribeStackse9f2151ae7c85063016d04dca4a05a09",
      "assertion"
     ]
    }

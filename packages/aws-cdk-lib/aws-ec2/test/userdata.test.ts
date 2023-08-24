@@ -443,7 +443,6 @@ describe('user data', () => {
       { 'Fn::Base64': '#!/bin/bash\necho \"Hello world\"' },
     ]);
 
-
   });
 
   test('Default parts separator used, if not specified', () => {
@@ -468,7 +467,6 @@ describe('user data', () => {
       '--+AWS+CDK+User+Data+Separator==--',
       '',
     ].join('\n'));
-
 
   });
 
@@ -497,7 +495,6 @@ describe('user data', () => {
       '',
     ].join('\n'));
 
-
   });
 
   test('Multipart separator validation', () => {
@@ -512,7 +509,6 @@ describe('user data', () => {
         partsSeparator: s,
       });
     }).toThrow(/Invalid characters in separator/));
-
 
   });
 

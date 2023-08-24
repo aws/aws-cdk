@@ -1,11 +1,11 @@
-import * as ecr from '../../aws-ecr';
-import { Platform } from '../../aws-ecr-assets';
 import { Construct } from 'constructs';
 import { Architecture } from './architecture';
 import { AssetImageCode, AssetImageCodeProps, EcrImageCode, EcrImageCodeProps, Code } from './code';
 import { Function, FunctionOptions } from './function';
 import { Handler } from './handler';
 import { Runtime } from './runtime';
+import * as ecr from '../../aws-ecr';
+import { Platform } from '../../aws-ecr-assets';
 
 /**
  * Properties to configure a new DockerImageFunction construct.

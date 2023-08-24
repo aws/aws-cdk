@@ -1,15 +1,5 @@
-import * as cloudwatch from '../../aws-cloudwatch';
-import { IProfilingGroup, ProfilingGroup, ComputePlatform } from '../../aws-codeguruprofiler';
-import * as ec2 from '../../aws-ec2';
-import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import * as logs from '../../aws-logs';
-import * as sns from '../../aws-sns';
-import * as sqs from '../../aws-sqs';
-import { Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, IAspect, Lazy, Names, Size, Stack, Token } from '../../core';
-import { LAMBDA_RECOGNIZE_LAYER_VERSION } from '../../cx-api';
 import { Construct, IConstruct } from 'constructs';
-import { AdotInstrumentationConfig } from './adot-layers';
+import { AdotInstrumentationConfig, AdotLambdaExecWrapper } from './adot-layers';
 import { AliasOptions, Alias } from './alias';
 import { Architecture } from './architecture';
 import { Code, CodeConfig } from './code';
@@ -25,9 +15,21 @@ import { Version, VersionOptions } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
 import { LayerVersion, ILayerVersion } from './layers';
 import { LogRetentionRetryOptions } from './log-retention';
-import { Runtime } from './runtime';
+import { ParamsAndSecretsLayerVersion } from './params-and-secrets-layers';
+import { Runtime, RuntimeFamily } from './runtime';
 import { RuntimeManagementMode } from './runtime-management';
+import { SnapStartConf } from './snapstart-config';
 import { addAlias } from './util';
+import * as cloudwatch from '../../aws-cloudwatch';
+import { IProfilingGroup, ProfilingGroup, ComputePlatform } from '../../aws-codeguruprofiler';
+import * as ec2 from '../../aws-ec2';
+import * as iam from '../../aws-iam';
+import * as kms from '../../aws-kms';
+import * as logs from '../../aws-logs';
+import * as sns from '../../aws-sns';
+import * as sqs from '../../aws-sqs';
+import { Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, IAspect, Lazy, Names, Size, Stack, Token } from '../../core';
+import { LAMBDA_RECOGNIZE_LAYER_VERSION } from '../../cx-api';
 
 /**
  * X-Ray Tracing Modes (https://docs.aws.amazon.com/lambda/latest/dg/API_TracingConfig.html)
@@ -225,6 +227,14 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   readonly tracing?: Tracing;
 
   /**
+  * Enable SnapStart for Lambda Function.
+  * SnapStart is currently supported only for Java 11, 17 runtime
+  *
+  * @default - No snapstart
+  */
+  readonly snapStart?: SnapStartConf;
+
+  /**
    * Enable profiling.
    * @see https://docs.aws.amazon.com/codeguru/latest/profiler-ug/setting-up-lambda.html
    *
@@ -259,6 +269,15 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default - No ADOT instrumentation
    */
   readonly adotInstrumentation?: AdotInstrumentationConfig;
+
+  /**
+   * Specify the configuration of Parameters and Secrets Extension
+   * @see https://docs.aws.amazon.com/secretsmanager/latest/userguide/retrieving-secrets_lambda.html
+   * @see https://docs.aws.amazon.com/systems-manager/latest/userguide/ps-integration-lambda-extensions.html
+   *
+   * @default - No Parameters and Secrets Extension
+   */
+  readonly paramsAndSecrets?: ParamsAndSecretsLayerVersion;
 
   /**
    * A list of layers to add to the function's execution environment. You can configure your Lambda function to pull in
@@ -822,6 +841,7 @@ export class Function extends FunctionBase {
       codeSigningConfigArn: props.codeSigningConfig?.codeSigningConfigArn,
       architectures: this._architecture ? [this._architecture.name] : undefined,
       runtimeManagementConfig: props.runtimeManagementMode?.runtimeManagementConfig,
+      snapStart: this.configureSnapStart(props),
     });
 
     if ((props.tracing !== undefined) || (props.adotInstrumentation !== undefined)) {
@@ -911,6 +931,8 @@ export class Function extends FunctionBase {
     this.configureLambdaInsights(props);
 
     this.configureAdotInstrumentation(props);
+
+    this.configureParamsAndSecretsExtension(props);
   }
 
   /**
@@ -1145,8 +1167,27 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       throw new Error('Runtime go1.x is not supported by the ADOT Lambda Go SDK');
     }
 
+    // The Runtime is Python and Adot is set it requires a different EXEC_WRAPPER than the other code bases.
+    if (this.runtime.family === RuntimeFamily.PYTHON &&
+      props.adotInstrumentation.execWrapper.valueOf() !== AdotLambdaExecWrapper.INSTRUMENT_HANDLER) {
+      throw new Error('Python Adot Lambda layer requires AdotLambdaExecWrapper.INSTRUMENT_HANDLER');
+    }
+
     this.addLayers(LayerVersion.fromLayerVersionArn(this, 'AdotLayer', props.adotInstrumentation.layerVersion._bind(this).arn));
     this.addEnvironment('AWS_LAMBDA_EXEC_WRAPPER', props.adotInstrumentation.execWrapper);
+  }
+
+  /**
+   * Add a Parameters and Secrets Extension Lambda layer.
+   */
+  private configureParamsAndSecretsExtension(props: FunctionProps): void {
+    if (props.paramsAndSecrets === undefined) {
+      return;
+    }
+
+    const layerVersion = props.paramsAndSecrets._bind(this, this);
+    this.addLayers(LayerVersion.fromLayerVersionArn(this, 'ParamsAndSecretsLayer', layerVersion.arn));
+    Object.entries(layerVersion.environmentVars).forEach(([key, value]) => this.addEnvironment(key, value.toString()));
   }
 
   private renderLayers() {
@@ -1191,27 +1232,35 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
    * Lambda creation properties.
    */
   private configureVpc(props: FunctionProps): CfnFunction.VpcConfigProperty | undefined {
-    if ((props.securityGroup || props.allowAllOutbound !== undefined) && !props.vpc) {
-      throw new Error('Cannot configure \'securityGroup\' or \'allowAllOutbound\' without configuring a VPC');
+    if (props.securityGroup && props.securityGroups) {
+      throw new Error('Only one of the function props, securityGroup or securityGroups, is allowed');
     }
 
     if (!props.vpc) {
+      if (props.allowAllOutbound !== undefined) {
+        throw new Error('Cannot configure \'allowAllOutbound\' without configuring a VPC');
+      }
+      if (props.securityGroup) {
+        throw new Error('Cannot configure \'securityGroup\' without configuring a VPC');
+      }
+      if (props.securityGroups) {
+        throw new Error('Cannot configure \'securityGroups\' without configuring a VPC');
+      }
       if (props.vpcSubnets) {
         throw new Error('Cannot configure \'vpcSubnets\' without configuring a VPC');
       }
       return undefined;
     }
 
-
     if (props.securityGroup && props.allowAllOutbound !== undefined) {
       throw new Error('Configure \'allowAllOutbound\' directly on the supplied SecurityGroup.');
     }
 
-    let securityGroups: ec2.ISecurityGroup[];
-
-    if (props.securityGroup && props.securityGroups) {
-      throw new Error('Only one of the function props, securityGroup or securityGroups, is allowed');
+    if (props.securityGroups && props.allowAllOutbound !== undefined) {
+      throw new Error('Configure \'allowAllOutbound\' directly on the supplied SecurityGroups.');
     }
+
+    let securityGroups: ec2.ISecurityGroup[];
 
     if (props.securityGroups) {
       securityGroups = props.securityGroups;
@@ -1251,6 +1300,38 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       subnetIds: selectedSubnets.subnetIds,
       securityGroupIds: securityGroups.map(sg => sg.securityGroupId),
     };
+  }
+
+  private configureSnapStart(props: FunctionProps): CfnFunction.SnapStartProperty | undefined {
+    // return/exit if no snapStart included
+    if (!props.snapStart) {
+      return undefined;
+    }
+
+    // SnapStart does not support arm64 architecture, Amazon Elastic File System (Amazon EFS), or ephemeral storage greater than 512 MB.
+    // SnapStart doesn't support provisioned concurrency either, but that's configured at the version level,
+    // so it can't be checked at function set up time
+    // SnapStart supports the Java 11 and Java 17 (java11 and java17) managed runtimes.
+    // See https://docs.aws.amazon.com/lambda/latest/dg/snapstart.html
+    Annotations.of(this).addWarningV2('@aws-cdk/aws-lambda:snapStartRequirePublish', 'SnapStart only support published Lambda versions. Ignore if function already have published versions');
+
+    if (!props.runtime.supportsSnapStart ) {
+      throw new Error(`SnapStart currently not supported by runtime ${props.runtime.name}`);
+    }
+
+    if (props.architecture == Architecture.ARM_64) {
+      throw new Error('SnapStart is currently not supported on Arm_64');
+    }
+
+    if (props.filesystem) {
+      throw new Error('SnapStart is currently not supported using EFS');
+    }
+
+    if (props.ephemeralStorageSize && props.ephemeralStorageSize?.toMebibytes() > 512) {
+      throw new Error('SnapStart is currently not supported using more than 512 MiB Ephemeral Storage');
+    }
+
+    return props.snapStart._render();
   }
 
   private isQueue(deadLetterQueue: sqs.IQueue | sns.ITopic): deadLetterQueue is sqs.IQueue {

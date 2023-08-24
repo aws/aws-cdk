@@ -1,9 +1,9 @@
-import * as iam from '../../aws-iam';
-import * as sfn from '../../aws-stepfunctions';
 import { Construct } from 'constructs';
 import { RestApi, RestApiProps } from '.';
 import { RequestContext } from './integrations';
 import { StepFunctionsIntegration } from './integrations/stepfunctions';
+import * as iam from '../../aws-iam';
+import * as sfn from '../../aws-stepfunctions';
 
 /**
  * Properties for StepFunctionsRestApi

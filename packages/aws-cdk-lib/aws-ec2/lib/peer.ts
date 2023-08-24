@@ -1,5 +1,5 @@
-import { Token } from '../../core';
 import { Connections, IConnectable } from './connections';
+import { Token } from '../../core';
 
 /**
  * Interface for classes that provide the peer-specification parts of a security group rule

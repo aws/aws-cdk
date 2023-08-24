@@ -108,6 +108,7 @@ below) and supply the intended destination:
 
 ```ts
 import * as destinations from 'aws-cdk-lib/aws-logs-destinations';
+
 declare const fn: lambda.Function;
 declare const logGroup: logs.LogGroup;
 
@@ -115,6 +116,7 @@ new logs.SubscriptionFilter(this, 'Subscription', {
   logGroup,
   destination: new destinations.LambdaDestination(fn),
   filterPattern: logs.FilterPattern.allTerms("ERROR", "MainThread"),
+  filterName: 'ErrorInMainThread',
 });
 ```
 
@@ -331,6 +333,50 @@ new logs.QueryDefinition(this, 'QueryDefinition', {
     sort: '@timestamp desc',
     limit: 20,
   }),
+});
+```
+
+## Data Protection Policy
+
+Creates a data protection policy and assigns it to the log group. A data protection policy can help safeguard sensitive data that's ingested by the log group by auditing and masking the sensitive log data. When a user who does not have permission to view masked data views a log event that includes masked data, the sensitive data is replaced by asterisks.
+
+For more information, see [Protect sensitive log data with masking](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/mask-sensitive-log-data.html).
+
+For a list of types of identifiers that can be audited and masked, see [Types of data that you can protect](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/protect-sensitive-log-data-types.html)
+
+If a new identifier is supported but not yet in the `DataIdentifiers` enum, the full ARN of the identifier can be supplied in `identifierArnStrings` instead. 
+
+Each policy may consist of a log group, S3 bucket, and/or Firehose delivery stream audit destination.  
+
+Example:
+
+```ts
+import * as kinesisfirehose from '@aws-cdk/aws-kinesisfirehose-alpha';
+import * as destinations from '@aws-cdk/aws-kinesisfirehose-destinations-alpha';
+
+const logGroupDestination = new logs.LogGroup(this, 'LogGroupLambdaAudit', {
+  logGroupName: 'auditDestinationForCDK',
+});
+
+const bucket = new s3.Bucket(this, 'audit-bucket');
+const s3Destination = new destinations.S3Bucket(bucket);
+
+const deliveryStream = new kinesisfirehose.DeliveryStream(this, 'Delivery Stream', {
+  destinations: [s3Destination],
+});
+
+const dataProtectionPolicy = new logs.DataProtectionPolicy({
+  name: 'data protection policy',
+  description: 'policy description',
+  identifiers: [logs.DataIdentifier.DRIVERSLICENSE_US, new logs.DataIdentifier('EmailAddress')],
+  logGroupAuditDestination: logGroupDestination,
+  s3BucketAuditDestination: bucket,
+  deliveryStreamNameAuditDestination: deliveryStream.deliveryStreamName,
+});
+
+new logs.LogGroup(this, 'LogGroupLambda', {
+  logGroupName: 'cdkIntegLogGroup',
+  dataProtectionPolicy: dataProtectionPolicy,
 });
 ```
 

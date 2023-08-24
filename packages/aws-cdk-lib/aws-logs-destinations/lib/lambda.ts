@@ -1,7 +1,7 @@
+import { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as logs from '../../aws-logs';
-import { Construct } from 'constructs';
 
 /**
  * Options that may be provided to LambdaDestination

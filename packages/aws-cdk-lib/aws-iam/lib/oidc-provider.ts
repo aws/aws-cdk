@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { Construct } from 'constructs';
 import {
   Arn,
   CustomResource,
@@ -8,7 +9,6 @@ import {
   Resource,
   Token,
 } from '../../core';
-import { Construct } from 'constructs';
 
 const RESOURCE_TYPE = 'Custom::AWSCDKOpenIdConnectProvider';
 
@@ -164,7 +164,7 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
   private getOrCreateProvider() {
     return CustomResourceProvider.getOrCreateProvider(this, RESOURCE_TYPE, {
       codeDirectory: path.join(__dirname, 'oidc-provider'),
-      runtime: CustomResourceProviderRuntime.NODEJS_16_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_18_X,
       policyStatements: [
         {
           Effect: 'Allow',

@@ -435,7 +435,6 @@ describe('Scope based Associations with Application within Same Account', () => 
     });
   });
 
-
   test('Associate Stack in same account will associate allStacks Inside it', () => {
     const application = new appreg.Application(stack, 'MyApplication', {
       applicationName: 'MyApplication',
@@ -513,7 +512,7 @@ describe('Scope based Associations with Application with Cross Region/Account', 
     application.associateAllStacksInScope(stage);
     Annotations.fromStack(stageStack).hasWarning('*',
       'AppRegistry does not support cross region associations, deployment might fail if there is cross region stacks in the app.'
-          + ' Application region region, stack region region1');
+          + ' Application region region, stack region region1 [ack: @aws-cdk/servicecatalogappregistry:CrossRegionAssociation]');
   });
 });
 
@@ -547,7 +546,6 @@ describe('Conditional nested stack Associations with Application within Same Acc
   });
 
 });
-
 
 class AppRegistrySampleStack extends cdk.Stack {
   public constructor(scope: Construct, id: string, props?: cdk.StackProps) {

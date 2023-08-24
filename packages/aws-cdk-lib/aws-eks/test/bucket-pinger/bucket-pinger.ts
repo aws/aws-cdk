@@ -1,8 +1,8 @@
+import { Construct } from 'constructs';
 import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
 import { CustomResource, Token, Duration } from '../../../core';
 import * as cr from '../../../custom-resources';
-import { Construct } from 'constructs';
 
 export interface BucketPingerProps {
   readonly bucketName: string;

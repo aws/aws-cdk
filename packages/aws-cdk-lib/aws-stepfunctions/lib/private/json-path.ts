@@ -1,5 +1,5 @@
-import { captureStackTrace, IResolvable, IResolveContext, Token, Tokenization } from '../../../core';
 import { IntrinsicParser, IntrinsicExpression } from './intrinstics';
+import { captureStackTrace, IResolvable, IResolveContext, Token, Tokenization } from '../../../core';
 
 const JSON_PATH_TOKEN_SYMBOL = Symbol.for('@aws-cdk/aws-stepfunctions.JsonPathToken');
 
@@ -183,18 +183,25 @@ function recurseArray(key: string, arr: any[], handlers: FieldHandlers, visited:
   }
 
   return {
-    [key]: arr.map(value => {
-      if ((typeof value === 'string' && jsonPathString(value) !== undefined)
+    [key]: resolveArray(arr, handlers, visited),
+  };
+}
+
+function resolveArray(arr: any[], handlers: FieldHandlers, visited: object[] = []): any[] {
+  return arr.map(value => {
+    if ((typeof value === 'string' && jsonPathString(value) !== undefined)
         || (typeof value === 'number' && jsonPathNumber(value) !== undefined)
         || (isStringArray(value) && jsonPathStringList(value) !== undefined)) {
-        throw new Error('Cannot use JsonPath fields in an array, they must be used in objects');
-      }
-      if (typeof value === 'object' && value !== null) {
-        return recurseObject(value, handlers, visited);
-      }
-      return value;
-    }),
-  };
+      throw new Error('Cannot use JsonPath fields in an array, they must be used in objects');
+    }
+    if (Array.isArray(value)) {
+      return resolveArray(value, handlers, visited);
+    }
+    if (typeof value === 'object' && value !== null) {
+      return recurseObject(value, handlers, visited);
+    }
+    return value;
+  });
 }
 
 function isStringArray(x: any): x is string[] {

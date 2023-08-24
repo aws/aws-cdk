@@ -1,9 +1,9 @@
+import { Construct } from 'constructs';
 import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
 import * as s3 from '../../../aws-s3';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
-import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
@@ -115,7 +115,7 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
               account: '',
               service: 's3',
               resource: this.props.resultConfiguration?.outputLocation?.bucketName,
-              resourceName: this.props.resultConfiguration?.outputLocation?.objectKey,
+              resourceName: `${this.props.resultConfiguration?.outputLocation?.objectKey}/*`,
             })
             : '*',
         ],

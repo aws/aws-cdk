@@ -1,8 +1,8 @@
 /* eslint-disable object-curly-newline */
+import { Construct, IConstruct } from 'constructs';
 import { Annotations, Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
-import { Construct, IConstruct } from 'constructs';
 import { EventBus, EventField, IRule, IRuleTarget, RuleTargetConfig, RuleTargetInput, Schedule, Match as m } from '../lib';
 import { Rule } from '../lib/rule';
 
@@ -38,7 +38,7 @@ describe('rule', () => {
       }),
     });
 
-    Annotations.fromStack(stack).hasWarning('/Default/MyRule', "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead.");
+    Annotations.fromStack(stack).hasWarning('/Default/MyRule', "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead. [ack: @aws-cdk/aws-events:scheduleWillRunEveryMinute]");
   });
 
   test('rule does not display warning when minute is set to * in cron', () => {

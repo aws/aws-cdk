@@ -1,6 +1,3 @@
-import { ISamlProvider } from '../../aws-iam';
-import * as logs from '../../aws-logs';
-import { CfnOutput, Resource, Token } from '../../core';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { ClientVpnAuthorizationRule, ClientVpnAuthorizationRuleOptions } from './client-vpn-authorization-rule';
 import { IClientVpnConnectionHandler, IClientVpnEndpoint, TransportProtocol, VpnPort } from './client-vpn-endpoint-types';
@@ -10,6 +7,9 @@ import { CfnClientVpnEndpoint, CfnClientVpnTargetNetworkAssociation } from './ec
 import { CidrBlock } from './network-util';
 import { ISecurityGroup, SecurityGroup } from './security-group';
 import { IVpc, SubnetSelection } from './vpc';
+import { ISamlProvider } from '../../aws-iam';
+import * as logs from '../../aws-logs';
+import { CfnOutput, Resource, Token } from '../../core';
 
 /**
  * Options for a client VPN endpoint

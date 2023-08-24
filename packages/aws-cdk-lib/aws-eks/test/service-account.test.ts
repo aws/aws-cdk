@@ -1,6 +1,6 @@
+import { testFixture, testFixtureCluster } from './util';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
-import { testFixture, testFixtureCluster } from './util';
 import * as eks from '../lib';
 
 /* eslint-disable max-len */

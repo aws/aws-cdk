@@ -1,5 +1,5 @@
-import { ArnFormat, Stack, Token } from '../../core';
 import { IConstruct } from 'constructs';
+import { ArnFormat, Stack, Token } from '../../core';
 
 export const AUTOGEN_MARKER = '$$autogen$$';
 

@@ -1,5 +1,7 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Annotations, Match, Template } from '../../../assertions';
 import * as autoscaling from '../../../aws-autoscaling';
+import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
 import * as elb from '../../../aws-elasticloadbalancing';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
@@ -7,12 +9,16 @@ import * as kms from '../../../aws-kms';
 import * as logs from '../../../aws-logs';
 import * as s3 from '../../../aws-s3';
 import * as cloudmap from '../../../aws-servicediscovery';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '../../../core';
 import { App } from '../../../core';
 import { ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME } from '../../../cx-api';
 import * as ecs from '../../lib';
-import { DeploymentControllerType, LaunchType, PropagatedTagSource } from '../../lib/base/base-service';
+import {
+  AlarmBehavior,
+  DeploymentControllerType,
+  LaunchType,
+  PropagatedTagSource,
+} from '../../lib/base/base-service';
 import { PlacementConstraint, PlacementStrategy } from '../../lib/placement';
 import { addDefaultCapacityProvider } from '../util';
 
@@ -54,7 +60,6 @@ describe('ec2 service', () => {
       });
 
       expect(service.node.defaultChild).toBeDefined();
-
 
     });
 
@@ -133,7 +138,6 @@ describe('ec2 service', () => {
         ],
       });
 
-
     });
 
     test('no logging enabled when logging field is set to NONE', () => {
@@ -192,7 +196,6 @@ describe('ec2 service', () => {
           },
         ],
       });
-
 
     });
 
@@ -317,7 +320,6 @@ describe('ec2 service', () => {
           },
         ],
       });
-
 
     });
 
@@ -489,7 +491,6 @@ describe('ec2 service', () => {
           Version: '2012-10-17',
         },
       });
-
 
     });
 
@@ -737,7 +738,6 @@ describe('ec2 service', () => {
         },
       });
 
-
     });
 
     test('with custom cloudmap namespace', () => {
@@ -804,7 +804,6 @@ describe('ec2 service', () => {
           Ref: 'MyVpcF9F0CA6F',
         },
       });
-
 
     });
 
@@ -923,7 +922,6 @@ describe('ec2 service', () => {
           },
         ],
       });
-
 
     });
 
@@ -1090,7 +1088,6 @@ describe('ec2 service', () => {
         },
       });
 
-
     });
 
     test('sets task definition to family when CODE_DEPLOY deployment controller is specified', () => {
@@ -1171,7 +1168,6 @@ describe('ec2 service', () => {
         });
       }).toThrow(/Only one of SecurityGroup or SecurityGroups can be populated./);
 
-
     });
 
     test('throws when task definition is not EC2 compatible', () => {
@@ -1195,7 +1191,6 @@ describe('ec2 service', () => {
           taskDefinition,
         });
       }).toThrow(/Supplied TaskDefinition is not configured for compatibility with EC2/);
-
 
     });
 
@@ -1221,7 +1216,7 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      Annotations.fromStack(stack).hasWarning('/Default/Ec2Service', 'taskDefinition and launchType are blanked out when using external deployment controller.');
+      Annotations.fromStack(stack).hasWarning('/Default/Ec2Service', 'taskDefinition and launchType are blanked out when using external deployment controller. [ack: @aws-cdk/aws-ecs:externalDeploymentController]');
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         Cluster: {
           Ref: 'EcsCluster97242B84',
@@ -1234,12 +1229,12 @@ describe('ec2 service', () => {
         EnableECSManagedTags: false,
       });
 
-
     });
 
     test('add warning to annotations if circuitBreaker is specified with a non-ECS DeploymentControllerType', () => {
       // GIVEN
-      const stack = new cdk.Stack();
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app);
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       addDefaultCapacityProvider(cluster, stack, vpc);
@@ -1258,9 +1253,10 @@ describe('ec2 service', () => {
         },
         circuitBreaker: { rollback: true },
       });
+      app.synth();
 
       // THEN
-      expect(service.node.metadata[0].data).toEqual('taskDefinition and launchType are blanked out when using external deployment controller.');
+      expect(service.node.metadata[0].data).toEqual('taskDefinition and launchType are blanked out when using external deployment controller. [ack: @aws-cdk/aws-ecs:externalDeploymentController]');
       expect(service.node.metadata[1].data).toEqual('Deployment circuit breaker requires the ECS deployment controller.');
 
     });
@@ -1287,7 +1283,6 @@ describe('ec2 service', () => {
         });
       }).toThrow(/Don't supply desiredCount/);
 
-
     });
 
     test('errors if daemon and maximumPercent not 100', () => {
@@ -1311,7 +1306,6 @@ describe('ec2 service', () => {
           maxHealthyPercent: 300,
         });
       }).toThrow(/Maximum percent must be 100 for daemon mode./);
-
 
     });
 
@@ -1338,7 +1332,6 @@ describe('ec2 service', () => {
         });
       }).toThrow(/Minimum healthy percent must be less than maximum healthy percent./);
 
-
     });
 
     test('errors if no container definitions', () => {
@@ -1358,7 +1351,6 @@ describe('ec2 service', () => {
       expect(() => {
         Template.fromStack(stack);
       }).toThrow(/one essential container/);
-
 
     });
 
@@ -1418,7 +1410,6 @@ describe('ec2 service', () => {
           MinimumHealthyPercent: 0,
         },
       });
-
 
     });
 
@@ -1621,7 +1612,6 @@ describe('ec2 service', () => {
           },
         });
 
-
       });
 
       test('it allows vpcSubnets', () => {
@@ -1678,7 +1668,6 @@ describe('ec2 service', () => {
         }],
       });
 
-
     });
 
     test('with memberOf placement constraints', () => {
@@ -1708,7 +1697,6 @@ describe('ec2 service', () => {
           Type: 'memberOf',
         }],
       });
-
 
     });
 
@@ -1741,7 +1729,6 @@ describe('ec2 service', () => {
         }],
       });
 
-
     });
 
     test('with spreadAcross placement strategy', () => {
@@ -1772,7 +1759,6 @@ describe('ec2 service', () => {
         }],
       });
 
-
     });
 
     test('can turn PlacementStrategy into json format', () => {
@@ -1782,7 +1768,6 @@ describe('ec2 service', () => {
         field: 'attribute:ecs.availability-zone',
       }]);
 
-
     });
 
     test('can turn PlacementConstraints into json format', () => {
@@ -1790,7 +1775,6 @@ describe('ec2 service', () => {
       expect(PlacementConstraint.distinctInstances().toJson()).toEqual([{
         type: 'distinctInstance',
       }]);
-
 
     });
 
@@ -1817,7 +1801,6 @@ describe('ec2 service', () => {
         service.addPlacementStrategies(PlacementStrategy.spreadAcross());
       }).toThrow('spreadAcross: give at least one field to spread by');
 
-
     });
 
     test('errors with spreadAcross placement strategy if daemon specified', () => {
@@ -1843,7 +1826,6 @@ describe('ec2 service', () => {
       expect(() => {
         service.addPlacementStrategies(PlacementStrategy.spreadAcross(ecs.BuiltInAttributes.AVAILABILITY_ZONE));
       });
-
 
     });
 
@@ -1947,7 +1929,6 @@ describe('ec2 service', () => {
         }],
       });
 
-
     });
 
     test('errors with random placement strategy if daemon specified', () => {
@@ -1973,7 +1954,6 @@ describe('ec2 service', () => {
       expect(() => {
         service.addPlacementStrategies(PlacementStrategy.randomly());
       }).toThrow();
-
 
     });
 
@@ -2005,7 +1985,6 @@ describe('ec2 service', () => {
         }],
       });
 
-
     });
 
     test('with packedbyMemory placement strategy', () => {
@@ -2036,7 +2015,6 @@ describe('ec2 service', () => {
         }],
       });
 
-
     });
 
     test('with packedBy placement strategy', () => {
@@ -2066,7 +2044,6 @@ describe('ec2 service', () => {
           Type: 'binpack',
         }],
       });
-
 
     });
 
@@ -2139,6 +2116,441 @@ describe('ec2 service', () => {
         Template.fromStack(stack);
       }).not.toThrow();
     });
+
+    describe('with deployment alarms', () => {
+      let stack: cdk.Stack;
+      let cluster: ecs.Cluster;
+      let taskDefinition: ecs.TaskDefinition;
+
+      beforeEach(() => {
+        stack = new cdk.Stack();
+        const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+        cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+        addDefaultCapacityProvider(cluster, stack, vpc);
+        taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+        taskDefinition.addContainer('web', {
+          image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+          memoryLimitMiB: 512,
+        });
+      });
+
+      test('minimum configuration', () => {
+        const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
+
+        new ecs.Ec2Service(stack, 'Ec2Service', {
+          cluster,
+          taskDefinition,
+          deploymentAlarms: {
+            alarmNames: [myAlarm.alarmName],
+          },
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+          DeploymentConfiguration: {
+            Alarms: {
+              Enable: true,
+              Rollback: true,
+              AlarmNames: [myAlarm.alarmName],
+            },
+          },
+        });
+      });
+
+      test('and explicitly set behavior to ROLLBACK_ON_ALARM', () => {
+        const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
+
+        new ecs.Ec2Service(stack, 'Ec2Service', {
+          cluster,
+          taskDefinition,
+          deploymentAlarms: {
+            alarmNames: [myAlarm.alarmName],
+            behavior: AlarmBehavior.ROLLBACK_ON_ALARM,
+          },
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+          DeploymentConfiguration: {
+            Alarms: {
+              Enable: true,
+              Rollback: true,
+              AlarmNames: [myAlarm.alarmName],
+            },
+          },
+        });
+      });
+
+      test('and explicitly set behavior to FAIL_ON_ALARM', () => {
+        const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
+        new ecs.Ec2Service(stack, 'Ec2Service', {
+          cluster,
+          taskDefinition,
+          deploymentAlarms: {
+            alarmNames: [myAlarm.alarmName],
+            behavior: AlarmBehavior.FAIL_ON_ALARM,
+          },
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+          DeploymentConfiguration: {
+            Alarms: {
+              Enable: true,
+              Rollback: false,
+              AlarmNames: [myAlarm.alarmName],
+            },
+          },
+        });
+      });
+
+      test('use enableDeploymentAlarms()', () => {
+        const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
+
+        const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+          cluster,
+          taskDefinition,
+        });
+        service.enableDeploymentAlarms([myAlarm.alarmName]);
+
+        Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+          DeploymentConfiguration: {
+            Alarms: {
+              Enable: true,
+              Rollback: true,
+              AlarmNames: [myAlarm.alarmName],
+            },
+          },
+        });
+      });
+
+      test('use enableDeploymentAlarms() and explicitly set behavior to ROLLBACK_ON_ALARM', () => {
+        const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
+
+        const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+          cluster,
+          taskDefinition,
+        });
+        service.enableDeploymentAlarms([myAlarm.alarmName], {
+          behavior: AlarmBehavior.ROLLBACK_ON_ALARM,
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+          DeploymentConfiguration: {
+            Alarms: {
+              Enable: true,
+              Rollback: true,
+              AlarmNames: [myAlarm.alarmName],
+            },
+          },
+        });
+      });
+
+      test('use enableDeploymentAlarms() and explicitly set behavior to FAIL_ON_ALARM', () => {
+        const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
+        const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+          cluster,
+          taskDefinition,
+        });
+        service.enableDeploymentAlarms([myAlarm.alarmName], {
+          behavior: AlarmBehavior.FAIL_ON_ALARM,
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+          DeploymentConfiguration: {
+            Alarms: {
+              Enable: true,
+              Rollback: false,
+              AlarmNames: [myAlarm.alarmName],
+            },
+          },
+        });
+      });
+
+      test('throw error if deploymentAlarms is specified with a non-ECS DeploymentControllerType', () => {
+        const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
+        expect(() => {
+          new ecs.Ec2Service(stack, 'Ec2Service', {
+            cluster,
+            taskDefinition,
+            deploymentController: {
+              type: DeploymentControllerType.EXTERNAL,
+            },
+            deploymentAlarms: {
+              alarmNames: [myAlarm.alarmName],
+            },
+          });
+        }).toThrow('Deployment alarms requires the ECS deployment controller.');
+      });
+
+      test('mixing alarm behaviors throws errors', () => {
+        const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
+        const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+          cluster,
+          taskDefinition,
+          deploymentAlarms: {
+            alarmNames: [myAlarm.alarmName],
+            behavior: AlarmBehavior.ROLLBACK_ON_ALARM,
+          },
+        });
+        expect(() => {
+          service.enableDeploymentAlarms([myAlarm.alarmName], { behavior: AlarmBehavior.FAIL_ON_ALARM });
+        }).toThrow('all deployment alarms on an ECS service must have the same AlarmBehavior. Attempted to enable deployment alarms with FAIL_ON_ALARM, but alarms were previously enabled with ROLLBACK_ON_ALARM');
+        const anotherService = new ecs.Ec2Service(stack, 'Ec2Service2', {
+          cluster,
+          taskDefinition,
+          deploymentAlarms: {
+            alarmNames: [myAlarm.alarmName],
+            behavior: AlarmBehavior.FAIL_ON_ALARM,
+          },
+        });
+        expect(() => {
+          anotherService.enableDeploymentAlarms([myAlarm.alarmName], { behavior: AlarmBehavior.ROLLBACK_ON_ALARM });
+        }).toThrow('all deployment alarms on an ECS service must have the same AlarmBehavior. Attempted to enable deployment alarms with ROLLBACK_ON_ALARM, but alarms were previously enabled with FAIL_ON_ALARM');
+      });
+
+      test('empty array of alarm names is not allowed', () => {
+        expect(() => {
+          new ecs.Ec2Service(stack, 'Ec2Service', {
+            cluster,
+            taskDefinition,
+            deploymentAlarms: {
+              alarmNames: [],
+            },
+          });
+        }).toThrow('at least one alarm name is required when specifying deploymentAlarms, received empty array');
+
+        const service = new ecs.Ec2Service(stack, 'AnotherEc2Service', {
+          cluster,
+          taskDefinition,
+        });
+        expect(() => service.enableDeploymentAlarms([])).toThrow('at least one alarm name is required when calling enableDeploymentAlarms(), received empty array');
+      });
+
+      test('no deployment alarms configured', () => {
+        new ecs.Ec2Service(stack, 'Ec2Service', {
+          cluster,
+          taskDefinition,
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+          DeploymentConfiguration: {
+            Alarms: {
+              Enable: false,
+              Rollback: false,
+              AlarmNames: [],
+            },
+          },
+        });
+      });
+
+      test('no deployment alarms configured in gov cloud', () => {
+        const app = new cdk.App();
+        const govCloudStack = new cdk.Stack(app, 'GovStack', {
+          env: { region: 'us-gov-east-1' },
+        });
+        const vpc = new ec2.Vpc(govCloudStack, 'MyVpc', {});
+        const gcCluster = new ecs.Cluster(govCloudStack, 'EcsCluster', { vpc });
+        addDefaultCapacityProvider(gcCluster, govCloudStack, vpc);
+        const gcTaskDefinition = new ecs.Ec2TaskDefinition(govCloudStack, 'Ec2TaskDef');
+
+        gcTaskDefinition.addContainer('web', {
+          image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+          memoryLimitMiB: 512,
+        });
+        new ecs.Ec2Service(govCloudStack, 'Ec2Service', {
+          cluster: gcCluster,
+          taskDefinition: gcTaskDefinition,
+        });
+
+        Template.fromStack(govCloudStack).hasResourceProperties('AWS::ECS::Service', {
+          DeploymentConfiguration: {
+            Alarms: Match.absent(),
+          },
+        });
+      });
+
+      test('no deployment alarms in isolated partitions', () => {
+        const app = new cdk.App();
+        const govCloudStack = new cdk.Stack(app, 'IsoStack', {
+          env: { region: 'us-isob-east-1' },
+        });
+        const vpc = new ec2.Vpc(govCloudStack, 'MyVpc', {});
+        const gcCluster = new ecs.Cluster(govCloudStack, 'EcsCluster', { vpc });
+        addDefaultCapacityProvider(gcCluster, govCloudStack, vpc);
+        const gcTaskDefinition = new ecs.Ec2TaskDefinition(govCloudStack, 'Ec2TaskDef');
+
+        gcTaskDefinition.addContainer('web', {
+          image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+          memoryLimitMiB: 512,
+        });
+        new ecs.Ec2Service(govCloudStack, 'Ec2Service', {
+          cluster: gcCluster,
+          taskDefinition: gcTaskDefinition,
+        });
+
+        Template.fromStack(govCloudStack).hasResourceProperties('AWS::ECS::Service', {
+          DeploymentConfiguration: {
+            Alarms: Match.absent(),
+          },
+        });
+      });
+
+      /**
+       * This section of tests test all combinations of the following possible
+       * alarm names and metrics. Most combinations work just fine, some
+       * combinations could cause a circular dependency and will have an info
+       * annotation for the user.
+       * NAME:
+       *   - name is undefined, so it is a token referencing its own logical id
+       *   - contains a token referencing the service
+       *   - contains a token referencing another resource
+       *   - hardcoded
+       * METRIC:
+       *   - contains a token referencing the service
+       *   - contains a token referencing another resource
+       *   - hardcoded
+       *
+       * The tests might seem repetitive because the implementation is not fully
+       * able to detect the alarm <-> service circular dependency. Keeping these
+       * tests in place to make it easier to validate a future implementation that
+       * does have proper errors for the alarm <-> service cycle.
+       */
+      describe('circular dependency tests', () => {
+        let service: ecs.Ec2Service;
+        function infoMessage(alarmName: string, serviceId: string): string {
+          return `Deployment alarm (${alarmName}) enabled on ${serviceId} may cause a circular dependency error when this stack deploys. The alarm name references the alarm's logical id, or another resource. See the 'Deployment alarms' section in the module README for more details.`;
+        }
+        beforeEach(() => {
+          service = new ecs.Ec2Service(stack, 'EC2Service', {
+            cluster,
+            taskDefinition,
+          });
+        });
+        test ('alarm name is undefined and alarm metric references service', () => {
+          // This configuration will fail deployment
+          const metric = service.metricCpuUtilization();
+          const alarm = new cloudwatch.Alarm(stack, 'MyAlarm', {
+            metric,
+            evaluationPeriods: 5,
+            threshold: 2,
+          });
+          service.enableDeploymentAlarms([alarm.alarmName]);
+          Annotations.fromStack(stack).hasInfo(`/${service.node.path}`, Match.exact(infoMessage(JSON.stringify(stack.resolve(alarm.alarmName)), service.node.id)));
+        });
+        test ('alarm name is undefined and alarm metric references other resource', () => {
+          // This will succeed deployment, but we still have an info message because we can't tell it apart from scenarios that will fail deployment
+          const metric = cluster.metricMemoryUtilization();
+          const alarm = new cloudwatch.Alarm(stack, 'MyAlarm', {
+            metric,
+            evaluationPeriods: 5,
+            threshold: 2,
+          });
+          service.enableDeploymentAlarms([alarm.alarmName]);
+          Annotations.fromStack(stack).hasInfo(`/${service.node.path}`, Match.exact(infoMessage(JSON.stringify(stack.resolve(alarm.alarmName)), service.node.id)));
+        });
+        test ('alarm name is undefined and alarm metric is hardcoded', () => {
+          // This will succeed deployment, but we still have an info message because we can't tell it apart from scenarios that will fail deployment
+          const metric = new cloudwatch.Metric({ namespace: 'AWS/ECS', metricName: 'CustomMetric' });
+          const alarm = new cloudwatch.Alarm(stack, 'MyAlarm', {
+            metric,
+            evaluationPeriods: 5,
+            threshold: 2,
+          });
+          service.enableDeploymentAlarms([alarm.alarmName]);
+          Annotations.fromStack(stack).hasInfo(`/${service.node.path}`, Match.exact(infoMessage(JSON.stringify(stack.resolve(alarm.alarmName)), service.node.id)));
+        });
+        test ('alarm name references the service', () => {
+          // This configuration will fail deployment
+          const alarmName = `${service.serviceName}Alarm`;
+          const metric = new cloudwatch.Metric({ namespace: 'CustomNamespace', metricName: 'CustomMetric' });
+          new cloudwatch.Alarm(stack, 'MyAlarm', {
+            alarmName,
+            metric,
+            evaluationPeriods: 5,
+            threshold: 2,
+          });
+          service.enableDeploymentAlarms([alarmName]);
+          Annotations.fromStack(stack).hasInfo(`/${service.node.path}`, Match.exact(infoMessage(JSON.stringify(stack.resolve(alarmName)), service.node.id)));
+        });
+        test ('alarm name references other resource and alarm metric references service', () => {
+          // This will succeed deployment, but we still have an info message because we can't tell it apart from scenarios that will fail deployment
+          const alarmName = `${cluster.clusterName}ServiceCpuAlarm`;
+          const metric = service.metricCpuUtilization();
+          new cloudwatch.Alarm(stack, 'MyAlarm', {
+            alarmName,
+            metric,
+            evaluationPeriods: 5,
+            threshold: 2,
+          });
+          service.enableDeploymentAlarms([alarmName]);
+          Annotations.fromStack(stack).hasInfo(`/${service.node.path}`, Match.exact(infoMessage(JSON.stringify(stack.resolve(alarmName)), service.node.id)));
+        });
+        test ('alarm name and metric reference other resource', () => {
+          // This will succeed deployment, but we still have an info message because we can't tell it apart from scenarios that will fail deployment
+          const alarmName = `${cluster.clusterName}Alarm`;
+          const metric = cluster.metricMemoryUtilization();
+          new cloudwatch.Alarm(stack, 'MyAlarm', {
+            alarmName,
+            metric,
+            evaluationPeriods: 5,
+            threshold: 2,
+          });
+          service.enableDeploymentAlarms([alarmName]);
+          Annotations.fromStack(stack).hasInfo(`/${service.node.path}`, Match.exact(infoMessage(JSON.stringify(stack.resolve(alarmName)), service.node.id)));
+        });
+        test ('alarm name references other resource and alarm metric is hardcoded', () => {
+          // This will succeed deployment, but we still have an info message because we can't tell it apart from scenarios that will fail deployment
+          const alarmName = `${cluster.clusterName}Alarm`;
+          const metric = new cloudwatch.Metric({ namespace: 'CustomNamespace', metricName: 'CustomMetric' });
+          new cloudwatch.Alarm(stack, 'MyAlarm', {
+            alarmName,
+            metric,
+            evaluationPeriods: 5,
+            threshold: 2,
+          });
+          service.enableDeploymentAlarms([alarmName]);
+          Annotations.fromStack(stack).hasInfo(`/${service.node.path}`, Match.exact(infoMessage(JSON.stringify(stack.resolve(alarmName)), service.node.id)));
+        });
+        test ('alarm name is hardcoded and alarm metric references service', () => {
+          // This will succeed deployment, and we know this during synthesis, so there is no info Annotation about circular dependency errors
+          const alarmName = 'MyAlarm';
+          const metric = service.metricCpuUtilization();
+          new cloudwatch.Alarm(stack, 'MyAlarm', {
+            alarmName,
+            metric,
+            evaluationPeriods: 5,
+            threshold: 2,
+          });
+          service.enableDeploymentAlarms([alarmName]);
+          Annotations.fromStack(stack).hasNoInfo(`/${service.node.path}`, Match.stringLikeRegexp('circular dependency error'));
+        });
+        test ('alarm name is hardcoded and alarm metric references other resource', () => {
+          // This will succeed deployment, and we know this during synthesis, so there is no info Annotation about circular dependency errors
+          const alarmName = 'MyAlarm';
+          const metric = cluster.metricMemoryUtilization();
+          new cloudwatch.Alarm(stack, 'MyAlarm', {
+            alarmName,
+            metric,
+            evaluationPeriods: 5,
+            threshold: 2,
+          });
+          service.enableDeploymentAlarms([alarmName]);
+          Annotations.fromStack(stack).hasNoInfo(`/${service.node.path}`, Match.stringLikeRegexp('circular dependency error'));
+        });
+        test ('alarm name and metric are hardcoded', () => {
+          // This will succeed deployment, and we know this during synthesis, so there is no info Annotation about circular dependency errors
+          const alarmName = 'MyAlarm';
+          const metric = new cloudwatch.Metric( { namespace: 'CustomNamespace', metricName: 'CustomMetric' } );
+          new cloudwatch.Alarm(stack, 'MyAlarm', {
+            alarmName,
+            metric,
+            evaluationPeriods: 5,
+            threshold: 2,
+          });
+          service.enableDeploymentAlarms([alarmName]);
+          Annotations.fromStack(stack).hasNoInfo(`/${service.node.path}`, Match.stringLikeRegexp('circular dependency error'));
+        });
+      });
+    });
   });
 
   describe('attachToClassicLB', () => {
@@ -2163,7 +2575,6 @@ describe('ec2 service', () => {
       const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
       service.attachToClassicLB(lb);
 
-
     });
 
     test('allows network mode of task definition to be bridge', () => {
@@ -2186,7 +2597,6 @@ describe('ec2 service', () => {
       // THEN
       const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
       service.attachToClassicLB(lb);
-
 
     });
 
@@ -2213,7 +2623,6 @@ describe('ec2 service', () => {
         service.attachToClassicLB(lb);
       }).toThrow(/Cannot use a Classic Load Balancer if NetworkMode is AwsVpc. Use Host or Bridge instead./);
 
-
     });
 
     test('throws when network mode of task definition is none', () => {
@@ -2238,7 +2647,6 @@ describe('ec2 service', () => {
       expect(() => {
         service.attachToClassicLB(lb);
       }).toThrow(/Cannot use a Classic Load Balancer if NetworkMode is None. Use Host or Bridge instead./);
-
 
     });
   });
@@ -2269,7 +2677,6 @@ describe('ec2 service', () => {
       // THEN
       service.attachToApplicationTargetGroup(targetGroup);
 
-
     });
 
     test('throws when network mode of task definition is none', () => {
@@ -2299,6 +2706,37 @@ describe('ec2 service', () => {
         service.attachToApplicationTargetGroup(targetGroup);
       }).toThrow(/Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead./);
 
+    });
+
+    test('throws when the first port mapping added to the container does not expose a single port', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+      const container = taskDefinition.addContainer('MainContainer', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+      });
+      container.addPortMappings({
+        containerPort: ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE,
+        containerPortRange: '8000-8001',
+      });
+
+      const service = new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition,
+      });
+
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'lb', { vpc });
+      const listener = lb.addListener('listener', { port: 80 });
+      const targetGroup = listener.addTargets('target', {
+        port: 80,
+      });
+
+      // THEN
+      expect(() => {
+        service.attachToApplicationTargetGroup(targetGroup);
+      }).toThrow(/The first port mapping of the container MainContainer must expose a single port./);
 
     });
 
@@ -2349,7 +2787,6 @@ describe('ec2 service', () => {
           });
         });
 
-
       });
 
       test('with bridge/NAT network mode and host port other than 0', () => {
@@ -2397,7 +2834,6 @@ describe('ec2 service', () => {
           });
         });
 
-
       });
 
       test('with host network mode', () => {
@@ -2442,7 +2878,6 @@ describe('ec2 service', () => {
           FromPort: 8001,
           ToPort: 8001,
         });
-
 
       });
 
@@ -2489,7 +2924,6 @@ describe('ec2 service', () => {
           ToPort: 8001,
         });
 
-
       });
     });
   });
@@ -2520,7 +2954,6 @@ describe('ec2 service', () => {
       // THEN
       service.attachToNetworkTargetGroup(targetGroup);
 
-
     });
 
     test('throws when network mode of task definition is none', () => {
@@ -2550,6 +2983,37 @@ describe('ec2 service', () => {
         service.attachToNetworkTargetGroup(targetGroup);
       }).toThrow(/Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead./);
 
+    });
+
+    test('throws when the first port mapping added to the container does not expose a single port', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+      const container = taskDefinition.addContainer('MainContainer', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+      });
+      container.addPortMappings({
+        containerPort: ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE,
+        containerPortRange: '8000-8001',
+      });
+
+      const service = new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition,
+      });
+
+      const lb = new elbv2.NetworkLoadBalancer(stack, 'lb', { vpc });
+      const listener = lb.addListener('listener', { port: 80 });
+      const targetGroup = listener.addTargets('target', {
+        port: 80,
+      });
+
+      // THEN
+      expect(() => {
+        service.attachToNetworkTargetGroup(targetGroup);
+      }).toThrow(/The first port mapping of the container MainContainer must expose a single port./);
 
     });
   });
@@ -2593,7 +3057,6 @@ describe('ec2 service', () => {
         HealthCheckGracePeriodSeconds: 60,
       });
 
-
     });
 
     test('can attach any container and port as a target', () => {
@@ -2632,7 +3095,6 @@ describe('ec2 service', () => {
         ],
       });
 
-
     });
   });
 
@@ -2662,7 +3124,6 @@ describe('ec2 service', () => {
           },
         });
       }).toThrow(/Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster./);
-
 
     });
 
@@ -2694,7 +3155,6 @@ describe('ec2 service', () => {
         });
       }).toThrow(/Cannot enable DNS service discovery for HTTP Cloudmap Namespace./);
 
-
     });
 
     test('throws if network mode is none', () => {
@@ -2724,7 +3184,6 @@ describe('ec2 service', () => {
           },
         });
       }).toThrow(/Cannot use a service discovery if NetworkMode is None. Use Bridge, Host or AwsVpc instead./);
-
 
     });
 
@@ -2800,7 +3259,6 @@ describe('ec2 service', () => {
           ],
         },
       });
-
 
     });
 
@@ -2878,7 +3336,6 @@ describe('ec2 service', () => {
         },
       });
 
-
     });
 
     test('throws if wrong DNS record type specified with bridge network mode', () => {
@@ -2911,7 +3368,6 @@ describe('ec2 service', () => {
           },
         });
       }).toThrow(/SRV records must be used when network mode is Bridge or Host./);
-
 
     });
 
@@ -2986,7 +3442,6 @@ describe('ec2 service', () => {
           ],
         },
       });
-
 
     });
 
@@ -3064,7 +3519,6 @@ describe('ec2 service', () => {
           ],
         },
       });
-
 
     });
 
@@ -3284,7 +3738,6 @@ describe('ec2 service', () => {
         });
       }).toThrow(/another task definition/i);
 
-
     });
 
     test('throws if SRV and the container port is not mapped', () => {
@@ -3318,7 +3771,6 @@ describe('ec2 service', () => {
           },
         });
       }).toThrow(/container port.*not.*mapped/i);
-
 
     });
   });
@@ -3362,7 +3814,6 @@ describe('ec2 service', () => {
       period: cdk.Duration.minutes(5),
       statistic: 'Average',
     });
-
 
   });
 
@@ -3681,7 +4132,6 @@ describe('ec2 service', () => {
         });
       }).toThrow(/only specify either serviceArn or serviceName/);
 
-
     });
 
     test('throws an exception if neither serviceArn nor serviceName were provided for fromEc2ServiceAttributes', () => {
@@ -3694,7 +4144,6 @@ describe('ec2 service', () => {
           cluster,
         });
       }).toThrow(/only specify either serviceArn or serviceName/);
-
 
     });
   });

@@ -1,5 +1,3 @@
-import * as iam from '../../aws-iam';
-import * as cdk from '../../core';
 import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
 import { IMesh, Mesh } from './mesh';
@@ -7,6 +5,8 @@ import { renderMeshOwner, renderTlsClientPolicy } from './private/utils';
 import { ServiceDiscovery, ServiceDiscoveryConfig } from './service-discovery';
 import { AccessLog, BackendDefaults, Backend } from './shared-interfaces';
 import { VirtualNodeListener, VirtualNodeListenerConfig } from './virtual-node-listener';
+import * as iam from '../../aws-iam';
+import * as cdk from '../../core';
 
 /**
  * Interface which all VirtualNode based classes must implement
@@ -51,7 +51,6 @@ export interface VirtualNodeBaseProps {
    * @default - A name is automatically determined
    */
   readonly virtualNodeName?: string;
-
 
   /**
    * Defines how upstream clients will discover this VirtualNode

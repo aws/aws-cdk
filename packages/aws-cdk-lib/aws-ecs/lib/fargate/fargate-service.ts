@@ -1,6 +1,6 @@
+import { Construct } from 'constructs';
 import * as ec2 from '../../../aws-ec2';
 import * as cdk from '../../../core';
-import { Construct } from 'constructs';
 import { BaseService, BaseServiceOptions, DeploymentControllerType, IBaseService, IService, LaunchType } from '../base/base-service';
 import { fromServiceAttributes, extractServiceNameFromArn } from '../base/from-service-attributes';
 import { TaskDefinition } from '../base/task-definition';
@@ -147,7 +147,10 @@ export class FargateService extends BaseService implements IFargateService {
       securityGroups = props.securityGroups;
     }
 
-    this.configureAwsVpcNetworkingWithSecurityGroups(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, securityGroups);
+    if (!props.deploymentController ||
+      (props.deploymentController.type !== DeploymentControllerType.EXTERNAL)) {
+      this.configureAwsVpcNetworkingWithSecurityGroups(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, securityGroups);
+    }
 
     this.node.addValidation({
       validate: () => this.taskDefinition.referencesSecretJsonField

@@ -2,7 +2,6 @@ import PQueue from 'p-queue';
 import { sleep } from '../aws';
 import { MemoryStream } from '../corking';
 
-
 export type ErrorResponse = 'fail' | 'skip' | 'retry';
 
 /**

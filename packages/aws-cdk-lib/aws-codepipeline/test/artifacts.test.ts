@@ -1,8 +1,8 @@
-import { Template } from '../../assertions';
-import * as cdk from '../../core';
 import { IConstruct } from 'constructs';
 import { FakeBuildAction } from './fake-build-action';
 import { FakeSourceAction } from './fake-source-action';
+import { Template } from '../../assertions';
+import * as cdk from '../../core';
 import * as codepipeline from '../lib';
 
 /* eslint-disable quote-props */
@@ -264,7 +264,6 @@ describe('artifacts', () => {
   });
 });
 
-/* eslint-disable @aws-cdk/no-core-construct */
 function validate(construct: IConstruct): string[] {
   try {
     (construct.node.root as cdk.App).synth();
@@ -276,4 +275,3 @@ function validate(construct: IConstruct): string[] {
     return err.message.split('\n').slice(1);
   }
 }
-/* eslint-enable @aws-cdk/no-core-construct */

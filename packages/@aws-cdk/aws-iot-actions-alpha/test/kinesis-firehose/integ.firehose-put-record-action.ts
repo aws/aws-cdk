@@ -5,7 +5,6 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
 import * as actions from '../../lib';
 
-
 const app = new cdk.App();
 
 class TestStack extends cdk.Stack {

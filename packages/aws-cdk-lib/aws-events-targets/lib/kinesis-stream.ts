@@ -1,7 +1,7 @@
+import { singletonEventRole } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as kinesis from '../../aws-kinesis';
-import { singletonEventRole } from './util';
 
 /**
  * Customize the Kinesis Stream Event Target

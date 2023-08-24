@@ -1,12 +1,12 @@
+import { Construct } from 'constructs';
+import { CLUSTER_RESOURCE_TYPE } from './cluster-resource-handler/consts';
+import { ClusterResourceProvider } from './cluster-resource-provider';
+import { CfnCluster } from './eks.generated';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import { ArnComponents, CustomResource, Token, Stack, Lazy } from '../../core';
-import { Construct } from 'constructs';
-import { CLUSTER_RESOURCE_TYPE } from './cluster-resource-handler/consts';
-import { ClusterResourceProvider } from './cluster-resource-provider';
-import { CfnCluster } from './eks.generated';
 
 export interface ClusterResourceProps {
   readonly resourcesVpcConfig: CfnCluster.ResourcesVpcConfigProperty;
@@ -57,16 +57,15 @@ export class ClusterResource extends Construct {
       throw new Error('"roleArn" is required');
     }
 
-    this.adminRole = this.createAdminRole(props);
-
     const provider = ClusterResourceProvider.getOrCreate(this, {
-      adminRole: this.adminRole,
       subnets: props.subnets,
       vpc: props.vpc,
       environment: props.environment,
       onEventLayer: props.onEventLayer,
       securityGroup: props.clusterHandlerSecurityGroup,
     });
+
+    this.adminRole = this.createAdminRole(provider, props);
 
     const resource = new CustomResource(this, 'Resource', {
       resourceType: CLUSTER_RESOURCE_TYPE,
@@ -113,13 +112,15 @@ export class ClusterResource extends Construct {
     this.attrOpenIdConnectIssuer = Token.asString(resource.getAtt('OpenIdConnectIssuer'));
   }
 
-  private createAdminRole(props: ClusterResourceProps) {
+  private createAdminRole(provider: ClusterResourceProvider, props: ClusterResourceProps) {
     const stack = Stack.of(this);
 
     // the role used to create the cluster. this becomes the administrator role
     // of the cluster.
     const creationRole = new iam.Role(this, 'CreationRole', {
-      assumedBy: new iam.AccountRootPrincipal(),
+      // the role would be assumed by the provider handlers, as they are the ones making
+      // the requests.
+      assumedBy: new iam.CompositePrincipal(provider.provider.onEventHandler.role!, provider.provider.isCompleteHandler!.role!),
     });
 
     // the CreateCluster API will allow the cluster to assume this role, so we

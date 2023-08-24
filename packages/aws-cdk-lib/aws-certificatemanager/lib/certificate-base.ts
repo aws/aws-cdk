@@ -1,7 +1,7 @@
+import { ICertificate } from './certificate';
 import * as cloudwatch from '../../aws-cloudwatch';
 import { Stats } from '../../aws-cloudwatch';
 import { Duration, Resource } from '../../core';
-import { ICertificate } from './certificate';
 
 /**
  * Shared implementation details of ICertificate implementations.

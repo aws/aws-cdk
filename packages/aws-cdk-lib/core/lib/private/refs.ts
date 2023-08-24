@@ -37,7 +37,6 @@ export function resolveReferences(scope: IConstruct): void {
   }
 }
 
-
 /**
  * Resolves the value for `reference` in the context of `consumer`.
  */
@@ -64,7 +63,6 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
       `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". ` +
       'Cross stack references are only supported for stacks deployed to the same account or between nested stacks and their parent stack');
   }
-
 
   // Stacks are in the same account, but different regions
   if (producerRegion !== consumerRegion && !consumer._crossRegionReferences) {

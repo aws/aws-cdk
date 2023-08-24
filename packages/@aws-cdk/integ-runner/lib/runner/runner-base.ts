@@ -384,7 +384,6 @@ export abstract class IntegRunner {
   }
 }
 
-
 // Default context we run all integ tests with, so they don't depend on the
 // account of the exercising user.
 export const DEFAULT_SYNTH_OPTIONS = {

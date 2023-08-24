@@ -1,6 +1,6 @@
+import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
-import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '../../core';
 import * as kms from '../lib';
 import { KeySpec, KeyUsage } from '../lib';
@@ -570,7 +570,7 @@ describe('imported keys', () => {
     const stack = new cdk.Stack();
     expect(() => {
       kms.Key.fromKeyArn(stack, 'Imported', 'arn:aws:kms:us-east-1:123456789012:key');
-    }).toThrow(/KMS key ARN must be in the format 'arn:aws:kms:<region>:<account>:key\/<keyId>', got: 'arn:aws:kms:us-east-1:123456789012:key'/);
+    }).toThrow(/KMS key ARN must be in the format 'arn:<partition>:kms:<region>:<account>:key\/<keyId>', got: 'arn:aws:kms:us-east-1:123456789012:key'/);
 
   });
 
@@ -1208,7 +1208,6 @@ describe('SM2', () => {
     });
   });
 });
-
 
 function generateInvalidKeySpecKeyUsageCombinations() {
   // Copied from Key class

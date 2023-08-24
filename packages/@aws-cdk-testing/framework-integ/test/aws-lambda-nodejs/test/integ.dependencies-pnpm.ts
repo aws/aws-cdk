@@ -27,7 +27,6 @@ const integ = new IntegTest(app, 'PnpmTest', {
   stackUpdateWorkflow: false, // this will tell the runner to not check in assets.
 });
 
-
 const response = integ.assertions.invokeFunction({
   functionName: handler.functionName,
 });

@@ -1,9 +1,9 @@
-import { findAlarmThresholds, normalizeIntervals } from '../../aws-autoscaling-common';
-import * as cloudwatch from '../../aws-cloudwatch';
-import * as cdk from '../../core';
 import { Construct } from 'constructs';
 import { IScalableTarget } from './scalable-target';
 import { AdjustmentType, MetricAggregationType, StepScalingAction } from './step-scaling-action';
+import { findAlarmThresholds, normalizeIntervals } from '../../aws-autoscaling-common';
+import * as cloudwatch from '../../aws-cloudwatch';
+import * as cdk from '../../core';
 
 export interface BasicStepScalingPolicyProps {
   /**
@@ -15,6 +15,8 @@ export interface BasicStepScalingPolicyProps {
    * The intervals for scaling.
    *
    * Maps a range of metric values to a particular scaling behavior.
+   *
+   * Must be between 2 and 40 steps.
    */
   readonly scalingSteps: ScalingInterval[];
 
@@ -109,6 +111,10 @@ export class StepScalingPolicy extends Construct {
 
     if (props.scalingSteps.length < 2) {
       throw new Error('You must supply at least 2 intervals for autoscaling');
+    }
+
+    if (props.scalingSteps.length > 40) {
+      throw new Error(`'scalingSteps' can have at most 40 steps, got ${props.scalingSteps.length}`);
     }
 
     if (props.datapointsToAlarm !== undefined && props.datapointsToAlarm < 1) {

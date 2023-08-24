@@ -1,4 +1,4 @@
-import { IAspect, Stack, Stage, Annotations, Names } from 'aws-cdk-lib';
+import { IAspect, Stack, Stage, Annotations, Names } from 'aws-cdk-lib/core';
 import { IConstruct } from 'constructs';
 import { IApplication } from '../application';
 import { ApplicationAssociator } from '../application-associator';
@@ -38,7 +38,7 @@ abstract class StackAssociatorBase implements IAspect {
       if (Stage.isStage(childNode)) {
         var stageAssociated = this.applicationAssociator?.isStageAssociated(childNode);
         if (stageAssociated === false) {
-          this.warning(childNode, 'Associate Stage: ' + childNode.stageName + ' to ensure all stacks in your cdk app are associated with AppRegistry. '
+          this.warning('StackNotAssociated', childNode, 'Associate Stage: ' + childNode.stageName + ' to ensure all stacks in your cdk app are associated with AppRegistry. '
                         + 'You can use ApplicationAssociator.associateStage to associate any stage.');
         }
       }
@@ -73,8 +73,8 @@ abstract class StackAssociatorBase implements IAspect {
    * @param node The scope to add the warning to.
    * @param message The error message.
    */
-  private warning(node: IConstruct, message: string): void {
-    Annotations.of(node).addWarning(message);
+  private warning(id: string, node: IConstruct, message: string): void {
+    Annotations.of(node).addWarningV2(`@aws-cdk/servicecatalogappregistry:${id}`, message);
   }
 
   /**
@@ -87,12 +87,12 @@ abstract class StackAssociatorBase implements IAspect {
    */
   private handleCrossRegionStack(node: Stack): void {
     if (isRegionUnresolved(this.application.env.region, node.region)) {
-      this.warning(node, 'Environment agnostic stack determined, AppRegistry association might not work as expected in case you deploy cross-region or cross-account stack.');
+      this.warning('EnvironmentAgnosticStack', node, 'Environment agnostic stack determined, AppRegistry association might not work as expected in case you deploy cross-region or cross-account stack.');
       return;
     }
 
     if (node.region != this.application.env.region) {
-      this.warning(node, 'AppRegistry does not support cross region associations, deployment might fail if there is cross region stacks in the app. Application region '
+      this.warning('CrossRegionAssociation', node, 'AppRegistry does not support cross region associations, deployment might fail if there is cross region stacks in the app. Application region '
       + this.application.env.region + ', stack region ' + node.region);
     }
   }
@@ -106,7 +106,7 @@ abstract class StackAssociatorBase implements IAspect {
    */
   private handleCrossAccountStack(node: Stack): void {
     if (isAccountUnresolved(this.application.env.account!, node.account)) {
-      this.warning(node, 'Environment agnostic stack determined, AppRegistry association might not work as expected in case you deploy cross-region or cross-account stack.');
+      this.warning('EnvironmentAgnosticStack', node, 'Environment agnostic stack determined, AppRegistry association might not work as expected in case you deploy cross-region or cross-account stack.');
       return;
     }
 
@@ -121,7 +121,7 @@ abstract class StackAssociatorBase implements IAspect {
 
         this.sharedAccounts.add(node.account);
       } else {
-        this.warning(node, 'Cross-account stack detected but application sharing and association will be skipped because cross-account option is not enabled.');
+        this.warning('AssociationSkipped', node, 'Cross-account stack detected but application sharing and association will be skipped because cross-account option is not enabled.');
         return;
       }
     }

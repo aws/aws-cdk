@@ -72,7 +72,6 @@ describe('DynamoEventSource', () => {
       'StartingPosition': 'TRIM_HORIZON',
     });
 
-
   });
 
   test('specific tumblingWindow', () => {
@@ -98,7 +97,6 @@ describe('DynamoEventSource', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       TumblingWindowInSeconds: 60,
     });
-
 
   });
 
@@ -134,7 +132,6 @@ describe('DynamoEventSource', () => {
       'BatchSize': 5000,
       'StartingPosition': 'LATEST',
     });
-
 
   });
 
@@ -178,7 +175,6 @@ describe('DynamoEventSource', () => {
       'StartingPosition': 'LATEST',
     });
 
-
   });
 
   test('fails if streaming not enabled on table', () => {
@@ -197,7 +193,6 @@ describe('DynamoEventSource', () => {
       batchSize: 50,
       startingPosition: lambda.StartingPosition.LATEST,
     }))).toThrow(/DynamoDB Streams must be enabled on the table Default\/T/);
-
 
   });
 
@@ -219,7 +214,6 @@ describe('DynamoEventSource', () => {
       startingPosition: lambda.StartingPosition.LATEST,
     }))).toThrow(/Maximum batch size must be between 1 and 10000 inclusive \(given 0\)/);
 
-
   });
 
   test('fails if batch size > 10000', () => {
@@ -239,7 +233,6 @@ describe('DynamoEventSource', () => {
       batchSize: 10001,
       startingPosition: lambda.StartingPosition.LATEST,
     }))).toThrow(/Maximum batch size must be between 1 and 10000 inclusive \(given 10001\)/);
-
 
   });
 
@@ -327,7 +320,6 @@ describe('DynamoEventSource', () => {
       'StartingPosition': 'LATEST',
     });
 
-
   });
 
   test('throws if maxBatchingWindow > 300 seconds', () => {
@@ -348,7 +340,6 @@ describe('DynamoEventSource', () => {
         maxBatchingWindow: cdk.Duration.seconds(301),
         startingPosition: lambda.StartingPosition.LATEST,
       }))).toThrow(/maxBatchingWindow cannot be over 300 seconds/);
-
 
   });
 
@@ -469,7 +460,6 @@ describe('DynamoEventSource', () => {
       'StartingPosition': 'LATEST',
     });
 
-
   });
 
   test('fails if retryAttempts < 0', () => {
@@ -491,7 +481,6 @@ describe('DynamoEventSource', () => {
         startingPosition: lambda.StartingPosition.LATEST,
       }))).toThrow(/retryAttempts must be between 0 and 10000 inclusive, got -1/);
 
-
   });
 
   test('fails if retryAttempts > 10000', () => {
@@ -512,7 +501,6 @@ describe('DynamoEventSource', () => {
         retryAttempts: 10001,
         startingPosition: lambda.StartingPosition.LATEST,
       }))).toThrow(/retryAttempts must be between 0 and 10000 inclusive, got 10001/);
-
 
   });
 
@@ -549,7 +537,6 @@ describe('DynamoEventSource', () => {
       'StartingPosition': 'LATEST',
     });
 
-
   });
 
   test('specific parallelizationFactor', () => {
@@ -585,7 +572,6 @@ describe('DynamoEventSource', () => {
       'StartingPosition': 'LATEST',
     });
 
-
   });
 
   test('fails if parallelizationFactor < 1', () => {
@@ -607,7 +593,6 @@ describe('DynamoEventSource', () => {
         startingPosition: lambda.StartingPosition.LATEST,
       }))).toThrow(/parallelizationFactor must be between 1 and 10 inclusive, got 0/);
 
-
   });
 
   test('fails if parallelizationFactor > 10', () => {
@@ -628,7 +613,6 @@ describe('DynamoEventSource', () => {
         parallelizationFactor: 11,
         startingPosition: lambda.StartingPosition.LATEST,
       }))).toThrow(/parallelizationFactor must be between 1 and 10 inclusive, got 11/);
-
 
   });
 
@@ -665,7 +649,6 @@ describe('DynamoEventSource', () => {
       'StartingPosition': 'LATEST',
     });
 
-
   });
 
   test('fails if maxRecordAge < 60 seconds', () => {
@@ -687,7 +670,6 @@ describe('DynamoEventSource', () => {
         startingPosition: lambda.StartingPosition.LATEST,
       }))).toThrow(/maxRecordAge must be between 60 seconds and 7 days inclusive/);
 
-
   });
 
   test('fails if maxRecordAge > 7 days', () => {
@@ -708,7 +690,6 @@ describe('DynamoEventSource', () => {
         maxRecordAge: cdk.Duration.seconds(604801),
         startingPosition: lambda.StartingPosition.LATEST,
       }))).toThrow(/maxRecordAge must be between 60 seconds and 7 days inclusive/);
-
 
   });
 
@@ -756,7 +737,6 @@ describe('DynamoEventSource', () => {
       'StartingPosition': 'LATEST',
     });
 
-
   });
 
   test('specific functionResponseTypes', () => {
@@ -792,7 +772,6 @@ describe('DynamoEventSource', () => {
       'FunctionResponseTypes': ['ReportBatchItemFailures'],
     });
 
-
   });
 
   test('event source disabled', () => {
@@ -817,7 +796,6 @@ describe('DynamoEventSource', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       'Enabled': false,
     });
-
 
   });
 });

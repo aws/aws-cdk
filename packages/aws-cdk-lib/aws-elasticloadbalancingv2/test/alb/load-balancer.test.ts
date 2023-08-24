@@ -5,7 +5,6 @@ import * as s3 from '../../../aws-s3';
 import * as cdk from '../../../core';
 import * as elbv2 from '../../lib';
 
-
 describe('tests', () => {
   test('Trivial construction: internet facing', () => {
     // GIVEN

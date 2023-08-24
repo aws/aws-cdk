@@ -1,7 +1,7 @@
-import { Duration, Lazy } from '../../core';
 import { Construct } from 'constructs';
 import { IAutoScalingGroup } from './auto-scaling-group';
 import { CfnScalingPolicy } from './autoscaling.generated';
+import { Duration, Lazy } from '../../core';
 
 /**
  * Properties for a scaling policy

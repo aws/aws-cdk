@@ -17,7 +17,6 @@ beforeEach(() => {
   input = iotevents.Input.fromInputName(stack, 'MyInput', 'my_input');
 });
 
-
 test('Default IoT Events input action', () => {
   // WHEN
   topicRule.addAction(

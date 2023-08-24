@@ -1,6 +1,6 @@
+import { Construct } from 'constructs';
 import { Match, Template } from '../../assertions';
 import * as cdk from '../../core';
-import { Construct } from 'constructs';
 import * as stepfunctions from '../lib';
 
 describe('State Machine Fragment', () => {
@@ -13,7 +13,7 @@ describe('State Machine Fragment', () => {
     const fragment2 = new ParallelMachineFragment(stack, 'Fragment 2').prefixStates();
 
     new stepfunctions.StateMachine(stack, 'State Machine', {
-      definition: fragment1.next(fragment2),
+      definitionBody: stepfunctions.DefinitionBody.fromChainable(fragment1.next(fragment2)),
     });
 
     // THEN

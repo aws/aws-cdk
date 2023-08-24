@@ -24,7 +24,6 @@ To illustrate how to use a canary, assume your application defines the following
 ```console
 % curl "https://api.example.com/user/books/topbook/"
 The Hitchhikers Guide to the Galaxy
-
 ```
 
 The below code defines a canary that will hit the `books/topbook` endpoint every 5 minutes:
@@ -36,7 +35,7 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
     handler: 'index.handler',
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_4_0,
   environmentVariables: {
     stage: 'prod',
   },
@@ -81,7 +80,6 @@ The Canary code will be executed in a lambda function created by Synthetics on y
 
 To learn more about Synthetics capabilities, check out the [docs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries.html).
 
-
 ### Canary Schedule
 
 You can specify the schedule on which a canary runs by providing a
@@ -104,28 +102,35 @@ const schedule = synthetics.Schedule.cron({
 
 If you want the canary to run just once upon deployment, you can use `Schedule.once()`.
 
+### Deleting underlying resources on canary deletion
 
-### Canary DeleteLambdaResourcesOnCanaryDeletion
+When you delete a lambda, the following underlying resources are isolated in your AWS account:
 
-You can specify whether the AWS CloudFormation is to also delete the Lambda functions and layers used by this canary, when the canary is deleted.
+  - Lambda Function that runs your canary script
+  - S3 Bucket for artifact storage
+  - IAM roles and policies
+  - Log Groups in CloudWatch Logs.
 
-This can be provisioned by setting the `enableAutoDeleteLambdas` property to `true` when we define the canary.
+To learn more about these underlying resources, see
+[Synthetics Canaries Deletion](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/synthetics_canaries_deletion.html).
+
+In the CDK, you can configure your canary to delete the underlying lambda function when the canary is deleted.
+This can be provisioned by setting `cleanup: Cleanup.LAMBDA`. Note that this
+will create a custom resource under the hood that takes care of the lambda deletion for you.
 
 ```ts
-const stack = new Stack();
-
-const canary = new synthetics.Canary(stack, 'Canary', {
+const canary = new synthetics.Canary(this, 'Canary', {
   test: synthetics.Test.custom({
     handler: 'index.handler',
     code: synthetics.Code.fromInline('/* Synthetics handler code'),
   }),
-  enableAutoDeleteLambdas: true,
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
+  cleanup: synthetics.Cleanup.LAMBDA,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_4_0,
 });
 ```
 
-Synthetic Canaries create additional resources under the hood beyond Lambda functions. Setting `enableAutoDeleteLambdas: true` will take care of
-cleaning up Lambda functions on deletion, but you still have to manually delete other resources like S3 buckets and CloudWatch logs.
+> Note: To properly clean up your canary on deletion, you still have to manually delete other resources 
+> like S3 buckets and CloudWatch logs.
 
 ### Configuring the Canary Script
 
@@ -146,7 +151,7 @@ new synthetics.Canary(this, 'Inline Canary', {
     code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     handler: 'index.handler', // must be 'index.handler'
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_4_0,
 });
 
 // To supply the code from your local filesystem:
@@ -155,7 +160,7 @@ new synthetics.Canary(this, 'Asset Canary', {
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
     handler: 'index.handler', // must end with '.handler'
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_4_0,
 });
 
 // To supply the code from a S3 bucket:
@@ -166,7 +171,7 @@ new synthetics.Canary(this, 'Bucket Canary', {
     code: synthetics.Code.fromBucket(bucket, 'canary.zip'),
     handler: 'index.handler', // must end with '.handler'
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_4_0,
 });
 ```
 
@@ -205,7 +210,7 @@ new synthetics.Canary(this, 'Vpc Canary', {
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
     handler: 'index.handler',
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_4_0,
   vpc,
 });
 ```
@@ -235,5 +240,26 @@ new cloudwatch.Alarm(this, 'CanaryAlarm', {
   evaluationPeriods: 2,
   threshold: 90,
   comparisonOperator: cloudwatch.ComparisonOperator.LESS_THAN_THRESHOLD,
+});
+```
+
+### Artifacts
+
+You can pass an S3 bucket to store artifacts from canary runs. If you do not,
+one will be auto-generated when the canary is created. You may add
+[lifecycle rules](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html)
+to the auto-generated bucket.
+
+```ts
+const canary = new synthetics.Canary(this, 'MyCanary', {
+  schedule: synthetics.Schedule.rate(Duration.minutes(5)),
+  test: synthetics.Test.custom({
+    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
+    handler: 'index.handler',
+  }),
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_4_0,
+  artifactsBucketLifecycleRules: [{
+    expiration: Duration.days(30),
+  }],
 });
 ```

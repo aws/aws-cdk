@@ -1,6 +1,6 @@
+import { Construct } from 'constructs';
 import * as ecr from '../../../aws-ecr';
 import * as cdk from '../../../core';
-import { Construct } from 'constructs';
 import { ContainerDefinition } from '../container-definition';
 import { ContainerImage, ContainerImageConfig } from '../container-image';
 

@@ -1,11 +1,10 @@
 import { Match, Template } from '../../../assertions';
 import { Vpc } from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
-import { ContainerImage } from '../../../aws-ecs';
+import { ContainerDefinition, ContainerImage } from '../../../aws-ecs';
 import { CompositePrincipal, Role, ServicePrincipal } from '../../../aws-iam';
 import { Duration, Stack } from '../../../core';
 import { ApplicationLoadBalancedFargateService, ApplicationMultipleTargetGroupsFargateService, NetworkLoadBalancedFargateService, NetworkMultipleTargetGroupsFargateService } from '../../lib';
-
 
 const enableExecuteCommandPermissions = {
   Statement: [
@@ -588,7 +587,6 @@ describe('When Network Load Balancer', () => {
       ServiceName: 'myService',
     });
 
-
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
@@ -708,7 +706,6 @@ describe('When Network Load Balancer', () => {
       ],
     });
 
-
     // ECS Exec
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: enableExecuteCommandPermissions,
@@ -811,7 +808,6 @@ describe('When Network Load Balancer', () => {
       },
     });
 
-
     new NetworkMultipleTargetGroupsFargateService(stack, 'NLBService', {
       cluster: cluster,
       memoryLimitMiB: 1024,
@@ -840,5 +836,29 @@ describe('When Network Load Balancer', () => {
         Ref: 'VPCB9E5F0B4',
       },
     });
+  });
+
+  test('Fargate multinetworkloadbalanced construct errors when container port range is set for essential container', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+    taskDefinition.addContainer('MainContainer', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      portMappings: [{
+        containerPort: ContainerDefinition.CONTAINER_PORT_USE_RANGE,
+        containerPortRange: '8080-8081',
+      }],
+    });
+
+    // THEN
+    expect(() => {
+      new NetworkMultipleTargetGroupsFargateService(stack, 'Service', {
+        cluster,
+        taskDefinition,
+      });
+    }).toThrow('The first port mapping added to the default container must expose a single port');
   });
 });

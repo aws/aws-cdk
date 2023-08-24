@@ -1,5 +1,5 @@
 {
-  "version": "29.0.0",
+  "version": "32.0.0",
   "artifacts": {
     "aws-cdk-autoscaling-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e92ef8b6a0364fa8466b36fe291bb03b48203d6b24059b42bed94140c19551f6.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1b561a60c7784d0ab86dea6375fc26f6a640334cce305be39b768d83b9dc7bf8.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -189,10 +189,10 @@
             "data": "CapacityRebalanceInstanceProfile9E43DE91"
           }
         ],
-        "/aws-cdk-autoscaling-integ/CapacityRebalance/LaunchConfig": [
+        "/aws-cdk-autoscaling-integ/CapacityRebalance/LaunchTemplate/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CapacityRebalanceLaunchConfig697F1934"
+            "data": "CapacityRebalanceLaunchTemplate3395D4AC"
           }
         ],
         "/aws-cdk-autoscaling-integ/CapacityRebalance/ASG": [
@@ -217,6 +217,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "CapacityRebalanceLaunchTemplateProfileB8458A19": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CapacityRebalanceLaunchTemplateProfileB8458A19",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

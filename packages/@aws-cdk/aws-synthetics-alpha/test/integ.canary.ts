@@ -1,92 +1,123 @@
 /// !cdk-integ canary-one
 
 import * as path from 'path';
+import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
-import * as synthetics from '../lib';
+import { Canary, Cleanup, Code, Runtime, Schedule, Test } from '../lib';
+import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { RemovalPolicy } from 'aws-cdk-lib';
 
-/*
- * Stack verification steps:
- *
- * -- aws synthetics get-canary --name canary-integ has a state of 'RUNNING'
- * -- aws synthetics get-canary --name assetcanary-one has a state of 'RUNNING'
- * -- aws synthetics get-canary --name assetcanary-two has a state of 'RUNNING'
- * -- aws synthetics get-canary --name assetcanary-three has a state of 'RUNNING'
- * -- aws synthetics get-canary --name assetcanary-four has a state of 'RUNNING'
- */
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'canary-one');
 
-const bucket = new s3.Bucket(stack, 'mytestbucket');
+const bucket = new s3.Bucket(stack, 'MyTestBucket', {
+  removalPolicy: RemovalPolicy.DESTROY,
+  autoDeleteObjects: true,
+});
 const prefix = 'integ';
 
-new synthetics.Canary(stack, 'MyCanary', {
-  canaryName: 'canary-integ',
-  test: synthetics.Test.custom({
+const api = new apigateway.RestApi(stack, 'ApiGateway');
+api.root.addMethod('GET', new apigateway.MockIntegration({
+  integrationResponses: [{
+    statusCode: '200',
+  }],
+  passthroughBehavior: apigateway.PassthroughBehavior.NEVER,
+  requestTemplates: {
+    'application/json': '{ "statusCode": 200 }',
+  },
+}), {
+  methodResponses: [{ statusCode: '200' }],
+});
+
+const inlineAsset = new Canary(stack, 'InlineAsset', {
+  test: Test.custom({
     handler: 'index.handler',
-    code: synthetics.Code.fromInline(`
+    code: Code.fromInline(`
       exports.handler = async () => {
         console.log(\'hello world\');
       };`),
   }),
-  schedule: synthetics.Schedule.rate(cdk.Duration.minutes(1)),
+  schedule: Schedule.rate(cdk.Duration.minutes(1)),
   artifactsBucketLocation: { bucket, prefix },
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
+  runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_4_0,
+  cleanup: Cleanup.LAMBDA,
 });
 
-new synthetics.Canary(stack, 'MyCanaryOne', {
-  canaryName: 'assetcanary-one',
-  test: synthetics.Test.custom({
+const directoryAsset = new Canary(stack, 'DirectoryAsset', {
+  test: Test.custom({
     handler: 'canary.handler',
-    code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
+    code: Code.fromAsset(path.join(__dirname, 'canaries')),
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
-  enableAutoDeleteLambdas: true,
+  runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_4_0,
+  environmentVariables: {
+    URL: api.url,
+  },
+  cleanup: Cleanup.LAMBDA,
 });
 
-new synthetics.Canary(stack, 'MyCanaryTwo', {
-  canaryName: 'assetcanary-two',
-  test: synthetics.Test.custom({
-    handler: 'canary.handler',
-    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary.zip')),
+const folderAsset = new Canary(stack, 'FolderAsset', {
+  test: Test.custom({
+    handler: 'folder/canary.functionName',
+    code: Code.fromAsset(path.join(__dirname, 'canaries')),
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
+  runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_4_0,
+  environmentVariables: {
+    URL: api.url,
+  },
+  cleanup: Cleanup.LAMBDA,
 });
 
-new synthetics.Canary(stack, 'MyCanaryThree', {
-  canaryName: 'assetcanary-three',
-  test: synthetics.Test.custom({
+const zipAsset = new Canary(stack, 'ZipAsset', {
+  test: Test.custom({
     handler: 'canary.handler',
-    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary.zip')),
+    code: Code.fromAsset(path.join(__dirname, 'canary.zip')),
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
+  artifactsBucketLifecycleRules: [
+    {
+      expiration: cdk.Duration.days(30),
+    },
+  ],
+  runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_4_0,
+  cleanup: Cleanup.LAMBDA,
 });
 
-new synthetics.Canary(stack, 'MyCanaryFour', {
-  canaryName: 'assetcanary-four',
-  test: synthetics.Test.custom({
-    handler: 'canary.handler',
-    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary.zip')),
-  }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
+const kebabToPascal = (text :string )=> text.replace(/(^\w|-\w)/g, (v) => v.replace(/-/, '').toUpperCase());
+const createCanaryByRuntimes = (runtime: Runtime) =>
+  new Canary(stack, kebabToPascal(runtime.name).replace('.', ''), {
+    test: Test.custom({
+      handler: 'canary.handler',
+      code: Code.fromAsset(path.join(__dirname, 'canaries')),
+    }),
+    environmentVariables: {
+      URL: api.url,
+    },
+    runtime,
+    cleanup: Cleanup.LAMBDA,
+  });
+
+const puppeteer39 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9);
+const puppeteer40 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PUPPETEER_4_0);
+const selenium13 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_1_3);
+
+const test = new IntegTest(app, 'IntegCanaryTest', {
+  testCases: [stack],
 });
 
-new synthetics.Canary(stack, 'MyCanaryRuntime38', {
-  canaryName: 'assetcanary-five',
-  test: synthetics.Test.custom({
-    handler: 'canary.handler',
-    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary.zip')),
-  }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
-});
-
-new synthetics.Canary(stack, 'MyPythonCanary', {
-  canaryName: 'py-canary-integ',
-  test: synthetics.Test.custom({
-    handler: 'canary.handler',
-    code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
-  }),
-  runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_1_3,
-});
+// Assertion that all Canary's are Passed
+[
+  inlineAsset,
+  directoryAsset,
+  folderAsset,
+  zipAsset,
+  puppeteer39,
+  puppeteer40,
+  selenium13,
+].forEach((canary) => test.assertions
+  .awsApiCall('Synthetics', 'getCanaryRuns', {
+    Name: canary.canaryName,
+  })
+  .assertAtPath('CanaryRuns.0.Status.State', ExpectedResult.stringLikeRegexp('PASSED'))
+  .waitForAssertions({ totalTimeout: cdk.Duration.minutes(5) }));
 
 app.synth();

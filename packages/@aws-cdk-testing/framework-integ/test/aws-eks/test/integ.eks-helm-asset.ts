@@ -79,10 +79,10 @@ class EksClusterStack extends Stack {
 
     // testing the disable mechanism of the installation of CRDs
     this.cluster.addHelmChart('test-skip-crd-installation', {
-      chart: 'lambda-chart',
-      release: 'lambda-chart-release',
-      repository: 'oci://public.ecr.aws/aws-controllers-k8s/lambda-chart',
-      version: 'v0.1.4',
+      chart: 'rds-chart',
+      release: 'rds-chart-release',
+      repository: 'oci://public.ecr.aws/aws-controllers-k8s/rds-chart',
+      version: 'v1.1.2',
       namespace: 'ack-system',
       createNamespace: true,
       skipCrds: true,
@@ -104,6 +104,8 @@ const app = new App();
 const stack = new EksClusterStack(app, 'aws-cdk-eks-helm-test');
 new integ.IntegTest(app, 'aws-cdk-eks-helm', {
   testCases: [stack],
+  // Test includes assets that are updated weekly. If not disabled, the upgrade PR will fail.
+  diffAssets: false,
 });
 
 app.synth();

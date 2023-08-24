@@ -1,6 +1,6 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../../assertions';
 import * as lambda from '../../../aws-lambda';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '../../../core';
 import * as codedeploy from '../../lib';
 
@@ -29,7 +29,6 @@ beforeEach(() => {
   application = new codedeploy.LambdaApplication(stack, 'MyApp');
   alias = mockAlias(stack);
 });
-
 
 testDeprecated('custom resource created', () => {
   // WHEN

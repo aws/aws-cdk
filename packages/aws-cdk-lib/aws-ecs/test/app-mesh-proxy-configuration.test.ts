@@ -201,6 +201,5 @@ describe('app mesh proxy configuration', () => {
       });
     }).toThrow(/At least one of ignoredUID or ignoredGID should be specified./);
 
-
   });
 });

@@ -6,7 +6,6 @@ import { App, Stack, RemovalPolicy } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { S3SourceAction, CodeBuildAction } from 'aws-cdk-lib/aws-codepipeline-actions';
 
-
 const app = new App({
   treeMetadata: false,
 });
@@ -22,7 +21,6 @@ const stack2 = new Stack(app, 'integ-pipeline-consumer-stack', {
   },
   crossRegionReferences: true,
 });
-
 
 const key = new Key(stack1, 'ReplicationKey');
 const bucket = new Bucket(stack1, 'ReplicationBucket', {

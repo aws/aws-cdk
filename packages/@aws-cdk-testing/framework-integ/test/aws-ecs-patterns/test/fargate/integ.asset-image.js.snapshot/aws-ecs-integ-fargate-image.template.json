@@ -665,6 +665,11 @@
      "Ref": "ClusterEB0386A7"
     },
     "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
      "MaximumPercent": 200,
      "MinimumHealthyPercent": 50
     },
@@ -707,7 +712,8 @@
    },
    "DependsOn": [
     "FargateServiceLBPublicListenerECSGroupBE57E081",
-    "FargateServiceLBPublicListener4B4929CA"
+    "FargateServiceLBPublicListener4B4929CA",
+    "FargateServiceTaskDefTaskRole8CDCF85E"
    ]
   },
   "FargateServiceSecurityGroup262B61DD": {
@@ -724,7 +730,10 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   }
+   },
+   "DependsOn": [
+    "FargateServiceTaskDefTaskRole8CDCF85E"
+   ]
   },
   "FargateServiceSecurityGroupfromawsecsintegfargateimageFargateServiceLBSecurityGroup04156A428000D3E717F0": {
    "Type": "AWS::EC2::SecurityGroupIngress",
@@ -745,7 +754,10 @@
      ]
     },
     "ToPort": 8000
-   }
+   },
+   "DependsOn": [
+    "FargateServiceTaskDefTaskRole8CDCF85E"
+   ]
   }
  },
  "Outputs": {

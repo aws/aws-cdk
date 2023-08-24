@@ -3,6 +3,7 @@ import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 class TestBucketDeployment extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
@@ -36,6 +37,11 @@ class TestBucketDeployment extends cdk.Stack {
 
 const app = new cdk.App();
 
-new TestBucketDeployment(app, 'test-bucket-deployments-1');
+const stack = new TestBucketDeployment(app, 'test-bucket-deployments-1');
+
+new IntegTest(app, 'TestBucketDeploymentInteg', {
+  testCases: [stack],
+  diffAssets: true,
+});
 
 app.synth();

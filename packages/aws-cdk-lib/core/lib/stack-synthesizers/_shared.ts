@@ -1,10 +1,8 @@
 import * as crypto from 'crypto';
-import * as cxschema from '../../../cloud-assembly-schema';
-import * as cxapi from '../../../cx-api';
 import { Node, IConstruct } from 'constructs';
 import { ISynthesisSession } from './types';
+import * as cxschema from '../../../cloud-assembly-schema';
 import { Stack } from '../stack';
-import { Token } from '../token';
 
 /**
  * Shared logic of writing stack artifact to the Cloud Assembly
@@ -125,47 +123,4 @@ export function assertBound<A>(x: A | undefined): asserts x is NonNullable<A> {
 
 function nonEmptyDict<A>(xs: Record<string, A>) {
   return Object.keys(xs).length > 0 ? xs : undefined;
-}
-
-/**
- * A "replace-all" function that doesn't require us escaping a literal string to a regex
- */
-function replaceAll(s: string, search: string, replace: string) {
-  return s.split(search).join(replace);
-}
-
-export class StringSpecializer {
-  constructor(private readonly stack: Stack, private readonly qualifier: string) {
-  }
-
-  /**
-   * Function to replace placeholders in the input string as much as possible
-   *
-   * We replace:
-   * - ${Qualifier}: always
-   * - ${AWS::AccountId}, ${AWS::Region}: only if we have the actual values available
-   * - ${AWS::Partition}: never, since we never have the actual partition value.
-   */
-  public specialize(s: string): string {
-    s = replaceAll(s, '${Qualifier}', this.qualifier);
-    return cxapi.EnvironmentPlaceholders.replace(s, {
-      region: resolvedOr(this.stack.region, cxapi.EnvironmentPlaceholders.CURRENT_REGION),
-      accountId: resolvedOr(this.stack.account, cxapi.EnvironmentPlaceholders.CURRENT_ACCOUNT),
-      partition: cxapi.EnvironmentPlaceholders.CURRENT_PARTITION,
-    });
-  }
-
-  /**
-   * Specialize only the qualifier
-   */
-  public qualifierOnly(s: string): string {
-    return replaceAll(s, '${Qualifier}', this.qualifier);
-  }
-}
-
-/**
- * Return the given value if resolved or fall back to a default
- */
-export function resolvedOr<A>(x: string, def: A): string | A {
-  return Token.isUnresolved(x) ? def : x;
 }

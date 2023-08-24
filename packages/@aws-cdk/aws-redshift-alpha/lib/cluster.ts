@@ -5,7 +5,7 @@ import * as kms from 'aws-cdk-lib/aws-kms';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
-import { ArnFormat, CustomResource, Duration, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token } from 'aws-cdk-lib';
+import { ArnFormat, CustomResource, Duration, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token } from 'aws-cdk-lib/core';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId, Provider } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 import { DatabaseSecret } from './database-secret';
@@ -707,7 +707,7 @@ export class Cluster extends ClusterBase {
     }
     const rebootFunction = new lambda.SingletonFunction(this, 'RedshiftClusterRebooterFunction', {
       uuid: '511e207f-13df-4b8b-b632-c32b30b65ac2',
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: lambda.Runtime.NODEJS_18_X,
       code: lambda.Code.fromAsset(path.join(__dirname, 'cluster-parameter-change-reboot-handler')),
       handler: 'index.handler',
       timeout: Duration.seconds(900),

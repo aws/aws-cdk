@@ -1,5 +1,12 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { Construct } from 'constructs';
+import { ArtifactMap } from './artifact-map';
+import { CodeBuildStep } from './codebuild-step';
+import { CodePipelineActionFactoryResult, ICodePipelineActionFactory } from './codepipeline-action-factory';
+import { CodeBuildFactory, mergeCodeBuildOptions } from './private/codebuild-factory';
+import { namespaceStepOutputs } from './private/outputs';
+import { StackOutputsMap } from './stack-outputs-map';
 import * as cb from '../../../aws-codebuild';
 import * as cp from '../../../aws-codepipeline';
 import * as cpa from '../../../aws-codepipeline-actions';
@@ -8,13 +15,6 @@ import * as iam from '../../../aws-iam';
 import * as s3 from '../../../aws-s3';
 import { Aws, CfnCapabilities, Duration, PhysicalName, Stack, Names } from '../../../core';
 import * as cxapi from '../../../cx-api';
-import { Construct } from 'constructs';
-import { ArtifactMap } from './artifact-map';
-import { CodeBuildStep } from './codebuild-step';
-import { CodePipelineActionFactoryResult, ICodePipelineActionFactory } from './codepipeline-action-factory';
-import { CodeBuildFactory, mergeCodeBuildOptions } from './private/codebuild-factory';
-import { namespaceStepOutputs } from './private/outputs';
-import { StackOutputsMap } from './stack-outputs-map';
 import { AssetType, FileSet, IFileSetProducer, ManualApprovalStep, ShellStep, StackAsset, StackDeployment, Step } from '../blueprint';
 import { DockerCredential, dockerCredentialsInstallCommands, DockerCredentialUsage } from '../docker-credentials';
 import { GraphNodeCollection, isGraph, AGraphNode, PipelineGraph } from '../helpers-internal';
@@ -28,7 +28,6 @@ import { toPosixPath } from '../private/fs';
 import { actionName, stackVariableNamespace } from '../private/identifiers';
 import { enumerate, flatten, maybeSuffix, noUndefined } from '../private/javascript';
 import { writeTemplateConfiguration } from '../private/template-configuration';
-
 
 /**
  * Properties for a `CodePipeline`
@@ -132,7 +131,7 @@ export interface CodePipelineProps {
    * application stacks.
    *
    * A common way to use bundling assets in your application is by
-   * using the `@aws-cdk/aws-lambda-nodejs` library.
+   * using the `aws-cdk-lib/aws-lambda-nodejs` library.
    *
    * Configures privileged mode for the synth CodeBuild action.
    *
@@ -147,7 +146,7 @@ export interface CodePipelineProps {
   /**
    * Customize the CodeBuild projects created for this pipeline
    *
-   * @default - All projects run non-privileged build, SMALL instance, LinuxBuildImage.STANDARD_6_0
+   * @default - All projects run non-privileged build, SMALL instance, LinuxBuildImage.STANDARD_7_0
    */
   readonly codeBuildDefaults?: CodeBuildOptions;
 
@@ -254,7 +253,7 @@ export interface CodeBuildOptions {
   /**
    * Partial build environment, will be combined with other build environments that apply
    *
-   * @default - Non-privileged build, SMALL instance, LinuxBuildImage.STANDARD_6_0
+   * @default - Non-privileged build, SMALL instance, LinuxBuildImage.STANDARD_7_0
    */
   readonly buildEnvironment?: cb.BuildEnvironment;
 
@@ -334,7 +333,6 @@ export interface CodeBuildOptions {
    */
   readonly logging?: cb.LoggingOptions;
 }
-
 
 /**
  * A CDK Pipeline that uses CodePipeline to deploy CDK apps
@@ -424,7 +422,6 @@ export class CodePipeline extends PipelineBase {
     }
     return this._pipeline;
   }
-
 
   protected doBuildPipeline(): void {
     if (this._pipeline) {
@@ -1035,7 +1032,6 @@ function chunkTranches<A>(n: number, xss: A[][]): A[][][] {
 
     ret.push(tranches);
   }
-
 
   return ret;
 }

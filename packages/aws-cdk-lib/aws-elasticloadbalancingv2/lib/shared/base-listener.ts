@@ -1,9 +1,9 @@
-import * as cxschema from '../../../cloud-assembly-schema';
-import { Annotations, ContextProvider, IResource, Lazy, Resource, Token } from '../../../core';
-import * as cxapi from '../../../cx-api';
 import { Construct } from 'constructs';
 import { IListenerAction } from './listener-action';
 import { mapTagMapToCxschema } from './util';
+import * as cxschema from '../../../cloud-assembly-schema';
+import { Annotations, ContextProvider, IResource, Lazy, Resource, Token } from '../../../core';
+import * as cxapi from '../../../cx-api';
 import { CfnListener } from '../elasticloadbalancingv2.generated';
 
 /**
@@ -99,6 +99,7 @@ export abstract class BaseListener extends Resource implements IListener {
         loadBalancerType: options.loadBalancerType,
       } as cxschema.LoadBalancerListenerContextQuery,
       dummyValue: {
+        // eslint-disable-next-line @aws-cdk/no-literal-partition
         listenerArn: `arn:aws:elasticloadbalancing:us-west-2:123456789012:listener/${options.loadBalancerType}/my-load-balancer/50dc6c495c0c9188/f2f7dc8efc522ab2`,
         listenerPort: 80,
         securityGroupIds: ['sg-123456789012'],
@@ -152,7 +153,7 @@ export abstract class BaseListener extends Resource implements IListener {
     // Instead, signal this through a warning.
     // @deprecate: upon the next major version bump, replace this with a `throw`
     if (this.defaultAction) {
-      Annotations.of(this).addWarning('A default Action already existed on this Listener and was replaced. Configure exactly one default Action.');
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-elbv2:listenerExistingDefaultActionReplaced', 'A default Action already existed on this Listener and was replaced. Configure exactly one default Action.');
     }
 
     this.defaultAction = action;

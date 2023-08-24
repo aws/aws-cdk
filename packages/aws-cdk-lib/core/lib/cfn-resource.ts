@@ -1,4 +1,3 @@
-import * as cxapi from '../../cx-api';
 import { Annotations } from './annotations';
 import { CfnCondition } from './cfn-condition';
 // import required to be here, otherwise causes a cycle when running the generated JavaScript
@@ -8,14 +7,13 @@ import { CfnCreationPolicy, CfnDeletionPolicy, CfnUpdatePolicy } from './cfn-res
 import { Construct, IConstruct, Node } from 'constructs';
 import { addDependency, obtainDependencies, removeDependency } from './deps';
 import { CfnReference } from './private/cfn-reference';
-import { CLOUDFORMATION_TOKEN_RESOLVER } from './private/cloudformation-lang';
 import { Reference } from './reference';
 import { RemovalPolicy, RemovalPolicyOptions } from './removal-policy';
 import { TagManager } from './tag-manager';
-import { Tokenization } from './token';
 import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from './util';
 import { FeatureFlags } from './feature-flags';
 import { ResolutionTypeHint } from './type-hints';
+import * as cxapi from '../../cx-api';
 
 export interface CfnResourceProps {
   /**
@@ -122,14 +120,22 @@ export class CfnResource extends CfnRefElement {
     policy = policy || options.default || RemovalPolicy.RETAIN;
 
     let deletionPolicy;
+    let updateReplacePolicy;
 
     switch (policy) {
       case RemovalPolicy.DESTROY:
         deletionPolicy = CfnDeletionPolicy.DELETE;
+        updateReplacePolicy = CfnDeletionPolicy.DELETE;
         break;
 
       case RemovalPolicy.RETAIN:
         deletionPolicy = CfnDeletionPolicy.RETAIN;
+        updateReplacePolicy = CfnDeletionPolicy.RETAIN;
+        break;
+
+      case RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE:
+        deletionPolicy = CfnDeletionPolicy.RETAIN_EXCEPT_ON_CREATE;
+        updateReplacePolicy = CfnDeletionPolicy.RETAIN;
         break;
 
       case RemovalPolicy.SNAPSHOT:
@@ -150,11 +156,12 @@ export class CfnResource extends CfnRefElement {
           if (FeatureFlags.of(this).isEnabled(cxapi.VALIDATE_SNAPSHOT_REMOVAL_POLICY) ) {
             throw new Error(`${this.cfnResourceType} does not support snapshot removal policy`);
           } else {
-            Annotations.of(this).addWarning(`${this.cfnResourceType} does not support snapshot removal policy. This policy will be ignored.`);
+            Annotations.of(this).addWarningV2(`@aws-cdk/core:${this.cfnResourceType}SnapshotRemovalPolicyIgnored`, `${this.cfnResourceType} does not support snapshot removal policy. This policy will be ignored.`);
           }
         }
 
         deletionPolicy = CfnDeletionPolicy.SNAPSHOT;
+        updateReplacePolicy = CfnDeletionPolicy.SNAPSHOT;
         break;
 
       default:
@@ -163,7 +170,7 @@ export class CfnResource extends CfnRefElement {
 
     this.cfnOptions.deletionPolicy = deletionPolicy;
     if (options.applyToUpdateReplacePolicy !== false) {
-      this.cfnOptions.updateReplacePolicy = deletionPolicy;
+      this.cfnOptions.updateReplacePolicy = updateReplacePolicy;
     }
   }
 
@@ -432,15 +439,13 @@ export class CfnResource extends CfnRefElement {
             Description: this.cfnOptions.description,
             Metadata: ignoreEmpty(this.cfnOptions.metadata),
             Condition: this.cfnOptions.condition && this.cfnOptions.condition.logicalId,
-          }, resourceDef => {
+          }, (resourceDef, context) => {
             const renderedProps = this.renderProperties(resourceDef.Properties || {});
             if (renderedProps) {
               const hasDefined = Object.values(renderedProps).find(v => v !== undefined);
               resourceDef.Properties = hasDefined !== undefined ? renderedProps : undefined;
             }
-            const resolvedRawOverrides = Tokenization.resolve(this.rawOverrides, {
-              scope: this,
-              resolver: CLOUDFORMATION_TOKEN_RESOLVER,
+            const resolvedRawOverrides = context.resolve(this.rawOverrides, {
               // we need to preserve the empty elements here,
               // as that's how removing overrides are represented as
               removeEmpty: false,
@@ -486,9 +491,12 @@ export class CfnResource extends CfnRefElement {
 
   protected get cfnProperties(): { [key: string]: any } {
     const props = this._cfnProperties || {};
-    if (TagManager.isTaggable(this)) {
+    const tagMgr = TagManager.of(this);
+    if (tagMgr) {
       const tagsProp: { [key: string]: any } = {};
-      tagsProp[this.tags.tagPropertyName] = this.tags.renderTags();
+      // If this object has a TagManager, then render it out into the correct field. We assume there
+      // is no shadow tags object, so we don't pass anything to renderTags().
+      tagsProp[tagMgr.tagPropertyName] = tagMgr.renderTags();
       return deepMerge(props, tagsProp);
     }
     return props;

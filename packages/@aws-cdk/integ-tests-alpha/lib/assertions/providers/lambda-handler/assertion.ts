@@ -37,7 +37,6 @@ export class AssertionHandler extends CustomResourceHandler<AssertionRequest, As
   }
 }
 
-
 class MatchCreator {
   private readonly parsedObj: { [key: string]: any };
   constructor(obj: { [key: string]: any }) {

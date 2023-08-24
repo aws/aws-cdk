@@ -646,10 +646,12 @@
    "Type": "AWS::RDS::DBCluster",
    "Properties": {
     "CopyTagsToSnapshot": true,
+    "DBClusterParameterGroupName": "default.aurora-mysql8.0",
     "DBSubnetGroupName": {
      "Ref": "DatabaseSubnets56F17B9A"
     },
-    "Engine": "aurora",
+    "Engine": "aurora-mysql",
+    "EngineVersion": "8.0.mysql_aurora.3.03.0",
     "MasterUsername": {
      "Fn::Join": [
       "",
@@ -692,11 +694,11 @@
     "DBClusterIdentifier": {
      "Ref": "DatabaseB269D8BB"
     },
-    "DBInstanceClass": "db.t3.small",
+    "DBInstanceClass": "db.t3.medium",
     "DBSubnetGroupName": {
      "Ref": "DatabaseSubnets56F17B9A"
     },
-    "Engine": "aurora"
+    "Engine": "aurora-mysql"
    },
    "DependsOn": [
     "VPCPrivateSubnet1DefaultRouteAE1D6490",
@@ -713,11 +715,11 @@
     "DBClusterIdentifier": {
      "Ref": "DatabaseB269D8BB"
     },
-    "DBInstanceClass": "db.t3.small",
+    "DBInstanceClass": "db.t3.medium",
     "DBSubnetGroupName": {
      "Ref": "DatabaseSubnets56F17B9A"
     },
-    "Engine": "aurora"
+    "Engine": "aurora-mysql"
    },
    "DependsOn": [
     "VPCPrivateSubnet1DefaultRouteAE1D6490",
@@ -913,6 +915,7 @@
     "SecretId": {
      "Ref": "CustomRotationOptionsSecretAttachment697A23BF"
     },
+    "RotateImmediatelyOnUpdate": false,
     "RotationLambdaARN": {
      "Fn::GetAtt": [
       "CustomRotationOptionsRotationSingleUserC555446F",
@@ -964,10 +967,12 @@
    "Type": "AWS::RDS::DBCluster",
    "Properties": {
     "CopyTagsToSnapshot": true,
+    "DBClusterParameterGroupName": "default.aurora-mysql8.0",
     "DBSubnetGroupName": {
      "Ref": "CustomRotationOptionsSubnets52AEBCED"
     },
-    "Engine": "aurora",
+    "Engine": "aurora-mysql",
+    "EngineVersion": "8.0.mysql_aurora.3.03.0",
     "MasterUsername": {
      "Fn::Join": [
       "",
@@ -1010,11 +1015,11 @@
     "DBClusterIdentifier": {
      "Ref": "CustomRotationOptions7CA9E132"
     },
-    "DBInstanceClass": "db.t3.small",
+    "DBInstanceClass": "db.t3.medium",
     "DBSubnetGroupName": {
      "Ref": "CustomRotationOptionsSubnets52AEBCED"
     },
-    "Engine": "aurora"
+    "Engine": "aurora-mysql"
    },
    "DependsOn": [
     "VPCPrivateSubnet1DefaultRouteAE1D6490",
@@ -1031,11 +1036,11 @@
     "DBClusterIdentifier": {
      "Ref": "CustomRotationOptions7CA9E132"
     },
-    "DBInstanceClass": "db.t3.small",
+    "DBInstanceClass": "db.t3.medium",
     "DBSubnetGroupName": {
      "Ref": "CustomRotationOptionsSubnets52AEBCED"
     },
-    "Engine": "aurora"
+    "Engine": "aurora-mysql"
    },
    "DependsOn": [
     "VPCPrivateSubnet1DefaultRouteAE1D6490",

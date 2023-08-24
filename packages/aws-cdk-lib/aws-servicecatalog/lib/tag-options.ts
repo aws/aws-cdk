@@ -1,8 +1,8 @@
-import * as cdk from '../../core';
 import { Construct } from 'constructs';
 import { hashValues } from './private/util';
 import { InputValidator } from './private/validation';
 import { CfnTagOption } from './servicecatalog.generated';
+import * as cdk from '../../core';
 
 /**
  * Properties for TagOptions.

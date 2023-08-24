@@ -231,7 +231,6 @@ export class Match implements IResolvable {
   }
 }
 
-
 /**
  * Events in Amazon CloudWatch Events are represented as JSON objects. For more
  * information about JSON objects, see RFC 7159.

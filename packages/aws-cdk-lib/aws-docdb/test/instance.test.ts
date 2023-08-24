@@ -1,7 +1,7 @@
+import * as constructs from 'constructs';
 import { Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as cdk from '../../core';
-import * as constructs from 'constructs';
 import { DatabaseCluster, DatabaseInstance } from '../lib';
 
 const CLUSTER_INSTANCE_TYPE = ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE);

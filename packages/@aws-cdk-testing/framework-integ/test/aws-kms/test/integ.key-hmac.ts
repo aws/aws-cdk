@@ -28,4 +28,3 @@ new IntegTest(app, 'HmacIntegTest', {
 
 app.synth();
 
-

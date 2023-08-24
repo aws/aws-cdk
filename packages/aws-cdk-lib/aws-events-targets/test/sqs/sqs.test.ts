@@ -168,7 +168,6 @@ test('Encrypted queues result in a policy statement with aws:sourceAccount condi
     encryptionMasterKey: kms.Key.fromKeyArn(queueStack, 'key', 'arn:aws:kms:us-west-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab'),
   });
 
-
   // WHEN
   rule.addTarget(new targets.SqsQueue(queue));
 

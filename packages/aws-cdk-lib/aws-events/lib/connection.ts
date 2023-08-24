@@ -1,6 +1,6 @@
-import { IResource, Resource, Stack, SecretValue } from '../../core';
 import { Construct } from 'constructs';
 import { CfnConnection } from './events.generated';
+import { IResource, Resource, Stack, SecretValue } from '../../core';
 
 /**
  * An API Destination Connection

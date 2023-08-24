@@ -1,7 +1,7 @@
 import * as path from 'path';
+import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../assertions';
 import * as es from '../../aws-elasticsearch';
-import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '../../core';
 import * as appsync from '../lib';
 

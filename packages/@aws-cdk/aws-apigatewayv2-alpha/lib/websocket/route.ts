@@ -1,4 +1,4 @@
-import { Resource } from 'aws-cdk-lib';
+import { Resource } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { IWebSocketApi } from './api';
 import { IWebSocketRouteAuthorizer, WebSocketNoneAuthorizer } from './authorizer';

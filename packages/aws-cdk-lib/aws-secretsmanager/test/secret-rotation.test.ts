@@ -19,7 +19,6 @@ beforeEach(() => {
   });
 });
 
-
 test('secret rotation single user', () => {
   // GIVEN
   const excludeCharacters = ' ;+%{}' + '@\'"`/\\#'; // DMS and BASH problem chars
@@ -272,6 +271,22 @@ test('secret rotation allows passing an empty string for excludeCharacters', () 
   });
 });
 
+test('secret rotation without immediate rotation', () => {
+  // WHEN
+  new secretsmanager.SecretRotation(stack, 'SecretRotation', {
+    application: secretsmanager.SecretRotationApplication.MARIADB_ROTATION_SINGLE_USER,
+    secret,
+    target,
+    vpc,
+    rotateImmediatelyOnUpdate: false,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
+    RotateImmediatelyOnUpdate: false,
+  });
+});
+
 test('throws when connections object has no default port range', () => {
   // WHEN
   const targetWithoutDefaultPort = new ec2.Connections({
@@ -349,7 +364,6 @@ test('rotation function name does not exceed 64 chars', () => {
     },
   });
 });
-
 
 test('with interface vpc endpoint', () => {
   // GIVEN

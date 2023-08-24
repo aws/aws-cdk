@@ -6,3 +6,4 @@ export * from './common';
 export * from './match';
 export * from './api-call-base';
 export * from './waiter-state-machine';
+export * from './http-call';

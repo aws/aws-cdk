@@ -53,6 +53,11 @@ zp2mwJn2NYB7AZ7+imp0azDZb+8YG2aUCiyqb6PnnA==
         authenticationMethod: AuthenticationMethod.CLIENT_CERTIFICATE_TLS_AUTH,
         rootCACertificate: rootCASecret,
         startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        filters: [
+          lambda.FilterCriteria.filter({
+            numericEquals: lambda.FilterRule.isEqual(1),
+          }),
+        ],
       }),
     );
   }

@@ -326,7 +326,6 @@ export class Lazy {
   }
 }
 
-
 interface ILazyProducer<A> {
   produce(context: IResolveContext): A | undefined;
 }

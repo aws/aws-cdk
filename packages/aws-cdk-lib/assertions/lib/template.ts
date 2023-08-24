@@ -1,5 +1,4 @@
 import * as path from 'path';
-import { Stack, Stage } from '../../core';
 import * as fs from 'fs-extra';
 import { Match } from './match';
 import { Matcher } from './matcher';
@@ -10,6 +9,7 @@ import { findOutputs, hasOutput } from './private/outputs';
 import { findParameters, hasParameter } from './private/parameters';
 import { allResources, allResourcesProperties, countResources, countResourcesProperties, findResources, hasResource, hasResourceProperties } from './private/resources';
 import { Template as TemplateType } from './private/template';
+import { Stack, Stage } from '../../core';
 
 /**
  * Suite of assertions that can be run on a CDK stack.

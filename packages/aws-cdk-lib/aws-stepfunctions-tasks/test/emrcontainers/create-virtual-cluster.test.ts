@@ -21,7 +21,7 @@ describe('Invoke emr-containers CreateVirtualCluster with ', () => {
     });
 
     new sfn.StateMachine(stack, 'SM', {
-      definition: task,
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
     });
 
     // THEN
@@ -65,7 +65,7 @@ describe('Invoke emr-containers CreateVirtualCluster with ', () => {
     });
 
     new sfn.StateMachine(stack, 'SM', {
-      definition: task,
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
     });
 
     // THEN
@@ -132,7 +132,7 @@ describe('Invoke emr-containers CreateVirtualCluster with ', () => {
     });
 
     new sfn.StateMachine(stack, 'SM', {
-      definition: task,
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
     });
 
     // THEN
@@ -154,7 +154,7 @@ test('Permitted role actions included for CreateVirtualCluster if service integr
   });
 
   new sfn.StateMachine(stack, 'SM', {
-    definition: task,
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
   });
 
   // THEN

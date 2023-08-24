@@ -50,7 +50,6 @@ export interface DefaultCdkOptions {
    */
   readonly app?: string;
 
-
   /**
    * Role to pass to CloudFormation for deployment
    *

@@ -1078,5 +1078,4 @@ export class TimeZone {
   private constructor(public readonly timezoneName: string) {
   }
 
-
 }

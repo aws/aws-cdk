@@ -1,9 +1,9 @@
-import * as iam from '../../../aws-iam';
-import * as sfn from '../../../aws-stepfunctions';
-import { Duration, Stack } from '../../../core';
 import { Construct } from 'constructs';
 import { EmrCreateCluster } from './emr-create-cluster';
 import { InstanceGroupModifyConfigPropertyToJson } from './private/cluster-utils';
+import * as iam from '../../../aws-iam';
+import * as sfn from '../../../aws-stepfunctions';
+import { Duration, Stack } from '../../../core';
 import { integrationResourceArn } from '../private/task-utils';
 
 /**

@@ -1,7 +1,7 @@
+import { createScalableTarget } from './util';
 import { Template } from '../../assertions';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as cdk from '../../core';
-import { createScalableTarget } from './util';
 import * as appscaling from '../lib';
 
 describe('target tracking', () => {
@@ -26,7 +26,6 @@ describe('target tracking', () => {
 
     });
 
-
   });
 
   test('test setup target tracking on predefined metric for lambda', () => {
@@ -49,7 +48,6 @@ describe('target tracking', () => {
       },
 
     });
-
 
   });
 
@@ -97,7 +95,6 @@ describe('target tracking', () => {
       },
 
     });
-
 
   });
 });

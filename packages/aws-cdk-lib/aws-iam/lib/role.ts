@@ -1,5 +1,3 @@
-import { ArnFormat, Duration, Resource, Stack, Token, TokenComparison, Aspects, Annotations } from '../../core';
-import { getCustomizeRolesConfig, getPrecreatedRoleConfig, CUSTOMIZE_ROLES_CONTEXT_KEY, CustomizeRoleConfig } from '../../core/lib/helpers-internal';
 import { Construct, IConstruct, DependencyGroup, Node } from 'constructs';
 import { Grant } from './grant';
 import { CfnRole } from './iam.generated';
@@ -15,6 +13,8 @@ import { ImportedRole } from './private/imported-role';
 import { MutatingPolicyDocumentAdapter } from './private/policydoc-adapter';
 import { PrecreatedRole } from './private/precreated-role';
 import { AttachedPolicies, UniqueStringSet } from './private/util';
+import { ArnFormat, Duration, Resource, Stack, Token, TokenComparison, Aspects, Annotations } from '../../core';
+import { getCustomizeRolesConfig, getPrecreatedRoleConfig, CUSTOMIZE_ROLES_CONTEXT_KEY, CustomizeRoleConfig } from '../../core/lib/helpers-internal';
 
 const MAX_INLINE_SIZE = 10000;
 const MAX_MANAGEDPOL_SIZE = 6000;
@@ -293,7 +293,6 @@ export class Role extends Resource implements IRole {
       ...options,
     });
 
-
     // we only return an immutable Role if both accounts were explicitly provided, and different
     return options.mutable !== false && equalOrAnyUnresolved
       ? importedRole
@@ -306,7 +305,6 @@ export class Role extends Resource implements IRole {
   public static isRole(x: any) : x is Role {
     return x !== null && typeof(x) === 'object' && IAM_ROLE_SYMBOL in x;
   }
-
 
   /**
    * Import an external role by name.
@@ -551,7 +549,7 @@ export class Role extends Resource implements IRole {
     if (this._precreatedRole) {
       return this._precreatedRole.addManagedPolicy(policy);
     } else {
-      if (this.managedPolicies.find(mp => mp === policy)) { return; }
+      if (this.managedPolicies.some(mp => mp.managedPolicyArn === policy.managedPolicyArn)) { return; }
       this.managedPolicies.push(policy);
     }
   }
@@ -654,9 +652,9 @@ export class Role extends Resource implements IRole {
 
     const mpCount = this.managedPolicies.length + (splitOffDocs.size - 1);
     if (mpCount > 20) {
-      Annotations.of(this).addWarning(`Policy too large: ${mpCount} exceeds the maximum of 20 managed policies attached to a Role`);
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-iam:rolePolicyTooLarge', `Policy too large: ${mpCount} exceeds the maximum of 20 managed policies attached to a Role`);
     } else if (mpCount > 10) {
-      Annotations.of(this).addWarning(`Policy large: ${mpCount} exceeds 10 managed policies attached to a Role, this requires a quota increase`);
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-iam:rolePolicyLarge', `Policy large: ${mpCount} exceeds 10 managed policies attached to a Role, this requires a quota increase`);
     }
 
     // Create the managed policies and fix up the dependencies

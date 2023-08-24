@@ -1,11 +1,11 @@
 import * as fs from 'fs';
 import { join, dirname } from 'path';
+import { Construct } from 'constructs';
+import { renderData } from './render-data';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
 import { FileSystem, Stack } from '../../core';
-import { Construct } from 'constructs';
-import { renderData } from './render-data';
 
 /**
  * Source information.

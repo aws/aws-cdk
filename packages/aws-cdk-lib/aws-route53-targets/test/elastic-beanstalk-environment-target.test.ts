@@ -24,7 +24,6 @@ test('use EBS environment as record target', () => {
   });
 });
 
-
 test('support 4-levels subdomain URLs for EBS environments', () => {
   // GIVEN
   const stack = new Stack();

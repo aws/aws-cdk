@@ -1,7 +1,7 @@
-import { IResource, Resource } from '../../core';
 import { Construct } from 'constructs';
 import { HttpMethod, IConnection } from './connection';
 import { CfnApiDestination } from './events.generated';
+import { IResource, Resource } from '../../core';
 
 /**
  * The event API Destination properties

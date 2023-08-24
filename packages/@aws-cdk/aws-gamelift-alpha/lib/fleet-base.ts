@@ -1,13 +1,12 @@
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as cdk from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { Alias, AliasOptions } from './alias';
 import { IGameSessionQueueDestination } from './game-session-queue';
 import { GameLiftMetrics } from 'aws-cdk-lib/aws-gamelift/lib/gamelift-canned-metrics.generated';
 import { CfnFleet } from 'aws-cdk-lib/aws-gamelift';
-
 
 /**
  * Current resource capacity settings in a specified fleet or location.
@@ -640,7 +639,7 @@ export abstract class FleetBase extends cdk.Resource implements IFleet {
   }
 
   protected warnVpcPeeringAuthorizations(scope: Construct): void {
-    cdk.Annotations.of(scope).addWarning([
+    cdk.Annotations.of(scope).addWarningV2('@aws-cdk/aws-gamelift:fleetAutorizeVpcPeering', [
       'To authorize the VPC peering, call the GameLift service API CreateVpcPeeringAuthorization() or use the AWS CLI command create-vpc-peering-authorization.',
       'Make this call using the account that manages your non-GameLift resources.',
       'See: https://docs.aws.amazon.com/gamelift/latest/developerguide/vpc-peering.html',

@@ -55,6 +55,7 @@ const stack = new LambdaStack(app, 'lambda-logssubscription-integ');
 
 const integ = new IntegTest(app, 'LambdaInteg', {
   testCases: [stack],
+  diffAssets: true,
 });
 
 const putEvents = integ.assertions.awsApiCall('EventBridge', 'putEvents', {

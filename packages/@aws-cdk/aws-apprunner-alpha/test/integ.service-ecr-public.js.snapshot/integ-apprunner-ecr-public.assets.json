@@ -1,7 +1,7 @@
 {
-  "version": "31.0.0",
+  "version": "32.0.0",
   "files": {
-    "f00e06a7824495556404fb0a324a2b16e71836ea8aee2588858ad09bad6da100": {
+    "2181f59f2645e4bd58941c645d6d82a03c41c276ad3e6fd67609d6a733a7248e": {
       "source": {
         "path": "integ-apprunner-ecr-public.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "f00e06a7824495556404fb0a324a2b16e71836ea8aee2588858ad09bad6da100.json",
+          "objectKey": "2181f59f2645e4bd58941c645d6d82a03c41c276ad3e6fd67609d6a733a7248e.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

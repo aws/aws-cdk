@@ -1,7 +1,7 @@
+import { singletonEventRole } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as firehose from '../../aws-kinesisfirehose';
-import { singletonEventRole } from './util';
 
 /**
  * Customize the Firehose Stream Event Target
@@ -16,7 +16,6 @@ export interface KinesisFirehoseStreamProps {
    */
   readonly message?: events.RuleTargetInput;
 }
-
 
 /**
  * Customize the Firehose Stream Event Target
@@ -36,7 +35,6 @@ export class KinesisFirehoseStream implements events.IRuleTarget {
       actions: ['firehose:PutRecord', 'firehose:PutRecordBatch'],
       resources: [this.stream.attrArn],
     }));
-
 
     return {
       arn: this.stream.attrArn,

@@ -1,4 +1,3 @@
-import * as cdk from '../../core';
 import { Construct } from 'constructs';
 import { Grant } from './grant';
 import { IManagedPolicy } from './managed-policy';
@@ -6,6 +5,7 @@ import { Policy } from './policy';
 import { PolicyStatement } from './policy-statement';
 import { AddToPrincipalPolicyResult, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { IRole, Role, RoleProps } from './role';
+import * as cdk from '../../core';
 
 /**
  * Properties for defining a LazyRole

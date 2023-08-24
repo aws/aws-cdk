@@ -38,12 +38,32 @@ describe('Fields', () => {
         count: JsonPath.numberAt('$$.State.RetryCount'),
         token: JsonPath.taskToken,
         entire: JsonPath.entireContext,
+        execId: JsonPath.executionId,
+        input: JsonPath.executionInput,
+        execName: JsonPath.executionName,
+        roleArn: JsonPath.executionRoleArn,
+        startTime: JsonPath.executionStartTime,
+        enteredTime: JsonPath.stateEnteredTime,
+        stateName: JsonPath.stateName,
+        retryCount: JsonPath.stateRetryCount,
+        stateMachineId: JsonPath.stateMachineId,
+        stateMachineName: JsonPath.stateMachineName,
       }),
     ).toStrictEqual({
       'str.$': '$$.Execution.StartTime',
       'count.$': '$$.State.RetryCount',
       'token.$': '$$.Task.Token',
       'entire.$': '$$',
+      'execId.$': '$$.Execution.Id',
+      'input.$': '$$.Execution.Input',
+      'execName.$': '$$.Execution.Name',
+      'roleArn.$': '$$.Execution.RoleArn',
+      'startTime.$': '$$.Execution.StartTime',
+      'enteredTime.$': '$$.State.EnteredTime',
+      'stateName.$': '$$.State.Name',
+      'retryCount.$': '$$.State.RetryCount',
+      'stateMachineId.$': '$$.StateMachine.Id',
+      'stateMachineName.$': '$$.StateMachine.Name',
     });
   }),
   test('find all referenced paths', () => {
@@ -448,6 +468,48 @@ describe('intrinsics constructors', () => {
       Field: JsonPath.jsonToString(JsonPath.objectAt('$.Obj')),
     })).toEqual({
       'Field.$': 'States.JsonToString($.Obj)',
+    });
+  });
+
+  test('correctly serialize a nested array', () => {
+    expect(
+      FieldUtils.renderObject({
+        nestedArray: [
+          [
+            [123, 123],
+            [456, 456],
+          ],
+        ],
+      }),
+    ).toStrictEqual({
+      nestedArray: [
+        [
+          [123, 123],
+          [456, 456],
+        ],
+      ],
+    });
+  });
+
+  test('deep replace correctly handles fields in nested arrays', () => {
+    expect(
+      FieldUtils.renderObject({
+        deep: [
+          [
+            {
+              deepField: JsonPath.numberAt('$.numField'),
+            },
+          ],
+        ],
+      }),
+    ).toStrictEqual({
+      deep: [
+        [
+          {
+            'deepField.$': '$.numField',
+          },
+        ],
+      ],
     });
   });
 });

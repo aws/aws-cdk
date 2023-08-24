@@ -2,12 +2,11 @@ import { Template } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as eks from 'aws-cdk-lib/aws-eks';
 import { ArnPrincipal, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { Stack, Duration } from 'aws-cdk-lib';
+import { Stack, Duration, Tags } from 'aws-cdk-lib';
 import { capitalizePropertyNames } from './utils';
 import * as batch from '../lib';
-import { AllocationStrategy, ManagedEc2EcsComputeEnvironment, ManagedEc2EcsComputeEnvironmentProps, ManagedEc2EksComputeEnvironment, ManagedEc2EksComputeEnvironmentProps } from '../lib';
+import { AllocationStrategy, ManagedEc2EcsComputeEnvironment, ManagedEc2EcsComputeEnvironmentProps, ManagedEc2EksComputeEnvironment, ManagedEc2EksComputeEnvironmentProps, FargateComputeEnvironment } from '../lib';
 import { CfnComputeEnvironmentProps } from 'aws-cdk-lib/aws-batch';
-
 
 const defaultExpectedEcsProps: CfnComputeEnvironmentProps = {
   type: 'managed',
@@ -169,7 +168,7 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
     });
   });
 
-  test('spot => AllocationStrategy.SPOT_CAPACITY_OPTIMIZED', () => {
+  test('spot => AllocationStrategy.SPOT_PRICE_CAPACITY_OPTIMIZED', () => {
     // WHEN
     new ComputeEnvironment(stack, 'MyCE', {
       ...defaultProps,
@@ -183,7 +182,7 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
       ComputeResources: {
         ...defaultComputeResources,
         Type: 'SPOT',
-        AllocationStrategy: 'SPOT_CAPACITY_OPTIMIZED',
+        AllocationStrategy: 'SPOT_PRICE_CAPACITY_OPTIMIZED',
       },
     });
   });
@@ -565,6 +564,28 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
     });
   });
 
+  test('respects tags', () => {
+    // WHEN
+    const ce = new ComputeEnvironment(stack, 'MyCE', {
+      ...defaultProps,
+    });
+
+    Tags.of(ce).add('superfood', 'acai');
+    Tags.of(ce).add('super', 'salamander');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+      ...expectedProps,
+      ComputeResources: {
+        ...defaultComputeResources,
+        Tags: {
+          superfood: 'acai',
+          super: 'salamander',
+        },
+      },
+    });
+  });
+
   test('can be imported from arn', () => {
     // WHEN
     const ce = ManagedEc2EcsComputeEnvironment.fromManagedEc2EcsComputeEnvironmentArn(stack, 'import', 'arn:aws:batch:us-east-1:123456789012:compute-environment/ce-name');
@@ -620,6 +641,17 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
         allocationStrategy: AllocationStrategy.SPOT_CAPACITY_OPTIMIZED,
       });
     }).toThrow(/Managed ComputeEnvironment 'MyCE' specifies 'AllocationStrategy.SPOT_CAPACITY_OPTIMIZED' without using spot instances/);
+  });
+
+  test('throws error when AllocationStrategy.SPOT_PRICE_CAPACITY_OPTIMIZED is used without specfiying spot', () => {
+    // THEN
+    expect(() => {
+      new ComputeEnvironment(stack, 'MyCE', {
+        ...defaultProps,
+        vpc,
+        allocationStrategy: AllocationStrategy.SPOT_PRICE_CAPACITY_OPTIMIZED,
+      });
+    }).toThrow(/Managed ComputeEnvironment 'MyCE' specifies 'AllocationStrategy.SPOT_PRICE_CAPACITY_OPTIMIZED' without using spot instances/);
   });
 
   test('throws error when spotBidPercentage is specified without spot', () => {
@@ -729,7 +761,7 @@ describe('ManagedEc2EcsComputeEnvironment', () => {
       ...pascalCaseExpectedEcsProps,
       ComputeResources: {
         ...defaultComputeResources,
-        AllocationStrategy: AllocationStrategy.SPOT_CAPACITY_OPTIMIZED,
+        AllocationStrategy: AllocationStrategy.SPOT_PRICE_CAPACITY_OPTIMIZED,
         Type: 'SPOT',
         SpotIamFleetRole: {
           'Fn::GetAtt': ['SpotFleetRole6D4F7558', 'Arn'],
@@ -887,5 +919,39 @@ describe('ManagedEc2EksComputeEnvironment', () => {
         ],
       },
     });
+  });
+});
+
+describe('FargateComputeEnvironment', () => {
+  beforeEach(() => {
+    stack = new Stack();
+    vpc = new ec2.Vpc(stack, 'vpc');
+  });
+
+  test('respects name', () => {
+    // WHEN
+    new FargateComputeEnvironment(stack, 'maximalPropsFargate', {
+      vpc,
+      maxvCpus: 512,
+      computeEnvironmentName: 'maxPropsFargateCE',
+      replaceComputeEnvironment: true,
+      spot: true,
+      terminateOnUpdate: true,
+      updateTimeout: Duration.minutes(30),
+      updateToLatestImageVersion: false,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+      ComputeEnvironmentName: 'maxPropsFargateCE',
+    });
+  });
+
+  test('can be imported from arn', () => {
+    // WHEN
+    const ce = FargateComputeEnvironment.fromFargateComputeEnvironmentArn(stack, 'import', 'arn:aws:batch:us-east-1:123456789012:compute-environment/ce-name');
+
+    // THEN
+    expect(ce.computeEnvironmentArn).toEqual('arn:aws:batch:us-east-1:123456789012:compute-environment/ce-name');
   });
 });

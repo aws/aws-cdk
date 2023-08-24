@@ -18,6 +18,7 @@ export interface ClientOptions {
   region?: string;
   assumeRoleArn?: string;
   assumeRoleExternalId?: string;
+  quiet?: boolean;
 }
 
 /**
@@ -56,7 +57,6 @@ export class DefaultAwsClient implements IAws {
     // Stop SDKv2 from displaying a warning for now. We are aware and will migrate at some point,
     // our customer don't need to be bothered with this.
     process.env.AWS_SDK_JS_SUPPRESS_MAINTENANCE_MODE_MESSAGE = '1';
-
 
     // We need to set the environment before we load this library for the first time.
     // eslint-disable-next-line @typescript-eslint/no-require-imports

@@ -1,7 +1,7 @@
+import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
 import * as codebuild from '../../aws-codebuild';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
-import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
 
 /**
  * Customize the CodeBuild Event Target

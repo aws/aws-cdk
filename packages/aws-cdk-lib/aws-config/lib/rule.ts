@@ -1,10 +1,10 @@
 import { createHash } from 'crypto';
+import { Construct } from 'constructs';
+import { CfnConfigRule } from './config.generated';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import { IResource, Lazy, Resource, Stack } from '../../core';
-import { Construct } from 'constructs';
-import { CfnConfigRule } from './config.generated';
 
 /**
  * Interface representing an AWS Config rule

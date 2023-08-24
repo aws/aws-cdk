@@ -1,5 +1,6 @@
 import { IApiCall } from './api-call-base';
 import { ExpectedResult, ActualResult } from './common';
+import { FetchOptions } from './providers';
 import { LambdaInvokeFunctionProps } from './sdk';
 
 /**
@@ -43,6 +44,19 @@ export interface IDeployAssert {
    * }));
    */
   invokeFunction(props: LambdaInvokeFunctionProps): IApiCall;
+
+  /**
+   * Make an HTTP call to the provided endpoint
+   *
+   * @example
+   * declare const app: App;
+   * declare const integ: IntegTest;
+   * const call = integ.assertions.httpApiCall('https://example.com/test');
+   * call.expect(ExpectedResult.objectLike({
+   *   Message: 'Hello World!',
+   * }));
+   */
+  httpApiCall(url: string, options?: FetchOptions): IApiCall;
 
   /**
    * Assert that the ExpectedResult is equal

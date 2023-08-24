@@ -1,6 +1,6 @@
 import { ICertificate } from 'aws-cdk-lib/aws-certificatemanager';
 import { IBucket } from 'aws-cdk-lib/aws-s3';
-import { IResource, Lazy, Resource, Token } from 'aws-cdk-lib';
+import { IResource, Lazy, Resource, Token } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnDomainName, CfnDomainNameProps } from 'aws-cdk-lib/aws-apigatewayv2';
 

@@ -2,17 +2,16 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as eks from 'aws-cdk-lib/aws-eks';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { IRole } from 'aws-cdk-lib/aws-iam';
-import { ArnFormat, Duration, Lazy, Resource, Stack } from 'aws-cdk-lib';
+import { ArnFormat, Duration, ITaggable, Lazy, Resource, Stack, TagManager, TagType } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnComputeEnvironment } from 'aws-cdk-lib/aws-batch';
 import { IComputeEnvironment, ComputeEnvironmentBase, ComputeEnvironmentProps } from './compute-environment-base';
-
 
 /**
  * Represents a Managed ComputeEnvironment. Batch will provision EC2 Instances to
  * meet the requirements of the jobs executing in this ComputeEnvironment.
  */
-export interface IManagedComputeEnvironment extends IComputeEnvironment, ec2.IConnectable {
+export interface IManagedComputeEnvironment extends IComputeEnvironment, ec2.IConnectable, ITaggable {
   /**
    * The maximum vCpus this `ManagedComputeEnvironment` can scale up to.
    *
@@ -206,6 +205,7 @@ export abstract class ManagedComputeEnvironmentBase extends ComputeEnvironmentBa
   public readonly terminateOnUpdate?: boolean;
   public readonly securityGroups: ec2.ISecurityGroup[];
   public readonly updateToLatestImageVersion?: boolean;
+  public readonly tags: TagManager = new TagManager(TagType.MAP, 'AWS::Batch::ComputeEnvironment');
 
   public readonly connections: ec2.Connections;
 
@@ -452,6 +452,15 @@ export enum AllocationStrategy {
    * you should allow Batch to choose from as many different instance types as possible.
    */
   SPOT_CAPACITY_OPTIMIZED = 'SPOT_CAPACITY_OPTIMIZED',
+
+  /**
+   * The price and capacity optimized allocation strategy looks at both price and capacity
+   * to select the Spot Instance pools that are the least likely to be interrupted
+   * and have the lowest possible price.
+   *
+   * The Batch team recommends this over `SPOT_CAPACITY_OPTIMIZED` in most instances.
+   */
+  SPOT_PRICE_CAPACITY_OPTIMIZED = 'SPOT_PRICE_CAPACITY_OPTIMIZED',
 }
 
 /**
@@ -595,6 +604,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
       public readonly maxvCpus = 1;
       public readonly connections = { } as any;
       public readonly securityGroups = [];
+      public readonly tags: TagManager = new TagManager(TagType.MAP, 'AWS::Batch::ComputeEnvironment');
 
       public addInstanceClass(_instanceClass: ec2.InstanceClass): void {
         throw new Error(`cannot add instance class to imported ComputeEnvironment '${id}'`);
@@ -674,6 +684,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
           };
         }),
         placementGroup: this.placementGroup?.placementGroupName,
+        tags: this.tags.renderedTags as any,
       },
     });
 
@@ -1020,6 +1031,7 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
           };
         }),
         placementGroup: this.placementGroup?.placementGroupName,
+        tags: this.tags.renderedTags as any,
       },
     });
 
@@ -1065,15 +1077,17 @@ export class FargateComputeEnvironment extends ManagedComputeEnvironmentBase imp
     const stack = Stack.of(scope);
     const computeEnvironmentName = stack.splitArn(fargateComputeEnvironmentArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
 
-    class Import extends ManagedComputeEnvironmentBase implements IFargateComputeEnvironment {
+    class Import extends Resource implements IFargateComputeEnvironment {
       public readonly computeEnvironmentArn = fargateComputeEnvironmentArn;
       public readonly computeEnvironmentName = computeEnvironmentName;
       public readonly enabled = true;
+      public readonly maxvCpus = 1;
+      public readonly connections = { } as any;
+      public readonly securityGroups = [];
+      public readonly tags: TagManager = new TagManager(TagType.MAP, 'AWS::Batch::ComputeEnvironment');
     }
 
-    return new Import(scope, id, {
-      vpc: undefined as any,
-    });
+    return new Import(scope, id);
   }
 
   public readonly computeEnvironmentName: string;
@@ -1085,6 +1099,7 @@ export class FargateComputeEnvironment extends ManagedComputeEnvironmentBase imp
     const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
     const resource = new CfnComputeEnvironment(this, 'Resource', {
       ...baseManagedResourceProperties(this, subnetIds),
+      computeEnvironmentName: props.computeEnvironmentName,
       computeResources: {
         ...baseManagedResourceProperties(this, subnetIds).computeResources as CfnComputeEnvironment.ComputeResourcesProperty,
         type: this.spot ? 'FARGATE_SPOT' : 'FARGATE',
@@ -1139,7 +1154,9 @@ function createSpotFleetRole(scope: Construct): IRole {
 function determineAllocationStrategy(id: string, allocationStrategy?: AllocationStrategy, spot?: boolean): AllocationStrategy | undefined {
   let result = allocationStrategy;
   if (!allocationStrategy) {
-    result = spot ? AllocationStrategy.SPOT_CAPACITY_OPTIMIZED : AllocationStrategy.BEST_FIT_PROGRESSIVE;
+    result = spot ? AllocationStrategy.SPOT_PRICE_CAPACITY_OPTIMIZED : AllocationStrategy.BEST_FIT_PROGRESSIVE;
+  } else if (allocationStrategy === AllocationStrategy.SPOT_PRICE_CAPACITY_OPTIMIZED && !spot) {
+    throw new Error(`Managed ComputeEnvironment '${id}' specifies 'AllocationStrategy.SPOT_PRICE_CAPACITY_OPTIMIZED' without using spot instances`);
   } else if (allocationStrategy === AllocationStrategy.SPOT_CAPACITY_OPTIMIZED && !spot) {
     throw new Error(`Managed ComputeEnvironment '${id}' specifies 'AllocationStrategy.SPOT_CAPACITY_OPTIMIZED' without using spot instances`);
   }

@@ -79,7 +79,7 @@ export function filterUndefined(obj: any): any {
  * A Token that applies a function AFTER resolve resolution
  */
 export class PostResolveToken extends Intrinsic implements IPostProcessor {
-  constructor(value: any, private readonly processor: (x: any) => any) {
+  constructor(value: any, private readonly processor: (x: any, context: IResolveContext) => any) {
     super(value, { stackTrace: false });
   }
 
@@ -88,8 +88,8 @@ export class PostResolveToken extends Intrinsic implements IPostProcessor {
     return super.resolve(context);
   }
 
-  public postProcess(o: any, _context: IResolveContext): any {
-    return this.processor(o);
+  public postProcess(o: any, context: IResolveContext): any {
+    return this.processor(o, context);
   }
 }
 

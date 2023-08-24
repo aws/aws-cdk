@@ -1,6 +1,6 @@
+import { Construct, Dependable, DependencyGroup } from 'constructs';
 import { Resource, Stack } from '../../../core';
 import { PolicySynthesizer } from '../../../core/lib/helpers-internal';
-import { Construct, Dependable, DependencyGroup } from 'constructs';
 import { Grant } from '../grant';
 import { IManagedPolicy } from '../managed-policy';
 import { Policy } from '../policy';

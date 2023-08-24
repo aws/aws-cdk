@@ -1,12 +1,11 @@
 import * as ecs from 'aws-cdk-lib/aws-ecs';
-import { Lazy, Size } from 'aws-cdk-lib';
+import { Lazy, Size } from 'aws-cdk-lib/core';
 import { Construct, IConstruct } from 'constructs';
 import { CfnJobDefinition } from 'aws-cdk-lib/aws-batch';
 
 const EMPTY_DIR_VOLUME_SYMBOL = Symbol.for('aws-cdk-lib/aws-batch/lib/eks-container-definition.EmptyDirVolume');
 const HOST_PATH_VOLUME_SYMBOL = Symbol.for('aws-cdk-lib/aws-batch/lib/eks-container-definition.HostPathVolume');
 const SECRET_PATH_VOLUME_SYMBOL = Symbol.for('aws-cdk-lib/aws-batch/lib/eks-container-definition.SecretVolume');
-
 
 /**
  * A container that can be run with EKS orchestration on EC2 resources
@@ -648,9 +647,9 @@ export interface EksVolumeOptions {
   readonly name: string;
 
   /**
-   * The path on the container where the container is mounted.
+   * The path on the container where the volume is mounted.
    *
-   * @default - the container is not mounted
+   * @default - the volume is not mounted
    */
   readonly mountPath?: string;
 
@@ -903,7 +902,7 @@ export class SecretPathVolume extends EksVolume {
   constructor(options: SecretPathVolumeOptions) {
     super(options);
     this.secretName = options.secretName;
-    this.optional = options.optional;
+    this.optional = options.optional ?? true;
   }
 }
 

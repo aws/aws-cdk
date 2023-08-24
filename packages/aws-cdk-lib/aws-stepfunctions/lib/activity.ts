@@ -1,9 +1,9 @@
-import * as cloudwatch from '../../aws-cloudwatch';
-import * as iam from '../../aws-iam';
-import { ArnFormat, IResource, Lazy, Names, Resource, Stack } from '../../core';
 import { Construct } from 'constructs';
 import { StatesMetrics } from './stepfunctions-canned-metrics.generated';
 import { CfnActivity } from './stepfunctions.generated';
+import * as cloudwatch from '../../aws-cloudwatch';
+import * as iam from '../../aws-iam';
+import { ArnFormat, IResource, Lazy, Names, Resource, Stack } from '../../core';
 
 /**
  * Properties for defining a new Step Functions Activity

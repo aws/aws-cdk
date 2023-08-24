@@ -7,20 +7,64 @@
      "LifecyclePolicyText": "{\"rules\":[{\"rulePriority\":1,\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":5},\"action\":{\"type\":\"expire\"}}]}"
     },
     "RepositoryPolicyText": {
-      "Statement": [
-       {
-        "Action": "ecr:GetDownloadUrlForLayer",
-        "Effect": "Allow",
-        "Principal": {
-         "AWS": "*"
-        }
+     "Statement": [
+      {
+       "Action": "ecr:GetDownloadUrlForLayer",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": "*"
        }
-      ],
-      "Version": "2012-10-17"
-     }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
    },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
+  },
+  "MyUserDC45028B": {
+   "Type": "AWS::IAM::User"
+  },
+  "MyUserDefaultPolicy7B897426": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:BatchGetImage",
+        "ecr:CompleteLayerUpload",
+        "ecr:DescribeImages",
+        "ecr:DescribeRepositories",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:InitiateLayerUpload",
+        "ecr:PutImage",
+        "ecr:UploadLayerPart"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "Repo02AC86CF",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "ecr:GetAuthorizationToken",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyUserDefaultPolicy7B897426",
+    "Users": [
+     {
+      "Ref": "MyUserDC45028B"
+     }
+    ]
+   }
   }
  },
  "Outputs": {

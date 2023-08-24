@@ -119,229 +119,6 @@
     ]
    }
   },
-  "IntegDomain624DF323": {
-   "Type": "AWS::ApiGateway::DomainName",
-   "Properties": {
-    "DomainName": "*.example.com",
-    "EndpointConfiguration": {
-     "Types": [
-      "REGIONAL"
-     ]
-    },
-    "RegionalCertificateArn": "arn:aws:acm:test-region:12345678:certificate/86468209-a272-595d-b831-0efb6421265z",
-    "SecurityPolicy": "TLS_1_2"
-   }
-  },
-  "IntegDomainMapintegapigwdomainnamemappingIntegApi1IntegApi201817D4F3E86701596": {
-   "Type": "AWS::ApiGateway::BasePathMapping",
-   "Properties": {
-    "DomainName": {
-     "Ref": "IntegDomain624DF323"
-    },
-    "RestApiId": {
-     "Ref": "IntegApi1IntegApi2018FAD77E9"
-    },
-    "Stage": {
-     "Ref": "IntegApi1IntegApi201DeploymentStageprod42C7F5CE"
-    }
-   }
-  },
-  "IntegDomainMapordersintegapigwdomainnamemappingIntegApi1IntegApi201817D4F3E1F08DBEE": {
-   "Type": "AWS::ApiGateway::BasePathMapping",
-   "Properties": {
-    "DomainName": {
-     "Ref": "IntegDomain624DF323"
-    },
-    "BasePath": "orders",
-    "RestApiId": {
-     "Ref": "IntegApi1IntegApi2018FAD77E9"
-    },
-    "Stage": {
-     "Ref": "IntegApi1IntegApi201DeploymentStageprod42C7F5CE"
-    }
-   }
-  },
-  "IntegDomainMapordersv2integapigwdomainnamemappingIntegApi2IntegApi202DeploymentStageprodDA7FC3FE3C3CDD8F": {
-   "Type": "AWS::ApiGatewayV2::ApiMapping",
-   "Properties": {
-    "ApiId": {
-     "Ref": "IntegApi2IntegApi202F39817F4"
-    },
-    "DomainName": {
-     "Ref": "IntegDomain624DF323"
-    },
-    "Stage": {
-     "Ref": "IntegApi2IntegApi202DeploymentStageprod9500285C"
-    },
-    "ApiMappingKey": "orders/v2"
-   }
-  },
-  "IntegDomainMapordersv1integapigwdomainnamemappingIntegApi1IntegApi201DeploymentStageprod556D59765598DA9A": {
-   "Type": "AWS::ApiGatewayV2::ApiMapping",
-   "Properties": {
-    "ApiId": {
-     "Ref": "IntegApi1IntegApi2018FAD77E9"
-    },
-    "DomainName": {
-     "Ref": "IntegDomain624DF323"
-    },
-    "Stage": {
-     "Ref": "IntegApi1IntegApi201DeploymentStageprod42C7F5CE"
-    },
-    "ApiMappingKey": "orders/v1"
-   }
-  },
-  "Integ2Domain70CCEA68": {
-   "Type": "AWS::ApiGateway::DomainName",
-   "Properties": {
-    "DomainName": "another-*.example.com",
-    "EndpointConfiguration": {
-     "Types": [
-      "REGIONAL"
-     ]
-    },
-    "RegionalCertificateArn": "arn:aws:acm:test-region:12345678:certificate/86468209-a272-595d-b831-0efb6421265z",
-    "SecurityPolicy": "TLS_1_2"
-   }
-  },
-  "Integ2DomainMapordersintegapigwdomainnamemappingIntegApi1IntegApi201817D4F3E604CCBD9": {
-   "Type": "AWS::ApiGateway::BasePathMapping",
-   "Properties": {
-    "DomainName": {
-     "Ref": "Integ2Domain70CCEA68"
-    },
-    "BasePath": "orders",
-    "RestApiId": {
-     "Ref": "IntegApi1IntegApi2018FAD77E9"
-    },
-    "Stage": {
-     "Ref": "IntegApi1IntegApi201DeploymentStageprod42C7F5CE"
-    }
-   }
-  },
-  "Integ2DomainMapordersv2integapigwdomainnamemappingIntegApi2IntegApi202DeploymentStageprodDA7FC3FECE78C5AD": {
-   "Type": "AWS::ApiGatewayV2::ApiMapping",
-   "Properties": {
-    "ApiId": {
-     "Ref": "IntegApi2IntegApi202F39817F4"
-    },
-    "DomainName": {
-     "Ref": "Integ2Domain70CCEA68"
-    },
-    "Stage": {
-     "Ref": "IntegApi2IntegApi202DeploymentStageprod9500285C"
-    },
-    "ApiMappingKey": "orders/v2"
-   }
-  },
-  "Integ3DomainE531FBAB": {
-   "Type": "AWS::ApiGateway::DomainName",
-   "Properties": {
-    "DomainName": "yet-another-*.example.com",
-    "EndpointConfiguration": {
-     "Types": [
-      "REGIONAL"
-     ]
-    },
-    "RegionalCertificateArn": "arn:aws:acm:test-region:12345678:certificate/86468209-a272-595d-b831-0efb6421265z",
-    "SecurityPolicy": "TLS_1_2"
-   }
-  },
-  "Integ3DomainMapintegapigwdomainnamemappingIntegApi1IntegApi201817D4F3EC2A223F3": {
-   "Type": "AWS::ApiGateway::BasePathMapping",
-   "Properties": {
-    "DomainName": {
-     "Ref": "Integ3DomainE531FBAB"
-    },
-    "RestApiId": {
-     "Ref": "IntegApi1IntegApi2018FAD77E9"
-    },
-    "Stage": {
-     "Ref": "IntegApi1IntegApi201DeploymentStageprod42C7F5CE"
-    }
-   }
-  },
-  "Integ3DomainMapv2integapigwdomainnamemappingIntegApi2IntegApi20289438F2BD839069D": {
-   "Type": "AWS::ApiGateway::BasePathMapping",
-   "Properties": {
-    "DomainName": {
-     "Ref": "Integ3DomainE531FBAB"
-    },
-    "BasePath": "v2",
-    "RestApiId": {
-     "Ref": "IntegApi2IntegApi202F39817F4"
-    },
-    "Stage": {
-     "Ref": "IntegApi2IntegApi202DeploymentStageprod9500285C"
-    }
-   }
-  },
-  "IntegDomainRecord": {
-   "Type": "AWS::Route53::RecordSet",
-   "Properties": {
-    "Name": "*.example.com",
-    "Type": "A",
-    "AliasTarget": {
-     "DNSName": {
-      "Fn::GetAtt": [
-       "IntegDomain624DF323",
-       "RegionalDomainName"
-      ]
-     },
-     "HostedZoneId": {
-      "Fn::GetAtt": [
-       "IntegDomain624DF323",
-       "RegionalHostedZoneId"
-      ]
-     }
-    },
-    "HostedZoneId": "Z23ABC4XYZL05B"
-   }
-  },
-  "Integ2DomainRecord": {
-   "Type": "AWS::Route53::RecordSet",
-   "Properties": {
-    "Name": "another-*.example.com",
-    "Type": "A",
-    "AliasTarget": {
-     "DNSName": {
-      "Fn::GetAtt": [
-       "Integ2Domain70CCEA68",
-       "RegionalDomainName"
-      ]
-     },
-     "HostedZoneId": {
-      "Fn::GetAtt": [
-       "Integ2Domain70CCEA68",
-       "RegionalHostedZoneId"
-      ]
-     }
-    },
-    "HostedZoneId": "Z23ABC4XYZL05B"
-   }
-  },
-  "Integ3DomainRecord": {
-   "Type": "AWS::Route53::RecordSet",
-   "Properties": {
-    "Name": "yet-another-*.example.com",
-    "Type": "A",
-    "AliasTarget": {
-     "DNSName": {
-      "Fn::GetAtt": [
-       "Integ3DomainE531FBAB",
-       "RegionalDomainName"
-      ]
-     },
-     "HostedZoneId": {
-      "Fn::GetAtt": [
-       "Integ3DomainE531FBAB",
-       "RegionalHostedZoneId"
-      ]
-     }
-    },
-    "HostedZoneId": "Z23ABC4XYZL05B"
-   }
-  },
   "IntegApi2IntegApi202F39817F4": {
    "Type": "AWS::ApiGateway::RestApi",
    "Properties": {
@@ -461,55 +238,228 @@
     ]
    }
   },
-  "InvokeApiServiceRoleFB17CD97": {
-   "Type": "AWS::IAM::Role",
+  "IntegDomain624DF323": {
+   "Type": "AWS::ApiGateway::DomainName",
    "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-       ]
-      ]
-     }
-    ]
-   }
-  },
-  "InvokeApi313C8B49": {
-   "Type": "AWS::Lambda::Function",
-   "Properties": {
-    "Code": {
-     "ZipFile": "\nconst https = require('https');\nexports.handler = async function(event) {\n  console.log(event);\n  const options = {\n    hostname: event.hostname,\n    path: event.path,\n  };\n  let dataString = '';\n  const response = await new Promise((resolve, reject) => {\n    const req = https.get(options, (res) => {\n      res.on('data', data => {\n        dataString += data;\n      })\n      res.on('end', () => {\n        resolve({\n          statusCode: res.statusCode,\n          body: dataString,\n        });\n      })\n    });\n    req.on('error', err => {\n      reject({\n        statusCode: 500,\n        body: JSON.stringify({\n          cause: 'Something went wrong',\n          error: err,\n        })\n      });\n    });\n    req.end();\n  });\n  return response;\n}\n\n"
-    },
-    "Role": {
-     "Fn::GetAtt": [
-      "InvokeApiServiceRoleFB17CD97",
-      "Arn"
+    "DomainName": "*.example.com",
+    "EndpointConfiguration": {
+     "Types": [
+      "REGIONAL"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs16.x"
-   },
-   "DependsOn": [
-    "InvokeApiServiceRoleFB17CD97"
-   ]
+    "RegionalCertificateArn": "arn:aws:acm:test-region:12345678:certificate/86468209-a272-595d-b831-0efb6421265z",
+    "SecurityPolicy": "TLS_1_2"
+   }
+  },
+  "IntegDomainMapintegapigwdomainnamemappingIntegApi1IntegApi201817D4F3E86701596": {
+   "Type": "AWS::ApiGateway::BasePathMapping",
+   "Properties": {
+    "DomainName": {
+     "Ref": "IntegDomain624DF323"
+    },
+    "RestApiId": {
+     "Ref": "IntegApi1IntegApi2018FAD77E9"
+    },
+    "Stage": {
+     "Ref": "IntegApi1IntegApi201DeploymentStageprod42C7F5CE"
+    }
+   }
+  },
+  "IntegDomainMapordersintegapigwdomainnamemappingIntegApi1IntegApi201817D4F3E1F08DBEE": {
+   "Type": "AWS::ApiGateway::BasePathMapping",
+   "Properties": {
+    "DomainName": {
+     "Ref": "IntegDomain624DF323"
+    },
+    "BasePath": "orders",
+    "RestApiId": {
+     "Ref": "IntegApi1IntegApi2018FAD77E9"
+    },
+    "Stage": {
+     "Ref": "IntegApi1IntegApi201DeploymentStageprod42C7F5CE"
+    }
+   }
+  },
+  "IntegDomainMapordersv2integapigwdomainnamemappingIntegApi2IntegApi202DeploymentStageprodDA7FC3FE3C3CDD8F": {
+   "Type": "AWS::ApiGatewayV2::ApiMapping",
+   "Properties": {
+    "ApiId": {
+     "Ref": "IntegApi2IntegApi202F39817F4"
+    },
+    "DomainName": {
+     "Ref": "IntegDomain624DF323"
+    },
+    "Stage": {
+     "Ref": "IntegApi2IntegApi202DeploymentStageprod9500285C"
+    },
+    "ApiMappingKey": "orders/v2"
+   }
+  },
+  "IntegDomainMapordersv1integapigwdomainnamemappingIntegApi1IntegApi201DeploymentStageprod556D59765598DA9A": {
+   "Type": "AWS::ApiGatewayV2::ApiMapping",
+   "Properties": {
+    "ApiId": {
+     "Ref": "IntegApi1IntegApi2018FAD77E9"
+    },
+    "DomainName": {
+     "Ref": "IntegDomain624DF323"
+    },
+    "Stage": {
+     "Ref": "IntegApi1IntegApi201DeploymentStageprod42C7F5CE"
+    },
+    "ApiMappingKey": "orders/v1"
+   }
+  },
+  "IntegDomainRecord": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "Name": "*.example.com",
+    "Type": "A",
+    "AliasTarget": {
+     "DNSName": {
+      "Fn::GetAtt": [
+       "IntegDomain624DF323",
+       "RegionalDomainName"
+      ]
+     },
+     "HostedZoneId": {
+      "Fn::GetAtt": [
+       "IntegDomain624DF323",
+       "RegionalHostedZoneId"
+      ]
+     }
+    },
+    "HostedZoneId": "Z23ABC4XYZL05B"
+   }
+  },
+  "Integ2Domain70CCEA68": {
+   "Type": "AWS::ApiGateway::DomainName",
+   "Properties": {
+    "DomainName": "another-*.example.com",
+    "EndpointConfiguration": {
+     "Types": [
+      "REGIONAL"
+     ]
+    },
+    "RegionalCertificateArn": "arn:aws:acm:test-region:12345678:certificate/86468209-a272-595d-b831-0efb6421265z",
+    "SecurityPolicy": "TLS_1_2"
+   }
+  },
+  "Integ2DomainMapordersintegapigwdomainnamemappingIntegApi1IntegApi201817D4F3E604CCBD9": {
+   "Type": "AWS::ApiGateway::BasePathMapping",
+   "Properties": {
+    "DomainName": {
+     "Ref": "Integ2Domain70CCEA68"
+    },
+    "BasePath": "orders",
+    "RestApiId": {
+     "Ref": "IntegApi1IntegApi2018FAD77E9"
+    },
+    "Stage": {
+     "Ref": "IntegApi1IntegApi201DeploymentStageprod42C7F5CE"
+    }
+   }
+  },
+  "Integ2DomainMapordersv2integapigwdomainnamemappingIntegApi2IntegApi202DeploymentStageprodDA7FC3FECE78C5AD": {
+   "Type": "AWS::ApiGatewayV2::ApiMapping",
+   "Properties": {
+    "ApiId": {
+     "Ref": "IntegApi2IntegApi202F39817F4"
+    },
+    "DomainName": {
+     "Ref": "Integ2Domain70CCEA68"
+    },
+    "Stage": {
+     "Ref": "IntegApi2IntegApi202DeploymentStageprod9500285C"
+    },
+    "ApiMappingKey": "orders/v2"
+   }
+  },
+  "Integ2DomainRecord": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "Name": "another-*.example.com",
+    "Type": "A",
+    "AliasTarget": {
+     "DNSName": {
+      "Fn::GetAtt": [
+       "Integ2Domain70CCEA68",
+       "RegionalDomainName"
+      ]
+     },
+     "HostedZoneId": {
+      "Fn::GetAtt": [
+       "Integ2Domain70CCEA68",
+       "RegionalHostedZoneId"
+      ]
+     }
+    },
+    "HostedZoneId": "Z23ABC4XYZL05B"
+   }
+  },
+  "Integ3DomainE531FBAB": {
+   "Type": "AWS::ApiGateway::DomainName",
+   "Properties": {
+    "DomainName": "yet-another-*.example.com",
+    "EndpointConfiguration": {
+     "Types": [
+      "REGIONAL"
+     ]
+    },
+    "RegionalCertificateArn": "arn:aws:acm:test-region:12345678:certificate/86468209-a272-595d-b831-0efb6421265z",
+    "SecurityPolicy": "TLS_1_2"
+   }
+  },
+  "Integ3DomainMapintegapigwdomainnamemappingIntegApi1IntegApi201817D4F3EC2A223F3": {
+   "Type": "AWS::ApiGateway::BasePathMapping",
+   "Properties": {
+    "DomainName": {
+     "Ref": "Integ3DomainE531FBAB"
+    },
+    "RestApiId": {
+     "Ref": "IntegApi1IntegApi2018FAD77E9"
+    },
+    "Stage": {
+     "Ref": "IntegApi1IntegApi201DeploymentStageprod42C7F5CE"
+    }
+   }
+  },
+  "Integ3DomainMapv2integapigwdomainnamemappingIntegApi2IntegApi20289438F2BD839069D": {
+   "Type": "AWS::ApiGateway::BasePathMapping",
+   "Properties": {
+    "DomainName": {
+     "Ref": "Integ3DomainE531FBAB"
+    },
+    "BasePath": "v2",
+    "RestApiId": {
+     "Ref": "IntegApi2IntegApi202F39817F4"
+    },
+    "Stage": {
+     "Ref": "IntegApi2IntegApi202DeploymentStageprod9500285C"
+    }
+   }
+  },
+  "Integ3DomainRecord": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "Name": "yet-another-*.example.com",
+    "Type": "A",
+    "AliasTarget": {
+     "DNSName": {
+      "Fn::GetAtt": [
+       "Integ3DomainE531FBAB",
+       "RegionalDomainName"
+      ]
+     },
+     "HostedZoneId": {
+      "Fn::GetAtt": [
+       "Integ3DomainE531FBAB",
+       "RegionalHostedZoneId"
+      ]
+     }
+    },
+    "HostedZoneId": "Z23ABC4XYZL05B"
+   }
   }
  },
  "Outputs": {
@@ -563,14 +513,6 @@
       "/"
      ]
     ]
-   }
-  },
-  "ExportsOutputRefInvokeApi313C8B4949AC2AFC": {
-   "Value": {
-    "Ref": "InvokeApi313C8B49"
-   },
-   "Export": {
-    "Name": "integ-apigw-domain-name-mapping:ExportsOutputRefInvokeApi313C8B4949AC2AFC"
    }
   },
   "ExportsOutputRefIntegDomain624DF323D17B7540": {

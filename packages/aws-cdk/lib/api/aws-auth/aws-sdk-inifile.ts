@@ -1,6 +1,5 @@
 import * as AWS from 'aws-sdk';
 
-
 /**
  * Hack-fix
  *

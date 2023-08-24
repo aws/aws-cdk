@@ -1,6 +1,6 @@
-import * as acmpca from '../../aws-acmpca';
 import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
+import * as acmpca from '../../aws-acmpca';
 
 /**
  * Represents the properties needed to define TLS Validation context

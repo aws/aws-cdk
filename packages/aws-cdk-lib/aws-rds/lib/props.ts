@@ -1,8 +1,8 @@
+import { IParameterGroup } from './parameter-group';
 import * as ec2 from '../../aws-ec2';
 import * as kms from '../../aws-kms';
 import * as secretsmanager from '../../aws-secretsmanager';
 import { Duration, SecretValue } from '../../core';
-import { IParameterGroup } from './parameter-group';
 
 /**
  * Instance properties for database instances
@@ -499,6 +499,14 @@ export interface CommonRotationUserOptions {
    * @default - a new security group is created
    */
   readonly securityGroup?: ec2.ISecurityGroup;
+
+  /**
+   * Specifies whether to rotate the secret immediately or wait until the next
+   * scheduled rotation window.
+   *
+   * @default true
+   */
+  readonly rotateImmediatelyOnUpdate?: boolean;
 }
 
 /**

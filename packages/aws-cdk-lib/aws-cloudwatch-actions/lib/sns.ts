@@ -1,6 +1,6 @@
+import { Construct } from 'constructs';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as sns from '../../aws-sns';
-import { Construct } from 'constructs';
 
 /**
  * Use an SNS topic as an alarm action

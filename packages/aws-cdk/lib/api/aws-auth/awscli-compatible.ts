@@ -215,7 +215,6 @@ async function isEc2Instance() {
   return isEc2InstanceCache;
 }
 
-
 let isEc2InstanceCache: boolean | undefined = undefined;
 
 /**

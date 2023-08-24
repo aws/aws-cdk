@@ -395,7 +395,7 @@
    "Type": "AWS::RDS::DBClusterParameterGroup",
    "Properties": {
     "Description": "A nice parameter group",
-    "Family": "aurora5.6",
+    "Family": "aurora-mysql8.0",
     "Parameters": {
      "character_set_database": "utf8mb4"
     }
@@ -502,7 +502,8 @@
     "DBSubnetGroupName": {
      "Ref": "DatabaseSubnets56F17B9A"
     },
-    "Engine": "aurora",
+    "Engine": "aurora-mysql",
+    "EngineVersion": "8.0.mysql_aurora.3.03.0",
     "KmsKeyId": {
      "Fn::GetAtt": [
       "DbSecurity381C2C15",
@@ -530,11 +531,11 @@
     "DBClusterIdentifier": {
      "Ref": "DatabaseB269D8BB"
     },
-    "DBInstanceClass": "db.t3.small",
+    "DBInstanceClass": "db.t3.medium",
     "DBSubnetGroupName": {
      "Ref": "DatabaseSubnets56F17B9A"
     },
-    "Engine": "aurora",
+    "Engine": "aurora-mysql",
     "PubliclyAccessible": true
    },
    "DependsOn": [
@@ -552,11 +553,11 @@
     "DBClusterIdentifier": {
      "Ref": "DatabaseB269D8BB"
     },
-    "DBInstanceClass": "db.t3.small",
+    "DBInstanceClass": "db.t3.medium",
     "DBSubnetGroupName": {
      "Ref": "DatabaseSubnets56F17B9A"
     },
-    "Engine": "aurora",
+    "Engine": "aurora-mysql",
     "PubliclyAccessible": true
    },
    "DependsOn": [

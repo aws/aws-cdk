@@ -1,5 +1,5 @@
 import { Metric, MetricOptions } from 'aws-cdk-lib/aws-cloudwatch';
-import { Stack } from 'aws-cdk-lib';
+import { Stack } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { IHttpApi } from './api';
 import { CfnStage } from 'aws-cdk-lib/aws-apigatewayv2';

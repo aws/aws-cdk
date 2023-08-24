@@ -1,6 +1,6 @@
+import { Construct } from 'constructs';
 import * as codepipeline from '../../../aws-codepipeline';
 import { SecretValue } from '../../../core';
-import { Construct } from 'constructs';
 import { Action } from '../action';
 import { sourceArtifactBounds } from '../common';
 

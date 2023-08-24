@@ -1,10 +1,11 @@
 {
-  "version": "31.0.0",
+  "version": "33.0.0",
   "testCases": {
     "aws-cdk-eks-cluster/DefaultTest": {
       "stacks": [
         "aws-cdk-eks-cluster-test"
       ],
+      "diffAssets": false,
       "cdkCommandOptions": {
         "deploy": {
           "args": {

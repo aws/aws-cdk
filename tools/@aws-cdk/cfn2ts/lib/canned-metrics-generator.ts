@@ -1,7 +1,6 @@
 import * as cfnspec from '@aws-cdk/cfnspec';
 import { CodeMaker, toCamelCase } from 'codemaker';
 
-
 /**
  * Generate default prop sets for canned metric
  *

@@ -1,7 +1,7 @@
+import { AwsIntegration } from './aws';
 import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
 import { Lazy, Names, Token } from '../../../core';
-import { AwsIntegration } from './aws';
 import { IntegrationConfig, IntegrationOptions } from '../integration';
 import { Method } from '../method';
 

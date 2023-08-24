@@ -16,7 +16,6 @@ export async function runExecFile(args: RunOptions, cmd: string, cmdArgs: string
   return streams.stdout.toString('utf-8');
 }
 
-
 function fmtCommandArgs(cmd: string, cmdArgs: string[]) {
   return `${cmd} ${cmdArgs.map(cmdArg => cmdArg.match(/\s/) ? `"${cmdArg}"` : cmdArg).join(' ')}`.trim();
 }

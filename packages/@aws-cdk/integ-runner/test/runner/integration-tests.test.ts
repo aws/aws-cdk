@@ -68,7 +68,6 @@ describe('IntegrationTests Discovery', () => {
         expect(integTests[0].fileName).toEqual(expect.stringMatching(namedTest));
       });
 
-
       test('test not found', async () => {
         const integTests = await tests.fromCliOptions({ ...cliOptions, tests: [`test-data/${namedTest}`.replace('test1', 'test42')] });
 

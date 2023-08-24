@@ -1,6 +1,6 @@
-import { IResource, Names, Resource, Token } from '../../core';
 import { Construct } from 'constructs';
 import { CfnPublicKey } from './cloudfront.generated';
+import { IResource, Names, Resource, Token } from '../../core';
 
 /**
  * Represents a Public Key

@@ -1,6 +1,6 @@
-import { IResource, Resource } from '../../core';
 import { Construct } from 'constructs';
 import { CfnDedicatedIpPool } from './ses.generated';
+import { IResource, Resource } from '../../core';
 
 /**
  * A dedicated IP pool

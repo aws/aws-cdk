@@ -336,6 +336,43 @@ test('create a plan and add rule to copy to a different vault', () => {
   });
 });
 
+test('create a plan and add rule with recoveryPointTags', () => {
+  // GIVEN
+  const tags = {
+    key: 'value',
+  };
+
+  // WHEN
+  new BackupPlan(stack, 'Plan', {
+    backupPlanRules: [
+      new BackupPlanRule({
+        recoveryPointTags: tags,
+      }),
+    ],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupPlan', {
+    BackupPlan: {
+      BackupPlanName: 'Plan',
+      BackupPlanRule: [
+        {
+          RuleName: 'PlanRule0',
+          TargetBackupVault: {
+            'Fn::GetAtt': [
+              'PlanVault0284B0C2',
+              'BackupVaultName',
+            ],
+          },
+          RecoveryPointTags: {
+            key: 'value',
+          },
+        },
+      ],
+    },
+  });
+});
+
 test('throws when deleteAfter is not greater than moveToColdStorageAfter', () => {
   expect(() => new BackupPlanRule({
     deleteAfter: Duration.days(5),

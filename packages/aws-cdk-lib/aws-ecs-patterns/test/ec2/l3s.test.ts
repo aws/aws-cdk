@@ -1112,7 +1112,6 @@ test('idletime is undefined when not set for multiAlbService', () => {
   });
 });
 
-
 test('test Fargate loadbalanced construct with optional log driver input', () => {
   // GIVEN
   const stack = new cdk.Stack();

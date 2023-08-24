@@ -27,7 +27,6 @@ const restapi = new RestApi(stack, 'MyRestApi', {
   },
 });
 
-
 restapi.root.addMethod('ANY', new MockIntegration({
   integrationResponses: [
     { statusCode: '200' },

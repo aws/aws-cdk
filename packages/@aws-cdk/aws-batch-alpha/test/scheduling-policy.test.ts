@@ -2,7 +2,6 @@ import { Template } from 'aws-cdk-lib/assertions';
 import { Duration, Stack } from 'aws-cdk-lib/core';
 import { FairshareSchedulingPolicy } from '../lib';
 
-
 test('empty fairshare policy', () => {
   // GIVEN
   const stack = new Stack();

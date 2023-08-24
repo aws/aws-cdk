@@ -66,7 +66,6 @@ describe('receipt rule', () => {
       },
     });
 
-
   });
 
   test('import receipt rule', () => {
@@ -101,7 +100,6 @@ describe('receipt rule', () => {
         },
       },
     });
-
 
   });
 
@@ -140,7 +138,6 @@ describe('receipt rule', () => {
       },
     });
 
-
   });
 
   test('can add action with addAction', () => {
@@ -174,7 +171,6 @@ describe('receipt rule', () => {
         'Ref': 'RuleSetE30C6C48',
       },
     });
-
 
   });
 });

@@ -1,7 +1,6 @@
-import { Duration, IResource, Lazy, Resource } from 'aws-cdk-lib';
+import { Duration, IResource, Lazy, Resource } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnJobDefinitionProps } from 'aws-cdk-lib/aws-batch';
-
 
 /**
  * Represents a JobDefinition
@@ -64,7 +63,6 @@ export interface IJobDefinition extends IResource {
    * @default - no timeout
    */
   readonly timeout?: Duration;
-
 
   /**
    * Add a RetryStrategy to this JobDefinition

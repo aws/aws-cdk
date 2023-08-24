@@ -337,7 +337,7 @@ export interface ParseCfnOptions {
  * While this file not exported from the module
  * (to not make it part of the public API),
  * it is directly referenced in the generated L1 code,
- * so any renames of it need to be reflected in cfn2ts/codegen.ts as well.
+ * so any renames of it need to be reflected in codegen as well.
  *
  */
 export class CfnParser {

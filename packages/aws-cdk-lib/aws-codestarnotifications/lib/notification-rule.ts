@@ -1,8 +1,8 @@
-import { IResource, Resource, Names } from '../../core';
 import * as constructs from 'constructs';
 import { CfnNotificationRule } from './codestarnotifications.generated';
 import { INotificationRuleSource } from './notification-rule-source';
 import { INotificationRuleTarget, NotificationRuleTargetConfig } from './notification-rule-target';
+import { IResource, Resource, Names } from '../../core';
 
 /**
  * The level of detail to include in the notifications for this resource.

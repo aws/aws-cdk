@@ -26,7 +26,7 @@ const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-emr-containers-all-ser
 stack.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
 
 const eksCluster = new eks.Cluster(stack, 'integration-test-eks-cluster', {
-  version: eks.KubernetesVersion.V1_21,
+  version: eks.KubernetesVersion.V1_22,
   defaultCapacity: 3,
   defaultCapacityInstance: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE),
 });
@@ -70,7 +70,6 @@ const startJobRun = new EmrContainersStartJobRun(stack, 'Start a Job Run', {
   resultPath: '$.job',
 });
 
-
 const deleteVirtualCluster = new EmrContainersDeleteVirtualCluster(stack, 'Delete a Virtual Cluster', {
   virtualClusterId: sfn.TaskInput.fromJsonPathAt('$.job.VirtualClusterId'),
 });
@@ -91,6 +90,8 @@ new cdk.CfnOutput(stack, 'stateMachineArn', {
 
 new integ.IntegTest(app, 'aws-stepfunctions-tasks-emr-containers-all-services', {
   testCases: [stack],
+  // Test includes assets that are updated weekly. If not disabled, the upgrade PR will fail.
+  diffAssets: false,
   cdkCommandOptions: {
     deploy: {
       args: {

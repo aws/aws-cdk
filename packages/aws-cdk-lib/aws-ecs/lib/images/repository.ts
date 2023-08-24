@@ -1,6 +1,6 @@
+import { Construct } from 'constructs';
 import * as secretsmanager from '../../../aws-secretsmanager';
 import { Annotations, Token } from '../../../core';
-import { Construct } from 'constructs';
 import { ContainerDefinition } from '../container-definition';
 import { ContainerImage, ContainerImageConfig } from '../container-image';
 
@@ -37,7 +37,7 @@ export class RepositoryImage extends ContainerImage {
   public bind(scope: Construct, containerDefinition: ContainerDefinition): ContainerImageConfig {
     // name could be a Token - in that case, skip validation altogether
     if (!Token.isUnresolved(this.imageName) && ECR_IMAGE_REGEX.test(this.imageName)) {
-      Annotations.of(scope).addWarning("Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
+      Annotations.of(scope).addWarningV2('@aws-cdk/aws-ecs:ecrImageRequiresPolicy', "Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
     }
 
     if (this.props.credentials) {

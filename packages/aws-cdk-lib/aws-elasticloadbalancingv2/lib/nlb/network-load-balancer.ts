@@ -1,10 +1,10 @@
+import { Construct } from 'constructs';
+import { BaseNetworkListenerProps, NetworkListener } from './network-listener';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { Resource } from '../../../core';
 import * as cxapi from '../../../cx-api';
-import { Construct } from 'constructs';
-import { BaseNetworkListenerProps, NetworkListener } from './network-listener';
 import { NetworkELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
 import { BaseLoadBalancer, BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
 import { parseLoadBalancerFullName } from '../shared/util';

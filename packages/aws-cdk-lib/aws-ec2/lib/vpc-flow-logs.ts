@@ -1,11 +1,16 @@
-import * as iam from '../../aws-iam';
-import * as logs from '../../aws-logs';
-import * as s3 from '../../aws-s3';
-import { IResource, PhysicalName, RemovalPolicy, Resource, FeatureFlags, Stack, CfnResource } from '../../core';
-import { S3_CREATE_DEFAULT_LOGGING_POLICY } from '../../cx-api';
 import { Construct } from 'constructs';
 import { CfnFlowLog } from './ec2.generated';
 import { ISubnet, IVpc } from './vpc';
+import * as iam from '../../aws-iam';
+import * as logs from '../../aws-logs';
+import * as s3 from '../../aws-s3';
+import { IResource, PhysicalName, RemovalPolicy, Resource, FeatureFlags, Stack, Tags, CfnResource } from '../../core';
+import { S3_CREATE_DEFAULT_LOGGING_POLICY } from '../../cx-api';
+
+/**
+ * Name tag constant
+ */
+const NAME_TAG: string = 'Name';
 
 /**
  * A FlowLog
@@ -150,7 +155,6 @@ export interface S3DestinationOptions {
  * only for s3 destinations (not sure if that will change)
  */
 export interface DestinationOptions extends S3DestinationOptions { }
-
 
 /**
  * The destination type for the flow log
@@ -651,10 +655,9 @@ export interface FlowLogProps extends FlowLogOptions {
   /**
    * The name of the FlowLog
    *
-   * It is not recommended to use an explicit name.
+   * Since the FlowLog resource doesn't support providing a physical name, the value provided here will be recorded in the `Name` tag.
    *
-   * @default If you don't specify a flowLogName, AWS CloudFormation generates a
-   * unique physical ID and uses that ID for the group name.
+   * @default CDK generated name
    */
   readonly flowLogName?: string;
 
@@ -720,9 +723,7 @@ export class FlowLog extends FlowLogBase {
   public readonly logGroup?: logs.ILogGroup;
 
   constructor(scope: Construct, id: string, props: FlowLogProps) {
-    super(scope, id, {
-      physicalName: props.flowLogName,
-    });
+    super(scope, id);
 
     const destination = props.destination || FlowLogDestination.toCloudWatchLogs();
 
@@ -731,6 +732,8 @@ export class FlowLog extends FlowLogBase {
     this.bucket = destinationConfig.s3Bucket;
     this.iamRole = destinationConfig.iamRole;
     this.keyPrefix = destinationConfig.keyPrefix;
+
+    Tags.of(this).add(NAME_TAG, props.flowLogName || this.node.path);
 
     let logDestination: string | undefined = undefined;
     if (this.bucket) {

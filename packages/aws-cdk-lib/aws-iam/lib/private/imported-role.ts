@@ -1,6 +1,6 @@
+import { Construct } from 'constructs';
 import { FeatureFlags, Names, Resource, Token, TokenComparison, Annotations } from '../../../core';
 import { IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME } from '../../../cx-api';
-import { Construct } from 'constructs';
 import { Grant } from '../grant';
 import { IManagedPolicy } from '../managed-policy';
 import { Policy } from '../policy';
@@ -68,7 +68,7 @@ export class ImportedRole extends Resource implements IRole, IComparablePrincipa
   }
 
   public addManagedPolicy(policy: IManagedPolicy): void {
-    Annotations.of(this).addWarning(`Not adding managed policy: ${policy.managedPolicyArn} to imported role: ${this.roleName}`);
+    Annotations.of(this).addWarningV2('@aws-cdk/aws-iam:importedRoleManagedPolicyNotAdded', `Not adding managed policy: ${policy.managedPolicyArn} to imported role: ${this.roleName}`);
   }
 
   public grantPassRole(identity: IPrincipal): Grant {

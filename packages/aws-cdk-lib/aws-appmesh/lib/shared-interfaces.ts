@@ -1,9 +1,9 @@
-import * as cdk from '../../core';
 import { Construct } from 'constructs';
 import { CfnVirtualGateway, CfnVirtualNode } from './appmesh.generated';
 import { renderTlsClientPolicy } from './private/utils';
 import { TlsClientPolicy } from './tls-client-policy';
 import { IVirtualService } from './virtual-service';
+import * as cdk from '../../core';
 
 /**
  * Represents timeouts for HTTP protocols.
@@ -122,8 +122,8 @@ export abstract class AccessLog {
    *
    * @default - no file based access logging
    */
-  public static fromFilePath(filePath: string): AccessLog {
-    return new FileAccessLog(filePath);
+  public static fromFilePath(filePath: string, loggingFormat?: LoggingFormat): AccessLog {
+    return new FileAccessLog(filePath, loggingFormat);
   }
 
   /**
@@ -143,10 +143,15 @@ class FileAccessLog extends AccessLog {
    * @default - no file based access logging
    */
   public readonly filePath: string;
+  private readonly virtualNodeLoggingFormat?: CfnVirtualNode.LoggingFormatProperty;
+  private readonly virtualGatewayLoggingFormat?: CfnVirtualGateway.LoggingFormatProperty;
 
-  constructor(filePath: string) {
+  constructor(filePath: string, loggingFormat?: LoggingFormat) {
     super();
     this.filePath = filePath;
+    // For now we have the same setting for Virtual Gateway and Virtual Nodes
+    this.virtualGatewayLoggingFormat = loggingFormat?.bind().formatConfig;
+    this.virtualNodeLoggingFormat = loggingFormat?.bind().formatConfig;
   }
 
   public bind(_scope: Construct): AccessLogConfig {
@@ -154,12 +159,95 @@ class FileAccessLog extends AccessLog {
       virtualNodeAccessLog: {
         file: {
           path: this.filePath,
+          format: this.virtualNodeLoggingFormat,
         },
       },
       virtualGatewayAccessLog: {
         file: {
           path: this.filePath,
+          format: this.virtualGatewayLoggingFormat,
         },
+      },
+    };
+  }
+}
+
+/**
+ * All Properties for Envoy Access Logging Format for mesh endpoints
+ */
+export interface LoggingFormatConfig {
+  /**
+   * CFN configuration for Access Logging Format
+   *
+   * @default - no access logging format
+   */
+  readonly formatConfig?: CfnVirtualNode.LoggingFormatProperty;
+}
+
+/**
+ * Configuration for Envoy Access Logging Format for mesh endpoints
+ */
+export abstract class LoggingFormat {
+  /**
+   * Generate logging format from text pattern
+   */
+  public static fromText(text: string): LoggingFormat {
+    return new TextLoggingFormat(text);
+  }
+  /**
+   * Generate logging format from json key pairs
+   */
+  public static fromJson(jsonLoggingFormat :{[key:string]: string}): LoggingFormat {
+    if (Object.keys(jsonLoggingFormat).length == 0) {
+      throw new Error('Json key pairs cannot be empty.');
+    }
+
+    return new JsonLoggingFormat(jsonLoggingFormat);
+  };
+
+  /**
+   * Called when the Access Log Format is initialized. Can be used to enforce
+   * mutual exclusivity with future properties
+   */
+  public abstract bind(): LoggingFormatConfig;
+}
+
+/**
+ * Configuration for Json logging format
+ */
+class JsonLoggingFormat extends LoggingFormat {
+  /**
+  * Json pattern for the output logs
+  */
+  private readonly json: Array<CfnVirtualNode.JsonFormatRefProperty>;
+  constructor(json: {[key:string]: string}) {
+    super();
+    this.json = Object.entries(json).map(([key, value]) => ({ key, value }));
+  }
+
+  bind(): LoggingFormatConfig {
+    return {
+      formatConfig: {
+        json: this.json,
+      },
+    };
+  }
+}
+
+class TextLoggingFormat extends LoggingFormat {
+  /**
+  * Json pattern for the output logs
+  */
+  private readonly text: string;
+  constructor(text: string) {
+    super();
+    this.text = text;
+  }
+
+  public bind(): LoggingFormatConfig {
+    return {
+      formatConfig: {
+        text: this.text,
       },
     };
   }
@@ -199,7 +287,6 @@ export interface BackendConfig {
    */
   readonly virtualServiceBackend: CfnVirtualNode.BackendProperty;
 }
-
 
 /**
  * Contains static factory methods to create backends

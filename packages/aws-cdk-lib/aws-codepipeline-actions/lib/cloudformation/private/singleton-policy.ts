@@ -1,6 +1,6 @@
+import { Construct } from 'constructs';
 import * as iam from '../../../../aws-iam';
 import * as cdk from '../../../../core';
-import { Construct } from 'constructs';
 
 /**
  * Manages a bunch of singleton-y statements on the policy of an IAM Role.

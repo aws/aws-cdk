@@ -14,6 +14,7 @@
   "AWS::ElastiCache::ReplicationGroup": {},
   "AWS::Elasticsearch::Domain": {},
   "AWS::FSx::FileSystem": {},
+  "AWS::KMS::Key": {},
   "AWS::Logs::LogGroup": {},
   "AWS::Neptune::DBCluster": {},
   "AWS::Neptune::DBInstance": {},

@@ -1,6 +1,6 @@
-import { IResource, Lazy, Resource, Names } from '../../core';
 import { Construct } from 'constructs';
 import { CfnPrefixList } from './ec2.generated';
+import { IResource, Lazy, Resource, Names } from '../../core';
 
 /**
  * A prefix list

@@ -24,7 +24,6 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         }).promise();
       }
 
-
       return {
         Data: {
           ServerCertificateArn: serverImport?.CertificateArn,

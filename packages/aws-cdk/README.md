@@ -146,8 +146,8 @@ See the [CDK reference documentation](https://docs.aws.amazon.com/cdk/api/latest
 ### `cdk diff`
 
 Computes differences between the infrastructure specified in the current state of the CDK app and the currently
-deployed application (or a user-specified CloudFormation template). This command returns non-zero if any differences are
-found.
+deployed application (or a user-specified CloudFormation template). If you need the command to return a non-zero if any differences are
+found you need to use the `--fail` command line option.
 
 ```console
 $ # Diff against the currently deployed stack
@@ -155,6 +155,13 @@ $ cdk diff --app='node bin/main.js' MyStackName
 
 $ # Diff against a specific template document
 $ cdk diff --app='node bin/main.js' MyStackName --template=path/to/template.yml
+```
+
+The `quiet` flag can also be passed to the `cdk diff` command. Assuming there are no differences detected the output to the console will **not** contain strings such as the *Stack* `MyStackName` and `There were no differences`.
+
+```console
+$ # Diff against the currently deployed stack with quiet parameter enabled
+$ cdk diff --quiet --app='node bin/main.js' MyStackName
 ```
 
 ### `cdk deploy`
@@ -811,3 +818,25 @@ The following environment variables affect aws-cdk:
 The CLI will attempt to detect whether it is being run in CI by looking for the presence of an
 environment variable `CI=true`. This can be forced by passing the `--ci` flag. By default the CLI
 sends most of its logs to `stderr`, but when `ci=true` it will send the logs to `stdout` instead.
+
+### Changing the default TypeScript transpiler
+
+The ts-node package used to synthesize and deploy CDK apps supports an alternate transpiler that might improve transpile times. The SWC transpiler is written in Rust and has no type checking. The SWC transpiler should be enabled by experienced TypeScript developers.
+
+To enable the SWC transpiler, install the package in the CDK app.
+
+```sh
+npm i -D @swc/core @swc/helpers regenerator-runtime
+```
+
+And, update the `tsconfig.json` file to add the `ts-node` property.
+
+```json
+{
+  "ts-node": {
+    "swc": true
+  }
+}
+```
+
+The documentation may be found at <https://typestrong.org/ts-node/docs/swc/>

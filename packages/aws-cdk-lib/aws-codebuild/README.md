@@ -305,8 +305,8 @@ The CodeBuild library supports both Linux and Windows images via the
 
 You can specify one of the predefined Windows/Linux images by using one
 of the constants such as `WindowsBuildImage.WIN_SERVER_CORE_2019_BASE`,
-`WindowsBuildImage.WINDOWS_BASE_2_0`, `LinuxBuildImage.STANDARD_2_0`, or
-`LinuxArmBuildImage.AMAZON_LINUX_2_ARM`.
+`WindowsBuildImage.WINDOWS_BASE_2_0`, `LinuxBuildImage.STANDARD_2_0`,
+`LinuxBuildImage.AMAZON_LINUX_2_5`, or `LinuxArmBuildImage.AMAZON_LINUX_2_ARM`.
 
 Alternatively, you can specify a custom image using one of the static methods on
 `LinuxBuildImage`:
@@ -326,6 +326,7 @@ or one of the corresponding methods on `WindowsBuildImage`:
 
 or one of the corresponding methods on `LinuxArmBuildImage`:
 
+* `LinuxArmBuildImage.fromDockerRegistry(image[, { secretsManagerCredentials }])`
 * `LinuxArmBuildImage.fromEcrRepository(repo[, tag])`
 
 Note that the `WindowsBuildImage` version of the static methods accepts an optional parameter of type `WindowsImageType`,
@@ -604,7 +605,7 @@ by events via an event rule.
 
 ### Using Project as an event target
 
-The `@aws-cdk/aws-events-targets.CodeBuildProject` allows using an AWS CodeBuild
+The `aws-cdk-lib/aws-events-targets.CodeBuildProject` allows using an AWS CodeBuild
 project as a AWS CloudWatch event rule target:
 
 ```ts

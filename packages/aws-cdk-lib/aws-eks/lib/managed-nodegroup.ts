@@ -1,9 +1,9 @@
-import { InstanceType, ISecurityGroup, SubnetSelection, InstanceArchitecture, InstanceClass, InstanceSize } from '../../aws-ec2';
-import { IRole, ManagedPolicy, Role, ServicePrincipal } from '../../aws-iam';
-import { IResource, Resource, Annotations, withResolved } from '../../core';
 import { Construct, Node } from 'constructs';
-import { Cluster, ICluster } from './cluster';
+import { Cluster, ICluster, IpFamily } from './cluster';
 import { CfnNodegroup } from './eks.generated';
+import { InstanceType, ISecurityGroup, SubnetSelection, InstanceArchitecture, InstanceClass, InstanceSize } from '../../aws-ec2';
+import { IRole, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
+import { IResource, Resource, Annotations, withResolved } from '../../core';
 
 /**
  * NodeGroup interface
@@ -370,7 +370,7 @@ export class Nodegroup extends Resource implements INodegroup {
     }
 
     if (props.instanceType) {
-      Annotations.of(this).addWarning('"instanceType" is deprecated and will be removed in the next major version. please use "instanceTypes" instead');
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-eks:managedNodeGroupDeprecatedInstanceType', '"instanceType" is deprecated and will be removed in the next major version. please use "instanceTypes" instead');
     }
     const instanceTypes = props.instanceTypes ?? (props.instanceType ? [props.instanceType] : undefined);
     let possibleAmiTypes: NodegroupAmiType[] = [];
@@ -407,6 +407,19 @@ export class Nodegroup extends Resource implements INodegroup {
       ngRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSWorkerNodePolicy'));
       ngRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonEKS_CNI_Policy'));
       ngRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'));
+
+      // Grant additional IPv6 networking permissions if running in IPv6
+      // https://docs.aws.amazon.com/eks/latest/userguide/cni-iam-role.html
+      if (props.cluster.ipFamily == IpFamily.IP_V6) {
+        ngRole.addToPrincipalPolicy(new PolicyStatement({
+          // eslint-disable-next-line @aws-cdk/no-literal-partition
+          resources: ['arn:aws:ec2:*:*:network-interface/*'],
+          actions: [
+            'ec2:AssignIpv6Addresses',
+            'ec2:UnassignIpv6Addresses',
+          ],
+        }));
+      };
       this.role = ngRole;
     } else {
       this.role = props.nodeRole;
@@ -492,7 +505,6 @@ const windowsAmiTypes: NodegroupAmiType[] = [NodegroupAmiType.WINDOWS_CORE_2019_
   NodegroupAmiType.WINDOWS_CORE_2022_X86_64, NodegroupAmiType.WINDOWS_FULL_2019_X86_64,
   NodegroupAmiType.WINDOWS_FULL_2022_X86_64];
 const gpuAmiTypes: NodegroupAmiType[] = [NodegroupAmiType.AL2_X86_64_GPU];
-
 
 /**
  * This function check if the instanceType is GPU instance.

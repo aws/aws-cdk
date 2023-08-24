@@ -104,6 +104,17 @@ plan.addRule(new backup.BackupPlanRule({
 }));
 ```
 
+You can assign your own metadata to the resources that are associated with the rule when restored from backup using `recoveryPointTags`. Each tag is a key-value pair.
+
+```ts
+declare const plan: backup.BackupPlan;
+plan.addRule(new backup.BackupPlanRule({
+  recoveryPointTags: {
+    key: 'value',
+  },
+}));
+```
+
 Ready-made rules are also available:
 
 ```ts

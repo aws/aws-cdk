@@ -1,5 +1,5 @@
-import * as cdk from '../../core';
 import { Construct } from 'constructs';
+import * as cdk from '../../core';
 
 /**
  * Interface which all CertificateAuthority based class must implement

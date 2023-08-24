@@ -1,10 +1,10 @@
+import { DockerAssetApp, TestApp } from './testhelpers';
 import { Match, Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as ecr from '../../aws-ecr';
 import * as iam from '../../aws-iam';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as cdk from '../../core';
-import { DockerAssetApp, TestApp } from './testhelpers';
 import * as cdkp from '../lib';
 import { ShellStep } from '../lib';
 
@@ -14,7 +14,7 @@ let stack: cdk.Stack;
 beforeEach(() => {
   app = new TestApp();
   stack = new cdk.Stack(app, 'Stack', {
-    env: { account: '0123456789012', region: 'eu-west-1' },
+    env: { account: '123456789012', region: 'eu-west-1' },
   });
 });
 
@@ -44,7 +44,7 @@ describe('ExternalDockerCredential', () => {
   });
 
   test('maximum example includes all expected properties', () => {
-    const roleArn = 'arn:aws:iam::0123456789012:role/MyRole';
+    const roleArn = 'arn:aws:iam::123456789012:role/MyRole';
     const creds = cdkp.DockerCredential.customRegistry('example.com', secret, {
       secretUsernameField: 'login',
       secretPasswordField: 'pass',
@@ -86,7 +86,7 @@ describe('ExternalDockerCredential', () => {
     });
 
     test('grants read access to the secret to the assumeRole if provided', () => {
-      const assumeRole = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::0123456789012:role/MyRole');
+      const assumeRole = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/MyRole');
       const creds = cdkp.DockerCredential.customRegistry('example.com', secret, { assumeRole });
 
       const user = new iam.User(stack, 'User');
@@ -108,7 +108,7 @@ describe('ExternalDockerCredential', () => {
           Statement: [{
             Action: 'sts:AssumeRole',
             Effect: 'Allow',
-            Resource: 'arn:aws:iam::0123456789012:role/MyRole',
+            Resource: 'arn:aws:iam::123456789012:role/MyRole',
           }],
           Version: '2012-10-17',
         },
@@ -117,7 +117,7 @@ describe('ExternalDockerCredential', () => {
     });
 
     test('does not grant any access if the usage does not match', () => {
-      const assumeRole = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::0123456789012:role/MyRole');
+      const assumeRole = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/MyRole');
       const creds = cdkp.DockerCredential.customRegistry('example.com', secret, {
         assumeRole,
         usages: [cdkp.DockerCredentialUsage.ASSET_PUBLISHING],
@@ -138,7 +138,7 @@ describe('EcrDockerCredential', () => {
   let repo: ecr.IRepository;
 
   beforeEach(() => {
-    repo = ecr.Repository.fromRepositoryArn(stack, 'Repo', 'arn:aws:ecr:eu-west-1:0123456789012:repository/Repo');
+    repo = ecr.Repository.fromRepositoryArn(stack, 'Repo', 'arn:aws:ecr:eu-west-1:123456789012:repository/Repo');
   });
 
   test('minimal example only renders ecrRepository', () => {
@@ -150,7 +150,7 @@ describe('EcrDockerCredential', () => {
       'Fn::Select': [
         0, {
           'Fn::Split': ['/', {
-            'Fn::Join': ['', ['0123456789012.dkr.ecr.eu-west-1.', { Ref: 'AWS::URLSuffix' }, '/Repo']],
+            'Fn::Join': ['', ['123456789012.dkr.ecr.eu-west-1.', { Ref: 'AWS::URLSuffix' }, '/Repo']],
           }],
         },
       ],
@@ -161,7 +161,7 @@ describe('EcrDockerCredential', () => {
   });
 
   test('maximum example renders all fields', () => {
-    const roleArn = 'arn:aws:iam::0123456789012:role/MyRole';
+    const roleArn = 'arn:aws:iam::123456789012:role/MyRole';
     const creds = cdkp.DockerCredential.ecr([repo], {
       assumeRole: iam.Role.fromRoleArn(stack, 'Role', roleArn),
       usages: [cdkp.DockerCredentialUsage.SYNTH],
@@ -173,7 +173,7 @@ describe('EcrDockerCredential', () => {
       'Fn::Select': [
         0, {
           'Fn::Split': ['/', {
-            'Fn::Join': ['', ['0123456789012.dkr.ecr.eu-west-1.', { Ref: 'AWS::URLSuffix' }, '/Repo']],
+            'Fn::Join': ['', ['123456789012.dkr.ecr.eu-west-1.', { Ref: 'AWS::URLSuffix' }, '/Repo']],
           }],
         },
       ],
@@ -201,7 +201,7 @@ describe('EcrDockerCredential', () => {
               'ecr:BatchGetImage',
             ],
             Effect: 'Allow',
-            Resource: 'arn:aws:ecr:eu-west-1:0123456789012:repository/Repo',
+            Resource: 'arn:aws:ecr:eu-west-1:123456789012:repository/Repo',
           },
           {
             Action: 'ecr:GetAuthorizationToken',
@@ -215,7 +215,7 @@ describe('EcrDockerCredential', () => {
     });
 
     test('grants pull access to the assumed role', () => {
-      const assumeRole = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::0123456789012:role/MyRole');
+      const assumeRole = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/MyRole');
       const creds = cdkp.DockerCredential.ecr([repo], { assumeRole });
 
       const user = new iam.User(stack, 'User');
@@ -230,7 +230,7 @@ describe('EcrDockerCredential', () => {
               'ecr:BatchGetImage',
             ],
             Effect: 'Allow',
-            Resource: 'arn:aws:ecr:eu-west-1:0123456789012:repository/Repo',
+            Resource: 'arn:aws:ecr:eu-west-1:123456789012:repository/Repo',
           },
           {
             Action: 'ecr:GetAuthorizationToken',
@@ -246,7 +246,7 @@ describe('EcrDockerCredential', () => {
           Statement: [{
             Action: 'sts:AssumeRole',
             Effect: 'Allow',
-            Resource: 'arn:aws:iam::0123456789012:role/MyRole',
+            Resource: 'arn:aws:iam::123456789012:role/MyRole',
           }],
           Version: '2012-10-17',
         },
@@ -255,7 +255,7 @@ describe('EcrDockerCredential', () => {
     });
 
     test('grants pull access to multiple repos if provided', () => {
-      const repo2 = ecr.Repository.fromRepositoryArn(stack, 'Repo2', 'arn:aws:ecr:eu-west-1:0123456789012:repository/Repo2');
+      const repo2 = ecr.Repository.fromRepositoryArn(stack, 'Repo2', 'arn:aws:ecr:eu-west-1:123456789012:repository/Repo2');
       const creds = cdkp.DockerCredential.ecr([repo, repo2]);
 
       const user = new iam.User(stack, 'User');
@@ -270,7 +270,7 @@ describe('EcrDockerCredential', () => {
               'ecr:BatchGetImage',
             ],
             Effect: 'Allow',
-            Resource: 'arn:aws:ecr:eu-west-1:0123456789012:repository/Repo',
+            Resource: 'arn:aws:ecr:eu-west-1:123456789012:repository/Repo',
           },
           {
             Action: 'ecr:GetAuthorizationToken',
@@ -284,7 +284,7 @@ describe('EcrDockerCredential', () => {
               'ecr:BatchGetImage',
             ],
             Effect: 'Allow',
-            Resource: 'arn:aws:ecr:eu-west-1:0123456789012:repository/Repo2',
+            Resource: 'arn:aws:ecr:eu-west-1:123456789012:repository/Repo2',
           }]),
           Version: '2012-10-17',
         },
@@ -324,7 +324,7 @@ describe('EcrDockerCredential', () => {
 });
 
 describe('dockerCredentialsInstallCommands', () => {
-  const secretArn = 'arn:aws:secretsmanager:eu-west-1:0123456789012:secret:mySecret-012345';
+  const secretArn = 'arn:aws:secretsmanager:eu-west-1:123456789012:secret:mySecret-012345';
   let secret: secretsmanager.ISecret;
 
   beforeEach(() => {

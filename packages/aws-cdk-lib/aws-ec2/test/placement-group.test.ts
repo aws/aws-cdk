@@ -2,7 +2,6 @@ import { Template } from '../../assertions';
 import { Stack } from '../../core';
 import { PlacementGroup, PlacementGroupSpreadLevel, PlacementGroupStrategy } from '../lib';
 
-
 test('can configure empty placement group', () => {
   // GIVEN
   const stack = new Stack();

@@ -1,5 +1,5 @@
 {
-  "$version": "120.0.0",
+  "$version": "130.1.0",
   "PropertyTypes": {
     "AWS::NetworkManager::ConnectAttachment.ConnectAttachmentOptions": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-networkmanager-connectattachment-connectattachmentoptions.html",
@@ -29,7 +29,7 @@
         },
         "Tags": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-networkmanager-connectattachment-proposedsegmentchange.html#cfn-networkmanager-connectattachment-proposedsegmentchange-tags",
-          "DuplicatesAllowed": true,
+          "DuplicatesAllowed": false,
           "ItemType": "Tag",
           "Required": false,
           "Type": "List",
@@ -168,6 +168,23 @@
         }
       }
     },
+    "AWS::NetworkManager::Device.AWSLocation": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-networkmanager-device-awslocation.html",
+      "Properties": {
+        "SubnetArn": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-networkmanager-device-awslocation.html#cfn-networkmanager-device-awslocation-subnetarn",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "Zone": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-networkmanager-device-awslocation.html#cfn-networkmanager-device-awslocation-zone",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        }
+      }
+    },
     "AWS::NetworkManager::Device.Location": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-networkmanager-device-location.html",
       "Properties": {
@@ -248,7 +265,7 @@
         },
         "Tags": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-networkmanager-sitetositevpnattachment-proposedsegmentchange.html#cfn-networkmanager-sitetositevpnattachment-proposedsegmentchange-tags",
-          "DuplicatesAllowed": true,
+          "DuplicatesAllowed": false,
           "ItemType": "Tag",
           "Required": false,
           "Type": "List",
@@ -298,7 +315,7 @@
         },
         "Tags": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-networkmanager-vpcattachment-proposedsegmentchange.html#cfn-networkmanager-vpcattachment-proposedsegmentchange-tags",
-          "DuplicatesAllowed": true,
+          "DuplicatesAllowed": false,
           "ItemType": "Tag",
           "Required": false,
           "Type": "List",
@@ -345,19 +362,6 @@
         "OwnerAccountId": {
           "PrimitiveType": "String"
         },
-        "ProposedSegmentChange": {
-          "Type": "ProposedSegmentChange"
-        },
-        "ProposedSegmentChange.AttachmentPolicyRuleNumber": {
-          "PrimitiveType": "Integer"
-        },
-        "ProposedSegmentChange.SegmentName": {
-          "PrimitiveType": "String"
-        },
-        "ProposedSegmentChange.Tags": {
-          "ItemType": "Tag",
-          "Type": "List"
-        },
         "ResourceArn": {
           "PrimitiveType": "String"
         },
@@ -391,9 +395,15 @@
           "Type": "ConnectAttachmentOptions",
           "UpdateType": "Immutable"
         },
+        "ProposedSegmentChange": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-networkmanager-connectattachment.html#cfn-networkmanager-connectattachment-proposedsegmentchange",
+          "Required": false,
+          "Type": "ProposedSegmentChange",
+          "UpdateType": "Mutable"
+        },
         "Tags": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-networkmanager-connectattachment.html#cfn-networkmanager-connectattachment-tags",
-          "DuplicatesAllowed": true,
+          "DuplicatesAllowed": false,
           "ItemType": "Tag",
           "Required": false,
           "Type": "List",
@@ -469,7 +479,7 @@
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-networkmanager-connectpeer.html#cfn-networkmanager-connectpeer-insidecidrblocks",
           "DuplicatesAllowed": true,
           "PrimitiveItemType": "String",
-          "Required": true,
+          "Required": false,
           "Type": "List",
           "UpdateType": "Immutable"
         },
@@ -481,7 +491,7 @@
         },
         "Tags": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-networkmanager-connectpeer.html#cfn-networkmanager-connectpeer-tags",
-          "DuplicatesAllowed": true,
+          "DuplicatesAllowed": false,
           "ItemType": "Tag",
           "Required": false,
           "Type": "List",
@@ -537,7 +547,7 @@
         },
         "Tags": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-networkmanager-corenetwork.html#cfn-networkmanager-corenetwork-tags",
-          "DuplicatesAllowed": true,
+          "DuplicatesAllowed": false,
           "ItemType": "Tag",
           "Required": false,
           "Type": "List",
@@ -576,6 +586,9 @@
     },
     "AWS::NetworkManager::Device": {
       "Attributes": {
+        "CreatedAt": {
+          "PrimitiveType": "String"
+        },
         "DeviceArn": {
           "PrimitiveType": "String"
         },
@@ -585,6 +598,12 @@
       },
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-networkmanager-device.html",
       "Properties": {
+        "AWSLocation": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-networkmanager-device.html#cfn-networkmanager-device-awslocation",
+          "Required": false,
+          "Type": "AWSLocation",
+          "UpdateType": "Mutable"
+        },
         "Description": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-networkmanager-device.html#cfn-networkmanager-device-description",
           "PrimitiveType": "String",
@@ -623,7 +642,7 @@
         },
         "Tags": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-networkmanager-device.html#cfn-networkmanager-device-tags",
-          "DuplicatesAllowed": true,
+          "DuplicatesAllowed": false,
           "ItemType": "Tag",
           "Required": false,
           "Type": "List",
@@ -812,19 +831,6 @@
         "OwnerAccountId": {
           "PrimitiveType": "String"
         },
-        "ProposedSegmentChange": {
-          "Type": "ProposedSegmentChange"
-        },
-        "ProposedSegmentChange.AttachmentPolicyRuleNumber": {
-          "PrimitiveType": "Integer"
-        },
-        "ProposedSegmentChange.SegmentName": {
-          "PrimitiveType": "String"
-        },
-        "ProposedSegmentChange.Tags": {
-          "ItemType": "Tag",
-          "Type": "List"
-        },
         "ResourceArn": {
           "PrimitiveType": "String"
         },
@@ -846,9 +852,15 @@
           "Required": true,
           "UpdateType": "Immutable"
         },
+        "ProposedSegmentChange": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-networkmanager-sitetositevpnattachment.html#cfn-networkmanager-sitetositevpnattachment-proposedsegmentchange",
+          "Required": false,
+          "Type": "ProposedSegmentChange",
+          "UpdateType": "Mutable"
+        },
         "Tags": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-networkmanager-sitetositevpnattachment.html#cfn-networkmanager-sitetositevpnattachment-tags",
-          "DuplicatesAllowed": true,
+          "DuplicatesAllowed": false,
           "ItemType": "Tag",
           "Required": false,
           "Type": "List",
@@ -1025,19 +1037,6 @@
         "OwnerAccountId": {
           "PrimitiveType": "String"
         },
-        "ProposedSegmentChange": {
-          "Type": "ProposedSegmentChange"
-        },
-        "ProposedSegmentChange.AttachmentPolicyRuleNumber": {
-          "PrimitiveType": "Integer"
-        },
-        "ProposedSegmentChange.SegmentName": {
-          "PrimitiveType": "String"
-        },
-        "ProposedSegmentChange.Tags": {
-          "ItemType": "Tag",
-          "Type": "List"
-        },
         "ResourceArn": {
           "PrimitiveType": "String"
         },
@@ -1065,6 +1064,12 @@
           "Type": "VpcOptions",
           "UpdateType": "Mutable"
         },
+        "ProposedSegmentChange": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-networkmanager-vpcattachment.html#cfn-networkmanager-vpcattachment-proposedsegmentchange",
+          "Required": false,
+          "Type": "ProposedSegmentChange",
+          "UpdateType": "Mutable"
+        },
         "SubnetArns": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-networkmanager-vpcattachment.html#cfn-networkmanager-vpcattachment-subnetarns",
           "DuplicatesAllowed": true,
@@ -1075,7 +1080,7 @@
         },
         "Tags": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-networkmanager-vpcattachment.html#cfn-networkmanager-vpcattachment-tags",
-          "DuplicatesAllowed": true,
+          "DuplicatesAllowed": false,
           "ItemType": "Tag",
           "Required": false,
           "Type": "List",

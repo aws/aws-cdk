@@ -1,5 +1,5 @@
 import { Grant, IGrantable } from 'aws-cdk-lib/aws-iam';
-import { Stack } from 'aws-cdk-lib';
+import { Stack } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { IWebSocketApi } from './api';
 import { CfnStage } from 'aws-cdk-lib/aws-apigatewayv2';

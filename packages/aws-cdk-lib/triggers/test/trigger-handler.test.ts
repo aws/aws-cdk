@@ -1,4 +1,4 @@
-import * as AWS from 'aws-sdk';
+import { AccessDeniedException } from '@aws-sdk/client-account';
 import * as lambda from '../lib/lambda';
 
 beforeAll(() => {
@@ -15,17 +15,19 @@ afterEach(() => {
 
 jest.mock('aws-sdk');
 
-const promiseMock = jest.fn().mockResolvedValue({
+const mockInvoke = jest.fn().mockResolvedValue({
   StatusCode: 200,
 });
 
-const invokeMock = jest.fn().mockReturnValue({
-  promise: promiseMock,
+jest.mock('@aws-sdk/client-lambda', () => {
+  return {
+    Lambda: jest.fn().mockImplementation(() => {
+      return {
+        invoke: mockInvoke,
+      };
+    }),
+  };
 });
-
-(AWS.Lambda as jest.MockedClass<any>).mockImplementation(() => ({
-  invoke: invokeMock,
-}));
 
 jest.useFakeTimers();
 
@@ -34,105 +36,121 @@ const mockRequest = {
   LogicalResourceId: 'MyTrigger',
   StackId: 'arn:aws:cloudformation:us-east-1:123456789012:stack/MyStack/12345678-1234-1234-1234-123456789012',
   ResponseURL: 'https://cloudformation-custom-resource-response-MyTrigger/',
-  ResourceProperties: {
-    ServiceToken: 'arn:aws:lambda:us-east-1:123456789012:function:MyFunction',
-    HandlerArn: handlerArn,
-    Timeout: '600',
-    InvocationType: 'Event',
-  },
   RequestId: 'MyRequestId',
   ResourceType: 'Custom::Trigger',
   ServiceToken: 'arn:aws:lambda:us-east-1:123456789012:function:MyFunction',
 };
+const mockResourceProperties = {
+  ServiceToken: 'arn:aws:lambda:us-east-1:123456789012:function:MyFunction',
+  HandlerArn: handlerArn,
+  Timeout: '600',
+  InvocationType: 'Event',
+  ExecuteOnHandlerChange: 'true',
+};
 
 test('Create', async () => {
-  await lambda.handler({ RequestType: 'Create', ...mockRequest });
+  await lambda.handler({ RequestType: 'Create', ResourceProperties: mockResourceProperties, ...mockRequest });
 
-  expect(invokeMock).toBeCalledTimes(1);
-  expect(invokeMock).toBeCalledWith({ FunctionName: handlerArn, InvocationType: 'Event' });
+  expect(mockInvoke).toBeCalledTimes(1);
+  expect(mockInvoke).toBeCalledWith({ FunctionName: handlerArn, InvocationType: 'Event' });
 });
 
 test('Update', async () => {
-  await lambda.handler({ RequestType: 'Update', PhysicalResourceId: 'PRID', OldResourceProperties: {}, ...mockRequest });
+  await lambda.handler({ RequestType: 'Update', PhysicalResourceId: 'PRID', OldResourceProperties: {}, ResourceProperties: mockResourceProperties, ...mockRequest });
 
-  expect(invokeMock).toBeCalledTimes(1);
-  expect(invokeMock).toBeCalledWith({ FunctionName: handlerArn, InvocationType: 'Event' });
+  expect(mockInvoke).toBeCalledTimes(1);
+  expect(mockInvoke).toBeCalledWith({ FunctionName: handlerArn, InvocationType: 'Event' });
+});
+
+test('Update with ExecuteOnHandlerChange = false', async () => {
+  const resourceProperties = {
+    ServiceToken: 'arn:aws:lambda:us-east-1:123456789012:function:MyFunction',
+    HandlerArn: handlerArn,
+    Timeout: '600',
+    InvocationType: 'Event',
+    ExecuteOnHandlerChange: 'false',
+  };
+
+  await lambda.handler({ RequestType: 'Update', PhysicalResourceId: 'PRID', OldResourceProperties: {}, ResourceProperties: resourceProperties, ...mockRequest });
+
+  expect(mockInvoke).not.toBeCalled();
 });
 
 test('Delete - handler not called', async () => {
-  await lambda.handler({ RequestType: 'Delete', PhysicalResourceId: 'PRID', ...mockRequest });
-  expect(invokeMock).not.toBeCalled();
+  await lambda.handler({ RequestType: 'Delete', PhysicalResourceId: 'PRID', ResourceProperties: mockResourceProperties, ...mockRequest });
+  expect(mockInvoke).not.toBeCalled();
 });
 
 test('non-200 status code throws an error', async () => {
-  promiseMock.mockResolvedValueOnce({
+  mockInvoke.mockResolvedValueOnce({
     StatusCode: 500,
   });
 
-  await expect(lambda.handler({ RequestType: 'Create', ...mockRequest }))
+  await expect(lambda.handler({ RequestType: 'Create', ResourceProperties: mockResourceProperties, ...mockRequest }))
     .rejects
     .toMatchObject({ message: 'Trigger handler failed with status code 500' });
 
-  expect(invokeMock).toBeCalledTimes(1);
-  expect(invokeMock).toBeCalledWith({ FunctionName: handlerArn, InvocationType: 'Event' });
+  expect(mockInvoke).toBeCalledTimes(1);
+  expect(mockInvoke).toBeCalledWith({ FunctionName: handlerArn, InvocationType: 'Event' });
 });
 
 test('202 status code success', async () => {
-  promiseMock.mockResolvedValueOnce({
+  mockInvoke.mockResolvedValueOnce({
     StatusCode: 202,
   });
 
-  await lambda.handler(({ RequestType: 'Create', ...mockRequest }));
+  await lambda.handler(({ RequestType: 'Create', ResourceProperties: mockResourceProperties, ...mockRequest }));
 
-  expect(invokeMock).toBeCalledTimes(1);
-  expect(invokeMock).toBeCalledWith({ FunctionName: handlerArn, InvocationType: 'Event' });
+  expect(mockInvoke).toBeCalledTimes(1);
+  expect(mockInvoke).toBeCalledWith({ FunctionName: handlerArn, InvocationType: 'Event' });
 });
 
 test('retry with access denied exception', async () => {
-  promiseMock.mockImplementationOnce(() => {
-    const error = new Error();
-    (error as AWS.AWSError).code = 'AccessDeniedException';
-    throw error;
+  mockInvoke.mockImplementationOnce(() => {
+    const error = new AccessDeniedException({
+      message: 'AccessDeniedException',
+    } as AccessDeniedException);
+    return Promise.reject(error);
   });
 
-  const response = lambda.handler({ RequestType: 'Create', ...mockRequest });
+  const response = lambda.handler({ RequestType: 'Create', ResourceProperties: mockResourceProperties, ...mockRequest });
 
   await Promise.resolve().then(() => jest.runAllTimers());
 
   await response;
 
-  expect(invokeMock).toBeCalledTimes(2);
-  expect(invokeMock).toBeCalledWith({ FunctionName: handlerArn, InvocationType: 'Event' });
+  expect(mockInvoke).toBeCalledTimes(2);
+  expect(mockInvoke).toBeCalledWith({ FunctionName: handlerArn, InvocationType: 'Event' });
 });
 
 test('throws an error for other exceptions', async () => {
-  promiseMock.mockImplementationOnce(() => {
+  mockInvoke.mockImplementationOnce(() => {
     throw new Error();
   });
 
-  await expect(lambda.handler({ RequestType: 'Create', ...mockRequest }))
+  await expect(lambda.handler({ RequestType: 'Create', ResourceProperties: mockResourceProperties, ...mockRequest }))
     .rejects
     .toThrow();
 
-  expect(invokeMock).toBeCalledTimes(1);
-  expect(invokeMock).toBeCalledWith({ FunctionName: handlerArn, InvocationType: 'Event' });
+  expect(mockInvoke).toBeCalledTimes(1);
+  expect(mockInvoke).toBeCalledWith({ FunctionName: handlerArn, InvocationType: 'Event' });
 });
 
 describe('function error', () => {
   const makeTest = (payload: string | undefined, expectedError: string) => {
     return async () => {
-      promiseMock.mockResolvedValueOnce({
+      mockInvoke.mockResolvedValueOnce({
         StatusCode: 200,
         FunctionError: 'Unhandled',
         Payload: payload,
       });
 
-      await expect(lambda.handler({ RequestType: 'Create', ...mockRequest }))
+      await expect(lambda.handler({ RequestType: 'Create', ResourceProperties: mockResourceProperties, ...mockRequest }))
         .rejects
         .toMatchObject({ message: expectedError });
 
-      expect(invokeMock).toBeCalledTimes(1);
-      expect(invokeMock).toBeCalledWith({ FunctionName: handlerArn, InvocationType: 'Event' });
+      expect(mockInvoke).toBeCalledTimes(1);
+      expect(mockInvoke).toBeCalledWith({ FunctionName: handlerArn, InvocationType: 'Event' });
     };
   };
 

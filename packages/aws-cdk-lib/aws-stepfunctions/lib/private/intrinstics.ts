@@ -17,7 +17,6 @@ export interface FnCallExpression {
   readonly arguments: IntrinsicExpression[];
 }
 
-
 /**
  * LL(1) parser for StepFunctions intrinsics
  *

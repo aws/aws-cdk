@@ -1,7 +1,7 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
-import * as cdk from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 
 /**
@@ -18,7 +18,6 @@ export abstract class Content {
   public static fromBucket(bucket: s3.IBucket, key: string, objectVersion?: string): S3Content {
     return new S3Content(bucket, key, objectVersion);
   }
-
 
   /**
      * Loads the game content from a local disk path.

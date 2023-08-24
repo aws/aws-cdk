@@ -1,7 +1,7 @@
-import * as iam from '../../../aws-iam';
-import * as sfn from '../../../aws-stepfunctions';
 import { Construct } from 'constructs';
 import { AuthType, CallApiGatewayEndpointBaseProps } from './base-types';
+import * as iam from '../../../aws-iam';
+import * as sfn from '../../../aws-stepfunctions';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**

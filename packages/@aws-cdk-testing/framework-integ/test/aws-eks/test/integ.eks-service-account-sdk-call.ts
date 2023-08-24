@@ -8,6 +8,7 @@ import * as cdk8s from 'cdk8s';
 import * as kplus from 'cdk8s-plus-24';
 import { BucketPinger } from './bucket-pinger/bucket-pinger';
 import * as eks from 'aws-cdk-lib/aws-eks';
+import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 
 const app = new App();
 const stack = new Stack(app, 'aws-eks-service-account-sdk-calls-test');
@@ -23,8 +24,8 @@ const dockerImage = new ecrAssets.DockerImageAsset(stack, 'sdk-call-making-docke
 const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 3, natGateways: 1, restrictDefaultSecurityGroup: false });
 
 const cluster = new eks.Cluster(stack, 'Cluster', {
-  vpc: vpc,
-  version: eks.KubernetesVersion.V1_24,
+  vpc,
+  ...getClusterVersionConfig(stack),
 });
 
 const chart = new cdk8s.Chart(new cdk8s.App(), 'sdk-call-image');
@@ -36,6 +37,7 @@ new kplus.Deployment(chart, 'Deployment', {
     image: dockerImage.imageUri,
     envVariables: {
       BUCKET_NAME: kplus.EnvValue.fromValue(bucketName),
+      REGION: kplus.EnvValue.fromValue(stack.region),
     },
     securityContext: {
       user: 1000,
@@ -75,6 +77,7 @@ new CfnOutput(stack, 'PingerResponse', {
 
 new integ.IntegTest(app, 'aws-cdk-eks-service-account-sdk-call', {
   testCases: [stack],
+  diffAssets: false, // otherwise this test will block every dependency upgrade PR
 });
 
 app.synth();

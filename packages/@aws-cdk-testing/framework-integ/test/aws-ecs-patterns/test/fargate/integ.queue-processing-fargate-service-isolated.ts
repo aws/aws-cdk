@@ -24,7 +24,6 @@ const vpc = new ec2.Vpc(stack, 'VPC', {
   ],
 });
 
-
 vpc.addS3Endpoint('S3Endpoint', [{ subnetType: ec2.SubnetType.PRIVATE_ISOLATED }]);
 
 const securityGroup = new ec2.SecurityGroup(stack, 'MyCustomSG', {

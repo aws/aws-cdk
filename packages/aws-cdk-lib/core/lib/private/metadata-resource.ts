@@ -1,7 +1,7 @@
 import * as zlib from 'zlib';
-import { RegionInfo } from '../../../region-info';
 import { Construct } from 'constructs';
 import { ConstructInfo, constructInfoFromStack } from './runtime-info';
+import { RegionInfo } from '../../../region-info';
 import { CfnCondition } from '../cfn-condition';
 import { Fn } from '../cfn-fn';
 import { Aws } from '../cfn-pseudo';

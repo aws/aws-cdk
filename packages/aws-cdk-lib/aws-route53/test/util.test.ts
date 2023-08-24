@@ -3,10 +3,6 @@ import { HostedZone } from '../lib';
 import * as util from '../lib/util';
 
 describe('util', () => {
-  test('throws when zone name ending with a \'.\'', () => {
-    expect(() => util.validateZoneName('zone.name.')).toThrow(/trailing dot/);
-  });
-
   test('accepts a valid domain name', () => {
     const domainName = 'amazonaws.com';
     util.validateZoneName(domainName);

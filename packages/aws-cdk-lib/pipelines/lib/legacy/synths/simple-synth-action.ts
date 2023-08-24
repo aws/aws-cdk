@@ -1,5 +1,7 @@
 import * as crypto from 'crypto';
 import * as path from 'path';
+import { Construct } from 'constructs';
+import { copyEnvironmentVariables, filterEmpty } from './_util';
 import * as codebuild from '../../../../aws-codebuild';
 import * as codepipeline from '../../../../aws-codepipeline';
 import * as codepipeline_actions from '../../../../aws-codepipeline-actions';
@@ -7,8 +9,6 @@ import * as ec2 from '../../../../aws-ec2';
 import * as events from '../../../../aws-events';
 import * as iam from '../../../../aws-iam';
 import { Stack } from '../../../../core';
-import { Construct } from 'constructs';
-import { copyEnvironmentVariables, filterEmpty } from './_util';
 import { dockerCredentialsInstallCommands, DockerCredential, DockerCredentialUsage } from '../../docker-credentials';
 import { CDKP_DEFAULT_CODEBUILD_IMAGE } from '../../private/default-codebuild-image';
 import { toPosixPath } from '../../private/fs';

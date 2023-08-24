@@ -241,7 +241,6 @@ behavior('self-update project role uses tagged bootstrap-role permissions', (sui
   }
 });
 
-
 behavior('self-mutation stage can be customized with BuildSpec', (suite) => {
   suite.legacy(() => {
     new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk', {

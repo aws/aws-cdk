@@ -1,7 +1,7 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { LaunchTemplate } from 'aws-cdk-lib/aws-ec2';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { App, Duration, Stack } from 'aws-cdk-lib';
+import { App, Duration, Stack, Tags } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { AllocationStrategy, FargateComputeEnvironment, ManagedEc2EcsComputeEnvironment } from '../lib';
 
@@ -58,6 +58,26 @@ new ManagedEc2EcsComputeEnvironment(stack, 'SpotEc2', {
     assumedBy: new ServicePrincipal('batch.amazonaws.com'),
   }),
 });
+
+new ManagedEc2EcsComputeEnvironment(stack, 'AllocationStrategySPOT_CAPACITY', {
+  vpc,
+  images: [{
+    image: new ec2.AmazonLinuxImage(),
+  }],
+  spot: true,
+  spotBidPercentage: 95,
+  allocationStrategy: AllocationStrategy.SPOT_CAPACITY_OPTIMIZED,
+});
+
+const taggedEc2Ecs = new ManagedEc2EcsComputeEnvironment(stack, 'taggedCE', {
+  vpc,
+  images: [{
+    image: new ec2.AmazonLinuxImage(),
+  }],
+});
+
+Tags.of(taggedEc2Ecs).add('foo', 'bar');
+Tags.of(taggedEc2Ecs).add('super', 'salamander');
 
 new integ.IntegTest(app, 'BatchManagedComputeEnvironmentTest', {
   testCases: [stack],

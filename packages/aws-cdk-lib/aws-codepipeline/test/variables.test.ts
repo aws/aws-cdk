@@ -1,7 +1,7 @@
-import { Match, Template } from '../../assertions';
-import * as cdk from '../../core';
 import { FakeBuildAction } from './fake-build-action';
 import { FakeSourceAction } from './fake-source-action';
+import { Match, Template } from '../../assertions';
+import * as cdk from '../../core';
 import * as codepipeline from '../lib';
 
 /* eslint-disable quote-props */

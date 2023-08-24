@@ -1,8 +1,8 @@
+import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
+import * as constructs from 'constructs';
 import { Annotations, Match, Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
-import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '../../core';
-import * as constructs from 'constructs';
 import * as autoscaling from '../lib';
 
 describeDeprecated('scheduled action', () => {
@@ -133,7 +133,7 @@ describeDeprecated('scheduled action', () => {
     });
 
     // THEN
-    Annotations.fromStack(stack).hasWarning('/Default/ASG/ScheduledActionScaleOutInTheMorning', "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead.");
+    Annotations.fromStack(stack).hasWarning('/Default/ASG/ScheduledActionScaleOutInTheMorning', "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead. [ack: @aws-cdk/aws-autoscaling:scheduleDefaultRunsEveryMinute]");
   });
 
   test('scheduled scaling shows no warning when minute is * in cron', () => {

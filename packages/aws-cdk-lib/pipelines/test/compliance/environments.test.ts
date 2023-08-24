@@ -366,7 +366,6 @@ behavior('action has right settings for cross-account/cross-region deployment', 
   }
 });
 
-
 function agnosticRole(roleName: string) {
   return {
     'Fn::Join': ['', [

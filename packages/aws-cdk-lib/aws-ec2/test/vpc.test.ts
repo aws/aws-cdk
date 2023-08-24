@@ -194,7 +194,6 @@ describe('vpc', () => {
 
     describe('dns getters correspond to CFN properties', () => {
 
-
       const inputs = [
         { dnsSupport: false, dnsHostnames: false },
         // {dnsSupport: false, dnsHostnames: true} - this configuration is illegal so its not part of the permutations.
@@ -224,10 +223,8 @@ describe('vpc', () => {
           expect(input.dnsSupport).toEqual(vpc.dnsSupportEnabled);
           expect(input.dnsHostnames).toEqual(vpc.dnsHostnamesEnabled);
 
-
         });
       }
-
 
     });
 
@@ -284,6 +281,26 @@ describe('vpc', () => {
       Template.fromStack(stack).resourceCountIs('AWS::EC2::NatGateway', 0);
 
     });
+
+    test('with createInternetGateway: false, the VPC should not have an IGW nor NAT Gateways', () => {
+      const stack = getTestStack();
+      new Vpc(stack, 'TheVPC', {
+        createInternetGateway: false,
+        subnetConfiguration: [
+          {
+            subnetType: SubnetType.PUBLIC,
+            name: 'Public',
+          },
+          {
+            subnetType: SubnetType.PRIVATE_ISOLATED,
+            name: 'Isolated',
+          },
+        ],
+      });
+      Template.fromStack(stack).resourceCountIs('AWS::EC2::InternetGateway', 0);
+      Template.fromStack(stack).resourceCountIs('AWS::EC2::NatGateway', 0);
+    });
+
     test('with private subnets and custom networkAcl.', () => {
       const stack = getTestStack();
       const vpc = new Vpc(stack, 'TheVPC', {
@@ -722,11 +739,36 @@ describe('vpc', () => {
 
     test('with availabilityZones set to zones different from stack', () => {
       const stack = getTestStack();
+      // we need to create a context with availability zones, otherwise we're checking against dummy values
+      stack.node.setContext(
+        `availability-zones:account=${stack.account}:region=${stack.region}`,
+        ['us-east-1a', 'us-east1b', 'us-east-1c'],
+      );
       expect(() => {
         new Vpc(stack, 'VPC', {
           availabilityZones: [stack.availabilityZones[0] + 'invalid'],
         });
       }).toThrow(/must be a subset of the stack/);
+    });
+
+    test('does not throw with availability zones set without context in non-agnostic stack', () => {
+      const stack = getTestStack();
+      expect(() => {
+        new Vpc(stack, 'VPC', {
+          availabilityZones: ['us-east-1a'],
+        });
+      }).not.toThrow();
+    });
+
+    test('agnostic stack without context with defined vpc AZs', () => {
+      const stack = new Stack(undefined, 'TestStack');
+      new Vpc(stack, 'VPC', {
+        availabilityZones: ['us-east-1a'],
+      });
+      Template.fromStack(stack).resourceCountIs('AWS::EC2::Subnet', 2);
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
+        AvailabilityZone: 'us-east-1a',
+      });
     });
 
     test('with natGateway set to 1', () => {
@@ -797,7 +839,6 @@ describe('vpc', () => {
           ],
         });
       }).toThrow(/make sure you don't configure any PRIVATE/);
-
 
     });
 
@@ -953,7 +994,6 @@ describe('vpc', () => {
         },
       });
 
-
     });
     test('with a vpn gateway and route propagation on isolated subnets', () => {
       const stack = getTestStack();
@@ -986,7 +1026,6 @@ describe('vpc', () => {
           Ref: 'VPCVpnGatewayB5ABAE68',
         },
       });
-
 
     });
     test('with a vpn gateway and route propagation on private and isolated subnets', () => {
@@ -1034,7 +1073,6 @@ describe('vpc', () => {
         },
       });
 
-
     });
     test('route propagation defaults to isolated subnets when there are no private subnets', () => {
       const stack = getTestStack();
@@ -1063,7 +1101,6 @@ describe('vpc', () => {
         },
       });
 
-
     });
     test('route propagation defaults to public subnets when there are no private/isolated subnets', () => {
       const stack = getTestStack();
@@ -1091,7 +1128,6 @@ describe('vpc', () => {
         },
       });
 
-
     });
     test('fails when specifying vpnConnections with vpnGateway set to false', () => {
       // GIVEN
@@ -1107,7 +1143,6 @@ describe('vpc', () => {
         },
       })).toThrow(/`vpnConnections`.+`vpnGateway`.+false/);
 
-
     });
     test('fails when specifying vpnGatewayAsn with vpnGateway set to false', () => {
       // GIVEN
@@ -1117,7 +1152,6 @@ describe('vpc', () => {
         vpnGateway: false,
         vpnGatewayAsn: 65000,
       })).toThrow(/`vpnGatewayAsn`.+`vpnGateway`.+false/);
-
 
     });
 
@@ -1201,7 +1235,6 @@ describe('vpc', () => {
         DestinationIpv6CidrBlock: '2001:4860:4860::8888/32',
         NetworkInterfaceId: 'router-1',
       });
-
 
     });
     test('Can add an IPv4 route', () => {
@@ -1436,7 +1469,6 @@ describe('vpc', () => {
         ],
       });
 
-
     });
 
     test('natGateways controls amount of NAT instances', () => {
@@ -1495,7 +1527,6 @@ describe('vpc', () => {
         ],
       });
 
-
     });
 
     test('can configure Security Groups of NAT instances with defaultAllowAll INBOUND_AND_OUTBOUND', () => {
@@ -1532,7 +1563,6 @@ describe('vpc', () => {
         ],
       });
 
-
     });
 
     test('can configure Security Groups of NAT instances with defaultAllowAll OUTBOUND_ONLY', () => {
@@ -1561,7 +1591,6 @@ describe('vpc', () => {
           },
         ],
       });
-
 
     });
 
@@ -1593,7 +1622,6 @@ describe('vpc', () => {
           },
         ],
       });
-
 
     });
 
@@ -1730,7 +1758,6 @@ describe('vpc', () => {
       // THEN
       expect(subnetIds).toEqual(vpc.publicSubnets.map(s => s.subnetId));
 
-
     });
 
     test('can select isolated subnets', () => {
@@ -1748,7 +1775,6 @@ describe('vpc', () => {
 
       // THEN
       expect(subnetIds).toEqual(vpc.isolatedSubnets.map(s => s.subnetId));
-
 
     });
 
@@ -1835,7 +1861,6 @@ describe('vpc', () => {
         vpc.selectSubnets({ subnetGroupName: 'Toot' });
       }).toThrow(/There are no subnet groups with name 'Toot' in this VPC. Available names: Public,Private/);
 
-
     });
 
     test('select subnets with az restriction', () => {
@@ -1886,7 +1911,7 @@ describe('vpc', () => {
         subnetIds: { 'Fn::Split': [',', { 'Fn::ImportValue': 'myPublicSubnetIds' }] },
       });
 
-      Annotations.fromStack(stack).hasWarning('/TestStack/VPC', "fromVpcAttributes: 'availabilityZones' is a list token: the imported VPC will not work with constructs that require a list of subnets at synthesis time. Use 'Vpc.fromLookup()' or 'Fn.importListValue' instead.");
+      Annotations.fromStack(stack).hasWarning('/TestStack/VPC', "fromVpcAttributes: 'availabilityZones' is a list token: the imported VPC will not work with constructs that require a list of subnets at synthesis time. Use 'Vpc.fromLookup()' or 'Fn.importListValue' instead. [ack: @aws-cdk/aws-ec2:vpcAttributeIsListTokenavailabilityZones]");
     });
 
     test('fromVpcAttributes using fixed-length list tokens', () => {
@@ -1920,7 +1945,6 @@ describe('vpc', () => {
           { 'Fn::Select': [1, publicSubnetList] },
         ],
       });
-
 
     });
 

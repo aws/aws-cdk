@@ -13,7 +13,7 @@ test('State machine can be used as Event Rule target', () => {
     schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
   });
   const stateMachine = new sfn.StateMachine(stack, 'SM', {
-    definition: new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) }),
+    definitionBody: sfn.DefinitionBody.fromChainable(new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) })),
   });
 
   // WHEN
@@ -67,7 +67,7 @@ test('Existing role can be used for State machine Rule target', () => {
     assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
   });
   const stateMachine = new sfn.StateMachine(stack, 'SM', {
-    definition: new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) }),
+    definitionBody: sfn.DefinitionBody.fromChainable(new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) })),
   });
 
   // WHEN
@@ -124,7 +124,7 @@ test('specifying retry policy', () => {
     assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
   });
   const stateMachine = new sfn.StateMachine(stack, 'SM', {
-    definition: new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) }),
+    definitionBody: sfn.DefinitionBody.fromChainable(new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) })),
   });
 
   rule.addTarget(new targets.SfnStateMachine(stateMachine, {
@@ -172,7 +172,7 @@ test('specifying retry policy with 0 retryAttempts', () => {
     assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
   });
   const stateMachine = new sfn.StateMachine(stack, 'SM', {
-    definition: new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) }),
+    definitionBody: sfn.DefinitionBody.fromChainable(new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) })),
   });
 
   rule.addTarget(new targets.SfnStateMachine(stateMachine, {
@@ -221,7 +221,7 @@ test('use a Dead Letter Queue for the rule target', () => {
     assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
   });
   const stateMachine = new sfn.StateMachine(stack, 'SM', {
-    definition: new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) }),
+    definitionBody: sfn.DefinitionBody.fromChainable(new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) })),
   });
 
   // WHEN

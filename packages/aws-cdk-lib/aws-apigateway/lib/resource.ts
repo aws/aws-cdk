@@ -1,4 +1,3 @@
-import { IResource as IResourceBase, Resource as ResourceConstruct } from '../../core';
 import { Construct } from 'constructs';
 import { CfnResource, CfnResourceProps } from './apigateway.generated';
 import { Cors, CorsOptions } from './cors';
@@ -6,6 +5,7 @@ import { Integration } from './integration';
 import { MockIntegration } from './integrations';
 import { Method, MethodOptions, AuthorizationType } from './method';
 import { IRestApi, RestApi } from './restapi';
+import { IResource as IResourceBase, Resource as ResourceConstruct } from '../../core';
 
 export interface IResource extends IResourceBase {
   /**
@@ -320,7 +320,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
       template.push('#set($origin = $input.params().header.get("Origin"))');
       template.push('#if($origin == "") #set($origin = $input.params().header.get("origin")) #end');
 
-      const condition = origins.map(o => `$origin.matches("${o}")`).join(' || ');
+      const condition = origins.map(o => `$origin == "${o}"`).join(' || ');
 
       template.push(`#if(${condition})`);
       template.push('  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)');

@@ -1,9 +1,9 @@
-import * as cxapi from '../../cx-api';
 import { IConstruct, Construct, Node } from 'constructs';
 import { Environment } from './environment';
 import { PermissionsBoundary } from './permissions-boundary';
 import { synthesize } from './private/synthesis';
 import { IPolicyValidationPluginBeta1 } from './validation';
+import * as cxapi from '../../cx-api';
 
 const STAGE_SYMBOL = Symbol.for('@aws-cdk/core.Stage');
 
@@ -154,7 +154,6 @@ export class Stage extends Construct {
    */
   public readonly policyValidationBeta1: IPolicyValidationPluginBeta1[] = [];
 
-
   constructor(scope: Construct, id: string, props: StageProps = {}) {
     super(scope, id);
 
@@ -168,7 +167,6 @@ export class Stage extends Construct {
 
     this.region = props.env?.region ?? this.parentStage?.region;
     this.account = props.env?.account ?? this.parentStage?.account;
-
 
     props.permissionsBoundary?._bind(this);
 

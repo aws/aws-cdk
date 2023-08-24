@@ -83,7 +83,6 @@ describe('pipeline', () => {
       },
     });
 
-
   });
 
   test('pipeline with GitHub source with poll trigger', () => {
@@ -142,7 +141,6 @@ describe('pipeline', () => {
       ],
     });
 
-
   });
 
   test('pipeline with GitHub source without triggers', () => {
@@ -200,7 +198,6 @@ describe('pipeline', () => {
         },
       ],
     });
-
 
   });
 
@@ -420,7 +417,6 @@ describe('pipeline', () => {
           },
         });
 
-
       });
     });
   });
@@ -550,7 +546,6 @@ describe('pipeline', () => {
       ],
     });
 
-
   });
 
   describe('cross-region Pipeline', () => {
@@ -673,7 +668,6 @@ describe('pipeline', () => {
       expect(usEast1Support.stack.account).toEqual(pipelineAccount);
       expect(usEast1Support.stack.node.id.indexOf('us-east-1')).not.toEqual(-1);
 
-
     });
 
     test('allows specifying only one of artifactBucket and crossRegionReplicationBuckets', () => {
@@ -744,7 +738,6 @@ describe('pipeline', () => {
           },
         ],
       });
-
 
     });
 
@@ -832,7 +825,6 @@ describe('pipeline', () => {
       Template.fromStack(replicationStack).hasResourceProperties('AWS::S3::Bucket', {
         'BucketName': 'replicationstackeplicationbucket2464cd5c33b386483b66',
       });
-
 
     });
   });
@@ -977,7 +969,6 @@ describe('pipeline', () => {
         },
       });
 
-
     });
 
     test('adds a dependency on the Stack containing a new action Role', () => {
@@ -1062,7 +1053,6 @@ describe('pipeline', () => {
 
       expect(pipelineStack.dependencies.length).toEqual(1);
 
-
     });
 
     test('does not add a dependency on the Stack containing an imported action Role', () => {
@@ -1139,7 +1129,6 @@ describe('pipeline', () => {
       });
 
       expect(pipelineStack.dependencies.length).toEqual(0);
-
 
     });
   });

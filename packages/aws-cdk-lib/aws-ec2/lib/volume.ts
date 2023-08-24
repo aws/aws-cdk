@@ -1,10 +1,10 @@
+import { Construct } from 'constructs';
+import { CfnVolume } from './ec2.generated';
+import { IInstance } from './instance';
 import { AccountRootPrincipal, Grant, IGrantable } from '../../aws-iam';
 import { IKey, ViaServicePrincipal } from '../../aws-kms';
 import { IResource, Resource, Size, SizeRoundingBehavior, Stack, Token, Tags, Names, RemovalPolicy } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
-import { Construct } from 'constructs';
-import { CfnVolume } from './ec2.generated';
-import { IInstance } from './instance';
 
 /**
  * Block device

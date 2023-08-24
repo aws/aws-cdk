@@ -13,6 +13,14 @@ const sortJson = require('sort-json');
 
 export interface PatchOptions {
   readonly quiet?: boolean;
+  /**
+   * Strict patching mode.
+   * Will fail if a patch can't be applied.
+   * Set to `false` to silently ignore any errors.
+   *
+   * @default true
+   */
+  readonly strict?: boolean;
 }
 
 export type PatchSet = Record<string, PatchSetElement>;
@@ -61,7 +69,7 @@ export function evaluatePatchSet(sources: PatchSet, options: PatchOptions = {}) 
         merge(targetObject, value.data, []);
         break;
       case 'patch':
-        patch(targetObject, value.data, (m) => log(`${key}: ${m}`));
+        patch(targetObject, value.data, (m) => log(`${key}: ${m}`), options.strict);
         break;
       case 'set':
         const evaluated = evaluatePatchSet(value.sources, options);
@@ -136,7 +144,7 @@ function merge(target: any, fragment: any, jsonPath: string[]) {
   }
 }
 
-function patch(target: any, fragment: any, log: (x: string) => void) {
+function patch(target: any, fragment: any, log: (x: string) => void, strict: boolean = true) {
   if (!fragment) { return; }
 
   const patches = findPatches(target, fragment);
@@ -146,7 +154,11 @@ function patch(target: any, fragment: any, log: (x: string) => void) {
     try {
       fastJsonPatch.applyPatch(target, p.operations);
     } catch (e: any) {
-      throw new Error(`error applying patch: ${JSON.stringify(p, undefined, 2)}: ${e.message}`);
+      const msg = `error applying patch: ${JSON.stringify(p, undefined, 2)}: ${e.message}`;
+      if (strict) {
+        throw new Error(msg);
+      }
+      log('!!!!! ' + msg);
     }
   }
 }
@@ -235,7 +247,6 @@ function findPatches(data: any, patchSource: any): Patch[] {
     return jsonPath.map(p => `/${p}`).join('') + originalPath;
   }
 }
-
 
 /**
  * Run this file as a CLI tool, to apply a patch set from the command line

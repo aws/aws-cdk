@@ -1,7 +1,7 @@
+import { Endpoint } from './endpoint';
 import { IConnectable, ISecurityGroup } from '../../aws-ec2';
 import { ISecretAttachmentTarget } from '../../aws-secretsmanager';
 import { IResource } from '../../core';
-import { Endpoint } from './endpoint';
 
 /**
  * Create a clustered database with a given number of instances.

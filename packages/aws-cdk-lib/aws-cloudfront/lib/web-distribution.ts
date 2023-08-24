@@ -1,8 +1,3 @@
-import * as certificatemanager from '../../aws-certificatemanager';
-import * as iam from '../../aws-iam';
-import * as lambda from '../../aws-lambda';
-import * as s3 from '../../aws-s3';
-import * as cdk from '../../core';
 import { Construct } from 'constructs';
 import { CfnDistribution } from './cloudfront.generated';
 import { HttpVersion, IDistribution, LambdaEdgeEventType, OriginProtocolPolicy, PriceClass, ViewerProtocolPolicy, SSLMethod, SecurityPolicyProtocol } from './distribution';
@@ -11,6 +6,11 @@ import { GeoRestriction } from './geo-restriction';
 import { IKeyGroup } from './key-group';
 import { IOriginAccessIdentity } from './origin-access-identity';
 import { formatDistributionArn } from './private/utils';
+import * as certificatemanager from '../../aws-certificatemanager';
+import * as iam from '../../aws-iam';
+import * as lambda from '../../aws-lambda';
+import * as s3 from '../../aws-s3';
+import * as cdk from '../../core';
 
 /**
  * HTTP status code to failover to second origin
@@ -555,7 +555,7 @@ export class ViewerCertificate {
   }
 
   /**
-   * Generate a viewer certifcate configuration using
+   * Generate a viewer certificate configuration using
    * the CloudFront default certificate (e.g. d111111abcdef8.cloudfront.net)
    * and a `SecurityPolicyProtocol.TLS_V1` security policy.
    *

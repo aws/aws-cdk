@@ -1,7 +1,7 @@
-import * as cdk from '../../core';
 import { Construct } from 'constructs';
 import * as ga from './globalaccelerator.generated';
 import { Listener, ListenerOptions } from './listener';
+import * as cdk from '../../core';
 
 /**
  * The interface of the Accelerator

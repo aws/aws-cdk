@@ -1,7 +1,3 @@
-import * as appscaling from '../../aws-applicationautoscaling';
-import * as cloudwatch from '../../aws-cloudwatch';
-import * as iam from '../../aws-iam';
-import { ArnFormat } from '../../core';
 import { Construct } from 'constructs';
 import { Architecture } from './architecture';
 import { EventInvokeConfigOptions } from './event-invoke-config';
@@ -10,6 +6,10 @@ import { extractQualifierFromArn, IVersion } from './lambda-version';
 import { CfnAlias } from './lambda.generated';
 import { ScalableFunctionAttribute } from './private/scalable-function-attribute';
 import { AutoScalingOptions, IScalableFunctionAttribute } from './scalable-attribute-api';
+import * as appscaling from '../../aws-applicationautoscaling';
+import * as cloudwatch from '../../aws-cloudwatch';
+import * as iam from '../../aws-iam';
+import { ArnFormat } from '../../core';
 
 export interface IAlias extends IFunction {
   /**

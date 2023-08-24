@@ -6,7 +6,6 @@ import { error, print, warning } from '../../logging';
 import { flatten } from '../../util';
 import { versionNumber } from '../../version';
 
-
 export enum DefaultSelection {
   /**
    * Returns an empty selection in case there are no selectors.

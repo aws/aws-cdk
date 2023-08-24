@@ -1,8 +1,8 @@
+import { Construct } from 'constructs';
+import { QueuePolicy } from './policy';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { IResource, Resource, ResourceProps } from '../../core';
-import { Construct } from 'constructs';
-import { QueuePolicy } from './policy';
 
 /**
  * Represents an SQS queue
@@ -35,6 +35,11 @@ export interface IQueue extends IResource {
    * Whether this queue is an Amazon SQS FIFO queue. If false, this is a standard queue.
    */
   readonly fifo: boolean;
+
+  /**
+   * Whether the contents of the queue are encrypted, and by what type of key.
+   */
+  readonly encryptionType?: QueueEncryption;
 
   /**
    * Adds a statement to the IAM resource policy associated with this queue.
@@ -127,6 +132,11 @@ export abstract class QueueBase extends Resource implements IQueue {
   public abstract readonly fifo: boolean;
 
   /**
+   * Whether the contents of the queue are encrypted, and by what type of key.
+   */
+  public abstract readonly encryptionType?: QueueEncryption;
+
+  /**
    * Controls automatic creation of policy objects.
    *
    * Set by subclasses.
@@ -172,6 +182,12 @@ export abstract class QueueBase extends Resource implements IQueue {
    *   - sqs:GetQueueAttributes
    *   - sqs:GetQueueUrl
    *
+   * If encryption is used, permission to use the key to decrypt the contents of the queue will also be granted to the same principal.
+   *
+   * This will grant the following KMS permissions:
+   *
+   *   - kms:Decrypt
+   *
    * @param grantee Principal to grant consume rights to
    */
   public grantConsumeMessages(grantee: iam.IGrantable) {
@@ -197,6 +213,15 @@ export abstract class QueueBase extends Resource implements IQueue {
    *  - sqs:SendMessage
    *  - sqs:GetQueueAttributes
    *  - sqs:GetQueueUrl
+   *
+   * If encryption is used, permission to use the key to encrypt/decrypt the contents of the queue will also be granted to the same principal.
+   *
+   * This will grant the following KMS permissions:
+   *
+   *  - kms:Decrypt
+   *  - kms:Encrypt
+   *  - kms:ReEncrypt*
+   *  - kms:GenerateDataKey*
    *
    * @param grantee Principal to grant send rights to
    */
@@ -285,4 +310,34 @@ export interface QueueAttributes {
    * @default - if fifo is not specified, the property will be determined based on the queue name (not possible for FIFO queues imported from a token)
    */
   readonly fifo?: boolean;
+}
+
+/**
+ * What kind of encryption to apply to this queue
+ */
+export enum QueueEncryption {
+  /**
+   * Messages in the queue are not encrypted
+   */
+  UNENCRYPTED = 'NONE',
+
+  /**
+   * Server-side KMS encryption with a KMS key managed by SQS.
+   */
+  KMS_MANAGED = 'KMS_MANAGED',
+
+  /**
+   * Server-side encryption with a KMS key managed by the user.
+   *
+   * If `encryptionKey` is specified, this key will be used, otherwise, one will be defined.
+   */
+  KMS = 'KMS',
+
+  /**
+   * Server-side encryption key managed by SQS (SSE-SQS).
+   *
+   * To learn more about SSE-SQS on Amazon SQS, please visit the
+   * [Amazon SQS documentation](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-server-side-encryption.html).
+   */
+  SQS_MANAGED = 'SQS_MANAGED'
 }

@@ -1,3 +1,4 @@
+import * as eks from '@aws-sdk/client-eks';
 import * as mocks from './cluster-resource-handler-mocks';
 import { ClusterResourceHandler } from '../lib/cluster-resource-handler/cluster';
 
@@ -56,7 +57,7 @@ describe('cluster resource provider', () => {
       await handler.onEvent();
 
       // THEN
-      expect(mocks.actualRequest.createClusterRequest?.name.length).toEqual(100);
+      expect(mocks.actualRequest.createClusterRequest?.name?.length).toEqual(100);
       expect(mocks.actualRequest.createClusterRequest?.name).toEqual('hellohellohellohellohellohellohellohellohellohellohellohellohellohe-602c078a6181435296764f00352445aa');
     });
 
@@ -149,7 +150,12 @@ describe('cluster resource provider', () => {
 
     test('onDelete ignores ResourceNotFoundException', async () => {
       const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Delete'));
-      mocks.simulateResponse.deleteClusterErrorCode = 'ResourceNotFoundException';
+      mocks.simulateResponse.deleteClusterError = new eks.ResourceNotFoundException({
+        message: 'Cluster not found',
+        $metadata: {
+          httpStatusCode: 404,
+        },
+      });
       await handler.onEvent();
     });
 
@@ -162,21 +168,26 @@ describe('cluster resource provider', () => {
 
     test('isDeleteComplete returns true when describeCluster throws a ResourceNotFound exception', async () => {
       const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Delete'));
-      mocks.simulateResponse.describeClusterExceptionCode = 'ResourceNotFoundException';
+      mocks.simulateResponse.describeClusterException = new eks.ResourceNotFoundException({
+        message: 'Cluster not found',
+        $metadata: {
+          httpStatusCode: 404,
+        },
+      });
       const resp = await handler.isComplete();
       expect(resp.IsComplete).toEqual(true);
     });
 
     test('isDeleteComplete propagates other errors', async () => {
       const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Delete'));
-      mocks.simulateResponse.describeClusterExceptionCode = 'OtherException';
+      mocks.simulateResponse.describeClusterException = new Error('OtherException');
       let error: any;
       try {
         await handler.isComplete();
       } catch (e) {
         error = e;
       }
-      expect(error.code).toEqual('OtherException');
+      expect(error.message).toEqual('OtherException');
     });
   });
 

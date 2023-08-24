@@ -1,7 +1,7 @@
-import { Arn, ArnFormat, Stack, Token } from '../../core';
 import { ICertificate } from './certificate';
 import { DnsValidatedCertificate } from './dns-validated-certificate';
 import { publicSuffixes } from './public-suffixes';
+import { Arn, ArnFormat, Stack, Token } from '../../core';
 
 /**
  * Returns the apex domain (domain.com) from a subdomain (www.sub.domain.com)
