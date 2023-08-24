@@ -91,11 +91,6 @@
    }
   }
  },
- "Outputs": {
-  "NameForLogConfigImportedByName": {
-   "Value": "MyRealtimeLogConfig"
-  }
- },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

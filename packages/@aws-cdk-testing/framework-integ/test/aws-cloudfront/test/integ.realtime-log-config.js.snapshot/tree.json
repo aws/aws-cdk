@@ -178,22 +178,6 @@
               "version": "0.0.0"
             }
           },
-          "ImportedProfileByArn": {
-            "id": "ImportedProfileByArn",
-            "path": "integ-realtime-config/ImportedProfileByArn",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
-              "version": "0.0.0"
-            }
-          },
-          "NameForLogConfigImportedByName": {
-            "id": "NameForLogConfigImportedByName",
-            "path": "integ-realtime-config/NameForLogConfigImportedByName",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnOutput",
-              "version": "0.0.0"
-            }
-          },
           "realtime-log-config": {
             "id": "realtime-log-config",
             "path": "integ-realtime-config/realtime-log-config",

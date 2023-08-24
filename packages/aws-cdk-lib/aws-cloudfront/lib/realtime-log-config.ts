@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnRealtimeLogConfig } from './cloudfront.generated';
 import { Endpoint } from '../';
-import { Arn, IResource, Lazy, Names, Resource, Stack } from '../../core';
+import { IResource, Lazy, Names, Resource } from '../../core';
 
 /**
  * Represents Realtime Log Configuration
@@ -46,83 +46,11 @@ export interface RealtimeLogConfigProps {
 }
 
 /**
- * Base class for RealTimeLogConfig
- */
-abstract class RealtimeLogConfigBase extends Resource implements IRealtimeLogConfig {
-  public abstract readonly realtimeLogConfigName: string;
-  public abstract readonly realtimeLogConfigArn: string;
-}
-
-/**
- * Attributes for RealtimeLogConfig
- */
-export interface RealtimeLogConfigAttributes {
-  /**
-   * The ARN of the RealTimeLogConfig.
-   *
-   * Format: arn:<partition>:cloudfront::<account-id>:realtime-log-config/<realtime-log-config-name-with-path>
-   */
-  readonly realtimeLogConfigArn: string;
-}
-
-/**
  * A Realtime Log Config configuration
  *
  * @resource AWS::CloudFront::RealtimeLogConfig
  */
-export class RealtimeLogConfig extends RealtimeLogConfigBase {
-
-  /**
-   * Import an existing RealtimeLogConfig from an RealtimeLogConfig name.
-   *
-   * @param scope construct scope
-   * @param id construct id
-   * @param realtimeLogConfigName the name of the existing RealtimeLogConfig to import
-   */
-  public static fromRealtimeLogConfigName(scope: Construct, id: string, realtimeLogConfigName: string): IRealtimeLogConfig {
-    const realtimeLogConfigArn = Stack.of(scope).formatArn({
-      service: 'cloudfront',
-      region: '',
-      resource: 'realtime-log-config',
-      resourceName: realtimeLogConfigName,
-    });
-    return RealtimeLogConfig.fromRealtimeLogConfigAttributes(scope, id, { realtimeLogConfigArn });
-  }
-  /**
-   * Import an existing RealtimeLogConfig from an RealtimeLogConfig ARN.
-   *
-   * If the ARN comes from a Token, the RealtimeLogConfig cannot have a path; if so, any attempt
-   * to reference its realtimeLogConfigName will fail.
-   *
-   * @param scope construct scope
-   * @param id construct id
-   * @param realtimeLogConfigArn the ARN of the exiting RealtimeLogConfig to import
-   */
-  public static fromRealtimeLogConfigArn(scope: Construct, id: string, realtimeLogConfigArn: string): IRealtimeLogConfig {
-    return RealtimeLogConfig.fromRealtimeLogConfigAttributes(scope, id, { realtimeLogConfigArn });
-  }
-
-  /**
-   * Import an existing RealtimeLogConfig from given RealtimeLogConfig attributes.
-   *
-   * If the ARN comes from a Token, the RealtimeLogConfig cannot have a path; if so, any attempt
-   * to reference its realtimeLogConfigName will fail.
-   *
-   * @param scope construct scope
-   * @param id construct id
-   * @param attrs the attributes of the RealtimeLogConfig to import
-   */
-  public static fromRealtimeLogConfigAttributes(scope: Construct, id: string, attrs: RealtimeLogConfigAttributes): IRealtimeLogConfig {
-    class Import extends RealtimeLogConfigBase {
-      public readonly realtimeLogConfigName: string = Arn.extractResourceName(attrs.realtimeLogConfigArn, 'realtime-log-config').split('/').pop()!;
-      public readonly realtimeLogConfigArn: string = attrs.realtimeLogConfigArn;
-
-      constructor(s: Construct, i: string) {
-        super(s, i);
-      }
-    }
-    return new Import(scope, id);
-  }
+export class RealtimeLogConfig extends Resource implements IRealtimeLogConfig {
   public readonly realtimeLogConfigName: string;
   public readonly realtimeLogConfigArn: string;
 
@@ -146,6 +74,7 @@ export class RealtimeLogConfig extends RealtimeLogConfigBase {
 
     this.realtimeLogConfigArn = this.getResourceArnAttribute(resource.attrArn, {
       service: 'cloudfront',
+      region: '',
       resource: 'realtime-log-config',
       resourceName: this.physicalName,
     });

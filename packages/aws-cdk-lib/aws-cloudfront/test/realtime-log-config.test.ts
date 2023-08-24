@@ -321,16 +321,4 @@ describe('RealtimeLogConfig', () => {
       ],
     });
   });
-
-  test('import realtime log config from arn', () => {
-    const realtimeLogConfig = RealtimeLogConfig.fromRealtimeLogConfigArn(stack, 'import', 'arn:aws:iam::123456789012:realtime-log-config/stream');
-    expect(stack.resolve(realtimeLogConfig.realtimeLogConfigArn)).toStrictEqual('arn:aws:iam::123456789012:realtime-log-config/stream');
-  });
-
-  test('import realtime log config from name', () => {
-    const realtimeLogConfig = RealtimeLogConfig.fromRealtimeLogConfigName(stack, 'import', 'stream');
-    expect(stack.resolve(realtimeLogConfig.realtimeLogConfigArn)).toStrictEqual({
-      'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudfront::1234:realtime-log-config/stream']],
-    });
-  });
 });
