@@ -937,7 +937,7 @@ function renderLifecycleRule(rule: LifecycleRule) {
 /**
  * Select images based on counts
  */
-const enum CountType {
+enum CountType {
   /**
    * Set a limit on the number of images in your repository
    */
