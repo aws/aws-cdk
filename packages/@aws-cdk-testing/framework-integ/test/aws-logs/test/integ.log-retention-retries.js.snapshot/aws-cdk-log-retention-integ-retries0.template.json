@@ -9,7 +9,7 @@
       "Arn"
      ]
     },
-    "LogGroupName": "/aws-cdk-log-retention-integ-retries1/group0",
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries0/group0",
     "RetentionInDays": 7,
     "RemovalPolicy": "destroy"
    }
@@ -78,7 +78,7 @@
            {
             "Ref": "AWS::AccountId"
            },
-           ":log-group:/aws-cdk-log-retention-integ-retries1/group0:*"
+           ":log-group:/aws-cdk-log-retention-integ-retries0/group0:*"
           ]
          ]
         },
@@ -98,7 +98,7 @@
            {
             "Ref": "AWS::AccountId"
            },
-           ":log-group:/aws-cdk-log-retention-integ-retries1/group10:*"
+           ":log-group:/aws-cdk-log-retention-integ-retries0/group10:*"
           ]
          ]
         },
@@ -118,7 +118,7 @@
            {
             "Ref": "AWS::AccountId"
            },
-           ":log-group:/aws-cdk-log-retention-integ-retries1/group11:*"
+           ":log-group:/aws-cdk-log-retention-integ-retries0/group11:*"
           ]
          ]
         },
@@ -138,7 +138,7 @@
            {
             "Ref": "AWS::AccountId"
            },
-           ":log-group:/aws-cdk-log-retention-integ-retries1/group12:*"
+           ":log-group:/aws-cdk-log-retention-integ-retries0/group12:*"
           ]
          ]
         },
@@ -158,7 +158,7 @@
            {
             "Ref": "AWS::AccountId"
            },
-           ":log-group:/aws-cdk-log-retention-integ-retries1/group13:*"
+           ":log-group:/aws-cdk-log-retention-integ-retries0/group13:*"
           ]
          ]
         },
@@ -178,7 +178,7 @@
            {
             "Ref": "AWS::AccountId"
            },
-           ":log-group:/aws-cdk-log-retention-integ-retries1/group14:*"
+           ":log-group:/aws-cdk-log-retention-integ-retries0/group14:*"
           ]
          ]
         },
@@ -198,7 +198,7 @@
            {
             "Ref": "AWS::AccountId"
            },
-           ":log-group:/aws-cdk-log-retention-integ-retries1/group15:*"
+           ":log-group:/aws-cdk-log-retention-integ-retries0/group15:*"
           ]
          ]
         },
@@ -218,7 +218,7 @@
            {
             "Ref": "AWS::AccountId"
            },
-           ":log-group:/aws-cdk-log-retention-integ-retries1/group16:*"
+           ":log-group:/aws-cdk-log-retention-integ-retries0/group16:*"
           ]
          ]
         },
@@ -238,7 +238,7 @@
            {
             "Ref": "AWS::AccountId"
            },
-           ":log-group:/aws-cdk-log-retention-integ-retries1/group17:*"
+           ":log-group:/aws-cdk-log-retention-integ-retries0/group17:*"
           ]
          ]
         },
@@ -258,7 +258,7 @@
            {
             "Ref": "AWS::AccountId"
            },
-           ":log-group:/aws-cdk-log-retention-integ-retries1/group18:*"
+           ":log-group:/aws-cdk-log-retention-integ-retries0/group18:*"
           ]
          ]
         },
@@ -278,7 +278,7 @@
            {
             "Ref": "AWS::AccountId"
            },
-           ":log-group:/aws-cdk-log-retention-integ-retries1/group19:*"
+           ":log-group:/aws-cdk-log-retention-integ-retries0/group19:*"
           ]
          ]
         },
@@ -298,7 +298,7 @@
            {
             "Ref": "AWS::AccountId"
            },
-           ":log-group:/aws-cdk-log-retention-integ-retries1/group1:*"
+           ":log-group:/aws-cdk-log-retention-integ-retries0/group1:*"
           ]
          ]
         },
@@ -318,7 +318,7 @@
            {
             "Ref": "AWS::AccountId"
            },
-           ":log-group:/aws-cdk-log-retention-integ-retries1/group20:*"
+           ":log-group:/aws-cdk-log-retention-integ-retries0/group20:*"
           ]
          ]
         },
@@ -338,7 +338,7 @@
            {
             "Ref": "AWS::AccountId"
            },
-           ":log-group:/aws-cdk-log-retention-integ-retries1/group21:*"
+           ":log-group:/aws-cdk-log-retention-integ-retries0/group21:*"
           ]
          ]
         },
@@ -358,7 +358,7 @@
            {
             "Ref": "AWS::AccountId"
            },
-           ":log-group:/aws-cdk-log-retention-integ-retries1/group22:*"
+           ":log-group:/aws-cdk-log-retention-integ-retries0/group22:*"
           ]
          ]
         },
@@ -378,7 +378,7 @@
            {
             "Ref": "AWS::AccountId"
            },
-           ":log-group:/aws-cdk-log-retention-integ-retries1/group23:*"
+           ":log-group:/aws-cdk-log-retention-integ-retries0/group23:*"
           ]
          ]
         },
@@ -398,7 +398,7 @@
            {
             "Ref": "AWS::AccountId"
            },
-           ":log-group:/aws-cdk-log-retention-integ-retries1/group24:*"
+           ":log-group:/aws-cdk-log-retention-integ-retries0/group24:*"
           ]
          ]
         },
@@ -418,7 +418,7 @@
            {
             "Ref": "AWS::AccountId"
            },
-           ":log-group:/aws-cdk-log-retention-integ-retries1/group2:*"
+           ":log-group:/aws-cdk-log-retention-integ-retries0/group2:*"
           ]
          ]
         },
@@ -438,7 +438,7 @@
            {
             "Ref": "AWS::AccountId"
            },
-           ":log-group:/aws-cdk-log-retention-integ-retries1/group3:*"
+           ":log-group:/aws-cdk-log-retention-integ-retries0/group3:*"
           ]
          ]
         },
@@ -458,7 +458,7 @@
            {
             "Ref": "AWS::AccountId"
            },
-           ":log-group:/aws-cdk-log-retention-integ-retries1/group4:*"
+           ":log-group:/aws-cdk-log-retention-integ-retries0/group4:*"
           ]
          ]
         },
@@ -478,7 +478,7 @@
            {
             "Ref": "AWS::AccountId"
            },
-           ":log-group:/aws-cdk-log-retention-integ-retries1/group5:*"
+           ":log-group:/aws-cdk-log-retention-integ-retries0/group5:*"
           ]
          ]
         },
@@ -498,7 +498,7 @@
            {
             "Ref": "AWS::AccountId"
            },
-           ":log-group:/aws-cdk-log-retention-integ-retries1/group6:*"
+           ":log-group:/aws-cdk-log-retention-integ-retries0/group6:*"
           ]
          ]
         },
@@ -518,7 +518,7 @@
            {
             "Ref": "AWS::AccountId"
            },
-           ":log-group:/aws-cdk-log-retention-integ-retries1/group7:*"
+           ":log-group:/aws-cdk-log-retention-integ-retries0/group7:*"
           ]
          ]
         },
@@ -538,7 +538,7 @@
            {
             "Ref": "AWS::AccountId"
            },
-           ":log-group:/aws-cdk-log-retention-integ-retries1/group8:*"
+           ":log-group:/aws-cdk-log-retention-integ-retries0/group8:*"
           ]
          ]
         },
@@ -558,7 +558,7 @@
            {
             "Ref": "AWS::AccountId"
            },
-           ":log-group:/aws-cdk-log-retention-integ-retries1/group9:*"
+           ":log-group:/aws-cdk-log-retention-integ-retries0/group9:*"
           ]
          ]
         }
@@ -607,7 +607,7 @@
       "Arn"
      ]
     },
-    "LogGroupName": "/aws-cdk-log-retention-integ-retries1/group1",
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries0/group1",
     "RetentionInDays": 7,
     "RemovalPolicy": "destroy"
    }
@@ -621,7 +621,7 @@
       "Arn"
      ]
     },
-    "LogGroupName": "/aws-cdk-log-retention-integ-retries1/group2",
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries0/group2",
     "RetentionInDays": 7,
     "RemovalPolicy": "destroy"
    }
@@ -635,7 +635,7 @@
       "Arn"
      ]
     },
-    "LogGroupName": "/aws-cdk-log-retention-integ-retries1/group3",
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries0/group3",
     "RetentionInDays": 7,
     "RemovalPolicy": "destroy"
    }
@@ -649,7 +649,7 @@
       "Arn"
      ]
     },
-    "LogGroupName": "/aws-cdk-log-retention-integ-retries1/group4",
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries0/group4",
     "RetentionInDays": 7,
     "RemovalPolicy": "destroy"
    }
@@ -663,7 +663,7 @@
       "Arn"
      ]
     },
-    "LogGroupName": "/aws-cdk-log-retention-integ-retries1/group5",
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries0/group5",
     "RetentionInDays": 7,
     "RemovalPolicy": "destroy"
    }
@@ -677,7 +677,7 @@
       "Arn"
      ]
     },
-    "LogGroupName": "/aws-cdk-log-retention-integ-retries1/group6",
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries0/group6",
     "RetentionInDays": 7,
     "RemovalPolicy": "destroy"
    }
@@ -691,7 +691,7 @@
       "Arn"
      ]
     },
-    "LogGroupName": "/aws-cdk-log-retention-integ-retries1/group7",
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries0/group7",
     "RetentionInDays": 7,
     "RemovalPolicy": "destroy"
    }
@@ -705,7 +705,7 @@
       "Arn"
      ]
     },
-    "LogGroupName": "/aws-cdk-log-retention-integ-retries1/group8",
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries0/group8",
     "RetentionInDays": 7,
     "RemovalPolicy": "destroy"
    }
@@ -719,7 +719,7 @@
       "Arn"
      ]
     },
-    "LogGroupName": "/aws-cdk-log-retention-integ-retries1/group9",
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries0/group9",
     "RetentionInDays": 7,
     "RemovalPolicy": "destroy"
    }
@@ -733,7 +733,7 @@
       "Arn"
      ]
     },
-    "LogGroupName": "/aws-cdk-log-retention-integ-retries1/group10",
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries0/group10",
     "RetentionInDays": 7,
     "RemovalPolicy": "destroy"
    }
@@ -747,7 +747,7 @@
       "Arn"
      ]
     },
-    "LogGroupName": "/aws-cdk-log-retention-integ-retries1/group11",
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries0/group11",
     "RetentionInDays": 7,
     "RemovalPolicy": "destroy"
    }
@@ -761,7 +761,7 @@
       "Arn"
      ]
     },
-    "LogGroupName": "/aws-cdk-log-retention-integ-retries1/group12",
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries0/group12",
     "RetentionInDays": 7,
     "RemovalPolicy": "destroy"
    }
@@ -775,7 +775,7 @@
       "Arn"
      ]
     },
-    "LogGroupName": "/aws-cdk-log-retention-integ-retries1/group13",
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries0/group13",
     "RetentionInDays": 7,
     "RemovalPolicy": "destroy"
    }
@@ -789,7 +789,7 @@
       "Arn"
      ]
     },
-    "LogGroupName": "/aws-cdk-log-retention-integ-retries1/group14",
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries0/group14",
     "RetentionInDays": 7,
     "RemovalPolicy": "destroy"
    }
@@ -803,7 +803,7 @@
       "Arn"
      ]
     },
-    "LogGroupName": "/aws-cdk-log-retention-integ-retries1/group15",
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries0/group15",
     "RetentionInDays": 7,
     "RemovalPolicy": "destroy"
    }
@@ -817,7 +817,7 @@
       "Arn"
      ]
     },
-    "LogGroupName": "/aws-cdk-log-retention-integ-retries1/group16",
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries0/group16",
     "RetentionInDays": 7,
     "RemovalPolicy": "destroy"
    }
@@ -831,7 +831,7 @@
       "Arn"
      ]
     },
-    "LogGroupName": "/aws-cdk-log-retention-integ-retries1/group17",
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries0/group17",
     "RetentionInDays": 7,
     "RemovalPolicy": "destroy"
    }
@@ -845,7 +845,7 @@
       "Arn"
      ]
     },
-    "LogGroupName": "/aws-cdk-log-retention-integ-retries1/group18",
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries0/group18",
     "RetentionInDays": 7,
     "RemovalPolicy": "destroy"
    }
@@ -859,7 +859,7 @@
       "Arn"
      ]
     },
-    "LogGroupName": "/aws-cdk-log-retention-integ-retries1/group19",
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries0/group19",
     "RetentionInDays": 7,
     "RemovalPolicy": "destroy"
    }
@@ -873,7 +873,7 @@
       "Arn"
      ]
     },
-    "LogGroupName": "/aws-cdk-log-retention-integ-retries1/group20",
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries0/group20",
     "RetentionInDays": 7,
     "RemovalPolicy": "destroy"
    }
@@ -887,7 +887,7 @@
       "Arn"
      ]
     },
-    "LogGroupName": "/aws-cdk-log-retention-integ-retries1/group21",
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries0/group21",
     "RetentionInDays": 7,
     "RemovalPolicy": "destroy"
    }
@@ -901,7 +901,7 @@
       "Arn"
      ]
     },
-    "LogGroupName": "/aws-cdk-log-retention-integ-retries1/group22",
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries0/group22",
     "RetentionInDays": 7,
     "RemovalPolicy": "destroy"
    }
@@ -915,7 +915,7 @@
       "Arn"
      ]
     },
-    "LogGroupName": "/aws-cdk-log-retention-integ-retries1/group23",
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries0/group23",
     "RetentionInDays": 7,
     "RemovalPolicy": "destroy"
    }
@@ -929,7 +929,7 @@
       "Arn"
      ]
     },
-    "LogGroupName": "/aws-cdk-log-retention-integ-retries1/group24",
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries0/group24",
     "RetentionInDays": 7,
     "RemovalPolicy": "destroy"
    }

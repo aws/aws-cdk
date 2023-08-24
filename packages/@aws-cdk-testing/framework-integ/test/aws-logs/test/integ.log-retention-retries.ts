@@ -1,5 +1,4 @@
-import { App, Stack, StackProps } from 'aws-cdk-lib';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
@@ -9,11 +8,10 @@ class LogRetentionRetriesStack extends Stack {
     super(scope, id, props);
 
     for (let i = 0; i < 25; i++) {
-      new lambda.Function(this, `hello_${i}`, {
-        runtime: lambda.Runtime.NODEJS_16_X,
-        handler: 'index.handler',
-        code: lambda.Code.fromInline('export async handler() { return; }'),
-        logRetention: logs.RetentionDays.ONE_WEEK,
+      new logs.LogRetention(this, `LogRetention${i}`, {
+        logGroupName: `/${id}/group${i}`,
+        retention: logs.RetentionDays.ONE_WEEK,
+        removalPolicy: RemovalPolicy.DESTROY,
       });
     }
   }
