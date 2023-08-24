@@ -17,6 +17,7 @@ Flags come in three types:
 
 | Flag | Summary | Since | Type |
 | ----- | ----- | ----- | ----- |
+| [@aws-cdk/aws-efs:denyAnonymousAccess](#aws-cdkaws-efsdenyanonymousaccess) | EFS denies anonymous clients accesses | V2·NEXT | (default) |
 | [@aws-cdk/core:newStyleStackSynthesis](#aws-cdkcorenewstylestacksynthesis) | Switch to new stack synthesis method which enables CI/CD | 2.0.0 | (fix) |
 | [@aws-cdk/core:stackRelativeExports](#aws-cdkcorestackrelativeexports) | Name exports based on the construct paths relative to the stack, rather than the global construct path | 2.0.0 | (fix) |
 | [@aws-cdk/aws-rds:lowercaseDbIdentifier](#aws-cdkaws-rdslowercasedbidentifier) | Force lowercasing of RDS Cluster names in CDK | 2.0.0 | (fix) |
@@ -56,6 +57,7 @@ Flags come in three types:
 | [@aws-cdk/core:includePrefixInUniqueNameGeneration](#aws-cdkcoreincludeprefixinuniquenamegeneration) | Include the stack prefix in the stack name generation process | 2.84.0 | (fix) |
 | [@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig](#aws-cdkaws-autoscalinggeneratelaunchtemplateinsteadoflaunchconfig) | Generate a launch template when creating an AutoScalingGroup | 2.88.0 | (fix) |
 | [@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby](#aws-cdkaws-opensearchserviceenableopensearchmultiazwithstandby) | Enables support for Multi-AZ with Standby deployment for opensearch domains | 2.88.0 | (default) |
+| [@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId](#aws-cdkaws-efsmounttargetorderinsensitivelogicalid) | When enabled, mount targets will have a stable logicalId that is linked to the associated subnet. | V2NEXT | (fix) |
 | [@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion](#aws-cdkaws-lambda-nodejsuselatestruntimeversion) | Enables aws-lambda-nodejs.Function to use the latest available NodeJs runtime as the default | V2NEXT | (default) |
 
 <!-- END table -->
@@ -103,8 +105,10 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-kms:aliasNameRef": true,
     "@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig": true,
     "@aws-cdk/core:includePrefixInUniqueNameGeneration": true,
+    "@aws-cdk/aws-efs:denyAnonymousAccess": true,
     "@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby": true,
-    "@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion": true
+    "@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion": true,
+    "@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId": true
   }
 }
 ```
@@ -332,6 +336,25 @@ Encryption can also be configured explicitly using the `encrypted` property.
 | (default in v2) | `true` |  |
 
 **Compatibility with old behavior:** Pass the `encrypted: false` property to the `FileSystem` construct to disable encryption.
+
+
+### @aws-cdk/aws-efs:denyAnonymousAccess
+
+*EFS denies anonymous clients accesses* (default)
+
+This flag adds the file system policy that denies anonymous clients
+access to `efs.FileSystem`.
+
+If this flag is not set, `efs.FileSystem` will allow all anonymous clients
+that can access over the network.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2·NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** You can pass `allowAnonymousAccess: true` so allow anonymous clients access.
 
 
 ### @aws-cdk/core:newStyleStackSynthesis
@@ -1052,6 +1075,24 @@ multi-az with standby enabled.
 | 2.88.0 | `false` | `true` |
 
 **Compatibility with old behavior:** Pass `capacity.multiAzWithStandbyEnabled: false` to `Domain` construct to restore the old behavior.
+
+
+### @aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId
+
+*When enabled, mount targets will have a stable logicalId that is linked to the associated subnet.* (fix)
+
+When this feature flag is enabled, each mount target will have a stable
+logicalId that is linked to the associated subnet. If the flag is set to
+false then the logicalIds of the mount targets can change if the number of
+subnets changes.
+
+Set this flag to false for existing mount targets.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 ### @aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion
