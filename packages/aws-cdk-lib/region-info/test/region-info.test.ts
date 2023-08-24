@@ -1,4 +1,4 @@
-import {APPCONFIG_LAMBDA_LAYER_ARNS, CLOUDWATCH_LAMBDA_INSIGHTS_ARNS} from '../build-tools/fact-tables';
+import { APPCONFIG_LAMBDA_LAYER_ARNS, CLOUDWATCH_LAMBDA_INSIGHTS_ARNS } from '../build-tools/fact-tables';
 import { FactName, RegionInfo } from '../lib';
 import { AWS_REGIONS, AWS_SERVICES } from '../lib/aws-entities';
 
@@ -41,7 +41,7 @@ test('built-in data is correct', () => {
       lambdaInsightsVersions,
       lambdaInsightsArmVersions,
       appConfigLayerVersions,
-      appConfigLayerArmVersions
+      appConfigLayerArmVersions,
     };
   }
   expect(snapshot).toMatchSnapshot();
