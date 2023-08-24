@@ -1,5 +1,5 @@
 // Cannot depend on cdk-build-tools, cdk-build-tools depends on this
-const baseConfig = {
+module.exports = {
     moduleFileExtensions: [
         "js",
     ],
@@ -23,14 +23,4 @@ const baseConfig = {
         "<rootDir>/lib/.*\\.generated\\.[jt]s",
         "<rootDir>/test/.*\\.[jt]s",
     ],
-};
-
-module.exports = {
-    ...baseConfig,
-    coverageThreshold: {
-        global: {
-            ...baseConfig.coverageThreshold.global,
-            branches: 60,
-        },
-    },
 };
