@@ -105,7 +105,7 @@ export async function main(): Promise<void> {
 
     for (const version in APPCONFIG_LAMBDA_LAYER_ARNS) {
       for (const arch in APPCONFIG_LAMBDA_LAYER_ARNS[version]) {
-        registerFact(region, ['appConfigLambdaLayer', version, arch], APPCONFIG_LAMBDA_LAYER_ARNS[version][arch][region]);
+        registerFact(region, ['appConfigLambdaLayerVersion', version, arch], APPCONFIG_LAMBDA_LAYER_ARNS[version][arch][region]);
       }
     }
 
