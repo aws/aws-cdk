@@ -31,7 +31,7 @@ export interface EdgeNodejsFunctionProps extends lambdaNodejs.NodejsFunctionProp
 }
 
 /**
- * A Lambda@Edge function.
+ * A Lambda@Edge With Nodejs function.
  *
  * Convenience resource for requesting a Lambda function in the 'us-east-1' region for use with Lambda@Edge.
  * Implements several restrictions enforced by Lambda@Edge.
@@ -58,7 +58,7 @@ export class EdgeNodejsFunction extends Resource implements lambda.IVersion {
 
   private readonly _edgeFunction: lambda.Function;
 
-  constructor(scope: Construct, id: string, props: EdgeFunctionProps) {
+  constructor(scope: Construct, id: string, props: EdgeNodejsFunctionProps) {
     super(scope, id);
 
     // Create a simple Function if we're already in us-east-1; otherwise create a cross-region stack.
@@ -160,7 +160,7 @@ export class EdgeNodejsFunction extends Resource implements lambda.IVersion {
   }
 
   /** Create a support stack and function in us-east-1, and a SSM reader in-region */
-  private createCrossRegionFunction(id: string, props: EdgeFunctionProps): FunctionConfig {
+  private createCrossRegionFunction(id: string, props: EdgeNodejsFunctionProps): FunctionConfig {
     const parameterNamePrefix = 'cdk/EdgeFunctionArn';
     if (Token.isUnresolved(this.env.region)) {
       throw new Error('stacks which use EdgeFunctions must have an explicitly set region');
