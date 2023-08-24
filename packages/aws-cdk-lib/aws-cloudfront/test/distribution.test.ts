@@ -2,12 +2,14 @@ import { defaultOrigin, defaultOriginGroup } from './test-origin';
 import { Match, Template } from '../../assertions';
 import * as acm from '../../aws-certificatemanager';
 import * as iam from '../../aws-iam';
+import * as kinesis from '../../aws-kinesis';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
 import { App, Duration, Stack } from '../../core';
 import {
   CfnDistribution,
   Distribution,
+  Endpoint,
   Function,
   FunctionCode,
   FunctionEventType,
@@ -16,6 +18,7 @@ import {
   IOrigin,
   LambdaEdgeEventType,
   PriceClass,
+  RealtimeLogConfig,
   SecurityPolicyProtocol,
   SSLMethod,
 } from '../lib';
@@ -1145,4 +1148,96 @@ test('grants createInvalidation', () => {
       ],
     },
   });
+});
+
+test('render distribution behavior with realtime log config', () => {
+  const role = new iam.Role(stack, 'Role', {
+    assumedBy: new iam.ServicePrincipal('cloudfront.amazonaws.com'),
+  });
+
+  const stream = new kinesis.Stream(stack, 'stream', {
+    streamMode: kinesis.StreamMode.ON_DEMAND,
+    encryption: kinesis.StreamEncryption.MANAGED,
+  });
+
+  const realTimeConfig = new RealtimeLogConfig(stack, 'RealtimeConfig', {
+    endPoints: [
+      Endpoint.fromKinesisStream(stream, role),
+    ],
+    fields: ['timestamp'],
+    realtimeLogConfigName: 'realtime-config',
+    samplingRate: 50,
+  });
+
+  new Distribution(stack, 'MyDist', {
+    defaultBehavior: {
+      origin: defaultOrigin(),
+      realtimeLogConfig: realTimeConfig,
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution',
+    Match.objectLike({
+      DistributionConfig: {
+        DefaultCacheBehavior: {
+          RealtimeLogConfigArn: {
+            'Fn::GetAtt': ['RealtimeConfigB6004E8E', 'Arn'],
+          },
+        },
+      },
+    }));
+});
+
+test('render distribution behavior with realtime log config - multiple behaviors', () => {
+  const role = new iam.Role(stack, 'Role', {
+    assumedBy: new iam.ServicePrincipal('cloudfront.amazonaws.com'),
+  });
+
+  const stream = new kinesis.Stream(stack, 'stream', {
+    streamMode: kinesis.StreamMode.ON_DEMAND,
+    encryption: kinesis.StreamEncryption.MANAGED,
+  });
+
+  const realTimeConfig = new RealtimeLogConfig(stack, 'RealtimeConfig', {
+    endPoints: [
+      Endpoint.fromKinesisStream(stream, role),
+    ],
+    fields: ['timestamp'],
+    realtimeLogConfigName: 'realtime-config',
+    samplingRate: 50,
+  });
+
+  const origin2 = defaultOrigin('origin2.example.com');
+
+  new Distribution(stack, 'MyDist', {
+    defaultBehavior: {
+      origin: defaultOrigin(),
+      realtimeLogConfig: realTimeConfig,
+    },
+    additionalBehaviors: {
+      '/api/*': {
+        origin: origin2,
+        realtimeLogConfig: realTimeConfig,
+      },
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution',
+    Match.objectLike({
+      DistributionConfig: {
+        DefaultCacheBehavior: {
+          RealtimeLogConfigArn: {
+            'Fn::GetAtt': ['RealtimeConfigB6004E8E', 'Arn'],
+          },
+          TargetOriginId: 'StackMyDistOrigin1D6D5E535',
+        },
+        CacheBehaviors: [{
+          PathPattern: '/api/*',
+          RealtimeLogConfigArn: {
+            'Fn::GetAtt': ['RealtimeConfigB6004E8E', 'Arn'],
+          },
+          TargetOriginId: 'StackMyDistOrigin20B96F3AD',
+        }],
+      },
+    }));
 });
