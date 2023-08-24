@@ -3,7 +3,7 @@ import { DockerImageDestination } from '@aws-cdk/cloud-assembly-schema';
 import type * as AWS from 'aws-sdk';
 import { DockerImageManifestEntry } from '../../asset-manifest';
 import { EventType } from '../../progress';
-import { IAssetHandler, IHandlerHost } from '../asset-handler';
+import { IAssetHandler, IHandlerHost, IHandlerOptions } from '../asset-handler';
 import { Docker } from '../docker';
 import { replaceAwsPlaceholders } from '../placeholders';
 import { shell } from '../shell';
@@ -21,7 +21,8 @@ export class ContainerImageAssetHandler implements IAssetHandler {
   constructor(
     private readonly workDir: string,
     private readonly asset: DockerImageManifestEntry,
-    private readonly host: IHandlerHost) {
+    private readonly host: IHandlerHost,
+    private readonly options: IHandlerOptions) {
   }
 
   public async build(): Promise<void> {
@@ -36,7 +37,9 @@ export class ContainerImageAssetHandler implements IAssetHandler {
       ecr: initOnce.ecr,
     });
 
-    const builder = new ContainerImageBuilder(dockerForBuilding, this.workDir, this.asset, this.host);
+    const builder = new ContainerImageBuilder(dockerForBuilding, this.workDir, this.asset, this.host, {
+      quiet: this.options.quiet,
+    });
     const localTagName = await builder.build();
 
     if (localTagName === undefined || this.host.aborted) { return; }
@@ -70,7 +73,7 @@ export class ContainerImageAssetHandler implements IAssetHandler {
     if (this.host.aborted) { return; }
 
     this.host.emitMessage(EventType.UPLOAD, `Push ${initOnce.imageUri}`);
-    await dockerForPushing.push(initOnce.imageUri);
+    await dockerForPushing.push({ tag: initOnce.imageUri, quiet: this.options.quiet });
   }
 
   private async initOnce(options: { quiet?: boolean } = {}): Promise<ContainerImageAssetHandlerInit> {
@@ -120,12 +123,17 @@ export class ContainerImageAssetHandler implements IAssetHandler {
   }
 }
 
+interface ContainerImageBuilderOptions {
+  readonly quiet?: boolean;
+}
+
 class ContainerImageBuilder {
   constructor(
     private readonly docker: Docker,
     private readonly workDir: string,
     private readonly asset: DockerImageManifestEntry,
-    private readonly host: IHandlerHost) {
+    private readonly host: IHandlerHost,
+    private readonly options: ContainerImageBuilderOptions) {
   }
 
   async build(): Promise<string | undefined> {
@@ -181,6 +189,7 @@ class ContainerImageBuilder {
       tag: localTagName,
       buildArgs: source.dockerBuildArgs,
       buildSecrets: source.dockerBuildSecrets,
+      buildSsh: source.dockerBuildSsh,
       target: source.dockerBuildTarget,
       file: source.dockerFile,
       networkMode: source.networkMode,
@@ -188,6 +197,7 @@ class ContainerImageBuilder {
       outputs: source.dockerOutputs,
       cacheFrom: source.cacheFrom,
       cacheTo: source.cacheTo,
+      quiet: this.options.quiet,
     });
   }
 

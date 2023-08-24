@@ -1060,6 +1060,12 @@ new tasks.SageMakerCreateTrainingJob(this, 'TrainSagemaker', {
 });
 ```
 
+You can specify [TrainingInputMode](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_AlgorithmSpecification.html#API_AlgorithmSpecification_Contents) via the trainingInputMode property.
+
+- To download the data from Amazon Simple Storage Service (Amazon S3) to the provisioned ML storage volume, and mount the directory to a Docker volume, choose `InputMode.FILE` if an algorithm supports it.
+- To stream data directly from Amazon S3 to the container, choose `InputMode.PIPE` if an algorithm supports it.
+- To stream data directly from Amazon S3 to the container with no code changes and to provide file system access to the data, choose `InputMode.FAST_FILE` if an algorithm supports it.
+
 ### Create Transform Job
 
 You can call the [`CreateTransformJob`](https://docs.aws.amazon.com/sagemaker/latest/dg/API_CreateTransformJob.html) API from a `Task` state.

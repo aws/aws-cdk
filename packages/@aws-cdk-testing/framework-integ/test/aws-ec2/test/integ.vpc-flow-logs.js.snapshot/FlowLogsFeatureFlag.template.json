@@ -361,7 +361,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "FlowLogsFeatureFlag/VPC"
+      "Value": "FlowLogsFeatureFlag/VPC/FlowLogsS3"
      }
     ]
    },
@@ -498,7 +498,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "FlowLogsFeatureFlag/VPC"
+      "Value": "FlowLogsFeatureFlag/VPC/FlowLogsS3"
      }
     ],
     "TrafficType": "ALL"
@@ -513,7 +513,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "FlowLogsFeatureFlag/VPC"
+      "Value": "FlowLogsFeatureFlag/VPC/FlowLogsS3WithDestinationOptions"
      }
     ]
    },
@@ -655,7 +655,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "FlowLogsFeatureFlag/VPC"
+      "Value": "FlowLogsFeatureFlag/VPC/FlowLogsS3WithDestinationOptions"
      }
     ],
     "TrafficType": "ALL"

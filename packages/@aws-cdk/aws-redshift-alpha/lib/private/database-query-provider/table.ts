@@ -164,9 +164,14 @@ async function updateTable(
 
   const oldDistKey = getDistKeyColumn(oldTableColumns)?.name;
   const newDistKey = getDistKeyColumn(tableColumns)?.name;
-  if ((!oldDistKey && newDistKey ) || (oldDistKey && !newDistKey)) {
-    return createTable(tableNamePrefix, tableNameSuffix, tableColumns, tableAndClusterProps);
+  if (!oldDistKey && newDistKey) {
+    // Table has no existing distribution key, add a new one
+    alterationStatements.push(`ALTER TABLE ${tableName} ALTER DISTSTYLE KEY DISTKEY ${newDistKey}`);
+  } else if (oldDistKey && !newDistKey) {
+    // Table has a distribution key, remove and set to AUTO
+    alterationStatements.push(`ALTER TABLE ${tableName} ALTER DISTSTYLE AUTO`);
   } else if (oldDistKey !== newDistKey) {
+    // Table has an existing distribution key, change it
     alterationStatements.push(`ALTER TABLE ${tableName} ALTER DISTKEY ${newDistKey}`);
   }
 
