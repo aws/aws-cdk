@@ -43,11 +43,6 @@
     "jest-resolve": "^29.6.3"
   },
   "main": "lib/index.js",
-  "exports": {
-    ".": "./lib/index",
-    "./ts-jest-preset/*": "./lib/ts-jest-preset/*",
-    "./config/*": "./config/*.js"
-  },
   "dependencies": {
     "@aws-cdk/eslint-plugin": "0.0.0",
     "@aws-cdk/yarn-cling": "0.0.0",
