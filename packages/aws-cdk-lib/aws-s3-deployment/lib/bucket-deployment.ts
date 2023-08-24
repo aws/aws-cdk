@@ -519,7 +519,10 @@ export class BucketDeployment extends Construct {
    * deployment.addSource(s3deploy.Source.asset('./another-asset'));
    */
   public addSource(source: ISource): void {
-    this.sources.push(source.bind(this, { handlerRole: this.handlerRole }));
+    const config = source.bind(this, { handlerRole: this.handlerRole });
+    if (!this.sources.some((c) => sourceConfigEqual(c, config))) {
+      this.sources.push(config);
+    }
   }
 
   private renderUniqueId(memoryLimit?: number, ephemeralStorageSize?: cdk.Size, vpc?: ec2.IVpc) {
@@ -868,4 +871,8 @@ export interface UserDefinedObjectMetadata {
    * @jsii ignore
    */
   readonly [key: string]: string;
+}
+
+function sourceConfigEqual(a: SourceConfig, b: SourceConfig) {
+  return a.bucket === b.bucket && a.zipObjectKey === b.zipObjectKey && a.markers === undefined && b.markers === undefined;
 }
