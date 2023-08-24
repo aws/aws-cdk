@@ -117,6 +117,7 @@ export class CdkToolkit {
     const strict = !!options.strict;
     const contextLines = options.contextLines || 3;
     const stream = options.stream || process.stderr;
+    const quiet = options.quiet || false;
 
     let diffs = 0;
     if (options.templatePath !== undefined) {
@@ -131,15 +132,26 @@ export class CdkToolkit {
       const template = deserializeStructure(await fs.readFile(options.templatePath, { encoding: 'UTF-8' }));
       diffs = options.securityOnly
         ? numberFromBool(printSecurityDiff(template, stacks.firstStack, RequireApproval.Broadening))
-        : printStackDiff(template, stacks.firstStack, strict, contextLines, stream);
+        : printStackDiff(template, stacks.firstStack, strict, contextLines, quiet, stream);
     } else {
       // Compare N stacks against deployed templates
       for (const stack of stacks.stackArtifacts) {
-        stream.write(format('Stack %s\n', chalk.bold(stack.displayName)));
-        const currentTemplate = await this.props.deployments.readCurrentTemplateWithNestedStacks(stack, options.compareAgainstProcessedTemplate);
-        diffs += options.securityOnly
-          ? numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening))
-          : printStackDiff(currentTemplate, stack, strict, contextLines, stream);
+        if (!quiet) {
+          stream.write(format('Stack %s\n', chalk.bold(stack.displayName)));
+        }
+
+        const templateWithNames = await this.props.deployments.readCurrentTemplateWithNestedStacks(
+          stack, options.compareAgainstProcessedTemplate,
+        );
+        const currentTemplate = templateWithNames.deployedTemplate;
+        const nestedStackCount = templateWithNames.nestedStackCount;
+
+        const stackCount =
+        options.securityOnly
+          ? (numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening)) > 0 ? 1 : 0)
+          : (printStackDiff(currentTemplate, stack, strict, contextLines, quiet, stream) > 0 ? 1 : 0);
+
+        diffs += stackCount + nestedStackCount;
       }
     }
 
@@ -890,6 +902,13 @@ export interface DiffOptions {
    * @default false
    */
   compareAgainstProcessedTemplate?: boolean;
+
+  /*
+  * Run diff in quiet mode without printing the diff statuses
+  *
+  * @default false
+  */
+  quiet?: boolean;
 }
 
 interface CfnDeployOptions {

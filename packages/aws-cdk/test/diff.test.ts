@@ -54,9 +54,15 @@ describe('non-nested stacks', () => {
     // Default implementations
     cloudFormation.readCurrentTemplateWithNestedStacks.mockImplementation((stackArtifact: CloudFormationStackArtifact) => {
       if (stackArtifact.stackName === 'D') {
-        return Promise.resolve({ resource: 'D' });
+        return Promise.resolve({
+          deployedTemplate: { resource: 'D' },
+          nestedStackCount: 0,
+        });
       }
-      return Promise.resolve({});
+      return Promise.resolve({
+        deployedTemplate: {},
+        nestedStackCount: 0,
+      });
     });
     cloudFormation.deployStack.mockImplementation((options) => Promise.resolve({
       noOp: true,
@@ -73,6 +79,43 @@ describe('non-nested stacks', () => {
     // WHEN
     const exitCode = await toolkit.diff({
       stackNames: ['B'],
+      stream: buffer,
+    });
+
+    // THEN
+    const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '');
+    expect(plainTextOutput).toContain('Stack A');
+    expect(plainTextOutput).toContain('Stack B');
+
+    expect(buffer.data.trim()).toContain('✨  Number of stacks with differences: 2');
+    expect(exitCode).toBe(0);
+  });
+
+  test('diff number of stack diffs, not resource diffs', async () => {
+    // GIVEN
+    cloudExecutable = new MockCloudExecutable({
+      stacks: [{
+        stackName: 'A',
+        template: { resourceA: 'A', resourceB: 'B' },
+      },
+      {
+        stackName: 'B',
+        template: { resourceC: 'C' },
+      }],
+    });
+
+    toolkit = new CdkToolkit({
+      cloudExecutable,
+      deployments: cloudFormation,
+      configuration: cloudExecutable.configuration,
+      sdkProvider: cloudExecutable.sdkProvider,
+    });
+
+    const buffer = new StringWritable();
+
+    // WHEN
+    const exitCode = await toolkit.diff({
+      stackNames: ['A', 'B'],
       stream: buffer,
     });
 
@@ -136,6 +179,24 @@ describe('non-nested stacks', () => {
       stream: buffer,
     })).rejects.toThrow(/Found errors/);
   });
+
+  test('when quiet mode is enabled, stacks with no diffs should not print stack name & no differences to stdout', async () => {
+    // GIVEN
+    const buffer = new StringWritable();
+
+    // WHEN
+    const exitCode = await toolkit.diff({
+      stackNames: ['A', 'A'],
+      stream: buffer,
+      fail: false,
+      quiet: true,
+    });
+
+    // THEN
+    expect(buffer.data.trim()).not.toContain('Stack A');
+    expect(buffer.data.trim()).not.toContain('There were no differences');
+    expect(exitCode).toBe(0);
+  });
 });
 
 describe('nested stacks', () => {
@@ -143,7 +204,7 @@ describe('nested stacks', () => {
     cloudExecutable = new MockCloudExecutable({
       stacks: [{
         stackName: 'Parent',
-        template: { },
+        template: {},
       }],
     });
 
@@ -191,41 +252,47 @@ describe('nested stacks', () => {
           },
         };
         return Promise.resolve({
-          Resources: {
-            AdditionChild: {
-              Type: 'AWS::CloudFormation::Stack',
-              Resources: {
-                SomeResource: {
-                  Type: 'AWS::Something',
-                },
-              },
-            },
-            DeletionChild: {
-              Type: 'AWS::CloudFormation::Stack',
-              Resources: {
-                SomeResource: {
-                  Type: 'AWS::Something',
-                  Properties: {
-                    Prop: 'value-to-be-removed',
+          deployedTemplate: {
+            Resources: {
+              AdditionChild: {
+                Type: 'AWS::CloudFormation::Stack',
+                Resources: {
+                  SomeResource: {
+                    Type: 'AWS::Something',
                   },
                 },
               },
-            },
-            ChangedChild: {
-              Type: 'AWS::CloudFormation::Stack',
-              Resources: {
-                SomeResource: {
-                  Type: 'AWS::Something',
-                  Properties: {
-                    Prop: 'old-value',
+              DeletionChild: {
+                Type: 'AWS::CloudFormation::Stack',
+                Resources: {
+                  SomeResource: {
+                    Type: 'AWS::Something',
+                    Properties: {
+                      Prop: 'value-to-be-removed',
+                    },
+                  },
+                },
+              },
+              ChangedChild: {
+                Type: 'AWS::CloudFormation::Stack',
+                Resources: {
+                  SomeResource: {
+                    Type: 'AWS::Something',
+                    Properties: {
+                      Prop: 'old-value',
+                    },
                   },
                 },
               },
             },
           },
+          nestedStackCount: 3,
         });
       }
-      return Promise.resolve({});
+      return Promise.resolve({
+        deployedTemplate: {},
+        nestedStackCount: 0,
+      });
     });
   });
 
@@ -261,7 +328,7 @@ Resources
                  └─ [+] new-value
 
 
-✨  Number of stacks with differences: 3`);
+✨  Number of stacks with differences: 4`);
 
     expect(exitCode).toBe(0);
   });

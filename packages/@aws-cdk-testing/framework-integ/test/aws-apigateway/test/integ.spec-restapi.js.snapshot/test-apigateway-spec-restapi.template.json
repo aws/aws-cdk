@@ -523,7 +523,7 @@
     "RestApiId": {
      "Ref": "myapi4C7BF186"
     },
-    "Description": "Automatically created by the RestApi construct"
+    "Description": "beta stage"
    },
    "DependsOn": [
     "myapiv1appliancesGET8FE872EC",

@@ -143,6 +143,8 @@ export class LegacyStackSynthesizer extends StackSynthesizer implements IReusabl
         path: asset.directoryName,
         sourceHash: asset.sourceHash,
         buildArgs: asset.dockerBuildArgs,
+        buildSecrets: asset.dockerBuildSecrets,
+        buildSsh: asset.dockerBuildSsh,
         target: asset.dockerBuildTarget,
         file: asset.dockerFile,
         networkMode: asset.networkMode,

@@ -3,7 +3,7 @@ import { CfnBackupVault } from './backup.generated';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as sns from '../../aws-sns';
-import { ArnFormat, Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Stack } from '../../core';
+import { ArnFormat, Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token } from '../../core';
 
 /**
  * A backup vault
@@ -270,7 +270,7 @@ export class BackupVault extends BackupVaultBase {
   constructor(scope: Construct, id: string, props: BackupVaultProps = {}) {
     super(scope, id);
 
-    if (props.backupVaultName && !/^[a-zA-Z0-9\-_]{2,50}$/.test(props.backupVaultName)) {
+    if (props.backupVaultName && !Token.isUnresolved(props.backupVaultName) && !/^[a-zA-Z0-9\-_]{2,50}$/.test(props.backupVaultName)) {
       throw new Error('Expected vault name to match pattern `^[a-zA-Z0-9\-_]{2,50}$`');
     }
 

@@ -10,7 +10,7 @@ import * as logs from '../../aws-logs';
 import * as route53 from '../../aws-route53';
 import { App, Stack, Duration, SecretValue, CfnParameter, Token } from '../../core';
 import * as cxapi from '../../cx-api';
-import { Domain, EngineVersion } from '../lib';
+import { Domain, DomainProps, EngineVersion } from '../lib';
 
 let app: App;
 let stack: Stack;
@@ -1329,6 +1329,197 @@ each(testedOpenSearchVersions).describe('advanced security options', (engineVers
       enforceHttps: false,
     })).toThrow(/Enforce HTTPS is required when fine-grained access control is enabled/);
   });
+
+  describe('SAML authentication', () => {
+    test('with SAML authentication enabled', () => {
+      new Domain(stack, 'Domain', {
+        version: engineVersion,
+        fineGrainedAccessControl: {
+          masterUserArn,
+          samlAuthenticationEnabled: true,
+          samlAuthenticationOptions: {
+            idpEntityId: 'entity-id',
+            idpMetadataContent: 'metadata',
+            masterBackendRole: 'backend-role',
+            masterUserName: 'master-username',
+          },
+        },
+        encryptionAtRest: {
+          enabled: true,
+        },
+        nodeToNodeEncryption: true,
+        enforceHttps: true,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+        AdvancedSecurityOptions: {
+          Enabled: true,
+          InternalUserDatabaseEnabled: false,
+          MasterUserOptions: {
+            MasterUserARN: masterUserArn,
+          },
+          SAMLOptions: {
+            Enabled: true,
+            Idp: {
+              EntityId: 'entity-id',
+              MetadataContent: 'metadata',
+            },
+            MasterBackendRole: 'backend-role',
+            MasterUserName: 'master-username',
+            RolesKey: 'roles',
+            SessionTimeoutMinutes: 60,
+          },
+        },
+      });
+    });
+
+    test('throws if SAML authentication is enabled without fine-grained access control', () => {
+      expect(() => {
+        new Domain(stack, 'Domain', {
+          version: engineVersion,
+          fineGrainedAccessControl: {
+            samlAuthenticationEnabled: true,
+            samlAuthenticationOptions: {
+              idpEntityId: 'entity-id',
+              idpMetadataContent: 'metadata',
+              masterBackendRole: 'backend-role',
+              masterUserName: 'master-username',
+            },
+          },
+          encryptionAtRest: {
+            enabled: true,
+          },
+          nodeToNodeEncryption: true,
+          enforceHttps: true,
+        });
+      }).toThrow(/SAML authentication requires fine-grained access control to be enabled./);
+    });
+
+    test('throws if SAML authentication is enabled without specifying its options', () => {
+      expect(() => {
+        new Domain(stack, 'Domain', {
+          version: engineVersion,
+          fineGrainedAccessControl: {
+            masterUserArn,
+            samlAuthenticationEnabled: true,
+          },
+          encryptionAtRest: {
+            enabled: true,
+          },
+          nodeToNodeEncryption: true,
+          enforceHttps: true,
+        });
+      }).toThrow(/You need to specify at least an Entity ID and Metadata content for the SAML configuration/);
+    });
+
+    test('validate SAML authentication options', () => {
+      expect(() => {
+        new Domain(stack, 'Domain0', {
+          version: engineVersion,
+          fineGrainedAccessControl: {
+            masterUserArn,
+            samlAuthenticationEnabled: true,
+            samlAuthenticationOptions: {
+              idpEntityId: 'short',
+              idpMetadataContent: 'metadata',
+              masterBackendRole: 'backend-role',
+              masterUserName: 'master-username',
+            },
+          },
+          encryptionAtRest: {
+            enabled: true,
+          },
+          nodeToNodeEncryption: true,
+          enforceHttps: true,
+        });
+      }).toThrow(/SAML identity provider entity ID must be between 8 and 512 characters long/);
+
+      expect(() => {
+        new Domain(stack, 'Domain1', {
+          version: engineVersion,
+          fineGrainedAccessControl: {
+            masterUserArn,
+            samlAuthenticationEnabled: true,
+            samlAuthenticationOptions: {
+              idpEntityId: 'identity-id',
+              idpMetadataContent: '',
+              masterBackendRole: 'backend-role',
+              masterUserName: 'master-username',
+            },
+          },
+          encryptionAtRest: {
+            enabled: true,
+          },
+          nodeToNodeEncryption: true,
+          enforceHttps: true,
+        });
+      }).toThrow(/SAML identity provider metadata content must be between 1 and 1048576 characters long/);
+
+      expect(() => {
+        new Domain(stack, 'Domain2', {
+          version: engineVersion,
+          fineGrainedAccessControl: {
+            masterUserArn,
+            samlAuthenticationEnabled: true,
+            samlAuthenticationOptions: {
+              idpEntityId: 'identity-id',
+              idpMetadataContent: 'metadata',
+              masterBackendRole: 'backend-role',
+              masterUserName: 'master-long'.repeat(10),
+            },
+          },
+          encryptionAtRest: {
+            enabled: true,
+          },
+          nodeToNodeEncryption: true,
+          enforceHttps: true,
+        });
+      }).toThrow(/SAML master username must be between 1 and 64 characters long/);
+
+      expect(() => {
+        new Domain(stack, 'Domain3', {
+          version: engineVersion,
+          fineGrainedAccessControl: {
+            masterUserArn,
+            samlAuthenticationEnabled: true,
+            samlAuthenticationOptions: {
+              idpEntityId: 'identity-id',
+              idpMetadataContent: 'metadata',
+              masterBackendRole: 'backend-long'.repeat(50),
+              masterUserName: 'master-username',
+            },
+          },
+          encryptionAtRest: {
+            enabled: true,
+          },
+          nodeToNodeEncryption: true,
+          enforceHttps: true,
+        });
+      }).toThrow(/SAML backend role must be between 1 and 256 characters long/);
+
+      expect(() => {
+        new Domain(stack, 'Domain4', {
+          version: engineVersion,
+          fineGrainedAccessControl: {
+            masterUserArn,
+            samlAuthenticationEnabled: true,
+            samlAuthenticationOptions: {
+              idpEntityId: 'identity-id',
+              idpMetadataContent: 'metadata',
+              masterBackendRole: 'backend-role',
+              masterUserName: 'master-username',
+              sessionTimeoutMinutes: 2000,
+            },
+          },
+          encryptionAtRest: {
+            enabled: true,
+          },
+          nodeToNodeEncryption: true,
+          enforceHttps: true,
+        });
+      }).toThrow(/SAML session timeout must be a value between 1 and 1440/);
+    });
+  });
 });
 
 each(testedOpenSearchVersions).describe('custom endpoints', (engineVersion) => {
@@ -2084,6 +2275,180 @@ each(testedOpenSearchVersions).describe('offPeakWindow and softwareUpdateOptions
     }).toThrow(
       /Minutes must be a value between 0 and 59/,
     );
+  });
+});
+
+describe('EBS Options Configurations', () => {
+
+  test('iops', () => {
+    const domainProps: DomainProps = {
+      version: EngineVersion.OPENSEARCH_2_5,
+      ebs: {
+        volumeSize: 30,
+        iops: 500,
+        volumeType: EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
+      },
+    };
+    new Domain(stack, 'Domain', domainProps);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      EBSOptions: {
+        VolumeSize: 30,
+        Iops: 500,
+        VolumeType: 'io1',
+      },
+    });
+  });
+
+  test('throughput', () => {
+    const domainProps: DomainProps = {
+      version: EngineVersion.OPENSEARCH_2_5,
+      ebs: {
+        volumeSize: 30,
+        throughput: 125,
+        volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3,
+      },
+    };
+    new Domain(stack, 'Domain', domainProps);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      EBSOptions: {
+        VolumeSize: 30,
+        Throughput: 125,
+        VolumeType: 'gp3',
+      },
+    });
+  });
+
+  test('throughput and iops', () => {
+    const domainProps: DomainProps = {
+      version: EngineVersion.OPENSEARCH_2_5,
+      ebs: {
+        volumeSize: 30,
+        iops: 3000,
+        throughput: 125,
+        volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3,
+      },
+    };
+    new Domain(stack, 'Domain', domainProps);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      EBSOptions: {
+        VolumeSize: 30,
+        Iops: 3000,
+        Throughput: 125,
+        VolumeType: 'gp3',
+      },
+    });
+  });
+
+  test('validation required props', () => {
+    let idx: number = 0;
+
+    expect(() => {
+      const domainProps: DomainProps = {
+        version: EngineVersion.OPENSEARCH_2_5,
+        ebs: {
+          volumeSize: 30,
+          volumeType: EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
+        },
+      };
+      new Domain(stack, `Domain${idx++}`, domainProps);
+    }).toThrow('`iops` must be specified if the `volumeType` is `PROVISIONED_IOPS_SSD`.');
+
+    expect(() => {
+      const domainProps: DomainProps = {
+        version: EngineVersion.OPENSEARCH_2_5,
+        ebs: {
+          volumeSize: 30,
+          volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
+          iops: 125,
+        },
+      };
+      new Domain(stack, `Domain${idx++}`, domainProps);
+    }).toThrow('General Purpose EBS volumes can not be used with Iops or Throughput configuration');
+
+    expect(() => {
+      const domainProps: DomainProps = {
+        version: EngineVersion.OPENSEARCH_2_5,
+        ebs: {
+          iops: 125,
+        },
+      };
+      new Domain(stack, `Domain${idx++}`, domainProps);
+    }).toThrow('General Purpose EBS volumes can not be used with Iops or Throughput configuration');
+
+    expect(() => {
+      const domainProps: DomainProps = {
+        version: EngineVersion.OPENSEARCH_2_5,
+        ebs: {
+          volumeSize: 30,
+          volumeType: EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
+          iops: 99,
+        },
+      };
+      new Domain(stack, `Domain${idx++}`, domainProps);
+    }).toThrow('`io1` volumes iops must be between 100 and 64000.');
+
+    expect(() => {
+      const domainProps: DomainProps = {
+        version: EngineVersion.OPENSEARCH_2_5,
+        ebs: {
+          volumeSize: 30,
+          volumeType: EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
+          iops: 64001,
+        },
+      };
+      new Domain(stack, `Domain${idx++}`, domainProps);
+    }).toThrow('`io1` volumes iops must be between 100 and 64000.');
+
+    expect(() => {
+      const domainProps: DomainProps = {
+        version: EngineVersion.OPENSEARCH_2_5,
+        ebs: {
+          volumeSize: 30,
+          volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3,
+          iops: 16001,
+        },
+      };
+      new Domain(stack, `Domain${idx++}`, domainProps);
+    }).toThrow('`gp3` volumes iops must be between 3000 and 16000.');
+
+    expect(() => {
+      const domainProps: DomainProps = {
+        version: EngineVersion.OPENSEARCH_2_5,
+        ebs: {
+          volumeSize: 30,
+          volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3,
+          iops: 2999,
+        },
+      };
+      new Domain(stack, `Domain${idx++}`, domainProps);
+    }).toThrow('`gp3` volumes iops must be between 3000 and 16000.');
+
+    expect(() => {
+      const domainProps: DomainProps = {
+        version: EngineVersion.OPENSEARCH_2_5,
+        ebs: {
+          volumeSize: 30,
+          volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3,
+          throughput: 1024,
+        },
+      };
+      new Domain(stack, `Domain${idx++}`, domainProps);
+    }).toThrow('throughput property takes a minimum of 125 and a maximum of 1000.');
+
+    expect(() => {
+      const domainProps: DomainProps = {
+        version: EngineVersion.OPENSEARCH_2_5,
+        ebs: {
+          volumeSize: 30,
+          volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3,
+          throughput: 100,
+        },
+      };
+      new Domain(stack, `Domain${idx++}`, domainProps);
+    }).toThrow('throughput property takes a minimum of 125 and a maximum of 1000.');
   });
 });
 
