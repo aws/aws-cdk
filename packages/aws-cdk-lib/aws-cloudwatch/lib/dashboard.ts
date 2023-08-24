@@ -179,9 +179,14 @@ export class Dashboard extends Resource {
       return;
     }
 
-    const warnings = allWidgetsDeep(widgets).flatMap(w => w.warnings ?? []);
-    for (const w of warnings) {
-      Annotations.of(this).addWarning(w);
+    const warnings = allWidgetsDeep(widgets).reduce((prev, curr) => {
+      return {
+        ...prev,
+        ...curr.warningsV2,
+      };
+    }, {} as { [id: string]: string });
+    for (const [id, message] of Object.entries(warnings ?? {})) {
+      Annotations.of(this).addWarningV2(id, message);
     }
 
     const w = widgets.length > 1 ? new Row(...widgets) : widgets[0];
