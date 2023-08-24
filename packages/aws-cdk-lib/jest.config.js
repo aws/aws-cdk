@@ -21,6 +21,7 @@ module.exports = {
       },
     ],
   },
+  resolver: "ts-jest-resolver",
   testMatch: [
     '<rootDir>/**/test/**/?(*.)+(test).ts',
   ],
