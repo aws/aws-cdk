@@ -35,6 +35,26 @@ async function onUpdate(event: AWSLambda.CloudFormationCustomResourceEvent) {
 }
 
 /**
+ * Set a write deny policy to prevent new object creation while we're emptying the bucket.
+ *
+ * @param bucketName the bucket name
+ */
+async function denyWrites(bucketName: string) {
+  const policy = {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Principal": "*",
+        "Effect": "Deny",
+        "Action": ["s3:PutObject"],
+        "Resource": [`arn:aws:s3:::${bucketName}/*`]
+      }
+    ]
+  };
+  await s3.putBucketPolicy({ Bucket: bucketName, Policy: JSON.stringify(policy) });
+}
+
+/**
  * Recursively delete all items in the bucket
  *
  * @param bucketName the bucket name
@@ -63,6 +83,7 @@ async function onDelete(bucketName?: string) {
       console.log(`Bucket does not have '${AUTO_DELETE_OBJECTS_TAG}' tag, skipping cleaning.`);
       return;
     }
+    await denyWrites(bucketName);
     await emptyBucket(bucketName);
   } catch (error: any) {
     // Bucket doesn't exist, all is well
