@@ -560,6 +560,12 @@ describe('global table', () => {
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
     const stream = new Stream(stack, 'Stream');
 
+    const tableKey = new Key(stack, 'Key');
+    const replicaKeyArns = {
+      'us-east-1': 'arn:aws:kms:us-east-1:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
+      'us-east-2': 'arn:aws:kms:us-east-2:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
+    };
+
     // WHEN
     new GlobalTable(stack, 'GlobalTable', {
       tableName: 'my-global-table',
@@ -569,7 +575,7 @@ describe('global table', () => {
         readCapacity: Capacity.fixed(10),
         writeCapacity: Capacity.autoscaled({ maxCapacity: 20 }),
       }),
-      encryption: TableEncryptionV2.awsManagedKey(),
+      encryption: TableEncryptionV2.customerManagedKey(tableKey, replicaKeyArns),
       contributorInsights: true,
       deletionProtection: true,
       pointInTimeRecovery: true,
