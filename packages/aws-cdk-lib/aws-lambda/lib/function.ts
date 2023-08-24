@@ -1313,10 +1313,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     // so it can't be checked at function set up time
     // SnapStart supports the Java 11 and Java 17 (java11 and java17) managed runtimes.
     // See https://docs.aws.amazon.com/lambda/latest/dg/snapstart.html
-    if (props.snapStart != SnapStartConf.ON_PUBLISHED_VERSIONS) {
-      throw new Error('SnapStart currently only support published versions');
-    }
-    Annotations.of(this).addWarning('SnapStart only support published Lambda versions. Ignore if function already have published versions');
+    Annotations.of(this).addWarningV2('@aws-cdk/aws-lambda:snapStartRequirePublish', 'SnapStart only support published Lambda versions. Ignore if function already have published versions');
 
     if (!props.runtime.supportsSnapStart ) {
       throw new Error(`SnapStart currently not supported by runtime ${props.runtime.name}`);
