@@ -529,15 +529,36 @@ describe('global table', () => {
     });
   });
 
+  test('with tags', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+
+    // WHEN
+    new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'key', type: AttributeType.STRING },
+      tags: [{ key: 'first', value: 'tag1' }, { key: 'second', value: 'tag2' }],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: [
+        {
+          Region: {
+            Ref: 'AWS::Region',
+          },
+          Tags: [
+            { Key: 'first', Value: 'tag1' },
+            { Key: 'second', Value: 'tag2' },
+          ],
+        },
+      ],
+    });
+  });
+
   test('with all properties configured', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
     const stream = new Stream(stack, 'Stream');
-    const tableKey = new Key(stack, 'Key');
-    const replicaKeyArns = {
-      'us-east-1': 'arn:aws:kms:us-east-1:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
-      'us-east-2': 'arn:aws:kms:us-east-2:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
-    };
 
     // WHEN
     new GlobalTable(stack, 'GlobalTable', {
@@ -548,7 +569,7 @@ describe('global table', () => {
         readCapacity: Capacity.fixed(10),
         writeCapacity: Capacity.autoscaled({ maxCapacity: 20 }),
       }),
-      encryption: TableEncryptionV2.customerManagedKey(tableKey, replicaKeyArns),
+      encryption: TableEncryptionV2.awsManagedKey(),
       contributorInsights: true,
       deletionProtection: true,
       pointInTimeRecovery: true,
@@ -959,6 +980,23 @@ describe('global table', () => {
       globalTable.replica('us-west-2');
     }).toThrow('Replica Tables are not supported in a region agnostic stack');
   });
+
+  test('throws if adding duplicate tags', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+
+    // WHEN / THEN
+    expect(() => {
+      new GlobalTable(stack, 'GlobalTable', {
+        partitionKey: { name: 'pk', type: AttributeType.STRING },
+        tags: [
+          { key: 'first', value: 'tag1' },
+          { key: 'second', value: 'tag2' },
+          { key: 'first', value: 'tag3' },
+        ],
+      });
+    }).toThrow("Duplicate tag key 'first' is not permitted");
+  });
 });
 
 describe('replica tables', () => {
@@ -1085,6 +1123,59 @@ describe('replica tables', () => {
               ],
             },
           },
+        },
+      ],
+    });
+  });
+
+  test('with per-replica tags', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+    // WHEN
+    new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      tags: [
+        { key: 'foo', value: 'bar' },
+        { key: 'fizz', value: 'buzz' },
+      ],
+      replicas: [
+        {
+          region: 'us-east-1',
+          tags: [
+            { key: 'foo', value: 'baz' },
+            { key: 'fruit', value: 'apple' },
+          ],
+        },
+        {
+          region: 'us-east-2',
+          tags: [{ key: 'fruit', value: 'banana' }],
+        },
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: [
+        {
+          Region: 'us-east-1',
+          Tags: [
+            { Key: 'foo', Value: 'baz' },
+            { Key: 'fruit', Value: 'apple' },
+          ],
+        },
+        {
+          Region: 'us-east-2',
+          Tags: [
+            { Key: 'fruit', Value: 'banana' },
+          ],
+        },
+        {
+          Region: 'us-west-2',
+          Tags: [
+            { Key: 'foo', Value: 'bar' },
+            { Key: 'fizz', Value: 'buzz' },
+          ],
         },
       ],
     });

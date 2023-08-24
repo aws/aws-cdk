@@ -487,6 +487,57 @@ globalTable.addLocalSecondaryIndex({
 });
 ```
 
+## Tags
+
+You can apply `tags` to a `GlobalTable` and any replicas. `Tags` on the `GlobalTable` will only apply to the table in the main deployment region.
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-west-2' } });
+
+const globalTable = new dynamodb.GlobalTable(stack, 'GlobalTable', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  // tags will only apply to table in us-west-2
+  tags: [
+    { key: 'foo', value: 'bar' },
+    { key: 'fizz', value: 'buzz' },
+  ],
+  replicas: [
+    { region: 'us-east-1' },
+    { region: 'us-east-2' },
+  ],
+});
+```
+
+Replicas will not inherit tags from the `GlobalTable`, bou can apply tags on a per-replica basis:
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-west-2' } });
+
+const globalTable = new dynamodb.GlobalTable(stack, 'GlobalTable', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  tags: [
+    { key: 'foo', value: 'bar' },
+    { key: 'fizz', value: 'buzz' },
+  ],
+  replicas: [
+    {
+      region: 'us-east-1',
+      tags: [{ key: 'foo', value: 'bar' }],
+    },
+    {
+      region: 'us-east-2',
+      tags: [{ key: 'fizz', value: 'buzz' }],
+    },
+  ],
+});
+```
+
 ## Importing Existing Global Tables
 
 To import an existing `GlobalTable` into your CDK application, use one of the `GlobalTable.fromTableName`, `GlobalTable.fromTableArn` or `GlobalTable.fromTableAttributes`
