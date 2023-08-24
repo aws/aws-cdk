@@ -183,6 +183,7 @@ export class CdkCliWrapper implements ICdk {
       ...options.toolkitStackName ? ['--toolkit-stack-name', options.toolkitStackName] : [],
       ...options.progress ? ['--progress', options.progress] : ['--progress', StackActivityProgress.EVENTS],
       ...options.deploymentMethod ? ['--method', options.deploymentMethod] : [],
+      ...options.concurrency ? ['--concurrency', options.concurrency.toString()] : [],
       ...this.createDefaultArguments(options),
     ];
 

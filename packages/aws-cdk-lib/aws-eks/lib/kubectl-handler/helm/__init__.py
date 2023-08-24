@@ -100,7 +100,7 @@ def helm_handler(event, context):
 
 def get_oci_cmd(repository, version):
     # Generates OCI command based on pattern. Public ECR vs Private ECR are treated differently.
-    private_ecr_pattern = 'oci://(?P<registry>\d+.dkr.ecr.(?P<region>[a-z]+-[a-z]+-\d).amazonaws.com)*'
+    private_ecr_pattern = 'oci://(?P<registry>\d+.dkr.ecr.(?P<region>[a-z0-9\-]+).amazonaws.com)*'
     public_ecr_pattern = 'oci://(?P<registry>public.ecr.aws)*'
 
     private_registry = re.match(private_ecr_pattern, repository).groupdict()
