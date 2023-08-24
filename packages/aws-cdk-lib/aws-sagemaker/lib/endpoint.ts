@@ -1,9 +1,9 @@
-import * as cdk from 'aws-cdk-lib';
+import { IResource } from '../../core';
 
 /**
  * The interface for a SageMaker Endpoint resource.
  */
-export interface IEndpoint extends cdk.IResource {
+export interface IEndpoint extends IResource {
   /**
    * The ARN of the endpoint.
    *
