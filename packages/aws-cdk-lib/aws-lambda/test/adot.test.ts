@@ -114,7 +114,7 @@ describe('ADOT Lambda Layer', () => {
               {
                 Ref: 'AWS::Region',
               },
-              ':901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-28-1:1',
+              ':901920570463:layer:aws-otel-java-wrapper-arm64-ver-1-28-1:1',
             ],
           ],
         },
