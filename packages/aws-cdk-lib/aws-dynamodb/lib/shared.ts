@@ -191,6 +191,34 @@ export enum TableEncryption {
 }
 
 /**
+ * When an item in the table is modified, StreamViewType determines what information
+ * is written to the stream for this table.
+ *
+ * @see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_StreamSpecification.html
+ */
+export enum StreamViewType {
+  /**
+   * The entire item, as it appears after it was modified, is written to the stream.
+   */
+  NEW_IMAGE = 'NEW_IMAGE',
+
+  /**
+   * The entire item, as it appeared before it was modified, is written to the stream.
+   */
+  OLD_IMAGE = 'OLD_IMAGE',
+
+  /**
+   * Both the new and the old item images of the item are written to the stream.
+   */
+  NEW_AND_OLD_IMAGES = 'NEW_AND_OLD_IMAGES',
+
+  /**
+   * Only the key attributes of the modified item are written to the stream.
+   */
+  KEYS_ONLY = 'KEYS_ONLY'
+}
+
+/**
  * Properties for a secondary index
  */
 export interface SecondaryIndexProps {

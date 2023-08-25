@@ -4,7 +4,7 @@ import { Key } from '../../aws-kms';
 import { CfnDeletionPolicy, Lazy, RemovalPolicy, Stack } from '../../core';
 import {
   AttributeType, Billing, Capacity, GlobalSecondaryIndexPropsV2, GlobalTable,
-  LocalSecondaryIndexProps, ProjectionType, TableClass, TableEncryptionV2,
+  LocalSecondaryIndexProps, ProjectionType, StreamViewType, TableClass, TableEncryptionV2,
 } from '../lib';
 
 describe('global table', () => {
@@ -26,6 +26,7 @@ describe('global table', () => {
         { AttributeName: 'pk', AttributeType: 'S' },
       ],
       BillingMode: 'PAY_PER_REQUEST',
+      StreamSpecification: Match.absent(),
       Replicas: [
         {
           Region: {
@@ -35,6 +36,24 @@ describe('global table', () => {
       ],
     });
     Template.fromStack(stack).hasResource('AWS::DynamoDB::GlobalTable', { DeletionPolicy: CfnDeletionPolicy.RETAIN });
+  });
+
+  test('with dynamo stream', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+
+    // WHEN
+    new GlobalTable(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      dynamoStream: StreamViewType.NEW_IMAGE,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      StreamSpecification: {
+        StreamViewType: 'NEW_IMAGE',
+      },
+    });
   });
 
   test('with sort key', () => {
@@ -2709,23 +2728,4 @@ describe('imports', () => {
       });
     }).toThrow('Table ARN must be of the form: arn:<partition>:dynamodb:<region>:<account>:table/<table-name>');
   });
-});
-
-test('deletion protection and removal policy', () => {
-  const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
-
-  new GlobalTable(stack, 'GlobalTable', {
-    partitionKey: { name: 'pk', type: AttributeType.STRING },
-    deletionProtection: true,
-    removalPolicy: RemovalPolicy.DESTROY,
-    replicas: [
-      {
-        region: 'us-east-1',
-        deletionProtection: false,
-      },
-    ],
-  });
-
-  /* eslint-disable no-console */
-  console.log(JSON.stringify(Template.fromStack(stack), null, 4));
 });

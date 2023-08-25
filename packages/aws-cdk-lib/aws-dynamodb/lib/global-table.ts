@@ -5,6 +5,7 @@ import { CfnGlobalTable } from './dynamodb.generated';
 import { TableEncryptionV2 } from './encryption';
 import { GlobalTableBase, IGlobalTable } from './global-table-base';
 import {
+  StreamViewType,
   Attribute, TableClass, LocalSecondaryIndexProps,
   SecondaryIndexProps, BillingMode, ProjectionType,
 } from './shared';
@@ -168,6 +169,18 @@ export interface GlobalTableProps extends TableOptionsV2 {
    * @default - TTL is disabled
    */
   readonly timeToLiveAttribute?: string;
+
+  /**
+   * When an item in the table is modified, StreamViewType determines what information is
+   * written to the stream.
+   *
+   * Note: The selected StreamViewType will be inherited by all replicas.
+   *
+   * @default - streams are disabled if replicas are not configured and this property is
+   * not specified. If this property is not specified when replicas are configured, then
+   * NEW_AND_OLD_IMAGES will be the StreamViewType for all replicas
+   */
+  readonly dynamoStream?: StreamViewType
 
   /**
    * The removal policy applied to all Replica Tables in the Global Table.
@@ -467,7 +480,9 @@ export class GlobalTable extends GlobalTableBase {
       localSecondaryIndexes: Lazy.any({ produce: () => this.renderLocalIndexes() }, { omitEmptyArray: true }),
       billingMode: this.billingMode,
       writeProvisionedThroughputSettings: this.writeProvisioning,
-      streamSpecification: Lazy.any({ produce: () => this.renderStreamSpecification() }),
+      streamSpecification: Lazy.any(
+        { produce: () => props.dynamoStream ? { streamViewType: props.dynamoStream } : this.renderStreamSpecification() },
+      ),
       sseSpecification: this.encryption?._renderSseSpecification(),
       timeToLiveSpecification: props.timeToLiveAttribute
         ? { attributeName: props.timeToLiveAttribute, enabled: true }

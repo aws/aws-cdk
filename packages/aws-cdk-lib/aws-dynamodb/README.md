@@ -1,5 +1,8 @@
 # Amazon DynamoDB Construct Library
 
+> The DynamoDB construct library has two table constructs - `Table` and `GlobalTable`. `GlobalTable` is the preferred construct to use for creating a single table or a table with multiple `replicas`. A `GlobalTable` without any `replicas` configured will create a single table in the primary deployment region and will behave in the same way as the `Table` construct.
+
+[`Table` API documentation](./ORIGINAL_API.md)
 
 Here is a minimal deployable DynamoDB `GlobalTable` definition:
 
@@ -27,7 +30,7 @@ https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GlobalTables.ht
 
 ## Replicas
 
-A `GlobalTable` can be configured with replica tables. To do this, the `GlobalTable` must be defined in a region non-agnostic `Stack`. The main deployment region must not be given as a replica because this is created by default with the `GlobalTable`. The following is a minimal `GlobalTable` definition with replicas defined in `us-east-1` and `us-east-2`:
+A `GlobalTable` can be configured with replica tables. To do this, the `GlobalTable` must be defined in a region non-agnostic `Stack`. The main deployment region must not be given as a replica because this is created by default with the `GlobalTable`. The following is a minimal `GlobalTable` definition with `replicas` defined in `us-east-1` and `us-east-2`:
 
 ```ts
 import * as cdk from 'aws-cdk-lib';
@@ -44,7 +47,7 @@ const globalTable = new dynamodb.GlobalTable(stack, 'GlobalTable', {
 });
 ```
 
-Alternatively, you can add new replicas to a `GlobalTable` using the `addReplica` method:
+Alternatively, you can add new `replicas` to a `GlobalTable` using the `addReplica` method:
 
 ```ts
 import * as cdk from 'aws-cdk-lib';
@@ -139,7 +142,7 @@ const barStack = new BarStack(app, 'BarStack', {
 });
 ```
 
-Note: You can create a new `GlobalTable` with as many replicas as needed as long as there is only one replica per region. After table creation you can add or remove replicas, but you can only add or remove a single replica in each update.
+Note: You can create a new `GlobalTable` with as many `replicas` as needed as long as there is only one replica per region. After table creation you can add or remove `replicas`, but you can only add or remove a single replica in each update.
 
 ## Billing
 
@@ -416,6 +419,67 @@ globalTable.addLocalSecondaryIndex({
 });
 ```
 
+## Streams
+
+Each `GlobalTable` produces an independent stream based on all its writes, regardless of the origination point for those writes. DynamoDB supports two stream types:
+* DynamoDB streams - Capture item-level changes in your table, and push the changes to a DynamoDB stream. You then can access the change information through the DynamoDB Streams API.
+* Kinesis streams - Amazon Kinesis Data Streams for DynamoDB captures item-level changes in your table, and replicates the changes to a Kinesis data stream. You then can consume and manage the change information from Kinesis.
+
+### DynamoDB Streams
+
+A `dynamoStream` configured as a `GlobalTable` property will be inherited by all replicas. If replicas are configured as part of a `GlobalTable`, but `dynamoStream` is not configured, then all replicas will be automatically configured using the `NEW_AND_OLD_IMAGES` stream view type.
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+import * as kinesis from 'aws-cdk-lib/aws-kinesis';
+
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-west-2' } });
+
+const globalTable = new dynamodb.GlobalTable(this, 'GlobalTable', {
+  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+  dynamoStream: dynamodb.StreamViewType.OLD_IMAGES,
+  // tables in us-west-2, us-east-1, and us-east-2 all have dynamo stream type of OLD_IMAGES
+  replicas: [
+    { region: 'us-east-1' },
+    { region: 'us-east-2' },
+  ],
+});
+```
+
+Further reading:
+https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.html
+
+### Kinesis Streams
+
+`kinesisStreams` must be configured on a per-replica basis. A `kinesisStream` configured as a `GlobalTable` property will only apply to the table in the primary deployment region.
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+import * as kinesis from 'aws-cdk-lib/aws-kinesis';
+
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-west-2' } });
+
+const stream1 = new kinesis.Stream(stack, 'Stream1');
+const stream2 = kinesis.Stream.fromStreamArn(stack, 'Stream2', 'arn:aws:kinesis:us-east-2:123456789012:stream/my-stream');
+
+const globalTable = new dynamodb.GlobalTable(this, 'GlobalTable', {
+  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+  kinesisStream: stream1, // for table in us-west-2
+  replicas: [
+    { region: 'us-east-1' }, // no kinesis data stream will be set for this replica
+    {
+      region: 'us-east-2',
+      kinesisStream: stream2, // for table in us-east-2
+    },
+  ],
+});
+```
+
+Further reading:
+https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/kds.html
+
 ## Keys
 
 When a `GlobalTable` is defined, you must define its schema using the `partitionKey` (required) and `sortKey` (optional) properties.
@@ -471,7 +535,7 @@ const globalTable = new dynamodb.GlobalTable(stack, 'GlobalTable', {
 });
 ```
 
-`deletionProtection` is configurable on a per-replica basis. If the `removalPolicy` is set to `DESTROY`, but some replicas have `deletionProtection` enabled, then only the replicas without `deletionProtection` will be deleted during `stack` deletion:
+`deletionProtection` is configurable on a per-replica basis. If the `removalPolicy` is set to `DESTROY`, but some `replicas` have `deletionProtection` enabled, then only the `replicas` without `deletionProtection` will be deleted during `stack` deletion:
 
 ```ts
 import * as cdk from 'aws-cdk-lib';
@@ -523,33 +587,6 @@ const globalTable = new dynamodb.GlobalTable(this, 'GlobalTable', {
 
 Further reading:
 https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.TableClasses.html
-
-## Kinesis Stream
-
-A Kinesis Data Stream can be configured on a `GlobalTable` to capture item-level changes. The Kinesis Data Stream configured on a `GlobalTable` will only apply to the table in the primary deployment region and will not be inherited by any replica tables. Replica specific Kinesis Data Streams should be configured on a per-replica basis.
-
-```ts
-import * as cdk from 'aws-cdk-lib';
-import * as kinesis from 'aws-cdk-lib/aws-kinesis';
-
-const app = new cdk.App();
-const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-west-2' } });
-
-const stream1 = new kinesis.Stream(stack, 'Stream1');
-const stream2 = kinesis.Stream.fromStreamArn(stack, 'Stream2', 'arn:aws:kinesis:us-east-2:123456789012:stream/my-stream');
-
-const globalTable = new dynamodb.GlobalTable(this, 'GlobalTable', {
-  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
-  kinesisStream: stream1,
-  replicas: [
-    { region: 'us-east-1' }, // no kinesis data stream will be set for this replica
-    {
-      region: 'us-east-2',
-      kinesisStream: stream2,
-    },
-  ],
-});
-```
 
 ## Referencing Existing Global Tables
 
@@ -707,245 +744,5 @@ const fooStack = new FooStack(app, 'FooStack', { env: { region: 'us-west-2' } })
 const barStack = new BarStack(app, 'BarStack', {
   replicaTable: fooStack.globalTable.replica('us-east-1'),
   env: { region: 'us-east-1' },
-});
-```
-
----
-
-Here is a minimal deployable DynamoDB table definition:
-
-```ts
-const table = new dynamodb.Table(this, 'Table', {
-  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
-});
-```
-
-## Referencing existing tables
-
-To reference an existing table in your CDK application, use the `Table.fromTableName`, `Table.fromTableArn` or `Table.fromTableAttributes`
-factory method. This method accepts table name or table ARN which describes the properties of an already
-existing table:
-
-```ts
-declare const user: iam.User;
-const table = dynamodb.Table.fromTableArn(this, 'ImportedTable', 'arn:aws:dynamodb:us-east-1:111111111:table/my-table');
-// now you can just call methods on the table
-table.grantReadWriteData(user);
-```
-
-If you intend to use the `tableStreamArn` (including indirectly, for example by creating an
-`aws-cdk-lib/aws-lambda-event-sources.DynamoEventSource` on the referenced table), you *must* use the
-`Table.fromTableAttributes` method and the `tableStreamArn` property *must* be populated.
-
-To grant permissions to indexes on a referenced table you can either set `grantIndexPermissions` to `true`, or you can provide the indexes via the `globalIndexes` or `localIndexes` properties. This will enable `grant*` methods to also grant permissions to *all* table indexes.
-
-## Keys
-
-When a table is defined, you must define it's schema using the `partitionKey`
-(required) and `sortKey` (optional) properties.
-
-## Billing Mode
-
-DynamoDB supports two billing modes:
-
-* PROVISIONED - the default mode where the table and global secondary indexes have configured read and write capacity.
-* PAY_PER_REQUEST - on-demand pricing and scaling. You only pay for what you use and there is no read and write capacity for the table or its global secondary indexes.
-
-```ts
-const table = new dynamodb.Table(this, 'Table', {
-  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
-  billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
-});
-```
-
-Further reading:
-https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadWriteCapacityMode.
-
-## Table Class
-
-DynamoDB supports two table classes:
-
-* STANDARD - the default mode, and is recommended for the vast majority of workloads.
-* STANDARD_INFREQUENT_ACCESS - optimized for tables where storage is the dominant cost.
-
-```ts
-const table = new dynamodb.Table(this, 'Table', {
-  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
-  tableClass: dynamodb.TableClass.STANDARD_INFREQUENT_ACCESS,
-});
-```
-
-Further reading:
-https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.TableClasses.html
-
-## Configure AutoScaling for your table
-
-You can have DynamoDB automatically raise and lower the read and write capacities
-of your table by setting up autoscaling. You can use this to either keep your
-tables at a desired utilization level, or by scaling up and down at pre-configured
-times of the day:
-
-Auto-scaling is only relevant for tables with the billing mode, PROVISIONED.
-
-[Example of configuring autoscaling](test/integ.autoscaling.lit.ts)
-
-Further reading:
-https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/AutoScaling.html
-https://aws.amazon.com/blogs/database/how-to-use-aws-cloudformation-to-configure-auto-scaling-for-amazon-dynamodb-tables-and-indexes/
-
-## Amazon DynamoDB Global Tables
-
-You can create DynamoDB Global Tables by setting the `replicationRegions` property on a `Table`:
-
-```ts
-const globalTable = new dynamodb.Table(this, 'Table', {
-  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
-  replicationRegions: ['us-east-1', 'us-east-2', 'us-west-2'],
-});
-```
-
-When doing so, a CloudFormation Custom Resource will be added to the stack in order to create the replica tables in the
-selected regions.
-
-The default billing mode for Global Tables is `PAY_PER_REQUEST`.
-If you want to use `PROVISIONED`,
-you have to make sure write auto-scaling is enabled for that Table:
-
-```ts
-const globalTable = new dynamodb.Table(this, 'Table', {
-  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
-  replicationRegions: ['us-east-1', 'us-east-2', 'us-west-2'],
-  billingMode: dynamodb.BillingMode.PROVISIONED,
-});
-
-globalTable.autoScaleWriteCapacity({
-  minCapacity: 1,
-  maxCapacity: 10,
-}).scaleOnUtilization({ targetUtilizationPercent: 75 });
-```
-
-When adding a replica region for a large table, you might want to increase the
-timeout for the replication operation:
-
-```ts
-const globalTable = new dynamodb.Table(this, 'Table', {
-  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
-  replicationRegions: ['us-east-1', 'us-east-2', 'us-west-2'],
-  replicationTimeout: Duration.hours(2), // defaults to Duration.minutes(30)
-});
-```
-
-A maximum of 10 tables with replication can be added to a stack without a limit increase for
-[managed policies attached to an IAM role](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_iam-quotas.html#reference_iam-quotas-entities).
-This is because more than 10 managed policies will be attached to the DynamoDB service replication role - one policy per replication table.
-Consider splitting your tables across multiple stacks if your reach this limit.
-
-## Encryption
-
-All user data stored in Amazon DynamoDB is fully encrypted at rest. When creating a new table, you can choose to encrypt using the following customer master keys (CMK) to encrypt your table:
-
-* AWS owned CMK - By default, all tables are encrypted under an AWS owned customer master key (CMK) in the DynamoDB service account (no additional charges apply).
-* AWS managed CMK - AWS KMS keys (one per region) are created in your account, managed, and used on your behalf by AWS DynamoDB (AWS KMS charges apply).
-* Customer managed CMK - You have full control over the KMS key used to encrypt the DynamoDB Table (AWS KMS charges apply).
-
-Creating a Table encrypted with a customer managed CMK:
-
-```ts
-const table = new dynamodb.Table(this, 'MyTable', {
-  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
-  encryption: dynamodb.TableEncryption.CUSTOMER_MANAGED,
-});
-
-// You can access the CMK that was added to the stack on your behalf by the Table construct via:
-const tableEncryptionKey = table.encryptionKey;
-```
-
-You can also supply your own key:
-
-```ts
-import * as kms from 'aws-cdk-lib/aws-kms';
-
-const encryptionKey = new kms.Key(this, 'Key', {
-  enableKeyRotation: true,
-});
-const table = new dynamodb.Table(this, 'MyTable', {
-  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
-  encryption: dynamodb.TableEncryption.CUSTOMER_MANAGED,
-  encryptionKey, // This will be exposed as table.encryptionKey
-});
-```
-
-In order to use the AWS managed CMK instead, change the code to:
-
-```ts
-const table = new dynamodb.Table(this, 'MyTable', {
-  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
-  encryption: dynamodb.TableEncryption.AWS_MANAGED,
-});
-
-// In this case, the CMK _cannot_ be accessed through table.encryptionKey.
-```
-
-## Get schema of table or secondary indexes
-
-To get the partition key and sort key of the table or indexes you have configured:
-
-```ts
-declare const table: dynamodb.Table;
-const schema = table.schema();
-const partitionKey = schema.partitionKey;
-const sortKey = schema.sortKey;
-
-// In case you want to get schema details for any secondary index
-// const { partitionKey, sortKey } = table.schema(INDEX_NAME);
-```
-
-## Kinesis Stream
-
-A Kinesis Data Stream can be configured on the DynamoDB table to capture item-level changes.
-
-```ts
-import * as kinesis from 'aws-cdk-lib/aws-kinesis';
-
-const stream = new kinesis.Stream(this, 'Stream');
-
-const table = new dynamodb.Table(this, 'Table', {
-  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
-  kinesisStream: stream,
-});
-```
-
-## Alarm metrics
-
-Alarms can be configured on the DynamoDB table to captured metric data
-
-```ts
-import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
-
-const table = new dynamodb.Table(this, 'Table', {
-  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
-});
-
-const metric = table.metricThrottledRequestsForOperations({
-  operations: [dynamodb.Operation.PUT_ITEM],
-  period: Duration.minutes(1),
-});
-
-new cloudwatch.Alarm(this, 'Alarm', {
-  metric: metric,
-  evaluationPeriods: 1,
-  threshold: 1,
-});
-```
-
-## Deletion Protection for Tables
-
-You can enable deletion protection for a table by setting the `deletionProtection` property to `true`.
-When deletion protection is enabled for a table, it cannot be deleted by anyone. By default, deletion protection is disabled.
-
-```ts
-const table = new dynamodb.Table(this, 'Table', {
-  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
-  deletionProtection: true,
 });
 ```
