@@ -1,9 +1,9 @@
+import { Template } from '../../assertions';
 import * as kms from '../../aws-kms';
-import * as sqs from '../../aws-sqs';
 import * as sns from '../../aws-sns';
+import * as sqs from '../../aws-sqs';
 import { Stack } from '../../core';
 import * as subscriptions from '../lib';
-import { Template } from '../../assertions';
 
 test('can add subscription to queue that has encryptionType auto changed', () => {
   // GIVEN
