@@ -56,6 +56,7 @@ describe('CLI creds synthesis', () => {
 
   test('add file asset', () => {
     // WHEN
+    const ext = __filename.match(/\.([tj]s)$/)?.[1];
     const location = stack.synthesizer.addFileAsset({
       fileName: __filename,
       packaging: FileAssetPackaging.FILE,
@@ -64,7 +65,7 @@ describe('CLI creds synthesis', () => {
 
     // THEN - we have a fixed asset location with region placeholders
     expect(evalCFN(location.bucketName)).toEqual('cdk-hnb659fds-assets-the_account-the_region');
-    expect(evalCFN(location.s3Url)).toEqual('https://s3.the_region.domain.aws/cdk-hnb659fds-assets-the_account-the_region/abcdef.js');
+    expect(evalCFN(location.s3Url)).toEqual(`https://s3.the_region.domain.aws/cdk-hnb659fds-assets-the_account-the_region/abcdef.${ext}`);
 
     // THEN - object key contains source hash somewhere
     expect(location.objectKey.indexOf('abcdef')).toBeGreaterThan(-1);
@@ -118,6 +119,7 @@ describe('CLI creds synthesis', () => {
       }),
     });
 
+    const ext = __filename.match(/\.([tj]s)$/)?.[1];
     mystack.synthesizer.addFileAsset({
       fileName: __filename,
       packaging: FileAssetPackaging.FILE,
@@ -135,7 +137,7 @@ describe('CLI creds synthesis', () => {
 
     expect(manifest.files?.['file-asset-hash']?.destinations?.['current_account-current_region']).toEqual({
       bucketName: 'file-asset-bucket',
-      objectKey: 'file-asset-hash.js',
+      objectKey: `file-asset-hash.${ext}`,
     });
 
     expect(manifest.dockerImages?.['docker-asset-hash']?.destinations?.['current_account-current_region']).toEqual({
@@ -156,6 +158,7 @@ describe('CLI creds synthesis', () => {
       }),
     });
 
+    const ext = __filename.match(/\.([tj]s)$/)?.[1];
     mystack.synthesizer.addFileAsset({
       fileName: __filename,
       packaging: FileAssetPackaging.FILE,
@@ -174,7 +177,7 @@ describe('CLI creds synthesis', () => {
     // THEN
     expect(manifest.files?.['file-asset-hash-with-prefix']?.destinations?.['current_account-current_region']).toEqual({
       bucketName: 'file-asset-bucket',
-      objectKey: '000000000000/file-asset-hash-with-prefix.js',
+      objectKey: `000000000000/file-asset-hash-with-prefix.${ext}`,
     });
 
     const templateHash = last(stackArtifact.stackTemplateAssetObjectUrl?.split('/'));

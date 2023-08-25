@@ -17,7 +17,7 @@
 
 Amazon Neptune is a fast, reliable, fully managed graph database service that makes it easy to build and run applications that work with highly connected datasets. The core of Neptune is a purpose-built, high-performance graph database engine. This engine is optimized for storing billions of relationships and querying the graph with milliseconds latency. Neptune supports the popular graph query languages Apache TinkerPop Gremlin and W3C’s SPARQL, enabling you to build queries that efficiently navigate highly connected datasets.
 
-The `@aws-cdk/aws-neptune` package contains primitives for setting up Neptune database clusters and instances.
+The `@aws-cdk/aws-neptune-alpha` package contains primitives for setting up Neptune database clusters and instances.
 
 ```ts nofixture
 import * as neptune from '@aws-cdk/aws-neptune-alpha';

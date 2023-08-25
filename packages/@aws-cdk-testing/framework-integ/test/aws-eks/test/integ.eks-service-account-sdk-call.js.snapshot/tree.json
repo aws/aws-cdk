@@ -1620,7 +1620,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "25f7dc8c7a6d65604d70050f2d9d19d6bfc5060a3d74662fc86589f4385e3a1b.zip"
+                          "s3Key": "3f579d6c1ab146cac713730c96809dd4a9c5d9750440fb835ab20fd6925e528c.zip"
                         },
                         "description": "/opt/nodejs/node_modules/proxy-agent"
                       }
@@ -2771,7 +2771,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/94cf94a2860df09befc13ff93aff19347688c348ef40686ad71e19b47417db03.json"
+                          "/2943b40bb9c544c5846912c9d002545dba57f14bc7cd3ebdd5d83b53b8845c74.json"
                         ]
                       ]
                     }

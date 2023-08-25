@@ -5,7 +5,6 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { Compatibility, CpuArchitecture, EcsEc2ContainerDefinition, EcsFargateContainerDefinition, EcsJobDefinition, OperatingSystemFamily, JobQueue, ManagedEc2EcsComputeEnvironment } from '../lib';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
 
-
 test('EcsJobDefinition respects propagateTags', () => {
   // GIVEN
   const stack = new Stack();
@@ -152,4 +151,45 @@ test('JobDefinitionName is parsed from arn in imported job', () => {
 
   // THEN
   expect(importedJob.jobDefinitionName).toEqual('job-def-name');
+});
+
+test('grantSubmitJob() grants the job role the correct actions', () => {
+  // GIVEN
+  const stack = new Stack();
+  const ecsJob = new EcsJobDefinition(stack, 'ECSJob', {
+    container: new EcsFargateContainerDefinition(stack, 'EcsContainer', {
+      cpu: 256,
+      memory: Size.mebibytes(2048),
+      image: ecs.ContainerImage.fromRegistry('foorepo/fooimage'),
+    }),
+  });
+  const queue = new JobQueue(stack, 'queue');
+
+  queue.addComputeEnvironment(
+    new ManagedEc2EcsComputeEnvironment(stack, 'env', {
+      vpc: new Vpc(stack, 'VPC'),
+    }),
+    1,
+  );
+
+  const user = new iam.User(stack, 'MyUser');
+
+  // WHEN
+  ecsJob.grantSubmitJob(user, queue);
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [{
+        Action: 'batch:SubmitJob',
+        Effect: 'Allow',
+        Resource: [
+          { Ref: 'ECSJobFFFEA569' },
+          { 'Fn::GetAtt': ['queue276F7297', 'JobQueueArn'] },
+        ],
+      }],
+      Version: '2012-10-17',
+    },
+    PolicyName: 'MyUserDefaultPolicy7B897426',
+  });
 });

@@ -1,6 +1,6 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
-import { PublicHostedZone, CrossAccountZoneDelegationRecord } from 'aws-cdk-lib/aws-route53';
+import { PublicHostedZone, CrossAccountZoneDelegationRecord, PrivateHostedZone, HostedZone } from 'aws-cdk-lib/aws-route53';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
@@ -32,8 +32,22 @@ new CrossAccountZoneDelegationRecord(stack, 'DelegationWithZoneName', {
   delegationRole: parentZone.crossAccountZoneDelegationRole!,
 });
 
+const role = new iam.Role(stack, 'Role', {
+  assumedBy: new iam.AccountRootPrincipal(),
+});
+
+const importedZone = HostedZone.fromHostedZoneId(stack, 'ImportedZone', 'imported-zone-id');
+importedZone.grantDelegation(role);
+
+const importedPublicZone = PublicHostedZone.fromPublicHostedZoneId(stack, 'ImportedPublicZone', 'imported-public-zone-id');
+importedPublicZone.grantDelegation(role);
+
+const importedPrivateZone = PrivateHostedZone.fromPrivateHostedZoneId(stack, 'ImportedPrivateZone', 'imported-private-zone-id');
+importedPrivateZone.grantDelegation(role);
+
 new IntegTest(app, 'Route53CrossAccountInteg', {
   testCases: [stack],
   diffAssets: true,
 });
+
 app.synth();

@@ -1,3 +1,5 @@
+import { MaybeParsed, mkParsed } from '../diff/maybe-parsed';
+
 export class ManagedPolicyAttachment {
   public static parseManagedPolicies(identityArn: string, arns: string | string[]): ManagedPolicyAttachment[] {
     return typeof arns === 'string'
@@ -19,8 +21,11 @@ export class ManagedPolicyAttachment {
    *
    * @internal
    */
-  public _toJson(): ManagedPolicyJson {
-    return { identityArn: this.identityArn, managedPolicyArn: this.managedPolicyArn };
+  public _toJson(): MaybeParsed<ManagedPolicyJson> {
+    return mkParsed({
+      identityArn: this.identityArn,
+      managedPolicyArn: this.managedPolicyArn,
+    });
   }
 }
 

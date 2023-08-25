@@ -1,5 +1,5 @@
 {
-  "version": "30.1.0",
+  "version": "33.0.0",
   "artifacts": {
     "test-efs-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bf1856ec9969cccf2ed5dcc40acf92ce4870f877b88f68aa2813b3feb3c775af.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a5b1ebc6006a2ce28112fae5df0ca689544d5dbbbbdd004fc794310ce2d08695.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -171,16 +171,16 @@
             "data": "FileSystemEfsSecurityGroup212D3ACB"
           }
         ],
-        "/test-efs-integ/FileSystem/EfsMountTarget1": [
+        "/test-efs-integ/FileSystem/EfsMountTarget-PrivateSubnet1": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FileSystemEfsMountTarget1586453F0"
+            "data": "FileSystemEfsMountTargetPrivateSubnet1BB305AF3"
           }
         ],
-        "/test-efs-integ/FileSystem/EfsMountTarget2": [
+        "/test-efs-integ/FileSystem/EfsMountTarget-PrivateSubnet2": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FileSystemEfsMountTarget24B8EBB43"
+            "data": "FileSystemEfsMountTargetPrivateSubnet265F3ED67"
           }
         ],
         "/test-efs-integ/FileSystem/AccessPoint/Resource": [
@@ -203,6 +203,53 @@
         ]
       },
       "displayName": "test-efs-integ"
+    },
+    "testefsintegtestDefaultTestDeployAssert7E1529D5.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "testefsintegtestDefaultTestDeployAssert7E1529D5.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "testefsintegtestDefaultTestDeployAssert7E1529D5": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "testefsintegtestDefaultTestDeployAssert7E1529D5.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "testefsintegtestDefaultTestDeployAssert7E1529D5.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "testefsintegtestDefaultTestDeployAssert7E1529D5.assets"
+      ],
+      "metadata": {
+        "/test-efs-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/test-efs-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "test-efs-integ-test/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
