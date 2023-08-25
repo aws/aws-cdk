@@ -1,7 +1,7 @@
 import { InstanceClass, InstanceSize, InstanceType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { CertificateIdentifier, DatabaseInstance, DatabaseInstanceEngine, PostgresEngineVersion } from 'aws-cdk-lib/aws-rds';
+import { CaCertificate, DatabaseInstance, DatabaseInstanceEngine, PostgresEngineVersion } from 'aws-cdk-lib/aws-rds';
 
 const app = new App();
 
@@ -15,7 +15,7 @@ new DatabaseInstance(stack, 'Instance', {
   }),
   instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.MICRO),
   vpc,
-  caCertificateIdentifier: CertificateIdentifier.RDS_CA_RSA2048_G1,
+  caCertificate: CaCertificate.rdsCaRsa2048G1(),
 });
 
 new integ.IntegTest(app, 'InstanceCACertificateTest', {

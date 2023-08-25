@@ -465,7 +465,7 @@ const gp3Instance = new rds.DatabaseInstance(this, 'Gp3Instance', {
 });
 ```
 
-Use the `caCertificateIdentifier` property to specify the [CA certificates](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL-certificate-rotation.html)
+Use the `caCertificate` property to specify the [CA certificates](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL-certificate-rotation.html)
 to use for the instance:
 
 ```ts
@@ -474,7 +474,19 @@ declare const vpc: ec2.Vpc;
 new rds.DatabaseInstance(this, 'Instance', {
   engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
   vpc,
-  caCertificateIdentifier: rds.CertificateIdentifier.RDS_CA_RSA2048_G1,
+  caCertificate: rds.CaCertificate.rdsCaRsa2048G1(),
+});
+```
+
+You can specify a custom CA certificate with:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+new rds.DatabaseInstance(this, 'Instance', {
+  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+  vpc,
+  caCertificate: rds.CaCertificate('future-rds-ca'),
 });
 ```
 

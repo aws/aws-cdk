@@ -348,28 +348,34 @@ export enum NetworkType {
 }
 
 /**
- * The CA identifier of the DB instance
+ * The CA certificate used for this DB instance.
  */
-export enum CertificateIdentifier {
+export class CaCertificate {
   /**
    * rds-ca-2019 certificate authority
    */
-  RDS_CA_2019 = 'rds-ca-2019',
+  static rdsCa2019() { return new CaCertificate('rds-ca-2019'); }
 
   /**
    * rds-ca-ecc384-g1 certificate authority
    */
-  RDS_CA_ECC384_G1 = 'rds-ca-ecc384-g1',
-
-  /**
-   * rds-ca-rsa4096-g1 certificate authority
-   */
-  RDS_CA_RSA4096_G1 = 'rds-ca-rsa4096-g1',
+  static rdsCaEcc384G1() { return new CaCertificate('rds-ca-ecc384-g1'); }
 
   /**
    * rds-ca-rsa2048-g1 certificate authority
    */
-  RDS_CA_RSA2048_G1 = 'rds-ca-rsa2048-g1',
+  static rdsCaRsa2048G1() { return new CaCertificate('rds-ca-rsa2048-g1'); }
+
+  /**
+   * rds-ca-rsa4096-g1 certificate authority
+   */
+  static rdsCaRsa4096G1() { return new CaCertificate('rds-ca-rsa4096-g1'); }
+
+  public readonly identifier: string;
+
+  public constructor(identifier: string) {
+    this.identifier = identifier;
+  }
 }
 
 /**
@@ -751,7 +757,7 @@ export interface DatabaseInstanceNewProps {
    *
    * @default - rds-ca-2019
    */
-  readonly caCertificateIdentifier?: CertificateIdentifier;
+  readonly caCertificate?: CaCertificate;
 }
 
 /**
@@ -904,7 +910,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       domain: this.domainId,
       domainIamRoleName: this.domainRole?.roleName,
       networkType: props.networkType,
-      caCertificateIdentifier: props.caCertificateIdentifier,
+      caCertificateIdentifier: props.caCertificate ? props.caCertificate.identifier : CaCertificate.rdsCa2019().identifier,
     };
   }
 
