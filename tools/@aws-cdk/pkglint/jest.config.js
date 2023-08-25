@@ -1,17 +1,26 @@
+// Cannot depend on cdk-build-tools, cdk-build-tools depends on this
 module.exports = {
-        collectCoverage: true,
+    moduleFileExtensions: [
+        "js",
+    ],
+    testMatch: [
+        "**/?(*.)+(test).js",
+    ],
+    testEnvironment: "node",
+    coverageThreshold: {
+        global: {
+            branches: 10,
+            statements: 10,
+        },
+    },
+    collectCoverage: true,
     coverageReporters: [
         "lcov",
         "html",
         "text-summary",
-        ['text', { file: 'coverage/coverage.txt' }]
     ],
     coveragePathIgnorePatterns: [
         "<rootDir>/lib/.*\\.generated\\.[jt]s",
         "<rootDir>/test/.*\\.[jt]s",
     ],
-
-  testMatch: [
-    "**/?(*.)+(test).js",
-  ],
 };
