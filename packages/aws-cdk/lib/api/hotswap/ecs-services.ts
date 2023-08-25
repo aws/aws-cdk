@@ -132,8 +132,9 @@ export async function isHotswappableEcsServiceChange(
             },
           },
         } as const;
+        const excludeFromTransformLowercased = transformObjectKeys(excludeFromTransform, lowerCaseFirstCharacter);
         // We first uppercase the task definition to properly merge it with the one from CloudFormation template.
-        const upperCasedTaskDef = transformObjectKeys(target.taskDefinition, upperCaseFirstCharacter, excludeFromTransform);
+        const upperCasedTaskDef = transformObjectKeys(target.taskDefinition, upperCaseFirstCharacter, excludeFromTransformLowercased);
         // merge evaluatable diff from CloudFormation template.
         const updatedTaskDef = applyPropertyUpdates(changes.updates, upperCasedTaskDef);
         // lowercase the merged task definition to use it in AWS SDK.

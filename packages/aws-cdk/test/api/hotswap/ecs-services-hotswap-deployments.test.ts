@@ -812,13 +812,22 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test('should call registerTaskDefinition with certain properties not lowercased', async () => {
+  test('should call registerTaskDefinition with certain properties not lowercased nor uppercased', async () => {
     // GIVEN
     setupCurrentTaskDefinition({
       taskDefinitionProperties: {
         Family: 'my-task-def',
         ContainerDefinitions: [
-          { Image: 'image1' },
+          {
+            Image: 'image1',
+            DockerLabels: { Label1: 'label1' },
+            FirelensConfiguration: {
+              Options: { Name: 'cloudwatch' },
+            },
+            LogConfiguration: {
+              Options: { Option1: 'option1', option2: 'option2' },
+            },
+          },
         ],
         Volumes: [
           {
@@ -846,7 +855,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
                     Options: { Name: 'cloudwatch' },
                   },
                   LogConfiguration: {
-                    Options: { Option1: 'option1' },
+                    Options: { Option1: 'option1', option2: 'option2' },
                   },
                 },
               ],
@@ -887,7 +896,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
             },
           },
           logConfiguration: {
-            options: { Option1: 'option1' },
+            options: { Option1: 'option1', option2: 'option2' },
           },
         },
       ],
