@@ -137,7 +137,7 @@ describe(AppStagingSynthesizer, () => {
 
     // THEN - we have a fixed asset location
     expect(evalCFN(location.bucketName)).toEqual(`cdk-${APP_ID}-staging-000000000000-us-east-1`);
-    expect(evalCFN(location.httpUrl)).toEqual(`https://s3.us-east-1.domain.aws/cdk-${APP_ID}-staging-000000000000-us-east-1/abcdef.js`);
+    expect(evalCFN(location.httpUrl)).toEqual(`https://s3.us-east-1.domain.aws/cdk-${APP_ID}-staging-000000000000-us-east-1/abcdef.ts`);
 
     // THEN - object key contains source hash somewhere
     expect(location.objectKey.indexOf('abcdef')).toBeGreaterThan(-1);
@@ -187,7 +187,7 @@ describe(AppStagingSynthesizer, () => {
       });
 
       // THEN - asset has deploy time prefix
-      expect(evalCFN(location.objectKey)).toEqual(`${DEPLOY_TIME_PREFIX}abcdef.js`);
+      expect(evalCFN(location.objectKey)).toEqual(`${DEPLOY_TIME_PREFIX}abcdef.ts`);
     });
 
     test('lambda assets are by default deploy time assets', () => {

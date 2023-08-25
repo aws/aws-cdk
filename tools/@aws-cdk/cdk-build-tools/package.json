@@ -3,7 +3,6 @@
   "private": true,
   "version": "0.0.0",
   "description": "Tools package with shared build scripts for CDK packages",
-  "main": "lib/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
@@ -40,8 +39,10 @@
     "@types/fs-extra": "^9.0.13",
     "@types/jest": "^29.5.4",
     "@types/semver": "^7.5.0",
-    "@types/yargs": "^15.0.15"
+    "@types/yargs": "^15.0.15",
+    "jest-resolve": "^29.6.3"
   },
+  "main": "lib/index.js",
   "dependencies": {
     "@aws-cdk/eslint-plugin": "0.0.0",
     "@aws-cdk/yarn-cling": "0.0.0",
