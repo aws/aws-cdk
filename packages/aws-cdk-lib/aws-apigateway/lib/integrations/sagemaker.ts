@@ -14,9 +14,9 @@ export interface SagemakerIntegrationOptions extends IntegrationOptions {
  *
  * @example
  *
- *    declare const resource: apiagateway.Resource;
- *    declare const endpoint: sagemaker.IEndpoint;
- *    resource.addMethod("POST", new apigateway.SagemakerIntegration(endpoint));
+ *   declare const resource: apigateway.Resource;
+ *   declare const endpoint: sagemaker.IEndpoint;
+ *   resource.addMethod('POST', new apigateway.SagemakerIntegration(endpoint));
  *
  */
 export class SagemakerIntegration extends AwsIntegration {
