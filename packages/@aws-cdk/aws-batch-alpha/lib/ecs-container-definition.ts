@@ -667,6 +667,10 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
       logConfiguration: this.logDriverConfig,
       readonlyRootFilesystem: this.readonlyRootFilesystem,
       resourceRequirements: this._renderResourceRequirements(),
+      runtimePlatform: {
+        cpuArchitecture: this.runtimePlatform?.cpuArchitecture?.toString(),
+        operatingSystemFamily: this.runtimePlatform?.operatingSystemFamily?.toString(),
+      },
       secrets: this.secrets ? Object.entries(this.secrets).map(([name, secret]) => {
         secret.grantRead(this.executionRole);
 
