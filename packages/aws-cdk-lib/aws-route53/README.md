@@ -289,7 +289,7 @@ const zoneFromAttributes = route53.PublicHostedZone.fromPublicHostedZoneAttribut
 const zoneFromId = route53.PublicHostedZone.fromPublicHostedZoneId(this, 'MyZone', 'ZOJJZC49E0EPZ');
 ```
 
-You can use `CrossAccountZoneDelegationRecord` on imported Public Hosted Zones with the `grantDelegation` method:
+You can use `CrossAccountZoneDelegationRecord` on imported Hosted Zones with the `grantDelegation` method:
 
 ```ts
 const crossAccountRole = new iam.Role(this, 'CrossAccountRole', {
@@ -299,8 +299,14 @@ const crossAccountRole = new iam.Role(this, 'CrossAccountRole', {
   assumedBy: new iam.AccountPrincipal('12345678901'),
 });
 
-const zoneFromId = route53.PublicHostedZone.fromPublicHostedZoneId(this, 'MyZone', 'ZOJJZC49E0EPZ');
+const zoneFromId = route53.HostedZone.fromHostedZoneId(this, 'MyZone', 'zone-id');
 zoneFromId.grantDelegation(crossAccountRole);
+
+const publicZoneFromId = route53.PublicHostedZone.fromPublicHostedZoneId(this, 'MyPublicZone', 'public-zone-id');
+publicZoneFromId.grantDelegation(crossAccountRole);
+
+const privateZoneFromId = route53.PrivateHostedZone.fromPrivateHostedZoneId(this, 'MyPrivateZone', 'private-zone-id');
+privateZoneFromId.grantDelegation(crossAccountRole);
 ```
 
 ## VPC Endpoint Service Private DNS
