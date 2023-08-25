@@ -395,6 +395,26 @@
    "Type": "AWS::EFS::FileSystem",
    "Properties": {
     "Encrypted": true,
+    "FileSystemPolicy": {
+     "Statement": [
+      {
+       "Action": [
+        "elasticfilesystem:ClientRootAccess",
+        "elasticfilesystem:ClientWrite"
+       ],
+       "Condition": {
+        "Bool": {
+         "elasticfilesystem:AccessedViaMountTarget": "true"
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": "*"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
     "FileSystemTags": [
      {
       "Key": "Name",
@@ -427,7 +447,7 @@
     }
    }
   },
-  "myFileSystemEfsMountTarget154A20479": {
+  "myFileSystemEfsMountTargetPrivateSubnet1752908A7": {
    "Type": "AWS::EFS::MountTarget",
    "Properties": {
     "FileSystemId": {
@@ -446,7 +466,7 @@
     }
    }
   },
-  "myFileSystemEfsMountTarget2E187D733": {
+  "myFileSystemEfsMountTargetPrivateSubnet245A93748": {
    "Type": "AWS::EFS::MountTarget",
    "Properties": {
     "FileSystemId": {

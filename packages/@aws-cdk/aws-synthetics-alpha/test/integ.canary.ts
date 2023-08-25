@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
-import { Canary, Code, Runtime, Schedule, Test } from '../lib';
+import { Canary, Cleanup, Code, Runtime, Schedule, Test } from '../lib';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { RemovalPolicy } from 'aws-cdk-lib';
 
@@ -41,6 +41,7 @@ const inlineAsset = new Canary(stack, 'InlineAsset', {
   schedule: Schedule.rate(cdk.Duration.minutes(1)),
   artifactsBucketLocation: { bucket, prefix },
   runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_4_0,
+  cleanup: Cleanup.LAMBDA,
 });
 
 const directoryAsset = new Canary(stack, 'DirectoryAsset', {
@@ -52,7 +53,19 @@ const directoryAsset = new Canary(stack, 'DirectoryAsset', {
   environmentVariables: {
     URL: api.url,
   },
-  enableAutoDeleteLambdas: true,
+  cleanup: Cleanup.LAMBDA,
+});
+
+const folderAsset = new Canary(stack, 'FolderAsset', {
+  test: Test.custom({
+    handler: 'folder/canary.functionName',
+    code: Code.fromAsset(path.join(__dirname, 'canaries')),
+  }),
+  runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_4_0,
+  environmentVariables: {
+    URL: api.url,
+  },
+  cleanup: Cleanup.LAMBDA,
 });
 
 const zipAsset = new Canary(stack, 'ZipAsset', {
@@ -66,6 +79,7 @@ const zipAsset = new Canary(stack, 'ZipAsset', {
     },
   ],
   runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_4_0,
+  cleanup: Cleanup.LAMBDA,
 });
 
 const kebabToPascal = (text :string )=> text.replace(/(^\w|-\w)/g, (v) => v.replace(/-/, '').toUpperCase());
@@ -79,6 +93,7 @@ const createCanaryByRuntimes = (runtime: Runtime) =>
       URL: api.url,
     },
     runtime,
+    cleanup: Cleanup.LAMBDA,
   });
 
 const puppeteer39 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9);
@@ -93,6 +108,7 @@ const test = new IntegTest(app, 'IntegCanaryTest', {
 [
   inlineAsset,
   directoryAsset,
+  folderAsset,
   zipAsset,
   puppeteer39,
   puppeteer40,

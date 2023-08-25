@@ -5,12 +5,14 @@
         "^build"
       ],
       "inputs": [
+        "{projectRoot}/**/bin/!(*.d|*.generated).ts",
         "{projectRoot}/**/lib/!(*.d|*.generated).ts",
         "{projectRoot}/**/test/!(*.d).ts",
         "!{workspaceRoot}/**/tsconfig.json",
         "!{workspaceRoot}/**/tsconfig.json",
         "!{workspaceRoot}/tsconfig.base.json",
-        "!{workspaceRoot}/**/tsconfig.tsbuildinfo"
+        "!{workspaceRoot}/**/tsconfig.tsbuildinfo",
+        "!{workspaceRoot}/**/jest.config.js"
       ],
       "outputs": [
         "{projectRoot}/**/*.integ.*.js.snapshot/*",
@@ -33,6 +35,9 @@
     "test": {
       "dependsOn": [
         "build"
+      ],
+      "inputs": [
+        "{projectRoot}/**/test/!(*.d|*.generated).ts"
       ]
     }
   },

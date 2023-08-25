@@ -24,7 +24,7 @@ describe('annotations', () => {
     expect(getWarnings(app.synth())).toEqual([
       {
         path: '/MyStack/Hello',
-        message: 'The API @aws-cdk/core.Construct.node is deprecated: use @aws-Construct.construct instead. This API will be removed in the next major release',
+        message: 'The API @aws-cdk/core.Construct.node is deprecated: use @aws-Construct.construct instead. This API will be removed in the next major release [ack: Deprecated:@aws-cdk/core.Construct.node]',
       },
     ]);
   });
@@ -51,15 +51,15 @@ describe('annotations', () => {
     expect(getWarnings(app.synth())).toEqual([
       {
         path: '/MyStack1/Hello',
-        message: 'The API @aws-cdk/core.Construct.node is deprecated: use @aws-Construct.construct instead. This API will be removed in the next major release',
+        message: 'The API @aws-cdk/core.Construct.node is deprecated: use @aws-Construct.construct instead. This API will be removed in the next major release [ack: Deprecated:@aws-cdk/core.Construct.node]',
       },
       {
         path: '/MyStack1/World',
-        message: 'The API @aws-cdk/core.Construct.node is deprecated: use @aws-Construct.construct instead. This API will be removed in the next major release',
+        message: 'The API @aws-cdk/core.Construct.node is deprecated: use @aws-Construct.construct instead. This API will be removed in the next major release [ack: Deprecated:@aws-cdk/core.Construct.node]',
       },
       {
         path: '/MyStack2/FooBar',
-        message: 'The API @aws-cdk/core.Construct.node is deprecated: use @aws-Construct.construct instead. This API will be removed in the next major release',
+        message: 'The API @aws-cdk/core.Construct.node is deprecated: use @aws-Construct.construct instead. This API will be removed in the next major release [ack: Deprecated:@aws-cdk/core.Construct.node]',
       },
     ]);
   });
@@ -79,18 +79,54 @@ describe('annotations', () => {
     const app = new App();
     const stack = new Stack(app, 'S1');
     const c1 = new Construct(stack, 'C1');
-    Annotations.of(c1).addWarning('You should know this!');
-    Annotations.of(c1).addWarning('You should know this!');
-    Annotations.of(c1).addWarning('You should know this!');
-    Annotations.of(c1).addWarning('You should know this, too!');
-    expect(getWarnings(app.synth())).toEqual([{
-      path: '/S1/C1',
-      message: 'You should know this!',
-    },
-    {
-      path: '/S1/C1',
-      message: 'You should know this, too!',
-    }],
-    );
+    Annotations.of(c1).addWarningV2('warning1', 'You should know this!');
+    Annotations.of(c1).addWarningV2('warning1', 'You should know this!');
+    Annotations.of(c1).addWarningV2('warning1', 'You should know this!');
+    Annotations.of(c1).addWarningV2('warning2', 'You should know this, too!');
+    expect(getWarnings(app.synth())).toEqual([
+      {
+        path: '/S1/C1',
+        message: 'You should know this! [ack: warning1]',
+      },
+      {
+        path: '/S1/C1',
+        message: 'You should know this, too! [ack: warning2]',
+      },
+    ]);
+  });
+
+  test('acknowledgeWarning removes warning', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'S1');
+    const c1 = new Construct(stack, 'C1');
+
+    // WHEN
+    Annotations.of(c1).addWarningV2('MESSAGE1', 'You should know this!');
+    Annotations.of(c1).addWarningV2('MESSAGE2', 'You Should know this too!');
+    Annotations.of(c1).acknowledgeWarning('MESSAGE2', 'I Ack this');
+
+    // THEN
+    expect(getWarnings(app.synth())).toEqual([
+      {
+        path: '/S1/C1',
+        message: 'You should know this! [ack: MESSAGE1]',
+      },
+    ]);
+  });
+
+  test('acknowledgeWarning removes warning on children', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'S1');
+    const c1 = new Construct(stack, 'C1');
+    const c2 = new Construct(c1, 'C2');
+
+    // WHEN
+    Annotations.of(c2).addWarningV2('MESSAGE2', 'You Should know this too!');
+    Annotations.of(c1).acknowledgeWarning('MESSAGE2', 'I Ack this');
+
+    // THEN
+    expect(getWarnings(app.synth())).toEqual([]);
   });
 });

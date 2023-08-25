@@ -289,6 +289,26 @@ const zoneFromAttributes = route53.PublicHostedZone.fromPublicHostedZoneAttribut
 const zoneFromId = route53.PublicHostedZone.fromPublicHostedZoneId(this, 'MyZone', 'ZOJJZC49E0EPZ');
 ```
 
+You can use `CrossAccountZoneDelegationRecord` on imported Hosted Zones with the `grantDelegation` method:
+
+```ts
+const crossAccountRole = new iam.Role(this, 'CrossAccountRole', {
+  // The role name must be predictable
+  roleName: 'MyDelegationRole',
+  // The other account
+  assumedBy: new iam.AccountPrincipal('12345678901'),
+});
+
+const zoneFromId = route53.HostedZone.fromHostedZoneId(this, 'MyZone', 'zone-id');
+zoneFromId.grantDelegation(crossAccountRole);
+
+const publicZoneFromId = route53.PublicHostedZone.fromPublicHostedZoneId(this, 'MyPublicZone', 'public-zone-id');
+publicZoneFromId.grantDelegation(crossAccountRole);
+
+const privateZoneFromId = route53.PrivateHostedZone.fromPrivateHostedZoneId(this, 'MyPrivateZone', 'private-zone-id');
+privateZoneFromId.grantDelegation(crossAccountRole);
+```
+
 ## VPC Endpoint Service Private DNS
 
 When you create a VPC endpoint service, AWS generates endpoint-specific DNS hostnames that consumers use to communicate with the service.

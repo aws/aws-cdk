@@ -1,5 +1,6 @@
 import * as os from 'os';
 import * as path from 'path';
+import { IConstruct } from 'constructs';
 import { PackageInstallation } from './package-installation';
 import { LockFile, PackageManager } from './package-manager';
 import { BundlingOptions, OutputFormat, SourceMapMode } from './types';
@@ -26,7 +27,7 @@ export interface BundlingProps extends BundlingOptions {
   /**
    * The runtime of the lambda function
    */
-  readonly runtime?: Runtime;
+  readonly runtime: Runtime;
 
   /**
    * The system architecture of the lambda function
@@ -57,11 +58,11 @@ export class Bundling implements cdk.BundlingOptions {
   /**
    * esbuild bundled Lambda asset code
    */
-  public static bundle(options: BundlingProps): AssetCode {
+  public static bundle(scope: IConstruct, options: BundlingProps): AssetCode {
     return Code.fromAsset(options.projectRoot, {
       assetHash: options.assetHash,
       assetHashType: options.assetHash ? cdk.AssetHashType.CUSTOM : cdk.AssetHashType.OUTPUT,
-      bundling: new Bundling(options),
+      bundling: new Bundling(scope, options),
     });
   }
 
@@ -97,7 +98,7 @@ export class Bundling implements cdk.BundlingOptions {
   private readonly externals: string[];
   private readonly packageManager: PackageManager;
 
-  constructor(private readonly props: BundlingProps) {
+  constructor(scope: IConstruct, private readonly props: BundlingProps) {
     this.packageManager = PackageManager.fromLockFile(props.depsLockFilePath, props.logLevel);
 
     Bundling.esbuildInstallation = Bundling.esbuildInstallation ?? PackageInstallation.detect('esbuild');
@@ -124,8 +125,31 @@ export class Bundling implements cdk.BundlingOptions {
       throw new Error(`ECMAScript module output format is not supported by the ${props.runtime.name} runtime`);
     }
 
+    // Modules to externalize when using a constant known version of the runtime.
+    // Mark aws-sdk as external by default (available in the runtime)
+    const isV2Runtime = isSdkV2Runtime(props.runtime);
+    const versionedExternals = isV2Runtime ? ['aws-sdk'] : ['@aws-sdk/*'];
+    // Don't automatically externalize any dependencies when using a `latest` runtime which may
+    // update versions in the future.
+    const defaultExternals = props.runtime?.isVariable ? [] : versionedExternals;
+    const externals = props.externalModules ?? defaultExternals;
+
+    // Warn users if they are trying to rely on global versions of the SDK that aren't available in
+    // their environment.
+    if (isV2Runtime && externals.some((pkgName) => pkgName.startsWith('@aws-sdk/'))) {
+      cdk.Annotations.of(scope).addWarningV2('@aws-cdk/aws-lambda-nodejs:sdkV3NotInRuntime', 'If you are relying on AWS SDK v3 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 18 or higher.');
+    } else if (externals.includes('aws-sdk')) {
+      cdk.Annotations.of(scope).addWarningV2('@aws-cdk/aws-lambda-nodejs:sdkV2NotInRuntime', 'If you are relying on AWS SDK v2 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 16 or lower.');
+    }
+
+    // Warn users if they are using a runtime that may change and are excluding any dependencies from
+    // bundling.
+    if (externals.length && props.runtime?.isVariable) {
+      cdk.Annotations.of(scope).addWarningV2('@aws-cdk/aws-lambda-nodejs:variableRuntimeExternals', 'When using NODEJS_LATEST the runtime version may change as new runtimes are released, this may affect the availability of packages shipped with the environment. Ensure that any external dependencies are available through layers or specify a specific runtime version.');
+    }
+
     this.externals = [
-      ...props.externalModules ?? (isSdkV2Runtime(props.runtime) ? ['aws-sdk'] : ['@aws-sdk/*']), // Mark aws-sdk as external by default (available in the runtime)
+      ...externals,
       ...props.nodeModules ?? [], // Mark the modules that we are going to install as externals also
     ];
 

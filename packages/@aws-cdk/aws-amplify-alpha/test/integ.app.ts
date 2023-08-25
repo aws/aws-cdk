@@ -25,6 +25,7 @@ class TestStack extends Stack {
           },
         },
       ],
+      platform: amplify.Platform.WEB_COMPUTE,
     });
 
     amplifyApp.addCustomRule({

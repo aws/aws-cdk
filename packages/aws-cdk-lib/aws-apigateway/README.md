@@ -257,9 +257,10 @@ method is called. API Gateway supports the following integrations:
 
 - `MockIntegration` - can be used to test APIs. This is the default
    integration if one is not specified.
-- `LambdaIntegration` - can be used to invoke an AWS Lambda function.
 - `AwsIntegration` - can be used to invoke arbitrary AWS service APIs.
 - `HttpIntegration` - can be used to invoke HTTP endpoints.
+- `LambdaIntegration` - can be used to invoke an AWS Lambda function.
+- `SagemakerIntegration` - can be used to invoke Sagemaker Endpoints.
 
 The following example shows how to integrate the `GET /book/{book_id}` method to
 an AWS Lambda function:
@@ -964,6 +965,19 @@ so if you create multiple `RestApi`s with `cloudWatchRole=true` each new `RestAp
 will overwrite the `CfnAccount`. It is recommended to set `cloudWatchRole=false`
 (the default behavior if `@aws-cdk/aws-apigateway:disableCloudWatchRole` is enabled)
 and only create a single CloudWatch role and account per environment.
+
+You can specify the CloudWatch Role and Account sub-resources removal policy with the
+`cloudWatchRoleRemovalPolicy` property, which defaults to `RemovalPolicy.RETAIN`.
+This option requires `cloudWatchRole` to be enabled.
+
+```ts
+import * as cdk from 'aws-cdk-lib/core';
+
+const api = new apigateway.RestApi(this, 'books', {
+  cloudWatchRole: true,
+  cloudWatchRoleRemovalPolicy: cdk.RemovalPolicy.DESTROY,
+});
+```
 
 ### Deep dive: Invalidation of deployments
 

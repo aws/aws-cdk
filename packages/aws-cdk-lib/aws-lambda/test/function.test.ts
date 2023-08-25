@@ -2979,6 +2979,114 @@ describe('function', () => {
     });
   });
 
+  describe('SnapStart', () => {
+    test('set SnapStart to desired value', () => {
+      const stack = new cdk.Stack();
+      new lambda.CfnFunction(stack, 'MyLambda', {
+        code: {
+          zipFile: 'java11-test-function.zip',
+        },
+        functionName: 'MyCDK-SnapStart-Function',
+        handler: 'example.Handler::handleRequest',
+        role: 'testRole',
+        runtime: 'java11',
+        snapStart: { applyOn: 'PublishedVersions' },
+      });
+
+      Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+        Properties:
+        {
+          Code: { ZipFile: 'java11-test-function.zip' },
+          Handler: 'example.Handler::handleRequest',
+          Runtime: 'java11',
+          SnapStart: {
+            ApplyOn: 'PublishedVersions',
+          },
+        },
+      });
+    });
+
+    test('function using SnapStart', () => {
+      const stack = new cdk.Stack();
+      //WHEN
+      new lambda.Function(stack, 'MyLambda', {
+        code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+        handler: 'example.Handler::handleRequest',
+        runtime: lambda.Runtime.JAVA_11,
+        snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
+      });
+
+      //THEN
+      Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+        Properties:
+            {
+              Handler: 'example.Handler::handleRequest',
+              Runtime: 'java11',
+              SnapStart: {
+                ApplyOn: 'PublishedVersions',
+              },
+            },
+      });
+    });
+
+    test('runtime validation for snapStart', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'bar',
+        runtime: lambda.Runtime.NODEJS_14_X,
+        snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
+      })).toThrowError('SnapStart currently not supported by runtime nodejs14.x');
+    });
+
+    test('arm64 validation for snapStart', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => new lambda.Function(stack, 'MyLambda', {
+        code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+        handler: 'example.Handler::handleRequest',
+        runtime: lambda.Runtime.JAVA_11,
+        architecture: lambda.Architecture.ARM_64,
+        snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
+      })).toThrowError('SnapStart is currently not supported on Arm_64');
+    });
+
+    test('EFS validation for snapStart', () => {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc', {
+        maxAzs: 3,
+        natGateways: 1,
+      });
+
+      const fs = new efs.FileSystem(stack, 'Efs', {
+        vpc,
+      });
+      const accessPoint = fs.addAccessPoint('AccessPoint');
+
+      expect(() => new lambda.Function(stack, 'MyLambda', {
+        vpc,
+        code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+        handler: 'example.Handler::handleRequest',
+        runtime: lambda.Runtime.JAVA_11,
+        filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
+        snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
+      })).toThrowError('SnapStart is currently not supported using EFS');
+    });
+
+    test('arm64 validation for snapStart', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => new lambda.Function(stack, 'MyLambda', {
+        code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+        handler: 'example.Handler::handleRequest',
+        runtime: lambda.Runtime.JAVA_11,
+        ephemeralStorageSize: Size.mebibytes(1024),
+        snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
+      })).toThrowError('SnapStart is currently not supported using more than 512 MiB Ephemeral Storage');
+    });
+  });
+
   test('called twice for the same service principal but with different conditions', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -3061,14 +3169,14 @@ describe('function', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_14_X,
       adotInstrumentation: {
-        layerVersion: lambda.AdotLayerVersion.fromJavaSdkLayerVersion(AdotLambdaLayerJavaSdkVersion.V1_19_0),
+        layerVersion: lambda.AdotLayerVersion.fromJavaSdkLayerVersion(AdotLambdaLayerJavaSdkVersion.V1_28_1),
         execWrapper: lambda.AdotLambdaExecWrapper.REGULAR_HANDLER,
       },
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-19-0:1'],
+      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-28-1:1'],
       Environment: {
         Variables: {
           AWS_LAMBDA_EXEC_WRAPPER: '/opt/otel-handler',
@@ -3090,14 +3198,14 @@ describe('function', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.PYTHON_3_9,
       adotInstrumentation: {
-        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_13_0),
+        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_19_0_1),
         execWrapper: lambda.AdotLambdaExecWrapper.INSTRUMENT_HANDLER,
       },
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-python-amd64-ver-1-13-0:1'],
+      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-python-amd64-ver-1-19-0:2'],
       Environment: {
         Variables: {
           AWS_LAMBDA_EXEC_WRAPPER: '/opt/otel-instrument',
@@ -3114,7 +3222,7 @@ describe('function', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.PYTHON_3_10,
       adotInstrumentation: {
-        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_13_0),
+        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_19_0_1),
         execWrapper: lambda.AdotLambdaExecWrapper.REGULAR_HANDLER,
       },
     })).toThrow(/Python Adot Lambda layer requires AdotLambdaExecWrapper.INSTRUMENT_HANDLER/);
@@ -3133,7 +3241,7 @@ describe('function', () => {
         new lambda.DockerImageFunction(stack, 'MyLambda', {
           code: lambda.DockerImageCode.fromImageAsset(dockerLambdaHandlerPath),
           adotInstrumentation: {
-            layerVersion: lambda.AdotLayerVersion.fromJavaSdkLayerVersion(AdotLambdaLayerJavaSdkVersion.V1_19_0),
+            layerVersion: lambda.AdotLayerVersion.fromJavaSdkLayerVersion(AdotLambdaLayerJavaSdkVersion.V1_28_1),
             execWrapper: lambda.AdotLambdaExecWrapper.REGULAR_HANDLER,
           },
         }),
@@ -3220,29 +3328,192 @@ test('function using a reserved environment variable', () => {
   })).toThrow(/AWS_REGION environment variable is reserved/);
 });
 
-test('set SnapStart to desired value', () => {
-  const stack = new cdk.Stack();
-  new lambda.CfnFunction(stack, 'MyLambda', {
-    code: {
-      zipFile: 'java11-test-function.zip',
+test('test 2.87.0 version hash stability', () => {
+  // GIVEN
+  const app = new cdk.App({
+    context: {
+      '@aws-cdk/aws-lambda:recognizeLayerVersion': true,
     },
-    functionName: 'MyCDK-SnapStart-Function',
-    handler: 'example.Handler::handleRequest',
-    role: 'testRole',
-    runtime: 'java11',
-    snapStart: { applyOn: 'PublishedVersions' },
+  });
+  const stack = new cdk.Stack(app, 'Stack');
+
+  // WHEN
+  const layer = new lambda.LayerVersion(stack, 'MyLayer', {
+    code: lambda.Code.fromAsset(path.join(__dirname, 'x.zip')),
+    compatibleRuntimes: [
+      lambda.Runtime.NODEJS_18_X,
+    ],
   });
 
-  Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
-    Properties:
-    {
-      Code: { ZipFile: 'java11-test-function.zip' },
-      Handler: 'example.Handler::handleRequest',
-      Runtime: 'java11',
-      SnapStart: {
-        ApplyOn: 'PublishedVersions',
+  const role = new iam.Role(stack, 'MyRole', {
+    assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    managedPolicies: [
+      iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
+      iam.ManagedPolicy.fromAwsManagedPolicyName('AWSXRayDaemonWriteAccess'),
+    ],
+  });
+
+  const lambdaFn = new lambda.Function(stack, 'MyLambda', {
+    runtime: lambda.Runtime.NODEJS_18_X,
+    memorySize: 128,
+    handler: 'index.handler',
+    timeout: cdk.Duration.seconds(30),
+    environment: {
+      VARIABLE_1: 'ONE',
+    },
+    code: lambda.Code.fromAsset(path.join(__dirname, 'x.zip')),
+    role,
+    currentVersionOptions: {
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    },
+    layers: [
+      layer,
+    ],
+  });
+
+  new lambda.Alias(stack, 'MyAlias', {
+    aliasName: 'current',
+    version: lambdaFn.currentVersion,
+  });
+
+  // THEN
+  // Precalculated version hash using 2.87.0 version
+  Template.fromStack(stack).hasResource('AWS::Lambda::Alias', {
+    Properties: {
+      FunctionVersion: {
+        'Fn::GetAtt': [
+          'MyLambdaCurrentVersionE7A382CCd55a48b26bd9a860d8842137f2243c37',
+          'Version',
+        ],
       },
     },
+  });
+});
+
+describe('VPC configuration', () => {
+  test('with both securityGroup and securityGroups', () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', {
+      maxAzs: 3,
+      natGateways: 1,
+    });
+    const securityGroup = new ec2.SecurityGroup(stack, 'LambdaSG', {
+      vpc,
+      allowAllOutbound: false,
+    });
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      securityGroup,
+      securityGroups: [securityGroup],
+    })).toThrow(/Only one of the function props, securityGroup or securityGroups, is allowed/);
+  });
+
+  test('with allowAllOutbound and no VPC', () => {
+    const stack = new cdk.Stack();
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      allowAllOutbound: true,
+    })).toThrow(/Cannot configure 'allowAllOutbound' without configuring a VPC/);
+  });
+
+  test('with allowAllOutbound and no VPC', () => {
+    const stack = new cdk.Stack();
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      allowAllOutbound: true,
+    })).toThrow(/Cannot configure 'allowAllOutbound' without configuring a VPC/);
+  });
+
+  test('with securityGroup and no VPC', () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', {
+      maxAzs: 3,
+      natGateways: 1,
+    });
+    const securityGroup = new ec2.SecurityGroup(stack, 'LambdaSG', {
+      vpc,
+      allowAllOutbound: false,
+    });
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      securityGroup,
+    })).toThrow(/Cannot configure 'securityGroup' without configuring a VPC/);
+  });
+
+  test('with securityGroups and no VPC', () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', {
+      maxAzs: 3,
+      natGateways: 1,
+    });
+    const securityGroup = new ec2.SecurityGroup(stack, 'LambdaSG', {
+      vpc,
+      allowAllOutbound: false,
+    });
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      securityGroups: [securityGroup],
+    })).toThrow(/Cannot configure 'securityGroups' without configuring a VPC/);
+  });
+
+  test('with vpcSubnets and no VPC', () => {
+    const stack = new cdk.Stack();
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+    })).toThrow(/Cannot configure 'vpcSubnets' without configuring a VPC/);
+  });
+
+  test('with securityGroup and allowAllOutbound', () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', {
+      maxAzs: 3,
+      natGateways: 1,
+    });
+    const securityGroup = new ec2.SecurityGroup(stack, 'LambdaSG', {
+      vpc,
+      allowAllOutbound: false,
+    });
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      vpc,
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      securityGroup,
+      allowAllOutbound: false,
+    })).toThrow(/Configure 'allowAllOutbound' directly on the supplied SecurityGroup./);
+  });
+
+  test('with securityGroups and allowAllOutbound', () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', {
+      maxAzs: 3,
+      natGateways: 1,
+    });
+    const securityGroup = new ec2.SecurityGroup(stack, 'LambdaSG', {
+      vpc,
+      allowAllOutbound: false,
+    });
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      vpc,
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      securityGroups: [securityGroup],
+      allowAllOutbound: false,
+    })).toThrow(/Configure 'allowAllOutbound' directly on the supplied SecurityGroups./);
   });
 });
 

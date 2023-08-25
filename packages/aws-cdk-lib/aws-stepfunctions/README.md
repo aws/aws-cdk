@@ -1,9 +1,9 @@
 # AWS Step Functions Construct Library
 
 
-The `@aws-cdk/aws-stepfunctions` package contains constructs for building
+The `aws-cdk-lib/aws-stepfunctions` package contains constructs for building
 serverless workflows using objects. Use this in conjunction with the
-`@aws-cdk/aws-stepfunctions-tasks` package, which contains classes used
+`aws-cdk-lib/aws-stepfunctions-tasks` package, which contains classes used
 to call other AWS services.
 
 Defining a workflow looks like this (for the [Step Functions Job Poller
@@ -59,11 +59,12 @@ const definition = submitJob
 new sfn.StateMachine(this, 'StateMachine', {
   definition,
   timeout: Duration.minutes(5),
+  comment: 'a super cool state machine',
 });
 ```
 
 You can find more sample snippets and learn more about the service integrations
-in the `@aws-cdk/aws-stepfunctions-tasks` package.
+in the `aws-cdk-lib/aws-stepfunctions-tasks` package.
 
 ## State Machine
 
@@ -250,7 +251,7 @@ information, see the States Language spec.
 
 A `Task` represents some work that needs to be done. Do not use the `Task` class directly.
 
-Instead, use one of the classes in the `@aws-cdk/aws-stepfunctions-tasks` module,
+Instead, use one of the classes in the `aws-cdk-lib/aws-stepfunctions-tasks` module,
 which provide a much more ergonomic way to integrate with various AWS services.
 
 ### Pass
@@ -466,8 +467,27 @@ execute the same steps for multiple entries of an array in the state input.
 const map = new sfn.Map(this, 'Map State', {
   maxConcurrency: 1,
   itemsPath: sfn.JsonPath.stringAt('$.inputForMap'),
+  parameters: {
+    item: sfn.JsonPath.stringAt('$$.Map.Item.Value'),
+  },
+  resultPath: '$.mapOutput',
 });
-map.iterator(new sfn.Pass(this, 'Pass State'));
+
+// The Map iterator can contain a IChainable, which can be an individual or multiple steps chained together.
+// Below example is with a Choice and Pass step
+const choice = new sfn.Choice(this, 'Choice');
+const condition1 = sfn.Condition.stringEquals('$.item.status', 'SUCCESS');
+const step1 = new sfn.Pass(this, 'Step1');
+const step2 = new sfn.Pass(this, 'Step2');
+const finish = new sfn.Pass(this, 'Finish');
+
+const definition = choice
+    .when(condition1, step1)
+    .otherwise(step2)
+    .afterwards()
+    .next(finish);
+
+map.iterator(definition);
 ```
 
 ### Custom State
@@ -532,6 +552,7 @@ const chain = sfn.Chain.start(custom)
 const sm = new sfn.StateMachine(this, 'StateMachine', {
   definition: chain,
   timeout: Duration.seconds(30),
+  comment: 'a super cool state machine',
 });
 
 // don't forget permissions. You need to assign them
