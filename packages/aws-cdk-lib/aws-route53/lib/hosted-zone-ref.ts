@@ -1,3 +1,4 @@
+import * as iam from '../../aws-iam';
 import { IResource } from '../../core';
 
 /**
@@ -32,6 +33,11 @@ export interface IHostedZone extends IResource {
    * @attribute
    */
   readonly hostedZoneNameServers?: string[];
+
+  /**
+   * Grant permissions to add delegation records to this zone
+   */
+  grantDelegation(grantee: iam.IGrantable): iam.Grant;
 }
 
 /**
