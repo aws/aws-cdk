@@ -348,6 +348,31 @@ export enum NetworkType {
 }
 
 /**
+ * The CA identifier of the DB instance
+ */
+export enum CertificateIdentifier {
+  /**
+   * rds-ca-2019 certificate authority
+   */
+  RDS_CA_2019 = 'rds-ca-2019',
+
+  /**
+   * rds-ca-ecc384-g1 certificate authority
+   */
+  RDS_CA_ECC384_G1 = 'rds-ca-ecc384-g1',
+
+  /**
+   * rds-ca-rsa4096-g1 certificate authority
+   */
+  RDS_CA_RSA4096_G1 = 'rds-ca-rsa4096-g1',
+
+  /**
+   * rds-ca-rsa2048-g1 certificate authority
+   */
+  RDS_CA_RSA2048_G1 = 'rds-ca-rsa2048-g1',
+}
+
+/**
  * Construction properties for a DatabaseInstanceNew
  */
 export interface DatabaseInstanceNewProps {
@@ -713,6 +738,20 @@ export interface DatabaseInstanceNewProps {
    * @default - IPV4
    */
   readonly networkType?: NetworkType;
+
+  /**
+   * The identifier of the CA certificate for this DB instance.
+   *
+   * Specifying or updating this property triggers a reboot.
+   *
+   * For RDS DB engines:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL-certificate-rotation.html
+   * For Aurora DB engines:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/UsingWithRDS.SSL-certificate-rotation.html
+   *
+   * @default - rds-ca-2019
+   */
+  readonly caCertificateIdentifier?: CertificateIdentifier;
 }
 
 /**
@@ -865,6 +904,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       domain: this.domainId,
       domainIamRoleName: this.domainRole?.roleName,
       networkType: props.networkType,
+      caCertificateIdentifier: props.caCertificateIdentifier,
     };
   }
 
