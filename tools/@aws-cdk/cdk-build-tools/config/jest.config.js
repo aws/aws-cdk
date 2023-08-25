@@ -39,7 +39,7 @@ module.exports = {
     'lcov',
     'html',
     'text-summary',
-    ['text', { file: 'coverage/coverage.txt' }],
+    ['text', { file: 'coverage.txt' }],
   ],
   coveragePathIgnorePatterns: [
     '\\.generated\\.[jt]s$',
