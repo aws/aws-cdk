@@ -10,7 +10,7 @@ import {
 } from './shared';
 import { IStream } from '../../aws-kinesis';
 import { IKey, Key } from '../../aws-kms';
-import { ArnFormat, CfnTag, Lazy, PhysicalName, RemovalPolicy, Stack, Token } from '../../core';
+import { ArnFormat, Lazy, PhysicalName, RemovalPolicy, Stack, Token } from '../../core';
 
 const HASH_KEY_TYPE = 'HASH';
 const RANGE_KEY_TYPE = 'RANGE';
@@ -111,13 +111,6 @@ export interface TableOptionsV2 {
    * @default - no Kinesis Data Stream
    */
   readonly kinesisStream?: IStream;
-
-  /**
-   * Tags to apply.
-   *
-   * @default - no tags
-   */
-  readonly tags?: CfnTag[];
 }
 
 /**
@@ -444,8 +437,6 @@ export class GlobalTable extends GlobalTableBase {
   public constructor(scope: Construct, id: string, props: GlobalTableProps) {
     super(scope, id, { physicalName: props.tableName ?? PhysicalName.GENERATE_IF_NEEDED });
 
-    props.tags && this.validateTags(props.tags);
-
     this.tableOptions = props;
     this.partitionKey = props.partitionKey;
     this.hasSortKey = props.sortKey !== undefined;
@@ -590,7 +581,6 @@ export class GlobalTable extends GlobalTableBase {
       deletionProtectionEnabled: props.deletionProtection ?? this.tableOptions.deletionProtection,
       tableClass: props.tableClass ?? this.tableOptions.tableClass,
       sseSpecification: this.encryption?._renderReplicaSseSpecification(this, props.region),
-      tags: props.tags,
       kinesisStreamSpecification: props.kinesisStream
         ? { streamArn: props.kinesisStream.streamArn }
         : undefined,
@@ -707,7 +697,6 @@ export class GlobalTable extends GlobalTableBase {
     replicaTables.push(this.configureReplicaTable({
       region: this.stack.region,
       kinesisStream: this.tableOptions.kinesisStream,
-      tags: this.tableOptions.tags,
     }));
 
     return replicaTables;
@@ -832,18 +821,6 @@ export class GlobalTable extends GlobalTableBase {
 
     if (this.localSecondaryIndexes.size === MAX_LSI_COUNT) {
       throw new Error(`You may not provide more than ${MAX_LSI_COUNT} local secondary indexes to a Global Table`);
-    }
-  }
-
-  private validateTags(tags: CfnTag[]) {
-    const tagKeys: string[] = [];
-
-    for (const tag of tags) {
-      if (tagKeys.includes(tag.key)) {
-        throw new Error(`Duplicate tag key '${tag.key}' is not permitted`);
-      }
-
-      tagKeys.push(tag.key);
     }
   }
 }
