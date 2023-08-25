@@ -200,7 +200,7 @@ const encryptionMappings = {
 };
 
 // create the bucket to store a table's data depending on the `encryption` and `encryptionKey` properties.
-function createBucket(table: TableBase, props: S3TableProps) {
+function createBucket(table: S3Table, props: S3TableProps) {
   let bucket = props.bucket;
 
   if (bucket && (props.encryption !== undefined && props.encryption !== TableEncryption.CLIENT_SIDE_KMS)) {

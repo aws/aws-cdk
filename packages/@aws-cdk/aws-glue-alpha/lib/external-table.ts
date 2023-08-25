@@ -115,7 +115,7 @@ export class ExternalTable extends TableBase {
   }
 
   /**
-   * Grant read permissions to the table and the underlying data stored in S3 to an IAM principal.
+   * Grant read permissions to the table
    *
    * @param grantee the principal
    */
@@ -126,7 +126,7 @@ export class ExternalTable extends TableBase {
   }
 
   /**
-   * Grant write permissions to the table and the underlying data stored in S3 to an IAM principal.
+   * Grant write permissions to the table
    *
    * @param grantee the principal
    */
@@ -137,7 +137,7 @@ export class ExternalTable extends TableBase {
   }
 
   /**
-   * Grant read and write permissions to the table and the underlying data stored in S3 to an IAM principal.
+   * Grant read and write permissions to the table
    *
    * @param grantee the principal
    */

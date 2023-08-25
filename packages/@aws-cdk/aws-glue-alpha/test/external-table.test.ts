@@ -6,27 +6,51 @@ import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as glue from '../lib';
 
+const externalDataLocation = 'default_db.public.test';
+const readPermissions = [
+  'glue:BatchGetPartition',
+  'glue:GetPartition',
+  'glue:GetPartitions',
+  'glue:GetTable',
+  'glue:GetTables',
+  'glue:GetTableVersion',
+  'glue:GetTableVersions',
+];
+const writePermissions = [
+  'glue:BatchCreatePartition',
+  'glue:BatchDeletePartition',
+  'glue:CreatePartition',
+  'glue:DeletePartition',
+  'glue:UpdatePartition',
+];
+
 test('unpartitioned JSON table', () => {
   const app = new cdk.App();
   const dbStack = new cdk.Stack(app, 'db');
   const database = new glue.Database(dbStack, 'Database');
 
   const tableStack = new cdk.Stack(app, 'table');
-  const table = new glue.S3Table(tableStack, 'Table', {
+  const connection = new glue.Connection(tableStack, 'Connection', {
+    connectionName: 'my_connection',
+    type: glue.ConnectionType.JDBC,
+    properties: {
+      JDBC_CONNECTION_URL: 'jdbc:server://server:443/connection',
+      USERNAME: 'username',
+      PASSWORD: 'password',
+    },
+  });
+  const table = new glue.ExternalTable(tableStack, 'Table', {
     database,
+    connection,
     columns: [{
       name: 'col',
       type: glue.Schema.STRING,
     }],
+    encryption: glue.TableEncryption.S3_MANAGED,
     dataFormat: glue.DataFormat.JSON,
+    externalDataLocation,
   });
   expect(table.encryption).toEqual(glue.TableEncryption.S3_MANAGED);
-
-  Template.fromStack(tableStack).hasResource('AWS::S3::Bucket', {
-    Type: 'AWS::S3::Bucket',
-    DeletionPolicy: 'Retain',
-    UpdateReplacePolicy: 'Retain',
-  });
 
   Template.fromStack(tableStack).hasResourceProperties('AWS::Glue::Table', {
     CatalogId: {
@@ -51,18 +75,7 @@ test('unpartitioned JSON table', () => {
         ],
         Compressed: false,
         InputFormat: 'org.apache.hadoop.mapred.TextInputFormat',
-        Location: {
-          'Fn::Join': [
-            '',
-            [
-              's3://',
-              {
-                Ref: 'TableBucketDA42407C',
-              },
-              '/',
-            ],
-          ],
-        },
+        Location: externalDataLocation,
         OutputFormat: 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat',
         SerdeInfo: {
           SerializationLibrary: 'org.openx.data.jsonserde.JsonSerDe',
@@ -80,7 +93,16 @@ test('partitioned JSON table', () => {
   const database = new glue.Database(dbStack, 'Database');
 
   const tableStack = new cdk.Stack(app, 'table');
-  const table = new glue.S3Table(tableStack, 'Table', {
+  const connection = new glue.Connection(tableStack, 'Connection', {
+    connectionName: 'my_connection',
+    type: glue.ConnectionType.JDBC,
+    properties: {
+      JDBC_CONNECTION_URL: 'jdbc:server://server:443/connection',
+      USERNAME: 'username',
+      PASSWORD: 'password',
+    },
+  });
+  const table = new glue.ExternalTable(tableStack, 'Table', {
     database,
     columns: [{
       name: 'col',
@@ -90,12 +112,13 @@ test('partitioned JSON table', () => {
       name: 'year',
       type: glue.Schema.SMALL_INT,
     }],
+    encryption: glue.TableEncryption.S3_MANAGED,
     dataFormat: glue.DataFormat.JSON,
+    connection,
+    externalDataLocation,
   });
   expect(table.encryption).toEqual(glue.TableEncryption.S3_MANAGED);
   expect(table.encryptionKey).toEqual(undefined);
-  expect(table.bucket).not.toEqual(undefined);
-  expect(table.bucket?.encryptionKey).toEqual(undefined);
 
   Template.fromStack(tableStack).hasResourceProperties('AWS::Glue::Table', {
     CatalogId: {
@@ -126,18 +149,7 @@ test('partitioned JSON table', () => {
         ],
         Compressed: false,
         InputFormat: 'org.apache.hadoop.mapred.TextInputFormat',
-        Location: {
-          'Fn::Join': [
-            '',
-            [
-              's3://',
-              {
-                Ref: 'TableBucketDA42407C',
-              },
-              '/',
-            ],
-          ],
-        },
+        Location: externalDataLocation,
         OutputFormat: 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat',
         SerdeInfo: {
           SerializationLibrary: 'org.openx.data.jsonserde.JsonSerDe',
@@ -153,7 +165,16 @@ test('compressed table', () => {
   const stack = new cdk.Stack();
   const database = new glue.Database(stack, 'Database');
 
-  const table = new glue.S3Table(stack, 'Table', {
+  const connection = new glue.Connection(stack, 'Connection', {
+    connectionName: 'my_connection',
+    type: glue.ConnectionType.JDBC,
+    properties: {
+      JDBC_CONNECTION_URL: 'jdbc:server://server:443/connection',
+      USERNAME: 'username',
+      PASSWORD: 'password',
+    },
+  });
+  const table = new glue.ExternalTable(stack, 'Table', {
     database,
     columns: [{
       name: 'col',
@@ -161,9 +182,10 @@ test('compressed table', () => {
     }],
     compressed: true,
     dataFormat: glue.DataFormat.JSON,
+    connection,
+    externalDataLocation,
   });
   expect(table.encryptionKey).toEqual(undefined);
-  expect(table.bucket?.encryptionKey).toEqual(undefined);
 
   Template.fromStack(stack).hasResourceProperties('AWS::Glue::Table', {
     CatalogId: {
@@ -188,18 +210,7 @@ test('compressed table', () => {
         ],
         Compressed: true,
         InputFormat: 'org.apache.hadoop.mapred.TextInputFormat',
-        Location: {
-          'Fn::Join': [
-            '',
-            [
-              's3://',
-              {
-                Ref: 'TableBucketDA42407C',
-              },
-              '/',
-            ],
-          ],
-        },
+        Location: externalDataLocation,
         OutputFormat: 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat',
         SerdeInfo: {
           SerializationLibrary: 'org.openx.data.jsonserde.JsonSerDe',
@@ -215,9 +226,18 @@ test('table.node.defaultChild', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const database = new glue.Database(stack, 'Database');
+  const connection = new glue.Connection(stack, 'Connection', {
+    connectionName: 'my_connection',
+    type: glue.ConnectionType.JDBC,
+    properties: {
+      JDBC_CONNECTION_URL: 'jdbc:server://server:443/connection',
+      USERNAME: 'username',
+      PASSWORD: 'password',
+    },
+  });
 
   // WHEN
-  const table = new glue.S3Table(stack, 'Table', {
+  const table = new glue.ExternalTable(stack, 'Table', {
     database,
     columns: [{
       name: 'col',
@@ -225,6 +245,8 @@ test('table.node.defaultChild', () => {
     }],
     compressed: true,
     dataFormat: glue.DataFormat.JSON,
+    connection,
+    externalDataLocation,
   });
 
   // THEN
@@ -234,8 +256,17 @@ test('table.node.defaultChild', () => {
 test('encrypted table: SSE-S3', () => {
   const stack = new cdk.Stack();
   const database = new glue.Database(stack, 'Database');
+  const connection = new glue.Connection(stack, 'Connection', {
+    connectionName: 'my_connection',
+    type: glue.ConnectionType.JDBC,
+    properties: {
+      JDBC_CONNECTION_URL: 'jdbc:server://server:443/connection',
+      USERNAME: 'username',
+      PASSWORD: 'password',
+    },
+  });
 
-  const table = new glue.S3Table(stack, 'Table', {
+  const table = new glue.ExternalTable(stack, 'Table', {
     database,
     columns: [{
       name: 'col',
@@ -243,10 +274,11 @@ test('encrypted table: SSE-S3', () => {
     }],
     encryption: glue.TableEncryption.S3_MANAGED,
     dataFormat: glue.DataFormat.JSON,
+    connection,
+    externalDataLocation,
   });
   expect(table.encryption).toEqual(glue.TableEncryption.S3_MANAGED);
   expect(table.encryptionKey).toEqual(undefined);
-  expect(table.bucket?.encryptionKey).toEqual(undefined);
 
   Template.fromStack(stack).hasResourceProperties('AWS::Glue::Table', {
     CatalogId: {
@@ -271,18 +303,7 @@ test('encrypted table: SSE-S3', () => {
         ],
         Compressed: false,
         InputFormat: 'org.apache.hadoop.mapred.TextInputFormat',
-        Location: {
-          'Fn::Join': [
-            '',
-            [
-              's3://',
-              {
-                Ref: 'TableBucketDA42407C',
-              },
-              '/',
-            ],
-          ],
-        },
+        Location: externalDataLocation,
         OutputFormat: 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat',
         SerdeInfo: {
           SerializationLibrary: 'org.openx.data.jsonserde.JsonSerDe',
@@ -292,25 +313,22 @@ test('encrypted table: SSE-S3', () => {
       TableType: 'EXTERNAL_TABLE',
     },
   });
-
-  Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
-    BucketEncryption: {
-      ServerSideEncryptionConfiguration: [
-        {
-          ServerSideEncryptionByDefault: {
-            SSEAlgorithm: 'AES256',
-          },
-        },
-      ],
-    },
-  });
 });
 
 test('encrypted table: SSE-KMS (implicitly created key)', () => {
   const stack = new cdk.Stack();
   const database = new glue.Database(stack, 'Database');
+  const connection = new glue.Connection(stack, 'Connection', {
+    connectionName: 'my_connection',
+    type: glue.ConnectionType.JDBC,
+    properties: {
+      JDBC_CONNECTION_URL: 'jdbc:server://server:443/connection',
+      USERNAME: 'username',
+      PASSWORD: 'password',
+    },
+  });
 
-  const table = new glue.S3Table(stack, 'Table', {
+  const table = new glue.ExternalTable(stack, 'Table', {
     database,
     columns: [{
       name: 'col',
@@ -318,30 +336,13 @@ test('encrypted table: SSE-KMS (implicitly created key)', () => {
     }],
     encryption: glue.TableEncryption.KMS,
     dataFormat: glue.DataFormat.JSON,
+    connection,
+    externalDataLocation,
   });
   expect(table.encryption).toEqual(glue.TableEncryption.KMS);
-  expect(table.encryptionKey).toEqual(table.bucket?.encryptionKey);
 
   Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
     Description: 'Created by Default/Table/Bucket',
-  });
-
-  Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
-    BucketEncryption: {
-      ServerSideEncryptionConfiguration: [
-        {
-          ServerSideEncryptionByDefault: {
-            KMSMasterKeyID: {
-              'Fn::GetAtt': [
-                'TableBucketKey3E9F984A',
-                'Arn',
-              ],
-            },
-            SSEAlgorithm: 'aws:kms',
-          },
-        },
-      ],
-    },
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Glue::Table', {
@@ -367,18 +368,7 @@ test('encrypted table: SSE-KMS (implicitly created key)', () => {
         ],
         Compressed: false,
         InputFormat: 'org.apache.hadoop.mapred.TextInputFormat',
-        Location: {
-          'Fn::Join': [
-            '',
-            [
-              's3://',
-              {
-                Ref: 'TableBucketDA42407C',
-              },
-              '/',
-            ],
-          ],
-        },
+        Location: externalDataLocation,
         OutputFormat: 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat',
         SerdeInfo: {
           SerializationLibrary: 'org.openx.data.jsonserde.JsonSerDe',
@@ -396,8 +386,17 @@ test('encrypted table: SSE-KMS (explicitly created key)', () => {
   const encryptionKey = new kms.Key(stack, 'MyKey', {
     description: 'OurKey',
   });
+  const connection = new glue.Connection(stack, 'Connection', {
+    connectionName: 'my_connection',
+    type: glue.ConnectionType.JDBC,
+    properties: {
+      JDBC_CONNECTION_URL: 'jdbc:server://server:443/connection',
+      USERNAME: 'username',
+      PASSWORD: 'password',
+    },
+  });
 
-  const table = new glue.S3Table(stack, 'Table', {
+  const table = new glue.ExternalTable(stack, 'Table', {
     database,
     columns: [{
       name: 'col',
@@ -406,31 +405,14 @@ test('encrypted table: SSE-KMS (explicitly created key)', () => {
     encryption: glue.TableEncryption.KMS,
     encryptionKey,
     dataFormat: glue.DataFormat.JSON,
+    connection,
+    externalDataLocation,
   });
   expect(table.encryption).toEqual(glue.TableEncryption.KMS);
-  expect(table.encryptionKey).toEqual(table.bucket?.encryptionKey);
   expect(table.encryptionKey).not.toEqual(undefined);
 
   Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
     Description: 'OurKey',
-  });
-
-  Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
-    BucketEncryption: {
-      ServerSideEncryptionConfiguration: [
-        {
-          ServerSideEncryptionByDefault: {
-            KMSMasterKeyID: {
-              'Fn::GetAtt': [
-                'MyKey6AB29FA6',
-                'Arn',
-              ],
-            },
-            SSEAlgorithm: 'aws:kms',
-          },
-        },
-      ],
-    },
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Glue::Table', {
@@ -456,18 +438,7 @@ test('encrypted table: SSE-KMS (explicitly created key)', () => {
         ],
         Compressed: false,
         InputFormat: 'org.apache.hadoop.mapred.TextInputFormat',
-        Location: {
-          'Fn::Join': [
-            '',
-            [
-              's3://',
-              {
-                Ref: 'TableBucketDA42407C',
-              },
-              '/',
-            ],
-          ],
-        },
+        Location: externalDataLocation,
         OutputFormat: 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat',
         SerdeInfo: {
           SerializationLibrary: 'org.openx.data.jsonserde.JsonSerDe',
@@ -482,8 +453,17 @@ test('encrypted table: SSE-KMS (explicitly created key)', () => {
 test('encrypted table: SSE-KMS_MANAGED', () => {
   const stack = new cdk.Stack();
   const database = new glue.Database(stack, 'Database');
+  const connection = new glue.Connection(stack, 'Connection', {
+    connectionName: 'my_connection',
+    type: glue.ConnectionType.JDBC,
+    properties: {
+      JDBC_CONNECTION_URL: 'jdbc:server://server:443/connection',
+      USERNAME: 'username',
+      PASSWORD: 'password',
+    },
+  });
 
-  const table = new glue.S3Table(stack, 'Table', {
+  const table = new glue.ExternalTable(stack, 'Table', {
     database,
     columns: [{
       name: 'col',
@@ -491,22 +471,11 @@ test('encrypted table: SSE-KMS_MANAGED', () => {
     }],
     encryption: glue.TableEncryption.KMS_MANAGED,
     dataFormat: glue.DataFormat.JSON,
+    connection,
+    externalDataLocation,
   });
   expect(table.encryption).toEqual(glue.TableEncryption.KMS_MANAGED);
   expect(table.encryptionKey).toEqual(undefined);
-  expect(table.bucket?.encryptionKey).toEqual(undefined);
-
-  Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
-    BucketEncryption: {
-      ServerSideEncryptionConfiguration: [
-        {
-          ServerSideEncryptionByDefault: {
-            SSEAlgorithm: 'aws:kms',
-          },
-        },
-      ],
-    },
-  });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Glue::Table', {
     CatalogId: {
@@ -531,18 +500,7 @@ test('encrypted table: SSE-KMS_MANAGED', () => {
         ],
         Compressed: false,
         InputFormat: 'org.apache.hadoop.mapred.TextInputFormat',
-        Location: {
-          'Fn::Join': [
-            '',
-            [
-              's3://',
-              {
-                Ref: 'TableBucketDA42407C',
-              },
-              '/',
-            ],
-          ],
-        },
+        Location: externalDataLocation,
         OutputFormat: 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat',
         SerdeInfo: {
           SerializationLibrary: 'org.openx.data.jsonserde.JsonSerDe',
@@ -557,8 +515,17 @@ test('encrypted table: SSE-KMS_MANAGED', () => {
 test('encrypted table: CSE-KMS (implicitly created key)', () => {
   const stack = new cdk.Stack();
   const database = new glue.Database(stack, 'Database');
+  const connection = new glue.Connection(stack, 'Connection', {
+    connectionName: 'my_connection',
+    type: glue.ConnectionType.JDBC,
+    properties: {
+      JDBC_CONNECTION_URL: 'jdbc:server://server:443/connection',
+      USERNAME: 'username',
+      PASSWORD: 'password',
+    },
+  });
 
-  const table = new glue.S3Table(stack, 'Table', {
+  const table = new glue.ExternalTable(stack, 'Table', {
     database,
     columns: [{
       name: 'col',
@@ -566,10 +533,11 @@ test('encrypted table: CSE-KMS (implicitly created key)', () => {
     }],
     encryption: glue.TableEncryption.CLIENT_SIDE_KMS,
     dataFormat: glue.DataFormat.JSON,
+    connection,
+    externalDataLocation,
   });
   expect(table.encryption).toEqual(glue.TableEncryption.CLIENT_SIDE_KMS);
   expect(table.encryptionKey).not.toEqual(undefined);
-  expect(table.bucket?.encryptionKey).toEqual(undefined);
 
   Template.fromStack(stack).resourceCountIs('AWS::KMS::Key', 1);
 
@@ -596,18 +564,7 @@ test('encrypted table: CSE-KMS (implicitly created key)', () => {
         ],
         Compressed: false,
         InputFormat: 'org.apache.hadoop.mapred.TextInputFormat',
-        Location: {
-          'Fn::Join': [
-            '',
-            [
-              's3://',
-              {
-                Ref: 'TableBucketDA42407C',
-              },
-              '/',
-            ],
-          ],
-        },
+        Location: externalDataLocation,
         OutputFormat: 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat',
         SerdeInfo: {
           SerializationLibrary: 'org.openx.data.jsonserde.JsonSerDe',
@@ -625,8 +582,17 @@ test('encrypted table: CSE-KMS (explicitly created key)', () => {
   const encryptionKey = new kms.Key(stack, 'MyKey', {
     description: 'MyKey',
   });
+  const connection = new glue.Connection(stack, 'Connection', {
+    connectionName: 'my_connection',
+    type: glue.ConnectionType.JDBC,
+    properties: {
+      JDBC_CONNECTION_URL: 'jdbc:server://server:443/connection',
+      USERNAME: 'username',
+      PASSWORD: 'password',
+    },
+  });
 
-  const table = new glue.S3Table(stack, 'Table', {
+  const table = new glue.ExternalTable(stack, 'Table', {
     database,
     columns: [{
       name: 'col',
@@ -635,10 +601,11 @@ test('encrypted table: CSE-KMS (explicitly created key)', () => {
     encryption: glue.TableEncryption.CLIENT_SIDE_KMS,
     encryptionKey,
     dataFormat: glue.DataFormat.JSON,
+    connection,
+    externalDataLocation,
   });
   expect(table.encryption).toEqual(glue.TableEncryption.CLIENT_SIDE_KMS);
   expect(table.encryptionKey).not.toEqual(undefined);
-  expect(table.bucket?.encryptionKey).toEqual(undefined);
 
   Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
     Description: 'MyKey',
@@ -667,18 +634,7 @@ test('encrypted table: CSE-KMS (explicitly created key)', () => {
         ],
         Compressed: false,
         InputFormat: 'org.apache.hadoop.mapred.TextInputFormat',
-        Location: {
-          'Fn::Join': [
-            '',
-            [
-              's3://',
-              {
-                Ref: 'TableBucketDA42407C',
-              },
-              '/',
-            ],
-          ],
-        },
+        Location: externalDataLocation,
         OutputFormat: 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat',
         SerdeInfo: {
           SerializationLibrary: 'org.openx.data.jsonserde.JsonSerDe',
@@ -693,25 +649,33 @@ test('encrypted table: CSE-KMS (explicitly created key)', () => {
 test('encrypted table: CSE-KMS (explicitly passed bucket and key)', () => {
   const stack = new cdk.Stack();
   const database = new glue.Database(stack, 'Database');
-  const bucket = new s3.Bucket(stack, 'Bucket');
   const encryptionKey = new kms.Key(stack, 'MyKey', {
     description: 'MyKey',
   });
+  const connection = new glue.Connection(stack, 'Connection', {
+    connectionName: 'my_connection',
+    type: glue.ConnectionType.JDBC,
+    properties: {
+      JDBC_CONNECTION_URL: 'jdbc:server://server:443/connection',
+      USERNAME: 'username',
+      PASSWORD: 'password',
+    },
+  });
 
-  const table = new glue.S3Table(stack, 'Table', {
+  const table = new glue.ExternalTable(stack, 'Table', {
     database,
     columns: [{
       name: 'col',
       type: glue.Schema.STRING,
     }],
-    bucket,
     encryption: glue.TableEncryption.CLIENT_SIDE_KMS,
     encryptionKey,
     dataFormat: glue.DataFormat.JSON,
+    connection,
+    externalDataLocation,
   });
   expect(table.encryption).toEqual(glue.TableEncryption.CLIENT_SIDE_KMS);
   expect(table.encryptionKey).not.toEqual(undefined);
-  expect(table.bucket?.encryptionKey).toEqual(undefined);
 
   Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
     Description: 'MyKey',
@@ -740,18 +704,7 @@ test('encrypted table: CSE-KMS (explicitly passed bucket and key)', () => {
         ],
         Compressed: false,
         InputFormat: 'org.apache.hadoop.mapred.TextInputFormat',
-        Location: {
-          'Fn::Join': [
-            '',
-            [
-              's3://',
-              {
-                Ref: 'Bucket83908E77',
-              },
-              '/',
-            ],
-          ],
-        },
+        Location: externalDataLocation,
         OutputFormat: 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat',
         SerdeInfo: {
           SerializationLibrary: 'org.openx.data.jsonserde.JsonSerDe',
@@ -767,18 +720,26 @@ test('explicit s3 bucket and prefix', () => {
   const app = new cdk.App();
   const dbStack = new cdk.Stack(app, 'db');
   const stack = new cdk.Stack(app, 'app');
-  const bucket = new s3.Bucket(stack, 'ExplicitBucket');
   const database = new glue.Database(dbStack, 'Database');
+  const connection = new glue.Connection(stack, 'Connection', {
+    connectionName: 'my_connection',
+    type: glue.ConnectionType.JDBC,
+    properties: {
+      JDBC_CONNECTION_URL: 'jdbc:server://server:443/connection',
+      USERNAME: 'username',
+      PASSWORD: 'password',
+    },
+  });
 
-  new glue.S3Table(stack, 'Table', {
+  new glue.ExternalTable(stack, 'Table', {
     database,
-    bucket,
-    s3Prefix: 'prefix/',
     columns: [{
       name: 'col',
       type: glue.Schema.STRING,
     }],
     dataFormat: glue.DataFormat.JSON,
+    connection,
+    externalDataLocation,
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Glue::Table', {
@@ -804,18 +765,7 @@ test('explicit s3 bucket and prefix', () => {
         ],
         Compressed: false,
         InputFormat: 'org.apache.hadoop.mapred.TextInputFormat',
-        Location: {
-          'Fn::Join': [
-            '',
-            [
-              's3://',
-              {
-                Ref: 'ExplicitBucket0AA51A3F',
-              },
-              '/prefix/',
-            ],
-          ],
-        },
+        Location: externalDataLocation,
         OutputFormat: 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat',
         SerdeInfo: {
           SerializationLibrary: 'org.openx.data.jsonserde.JsonSerDe',
@@ -831,18 +781,26 @@ test('explicit s3 bucket and with empty prefix', () => {
   const app = new cdk.App();
   const dbStack = new cdk.Stack(app, 'db');
   const stack = new cdk.Stack(app, 'app');
-  const bucket = new s3.Bucket(stack, 'ExplicitBucket');
   const database = new glue.Database(dbStack, 'Database');
+  const connection = new glue.Connection(stack, 'Connection', {
+    connectionName: 'my_connection',
+    type: glue.ConnectionType.JDBC,
+    properties: {
+      JDBC_CONNECTION_URL: 'jdbc:server://server:443/connection',
+      USERNAME: 'username',
+      PASSWORD: 'password',
+    },
+  });
 
-  new glue.S3Table(stack, 'Table', {
+  new glue.ExternalTable(stack, 'Table', {
     database,
-    bucket,
-    s3Prefix: '',
     columns: [{
       name: 'col',
       type: glue.Schema.STRING,
     }],
     dataFormat: glue.DataFormat.JSON,
+    connection,
+    externalDataLocation,
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Glue::Table', {
@@ -868,18 +826,7 @@ test('explicit s3 bucket and with empty prefix', () => {
         ],
         Compressed: false,
         InputFormat: 'org.apache.hadoop.mapred.TextInputFormat',
-        Location: {
-          'Fn::Join': [
-            '',
-            [
-              's3://',
-              {
-                Ref: 'ExplicitBucket0AA51A3F',
-              },
-              '/',
-            ],
-          ],
-        },
+        Location: externalDataLocation,
         OutputFormat: 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat',
         SerdeInfo: {
           SerializationLibrary: 'org.openx.data.jsonserde.JsonSerDe',
@@ -895,14 +842,25 @@ describe('add partition index', () => {
   test('fails if no partition keys', () => {
     const stack = new cdk.Stack();
     const database = new glue.Database(stack, 'Database');
+    const connection = new glue.Connection(stack, 'Connection', {
+      connectionName: 'my_connection',
+      type: glue.ConnectionType.JDBC,
+      properties: {
+        JDBC_CONNECTION_URL: 'jdbc:server://server:443/connection',
+        USERNAME: 'username',
+        PASSWORD: 'password',
+      },
+    });
 
-    const table = new glue.S3Table(stack, 'Table', {
+    const table = new glue.ExternalTable(stack, 'Table', {
       database,
       columns: [{
         name: 'col',
         type: glue.Schema.STRING,
       }],
       dataFormat: glue.DataFormat.JSON,
+      connection,
+      externalDataLocation,
     });
 
     expect(() => table.addPartitionIndex({
@@ -914,8 +872,17 @@ describe('add partition index', () => {
   test('fails if partition index does not match partition keys', () => {
     const stack = new cdk.Stack();
     const database = new glue.Database(stack, 'Database');
+    const connection = new glue.Connection(stack, 'Connection', {
+      connectionName: 'my_connection',
+      type: glue.ConnectionType.JDBC,
+      properties: {
+        JDBC_CONNECTION_URL: 'jdbc:server://server:443/connection',
+        USERNAME: 'username',
+        PASSWORD: 'password',
+      },
+    });
 
-    const table = new glue.S3Table(stack, 'Table', {
+    const table = new glue.ExternalTable(stack, 'Table', {
       database,
       columns: [{
         name: 'col',
@@ -926,6 +893,8 @@ describe('add partition index', () => {
         type: glue.Schema.SMALL_INT,
       }],
       dataFormat: glue.DataFormat.JSON,
+      connection,
+      externalDataLocation,
     });
 
     expect(() => table.addPartitionIndex({
@@ -937,8 +906,17 @@ describe('add partition index', () => {
   test('fails with index name < 1 character', () => {
     const stack = new cdk.Stack();
     const database = new glue.Database(stack, 'Database');
+    const connection = new glue.Connection(stack, 'Connection', {
+      connectionName: 'my_connection',
+      type: glue.ConnectionType.JDBC,
+      properties: {
+        JDBC_CONNECTION_URL: 'jdbc:server://server:443/connection',
+        USERNAME: 'username',
+        PASSWORD: 'password',
+      },
+    });
 
-    const table = new glue.S3Table(stack, 'Table', {
+    const table = new glue.ExternalTable(stack, 'Table', {
       database,
       columns: [{
         name: 'col',
@@ -949,6 +927,8 @@ describe('add partition index', () => {
         type: glue.Schema.SMALL_INT,
       }],
       dataFormat: glue.DataFormat.JSON,
+      connection,
+      externalDataLocation,
     });
 
     expect(() => table.addPartitionIndex({
@@ -960,6 +940,15 @@ describe('add partition index', () => {
   test('fails with > 3 indexes', () => {
     const stack = new cdk.Stack();
     const database = new glue.Database(stack, 'Database');
+    const connection = new glue.Connection(stack, 'Connection', {
+      connectionName: 'my_connection',
+      type: glue.ConnectionType.JDBC,
+      properties: {
+        JDBC_CONNECTION_URL: 'jdbc:server://server:443/connection',
+        USERNAME: 'username',
+        PASSWORD: 'password',
+      },
+    });
 
     const indexes: glue.PartitionIndex[] = [{
       indexName: 'ind1',
@@ -975,7 +964,7 @@ describe('add partition index', () => {
       keyNames: ['part'],
     }];
 
-    expect(() => new glue.S3Table(stack, 'Table', {
+    expect(() => new glue.ExternalTable(stack, 'Table', {
       database,
       columns: [{
         name: 'col',
@@ -987,6 +976,8 @@ describe('add partition index', () => {
       }],
       partitionIndexes: indexes,
       dataFormat: glue.DataFormat.JSON,
+      connection,
+      externalDataLocation,
     })).toThrowError('Maximum number of partition indexes allowed is 3');
   });
 });
@@ -996,8 +987,17 @@ describe('grants', () => {
     const stack = new cdk.Stack();
     const user = new iam.User(stack, 'User');
     const database = new glue.Database(stack, 'Database');
+    const connection = new glue.Connection(stack, 'Connection', {
+      connectionName: 'my_connection',
+      type: glue.ConnectionType.JDBC,
+      properties: {
+        JDBC_CONNECTION_URL: 'jdbc:server://server:443/connection',
+        USERNAME: 'username',
+        PASSWORD: 'password',
+      },
+    });
 
-    const table = new glue.S3Table(stack, 'Table', {
+    const table = new glue.ExternalTable(stack, 'Table', {
       database,
       columns: [{
         name: 'col',
@@ -1005,6 +1005,8 @@ describe('grants', () => {
       }],
       compressed: true,
       dataFormat: glue.DataFormat.JSON,
+      connection,
+      externalDataLocation,
     });
 
     table.grant(user, ['glue:UpdateTable']);
@@ -1055,216 +1057,201 @@ describe('grants', () => {
     });
   });
 
-  test('read only', () => {
+  describe('read only', () => {
     const stack = new cdk.Stack();
     const user = new iam.User(stack, 'User');
     const database = new glue.Database(stack, 'Database');
-
-    const table = new glue.S3Table(stack, 'Table', {
-      database,
-      columns: [{
-        name: 'col',
-        type: glue.Schema.STRING,
-      }],
-      compressed: true,
-      dataFormat: glue.DataFormat.JSON,
+    const connection = new glue.Connection(stack, 'Connection', {
+      connectionName: 'my_connection',
+      type: glue.ConnectionType.JDBC,
+      properties: {
+        JDBC_CONNECTION_URL: 'jdbc:server://server:443/connection',
+        USERNAME: 'username',
+        PASSWORD: 'password',
+      },
     });
+    test('no encryption key', () => {
+      const table = new glue.ExternalTable(stack, 'Table', {
+        database,
+        columns: [{
+          name: 'col',
+          type: glue.Schema.STRING,
+        }],
+        compressed: true,
+        dataFormat: glue.DataFormat.JSON,
+        connection,
+        externalDataLocation,
+      });
 
-    table.grantRead(user);
+      table.grantRead(user);
 
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: [
-              'glue:BatchGetPartition',
-              'glue:GetPartition',
-              'glue:GetPartitions',
-              'glue:GetTable',
-              'glue:GetTables',
-              'glue:GetTableVersion',
-              'glue:GetTableVersions',
-            ],
-            Effect: 'Allow',
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':glue:',
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':table/',
-                  {
-                    Ref: 'DatabaseB269D8BB',
-                  },
-                  '/',
-                  {
-                    Ref: 'Table4C2D914F',
-                  },
-                ],
-              ],
-            },
-          },
-          {
-            Action: [
-              's3:GetObject*',
-              's3:GetBucket*',
-              's3:List*',
-            ],
-            Effect: 'Allow',
-            Resource: [
-              {
-                'Fn::GetAtt': [
-                  'TableBucketDA42407C',
-                  'Arn',
-                ],
-              },
-              {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: readPermissions,
+              Effect: 'Allow',
+              Resource: {
                 'Fn::Join': [
                   '',
                   [
+                    'arn:',
                     {
-                      'Fn::GetAtt': [
-                        'TableBucketDA42407C',
-                        'Arn',
-                      ],
+                      Ref: 'AWS::Partition',
                     },
-                    '/*',
+                    ':glue:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/',
+                    {
+                      Ref: 'DatabaseB269D8BB',
+                    },
+                    '/',
+                    {
+                      Ref: 'Table4C2D914F',
+                    },
                   ],
                 ],
               },
-            ],
+            },
+          ],
+          Version: '2012-10-17',
+        },
+        PolicyName: 'UserDefaultPolicy1F97781E',
+        Users: [
+          {
+            Ref: 'User00B015A1',
           },
         ],
-        Version: '2012-10-17',
-      },
-      PolicyName: 'UserDefaultPolicy1F97781E',
-      Users: [
-        {
-          Ref: 'User00B015A1',
+      });
+    });
+
+    test('with encryption key', () => {
+      const encryptionKey = new kms.Key(stack, 'MyKey', {
+        description: 'OurKey',
+      });
+      const table = new glue.ExternalTable(stack, 'Table', {
+        database,
+        columns: [{
+          name: 'col',
+          type: glue.Schema.STRING,
+        }],
+        compressed: true,
+        dataFormat: glue.DataFormat.JSON,
+        connection,
+        encryptionKey,
+        externalDataLocation,
+      });
+
+      table.grantRead(user);
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: readPermissions,
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':glue:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/',
+                    {
+                      Ref: 'DatabaseB269D8BB',
+                    },
+                    '/',
+                    {
+                      Ref: 'Table4C2D914F',
+                    },
+                  ],
+                ],
+              },
+            },
+            {
+              Action: [
+              'kms:Decrypt', 
+              'kms:Encrypt',
+              'kms:ReEncrypt*',
+              'kms:GenerateDataKey*',
+            ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':glue:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/',
+                    {
+                      Ref: 'DatabaseB269D8BB',
+                    },
+                    '/',
+                    {
+                      Ref: 'Table4C2D914F',
+                    },
+                  ],
+                ],
+              },
+            },
+          ],
+          Version: '2012-10-17',
         },
-      ],
+        PolicyName: 'UserDefaultPolicy1F97781E',
+        Users: [
+          {
+            Ref: 'User00B015A1',
+          },
+        ],
+      });
     });
   });
 
-  test('write only', () => {
-    const stack = new cdk.Stack();
-    const user = new iam.User(stack, 'User');
-    const database = new glue.Database(stack, 'Database');
-
-    const table = new glue.S3Table(stack, 'Table', {
-      database,
-      columns: [{
-        name: 'col',
-        type: glue.Schema.STRING,
-      }],
-      compressed: true,
-      dataFormat: glue.DataFormat.JSON,
-    });
-
-    table.grantWrite(user);
-
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: [
-              'glue:BatchCreatePartition',
-              'glue:BatchDeletePartition',
-              'glue:CreatePartition',
-              'glue:DeletePartition',
-              'glue:UpdatePartition',
-            ],
-            Effect: 'Allow',
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':glue:',
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':table/',
-                  {
-                    Ref: 'DatabaseB269D8BB',
-                  },
-                  '/',
-                  {
-                    Ref: 'Table4C2D914F',
-                  },
-                ],
-              ],
-            },
-          },
-          {
-            Action: [
-              's3:DeleteObject*',
-              's3:PutObject',
-              's3:PutObjectLegalHold',
-              's3:PutObjectRetention',
-              's3:PutObjectTagging',
-              's3:PutObjectVersionTagging',
-              's3:Abort*',
-            ],
-            Effect: 'Allow',
-            Resource: [
-              {
-                'Fn::GetAtt': [
-                  'TableBucketDA42407C',
-                  'Arn',
-                ],
-              },
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    {
-                      'Fn::GetAtt': [
-                        'TableBucketDA42407C',
-                        'Arn',
-                      ],
-                    },
-                    '/*',
-                  ],
-                ],
-              },
-            ],
-          },
-        ],
-        Version: '2012-10-17',
-      },
-      PolicyName: 'UserDefaultPolicy1F97781E',
-      Users: [
-        {
-          Ref: 'User00B015A1',
-        },
-      ],
-    });
+  test('no encryption key', () => {
+    
   });
 
   test('read and write', () => {
     const stack = new cdk.Stack();
     const user = new iam.User(stack, 'User');
     const database = new glue.Database(stack, 'Database');
+    const connection = new glue.Connection(stack, 'Connection', {
+      connectionName: 'my_connection',
+      type: glue.ConnectionType.JDBC,
+      properties: {
+        JDBC_CONNECTION_URL: 'jdbc:server://server:443/connection',
+        USERNAME: 'username',
+        PASSWORD: 'password',
+      },
+    });
 
-    const table = new glue.S3Table(stack, 'Table', {
+    const table = new glue.ExternalTable(stack, 'Table', {
       database,
       columns: [{
         name: 'col',
@@ -1272,6 +1259,8 @@ describe('grants', () => {
       }],
       compressed: true,
       dataFormat: glue.DataFormat.JSON,
+      connection,
+      externalDataLocation,
     });
 
     table.grantReadWrite(user);
@@ -1323,43 +1312,6 @@ describe('grants', () => {
               ],
             },
           },
-          {
-            Action: [
-              's3:GetObject*',
-              's3:GetBucket*',
-              's3:List*',
-              's3:DeleteObject*',
-              's3:PutObject',
-              's3:PutObjectLegalHold',
-              's3:PutObjectRetention',
-              's3:PutObjectTagging',
-              's3:PutObjectVersionTagging',
-              's3:Abort*',
-            ],
-            Effect: 'Allow',
-            Resource: [
-              {
-                'Fn::GetAtt': [
-                  'TableBucketDA42407C',
-                  'Arn',
-                ],
-              },
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    {
-                      'Fn::GetAtt': [
-                        'TableBucketDA42407C',
-                        'Arn',
-                      ],
-                    },
-                    '/*',
-                  ],
-                ],
-              },
-            ],
-          },
         ],
         Version: '2012-10-17',
       },
@@ -1374,13 +1326,12 @@ describe('grants', () => {
 });
 
 describe('validate', () => {
-  test('at least one column', () => {
+  test('at least one', () => {
     expect(() => {
       createTable({
         columns: [],
       });
     }).toThrowError('you must specify at least one column for the table');
-
   });
 
   test('unique column names', () => {
@@ -1395,7 +1346,6 @@ describe('validate', () => {
         }],
       });
     }).toThrowError("column names and partition keys must be unique, but 'col1' is duplicated");
-
   });
 
   test('unique partition keys', () => {
@@ -1414,7 +1364,6 @@ describe('validate', () => {
         }],
       });
     }).toThrowError("column names and partition keys must be unique, but 'p1' is duplicated");
-
   });
 
   test('column names and partition keys are all unique', () => {
@@ -1430,7 +1379,6 @@ describe('validate', () => {
         }],
       });
     }).toThrowError("column names and partition keys must be unique, but 'col1' is duplicated");
-
   });
 
   test('can not specify an explicit bucket and encryption', () => {
@@ -1483,8 +1431,17 @@ describe('validate', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack');
     const database = new glue.Database(stack, 'Database');
+    const connection = new glue.Connection(stack, 'Connection', {
+      connectionName: 'my_connection',
+      type: glue.ConnectionType.JDBC,
+      properties: {
+        JDBC_CONNECTION_URL: 'jdbc:server://server:443/connection',
+        USERNAME: 'username',
+        PASSWORD: 'password',
+      },
+    });
 
-    expect(() => new glue.S3Table(stack, 'Table', {
+    expect(() => new glue.ExternalTable(stack, 'Table', {
       database,
       columns: [{
         name: 'col',
@@ -1497,6 +1454,8 @@ describe('validate', () => {
         glue.StorageParameter.custom('foo', 'bar'),
         glue.StorageParameter.custom(glue.StorageParameters.COMPRESSION_TYPE, 'true'),
       ],
+      connection,
+      externalDataLocation,
     })).toThrowError('Duplicate storage parameter key: compression_type');
   });
 });
@@ -1506,7 +1465,7 @@ test('Table.fromTableArn', () => {
   const stack = new cdk.Stack();
 
   // WHEN
-  const table = glue.S3Table.fromTableArn(stack, 'boom', 'arn:aws:glue:us-east-1:123456789012:table/db1/tbl1');
+  const table = glue.ExternalTable.fromTableArn(stack, 'boom', 'arn:aws:glue:us-east-1:123456789012:table/db1/tbl1');
 
   // THEN
   expect(table.tableArn).toEqual('arn:aws:glue:us-east-1:123456789012:table/db1/tbl1');
@@ -1520,9 +1479,18 @@ test.each([
   const app = new cdk.App();
   const dbStack = new cdk.Stack(app, 'db');
   const database = new glue.Database(dbStack, 'Database');
+  const connection = new glue.Connection(dbStack, 'Connection', {
+    connectionName: 'my_connection',
+    type: glue.ConnectionType.JDBC,
+    properties: {
+      JDBC_CONNECTION_URL: 'jdbc:server://server:443/connection',
+      USERNAME: 'username',
+      PASSWORD: 'password',
+    },
+  });
 
   const tableStack = new cdk.Stack(app, 'table');
-  new glue.S3Table(tableStack, 'Table', {
+  new glue.ExternalTable(tableStack, 'Table', {
     database,
     columns: [{
       name: 'col',
@@ -1534,6 +1502,8 @@ test.each([
     }],
     dataFormat: glue.DataFormat.JSON,
     enablePartitionFiltering: enabled,
+    connection,
+    externalDataLocation,
   });
 
   Template.fromStack(tableStack).hasResourceProperties('AWS::Glue::Table', {
@@ -1562,9 +1532,18 @@ test('Partition filtering on table is not defined (default behavior)', () => {
   const app = new cdk.App();
   const dbStack = new cdk.Stack(app, 'db');
   const database = new glue.Database(dbStack, 'Database');
+  const connection = new glue.Connection(dbStack, 'Connection', {
+    connectionName: 'my_connection',
+    type: glue.ConnectionType.JDBC,
+    properties: {
+      JDBC_CONNECTION_URL: 'jdbc:server://server:443/connection',
+      USERNAME: 'username',
+      PASSWORD: 'password',
+    },
+  });
 
   const tableStack = new cdk.Stack(app, 'table');
-  new glue.S3Table(tableStack, 'Table', {
+  new glue.ExternalTable(tableStack, 'Table', {
     database,
     columns: [{
       name: 'col',
@@ -1576,6 +1555,8 @@ test('Partition filtering on table is not defined (default behavior)', () => {
     }],
     dataFormat: glue.DataFormat.JSON,
     enablePartitionFiltering: undefined,
+    connection,
+    externalDataLocation,
   });
 
   Template.fromStack(tableStack).hasResourceProperties('AWS::Glue::Table', {
@@ -1603,7 +1584,16 @@ test('can specify a physical name', () => {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'Stack');
   const database = new glue.Database(stack, 'Database');
-  new glue.S3Table(stack, 'Table', {
+  const connection = new glue.Connection(stack, 'Connection', {
+    connectionName: 'my_connection',
+    type: glue.ConnectionType.JDBC,
+    properties: {
+      JDBC_CONNECTION_URL: 'jdbc:server://server:443/connection',
+      USERNAME: 'username',
+      PASSWORD: 'password',
+    },
+  });
+  new glue.ExternalTable(stack, 'Table', {
     database,
     tableName: 'my_table',
     columns: [{
@@ -1611,6 +1601,42 @@ test('can specify a physical name', () => {
       type: glue.Schema.STRING,
     }],
     dataFormat: glue.DataFormat.JSON,
+    connection,
+    externalDataLocation,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Glue::Table', {
+    TableInput: {
+      Name: 'my_table',
+      Description: 'my_table generated by CDK',
+    },
+  });
+});
+
+test('can specify a description', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Stack');
+  const database = new glue.Database(stack, 'Database');
+  const connection = new glue.Connection(stack, 'Connection', {
+    connectionName: 'my_connection',
+    type: glue.ConnectionType.JDBC,
+    properties: {
+      JDBC_CONNECTION_URL: 'jdbc:server://server:443/connection',
+      USERNAME: 'username',
+      PASSWORD: 'password',
+    },
+  });
+  new glue.ExternalTable(stack, 'Table', {
+    database,
+    tableName: 'my_table',
+    columns: [{
+      name: 'col',
+      type: glue.Schema.STRING,
+    }],
+    description: 'This is a test table.',
+    dataFormat: glue.DataFormat.JSON,
+    connection,
+    externalDataLocation,
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Glue::Table', {
@@ -1625,7 +1651,16 @@ test('storage descriptor parameters', () => {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'Stack');
   const database = new glue.Database(stack, 'Database');
-  new glue.S3Table(stack, 'Table', {
+  const connection = new glue.Connection(stack, 'Connection', {
+    connectionName: 'my_connection',
+    type: glue.ConnectionType.JDBC,
+    properties: {
+      JDBC_CONNECTION_URL: 'jdbc:server://server:443/connection',
+      USERNAME: 'username',
+      PASSWORD: 'password',
+    },
+  });
+  new glue.ExternalTable(stack, 'Table', {
     database,
     columns: [{
       name: 'col',
@@ -1638,6 +1673,8 @@ test('storage descriptor parameters', () => {
       glue.StorageParameter.custom('foo', 'bar'),
       glue.StorageParameter.custom('separatorChar', ','),
     ],
+    connection,
+    externalDataLocation,
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Glue::Table', {
@@ -1654,11 +1691,61 @@ test('storage descriptor parameters', () => {
   });
 });
 
+test('can associate an external location with the glue table', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Stack');
+  const database = new glue.Database(stack, 'Database');
+  const connection = new glue.Connection(stack, 'Connection', {
+    connectionName: 'my_connection',
+    type: glue.ConnectionType.JDBC,
+    properties: {
+      JDBC_CONNECTION_URL: 'jdbc:server://server:443/connection',
+      USERNAME: 'username',
+      PASSWORD: 'password',
+    },
+  });
+  new glue.ExternalTable(stack, 'Table', {
+    database,
+    tableName: 'my_table',
+    connection,
+    columns: [{
+      name: 'col',
+      type: glue.Schema.STRING,
+    }],
+    dataFormat: glue.DataFormat.JSON,
+    externalDataLocation,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Glue::Table', {
+    TableInput: {
+      StorageDescriptor: {
+        Location: externalDataLocation,
+      },
+      Parameters: {
+        connectionName: {
+          Ref: 'Connection89AD5CF5',
+        },
+      },
+    },
+  });
+});
+
 function createTable(props: Pick<glue.S3TableProps, Exclude<keyof glue.S3TableProps, 'database' | 'dataFormat'>>): void {
   const stack = new cdk.Stack();
-  new glue.S3Table(stack, 'table', {
+  const connection = new glue.Connection(stack, 'Connection', {
+    connectionName: 'my_connection',
+    type: glue.ConnectionType.JDBC,
+    properties: {
+      JDBC_CONNECTION_URL: 'jdbc:server://server:443/connection',
+      USERNAME: 'username',
+      PASSWORD: 'password',
+    },
+  });
+  new glue.ExternalTable(stack, 'table', {
     ...props,
     database: new glue.Database(stack, 'db'),
     dataFormat: glue.DataFormat.JSON,
+    connection,
+    externalDataLocation,
   });
 }
