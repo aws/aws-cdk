@@ -320,7 +320,7 @@ describe('schedule target', () => {
   });
 
   test('throws when lambda function is imported from different account', () => {
-    const importedFunc = lambda.Function.fromFunctionArn(stack, 'ImportedFunction', 'arn:aws:lambda:us-east-1:111122223333:function/somefunc');
+    const importedFunc = lambda.Function.fromFunctionArn(stack, 'ImportedFunction', 'arn:aws:lambda:us-east-1:234567890123:function/somefunc');
 
     const lambdaTarget = new LambdaInvoke(importedFunc, {});
 
@@ -344,7 +344,7 @@ describe('schedule target', () => {
   });
 
   test('throws when IAM role is imported from different account', () => {
-    const importedRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::111122223333:role/someRole');
+    const importedRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::234567890123:role/someRole');
 
     const lambdaTarget = new LambdaInvoke(func, {
       role: importedRole,
@@ -430,7 +430,7 @@ describe('schedule target', () => {
     const stack2 = new Stack(app, 'Stack2', {
       env: {
         region: 'us-east-1',
-        account: '111122223333',
+        account: '234567890123',
       },
     });
 
