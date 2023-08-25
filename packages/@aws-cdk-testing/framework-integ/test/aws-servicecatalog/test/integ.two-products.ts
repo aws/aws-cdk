@@ -1,3 +1,4 @@
+import * as path from 'path';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
@@ -14,20 +15,20 @@ class PortfolioStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: cdk.StackProps) {
     super(scope, id, props);
 
-    const portfolio = new servicecatalog.Portfolio(stack, 'TestPortfolio', {
+    const portfolio = new servicecatalog.Portfolio(this, 'TestPortfolio', {
       displayName: 'TestPortfolio',
       providerName: 'TestProvider',
       description: 'This is our Service Catalog Portfolio',
       messageLanguage: servicecatalog.MessageLanguage.EN,
     });
 
-    const testAssetBucket = new s3.Bucket(stack, 'TestAssetBucket', {
-      bucketName: `product-stack-asset-bucket-${stack.account}-${stack.region}`,
+    const testAssetBucket = new s3.Bucket(this, 'TestAssetBucket', {
+      bucketName: `product-stack-asset-bucket-${this.account}-${this.region}`,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
     });
 
-    portfolio.addProduct(new servicecatalog.CloudFormationProduct(stack, 'Product1', {
+    portfolio.addProduct(new servicecatalog.CloudFormationProduct(this, 'Product1', {
       productName: 'Prod 1',
       owner: 'Owner 1',
       productVersions: [{
@@ -40,7 +41,7 @@ class PortfolioStack extends cdk.Stack {
       }],
     }));
 
-    portfolio.addProduct(new servicecatalog.CloudFormationProduct(stack, 'Product2', {
+    portfolio.addProduct(new servicecatalog.CloudFormationProduct(this, 'Product2', {
       productName: 'Prod 2',
       owner: 'Owner 2',
       productVersions: [{
@@ -63,7 +64,7 @@ class TestAssetProductStack1 extends servicecatalog.ProductStack {
 
     new lambda.Function(this, 'HelloHandler', {
       runtime: lambda.Runtime.PYTHON_3_9,
-      code: lambda.Code.fromAsset('./assets'),
+      code: lambda.Code.fromAsset(path.join(__dirname, './assets')),
       handler: 'index.handler',
     });
   }
@@ -75,7 +76,7 @@ class TestAssetProductStack2 extends servicecatalog.ProductStack {
 
     new lambda.Function(this, 'HelloHandler2', {
       runtime: lambda.Runtime.PYTHON_3_9,
-      code: lambda.Code.fromAsset('./assetsv2'),
+      code: lambda.Code.fromAsset(path.join(__dirname, './assetsv2')),
       handler: 'index.handler',
     });
   }
