@@ -472,6 +472,7 @@ export class CfnParser {
       case 'Delete': return CfnDeletionPolicy.DELETE;
       case 'Retain': return CfnDeletionPolicy.RETAIN;
       case 'Snapshot': return CfnDeletionPolicy.SNAPSHOT;
+      case 'RetainExceptOnCreate': return CfnDeletionPolicy.RETAIN_EXCEPT_ON_CREATE;
       default: throw new Error(`Unrecognized DeletionPolicy '${policy}'`);
     }
   }
