@@ -19,9 +19,6 @@
   "VpcPublicSubnet1Subnet5C2D37C4": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -45,21 +42,24 @@
       "Key": "Name",
       "Value": "cdk-integ-cluster-snapshot/Vpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPublicSubnet1RouteTable6C95E38E": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "cdk-integ-cluster-snapshot/Vpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPublicSubnet1RouteTableAssociation97140677": {
@@ -76,12 +76,12 @@
   "VpcPublicSubnet1DefaultRoute3DA9E72A": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "VpcIGWD7BA715C"
+    },
+    "RouteTableId": {
+     "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
     }
    },
    "DependsOn": [
@@ -103,14 +103,14 @@
   "VpcPublicSubnet1NATGateway4D7517AA": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "VpcPublicSubnet1EIPD7E02669",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
     },
     "Tags": [
      {
@@ -127,9 +127,6 @@
   "VpcPublicSubnet2Subnet691E08A3": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -153,21 +150,24 @@
       "Key": "Name",
       "Value": "cdk-integ-cluster-snapshot/Vpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPublicSubnet2RouteTable94F7E489": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "cdk-integ-cluster-snapshot/Vpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPublicSubnet2RouteTableAssociationDD5762D8": {
@@ -184,12 +184,12 @@
   "VpcPublicSubnet2DefaultRoute97F91067": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VpcPublicSubnet2RouteTable94F7E489"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "VpcIGWD7BA715C"
+    },
+    "RouteTableId": {
+     "Ref": "VpcPublicSubnet2RouteTable94F7E489"
     }
    },
    "DependsOn": [
@@ -199,9 +199,6 @@
   "VpcPrivateSubnet1Subnet536B997A": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -225,21 +222,24 @@
       "Key": "Name",
       "Value": "cdk-integ-cluster-snapshot/Vpc/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPrivateSubnet1RouteTableB2C5B500": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "cdk-integ-cluster-snapshot/Vpc/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPrivateSubnet1RouteTableAssociation70C59FA6": {
@@ -256,21 +256,18 @@
   "VpcPrivateSubnet1DefaultRouteBE02A9ED": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "VpcPublicSubnet1NATGateway4D7517AA"
+    },
+    "RouteTableId": {
+     "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
     }
    }
   },
   "VpcPrivateSubnet2Subnet3788AAA1": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -294,21 +291,24 @@
       "Key": "Name",
       "Value": "cdk-integ-cluster-snapshot/Vpc/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPrivateSubnet2RouteTableA678073B": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "cdk-integ-cluster-snapshot/Vpc/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPrivateSubnet2RouteTableAssociationA89CAD56": {
@@ -325,12 +325,12 @@
   "VpcPrivateSubnet2DefaultRoute060D2087": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VpcPrivateSubnet2RouteTableA678073B"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "VpcPublicSubnet1NATGateway4D7517AA"
+    },
+    "RouteTableId": {
+     "Ref": "VpcPrivateSubnet2RouteTableA678073B"
     }
    }
   },
@@ -348,11 +348,11 @@
   "VpcVPCGWBF912B6E": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "InternetGatewayId": {
      "Ref": "VpcIGWD7BA715C"
+    },
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
     }
    }
   },
@@ -432,18 +432,6 @@
     },
     "Engine": "aurora-mysql",
     "EngineVersion": "5.7.mysql_aurora.2.10.2",
-    "MasterUsername": {
-     "Fn::Join": [
-      "",
-      [
-       "{{resolve:secretsmanager:",
-       {
-        "Ref": "ClusterSecret6368BD0F"
-       },
-       ":SecretString:username::}}"
-      ]
-     ]
-    },
     "MasterUserPassword": {
      "Fn::Join": [
       "",
@@ -453,6 +441,18 @@
         "Ref": "ClusterSecret6368BD0F"
        },
        ":SecretString:password::}}"
+      ]
+     ]
+    },
+    "MasterUsername": {
+     "Fn::Join": [
+      "",
+      [
+       "{{resolve:secretsmanager:",
+       {
+        "Ref": "ClusterSecret6368BD0F"
+       },
+       ":SecretString:username::}}"
       ]
      ]
     },
@@ -618,13 +618,13 @@
      },
      "S3Key": "4d4dc74a9beb8e44733e1a95b570d30a58a658c6b1896bf7da5db1940d5fed82.zip"
     },
+    "Handler": "index.onEventHandler",
     "Role": {
      "Fn::GetAtt": [
       "SnapshoterOnEventHandlerServiceRole7F84B26D",
       "Arn"
      ]
     },
-    "Handler": "index.onEventHandler",
     "Runtime": "nodejs16.x"
    },
    "DependsOn": [
@@ -737,13 +737,13 @@
      },
      "S3Key": "4d4dc74a9beb8e44733e1a95b570d30a58a658c6b1896bf7da5db1940d5fed82.zip"
     },
+    "Handler": "index.isCompleteHandler",
     "Role": {
      "Fn::GetAtt": [
       "SnapshoterIsCompleteHandlerServiceRole40F5F1A8",
       "Arn"
      ]
     },
-    "Handler": "index.isCompleteHandler",
     "Runtime": "nodejs16.x"
    },
    "DependsOn": [
@@ -860,12 +860,6 @@
      },
      "S3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "SnapshoterSnapshotProviderframeworkonEventServiceRole29C21F76",
-      "Arn"
-     ]
-    },
     "Description": "AWS CDK resource provider framework - onEvent (cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider)",
     "Environment": {
      "Variables": {
@@ -887,6 +881,12 @@
      }
     },
     "Handler": "framework.onEvent",
+    "Role": {
+     "Fn::GetAtt": [
+      "SnapshoterSnapshotProviderframeworkonEventServiceRole29C21F76",
+      "Arn"
+     ]
+    },
     "Runtime": "nodejs18.x",
     "Timeout": 900
    },
@@ -997,12 +997,6 @@
      },
      "S3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "SnapshoterSnapshotProviderframeworkisCompleteServiceRoleFAA9C6CB",
-      "Arn"
-     ]
-    },
     "Description": "AWS CDK resource provider framework - isComplete (cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider)",
     "Environment": {
      "Variables": {
@@ -1021,6 +1015,12 @@
      }
     },
     "Handler": "framework.isComplete",
+    "Role": {
+     "Fn::GetAtt": [
+      "SnapshoterSnapshotProviderframeworkisCompleteServiceRoleFAA9C6CB",
+      "Arn"
+     ]
+    },
     "Runtime": "nodejs18.x",
     "Timeout": 900
    },
@@ -1131,12 +1131,6 @@
      },
      "S3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "SnapshoterSnapshotProviderframeworkonTimeoutServiceRole0B00A1BD",
-      "Arn"
-     ]
-    },
     "Description": "AWS CDK resource provider framework - onTimeout (cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider)",
     "Environment": {
      "Variables": {
@@ -1155,6 +1149,12 @@
      }
     },
     "Handler": "framework.onTimeout",
+    "Role": {
+     "Fn::GetAtt": [
+      "SnapshoterSnapshotProviderframeworkonTimeoutServiceRole0B00A1BD",
+      "Arn"
+     ]
+    },
     "Runtime": "nodejs18.x",
     "Timeout": 900
    },
@@ -1329,7 +1329,6 @@
   "FromSnapshotSecurityGroupfromcdkintegclustersnapshotFromSnapshotRotationSingleUserSecurityGroup8B231219IndirectPort7C6DDFDF": {
    "Type": "AWS::EC2::SecurityGroupIngress",
    "Properties": {
-    "IpProtocol": "tcp",
     "Description": "from cdkintegclustersnapshotFromSnapshotRotationSingleUserSecurityGroup8B231219:{IndirectPort}",
     "FromPort": {
      "Fn::GetAtt": [
@@ -1343,6 +1342,7 @@
       "GroupId"
      ]
     },
+    "IpProtocol": "tcp",
     "SourceSecurityGroupId": {
      "Fn::GetAtt": [
       "FromSnapshotRotationSingleUserSecurityGroupF78A9956",
@@ -1432,9 +1432,6 @@
   "FromSnapshotSnapshotSecretAttachmentRotationSchedule102BDEB3": {
    "Type": "AWS::SecretsManager::RotationSchedule",
    "Properties": {
-    "SecretId": {
-     "Ref": "FromSnapshotSnapshotSecretAttachmentA3F619B8"
-    },
     "RotationLambdaARN": {
      "Fn::GetAtt": [
       "FromSnapshotRotationSingleUserEBCAA50C",
@@ -1443,6 +1440,9 @@
     },
     "RotationRules": {
      "AutomaticallyAfterDays": 30
+    },
+    "SecretId": {
+     "Ref": "FromSnapshotSnapshotSecretAttachmentA3F619B8"
     }
    }
   },
@@ -1651,7 +1651,7 @@
   "FromSnapshotRotationSingleUserSARMapping4464D796": {
    "aws": {
     "applicationId": "arn:aws:serverlessrepo:us-east-1:297356227824:applications/SecretsManagerRDSMySQLRotationSingleUser",
-    "semanticVersion": "1.1.225"
+    "semanticVersion": "1.1.367"
    },
    "aws-cn": {
     "applicationId": "arn:aws-cn:serverlessrepo:cn-north-1:193023089310:applications/SecretsManagerRDSMySQLRotationSingleUser",
