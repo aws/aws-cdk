@@ -1,4 +1,5 @@
 import { IResource } from '../../core';
+import * as iam from '../../aws-iam';
 
 /**
  * The interface for a SageMaker Endpoint resource.
@@ -17,4 +18,10 @@ export interface IEndpoint extends IResource {
    * @attribute
    */
   readonly endpointName: string;
+
+  /**
+   * Permits an IAM principal to invoke this endpoint
+   * @param grantee The principal to grant access to
+   */
+  grantInvoke(grantee: iam.IGrantable): iam.Grant;
 }

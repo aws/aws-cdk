@@ -4,6 +4,7 @@ import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib/core';
+import { IEndpoint } from 'aws-cdk-lib/aws-sagemaker';
 import { Construct } from 'constructs';
 import { EndpointConfig, IEndpointConfig, InstanceProductionVariant } from './endpoint-config';
 import { InstanceType } from './instance-type';
@@ -19,31 +20,6 @@ import { ScalableInstanceCount } from './scalable-instance-count';
 const BURSTABLE_INSTANCE_TYPE_PREFIXES = Object.entries(ec2.InstanceClass)
   .filter(([name, _]) => name.startsWith('T'))
   .map(([_, prefix]) => `ml.${prefix}.`);
-
-/**
- * The interface for a SageMaker Endpoint resource.
- */
-export interface IEndpoint extends cdk.IResource {
-  /**
-   * The ARN of the endpoint.
-   *
-   * @attribute
-   */
-  readonly endpointArn: string;
-
-  /**
-   * The name of the endpoint.
-   *
-   * @attribute
-   */
-  readonly endpointName: string;
-
-  /**
-   * Permits an IAM principal to invoke this endpoint
-   * @param grantee The principal to grant access to
-   */
-  grantInvoke(grantee: iam.IGrantable): iam.Grant;
-}
 
 /**
  * Represents the features common to all production variant types (e.g., instance, serverless) that
