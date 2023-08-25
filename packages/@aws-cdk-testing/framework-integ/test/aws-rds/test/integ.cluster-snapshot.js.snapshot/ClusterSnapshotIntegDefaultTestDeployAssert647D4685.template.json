@@ -1,39 +1,4 @@
 {
- "Resources": {
-  "AppRole1AF9B530": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "amplify.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   }
-  },
-  "AppF1B96344": {
-   "Type": "AWS::Amplify::App",
-   "Properties": {
-    "Name": "App",
-    "BasicAuthConfig": {
-     "EnableBasicAuth": false
-    },
-    "IAMServiceRole": {
-     "Fn::GetAtt": [
-      "AppRole1AF9B530",
-      "Arn"
-     ]
-    },
-    "Platform": "WEB"
-   }
-  }
- },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
