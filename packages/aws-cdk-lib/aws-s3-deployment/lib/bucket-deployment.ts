@@ -520,7 +520,7 @@ export class BucketDeployment extends Construct {
    */
   public addSource(source: ISource): void {
     const config = source.bind(this, { handlerRole: this.handlerRole });
-    if (!this.sources.some((c) => sourceConfigEqual(c, config))) {
+    if (!this.sources.some((c) => sourceConfigEqual(cdk.Stack.of(this), c, config))) {
       this.sources.push(config);
     }
   }
@@ -873,6 +873,9 @@ export interface UserDefinedObjectMetadata {
   readonly [key: string]: string;
 }
 
-function sourceConfigEqual(a: SourceConfig, b: SourceConfig) {
-  return a.bucket === b.bucket && a.zipObjectKey === b.zipObjectKey && a.markers === undefined && b.markers === undefined;
+function sourceConfigEqual(stack: cdk.Stack, a: SourceConfig, b: SourceConfig) {
+  return (
+    JSON.stringify(stack.resolve(a.bucket.bucketName)) === JSON.stringify(stack.resolve(b.bucket.bucketName))
+    && a.zipObjectKey === b.zipObjectKey
+    && a.markers === undefined && b.markers === undefined);
 }

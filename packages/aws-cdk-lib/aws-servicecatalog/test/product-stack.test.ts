@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Construct } from 'constructs';
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
@@ -428,10 +428,14 @@ describe('ProductStack', () => {
     // WHEN
     app.synth();
 
-    // THEN - should not throw
+    // THEN - should not throw, and there will be a single CDKBucketDeployment
     const template = Template.fromStack(mainStack);
     template.hasResourceProperties('Custom::CDKBucketDeployment', {
-      bier: 3,
+      SourceObjectKeys: [
+        // Don't care what the key is, as long as there is only one element in the array; both products use the exact
+        // same asset so it only needs to be copied once.
+        Match.anyValue(),
+      ],
     });
   });
 });

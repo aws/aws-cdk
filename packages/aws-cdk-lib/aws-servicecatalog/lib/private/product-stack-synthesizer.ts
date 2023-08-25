@@ -63,8 +63,6 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
       throw new Error('An Asset Bucket must be provided to use Assets');
     }
 
-    debugger;
-
     // This assumes all assets added to the parent stack's synthesizer go into the same bucket.
     const location = this.parentStack.synthesizer.addFileAsset(asset);
     if (!this.parentAssetBucket) {
@@ -80,8 +78,9 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
       throw new Error('A SSE_KMS encryption must be enabled if you provide KMS Key');
     }
 
+    // Multiple Products deploying into the same bucket will use the same 'BucketDeployment' construct.
     const deploymentScope = this.assetBucket;
-    const deploymentCid = `ProductAssetsFrom${this.boundStack.node.addr}`;
+    const deploymentCid = 'ProductAssetsDeployment';
     const bucketDeployment = deploymentScope.node.tryFindChild(deploymentCid) as BucketDeployment | undefined
       ?? new BucketDeployment(deploymentScope, deploymentCid, {
         sources: [source],
