@@ -125,7 +125,7 @@ interface BarStackProps extends cdk.StackProps {
 }
 
 class BarStack extends cdk.Stack {
-  public constructor(scope: Construct, id: string, props: cdk.StackProps) {
+  public constructor(scope: Construct, id: string, props: BarStackProps) {
     super(scope, id, props);
 
     // user is given grantWriteData permissions to replica in us-east-1
@@ -438,7 +438,7 @@ const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-west-2' } });
 
 const globalTable = new dynamodb.GlobalTable(this, 'GlobalTable', {
   partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
-  dynamoStream: dynamodb.StreamViewType.OLD_IMAGES,
+  dynamoStream: dynamodb.StreamViewType.OLD_IMAGE,
   // tables in us-west-2, us-east-1, and us-east-2 all have dynamo stream type of OLD_IMAGES
   replicas: [
     { region: 'us-east-1' },
