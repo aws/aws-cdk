@@ -6,6 +6,9 @@ import { IEndpoint } from '../../../aws-sagemaker';
 import { IntegrationConfig, IntegrationOptions } from '../integration';
 import { Method } from '../method';
 
+/**
+ * Options for SageMakerIntegration
+ */
 export interface SagemakerIntegrationOptions extends IntegrationOptions {
 }
 

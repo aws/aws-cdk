@@ -23,6 +23,9 @@ const BURSTABLE_INSTANCE_TYPE_PREFIXES = Object.entries(ec2.InstanceClass)
 
 // IEndpoint is stabilized so that it can be used in aws-apigateway SagemakerIntegration
 // Exposing it again here so that there is no breakage to aws-sagemaker-alpha
+/**
+ * The Interface for a SageMaker Endpoint resource.
+ */
 export interface IEndpoint extends sagemaker.IEndpoint {}
 
 /**
