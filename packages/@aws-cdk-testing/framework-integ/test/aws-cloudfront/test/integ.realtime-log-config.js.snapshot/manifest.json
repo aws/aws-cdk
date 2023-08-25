@@ -1,96 +1,19 @@
 {
   "version": "33.0.0",
   "artifacts": {
-    "test-condition-with-ref.assets": {
+    "integrealtimeconfigrealtimelogconfigDefaultTestDeployAssert02ABDB2F.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "test-condition-with-ref.assets.json",
+        "file": "integrealtimeconfigrealtimelogconfigDefaultTestDeployAssert02ABDB2F.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "test-condition-with-ref": {
+    "integrealtimeconfigrealtimelogconfigDefaultTestDeployAssert02ABDB2F": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "test-condition-with-ref.template.json",
-        "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c78c907e2231879b958741f82c29330bcd35d5778c279f9e497f7e8565e6e2cc.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
-        "additionalDependencies": [
-          "test-condition-with-ref.assets"
-        ],
-        "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
-          "requiresBootstrapStackVersion": 8,
-          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-        }
-      },
-      "dependencies": [
-        "test-condition-with-ref.assets"
-      ],
-      "metadata": {
-        "/test-condition-with-ref/PrincipalTag": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PrincipalTag"
-          }
-        ],
-        "/test-condition-with-ref/PrincipalTagCondition/Resource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PrincipalTagCondition94CCB594"
-          }
-        ],
-        "/test-condition-with-ref/AWSCDKCfnUtilsProviderCustomResourceProvider/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AWSCDKCfnUtilsProviderCustomResourceProviderRoleFE0EE867"
-          }
-        ],
-        "/test-condition-with-ref/AWSCDKCfnUtilsProviderCustomResourceProvider/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AWSCDKCfnUtilsProviderCustomResourceProviderHandlerCF82AA57"
-          }
-        ],
-        "/test-condition-with-ref/MyRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyRoleF48FFE04"
-          }
-        ],
-        "/test-condition-with-ref/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/test-condition-with-ref/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
-      "displayName": "test-condition-with-ref"
-    },
-    "iamtestconditionwithrefDefaultTestDeployAssert5E44A64B.assets": {
-      "type": "cdk:asset-manifest",
-      "properties": {
-        "file": "iamtestconditionwithrefDefaultTestDeployAssert5E44A64B.assets.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-      }
-    },
-    "iamtestconditionwithrefDefaultTestDeployAssert5E44A64B": {
-      "type": "aws:cloudformation:stack",
-      "environment": "aws://unknown-account/unknown-region",
-      "properties": {
-        "templateFile": "iamtestconditionwithrefDefaultTestDeployAssert5E44A64B.template.json",
+        "templateFile": "integrealtimeconfigrealtimelogconfigDefaultTestDeployAssert02ABDB2F.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -98,7 +21,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "iamtestconditionwithrefDefaultTestDeployAssert5E44A64B.assets"
+          "integrealtimeconfigrealtimelogconfigDefaultTestDeployAssert02ABDB2F.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -107,23 +30,94 @@
         }
       },
       "dependencies": [
-        "iamtestconditionwithrefDefaultTestDeployAssert5E44A64B.assets"
+        "integrealtimeconfigrealtimelogconfigDefaultTestDeployAssert02ABDB2F.assets"
       ],
       "metadata": {
-        "/iam-test-condition-with-ref/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/integ-realtime-config/realtime-log-config/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/iam-test-condition-with-ref/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/integ-realtime-config/realtime-log-config/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "iam-test-condition-with-ref/DefaultTest/DeployAssert"
+      "displayName": "integ-realtime-config/realtime-log-config/DefaultTest/DeployAssert"
+    },
+    "integ-realtime-config.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-realtime-config.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integ-realtime-config": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-realtime-config.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/065ae19c4c6accff85009f33f18e0ec2e2ed000b2cd704aed4eaa1778b943256.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-realtime-config.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-realtime-config.assets"
+      ],
+      "metadata": {
+        "/integ-realtime-config/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Role1ABCC5F0"
+          }
+        ],
+        "/integ-realtime-config/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RoleDefaultPolicy5FFB7DAB"
+          }
+        ],
+        "/integ-realtime-config/stream/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "stream19075594"
+          }
+        ],
+        "/integ-realtime-config/RealtimeLog/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RealtimeLog31F8FA14"
+          }
+        ],
+        "/integ-realtime-config/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-realtime-config/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-realtime-config"
     },
     "Tree": {
       "type": "cdk:tree",

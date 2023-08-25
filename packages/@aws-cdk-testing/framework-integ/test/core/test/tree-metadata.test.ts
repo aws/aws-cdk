@@ -1,8 +1,11 @@
+/**
+ * Unit tests that depend on 'aws-cdk-lib' having been compiled using jsii
+ */
 import * as fs from 'fs';
 import * as path from 'path';
 import { Construct } from 'constructs';
-import * as cxschema from '../../../cloud-assembly-schema';
-import { App, CfnParameter, CfnResource, Lazy, Stack, TreeInspector } from '../../lib/index';
+import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
+import { App, CfnParameter, CfnResource, Lazy, Stack, TreeInspector } from 'aws-cdk-lib';
 
 abstract class AbstractCfnResource extends CfnResource {
   constructor(scope: Construct, id: string) {
@@ -160,21 +163,19 @@ describe('tree metadata', () => {
     const treeArtifact = assembly.tree();
     expect(treeArtifact).toBeDefined();
 
-    const codeBuild = !!process.env.CODEBUILD_BUILD_ID;
-
     expect(readJson(assembly.directory, treeArtifact!.file)).toEqual({
       version: 'tree-0.1',
       tree: expect.objectContaining({
         children: expect.objectContaining({
           mystack: expect.objectContaining({
             constructInfo: {
-              fqn: expect.stringMatching(codeBuild ? /\bStack$/ : /\bStack$|^constructs.Construct$/),
+              fqn: expect.stringMatching(/\bStack$/),
               version: expect.any(String),
             },
             children: expect.objectContaining({
               myconstruct: expect.objectContaining({
                 constructInfo: {
-                  fqn: expect.stringMatching(codeBuild ? /\bCfnResource$/ : /\bCfnResource$|^constructs.Construct$/),
+                  fqn: expect.stringMatching(/\bCfnResource$/),
                   version: expect.any(String),
                 },
               }),

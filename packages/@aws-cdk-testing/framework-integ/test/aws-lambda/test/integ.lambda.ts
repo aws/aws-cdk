@@ -2,6 +2,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
 import { LAMBDA_RECOGNIZE_LAYER_VERSION } from 'aws-cdk-lib/cx-api';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as path from 'path';
 
 const app = new cdk.App();
 
@@ -35,5 +36,12 @@ alias.addFunctionUrl({
 // Changes the function description when the feature flag is present
 // to validate the changed function hash.
 cdk.Aspects.of(stack).add(new lambda.FunctionVersionUpgrade(LAMBDA_RECOGNIZE_LAYER_VERSION));
+
+new lambda.Function(stack, 'MySnapStartLambda', {
+  code: lambda.Code.fromAsset(path.join(__dirname, 'handler-snapstart.zip')),
+  handler: 'example.Handler::handleRequest',
+  runtime: lambda.Runtime.JAVA_11,
+  snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
+});
 
 app.synth();
