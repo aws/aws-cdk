@@ -4,7 +4,7 @@ import { CfnQueue } from './sqs.generated';
 import { validateProps } from './validate-props';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { Duration, RemovalPolicy, Stack, Token, ArnFormat } from '../../core';
+import { Duration, RemovalPolicy, Stack, Token, ArnFormat, Annotations } from '../../core';
 
 /**
  * Properties for creating a new Queue
@@ -336,7 +336,7 @@ export class Queue extends QueueBase {
       }
       : undefined;
 
-    const { encryptionMasterKey, encryptionProps } = _determineEncryptionProps.call(this);
+    const { encryptionMasterKey, encryptionProps, encryptionType } = _determineEncryptionProps.call(this);
 
     const fifoProps = this.determineFifoProps(props);
     this.fifo = fifoProps.fifoQueue || false;
@@ -362,9 +362,13 @@ export class Queue extends QueueBase {
     this.encryptionMasterKey = encryptionMasterKey;
     this.queueUrl = queue.ref;
     this.deadLetterQueue = props.deadLetterQueue;
-    this.encryptionType = props.encryption;
+    this.encryptionType = encryptionType;
 
-    function _determineEncryptionProps(this: Queue): { encryptionProps: EncryptionProps, encryptionMasterKey?: kms.IKey } {
+    function _determineEncryptionProps(this: Queue): {
+      encryptionProps: EncryptionProps,
+      encryptionMasterKey?: kms.IKey,
+      encryptionType: QueueEncryption | undefined
+    } {
       let encryption = props.encryption;
 
       if (encryption === QueueEncryption.SQS_MANAGED && props.encryptionMasterKey) {
@@ -372,15 +376,23 @@ export class Queue extends QueueBase {
       }
 
       if (encryption !== QueueEncryption.KMS && props.encryptionMasterKey) {
+        if (encryption !== undefined) {
+          Annotations.of(this).addWarningV2('@aws-cdk/aws-sqs:queueEncryptionChangedToKMS', [
+            `encryption: Automatically changed to QueueEncryption.KMS, was: QueueEncryption.${Object.keys(QueueEncryption)[Object.values(QueueEncryption).indexOf(encryption)]}`,
+            'When encryptionMasterKey is provided, always set `encryption: QueueEncryption.KMS`',
+          ].join('\n'));
+        }
+
         encryption = QueueEncryption.KMS; // KMS is implied by specifying an encryption key
       }
 
       if (!encryption) {
-        return { encryptionProps: {} };
+        return { encryptionProps: {}, encryptionType: encryption };
       }
 
       if (encryption === QueueEncryption.UNENCRYPTED) {
         return {
+          encryptionType: encryption,
           encryptionProps: {
             sqsManagedSseEnabled: false,
           },
@@ -389,6 +401,7 @@ export class Queue extends QueueBase {
 
       if (encryption === QueueEncryption.KMS_MANAGED) {
         return {
+          encryptionType: encryption,
           encryptionProps: {
             kmsMasterKeyId: 'alias/aws/sqs',
             kmsDataKeyReusePeriodSeconds: props.dataKeyReuse && props.dataKeyReuse.toSeconds(),
@@ -402,6 +415,7 @@ export class Queue extends QueueBase {
         });
 
         return {
+          encryptionType: encryption,
           encryptionMasterKey: masterKey,
           encryptionProps: {
             kmsMasterKeyId: masterKey.keyArn,
@@ -412,6 +426,7 @@ export class Queue extends QueueBase {
 
       if (encryption === QueueEncryption.SQS_MANAGED) {
         return {
+          encryptionType: encryption,
           encryptionProps: {
             sqsManagedSseEnabled: true,
           },
