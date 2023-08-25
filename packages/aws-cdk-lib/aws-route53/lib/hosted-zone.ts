@@ -84,6 +84,9 @@ export class HostedZone extends Resource implements IHostedZone {
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }
+      public grantDelegation(grantee: iam.IGrantable): iam.Grant {
+        return makeGrantDelegation(grantee, this.hostedZoneArn);
+      }
     }
 
     return new Import(scope, id);
@@ -104,6 +107,9 @@ export class HostedZone extends Resource implements IHostedZone {
       public readonly zoneName = attrs.zoneName;
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
+      }
+      public grantDelegation(grantee: iam.IGrantable): iam.Grant {
+        return makeGrantDelegation(grantee, this.hostedZoneArn);
       }
     }
 
@@ -192,6 +198,10 @@ export class HostedZone extends Resource implements IHostedZone {
   public addVpc(vpc: ec2.IVpc) {
     this.vpcs.push({ vpcId: vpc.vpcId, vpcRegion: vpc.env.region ?? Stack.of(vpc).region });
   }
+
+  public grantDelegation(grantee: iam.IGrantable): iam.Grant {
+    return makeGrantDelegation(grantee, this.hostedZoneArn);
+  }
 }
 
 /**
@@ -238,12 +248,7 @@ export interface PublicHostedZoneProps extends CommonHostedZoneProps {
 /**
  * Represents a Route 53 public hosted zone
  */
-export interface IPublicHostedZone extends IHostedZone {
-  /**
-   * Grant permissions to add delegation records to this zone
-   */
-  grantDelegation(grantee: iam.IGrantable): iam.Grant;
-}
+export interface IPublicHostedZone extends IHostedZone {}
 
 /**
  * Create a Route53 public hosted zone.
@@ -271,7 +276,7 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
       }
       public grantDelegation(grantee: iam.IGrantable): iam.Grant {
         return makeGrantDelegation(grantee, this.hostedZoneArn);
-      };
+      }
     }
     return new Import(scope, id);
   }
@@ -294,7 +299,7 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
       }
       public grantDelegation(grantee: iam.IGrantable): iam.Grant {
         return makeGrantDelegation(grantee, this.hostedZoneArn);
-      };
+      }
     }
     return new Import(scope, id);
   }
@@ -364,10 +369,6 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
       ttl: opts.ttl,
     });
   }
-
-  public grantDelegation(grantee: iam.IGrantable): iam.Grant {
-    return makeGrantDelegation(grantee, this.hostedZoneArn);
-  }
 }
 
 /**
@@ -433,6 +434,9 @@ export class PrivateHostedZone extends HostedZone implements IPrivateHostedZone 
       public get zoneName(): string { throw new Error('Cannot reference `zoneName` when using `PrivateHostedZone.fromPrivateHostedZoneId()`. A construct consuming this hosted zone may be trying to reference its `zoneName`'); }
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
+      }
+      public grantDelegation(grantee: iam.IGrantable): iam.Grant {
+        return makeGrantDelegation(grantee, this.hostedZoneArn);
       }
     }
     return new Import(scope, id);
