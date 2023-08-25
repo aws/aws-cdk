@@ -9,8 +9,17 @@ import { IScheduleTarget } from './target';
  * Interface representing a created or an imported `Schedule`.
  */
 export interface ISchedule extends IResource {
+  /**
+   * The name of the schedule.
+   */
   readonly scheduleName: string;
+  /**
+   * The schedule group associated with this schedule.
+   */
   readonly group?: IGroup;
+  /**
+   * The arn of the schedule.
+   */
   readonly scheduleArn: string;
 }
 
@@ -57,8 +66,17 @@ export interface ScheduleProps {
  * An EventBridge Schedule
  */
 export class Schedule extends Resource implements ISchedule {
+  /**
+   * The schedule group associated with this schedule.
+   */
   public readonly group?: IGroup;
+  /**
+   * The arn of the schedule.
+   */
   public readonly scheduleArn: string;
+  /**
+   * The name of the schedule.
+   */
   public readonly scheduleName: string;
 
   constructor(scope: Construct, id: string, props: ScheduleProps) {

@@ -3,7 +3,15 @@ import { CfnSchedule } from 'aws-cdk-lib/aws-scheduler';
 import { ScheduleTargetInput } from './input';
 import { ISchedule } from './schedule';
 
+/**
+ * Interface representing a Event Bridge Schedule Target.
+ */
 export interface IScheduleTarget {
+  /**
+   * Returns the schedule target specification.
+   *
+   * @param _schedule a schedule the target should be added to.
+   */
   bind(_schedule: ISchedule): ScheduleTargetConfig;
 }
 

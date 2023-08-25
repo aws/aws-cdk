@@ -129,11 +129,7 @@ new Schedule(this, 'Schedule', {
 The `@aws-cdk/aws-schedule-targets-alpha` module includes classes that implement the `IScheduleTarget` interface for
 various AWS services. EventBridge Scheduler supports two types of targets: templated targets invoke common API
 operations across a core groups of services, and customizeable universal targets that you can use to call more
-than 6,000 operations across over 270 services.
-
-The following targets are supported:
-
-1. `targets.LambdaInvoke`: Invoke an AWS Lambda function
+than 6,000 operations across over 270 services. A list of supported targets can be found at `@aws-cdk/aws-schedule-targets-alpha`. 
 
 ### Input 
 
@@ -168,9 +164,7 @@ permissions to interact with the templated target. If you wish you may specify y
 will grant minimal required permissions. For example: for invoking Lambda function target `LambdaInvoke` will grant
 execution IAM role permission to `lambda:InvokeFunction`.
 
-```text
-import * as iam from '@aws-cdk/aws-iam';
-
+```ts
 declare const fn: lambda.Function;
 
 const role = new iam.Role(this, 'Role', {
@@ -207,10 +201,10 @@ policy has been exhausted. You can use a DLQ to troubleshoot issues with your sc
 If you've configured a retry policy for your schedule, EventBridge Scheduler delivers the dead-letter event after
 exhausting the maximum number of retries you set in the retry policy.
 
-```text
+```ts
 declare const fn: lambda.Function;
 
-const dlq = new Queue(this, "DLQ", {
+const dlq = new sqs.Queue(this, "DLQ", {
     queueName: 'MyDLQ',
 });
 
