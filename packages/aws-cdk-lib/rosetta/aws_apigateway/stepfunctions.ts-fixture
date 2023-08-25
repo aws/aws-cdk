@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { Stack } from 'aws-cdk-lib';
-import apigateway = require('aws-cdk-lib/aws-apigateway');
-import stepfunctions = require('aws-cdk-lib/aws-stepfunctions');
+import * as apigateway from 'aws-cdk-lib/aws-apigateway';
+import * as stepfunctions from 'aws-cdk-lib/aws-stepfunctions';
 
 class Fixture extends Stack {
   constructor(scope: Construct, id: string) {
