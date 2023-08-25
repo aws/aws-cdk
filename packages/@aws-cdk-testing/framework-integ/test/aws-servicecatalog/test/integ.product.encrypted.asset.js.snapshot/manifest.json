@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "34.0.0",
   "artifacts": {
     "integ-servicecatalog-product-encrypted-asset.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/c4239d78dadb1df96f422c009e2d47614f81f2fd128f77af128992279f4336c7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/3a1f73ce8920482906dfe134236554e5d197d4950ebced7968d7478a30e47bfd.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -69,6 +69,18 @@
             "data": "TestAssetBucketAutoDeleteObjectsCustomResource5A0F8F22"
           }
         ],
+        "/integ-servicecatalog-product-encrypted-asset/TestAssetBucket/ProductAssetsDeployment/AwsCliLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestAssetBucketProductAssetsDeploymentAwsCliLayerD1E52C82"
+          }
+        ],
+        "/integ-servicecatalog-product-encrypted-asset/TestAssetBucket/ProductAssetsDeployment/CustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestAssetBucketProductAssetsDeploymentCustomResource5F81E30F"
+          }
+        ],
         "/integ-servicecatalog-product-encrypted-asset/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
@@ -79,21 +91,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
-          }
-        ],
-        "/integ-servicecatalog-product-encrypted-asset/AssetsBucketDeployment/AwsCliLayer/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetsBucketDeploymentAwsCliLayer9BCEE17F",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
-          }
-        ],
-        "/integ-servicecatalog-product-encrypted-asset/AssetsBucketDeployment/CustomResource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetsBucketDeploymentCustomResource283760D6"
           }
         ],
         "/integ-servicecatalog-product-encrypted-asset/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
@@ -136,6 +133,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "AssetsBucketDeploymentAwsCliLayer9BCEE17F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetsBucketDeploymentAwsCliLayer9BCEE17F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "AssetsBucketDeploymentCustomResource283760D6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetsBucketDeploymentCustomResource283760D6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

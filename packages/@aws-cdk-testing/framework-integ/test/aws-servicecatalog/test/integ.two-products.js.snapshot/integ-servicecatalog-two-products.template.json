@@ -9,14 +9,25 @@
     "ProviderName": "TestProvider"
    }
   },
-  "TestPortfolioPortfolioProductAssociation9c99ebba36fc70F2C75A": {
+  "TestPortfolioPortfolioProductAssociation0cb6a303fbbc243F6859": {
    "Type": "AWS::ServiceCatalog::PortfolioProductAssociation",
    "Properties": {
     "PortfolioId": {
      "Ref": "TestPortfolio4AC794EB"
     },
     "ProductId": {
-     "Ref": "TestProduct7606930B"
+     "Ref": "Product133E85955"
+    }
+   }
+  },
+  "TestPortfolioPortfolioProductAssociation8b0f551963a9D7EBBBF3": {
+   "Type": "AWS::ServiceCatalog::PortfolioProductAssociation",
+   "Properties": {
+    "PortfolioId": {
+     "Ref": "TestPortfolio4AC794EB"
+    },
+    "ProductId": {
+     "Ref": "Product2828D9765"
     }
    }
   },
@@ -30,7 +41,7 @@
       "Value": "true"
      },
      {
-      "Key": "aws-cdk:cr-owned:f2fec642",
+      "Key": "aws-cdk:cr-owned:8a3b3620",
       "Value": "true"
      }
     ]
@@ -355,64 +366,35 @@
     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
    ]
   },
-  "TestProduct7606930B": {
+  "Product133E85955": {
    "Type": "AWS::ServiceCatalog::CloudFormationProduct",
    "Properties": {
-    "Name": "testProduct",
-    "Owner": "testOwner",
+    "Name": "Prod 1",
+    "Owner": "Owner 1",
     "ProvisioningArtifactParameters": [
      {
-      "DisableTemplateValidation": true,
-      "Info": {
-       "LoadTemplateFromURL": "https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template"
-      }
-     },
-     {
       "DisableTemplateValidation": false,
       "Info": {
        "LoadTemplateFromURL": {
-        "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/b59f768286e16b69628bb23b9c1a1f07300a24101b8979d8e2a94ff1ab03d09e.json"
-       }
-      }
-     },
-     {
-      "DisableTemplateValidation": false,
-      "Info": {
-       "LoadTemplateFromURL": {
-        "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/6412a5f4524c6b41d26fbeee226c68c2dad735393940a51008d77e6f8b1038f5.json"
-       }
-      }
-     },
-     {
-      "DisableTemplateValidation": false,
-      "Info": {
-       "LoadTemplateFromURL": {
-        "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/dd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1f.json"
-       }
-      }
-     },
-     {
-      "DisableTemplateValidation": false,
-      "Info": {
-       "LoadTemplateFromURL": {
-        "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/dd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1f.json"
-       }
-      }
-     },
-     {
-      "DisableTemplateValidation": true,
-      "Info": {
-       "LoadTemplateFromURL": {
-        "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/febf69072bf0640316efdf49d6c38d247fef7de32412b570eaf45f5ca3657784.json"
+        "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/e3d02db86c0d1baccd824dbe984b3e37153502d8511f859c5664c716dc4ca3c9.json"
        }
       },
-      "Name": "testAssetProduct"
-     },
+      "Name": "v1"
+     }
+    ]
+   }
+  },
+  "Product2828D9765": {
+   "Type": "AWS::ServiceCatalog::CloudFormationProduct",
+   "Properties": {
+    "Name": "Prod 2",
+    "Owner": "Owner 2",
+    "ProvisioningArtifactParameters": [
      {
       "DisableTemplateValidation": false,
       "Info": {
        "LoadTemplateFromURL": {
-        "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/dd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1f.json"
+        "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/ff5d7c5889c1c3e06b0d5ec1e9cae941ed44715b96e8872c9b2eb2af322cf4d3.json"
        }
       },
       "Name": "v1"

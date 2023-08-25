@@ -4,7 +4,7 @@
   "testCases": {
     "integ-product/DefaultTest": {
       "stacks": [
-        "integ-servicecatalog-product"
+        "integ-servicecatalog-two-products"
       ],
       "diffAssets": true,
       "stackUpdateWorkflow": false,
