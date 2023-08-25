@@ -145,20 +145,21 @@ describe('bundling', () => {
       type: 'gha', params: { url: 'https://example.com', token: 'abc123', scope: 'gh-ref-image2' },
     };
 
-    const image = DockerImage.fromBuild('docker-path', { cacheTo, cacheFrom: [cacheFrom1, cacheFrom2] });
+    const options = { cacheTo, cacheFrom: [cacheFrom1, cacheFrom2] };
+    const image = DockerImage.fromBuild('docker-path', options);
     image.run();
 
     const tagHash = crypto.createHash('sha256').update(JSON.stringify({
       path: 'docker-path',
-      cacheTo,
+      ...options,
     })).digest('hex');
     const tag = `cdk-${tagHash}`;
 
     expect(spawnSyncStub.firstCall.calledWith(dockerCmd, [
       'build', '-t', tag,
-      '--cache-to', 'type=local,dest=path/to/local/dir',
       '--cache-from', 'type=s3,region=us-west-2,bucket=my-bucket,name=foo',
       '--cache-from', 'type=gha,url=https://example.com,token=abc123,scope=gh-ref-image2',
+      '--cache-to', 'type=local,dest=path/to/local/dir',
       'docker-path',
     ])).toEqual(true);
 
