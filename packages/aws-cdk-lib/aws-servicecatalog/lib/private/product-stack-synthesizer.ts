@@ -43,7 +43,6 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
   private readonly assetBucket?: IBucket;
   private readonly serverSideEncryption? : ServerSideEncryption;
   private readonly serverSideEncryptionAwsKmsKeyId? : string;
-  private bucketDeployment?: BucketDeployment;
   private parentAssetBucket?: IBucket;
 
   constructor(props: ProductStackSynthesizerProps) {
@@ -52,6 +51,11 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
     this.assetBucket = props.assetBucket;
     this.serverSideEncryption = props.serverSideEncryption;
     this.serverSideEncryptionAwsKmsKeyId = props.serverSideEncryptionAwsKmsKeyId;
+
+    if (this.assetBucket && !cdk.Resource.isOwnedResource(this.assetBucket)) {
+      cdk.Annotations.of(this.parentStack).addWarningV2('@aws-cdk/aws-servicecatalog:assetsManuallyAddBucketPermissions', '[WARNING] Bucket Policy Permissions cannot be added to' +
+        ' referenced Bucket. Please make sure your bucket has the correct permissions');
+    }
   }
 
   public addFileAsset(asset: cdk.FileAssetSource): cdk.FileAssetLocation {
@@ -59,6 +63,7 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
       throw new Error('An Asset Bucket must be provided to use Assets');
     }
 
+    // This assumes all assets added to the parent stack's synthesizer go into the same bucket.
     const location = this.parentStack.synthesizer.addFileAsset(asset);
     if (!this.parentAssetBucket) {
       this.parentAssetBucket = Bucket.fromBucketName(this.boundStack, 'ParentAssetBucket', location.bucketName);
@@ -73,22 +78,20 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
       throw new Error('A SSE_KMS encryption must be enabled if you provide KMS Key');
     }
 
-    if (!this.bucketDeployment) {
-      if (!cdk.Resource.isOwnedResource(this.assetBucket)) {
-        cdk.Annotations.of(this.parentStack).addWarning('[WARNING] Bucket Policy Permissions cannot be added to' +
-          ' referenced Bucket. Please make sure your bucket has the correct permissions');
-      }
-      this.bucketDeployment = new BucketDeployment(this.parentStack, 'AssetsBucketDeployment', {
+    // Multiple Products deploying into the same bucket will use the same 'BucketDeployment' construct.
+    const deploymentScope = this.assetBucket;
+    const deploymentCid = 'ProductAssetsDeployment';
+    const bucketDeployment = deploymentScope.node.tryFindChild(deploymentCid) as BucketDeployment | undefined
+      ?? new BucketDeployment(deploymentScope, deploymentCid, {
         sources: [source],
         destinationBucket: this.assetBucket,
         extract: false,
         prune: false,
+        retainOnDelete: true,
         serverSideEncryption: this.serverSideEncryption,
         serverSideEncryptionAwsKmsKeyId: this.serverSideEncryptionAwsKmsKeyId,
       });
-    } else {
-      this.bucketDeployment.addSource(source);
-    }
+    bucketDeployment.addSource(source);
 
     const bucketName = this.physicalNameOfBucket(this.assetBucket);
     if (!asset.fileName) {

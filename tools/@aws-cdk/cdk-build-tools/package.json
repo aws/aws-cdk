@@ -3,7 +3,6 @@
   "private": true,
   "version": "0.0.0",
   "description": "Tools package with shared build scripts for CDK packages",
-  "main": "lib/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
@@ -38,10 +37,12 @@
   "devDependencies": {
     "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^9.0.13",
-    "@types/jest": "^29.5.3",
+    "@types/jest": "^29.5.4",
     "@types/semver": "^7.5.0",
-    "@types/yargs": "^15.0.15"
+    "@types/yargs": "^15.0.15",
+    "jest-resolve": "^29.6.3"
   },
+  "main": "lib/index.js",
   "dependencies": {
     "@aws-cdk/eslint-plugin": "0.0.0",
     "@aws-cdk/yarn-cling": "0.0.0",
@@ -53,13 +54,13 @@
     "eslint": "^7.32.0",
     "eslint-import-resolver-node": "^0.3.9",
     "eslint-import-resolver-typescript": "^2.7.1",
-    "eslint-plugin-import": "^2.28.0",
+    "eslint-plugin-import": "^2.28.1",
     "eslint-plugin-jest": "^24.7.0",
     "fs-extra": "^9.1.0",
     "glob": "^7.2.3",
-    "jest": "^29.6.2",
+    "jest": "^29.6.3",
     "jest-junit": "^13.2.0",
-    "jsii": "~5.1.10",
+    "jsii": "~5.1.11",
     "jsii-pacmak": "1.87.0",
     "jsii-reflect": "1.87.0",
     "markdownlint-cli": "^0.35.0",

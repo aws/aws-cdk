@@ -59,6 +59,12 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
   public readonly acceptanceRequired: boolean;
 
   /**
+   * Whether to enable the built-in Contributor Insights rules provided by AWS PrivateLink.
+   *
+   */
+  public readonly contributorInsightsEnabled?: boolean;
+
+  /**
    * One or more Principal ARNs to allow inbound connections to.
    * @deprecated use `allowedPrincipals`
    */
@@ -95,6 +101,7 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
 
     this.vpcEndpointServiceLoadBalancers = props.vpcEndpointServiceLoadBalancers;
     this.acceptanceRequired = props.acceptanceRequired ?? true;
+    this.contributorInsightsEnabled = props.contributorInsights;
 
     if (props.allowedPrincipals && props.whitelistedPrincipals) {
       throw new Error('`whitelistedPrincipals` is deprecated; please use `allowedPrincipals` instead');
@@ -105,6 +112,7 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
     this.endpointService = new CfnVPCEndpointService(this, id, {
       networkLoadBalancerArns: this.vpcEndpointServiceLoadBalancers.map(lb => lb.loadBalancerArn),
       acceptanceRequired: this.acceptanceRequired,
+      contributorInsightsEnabled: this.contributorInsightsEnabled,
     });
 
     this.vpcEndpointServiceId = this.endpointService.ref;
@@ -150,6 +158,13 @@ export interface VpcEndpointServiceProps {
    *
    */
   readonly acceptanceRequired?: boolean;
+
+  /**
+   * Indicates whether to enable the built-in Contributor Insights rules provided by AWS PrivateLink.
+   * @default false
+   *
+   */
+  readonly contributorInsights?: boolean;
 
   /**
    * IAM users, IAM roles, or AWS accounts to allow inbound connections from.

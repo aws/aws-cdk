@@ -35,8 +35,8 @@ function synth(context?: { [key: string]: any }): cxapi.CloudAssembly {
 
     // add some metadata
     stack1.node.addMetadata('meta', 111);
-    Annotations.of(r2).addWarning('warning1');
-    Annotations.of(r2).addWarning('warning2');
+    Annotations.of(r2).addWarningV2('warning1', 'warning1');
+    Annotations.of(r2).addWarningV2('warning2', 'warning2');
     c1.node.addMetadata('meta', { key: 'value' });
     app.node.addMetadata('applevel', 123); // apps can also have metadata
   });
@@ -78,8 +78,8 @@ describe('app', () => {
       '/stack1/s1c1': [{ type: 'aws:cdk:logicalId', data: 's1c1' }],
       '/stack1/s1c2':
         [{ type: 'aws:cdk:logicalId', data: 's1c2' },
-          { type: 'aws:cdk:warning', data: 'warning1' },
-          { type: 'aws:cdk:warning', data: 'warning2' }],
+          { type: 'aws:cdk:warning', data: 'warning1 [ack: warning1]' },
+          { type: 'aws:cdk:warning', data: 'warning2 [ack: warning2]' }],
     });
 
     const stack2 = response.stacks[1];
