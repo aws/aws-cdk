@@ -1,8 +1,6 @@
 import { AwsIntegration } from './aws';
 import * as iam from '../../../aws-iam';
-
 import { IEndpoint } from '../../../aws-sagemaker';
-
 import { IntegrationConfig, IntegrationOptions } from '../integration';
 import { Method } from '../method';
 

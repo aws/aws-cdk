@@ -1,5 +1,5 @@
-import { IResource } from '../../core';
 import * as iam from '../../aws-iam';
+import { IResource } from '../../core';
 
 /**
  * The interface for a SageMaker Endpoint resource.

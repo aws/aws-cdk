@@ -1,8 +1,8 @@
 import { Template } from '../../../assertions';
+import * as iam from '../../../aws-iam';
 import * as sagemaker from '../../../aws-sagemaker';
 import * as cdk from '../../../core';
 import * as apigateway from '../../lib';
-import * as iam from '../../../aws-iam';
 
 describe('SageMaker Integration', () => {
   test('minimal setup', () => {
