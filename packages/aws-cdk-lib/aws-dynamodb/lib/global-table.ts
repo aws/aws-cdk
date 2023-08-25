@@ -15,7 +15,6 @@ import { ArnFormat, Lazy, PhysicalName, RemovalPolicy, Stack, Token } from '../.
 
 const HASH_KEY_TYPE = 'HASH';
 const RANGE_KEY_TYPE = 'RANGE';
-const NEW_AND_OLD_IMAGES = 'NEW_AND_OLD_IMAGES';
 const MAX_GSI_COUNT = 20;
 const MAX_LSI_COUNT = 5;
 const MAX_NON_KEY_ATTRIBUTES = 100;
@@ -738,7 +737,7 @@ export class GlobalTable extends GlobalTableBase {
   }
 
   private renderStreamSpecification(): CfnGlobalTable.StreamSpecificationProperty | undefined {
-    return this.replicaTables.size > 0 ? { streamViewType: NEW_AND_OLD_IMAGES } : undefined;
+    return this.replicaTables.size > 0 ? { streamViewType: StreamViewType.NEW_AND_OLD_IMAGES } : undefined;
   }
 
   private addKey(key: Attribute, keyType: string) {
