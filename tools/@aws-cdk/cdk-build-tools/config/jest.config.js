@@ -35,11 +35,17 @@ module.exports = {
     },
   },
   collectCoverage: true,
-  coverageReporters: ['lcov', 'html', 'text-summary'],
+  coverageReporters: [
+    'lcov',
+    'html',
+    'text-summary',
+    ['text', { file: 'coverage.txt' }],
+  ],
   coveragePathIgnorePatterns: [
     '\\.generated\\.[jt]s$',
     '<rootDir>/test/',
     '.warnings.jsii.js$',
+    '/node_modules/',
   ],
   reporters: [
     'default',
