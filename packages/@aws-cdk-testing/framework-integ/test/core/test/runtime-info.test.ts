@@ -1,31 +1,17 @@
+/**
+ * Unit tests that depend on 'aws-cdk-lib' having been compiled using jsii
+ */
 import * as fs from 'fs';
 import * as path from 'path';
 import { Construct } from 'constructs';
-import { App, NestedStack, Stack, Stage, IPolicyValidationPluginBeta1, PolicyViolationBeta1, PolicyValidationPluginReportBeta1, IPolicyValidationContextBeta1 } from '../lib';
-import { constructInfoFromConstruct, constructInfoFromStack } from '../lib/private/runtime-info';
+import { App, NestedStack, Stack, Stage, IPolicyValidationPluginBeta1, PolicyViolationBeta1, PolicyValidationPluginReportBeta1, IPolicyValidationContextBeta1 } from 'aws-cdk-lib';
+import { constructInfoFromConstruct, constructInfoFromStack } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 const JSII_RUNTIME_SYMBOL = Symbol.for('jsii.rtti');
 
 let app: App;
 let stack: Stack;
 let _cdkVersion: string | undefined = undefined;
-
-// The runtime metadata this test relies on is only available if the most
-// recent compile has happened using 'jsii', as the jsii compiler injects
-// this metadata.
-//
-// If the most recent compile was using 'tsc', the metadata will not have
-// been injected, and the test suite will fail.
-//
-// Tolerate `tsc` builds locally, but not on CodeBuild.
-const codeBuild = !!process.env.CODEBUILD_BUILD_ID;
-const moduleCompiledWithTsc = constructInfoFromConstruct(new Stack())?.fqn === 'constructs.Construct';
-let describeTscSafe = describe;
-if (moduleCompiledWithTsc && !codeBuild) {
-  // eslint-disable-next-line
-  console.error('It appears this module was compiled with `tsc` instead of `jsii` in a local build. Skipping this test suite.');
-  describeTscSafe = describe.skip;
-}
 
 beforeEach(() => {
   app = new App();
@@ -34,7 +20,7 @@ beforeEach(() => {
   });
 });
 
-describeTscSafe('constructInfoFromConstruct', () => {
+describe('constructInfoFromConstruct', () => {
   test('returns fqn and version for core constructs', () => {
     const constructInfo = constructInfoFromConstruct(stack);
     expect(constructInfo).toBeDefined();
@@ -70,7 +56,7 @@ describeTscSafe('constructInfoFromConstruct', () => {
   });
 });
 
-describeTscSafe('constructInfoForStack', () => {
+describe('constructInfoForStack', () => {
   test('returns stack itself and jsii runtime if stack is empty', () => {
     const constructInfos = constructInfoFromStack(stack);
 
