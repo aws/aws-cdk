@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Construct } from 'constructs';
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
@@ -26,21 +26,13 @@ describe('ProductStack', () => {
 
   test('Used defined Asset bucket in product stack with assets', () => {
     // GIVEN
-    const app = new cdk.App(
-      { outdir: 'cdk.out' },
-    );
+    const app = new cdk.App();
     const mainStack = new cdk.Stack(app, 'MyStack');
     const testAssetBucket = new s3.Bucket(mainStack, 'TestAssetBucket', {
       bucketName: 'test-asset-bucket',
     });
-    const productStack = new servicecatalog.ProductStack(mainStack, 'MyProductStack', {
+    const productStack = new ProductWithAnAsset(mainStack, 'MyProductStack', {
       assetBucket: testAssetBucket,
-    });
-
-    new lambda.Function(productStack, 'HelloHandler', {
-      runtime: lambda.Runtime.PYTHON_3_9,
-      code: lambda.Code.fromAsset(path.join(__dirname, 'assets')),
-      handler: 'index.handler',
     });
 
     // WHEN
@@ -66,14 +58,8 @@ describe('ProductStack', () => {
     const testAssetBucket = new s3.Bucket(mainStack, 'TestAssetBucket', {
       bucketName: 'test-asset-bucket',
     });
-    const productStack = new servicecatalog.ProductStack(mainStack, 'MyProductStackAbsolutePath', {
+    new ProductWithAnAsset(mainStack, 'MyProductStackAbsolutePath', {
       assetBucket: testAssetBucket,
-    });
-
-    new lambda.Function(productStack, 'HelloHandler', {
-      runtime: lambda.Runtime.PYTHON_3_9,
-      code: lambda.Code.fromAsset(path.join(__dirname, 'assets')),
-      handler: 'index.handler',
     });
 
     // WHEN
@@ -86,7 +72,6 @@ describe('ProductStack', () => {
   test('Used defined Asset bucket in product stack with nested assets', () => {
     // GIVEN
     const app = new cdk.App(
-      { outdir: 'cdk.out' },
     );
     const mainStack = new cdk.Stack(app, 'MyStack');
     let templateFileUrl = '';
@@ -202,9 +187,7 @@ describe('ProductStack', () => {
 
   test('fails if bucketName is not specified in product stack with assets', () => {
     // GIVEN
-    const app = new cdk.App(
-      { outdir: 'cdk.out' },
-    );
+    const app = new cdk.App();
     const mainStack = new cdk.Stack(app, 'MyStack');
     const testAssetBucket = new s3.Bucket(mainStack, 'TestAssetBucket', {
     });
@@ -384,15 +367,9 @@ describe('ProductStack', () => {
       bucketName: 'test-asset-bucket',
       encryption: BucketEncryption.S3_MANAGED,
     });
-    const productStack = new servicecatalog.ProductStack(mainStack, 'MyProductStack', {
+    const productStack = new ProductWithAnAsset(mainStack, 'MyProductStack', {
       assetBucket: testAssetBucket,
       serverSideEncryption: ServerSideEncryption.AES_256,
-    });
-
-    new lambda.Function(productStack, 'HelloHandler', {
-      runtime: lambda.Runtime.PYTHON_3_9,
-      code: lambda.Code.fromAsset(path.join(__dirname, 'assets')),
-      handler: 'index.handler',
     });
 
     // WHEN
@@ -407,4 +384,71 @@ describe('ProductStack', () => {
       },
     });
   });
+
+  test('Two product stacks with assets in the same portfolio', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const mainStack = new cdk.Stack(app, 'MyStack');
+    const testAssetBucket = new s3.Bucket(mainStack, 'TestAssetBucket', {
+      bucketName: 'test-asset-bucket',
+      encryption: BucketEncryption.S3_MANAGED,
+    });
+
+    const portfolio = new servicecatalog.Portfolio(mainStack, 'Portfolio', {
+      displayName: 'MyPortfolio',
+      providerName: 'MyProvider',
+    });
+
+    portfolio.addProduct(new servicecatalog.CloudFormationProduct(mainStack, 'Product1', {
+      productName: 'Prod 1',
+      owner: 'Owner 1',
+      productVersions: [{
+        productVersionName: 'v1',
+        cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(
+          new ProductWithAnAsset(mainStack, 'MyProductStack1', {
+            assetBucket: testAssetBucket,
+          }),
+        ),
+      }],
+    }));
+    portfolio.addProduct(new servicecatalog.CloudFormationProduct(mainStack, 'Product2', {
+      productName: 'Prod 2',
+      owner: 'Owner 2',
+      productVersions: [{
+        productVersionName: 'v1',
+        cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(
+          new ProductWithAnAsset(mainStack, 'MyProductStack2', {
+            assetBucket: testAssetBucket,
+            description: 'Just a description to make the asset definitely different',
+          }),
+        ),
+      }],
+    }));
+
+    // WHEN
+    app.synth();
+
+    // THEN - should not throw, and there will be a single CDKBucketDeployment
+    const template = Template.fromStack(mainStack);
+    template.hasResourceProperties('Custom::CDKBucketDeployment', {
+      SourceObjectKeys: [
+        // Don't care what the key is, as long as there is only one element in the array; both products use the exact
+        // same asset so it only needs to be copied once.
+        Match.anyValue(),
+      ],
+    });
+  });
 });
+
+class ProductWithAnAsset extends servicecatalog.ProductStack {
+  constructor(scope: Construct, id: string, props: servicecatalog.ProductStackProps & { description?: string }) {
+    super(scope, id, props);
+
+    new lambda.Function(this, 'HelloHandler', {
+      runtime: lambda.Runtime.PYTHON_3_9,
+      description: props.description,
+      code: lambda.Code.fromAsset(path.join(__dirname, 'assets')),
+      handler: 'index.handler',
+    });
+  }
+}
