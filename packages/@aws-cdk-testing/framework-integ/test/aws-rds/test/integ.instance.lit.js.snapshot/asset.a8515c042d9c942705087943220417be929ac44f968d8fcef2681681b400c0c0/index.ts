@@ -91,11 +91,13 @@ export async function handler(event: LogRetentionEvent, context: AWSLambda.Conte
     const logGroupRegion = event.ResourceProperties.LogGroupRegion;
 
     // Parse to AWS SDK retry options
-    const withDelay = makeWithDelay(parseIntOptional(event.ResourceProperties.SdkRetry?.maxRetries));
+    const maxRetries = parseIntOptional(event.ResourceProperties.SdkRetry?.maxRetries) ?? 5;
+    const withDelay = makeWithDelay(maxRetries);
 
     const sdkConfig: Logs.CloudWatchLogsClientConfig = {
       logger: console,
       region: logGroupRegion,
+      maxAttempts: Math.max(5, maxRetries), // Use a minimum for SDK level retries, because it might include retryable failures that withDelay isn't checking for
     };
     const client = new Logs.CloudWatchLogsClient(sdkConfig);
 
@@ -185,7 +187,7 @@ function parseIntOptional(value?: string, base = 10): number | undefined {
 }
 
 function makeWithDelay(
-  maxRetries: number = 5,
+  maxRetries: number,
   delayBase: number = 100,
   delayCap = 10 * 1000, // 10s
 ): (block: () => Promise<void>) => Promise<void> {
@@ -202,7 +204,11 @@ function makeWithDelay(
       try {
         return await block();
       } catch (error: any) {
-        if (error instanceof Logs.OperationAbortedException || error.name === 'OperationAbortedException') {
+        if (
+          error instanceof Logs.OperationAbortedException
+          || error.name === 'OperationAbortedException'
+          || error.name === 'ThrottlingException' // There is no class to check with instanceof, see https://github.com/aws/aws-sdk-js-v3/issues/5140
+        ) {
           if (attempts < maxRetries ) {
             attempts++;
             await new Promise(resolve => setTimeout(resolve, calculateDelay(attempts, delayBase, delayCap)));
