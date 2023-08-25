@@ -2979,6 +2979,114 @@ describe('function', () => {
     });
   });
 
+  describe('SnapStart', () => {
+    test('set SnapStart to desired value', () => {
+      const stack = new cdk.Stack();
+      new lambda.CfnFunction(stack, 'MyLambda', {
+        code: {
+          zipFile: 'java11-test-function.zip',
+        },
+        functionName: 'MyCDK-SnapStart-Function',
+        handler: 'example.Handler::handleRequest',
+        role: 'testRole',
+        runtime: 'java11',
+        snapStart: { applyOn: 'PublishedVersions' },
+      });
+
+      Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+        Properties:
+        {
+          Code: { ZipFile: 'java11-test-function.zip' },
+          Handler: 'example.Handler::handleRequest',
+          Runtime: 'java11',
+          SnapStart: {
+            ApplyOn: 'PublishedVersions',
+          },
+        },
+      });
+    });
+
+    test('function using SnapStart', () => {
+      const stack = new cdk.Stack();
+      //WHEN
+      new lambda.Function(stack, 'MyLambda', {
+        code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+        handler: 'example.Handler::handleRequest',
+        runtime: lambda.Runtime.JAVA_11,
+        snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
+      });
+
+      //THEN
+      Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+        Properties:
+            {
+              Handler: 'example.Handler::handleRequest',
+              Runtime: 'java11',
+              SnapStart: {
+                ApplyOn: 'PublishedVersions',
+              },
+            },
+      });
+    });
+
+    test('runtime validation for snapStart', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'bar',
+        runtime: lambda.Runtime.NODEJS_14_X,
+        snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
+      })).toThrowError('SnapStart currently not supported by runtime nodejs14.x');
+    });
+
+    test('arm64 validation for snapStart', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => new lambda.Function(stack, 'MyLambda', {
+        code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+        handler: 'example.Handler::handleRequest',
+        runtime: lambda.Runtime.JAVA_11,
+        architecture: lambda.Architecture.ARM_64,
+        snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
+      })).toThrowError('SnapStart is currently not supported on Arm_64');
+    });
+
+    test('EFS validation for snapStart', () => {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc', {
+        maxAzs: 3,
+        natGateways: 1,
+      });
+
+      const fs = new efs.FileSystem(stack, 'Efs', {
+        vpc,
+      });
+      const accessPoint = fs.addAccessPoint('AccessPoint');
+
+      expect(() => new lambda.Function(stack, 'MyLambda', {
+        vpc,
+        code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+        handler: 'example.Handler::handleRequest',
+        runtime: lambda.Runtime.JAVA_11,
+        filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
+        snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
+      })).toThrowError('SnapStart is currently not supported using EFS');
+    });
+
+    test('arm64 validation for snapStart', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => new lambda.Function(stack, 'MyLambda', {
+        code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+        handler: 'example.Handler::handleRequest',
+        runtime: lambda.Runtime.JAVA_11,
+        ephemeralStorageSize: Size.mebibytes(1024),
+        snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
+      })).toThrowError('SnapStart is currently not supported using more than 512 MiB Ephemeral Storage');
+    });
+  });
+
   test('called twice for the same service principal but with different conditions', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -3061,14 +3169,14 @@ describe('function', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_14_X,
       adotInstrumentation: {
-        layerVersion: lambda.AdotLayerVersion.fromJavaSdkLayerVersion(AdotLambdaLayerJavaSdkVersion.V1_19_0),
+        layerVersion: lambda.AdotLayerVersion.fromJavaSdkLayerVersion(AdotLambdaLayerJavaSdkVersion.V1_28_1),
         execWrapper: lambda.AdotLambdaExecWrapper.REGULAR_HANDLER,
       },
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-19-0:1'],
+      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-28-1:1'],
       Environment: {
         Variables: {
           AWS_LAMBDA_EXEC_WRAPPER: '/opt/otel-handler',
@@ -3090,14 +3198,14 @@ describe('function', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.PYTHON_3_9,
       adotInstrumentation: {
-        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_13_0),
+        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_19_0_1),
         execWrapper: lambda.AdotLambdaExecWrapper.INSTRUMENT_HANDLER,
       },
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-python-amd64-ver-1-13-0:1'],
+      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-python-amd64-ver-1-19-0:2'],
       Environment: {
         Variables: {
           AWS_LAMBDA_EXEC_WRAPPER: '/opt/otel-instrument',
@@ -3114,7 +3222,7 @@ describe('function', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.PYTHON_3_10,
       adotInstrumentation: {
-        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_13_0),
+        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_19_0_1),
         execWrapper: lambda.AdotLambdaExecWrapper.REGULAR_HANDLER,
       },
     })).toThrow(/Python Adot Lambda layer requires AdotLambdaExecWrapper.INSTRUMENT_HANDLER/);
@@ -3133,7 +3241,7 @@ describe('function', () => {
         new lambda.DockerImageFunction(stack, 'MyLambda', {
           code: lambda.DockerImageCode.fromImageAsset(dockerLambdaHandlerPath),
           adotInstrumentation: {
-            layerVersion: lambda.AdotLayerVersion.fromJavaSdkLayerVersion(AdotLambdaLayerJavaSdkVersion.V1_19_0),
+            layerVersion: lambda.AdotLayerVersion.fromJavaSdkLayerVersion(AdotLambdaLayerJavaSdkVersion.V1_28_1),
             execWrapper: lambda.AdotLambdaExecWrapper.REGULAR_HANDLER,
           },
         }),
@@ -3218,32 +3326,6 @@ test('function using a reserved environment variable', () => {
       AWS_REGION: 'ap-southeast-2',
     },
   })).toThrow(/AWS_REGION environment variable is reserved/);
-});
-
-test('set SnapStart to desired value', () => {
-  const stack = new cdk.Stack();
-  new lambda.CfnFunction(stack, 'MyLambda', {
-    code: {
-      zipFile: 'java11-test-function.zip',
-    },
-    functionName: 'MyCDK-SnapStart-Function',
-    handler: 'example.Handler::handleRequest',
-    role: 'testRole',
-    runtime: 'java11',
-    snapStart: { applyOn: 'PublishedVersions' },
-  });
-
-  Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
-    Properties:
-    {
-      Code: { ZipFile: 'java11-test-function.zip' },
-      Handler: 'example.Handler::handleRequest',
-      Runtime: 'java11',
-      SnapStart: {
-        ApplyOn: 'PublishedVersions',
-      },
-    },
-  });
 });
 
 test('test 2.87.0 version hash stability', () => {
