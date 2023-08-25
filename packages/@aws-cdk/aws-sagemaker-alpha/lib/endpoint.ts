@@ -4,7 +4,7 @@ import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib/core';
-import { IEndpoint } from 'aws-cdk-lib/aws-sagemaker';
+import * as sagemaker from 'aws-cdk-lib/aws-sagemaker';
 import { Construct } from 'constructs';
 import { EndpointConfig, IEndpointConfig, InstanceProductionVariant } from './endpoint-config';
 import { InstanceType } from './instance-type';
@@ -20,6 +20,10 @@ import { ScalableInstanceCount } from './scalable-instance-count';
 const BURSTABLE_INSTANCE_TYPE_PREFIXES = Object.entries(ec2.InstanceClass)
   .filter(([name, _]) => name.startsWith('T'))
   .map(([_, prefix]) => `ml.${prefix}.`);
+
+// IEndpoint is stabilized so that it can be used in aws-apigateway SagemakerIntegration
+// Exposing it again here so that there is no breakage to aws-sagemaker-alpha
+export interface IEndpoint extends sagemaker.IEndpoint {}
 
 /**
  * Represents the features common to all production variant types (e.g., instance, serverless) that
