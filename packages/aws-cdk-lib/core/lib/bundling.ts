@@ -168,6 +168,15 @@ export enum BundlingOutput {
    * it will be used as the bundle output as-is. Otherwise, all the files in the bundling output directory will be zipped.
    */
   AUTO_DISCOVER = 'auto-discover',
+
+  /**
+   * The bundling output directory includes a single file which
+   * will be used as the final bundle. If the output directory does not
+   * include exactly a single file, bundling will fail.
+   *
+   * Similar to ARCHIVED but for non-archive files
+   */
+  SINGLE_FILE = 'single-file',
 }
 
 /**

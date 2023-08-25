@@ -137,15 +137,15 @@ export class Bundling implements cdk.BundlingOptions {
     // Warn users if they are trying to rely on global versions of the SDK that aren't available in
     // their environment.
     if (isV2Runtime && externals.some((pkgName) => pkgName.startsWith('@aws-sdk/'))) {
-      cdk.Annotations.of(scope).addWarning('If you are relying on AWS SDK v3 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 18 or higher.');
+      cdk.Annotations.of(scope).addWarningV2('@aws-cdk/aws-lambda-nodejs:sdkV3NotInRuntime', 'If you are relying on AWS SDK v3 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 18 or higher.');
     } else if (externals.includes('aws-sdk')) {
-      cdk.Annotations.of(scope).addWarning('If you are relying on AWS SDK v2 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 16 or lower.');
+      cdk.Annotations.of(scope).addWarningV2('@aws-cdk/aws-lambda-nodejs:sdkV2NotInRuntime', 'If you are relying on AWS SDK v2 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 16 or lower.');
     }
 
     // Warn users if they are using a runtime that may change and are excluding any dependencies from
     // bundling.
     if (externals.length && props.runtime?.isVariable) {
-      cdk.Annotations.of(scope).addWarning('When using NODEJS_LATEST the runtime version may change as new runtimes are released, this may affect the availability of packages shipped with the environment. Ensure that any external dependencies are available through layers or specify a specific runtime version.');
+      cdk.Annotations.of(scope).addWarningV2('@aws-cdk/aws-lambda-nodejs:variableRuntimeExternals', 'When using NODEJS_LATEST the runtime version may change as new runtimes are released, this may affect the availability of packages shipped with the environment. Ensure that any external dependencies are available through layers or specify a specific runtime version.');
     }
 
     this.externals = [

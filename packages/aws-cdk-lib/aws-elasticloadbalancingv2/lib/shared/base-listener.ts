@@ -153,7 +153,7 @@ export abstract class BaseListener extends Resource implements IListener {
     // Instead, signal this through a warning.
     // @deprecate: upon the next major version bump, replace this with a `throw`
     if (this.defaultAction) {
-      Annotations.of(this).addWarning('A default Action already existed on this Listener and was replaced. Configure exactly one default Action.');
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-elbv2:listenerExistingDefaultActionReplaced', 'A default Action already existed on this Listener and was replaced. Configure exactly one default Action.');
     }
 
     this.defaultAction = action;
