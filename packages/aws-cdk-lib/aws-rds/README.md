@@ -486,7 +486,7 @@ declare const vpc: ec2.Vpc;
 new rds.DatabaseInstance(this, 'Instance', {
   engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
   vpc,
-  caCertificate: rds.CaCertificate('future-rds-ca'),
+  caCertificate: new rds.CaCertificate('future-rds-ca'),
 });
 ```
 
