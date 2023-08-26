@@ -13,7 +13,7 @@ beforeEach(() => {
   api = new appsync.GraphqlApi(stack, 'api', {
     authorizationConfig: {},
     name: 'api',
-    schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+    apiSource: appsync.ApiSource.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
     logConfig: {},
   });
 });
@@ -253,4 +253,42 @@ test('when visibility is set it should be used when creating the API', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
     Visibility: 'PRIVATE',
   });
+});
+
+test('appsync should support deprecated schema property', () => {
+  // WHEN
+  const schemaFile = appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'));
+  const apiWithSchema = new appsync.GraphqlApi(stack, 'apiWithSchema', {
+    authorizationConfig: {},
+    name: 'api',
+    schema: schemaFile,
+  });
+
+  // THEN
+  expect(apiWithSchema.schema).toBe(schemaFile);
+  expect(apiWithSchema.apiSource.schema).toBe(schemaFile);
+});
+
+test('appsync api from file', () => {
+  // WHEN
+  const apiWithSchema = new appsync.GraphqlApi(stack, 'apiWithSchema', {
+    authorizationConfig: {},
+    name: 'api',
+    apiSource: appsync.ApiSource.fromFile(path.join(__dirname, 'appsync.test.graphql')),
+  });
+
+  // THEN
+  expect(apiWithSchema.schema).not.toBeNull();
+  expect(apiWithSchema.apiSource.schema).not.toBeNull();
+});
+
+test('appsync fails when specifing schema and apiSource', () => {
+  // THEN
+  expect(() => {
+    new appsync.GraphqlApi(stack, 'apiWithSchemaAndApiSource', {
+      name: 'api',
+      schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+      apiSource: appsync.ApiSource.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+    });
+  }).toThrowError('You cannot specify both properties schema and apiSource.');
 });

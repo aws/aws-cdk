@@ -1,10 +1,10 @@
 import { Construct } from 'constructs';
-import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema, CfnDomainName, CfnDomainNameApiAssociation } from './appsync.generated';
+import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema, CfnDomainName, CfnDomainNameApiAssociation, CfnSourceApiAssociation } from './appsync.generated';
 import { IGraphqlApi, GraphqlApiBase } from './graphqlapi-base';
-import { ISchema } from './schema';
+import { ISchema, SchemaFile } from './schema';
 import { ICertificate } from '../../aws-certificatemanager';
 import { IUserPool } from '../../aws-cognito';
-import { ManagedPolicy, Role, IRole, ServicePrincipal, Grant, IGrantable } from '../../aws-iam';
+import { ManagedPolicy, Role, IRole, ServicePrincipal, Grant, IGrantable, PolicyStatement } from '../../aws-iam';
 import { IFunction } from '../../aws-lambda';
 import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
 import { ArnFormat, CfnResource, Duration, Expiration, IResolvable, Stack } from '../../core';
@@ -289,6 +289,100 @@ export interface DomainOptions {
 }
 
 /**
+ * Merge type used to associate the source API
+ */
+export enum MergeType {
+  /**
+   * Manual merge. The merge must be triggered manually if the source API has changed.
+   */
+  MANUAL_MERGE = 'MANUAL_MERGE',
+
+  /**
+   * Auto merge. The merge is triggered manually if the source API has changed.
+   */
+  AUTO_MERGE = 'AUTO_MERGE',
+}
+
+/**
+ * Source API configuration for creating a AppSync Merged API
+ */
+export interface SourceApiOptions {
+  /**
+   * Definition of source APIs associated with this Merged API
+   */
+  readonly sourceApis: SourceApi[];
+
+  /**
+   * IAM Role used to validate access to source APIs at runtime and to update the merged API endpoint with the source API changes
+   *
+   * @default - An IAM Role with acccess to source schemas will be created
+   */
+  readonly mergedApiExecutionRole?: Role;
+}
+
+/**
+ * Configuration of source API
+*/
+export interface SourceApi {
+  /**
+   * Source API that is associated with the merged API
+   */
+  readonly sourceApi: GraphqlApi;
+  /**
+   * Merging option used to associate the source API to the Merged API
+   *
+   * @default - Manual merge, requires the user to trigger schema merges manually.
+   */
+  readonly mergeType?: MergeType;
+}
+
+/**
+ * AppSync schema definition. Specify how you want to define your schema.
+ */
+export abstract class ApiSource {
+  /**
+   * Schema from schema object.
+   * @param schema SchemaFile.fromAsset(filePath: string) allows schema definition through schema.graphql file
+   * @returns API Source with schema from file
+   */
+  public static fromSchema(schema: ISchema): ApiSource {
+    return {
+      schema,
+    };
+  }
+
+  /**
+   * Schema from file, allows schema definition through schema.graphql file
+   * @param filePath the file path of the schema file
+   * @returns API Source with schema from file
+   */
+  public static fromFile(filePath: string): ApiSource {
+    return this.fromSchema(SchemaFile.fromAsset(filePath));
+  }
+
+  /**
+   * Schema from existing AppSync APIs - used for creating a AppSync Merged API
+   * @param sourceApiOptions Configuration for AppSync Merged API
+   * @returns API Source with for AppSync Merged API
+   */
+  public static fromSourceApis(sourceApiOptions: SourceApiOptions): ApiSource {
+    return {
+      sourceApiOptions,
+    };
+  }
+
+  /**
+   * Schema, when AppSync API is created from schema file
+   */
+  readonly schema?: ISchema;
+
+  /**
+   * Source APIs for Merged API
+   */
+  readonly sourceApiOptions?: SourceApiOptions;
+}
+
+/**
  * Properties for an AppSync GraphQL API
  */
 export interface GraphqlApiProps {
@@ -311,15 +405,17 @@ export interface GraphqlApiProps {
    */
   readonly logConfig?: LogConfig;
 
+  readonly apiSource?: ApiSource;
+
   /**
    * GraphQL schema definition. Specify how you want to define your schema.
    *
    * SchemaFile.fromAsset(filePath: string) allows schema definition through schema.graphql file
    *
    * @default - schema will be generated code-first (i.e. addType, addObjectType, etc.)
-   *
+   * @deprecated use apiSoure.schema instead
    */
-  readonly schema: ISchema;
+  readonly schema?: ISchema;
   /**
    * A flag indicating whether or not X-Ray tracing is enabled for the GraphQL API.
    *
@@ -474,8 +570,19 @@ export class GraphqlApi extends GraphqlApiBase {
 
   /**
    * the schema attached to this api
+   * @deprecated Use apiSource.schema instead
    */
-  public readonly schema: ISchema;
+  public get schema(): ISchema {
+    if (this.apiSource.schema) {
+      return this.apiSource.schema;
+    }
+    throw new Error('Schema does not exist for AppSync merged APIs.');
+  }
+
+  /**
+   * API source (schema file or source APIs) for this GraphQL Api
+   */
+  public readonly apiSource: ApiSource;
 
   /**
    * The Authorization Types for this GraphQL Api
@@ -494,10 +601,11 @@ export class GraphqlApi extends GraphqlApiBase {
    */
   public readonly logGroup: ILogGroup;
 
-  private schemaResource: CfnGraphQLSchema;
+  private schemaResource?: CfnGraphQLSchema;
   private api: CfnGraphQLApi;
   private apiKeyResource?: CfnApiKey;
   private domainNameResource?: CfnDomainName;
+  private mergedApiExecutionRole?: Role;
 
   constructor(scope: Construct, id: string, props: GraphqlApiProps) {
     super(scope, id);
@@ -511,6 +619,15 @@ export class GraphqlApi extends GraphqlApiBase {
 
     this.validateAuthorizationProps(modes);
 
+    if ((props.schema !== undefined) === (props.apiSource !== undefined)) {
+      throw new Error('You cannot specify both properties schema and apiSource.');
+    }
+    this.apiSource = props.schema ? ApiSource.fromSchema(props.schema) : props.apiSource!;
+
+    if (this.apiSource.sourceApiOptions) {
+      this.setupMergedApiExecutionRole(this.apiSource.sourceApiOptions);
+    }
+
     this.api = new CfnGraphQLApi(this, 'Resource', {
       name: props.name,
       authenticationType: defaultMode.authorizationType,
@@ -521,14 +638,20 @@ export class GraphqlApi extends GraphqlApiBase {
       additionalAuthenticationProviders: this.setupAdditionalAuthorizationModes(additionalModes),
       xrayEnabled: props.xrayEnabled,
       visibility: props.visibility,
+      mergedApiExecutionRoleArn: this.mergedApiExecutionRole?.roleArn,
+      apiType: this.apiSource.sourceApiOptions ? 'MERGED' : undefined,
     });
 
     this.apiId = this.api.attrApiId;
     this.arn = this.api.attrArn;
     this.graphqlUrl = this.api.attrGraphQlUrl;
     this.name = this.api.name;
-    this.schema = props.schema;
-    this.schemaResource = new CfnGraphQLSchema(this, 'Schema', this.schema.bind(this));
+
+    if (this.apiSource.schema) {
+      this.schemaResource = new CfnGraphQLSchema(this, 'Schema', this.apiSource.schema.bind(this));
+    } else {
+      this.setupSourceApiAssociations();
+    }
 
     if (props.domainName) {
       this.domainNameResource = new CfnDomainName(this, 'DomainName', {
@@ -549,7 +672,9 @@ export class GraphqlApi extends GraphqlApiBase {
         return mode.authorizationType === AuthorizationType.API_KEY && mode.apiKeyConfig;
       })?.apiKeyConfig;
       this.apiKeyResource = this.createAPIKey(config);
-      this.apiKeyResource.addDependency(this.schemaResource);
+      if (this.schemaResource) {
+        this.apiKeyResource.addDependency(this.schemaResource);
+      }
       this.apiKey = this.apiKeyResource.attrApiKey;
     }
 
@@ -573,6 +698,36 @@ export class GraphqlApi extends GraphqlApiBase {
         retention: props.logConfig.retention,
       });
     };
+  }
+
+  private setupSourceApiAssociations() {
+    this.apiSource.sourceApiOptions?.sourceApis.forEach(sourceApiOption => {
+      new CfnSourceApiAssociation(this, `${sourceApiOption.sourceApi.node.id}Association`, {
+        sourceApiIdentifier: sourceApiOption.sourceApi.apiId,
+        mergedApiIdentifier: this.api.attrApiId,
+        sourceApiAssociationConfig: {
+          mergeType: sourceApiOption.mergeType ?? MergeType.MANUAL_MERGE,
+        },
+      });
+    });
+  }
+
+  private setupMergedApiExecutionRole(sourceApiOptions: SourceApiOptions) {
+    if (sourceApiOptions.mergedApiExecutionRole) {
+      this.mergedApiExecutionRole = sourceApiOptions.mergedApiExecutionRole;
+    } else {
+      const sourceApiArns = sourceApiOptions.sourceApis?.map(sourceApiOption => {
+        return sourceApiOption.sourceApi.arn;
+      });
+
+      this.mergedApiExecutionRole = new Role(this, 'MergedApiExecutionRole', {
+        assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
+      });
+      this.mergedApiExecutionRole.addToPolicy(new PolicyStatement({
+        resources: sourceApiArns,
+        actions: ['appsync:SourceGraphQL'],
+      }));
+    }
   }
 
   /**
@@ -654,7 +809,9 @@ export class GraphqlApi extends GraphqlApiBase {
    * @param construct the dependee
    */
   public addSchemaDependency(construct: CfnResource): boolean {
-    construct.addDependency(this.schemaResource);
+    if (this.schemaResource) {
+      construct.addDependency(this.schemaResource);
+    };
     return true;
   }
 
