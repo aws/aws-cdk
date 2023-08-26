@@ -366,6 +366,7 @@ The syntax for template variables is `{{ variableName }}` in your local file. Th
 specify the substitutions in CDK like this:
 
 ```ts
+import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 
 declare const myLambdaFunction: lambda.Function;
