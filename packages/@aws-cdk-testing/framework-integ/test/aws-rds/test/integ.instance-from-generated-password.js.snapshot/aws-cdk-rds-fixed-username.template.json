@@ -462,6 +462,7 @@
    "Properties": {
     "AllocatedStorage": "100",
     "BackupRetentionPeriod": 0,
+    "CACertificateIdentifier": "rds-ca-2019",
     "CopyTagsToSnapshot": true,
     "DBInstanceClass": "db.t3.small",
     "DBName": "CDKDB",

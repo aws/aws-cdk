@@ -200,6 +200,7 @@
    "Properties": {
     "AllocatedStorage": "100",
     "BackupRetentionPeriod": 5,
+    "CACertificateIdentifier": "rds-ca-2019",
     "CopyTagsToSnapshot": true,
     "DBInstanceClass": "db.t3.small",
     "DBSubnetGroupName": {
@@ -279,6 +280,7 @@
    "Type": "AWS::RDS::DBInstance",
    "Properties": {
     "CopyTagsToSnapshot": true,
+    "CACertificateIdentifier": "rds-ca-2019",
     "DBInstanceClass": "db.t3.small",
     "DBSubnetGroupName": {
      "Ref": "PostgresReplicaSubnetGroup301B59DA"
@@ -391,6 +393,7 @@
    "Properties": {
     "AllocatedStorage": "100",
     "BackupRetentionPeriod": 5,
+    "CACertificateIdentifier": "rds-ca-2019",
     "CopyTagsToSnapshot": true,
     "DBInstanceClass": "db.t3.small",
     "DBSubnetGroupName": {
@@ -480,6 +483,7 @@
    "Type": "AWS::RDS::DBInstance",
    "Properties": {
     "BackupRetentionPeriod": 3,
+    "CACertificateIdentifier": "rds-ca-2019",
     "CopyTagsToSnapshot": true,
     "DBInstanceClass": "db.t3.small",
     "DBParameterGroupName": {
