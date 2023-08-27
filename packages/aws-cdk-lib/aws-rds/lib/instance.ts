@@ -354,28 +354,36 @@ export class CaCertificate {
   /**
    * rds-ca-2019 certificate authority
    */
-  static rdsCa2019() { return new CaCertificate('rds-ca-2019'); }
+  public static readonly RDS_CA_2019 = CaCertificate.of('rds-ca-2019');
 
   /**
    * rds-ca-ecc384-g1 certificate authority
    */
-  static rdsCaEcc384G1() { return new CaCertificate('rds-ca-ecc384-g1'); }
+  public static readonly RDS_CA_ECC384_G1 = CaCertificate.of('rds-ca-ecc384-g1');
 
   /**
    * rds-ca-rsa2048-g1 certificate authority
    */
-  static rdsCaRsa2048G1() { return new CaCertificate('rds-ca-rsa2048-g1'); }
+  public static readonly RDS_CA_RDS2048_G1 = CaCertificate.of('rds-ca-rsa2048-g1');
 
   /**
    * rds-ca-rsa4096-g1 certificate authority
    */
-  static rdsCaRsa4096G1() { return new CaCertificate('rds-ca-rsa4096-g1'); }
+  public static readonly RDS_CA_RDS4096_G1 = CaCertificate.of('rds-ca-rsa4096-g1');
 
-  public readonly identifier: string;
-
-  public constructor(identifier: string) {
-    this.identifier = identifier;
+  /**
+   * Custom CA certificate
+   *
+   * @param identifier - CA certificate identifier
+   */
+  public static of(identifier: string) {
+    return new CaCertificate(identifier);
   }
+
+  /**
+   * @param identifier - CA certificate identifier
+   */
+  private constructor(public readonly identifier: string) { }
 }
 
 /**
@@ -755,7 +763,7 @@ export interface DatabaseInstanceNewProps {
    * For Aurora DB engines:
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/UsingWithRDS.SSL-certificate-rotation.html
    *
-   * @default - rds-ca-2019
+   * @default - CaCertificate.RDS_CA_2019
    */
   readonly caCertificate?: CaCertificate;
 }
@@ -910,7 +918,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       domain: this.domainId,
       domainIamRoleName: this.domainRole?.roleName,
       networkType: props.networkType,
-      caCertificateIdentifier: props.caCertificate ? props.caCertificate.identifier : CaCertificate.rdsCa2019().identifier,
+      caCertificateIdentifier: props.caCertificate ? props.caCertificate.identifier : CaCertificate.RDS_CA_2019.identifier,
     };
   }
 
