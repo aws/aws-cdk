@@ -4,7 +4,7 @@ import { renderEnvironment, renderTags } from './private/utils';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
-import { Duration, Lazy, Size, Stack } from '../../../core';
+import { Duration, Lazy, Size, Stack, Token } from '../../../core';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
@@ -333,7 +333,7 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
   }
 
   private validateAlgorithmName(algorithmName?: string): void {
-    if (algorithmName === undefined) {
+    if (algorithmName === undefined || Token.isUnresolved(algorithmName)) {
       return;
     }
 
