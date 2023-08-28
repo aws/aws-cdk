@@ -90,6 +90,7 @@ export class Runtime {
 
   /**
    * The NodeJS 14.x runtime (nodejs14.x)
+   * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest NodeJS runtime.
    */
   public static readonly NODEJS_14_X = new Runtime('nodejs14.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
