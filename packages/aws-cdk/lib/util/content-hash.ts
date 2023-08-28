@@ -39,6 +39,6 @@ export function contentHashAny(value: unknown) {
       return;
     }
 
-    ret.update(`${x}`);
+    ret.update(`${x}${typeof x}`); // typeof to make sure hash('123') !== hash(123)
   }
 }
