@@ -1,27 +1,27 @@
 {
-  "name": "@aws-cdk/aws-scheduler-alpha",
+  "name": "@aws-cdk/aws-scheduler-targets-alpha",
   "version": "0.0.0",
-  "description": "The CDK Construct Library for Amazon Scheduler",
+  "description": "The CDK Construct Library for Amazon Scheduler Targets",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.services.scheduler.alpha",
+        "package": "software.amazon.awscdk.services.scheduler.targets.alpha",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "scheduler-alpha"
+          "artifactId": "scheduler-targets-alpha"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Scheduler.Alpha",
-        "packageId": "Amazon.CDK.AWS.Scheduler.Alpha",
+        "namespace": "Amazon.CDK.AWS.Scheduler.Targets.Alpha",
+        "packageId": "Amazon.CDK.AWS.Scheduler.Targets.Alpha",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
-        "distName": "aws-cdk.aws-scheduler-alpha",
-        "module": "aws_cdk.aws_scheduler_alpha",
+        "distName": "aws-cdk.aws-scheduler-targets-alpha",
+        "module": "aws_cdk.aws_scheduler_targets_alpha",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 2"
@@ -29,7 +29,7 @@
       },
       "go": {
         "moduleName": "github.com/aws/aws-cdk-go",
-        "packageName": "awscdkscheduleralpha"
+        "packageName": "awscdkschedulertargetsalpha"
       }
     },
     "projectReferences": true,
@@ -44,7 +44,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "packages/@aws-cdk/aws-scheduler-alpha"
+    "directory": "packages/@aws-cdk/aws-scheduler-targets-alpha"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "scripts": {
@@ -72,7 +72,8 @@
     "aws",
     "cdk",
     "constructs",
-    "aws-scheduler"
+    "aws-scheduler",
+    "aws-scheduler-targets"
   ],
   "author": {
     "name": "Amazon Web Services",
@@ -84,13 +85,15 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^29.5.4",
+    "@types/jest": "^29.5.3",
     "aws-cdk-lib": "0.0.0",
+    "@aws-cdk/aws-scheduler-alpha": "0.0.0",
     "constructs": "^10.0.0"
   },
   "dependencies": {},
   "peerDependencies": {
     "aws-cdk-lib": "^0.0.0",
+    "@aws-cdk/aws-scheduler-alpha": "0.0.0",
     "constructs": "^10.0.0"
   },
   "engines": {
@@ -114,10 +117,5 @@
       "naming/package-matches-directory",
       "assert/assert-dependency"
     ]
-  },
-  "jsiiRosetta": {
-    "exampleDependencies": {
-      "@aws-cdk/aws-scheduler-targets-alpha": "*"
-    }
   }
 }
