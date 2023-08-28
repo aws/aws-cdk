@@ -5,7 +5,7 @@ export function contentHash(data: string | Buffer | DataView) {
 }
 
 /**
- * A stably sorted Merkle hash of an arbitrary JS object
+ * A stably sorted hash of an arbitrary JS object
  */
 export function contentHashAny(value: unknown) {
   const ret = crypto.createHash('sha256');
