@@ -110,6 +110,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         const { fromTemporaryCredentials } = await import('@aws-sdk/credential-providers' as string);
         credentials = fromTemporaryCredentials({
           params,
+          clientConfig: { region: call.region },
         });
       }
 
