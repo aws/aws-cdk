@@ -665,7 +665,6 @@
     "AllocatedStorage": "100",
     "AutoMinorVersionUpgrade": true,
     "BackupRetentionPeriod": 7,
-    "CACertificateIdentifier": "rds-ca-2019",
     "CopyTagsToSnapshot": true,
     "DBInstanceClass": "db.t3.medium",
     "DBName": "ORCL",

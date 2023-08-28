@@ -588,7 +588,6 @@
       }
      }
     ],
-    "CACertificateIdentifier": "rds-ca-2019",
     "CopyTagsToSnapshot": true,
     "DBInstanceClass": "db.m5.large",
     "DBSubnetGroupName": {

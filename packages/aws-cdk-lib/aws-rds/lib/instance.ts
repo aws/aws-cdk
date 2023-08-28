@@ -385,7 +385,14 @@ export class CaCertificate {
   /**
    * @param identifier - CA certificate identifier
    */
-  private constructor(public readonly identifier: string) { }
+  private constructor(private readonly identifier: string) { }
+
+  /**
+   * Returns the CA certificate identifier as a string
+   */
+  public toString(): string {
+    return this.identifier;
+  }
 }
 
 /**
@@ -765,7 +772,7 @@ export interface DatabaseInstanceNewProps {
    * For Aurora DB engines:
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/UsingWithRDS.SSL-certificate-rotation.html
    *
-   * @default - CaCertificate.RDS_CA_2019
+   * @default - RDS will choose a certificate authority
    */
   readonly caCertificate?: CaCertificate;
 }
@@ -920,7 +927,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       domain: this.domainId,
       domainIamRoleName: this.domainRole?.roleName,
       networkType: props.networkType,
-      caCertificateIdentifier: props.caCertificate ? props.caCertificate.identifier : CaCertificate.RDS_CA_2019.identifier,
+      caCertificateIdentifier: props.caCertificate ? props.caCertificate.toString() : undefined,
     };
   }
 

@@ -425,7 +425,6 @@
    "Type": "AWS::RDS::DBInstance",
    "Properties": {
     "AllocatedStorage": "1000",
-    "CACertificateIdentifier": "rds-ca-2019",
     "CopyTagsToSnapshot": true,
     "DBInstanceClass": "db.t3.small",
     "DBSubnetGroupName": {
