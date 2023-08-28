@@ -349,6 +349,8 @@ export enum NetworkType {
 
 /**
  * The CA certificate used for this DB instance.
+ *
+ * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL.html
  */
 export class CaCertificate {
   /**
