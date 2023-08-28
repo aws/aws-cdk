@@ -38,12 +38,12 @@ export class WorkGraphBuilder {
    * Oof, see this parameter list
    */
   // eslint-disable-next-line max-len
-  private addAsset(ref: AssetReference) {
+  private addAsset(parentStack: cxapi.CloudFormationStackArtifact, assetManifestArtifact: cxapi.AssetManifestArtifact, assetManifest: AssetManifest, asset: IManifestEntry) {
     // Just the artifact identifier
-    const assetId = ref.manifestEntry.id.assetId;
+    const assetId = asset.id.assetId;
 
-    const buildId = `build-${assetId}-${contentHashAny([assetId, ref.manifestEntry.genericSource]).substring(0, 10)}`;
-    const publishId = `publish-${assetId}-${contentHashAny([assetId, ref.manifestEntry.genericDestination]).substring(0, 10)}`;
+    const buildId = `build-${assetId}-${contentHashAny([assetId, asset.genericSource]).substring(0, 10)}`;
+    const publishId = `publish-${assetId}-${contentHashAny([assetId, asset.genericDestination]).substring(0, 10)}`;
 
     // Build node only gets added once because they are all the same
     if (!this.graph.tryGetNode(buildId)) {
@@ -52,14 +52,14 @@ export class WorkGraphBuilder {
         id: buildId,
         note: assetId,
         dependencies: new Set([
-          ...this.stackArtifactIds(ref.manifestArtifact.dependencies),
+          ...this.stackArtifactIds(assetManifestArtifact.dependencies),
           // If we disable prebuild, then assets inherit (stack) dependencies from their parent stack
-          ...!this.prebuildAssets ? this.stackArtifactIds(onlyStacks(ref.parentStack.dependencies)) : [],
+          ...!this.prebuildAssets ? this.stackArtifactIds(onlyStacks(parentStack.dependencies)) : [],
         ]),
-        parentStack: ref.parentStack,
-        assetManifestArtifact: ref.manifestArtifact,
-        assetManifest: ref.assetManifest,
-        asset: ref.manifestEntry,
+        parentStack: parentStack,
+        assetManifestArtifact,
+        assetManifest,
+        asset,
         deploymentState: DeploymentState.PENDING,
         priority: WorkGraphBuilder.PRIORITIES['asset-build'],
       };
@@ -71,20 +71,20 @@ export class WorkGraphBuilder {
       this.graph.addNodes({
         type: 'asset-publish',
         id: publishId,
-        note: `${ref.manifestEntry.id}`,
+        note: `${asset.id}`,
         dependencies: new Set([
           buildId,
         ]),
-        parentStack: ref.parentStack,
-        assetManifestArtifact: ref.manifestArtifact,
-        assetManifest: ref.assetManifest,
-        asset: ref.manifestEntry,
+        parentStack,
+        assetManifestArtifact,
+        assetManifest,
+        asset,
         deploymentState: DeploymentState.PENDING,
         priority: WorkGraphBuilder.PRIORITIES['asset-publish'],
       });
     }
 
-    for (const inheritedDep of this.stackArtifactIds(onlyStacks(ref.parentStack.dependencies))) {
+    for (const inheritedDep of this.stackArtifactIds(onlyStacks(parentStack.dependencies))) {
       // The asset publish step also depends on the stacks that the parent depends on.
       // This is purely cosmetic: if we don't do this, the progress printing of asset publishing
       // is going to interfere with the progress bar of the stack deployment. We could remove this
@@ -96,7 +96,7 @@ export class WorkGraphBuilder {
     }
 
     // This will work whether the stack node has been added yet or not
-    this.graph.addDependency(`${this.idPrefix}${ref.parentStack.id}`, publishId);
+    this.graph.addDependency(`${this.idPrefix}${parentStack.id}`, publishId);
   }
 
   public build(artifacts: cxapi.CloudArtifact[]): WorkGraph {
@@ -108,12 +108,12 @@ export class WorkGraphBuilder {
       } else if (cxapi.AssetManifestArtifact.isAssetManifestArtifact(artifact)) {
         const assetManifest = AssetManifest.fromFile(artifact.file);
 
-        for (const asset of assetManifest.entries) {
+        for (const entry of assetManifest.entries) {
           const parentStack = parentStacks.get(artifact);
           if (parentStack === undefined) {
             throw new Error('Found an asset manifest that is not associated with a stack');
           }
-          this.addAsset({ parentStack, manifestArtifact: artifact, assetManifest, manifestEntry: asset });
+          this.addAsset(parentStack, artifact, assetManifest, entry);
         }
       } else if (cxapi.NestedCloudAssemblyArtifact.isNestedCloudAssemblyArtifact(artifact)) {
         const assembly = new cxapi.CloudAssembly(artifact.fullPath, { topoSort: false });
@@ -173,22 +173,4 @@ function stacksFromAssets(artifacts: cxapi.CloudArtifact[]) {
 
 function onlyStacks(artifacts: cxapi.CloudArtifact[]) {
   return artifacts.filter(cxapi.CloudFormationStackArtifact.isCloudFormationStackArtifact);
-}
-
-/**
- * A reference to a single asset entry for a single stack
- *
- * Also holds references to the asset context: the stack,
- * the artifact, the loaded manifest.
- *
- * The asset manifest has an unnecessarily bad structure to work with, but such is as it is.
- */
-interface AssetReference {
-  /**
-   * The asset itself
-   */
-  readonly manifestEntry: IManifestEntry;
-  readonly parentStack: cxapi.CloudFormationStackArtifact;
-  readonly manifestArtifact: cxapi.AssetManifestArtifact;
-  readonly assetManifest: AssetManifest;
 }
