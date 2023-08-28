@@ -55,8 +55,6 @@ describe('with some stacks and assets', () => {
 
   test('asset publishing step depends on asset building step', () => {
     const graph = new WorkGraphBuilder(true).build(assembly.artifacts);
-    // eslint-disable-next-line no-console
-    console.log(graph.toString());
 
     expect(graph.node('publish-F1-add54bdbcb')).toEqual(expect.objectContaining({
       type: 'asset-publish',
@@ -169,7 +167,7 @@ describe('tests that use assets', () => {
     const traversal = await traverseAndRecord(graph);
 
     expect(traversal).toEqual([
-      'build-work-graph-builder.test.js-0aa42b8a73',
+      'build-work-graph-builder.test.js-0c45de20db',
       'publish-work-graph-builder.test.js-5afe4c5879',
       'StackA',
       'StackB',
@@ -231,7 +229,7 @@ describe('tests that use assets', () => {
     const traversal = await traverseAndRecord(graph);
 
     expect(traversal).toEqual([
-      'build-abcdef-98b29b323e',
+      'build-abcdef-c414bd1cfd',
       'publish-abcdef-250b23e9ad',
       'publish-abcdef-422bc84ff9',
       'StackA',
@@ -277,7 +275,7 @@ describe('tests that use assets', () => {
     const traversal = await traverseAndRecord(graph);
 
     expect(traversal).toEqual([
-      'build-abcdef-98b29b323e',
+      'build-abcdef-c414bd1cfd',
       'publish-abcdef-250b23e9ad',
       'StackA',
       'publish-abcdef-422bc84ff9',
