@@ -505,18 +505,44 @@
                                 }
                               },
                               "Effect": "Allow",
-                              "Resource": {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:",
-                                    {
-                                      "Ref": "AWS::Partition"
-                                    },
-                                    ":route53:::hostedzone/imported-public-zone-id"
+                              "Resource": [
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":route53:::hostedzone/imported-private-zone-id"
+                                    ]
                                   ]
-                                ]
-                              }
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":route53:::hostedzone/imported-public-zone-id"
+                                    ]
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":route53:::hostedzone/imported-zone-id"
+                                    ]
+                                  ]
+                                }
+                              ]
                             },
                             {
                               "Action": "route53:ListHostedZonesByName",
@@ -551,9 +577,25 @@
               "version": "0.0.0"
             }
           },
+          "ImportedZone": {
+            "id": "ImportedZone",
+            "path": "aws-cdk-route53-cross-account-integ/ImportedZone",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
           "ImportedPublicZone": {
             "id": "ImportedPublicZone",
             "path": "aws-cdk-route53-cross-account-integ/ImportedPublicZone",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "ImportedPrivateZone": {
+            "id": "ImportedPrivateZone",
+            "path": "aws-cdk-route53-cross-account-integ/ImportedPrivateZone",
             "constructInfo": {
               "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"

@@ -356,40 +356,40 @@
        "Effect": "Allow",
        "Resource": [
         {
-          "Fn::Join": [
-            "",
-            [
-              "arn:",
-              {
-              "Ref": "AWS::Partition"
-              },
-              ":route53:::hostedzone/imported-private-zone-id"
-            ]
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":route53:::hostedzone/imported-private-zone-id"
           ]
+         ]
         },
         {
-          "Fn::Join": [
-            "",
-            [
-              "arn:",
-              {
-              "Ref": "AWS::Partition"
-              },
-              ":route53:::hostedzone/imported-public-zone-id"
-            ]
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":route53:::hostedzone/imported-public-zone-id"
           ]
+         ]
         },
         {
-          "Fn::Join": [
-            "",
-            [
-              "arn:",
-              {
-              "Ref": "AWS::Partition"
-              },
-              ":route53:::hostedzone/imported-zone-id"
-            ]
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":route53:::hostedzone/imported-zone-id"
           ]
+         ]
         }
        ]
       },

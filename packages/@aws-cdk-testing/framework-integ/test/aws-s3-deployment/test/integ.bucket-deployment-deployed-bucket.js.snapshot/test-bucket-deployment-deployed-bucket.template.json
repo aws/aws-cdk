@@ -465,6 +465,9 @@
    "eu-west-3": {
     "endpoint": "s3-website.eu-west-3.amazonaws.com"
    },
+   "il-central-1": {
+    "endpoint": "s3-website.il-central-1.amazonaws.com"
+   },
    "me-central-1": {
     "endpoint": "s3-website.me-central-1.amazonaws.com"
    },
