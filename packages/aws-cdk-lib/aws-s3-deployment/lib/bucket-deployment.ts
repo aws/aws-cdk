@@ -601,6 +601,13 @@ export interface DeployTimeSubstitutedFileProps {
    * substitution.
    */
   readonly substitutions: { [key: string]: string };
+
+  /**
+   * Execution role associated with this function
+   *
+   * @default - A role is automatically created
+   */
+  readonly role?: iam.IRole;
 }
 
 /**
@@ -628,6 +635,7 @@ export class DeployTimeSubstitutedFile extends BucketDeployment {
       extract: true,
       ...props,
       sources: [fileSource],
+      role: props.role,
     };
     super(scope, id, fullBucketDeploymentProps);
     // sets the object key

@@ -1,5 +1,5 @@
 {
-  "version": "33.0.0",
+  "version": "34.0.0",
   "files": {
     "086fe534b1e7545fbc662251685b8a7d91ab2061bbfe98d857b27478442487cb": {
       "source": {
@@ -27,7 +27,7 @@
         }
       }
     },
-    "b9110200a7df43e8d36405bba4dfa22124052374428d331231631a12975d93db": {
+    "e57b17d8bf8d61b539b259fe99cbe2dc5ae6e94bb1b30c9fa2f4aca3ffaafd37": {
       "source": {
         "path": "cdk-synthetics-canary-auto-delete.template.json",
         "packaging": "file"
@@ -35,7 +35,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "b9110200a7df43e8d36405bba4dfa22124052374428d331231631a12975d93db.json",
+          "objectKey": "e57b17d8bf8d61b539b259fe99cbe2dc5ae6e94bb1b30c9fa2f4aca3ffaafd37.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
