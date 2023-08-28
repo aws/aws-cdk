@@ -1,5 +1,6 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { AssetManifest, IManifestEntry } from 'cdk-assets';
+import { contentHashAny } from './content-hash';
 import { WorkGraph } from './work-graph';
 import { DeploymentState, AssetBuildNode, WorkNode } from './work-graph-types';
 
@@ -26,7 +27,7 @@ export class WorkGraphBuilder {
     this.graph.addNodes({
       type: 'stack',
       id: `${this.idPrefix}${artifact.id}`,
-      dependencies: new Set(this.getDepIds(onlyStacks(artifact.dependencies))),
+      dependencies: new Set(this.stackArtifactIds(onlyStacks(artifact.dependencies))),
       stack: artifact,
       deploymentState: DeploymentState.PENDING,
       priority: WorkGraphBuilder.PRIORITIES.stack,
@@ -37,53 +38,53 @@ export class WorkGraphBuilder {
    * Oof, see this parameter list
    */
   // eslint-disable-next-line max-len
-  private addAsset(parentStack: cxapi.CloudFormationStackArtifact, assetArtifact: cxapi.AssetManifestArtifact, assetManifest: AssetManifest, asset: IManifestEntry) {
+  private addAsset(ref: AssetReference) {
     // Just the artifact identifier
-    const assetId = asset.id.assetId;
-    // Unique per destination where the artifact needs to go
-    const assetDestinationId = `${asset.id}`;
+    const assetId = ref.manifestEntry.id.assetId;
 
-    const buildId = `${this.idPrefix}${assetId}-build`;
-    const publishNodeId = `${this.idPrefix}${assetDestinationId}-publish`;
+    const buildId = `build-${assetId}-${contentHashAny([assetId, ref.manifestEntry.genericSource]).substring(0, 10)}`;
+    const publishId = `publish-${assetId}-${contentHashAny([assetId, ref.manifestEntry.genericDestination]).substring(0, 10)}`;
 
     // Build node only gets added once because they are all the same
     if (!this.graph.tryGetNode(buildId)) {
       const node: AssetBuildNode = {
         type: 'asset-build',
         id: buildId,
+        note: assetId,
         dependencies: new Set([
-          ...this.getDepIds(assetArtifact.dependencies),
+          ...this.stackArtifactIds(ref.manifestArtifact.dependencies),
           // If we disable prebuild, then assets inherit (stack) dependencies from their parent stack
-          ...!this.prebuildAssets ? this.getDepIds(onlyStacks(parentStack.dependencies)) : [],
+          ...!this.prebuildAssets ? this.stackArtifactIds(onlyStacks(ref.parentStack.dependencies)) : [],
         ]),
-        parentStack,
-        assetManifestArtifact: assetArtifact,
-        assetManifest,
-        asset,
+        parentStack: ref.parentStack,
+        assetManifestArtifact: ref.manifestArtifact,
+        assetManifest: ref.assetManifest,
+        asset: ref.manifestEntry,
         deploymentState: DeploymentState.PENDING,
         priority: WorkGraphBuilder.PRIORITIES['asset-build'],
       };
       this.graph.addNodes(node);
     }
 
-    const publishNode = this.graph.tryGetNode(publishNodeId);
+    const publishNode = this.graph.tryGetNode(publishId);
     if (!publishNode) {
       this.graph.addNodes({
         type: 'asset-publish',
-        id: publishNodeId,
+        id: publishId,
+        note: `${ref.manifestEntry.id}`,
         dependencies: new Set([
           buildId,
         ]),
-        parentStack,
-        assetManifestArtifact: assetArtifact,
-        assetManifest,
-        asset,
+        parentStack: ref.parentStack,
+        assetManifestArtifact: ref.manifestArtifact,
+        assetManifest: ref.assetManifest,
+        asset: ref.manifestEntry,
         deploymentState: DeploymentState.PENDING,
         priority: WorkGraphBuilder.PRIORITIES['asset-publish'],
       });
     }
 
-    for (const inheritedDep of this.getDepIds(onlyStacks(parentStack.dependencies))) {
+    for (const inheritedDep of this.stackArtifactIds(onlyStacks(ref.parentStack.dependencies))) {
       // The asset publish step also depends on the stacks that the parent depends on.
       // This is purely cosmetic: if we don't do this, the progress printing of asset publishing
       // is going to interfere with the progress bar of the stack deployment. We could remove this
@@ -91,11 +92,11 @@ export class WorkGraphBuilder {
       // Note: this may introduce a cycle if one of the parent's dependencies is another stack that
       // depends on this asset. To workaround this we remove these cycles once all nodes have
       // been added to the graph.
-      this.graph.addDependency(publishNodeId, inheritedDep);
+      this.graph.addDependency(publishId, inheritedDep);
     }
 
     // This will work whether the stack node has been added yet or not
-    this.graph.addDependency(`${this.idPrefix}${parentStack.id}`, publishNodeId);
+    this.graph.addDependency(`${this.idPrefix}${ref.parentStack.id}`, publishId);
   }
 
   public build(artifacts: cxapi.CloudArtifact[]): WorkGraph {
@@ -105,14 +106,14 @@ export class WorkGraphBuilder {
       if (cxapi.CloudFormationStackArtifact.isCloudFormationStackArtifact(artifact)) {
         this.addStack(artifact);
       } else if (cxapi.AssetManifestArtifact.isAssetManifestArtifact(artifact)) {
-        const manifest = AssetManifest.fromFile(artifact.file);
+        const assetManifest = AssetManifest.fromFile(artifact.file);
 
-        for (const entry of manifest.entries) {
+        for (const asset of assetManifest.entries) {
           const parentStack = parentStacks.get(artifact);
           if (parentStack === undefined) {
             throw new Error('Found an asset manifest that is not associated with a stack');
           }
-          this.addAsset(parentStack, artifact, manifest, entry);
+          this.addAsset({ parentStack, manifestArtifact: artifact, assetManifest, manifestEntry: asset });
         }
       } else if (cxapi.NestedCloudAssemblyArtifact.isNestedCloudAssemblyArtifact(artifact)) {
         const assembly = new cxapi.CloudAssembly(artifact.fullPath, { topoSort: false });
@@ -131,17 +132,15 @@ export class WorkGraphBuilder {
     return this.graph;
   }
 
-  private getDepIds(deps: cxapi.CloudArtifact[]): string[] {
-    const ids = [];
-    for (const artifact of deps) {
-      if (cxapi.AssetManifestArtifact.isAssetManifestArtifact(artifact)) {
-        // Depend on only the publish step. The publish step will depend on the build step on its own.
-        ids.push(`${this.idPrefix}${artifact.id}-publish`);
-      } else {
-        ids.push(`${this.idPrefix}${artifact.id}`);
-      }
+  private stackArtifactIds(deps: cxapi.CloudArtifact[]): string[] {
+    return deps.flatMap((d) => cxapi.CloudFormationStackArtifact.isCloudFormationStackArtifact(d) ? [this.stackArtifactId(d)] : []);
+  }
+
+  private stackArtifactId(artifact: cxapi.CloudArtifact): string {
+    if (!cxapi.CloudFormationStackArtifact.isCloudFormationStackArtifact(artifact)) {
+      throw new Error(`Can only call this on CloudFormationStackArtifact, got: ${artifact.constructor.name}`);
     }
-    return ids;
+    return `${this.idPrefix}${artifact.id}`;
   }
 
   /**
@@ -174,4 +173,22 @@ function stacksFromAssets(artifacts: cxapi.CloudArtifact[]) {
 
 function onlyStacks(artifacts: cxapi.CloudArtifact[]) {
   return artifacts.filter(cxapi.CloudFormationStackArtifact.isCloudFormationStackArtifact);
+}
+
+/**
+ * A reference to a single asset entry for a single stack
+ *
+ * Also holds references to the asset context: the stack,
+ * the artifact, the loaded manifest.
+ *
+ * The asset manifest has an unnecessarily bad structure to work with, but such is as it is.
+ */
+interface AssetReference {
+  /**
+   * The asset itself
+   */
+  readonly manifestEntry: IManifestEntry;
+  readonly parentStack: cxapi.CloudFormationStackArtifact;
+  readonly manifestArtifact: cxapi.AssetManifestArtifact;
+  readonly assetManifest: AssetManifest;
 }
