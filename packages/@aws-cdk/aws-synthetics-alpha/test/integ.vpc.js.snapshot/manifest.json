@@ -1,5 +1,5 @@
 {
-  "version": "30.0.0",
+  "version": "34.0.0",
   "artifacts": {
     "canary-vpc.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/23ae46d38257adb81b3c7df8b60995e221cb3db62f1042bb3d23df9ecbef0511.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/91fabd97b90c5b2bdb26fa2b1dd4d26f0c6b6003e4f3c99f911b2a5ad0ceab37.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
