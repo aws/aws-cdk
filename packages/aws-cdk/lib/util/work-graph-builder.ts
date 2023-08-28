@@ -106,14 +106,14 @@ export class WorkGraphBuilder {
       if (cxapi.CloudFormationStackArtifact.isCloudFormationStackArtifact(artifact)) {
         this.addStack(artifact);
       } else if (cxapi.AssetManifestArtifact.isAssetManifestArtifact(artifact)) {
-        const assetManifest = AssetManifest.fromFile(artifact.file);
+        const manifest = AssetManifest.fromFile(artifact.file);
 
-        for (const entry of assetManifest.entries) {
+        for (const entry of manifest.entries) {
           const parentStack = parentStacks.get(artifact);
           if (parentStack === undefined) {
             throw new Error('Found an asset manifest that is not associated with a stack');
           }
-          this.addAsset(parentStack, artifact, assetManifest, entry);
+          this.addAsset(parentStack, artifact, manifest, entry);
         }
       } else if (cxapi.NestedCloudAssemblyArtifact.isNestedCloudAssemblyArtifact(artifact)) {
         const assembly = new cxapi.CloudAssembly(artifact.fullPath, { topoSort: false });
