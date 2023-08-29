@@ -39,6 +39,16 @@ export interface EmrContainersStartJobRunProps extends sfn.TaskStateBaseProps {
   readonly executionRole?: iam.IRole;
 
   /**
+   * The execution role arn for the job run.
+   *
+   * Used when both `virtualClusterId` and `executionRoleArn` need to be taken from a JSON input path.
+   * Conflicts with `executionRole` when both provided. `executionRole` takes precedence over `executionRoleArn`.
+   * If an execution role ARN is provided, follow the documentation to update the role trust policy.
+   * @see https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up-trust-policy.html
+   */
+  readonly executionRoleArn?: string;
+
+  /**
    * The Amazon EMR release version to use for the job run.
    */
   readonly releaseLabel: ReleaseLabel;
@@ -116,13 +126,14 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
     }
 
     if (this.props.executionRole === undefined
+      && this.props.executionRoleArn === undefined
       && sfn.JsonPath.isEncodedJsonPath(props.virtualCluster.id)) {
       throw new Error('Execution role cannot be undefined when the virtual cluster ID is not a concrete value. Provide an execution role with the correct trust policy');
     }
 
     this.logGroup = this.assignLogGroup();
     this.logBucket = this.assignLogBucket();
-    this.role = this.props.executionRole ?? this.createJobExecutionRole();
+    this.role = this.props.executionRole ?? this.jobExecutionRoleFromArn(this.props.executionRoleArn) ?? this.createJobExecutionRole();
     this.grantPrincipal = this.role;
 
     this.grantMonitoringPolicies();
@@ -295,8 +306,15 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
 
     return jobExecutionRole;
   }
-  private grantMonitoringPolicies() {
 
+  private jobExecutionRoleFromArn(exectionRoleArn?: string): iam.IRole | undefined {
+    if (exectionRoleArn === undefined) {
+      return undefined;
+    }
+    return iam.Role.fromRoleArn(this, 'Job-Execution-Role-From-Arn', exectionRoleArn);
+  }
+
+  private grantMonitoringPolicies() {
     this.logBucket?.grantReadWrite(this.role);
     this.logGroup?.grantWrite(this.role);
     this.logGroup?.grant(this.role, 'logs:DescribeLogStreams');

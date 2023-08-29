@@ -70,6 +70,32 @@ const startJobRun = new EmrContainersStartJobRun(stack, 'Start a Job Run', {
   resultPath: '$.job',
 });
 
+const startJobRunWithRoleFromArn = new EmrContainersStartJobRun(stack, 'Start a Job Run With Role From ARN', {
+  virtualCluster: VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromJsonPathAt('$.cluster.Id')),
+  releaseLabel: ReleaseLabel.EMR_6_2_0,
+  jobName: 'EMR-Containers-Job-Role-Arn',
+  executionRoleArn: jobExecutionRole.roleArn,
+  jobDriver: {
+    sparkSubmitJobDriver: {
+      entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
+      entryPointArguments: sfn.TaskInput.fromObject(['2']),
+      sparkSubmitParameters: '--conf spark.driver.memory=512M --conf spark.kubernetes.driver.request.cores=0.2 --conf spark.kubernetes.executor.request.cores=0.2 --conf spark.sql.shuffle.partitions=60 --conf spark.dynamicAllocation.enabled=false',
+    },
+  },
+  monitoring: {
+    logging: true,
+    persistentAppUI: true,
+  },
+  applicationConfig: [{
+    classification: Classification.SPARK_DEFAULTS,
+    properties: {
+      'spark.executor.instances': '1',
+      'spark.executor.memory': '512M',
+    },
+  }],
+  resultPath: '$.job',
+});
+
 const deleteVirtualCluster = new EmrContainersDeleteVirtualCluster(stack, 'Delete a Virtual Cluster', {
   virtualClusterId: sfn.TaskInput.fromJsonPathAt('$.job.VirtualClusterId'),
 });
@@ -77,10 +103,11 @@ const deleteVirtualCluster = new EmrContainersDeleteVirtualCluster(stack, 'Delet
 const chain = sfn.Chain
   .start(createVirtualCluster)
   .next(startJobRun)
+  .next(startJobRunWithRoleFromArn)
   .next(deleteVirtualCluster);
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {
-  definition: chain,
+  definitionBody: sfn.DefinitionBody.fromChainable(chain),
   timeout: cdk.Duration.minutes(20),
 });
 

@@ -814,10 +814,27 @@ Users can provide their own existing Job Execution Role.
 
 ```ts
 new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
-  virtualCluster:tasks.VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromJsonPathAt('$.VirtualClusterId')),
+  virtualCluster: tasks.VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromJsonPathAt('$.VirtualClusterId')),
   releaseLabel: tasks.ReleaseLabel.EMR_6_2_0,
   jobName: 'EMR-Containers-Job',
   executionRole: iam.Role.fromRoleArn(this, 'Job-Execution-Role', 'arn:aws:iam::xxxxxxxxxxxx:role/JobExecutionRole'),
+  jobDriver: {
+    sparkSubmitJobDriver: {
+      entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
+      sparkSubmitParameters: '--conf spark.executor.instances=2 --conf spark.executor.memory=2G --conf spark.executor.cores=2 --conf spark.driver.cores=1',
+    },
+  },
+});
+```
+
+Job Execution Role can also be provided via ARN. Use this to supply the Job Execution Role via JSON input path.
+
+```ts
+new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
+  virtualCluster: tasks.VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromJsonPathAt('$.VirtualClusterId')),
+  releaseLabel: tasks.ReleaseLabel.EMR_6_2_0,
+  jobName: 'EMR-Containers-Job',
+  executionRoleArn: sfn.TaskInput.fromJsonPathAt('$.ExecutionRoleArn'),
   jobDriver: {
     sparkSubmitJobDriver: {
       entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),

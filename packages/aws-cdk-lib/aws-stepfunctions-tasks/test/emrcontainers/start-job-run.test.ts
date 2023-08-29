@@ -212,6 +212,43 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
     Template.fromStack(stack).resourceCountIs('AWS::CloudFormation::CustomResource', 0);
   });
 
+  test('Job Execution Role ARN', () => {
+    // WHEN
+    const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
+      ...defaultProps,
+      executionRoleArn: 'arn:aws:iam::xxxxxxxxxxxx:role/JobExecutionRole',
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toMatchObject({
+      Parameters: {
+        ExecutionRoleArn: 'arn:aws:iam::xxxxxxxxxxxx:role/JobExecutionRole',
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).resourceCountIs('AWS::CloudFormation::CustomResource', 0);
+  });
+
+  test('Job Execution Role Precedence', () => {
+    // WHEN
+    const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
+      ...defaultProps,
+      executionRole: iam.Role.fromRoleArn(stack, 'Job Execution Role', 'arn:aws:iam::xxxxxxxxxxxx:role/JobExecutionRole'),
+      executionRoleArn: 'arn:aws:iam::xxxxxxxxxxxx:role/ThisRoleShouldNotBeSelected',
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toMatchObject({
+      Parameters: {
+        ExecutionRoleArn: 'arn:aws:iam::xxxxxxxxxxxx:role/JobExecutionRole',
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).resourceCountIs('AWS::CloudFormation::CustomResource', 0);
+  });
+
   test('Virtual Cluster Input from virtualClusterId', () => {
     // WHEN
     const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
