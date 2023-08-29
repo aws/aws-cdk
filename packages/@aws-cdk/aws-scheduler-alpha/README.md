@@ -37,16 +37,21 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 
 ## Defining a schedule 
 
-TODO: Schedule is not yet fully implemented. See section in [L2 Event Bridge Scheduler RFC](https://github.com/aws/aws-cdk-rfcs/blob/master/text/0474-event-bridge-scheduler-l2.md)
+```ts
+declare const fn: lambda.Function;
 
-[comment]: <> (TODO: change for each PR that implements more functionality)
+const target = new targets.LambdaInvoke(fn, {
+    input: ScheduleTargetInput.fromObject({
+        "payload": "useful",
+    }),
+});
 
-Only an L2 class is created that wraps the L1 class and handles the following properties:
-
-- schedule
-- schedule group
-- target (only LambdaInvoke is supported for now)
-- flexibleTimeWindow will be set to `{ mode: 'OFF' }`
+const schedule = new Schedule(this, 'Schedule', {
+    schedule: ScheduleExpression.rate(Duration.minutes(10)),
+    target,
+    description: 'This is a test schedule that invokes lambda function every 10 minutes.',
+});
+```
 
 ### Schedule Expressions
 
@@ -60,15 +65,17 @@ cron-based schedule you can specify a time zone in which EventBridge Scheduler e
 
 [comment]: <> (TODO: Switch to `ts` once Schedule is implemented)
 
-```text
+```ts
+declare const target: targets.LambdaInvoke;
+
 const rateBasedSchedule = new Schedule(this, 'Schedule', {
-    scheduleExpression: ScheduleExpression.rate(Duration.minutes(10)),
+    schedule: ScheduleExpression.rate(Duration.minutes(10)),
     target,
     description: 'This is a test rate-based schedule',
 });
 
 const cronBasedSchedule = new Schedule(this, 'Schedule', {
-    scheduleExpression: ScheduleExpression.cron({ 
+    schedule: ScheduleExpression.cron({ 
         minute: '0',
         hour: '23',
         day: '20',
@@ -85,9 +92,11 @@ and time zone in which EventBridge Scheduler evaluates the schedule.
 
 [comment]: <> (TODO: Switch to `ts` once Schedule is implemented)
 
-```text
+```ts
+declare const target: targets.LambdaInvoke;
+
 const oneTimeSchedule = new Schedule(this, 'Schedule', {
-    scheduleExpression: ScheduleExpression.at(
+    schedule: ScheduleExpression.at(
         new Date(2022, 10, 20, 19, 20, 23),
         TimeZone.AMERICA_NEW_YORK,
     ),
@@ -100,25 +109,21 @@ const oneTimeSchedule = new Schedule(this, 'Schedule', {
 
 Your AWS account comes with a default scheduler group. You can access default group in CDK with:
 
-```text
+```ts
 const defaultGroup = Group.fromDefaultGroup(this, "DefaultGroup");
 ```
 
 If not specified a schedule is added to the default group. However, you can also add the schedule to a custom scheduling group managed by you:
 
-```text
+```ts
+declare const target: targets.LambdaInvoke;
+
 const group = new Group(this, "Group", {
     groupName: "MyGroup",
 });
 
-const target = new targets.LambdaInvoke(props.func, {
-    input: ScheduleTargetInput.fromObject({
-        "payload": "useful",
-    }),
-});
-
 new Schedule(this, 'Schedule', {
-    scheduleExpression: ScheduleExpression.rate(Duration.minutes(10)),
+    schedule: ScheduleExpression.rate(Duration.minutes(10)),
     target,
     group,
 });
@@ -126,9 +131,10 @@ new Schedule(this, 'Schedule', {
 
 ## Scheduler Targets
 
-TODO: Scheduler Targets Module is not yet implemented. See section in [L2 Event Bridge Scheduler RFC](https://github.com/aws/aws-cdk-rfcs/blob/master/text/0474-event-bridge-scheduler-l2.md)
-
-Only LambdaInvoke target is added for now.
+The `@aws-cdk/aws-schedule-targets-alpha` module includes classes that implement the `IScheduleTarget` interface for
+various AWS services. EventBridge Scheduler supports two types of targets: templated targets invoke common API
+operations across a core groups of services, and customizeable universal targets that you can use to call more
+than 6,000 operations across over 270 services. A list of supported targets can be found at `@aws-cdk/aws-schedule-targets-alpha`. 
 
 ### Input 
 
@@ -156,7 +162,28 @@ const input = ScheduleTargetInput.fromText(text);
 
 ### Specifying Execution Role 
 
-TODO: Not yet implemented. See section in [L2 Event Bridge Scheduler RFC](https://github.com/aws/aws-cdk-rfcs/blob/master/text/0474-event-bridge-scheduler-l2.md)
+An execution role is an IAM role that EventBridge Scheduler assumes in order to interact with other AWS services on your behalf.
+
+The classes for templated schedule targets automatically create an IAM role with all the minimum necessary
+permissions to interact with the templated target. If you wish you may specify your own IAM role, then the templated targets
+will grant minimal required permissions. For example: for invoking Lambda function target `LambdaInvoke` will grant
+execution IAM role permission to `lambda:InvokeFunction`.
+
+```ts
+declare const fn: lambda.Function;
+
+const role = new iam.Role(this, 'Role', {
+    assumedBy: new iam.ServicePrincipal('scheduler.amazonaws.com'),
+});
+
+const target = new targets.LambdaInvoke(fn, {
+    input: ScheduleTargetInput.fromObject({
+        "payload": "useful"
+    }),
+    role,
+});
+```
+
 
 ### Cross-account and cross-region targets
 
@@ -168,7 +195,30 @@ TODO: Not yet implemented. See section in [L2 Event Bridge Scheduler RFC](https:
 
 ## Error-handling 
 
-TODO: Not yet implemented. See section in [L2 Event Bridge Scheduler RFC](https://github.com/aws/aws-cdk-rfcs/blob/master/text/0474-event-bridge-scheduler-l2.md)
+You can configure how your schedule handles failures, when EventBridge Scheduler is unable to deliver an event
+successfully to a target, by using two primary mechanisms: a retry policy, and a dead-letter queue (DLQ).
+
+A retry policy determines the number of times EventBridge Scheduler must retry a failed event, and how long
+to keep an unprocessed event.
+
+A DLQ is a standard Amazon SQS queue EventBridge Scheduler uses to deliver failed events to, after the retry
+policy has been exhausted. You can use a DLQ to troubleshoot issues with your schedule or its downstream target.
+If you've configured a retry policy for your schedule, EventBridge Scheduler delivers the dead-letter event after
+exhausting the maximum number of retries you set in the retry policy.
+
+```ts
+declare const fn: lambda.Function;
+
+const dlq = new sqs.Queue(this, "DLQ", {
+    queueName: 'MyDLQ',
+});
+
+const target = new targets.LambdaInvoke(fn, {
+    deadLetterQueue: dlq,
+    maxEventAge: Duration.minutes(1),
+    retryAttempts: 3
+});
+```
 
 ## Overriding Target Properties 
 

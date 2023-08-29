@@ -30,7 +30,7 @@
       "Value": "true"
      },
      {
-      "Key": "aws-cdk:cr-owned:3caa27f4",
+      "Key": "aws-cdk:cr-owned:f2fec642",
       "Value": "true"
      }
     ]
@@ -108,6 +108,47 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "TestAssetBucketProductAssetsDeploymentAwsCliLayerD1E52C82": {
+   "Type": "AWS::Lambda::LayerVersion",
+   "Properties": {
+    "Content": {
+     "S3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
+     "S3Key": "e2277687077a2abf9ae1af1cc9565e6715e2ebb62f79ec53aa75a1af9298f642.zip"
+    },
+    "Description": "/opt/awscli/aws"
+   }
+  },
+  "TestAssetBucketProductAssetsDeploymentCustomResource5F81E30F": {
+   "Type": "Custom::CDKBucketDeployment",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536",
+      "Arn"
+     ]
+    },
+    "SourceBucketNames": [
+     "cdk-hnb659fds-assets-12345678-test-region",
+     "cdk-hnb659fds-assets-12345678-test-region"
+    ],
+    "SourceObjectKeys": [
+     "d3833f63e813b3a96ea04c8c50ca98209330867f5f6ac358efca11f85a3476c2.zip",
+     "e2204c9fddfc339ea362dec9143b4c22f883d4c18dd38c456f8f6a7161c1073d.zip"
+    ],
+    "SourceMarkers": [
+     {},
+     {}
+    ],
+    "DestinationBucketName": {
+     "Ref": "TestAssetBucket9434EFAE"
+    },
+    "RetainOnDelete": true,
+    "Extract": false,
+    "Prune": false
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -163,46 +204,6 @@
    "DependsOn": [
     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
    ]
-  },
-  "AssetsBucketDeploymentAwsCliLayer9BCEE17F": {
-   "Type": "AWS::Lambda::LayerVersion",
-   "Properties": {
-    "Content": {
-     "S3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
-     "S3Key": "e2277687077a2abf9ae1af1cc9565e6715e2ebb62f79ec53aa75a1af9298f642.zip"
-    },
-    "Description": "/opt/awscli/aws"
-   }
-  },
-  "AssetsBucketDeploymentCustomResource283760D6": {
-   "Type": "Custom::CDKBucketDeployment",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536",
-      "Arn"
-     ]
-    },
-    "SourceBucketNames": [
-     "cdk-hnb659fds-assets-12345678-test-region",
-     "cdk-hnb659fds-assets-12345678-test-region"
-    ],
-    "SourceObjectKeys": [
-     "d3833f63e813b3a96ea04c8c50ca98209330867f5f6ac358efca11f85a3476c2.zip",
-     "e2204c9fddfc339ea362dec9143b4c22f883d4c18dd38c456f8f6a7161c1073d.zip"
-    ],
-    "SourceMarkers": [
-     {},
-     {}
-    ],
-    "DestinationBucketName": {
-     "Ref": "TestAssetBucket9434EFAE"
-    },
-    "Extract": false,
-    "Prune": false
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
   },
   "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265": {
    "Type": "AWS::IAM::Role",
@@ -337,7 +338,7 @@
     "Handler": "index.handler",
     "Layers": [
      {
-      "Ref": "AssetsBucketDeploymentAwsCliLayer9BCEE17F"
+      "Ref": "TestAssetBucketProductAssetsDeploymentAwsCliLayerD1E52C82"
      }
     ],
     "Role": {
