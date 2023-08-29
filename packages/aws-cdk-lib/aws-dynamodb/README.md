@@ -30,7 +30,7 @@ https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GlobalTables.ht
 
 ## Replicas
 
-A `GlobalTable` can be configured with replica tables. To do this, the `GlobalTable` must be defined in a region non-agnostic `Stack`. The main deployment region must not be given as a replica because this is created by default with the `GlobalTable`. The following is a minimal `GlobalTable` definition with `replicas` defined in `us-east-1` and `us-east-2`:
+A `GlobalTable` can be configured with replica tables. To do this, the `GlobalTable` must be defined in a `Stack` with a defined region. The main deployment region must not be given as a replica because this is created by default with the `GlobalTable`. The following is a minimal example of defining a `GlobalTable` with `replicas`. This `GlobalTable` definition will provision three copies of the table - one in `us-west-2` (primary deployment region), one in `us-east-1`, and one in `us-east-2`.
 
 ```ts
 import * as cdk from 'aws-cdk-lib';
