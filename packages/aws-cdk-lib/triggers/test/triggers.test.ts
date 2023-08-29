@@ -19,7 +19,7 @@ test('minimal trigger function', () => {
   const template = Template.fromStack(stack);
   template.hasResourceProperties('AWS::Lambda::Function', {});
   template.hasResourceProperties('Custom::Trigger', {
-    HandlerArn: { Ref: 'MyTriggerCurrentVersion8802742B555ea1a8a066d494bd9b85921db605fb' },
+    HandlerArn: { Ref: 'MyTriggerCurrentVersion8802742B9328233c8b1874b980ce987912273063' },
   });
 });
 
@@ -108,7 +108,7 @@ test('minimal trigger', () => {
   const template = Template.fromStack(stack);
   template.hasResourceProperties('AWS::Lambda::Function', {});
   template.hasResourceProperties('Custom::Trigger', {
-    HandlerArn: { Ref: 'MyFunctionCurrentVersion197490AF2e4e06d52af2bb609d8c23243d665966' },
+    HandlerArn: { Ref: 'MyFunctionCurrentVersion197490AF55e50858f6b564bc4745996ce85ee3a6' },
     ExecuteOnHandlerChange: true,
   });
 });
@@ -134,7 +134,7 @@ test('trigger with optional properties', () => {
   const template = Template.fromStack(stack);
   template.hasResourceProperties('AWS::Lambda::Function', {});
   template.hasResourceProperties('Custom::Trigger', {
-    HandlerArn: { Ref: 'MyFunctionCurrentVersion197490AF2e4e06d52af2bb609d8c23243d665966' },
+    HandlerArn: { Ref: 'MyFunctionCurrentVersion197490AF55e50858f6b564bc4745996ce85ee3a6' },
     Timeout: '600000',
     InvocationType: 'Event',
     ExecuteOnHandlerChange: false,

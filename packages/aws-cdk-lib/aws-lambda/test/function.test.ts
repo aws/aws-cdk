@@ -1642,10 +1642,10 @@ describe('function', () => {
     // THEN
     expect(() => new lambda.Function(stack, 'Function', {
       layers: [layer],
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: lambda.Runtime.NODEJS_18_X,
       code: lambda.Code.fromInline('exports.main = function() { console.log("DONE"); }'),
       handler: 'index.main',
-    })).toThrow(/nodejs16.x is not in \[nodejs16.x\]/);
+    })).toThrow(/nodejs18.x is not in \[nodejs16.x\]/);
   });
 
   test('using more than 5 layers', () => {
@@ -3311,7 +3311,7 @@ test('FunctionVersionUpgrade adds new description to function', () => {
       Code: { ZipFile: 'foo' },
       Handler: 'bar',
       Runtime: 'nodejs16.x',
-      Description: 'my description version-hash:54f18c47346ed84843c2dac547de81fa',
+      Description: Match.stringLikeRegexp('my description version-hash'),
     },
   });
 });

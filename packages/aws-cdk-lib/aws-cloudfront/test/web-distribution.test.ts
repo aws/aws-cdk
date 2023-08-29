@@ -868,7 +868,7 @@ added the ellipsis so a user would know there was more to r...`,
               'EventType': 'origin-request',
               'IncludeBody': true,
               'LambdaFunctionARN': {
-                'Ref': 'LambdaCurrentVersionDF706F6A9a632a294ae3a9cd4d550f1c4e26619d',
+                'Ref': Match.stringLikeRegexp(stack.getLogicalId(lambdaFunction.currentVersion.node.defaultChild as lambda.CfnVersion)),
               },
             },
           ],
