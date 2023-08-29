@@ -42,20 +42,24 @@ export abstract class ToolkitInfo {
 
   public static async lookup(environment: cxapi.Environment, sdk: ISDK, stackName: string | undefined): Promise<ToolkitInfo> {
     const cfn = sdk.cloudFormation();
-    const stack = await stabilizeStack(cfn, stackName ?? DEFAULT_TOOLKIT_STACK_NAME);
-    if (!stack) {
-      debug('The environment %s doesn\'t have the CDK toolkit stack (%s) installed. Use %s to setup your environment for use with the toolkit.',
-        environment.name, stackName, chalk.blue(`cdk bootstrap "${environment.name}"`));
-      return ToolkitInfo.bootstrapStackNotFoundInfo(sdk);
-    }
-    if (stack.stackStatus.isCreationFailure) {
-      // Treat a "failed to create" bootstrap stack as an absent one.
-      debug('The environment %s has a CDK toolkit stack (%s) that failed to create. Use %s to try provisioning it again.',
-        environment.name, stackName, chalk.blue(`cdk bootstrap "${environment.name}"`));
-      return ToolkitInfo.bootstrapStackNotFoundInfo(sdk);
-    }
+    try {
+      const stack = await stabilizeStack(cfn, stackName ?? DEFAULT_TOOLKIT_STACK_NAME);
+      if (!stack) {
+        debug('The environment %s doesn\'t have the CDK toolkit stack (%s) installed. Use %s to setup your environment for use with the toolkit.',
+          environment.name, stackName, chalk.blue(`cdk bootstrap "${environment.name}"`));
+        return ToolkitInfo.bootstrapStackNotFoundInfo(sdk);
+      }
+      if (stack.stackStatus.isCreationFailure) {
+        // Treat a "failed to create" bootstrap stack as an absent one.
+        debug('The environment %s has a CDK toolkit stack (%s) that failed to create. Use %s to try provisioning it again.',
+          environment.name, stackName, chalk.blue(`cdk bootstrap "${environment.name}"`));
+        return ToolkitInfo.bootstrapStackNotFoundInfo(sdk);
+      }
 
-    return new ExistingToolkitInfo(stack, sdk);
+      return new ExistingToolkitInfo(stack, sdk);
+    } catch (e: any) {
+      return ToolkitInfo.bootstrapStackLookupError(sdk, e);
+    }
   }
 
   public static fromStack(stack: CloudFormationStack, sdk: ISDK): ToolkitInfo {
@@ -68,6 +72,10 @@ export abstract class ToolkitInfo {
 
   public static bootstrapStackNotFoundInfo(sdk: ISDK): ToolkitInfo {
     return new BootstrapStackNotFoundInfo(sdk, 'This deployment requires a bootstrap stack with a known name; pass \'--toolkit-stack-name\' or switch to using the \'DefaultStackSynthesizer\' (see https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html)');
+  }
+
+  public static bootstrapStackLookupError(sdk: ISDK, e: Error): ToolkitInfo {
+    return new BootstrapStackNotFoundInfo(sdk, `This deployment requires a bootstrap stack with a known name, but during its lookup the following error occurred: ${e}; pass \'--toolkit-stack-name\' or switch to using the \'DefaultStackSynthesizer\' (see https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html)`);
   }
 
   /**
@@ -110,6 +118,8 @@ export abstract class ToolkitInfo {
   public abstract validateVersion(expectedVersion: number, ssmParameterName: string | undefined): Promise<void>;
   public abstract prepareEcrRepository(repositoryName: string): Promise<EcrRepositoryInfo>;
 }
+
+export type ToolkitInfoProvider = () => Promise<ToolkitInfo>;
 
 /**
  * Returned when a bootstrap stack is found
