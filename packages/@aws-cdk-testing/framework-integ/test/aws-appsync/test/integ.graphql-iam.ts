@@ -87,7 +87,7 @@ testDS.createResolver('MutationAddTest', {
   responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
 });
 
-const lambdaIAM = new Role(stack, 'LambdaIAM', { assumedBy: new ServicePrincipal('lambda') });
+const lambdaIAM = new Role(stack, 'LambdaIAM', { assumedBy: new ServicePrincipal('lambda.amazonaws.com') });
 
 api.grant(lambdaIAM, IamResource.custom('types/Query/fields/getTests'), 'appsync:graphql');
 api.grant(lambdaIAM, IamResource.ofType('test'), 'appsync:GraphQL');
