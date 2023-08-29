@@ -3,7 +3,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import { IConnection } from './connection';
 import { Column } from './schema';
-import { PartitionIndex, TableBase, TableEncryption, TableProps } from './table-base';
+import { PartitionIndex, TableBase, TableProps } from './table-base';
 
 export interface ExternalTableProps extends TableProps {
   /**
@@ -121,7 +121,6 @@ export class ExternalTable extends TableBase {
    */
   public grantRead(grantee: iam.IGrantable): iam.Grant {
     const ret = this.grant(grantee, readPermissions);
-    if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantDecrypt(grantee); }
     return ret;
   }
 
@@ -132,7 +131,6 @@ export class ExternalTable extends TableBase {
    */
   public grantWrite(grantee: iam.IGrantable): iam.Grant {
     const ret = this.grant(grantee, writePermissions);
-    if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantEncrypt(grantee); }
     return ret;
   }
 
@@ -143,7 +141,6 @@ export class ExternalTable extends TableBase {
    */
   public grantReadWrite(grantee: iam.IGrantable): iam.Grant {
     const ret = this.grant(grantee, [...readPermissions, ...writePermissions]);
-    if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantEncryptDecrypt(grantee); }
     return ret;
   }
 }

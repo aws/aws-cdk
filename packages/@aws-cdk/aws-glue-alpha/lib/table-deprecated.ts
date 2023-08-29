@@ -8,10 +8,10 @@ import { AwsCustomResource } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 import { DataFormat } from './data-format';
 import { IDatabase } from './database';
-import { S3Table, S3TableProps } from './s3-table';
+import { S3Table, S3TableProps, TableEncryption } from './s3-table';
 import { Column } from './schema';
 import { StorageParameter } from './storage-parameter';
-import { ITable, PartitionIndex, TableAttributes, TableBase, TableEncryption } from './table-base';
+import { ITable, PartitionIndex, TableAttributes, TableBase } from './table-base';
 
 /**
  * A Glue table.

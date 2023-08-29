@@ -1,6 +1,5 @@
 import { CfnTable } from 'aws-cdk-lib/aws-glue';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as kms from 'aws-cdk-lib/aws-kms';
 import { ArnFormat, Fn, IResource, Lazy, Names, Resource, Stack } from 'aws-cdk-lib/core';
 import * as cr from 'aws-cdk-lib/custom-resources';
 import { AwsCustomResource } from 'aws-cdk-lib/custom-resources';
@@ -38,39 +37,6 @@ export interface ITable extends IResource {
    * @attribute
    */
   readonly tableName: string;
-}
-
-/**
- * Encryption options for a Table.
- *
- * @see https://docs.aws.amazon.com/athena/latest/ug/encryption.html
- */
-export enum TableEncryption {
-  /**
-   * Server side encryption (SSE) with an Amazon S3-managed key.
-   *
-   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingServerSideEncryption.html
-   */
-  S3_MANAGED = 'SSE-S3',
-
-  /**
-   * Server-side encryption (SSE) with an AWS KMS key managed by the account owner.
-   *
-   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingKMSEncryption.html
-   */
-  KMS = 'SSE-KMS',
-
-  /**
-   * Server-side encryption (SSE) with an AWS KMS key managed by the KMS service.
-   */
-  KMS_MANAGED = 'SSE-KMS-MANAGED',
-
-  /**
-   * Client-side encryption (CSE) with an AWS KMS key managed by the account owner.
-   *
-   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingClientSideEncryption.html
-   */
-  CLIENT_SIDE_KMS = 'CSE-KMS'
 }
 
 export interface TableAttributes {
@@ -130,27 +96,6 @@ export interface TableProps {
    * @default false
    */
   readonly compressed?: boolean;
-
-  /**
-   * The kind of encryption to secure the data with.
-   *
-   * You can only provide this option if you are not explicitly passing in a bucket.
-   *
-   * If you choose `SSE-KMS`, you *can* provide an un-managed KMS key with `encryptionKey`.
-   * If you choose `CSE-KMS`, you *must* provide an un-managed KMS key with `encryptionKey`.
-   *
-   * @default BucketEncryption.S3_MANAGED
-   */
-  readonly encryption?: TableEncryption;
-
-  /**
-   * External KMS key to use for bucket encryption.
-   *
-   * The `encryption` property must be `SSE-KMS` or `CSE-KMS`.
-   *
-   * @default key is managed by KMS.
-   */
-  readonly encryptionKey?: kms.IKey;
 
   /**
    * Indicates whether the table data is stored in subdirectories.
@@ -251,16 +196,6 @@ export abstract class TableBase extends Resource implements ITable {
   public readonly compressed: boolean;
 
   /**
-   * The type of encryption enabled for the table.
-   */
-  public readonly encryption?: TableEncryption;
-
-  /**
-   * The KMS key used to secure the data if `encryption` is set to `CSE-KMS` or `SSE-KMS`. Otherwise, `undefined`.
-   */
-  public readonly encryptionKey?: kms.IKey;
-
-  /**
    * Format of this table's data files.
    */
   public readonly dataFormat: DataFormat;
@@ -304,9 +239,6 @@ export abstract class TableBase extends Resource implements ITable {
     this.storageParameters = props.storageParameters;
 
     this.compressed = props.compressed ?? false;
-
-    this.encryption = props.encryption;
-    this.encryptionKey = props.encryptionKey;
   }
 
   public abstract grantRead(grantee: iam.IGrantable): iam.Grant;

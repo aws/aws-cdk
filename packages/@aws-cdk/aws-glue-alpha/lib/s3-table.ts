@@ -4,7 +4,40 @@ import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 import { Column } from './schema';
-import { PartitionIndex, TableBase, TableEncryption, TableProps } from './table-base';
+import { PartitionIndex, TableBase, TableProps } from './table-base';
+
+/**
+ * Encryption options for a Table.
+ *
+ * @see https://docs.aws.amazon.com/athena/latest/ug/encryption.html
+ */
+export enum TableEncryption {
+  /**
+   * Server side encryption (SSE) with an Amazon S3-managed key.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingServerSideEncryption.html
+   */
+  S3_MANAGED = 'SSE-S3',
+
+  /**
+   * Server-side encryption (SSE) with an AWS KMS key managed by the account owner.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingKMSEncryption.html
+   */
+  KMS = 'SSE-KMS',
+
+  /**
+   * Server-side encryption (SSE) with an AWS KMS key managed by the KMS service.
+   */
+  KMS_MANAGED = 'SSE-KMS-MANAGED',
+
+  /**
+   * Client-side encryption (CSE) with an AWS KMS key managed by the account owner.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingClientSideEncryption.html
+   */
+  CLIENT_SIDE_KMS = 'CSE-KMS'
+}
 
 export interface S3TableProps extends TableProps {
   /**
@@ -20,6 +53,27 @@ export interface S3TableProps extends TableProps {
    * @default - No prefix. The data will be stored under the root of the bucket.
    */
   readonly s3Prefix?: string;
+
+  /**
+   * The kind of encryption to secure the data with.
+   *
+   * You can only provide this option if you are not explicitly passing in a bucket.
+   *
+   * If you choose `SSE-KMS`, you *can* provide an un-managed KMS key with `encryptionKey`.
+   * If you choose `CSE-KMS`, you *must* provide an un-managed KMS key with `encryptionKey`.
+   *
+   * @default BucketEncryption.S3_MANAGED
+   */
+  readonly encryption?: TableEncryption;
+
+  /**
+   * External KMS key to use for bucket encryption.
+   *
+   * The `encryption` property must be `SSE-KMS` or `CSE-KMS`.
+   *
+   * @default key is managed by KMS.
+   */
+  readonly encryptionKey?: kms.IKey;
 }
 
 /**
