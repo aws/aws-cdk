@@ -293,12 +293,12 @@ export interface DomainOptions {
  */
 export enum MergeType {
   /**
-   * Manual merge. The merge must be triggered manually if the source API has changed.
+   * Manual merge. The merge must be triggered manually when the source API has changed.
    */
   MANUAL_MERGE = 'MANUAL_MERGE',
 
   /**
-   * Auto merge. The merge is triggered manually if the source API has changed.
+   * Auto merge. The merge is triggered automatically when the source API has changed.
    */
   AUTO_MERGE = 'AUTO_MERGE',
 }
@@ -331,21 +331,21 @@ export interface SourceApi {
   /**
    * Merging option used to associate the source API to the Merged API
    *
-   * @default - Manual merge, requires the user to trigger schema merges manually.
+   * @default - Auto merge. The merge is triggered automatically when the source API has changed
    */
   readonly mergeType?: MergeType;
 }
 
 /**
- * AppSync schema definition. Specify how you want to define your schema.
+ * AppSync definition. Specify how you want to define your AppSync API.
  */
-export abstract class ApiSource {
+export abstract class Definition {
   /**
    * Schema from schema object.
    * @param schema SchemaFile.fromAsset(filePath: string) allows schema definition through schema.graphql file
    * @returns API Source with schema from file
    */
-  public static fromSchema(schema: ISchema): ApiSource {
+  public static fromSchema(schema: ISchema): Definition {
     return {
       schema,
     };
@@ -356,7 +356,7 @@ export abstract class ApiSource {
    * @param filePath the file path of the schema file
    * @returns API Source with schema from file
    */
-  public static fromFile(filePath: string): ApiSource {
+  public static fromFile(filePath: string): Definition {
     return this.fromSchema(SchemaFile.fromAsset(filePath));
   }
 
@@ -365,7 +365,7 @@ export abstract class ApiSource {
    * @param sourceApiOptions Configuration for AppSync Merged API
    * @returns API Source with for AppSync Merged API
    */
-  public static fromSourceApis(sourceApiOptions: SourceApiOptions): ApiSource {
+  public static fromSourceApis(sourceApiOptions: SourceApiOptions): Definition {
     return {
       sourceApiOptions,
     };
@@ -405,7 +405,10 @@ export interface GraphqlApiProps {
    */
   readonly logConfig?: LogConfig;
 
-  readonly apiSource?: ApiSource;
+  /**
+   * Definition (schema file or source APIs) for this GraphQL Api
+   */
+  readonly definition?: Definition;
 
   /**
    * GraphQL schema definition. Specify how you want to define your schema.
@@ -569,20 +572,14 @@ export class GraphqlApi extends GraphqlApiBase {
   public readonly name: string;
 
   /**
-   * the schema attached to this api
-   * @deprecated Use apiSource.schema instead
+   * the schema attached to this api (only available for GraphQL APIs, not available for merged APIs)
    */
   public get schema(): ISchema {
-    if (this.apiSource.schema) {
-      return this.apiSource.schema;
+    if (this.definition.schema) {
+      return this.definition.schema;
     }
     throw new Error('Schema does not exist for AppSync merged APIs.');
   }
-
-  /**
-   * API source (schema file or source APIs) for this GraphQL Api
-   */
-  public readonly apiSource: ApiSource;
 
   /**
    * The Authorization Types for this GraphQL Api
@@ -601,6 +598,7 @@ export class GraphqlApi extends GraphqlApiBase {
    */
   public readonly logGroup: ILogGroup;
 
+  private definition: Definition;
   private schemaResource?: CfnGraphQLSchema;
   private api: CfnGraphQLApi;
   private apiKeyResource?: CfnApiKey;
@@ -619,13 +617,16 @@ export class GraphqlApi extends GraphqlApiBase {
 
     this.validateAuthorizationProps(modes);
 
-    if ((props.schema !== undefined) === (props.apiSource !== undefined)) {
-      throw new Error('You cannot specify both properties schema and apiSource.');
+    if (!props.schema && !props.definition) {
+      throw new Error('You must specify a GraphQL schema or source APIs in property definition.');
     }
-    this.apiSource = props.schema ? ApiSource.fromSchema(props.schema) : props.apiSource!;
+    if ((props.schema !== undefined) === (props.definition !== undefined)) {
+      throw new Error('You cannot specify both properties schema and definition.');
+    }
+    this.definition = props.schema ? Definition.fromSchema(props.schema) : props.definition!;
 
-    if (this.apiSource.sourceApiOptions) {
-      this.setupMergedApiExecutionRole(this.apiSource.sourceApiOptions);
+    if (this.definition.sourceApiOptions) {
+      this.setupMergedApiExecutionRole(this.definition.sourceApiOptions);
     }
 
     this.api = new CfnGraphQLApi(this, 'Resource', {
@@ -639,7 +640,7 @@ export class GraphqlApi extends GraphqlApiBase {
       xrayEnabled: props.xrayEnabled,
       visibility: props.visibility,
       mergedApiExecutionRoleArn: this.mergedApiExecutionRole?.roleArn,
-      apiType: this.apiSource.sourceApiOptions ? 'MERGED' : undefined,
+      apiType: this.definition.sourceApiOptions ? 'MERGED' : undefined,
     });
 
     this.apiId = this.api.attrApiId;
@@ -647,8 +648,8 @@ export class GraphqlApi extends GraphqlApiBase {
     this.graphqlUrl = this.api.attrGraphQlUrl;
     this.name = this.api.name;
 
-    if (this.apiSource.schema) {
-      this.schemaResource = new CfnGraphQLSchema(this, 'Schema', this.apiSource.schema.bind(this));
+    if (this.definition.schema) {
+      this.schemaResource = new CfnGraphQLSchema(this, 'Schema', this.definition.schema.bind(this));
     } else {
       this.setupSourceApiAssociations();
     }
@@ -701,12 +702,12 @@ export class GraphqlApi extends GraphqlApiBase {
   }
 
   private setupSourceApiAssociations() {
-    this.apiSource.sourceApiOptions?.sourceApis.forEach(sourceApiOption => {
+    this.definition.sourceApiOptions?.sourceApis.forEach(sourceApiOption => {
       new CfnSourceApiAssociation(this, `${sourceApiOption.sourceApi.node.id}Association`, {
         sourceApiIdentifier: sourceApiOption.sourceApi.apiId,
         mergedApiIdentifier: this.api.attrApiId,
         sourceApiAssociationConfig: {
-          mergeType: sourceApiOption.mergeType ?? MergeType.MANUAL_MERGE,
+          mergeType: sourceApiOption.mergeType ?? MergeType.AUTO_MERGE,
         },
       });
     });

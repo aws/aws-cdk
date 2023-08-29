@@ -13,7 +13,7 @@ beforeEach(() => {
   api = new appsync.GraphqlApi(stack, 'api', {
     authorizationConfig: {},
     name: 'api',
-    apiSource: appsync.ApiSource.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+    definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
     logConfig: {},
   });
 });
@@ -266,7 +266,6 @@ test('appsync should support deprecated schema property', () => {
 
   // THEN
   expect(apiWithSchema.schema).toBe(schemaFile);
-  expect(apiWithSchema.apiSource.schema).toBe(schemaFile);
 });
 
 test('appsync api from file', () => {
@@ -274,21 +273,29 @@ test('appsync api from file', () => {
   const apiWithSchema = new appsync.GraphqlApi(stack, 'apiWithSchema', {
     authorizationConfig: {},
     name: 'api',
-    apiSource: appsync.ApiSource.fromFile(path.join(__dirname, 'appsync.test.graphql')),
+    definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.test.graphql')),
   });
 
   // THEN
   expect(apiWithSchema.schema).not.toBeNull();
-  expect(apiWithSchema.apiSource.schema).not.toBeNull();
 });
 
-test('appsync fails when specifing schema and apiSource', () => {
+test('appsync fails when properties schema and definition are undefined', () => {
   // THEN
   expect(() => {
-    new appsync.GraphqlApi(stack, 'apiWithSchemaAndApiSource', {
+    new appsync.GraphqlApi(stack, 'apiWithoutSchemaAndDefinition', {
+      name: 'api',
+    });
+  }).toThrowError('You must specify a GraphQL schema or source APIs in property definition.');
+});
+
+test('appsync fails when specifing schema and definition', () => {
+  // THEN
+  expect(() => {
+    new appsync.GraphqlApi(stack, 'apiWithSchemaAndDefinition', {
       name: 'api',
       schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
-      apiSource: appsync.ApiSource.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+      definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
     });
-  }).toThrowError('You cannot specify both properties schema and apiSource.');
+  }).toThrowError('You cannot specify both properties schema and definition.');
 });

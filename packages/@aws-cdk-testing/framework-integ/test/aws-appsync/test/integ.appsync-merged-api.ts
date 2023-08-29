@@ -8,7 +8,7 @@ const stack = new cdk.Stack(app, 'stack');
 
 const firstApi = new appsync.GraphqlApi(stack, 'FirstSourceAPI', {
   name: 'FirstSourceAPI',
-  apiSource: appsync.ApiSource.fromFile(path.join(__dirname, 'appsync.merged-api-1.graphql')),
+  definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.merged-api-1.graphql')),
 });
 
 firstApi.addNoneDataSource('FirstSourceDS', {
@@ -17,7 +17,7 @@ firstApi.addNoneDataSource('FirstSourceDS', {
 
 const secondApi = new appsync.GraphqlApi(stack, 'SecondSourceAPI', {
   name: 'SecondSourceAPI',
-  apiSource: appsync.ApiSource.fromFile(path.join(__dirname, 'appsync.merged-api-2.graphql')),
+  definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.merged-api-2.graphql')),
 });
 
 secondApi.addNoneDataSource('SecondSourceDS', {
@@ -26,7 +26,7 @@ secondApi.addNoneDataSource('SecondSourceDS', {
 
 new appsync.GraphqlApi(stack, 'MergedAPI', {
   name: 'MergedAPI',
-  apiSource: appsync.ApiSource.fromSourceApis({
+  definition: appsync.Definition.fromSourceApis({
     sourceApis: [
       {
         sourceApi: firstApi,

@@ -38,7 +38,7 @@ CDK stack file `app-stack.ts`:
 ```ts
 const api = new appsync.GraphqlApi(this, 'Api', {
   name: 'demo',
-  apiSource: appsync.ApiSource.fromFile(path.join(__dirname, 'schema.graphql')),
+  definition: appsync.Definition.fromFile(path.join(__dirname, 'schema.graphql')),
   authorizationConfig: {
     defaultAuthorization: {
       authorizationType: appsync.AuthorizationType.IAM,
@@ -208,7 +208,7 @@ CDK stack file `app-stack.ts`:
 ```ts
 const api = new appsync.GraphqlApi(this, 'api', {
   name: 'api',
-  schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'schema.graphql')),
+  definition: appsync.Definition.fromFile(path.join(__dirname, 'schema.graphql')),
 });
 
 const httpDs = api.addHttpDataSource(
@@ -233,9 +233,9 @@ httpDs.createResolver('MutationCallStepFunctionResolver', {
 ```
 
 ### EventBridge
-Integrating AppSync with EventBridge enables developers to use EventBridge rules to route commands for GraphQl mutations
+Integrating AppSync with EventBridge enables developers to use EventBridge rules to route commands for GraphQL mutations
 that need to perform any one of a variety of asynchronous tasks. More broadly, it enables teams to expose an event bus
-as a part of a GraphQl schema.
+as a part of a GraphQL schema.
 
 GraphQL schema file `schema.graphql`:
 
@@ -306,7 +306,7 @@ import * as events from 'aws-cdk-lib/aws-events';
 
 const api = new appsync.GraphqlApi(this, 'EventBridgeApi', {
   name: 'EventBridgeApi',
-  apiSource: appsync.ApiSource.fromFile(path.join(__dirname, 'appsync.eventbridge.graphql')),
+  definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.eventbridge.graphql')),
 });
 
 const bus = new events.EventBus(this, 'DestinationEventBus', {});
@@ -375,7 +375,7 @@ import * as cdk from 'aws-cdk-lib';
 // first source API
 const firstApi = new appsync.GraphqlApi(this, 'FirstSourceAPI', {
   name: 'FirstSourceAPI',
-  schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.merged-api-1.graphql')),
+  definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.merged-api-1.graphql')),
 });
 firstApi.addNoneDataSource('FirstSourceDS', {
   name: cdk.Lazy.string({ produce(): string { return 'FirstSourceDS'; } }),
@@ -384,7 +384,7 @@ firstApi.addNoneDataSource('FirstSourceDS', {
 // second source API
 const secondApi = new appsync.GraphqlApi(this, 'SecondSourceAPI', {
   name: 'SecondSourceAPI',
-  schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.merged-api-2.graphql')),
+  definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.merged-api-2.graphql')),
 });
 secondApi.addNoneDataSource('SecondSourceDS', {
   name: cdk.Lazy.string({ produce(): string { return 'SecondSourceDS'; } }),
@@ -393,7 +393,7 @@ secondApi.addNoneDataSource('SecondSourceDS', {
 // Merged API
 new appsync.GraphqlApi(this, 'MergedAPI', {
   name: 'MergedAPI',
-  apiSource: appsync.ApiSource.fromSourceApis({
+  definition: appsync.Definition.fromSourceApis({
     sourceApis: [
       {
         sourceApi: firstApi,
@@ -422,7 +422,7 @@ const certificate = new acm.Certificate(this, 'cert', { domainName: myDomainName
 const schema = new appsync.SchemaFile({ filePath: 'mySchemaFile' })
 const api = new appsync.GraphqlApi(this, 'api', {
   name: 'myApi',
-  schema,
+  definition: appsync.Definition.fromSchema(schema),
   domainName: {
     certificate,
     domainName: myDomainName,
@@ -465,19 +465,19 @@ const logConfig: appsync.LogConfig = {
 new appsync.GraphqlApi(this, 'api', {
   authorizationConfig: {},
   name: 'myApi',
-  apiSource: appsync.ApiSource.fromFile(path.join(__dirname, 'myApi.graphql')),
+  definition: appsync.Definition.fromFile(path.join(__dirname, 'myApi.graphql')),
   logConfig,
 });
 ```
 
 ## Schema
 
-You can define a schema using from a local file using `SchemaFile.fromAsset`
+You can define a schema using from a local file using `Definition.fromFile`
 
 ```ts
 const api = new appsync.GraphqlApi(this, 'api', {
   name: 'myApi',
-  apiSource: appsync.ApiSource.fromFile(path.join(__dirname, 'schema.graphl')),
+  definition: appsync.Definition.fromFile(path.join(__dirname, 'schema.graphl')),
 });
 ```
 
@@ -519,7 +519,7 @@ CDK stack file `app-stack.ts`:
 ```ts
 const api = new appsync.GraphqlApi(this, 'api', {
   name: 'MyPrivateAPI',
-  apiSource: appsync.ApiSource.fromFile(path.join(__dirname, 'appsync.schema.graphql')),
+  definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.schema.graphql')),
   visibility: appsync.Visibility.PRIVATE,
 });
 ```
@@ -549,7 +549,7 @@ declare const authFunction: lambda.Function;
 
 new appsync.GraphqlApi(this, 'api', {
   name: 'api',
-  apiSource: appsync.ApiSource.fromFile(path.join(__dirname, 'appsync.test.graphql')),
+  definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.test.graphql')),
   authorizationConfig: {
     defaultAuthorization: {
       authorizationType: appsync.AuthorizationType.LAMBDA,

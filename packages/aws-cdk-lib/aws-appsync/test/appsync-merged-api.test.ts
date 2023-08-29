@@ -12,13 +12,13 @@ beforeEach(() => {
   api1 = new appsync.GraphqlApi(stack, 'api1', {
     authorizationConfig: {},
     name: 'api',
-    apiSource: appsync.ApiSource.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+    definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.test.graphql')),
     logConfig: {},
   });
   api2 = new appsync.GraphqlApi(stack, 'api2', {
     authorizationConfig: {},
     name: 'api',
-    schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+    definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.test.graphql')),
     logConfig: {},
   });
 });
@@ -27,7 +27,7 @@ test('appsync supports merged API', () => {
   // WHEN
   new appsync.GraphqlApi(stack, 'merged-api', {
     name: 'api',
-    apiSource: appsync.ApiSource.fromSourceApis({
+    definition: appsync.Definition.fromSourceApis({
       sourceApis: [
         {
           sourceApi: api1,
@@ -153,7 +153,7 @@ test('appsync supports merged API with default merge type', () => {
   // WHEN
   new appsync.GraphqlApi(stack, 'merged-api', {
     name: 'api',
-    apiSource: appsync.ApiSource.fromSourceApis({
+    definition: appsync.Definition.fromSourceApis({
       sourceApis: [
         {
           sourceApi: api1,
@@ -171,7 +171,7 @@ test('appsync supports merged API with default merge type', () => {
       ],
     },
     SourceApiAssociationConfig: {
-      MergeType: 'MANUAL_MERGE',
+      MergeType: 'AUTO_MERGE',
     },
     SourceApiIdentifier: {
       'Fn::GetAtt': [
@@ -189,7 +189,7 @@ test('appsync merged API with custom merged API execution role', () => {
   });
   new appsync.GraphqlApi(stack, 'merged-api', {
     name: 'api',
-    apiSource: appsync.ApiSource.fromSourceApis({
+    definition: appsync.Definition.fromSourceApis({
       mergedApiExecutionRole: role,
       sourceApis: [
         {
@@ -220,7 +220,7 @@ test('Merged API throws when accessing schema property', () => {
   // WHEN
   const mergedApi = new appsync.GraphqlApi(stack, 'merged-api', {
     name: 'api',
-    apiSource: appsync.ApiSource.fromSourceApis({
+    definition: appsync.Definition.fromSourceApis({
       sourceApis: [
         {
           sourceApi: api1,
