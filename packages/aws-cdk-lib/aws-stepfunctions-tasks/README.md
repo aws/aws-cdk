@@ -834,7 +834,7 @@ new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
   virtualCluster: tasks.VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromJsonPathAt('$.VirtualClusterId')),
   releaseLabel: tasks.ReleaseLabel.EMR_6_2_0,
   jobName: 'EMR-Containers-Job',
-  executionRoleArn: sfn.TaskInput.fromJsonPathAt('$.ExecutionRoleArn'),
+  executionRoleArn: sfn.TaskInput.fromJsonPathAt('$.ExecutionRoleArn').value,
   jobDriver: {
     sparkSubmitJobDriver: {
       entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
