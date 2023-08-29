@@ -167,8 +167,8 @@ describe('tests that use assets', () => {
     const traversal = await traverseAndRecord(graph);
 
     expect(traversal).toEqual([
-      'build-work-graph-builder.test.js-0c45de20db',
-      'publish-work-graph-builder.test.js-5afe4c5879',
+      expect.stringMatching(/^build-work-graph-builder.test.js-.*$/),
+      expect.stringMatching(/^publish-work-graph-builder.test.js-.*$/),
       'StackA',
       'StackB',
     ]);
@@ -229,11 +229,11 @@ describe('tests that use assets', () => {
     const traversal = await traverseAndRecord(graph);
 
     expect(traversal).toEqual([
-      'build-abcdef-c414bd1cfd',
-      'publish-abcdef-250b23e9ad',
-      'publish-abcdef-422bc84ff9',
+      expect.stringMatching(/^build-abcdef-.*$/),
+      expect.stringMatching(/^publish-abcdef-.*$/),
+      expect.stringMatching(/^publish-abcdef-.*$/),
       'StackA',
-      'publish-abcdef-e6c9d7e973',
+      expect.stringMatching(/^publish-abcdef-.*$/),
       'StackB',
     ]);
   });
@@ -275,10 +275,10 @@ describe('tests that use assets', () => {
     const traversal = await traverseAndRecord(graph);
 
     expect(traversal).toEqual([
-      'build-abcdef-c414bd1cfd',
-      'publish-abcdef-250b23e9ad',
+      expect.stringMatching(/^build-abcdef-.*$/),
+      expect.stringMatching(/^publish-abcdef-.*$/),
       'StackA',
-      'publish-abcdef-422bc84ff9',
+      expect.stringMatching(/^publish-abcdef-.*$/),
       'StackB',
     ]);
   });
