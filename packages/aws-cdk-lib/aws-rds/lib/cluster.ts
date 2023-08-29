@@ -1122,7 +1122,7 @@ export interface DatabaseClusterFromSnapshotProps extends DatabaseClusterBasePro
 /**
  * A database cluster restored from a snapshot.
  *
- * @resource AWS::RDS::DBInstance
+ * @resource AWS::RDS::DBCluster
  */
 export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
   public readonly clusterIdentifier: string;
