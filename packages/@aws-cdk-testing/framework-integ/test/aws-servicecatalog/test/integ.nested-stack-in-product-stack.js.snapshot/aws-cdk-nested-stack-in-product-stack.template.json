@@ -6,7 +6,7 @@
     "BucketName": "asset-bucket-12345678-test-region",
     "Tags": [
      {
-      "Key": "aws-cdk:cr-owned:cea6ac02",
+      "Key": "aws-cdk:cr-owned:2278d920",
       "Value": "true"
      }
     ]
@@ -14,17 +14,17 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "AssetsBucketDeploymentAwsCliLayer9BCEE17F": {
+  "AssetBucketProductAssetsDeploymentAwsCliLayerB57A37F8": {
    "Type": "AWS::Lambda::LayerVersion",
    "Properties": {
     "Content": {
      "S3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
-     "S3Key": "292870ae2617f1c4d62ff18422e009afd534a342c17877fd1b931fb8d8a62abc.zip"
+     "S3Key": "e2277687077a2abf9ae1af1cc9565e6715e2ebb62f79ec53aa75a1af9298f642.zip"
     },
     "Description": "/opt/awscli/aws"
    }
   },
-  "AssetsBucketDeploymentCustomResource283760D6": {
+  "AssetBucketProductAssetsDeploymentCustomResource4B59DD1D": {
    "Type": "Custom::CDKBucketDeployment",
    "Properties": {
     "ServiceToken": {
@@ -51,6 +51,7 @@
     "DestinationBucketName": {
      "Ref": "AssetBucket1D025086"
     },
+    "RetainOnDelete": true,
     "Extract": false,
     "Prune": false
    },
@@ -190,7 +191,7 @@
     "Handler": "index.handler",
     "Layers": [
      {
-      "Ref": "AssetsBucketDeploymentAwsCliLayer9BCEE17F"
+      "Ref": "AssetBucketProductAssetsDeploymentAwsCliLayerB57A37F8"
      }
     ],
     "Role": {

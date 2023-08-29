@@ -465,6 +465,31 @@ const gp3Instance = new rds.DatabaseInstance(this, 'Gp3Instance', {
 });
 ```
 
+Use the `caCertificate` property to specify the [CA certificates](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL-certificate-rotation.html)
+to use for the instance:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+new rds.DatabaseInstance(this, 'Instance', {
+  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+  vpc,
+  caCertificate: rds.CaCertificate.RDS_CA_RDS2048_G1,
+});
+```
+
+You can specify a custom CA certificate with:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+new rds.DatabaseInstance(this, 'Instance', {
+  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+  vpc,
+  caCertificate: rds.CaCertificate.of('future-rds-ca'),
+});
+```
+
 ## Setting Public Accessibility
 
 You can set public accessibility for the database instance or cluster using the `publiclyAccessible` property.

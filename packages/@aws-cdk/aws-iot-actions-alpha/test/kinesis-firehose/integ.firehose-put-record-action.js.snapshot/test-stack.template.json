@@ -293,6 +293,9 @@
    "eu-west-3": {
     "FirehoseCidrBlock": "35.180.1.96/27"
    },
+   "il-central-1": {
+    "FirehoseCidrBlock": "51.16.102.64/27"
+   },
    "me-central-1": {
     "FirehoseCidrBlock": "3.28.159.32/27"
    },
