@@ -1,5 +1,5 @@
 {
-  "version": "29.0.0",
+  "version": "34.0.0",
   "files": {
     "df9f207d681056c35badb6bc0d60a945b44c887b227b759715fd6a6443486443": {
       "source": {
@@ -14,7 +14,7 @@
         }
       }
     },
-    "6318a3460f2277a0215d1d3dec988f54f73d1ebd0221c7a7cc4d2bcb6324b50f": {
+    "2185fb8c76606547c84a0643eb5976219d4c48b3d70b4e026a7e0d0ca654e868": {
       "source": {
         "path": "appsync-lambda-auth.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "6318a3460f2277a0215d1d3dec988f54f73d1ebd0221c7a7cc4d2bcb6324b50f.json",
+          "objectKey": "2185fb8c76606547c84a0643eb5976219d4c48b3d70b4e026a7e0d0ca654e868.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
