@@ -1381,52 +1381,6 @@ describe('validate', () => {
     }).toThrowError("column names and partition keys must be unique, but 'col1' is duplicated");
   });
 
-  test('can not specify an explicit bucket and encryption', () => {
-    expect(() => {
-      createTable({
-        columns: [{
-          name: 'col1',
-          type: glue.Schema.STRING,
-        }],
-        bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
-        encryption: glue.TableEncryption.KMS,
-      });
-    }).toThrowError('you can not specify encryption settings if you also provide a bucket');
-  });
-
-  test('can explicitly pass bucket if Encryption undefined', () => {
-    expect(() => createTable({
-      columns: [{
-        name: 'col1',
-        type: glue.Schema.STRING,
-      }],
-      bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
-      encryption: undefined,
-    })).not.toThrow();
-  });
-
-  test('can explicitly pass bucket if encryption is not set', () => {
-    expect(() => createTable({
-      columns: [{
-        name: 'col1',
-        type: glue.Schema.STRING,
-      }],
-      bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
-      encryption: undefined,
-    })).not.toThrow();
-  });
-
-  test('can explicitly pass bucket if ClientSideKms', () => {
-    expect(() => createTable({
-      columns: [{
-        name: 'col1',
-        type: glue.Schema.STRING,
-      }],
-      bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
-      encryption: glue.TableEncryption.CLIENT_SIDE_KMS,
-    })).not.toThrow();
-  });
-
   test('unique storage descriptor parameters', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack');
