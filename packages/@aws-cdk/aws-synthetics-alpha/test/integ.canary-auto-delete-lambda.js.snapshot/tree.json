@@ -34,8 +34,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.69"
                     }
                   },
                   "Policy": {
@@ -93,20 +93,20 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_s3.CfnBucketPolicy",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.69"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.69"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3.Bucket",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.69"
                 }
               },
               "ServiceRole": {
@@ -117,8 +117,8 @@
                     "id": "ImportServiceRole",
                     "path": "cdk-synthetics-canary-auto-delete/Canary/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.69"
                     }
                   },
                   "Resource": {
@@ -223,14 +223,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.69"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.69"
                 }
               },
               "Resource": {
@@ -276,8 +276,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_synthetics.CfnCanary",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.69"
                 }
               },
               "AutoDeleteUnderlyingResourcesCustomResource": {
@@ -288,14 +288,14 @@
                     "id": "Default",
                     "path": "cdk-synthetics-canary-auto-delete/Canary/AutoDeleteUnderlyingResourcesCustomResource/Default",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.69"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.69"
                 }
               }
             },
@@ -312,30 +312,30 @@
                 "id": "Staging",
                 "path": "cdk-synthetics-canary-auto-delete/Custom::SyntheticsAutoDeleteUnderlyingResourcesCustomResourceProvider/Staging",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.AssetStaging",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.69"
                 }
               },
               "Role": {
                 "id": "Role",
                 "path": "cdk-synthetics-canary-auto-delete/Custom::SyntheticsAutoDeleteUnderlyingResourcesCustomResourceProvider/Role",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.69"
                 }
               },
               "Handler": {
                 "id": "Handler",
                 "path": "cdk-synthetics-canary-auto-delete/Custom::SyntheticsAutoDeleteUnderlyingResourcesCustomResourceProvider/Handler",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.69"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CustomResourceProvider",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.69"
             }
           },
           "CanaryRemoved": {
@@ -364,8 +364,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.69"
                     }
                   },
                   "Policy": {
@@ -423,20 +423,20 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_s3.CfnBucketPolicy",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.69"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.69"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3.Bucket",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.69"
                 }
               },
               "ServiceRole": {
@@ -447,8 +447,8 @@
                     "id": "ImportServiceRole",
                     "path": "cdk-synthetics-canary-auto-delete/CanaryRemoved/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.69"
                     }
                   },
                   "Resource": {
@@ -553,14 +553,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.69"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.69"
                 }
               },
               "Resource": {
@@ -606,8 +606,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_synthetics.CfnCanary",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.69"
                 }
               },
               "AutoDeleteUnderlyingResourcesCustomResource": {
@@ -618,14 +618,14 @@
                     "id": "Default",
                     "path": "cdk-synthetics-canary-auto-delete/CanaryRemoved/AutoDeleteUnderlyingResourcesCustomResource/Default",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.69"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.69"
                 }
               }
             },
@@ -642,8 +642,8 @@
                 "id": "Provider",
                 "path": "cdk-synthetics-canary-auto-delete/DeleteCanary/Provider",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.69"
                 }
               },
               "Resource": {
@@ -654,14 +654,14 @@
                     "id": "Default",
                     "path": "cdk-synthetics-canary-auto-delete/DeleteCanary/Resource/Default",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.69"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.69"
                 }
               },
               "CustomResourcePolicy": {
@@ -693,20 +693,20 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.69"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Policy",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.69"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.custom_resources.AwsCustomResource",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.69"
             }
           },
           "AWS679f53fac002430cb0da5b7982bd2287": {
@@ -721,8 +721,8 @@
                     "id": "ImportServiceRole",
                     "path": "cdk-synthetics-canary-auto-delete/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.69"
                     }
                   },
                   "Resource": {
@@ -760,14 +760,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.69"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.69"
                 }
               },
               "Code": {
@@ -778,22 +778,22 @@
                     "id": "Stage",
                     "path": "cdk-synthetics-canary-auto-delete/AWS679f53fac002430cb0da5b7982bd2287/Code/Stage",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.AssetStaging",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.69"
                     }
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
                     "path": "cdk-synthetics-canary-auto-delete/AWS679f53fac002430cb0da5b7982bd2287/Code/AssetBucket",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.69"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.69"
                 }
               },
               "Resource": {
@@ -806,7 +806,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "66db480cb40e7e6208f01c9d9e882f4c416110a2c66dd0c6d12844e8ca9129b6.zip"
+                      "s3Key": "5f261fda6ce862e76898690434e65f5c50aa14a3f63055f1f862b2aa3c20ccb5.zip"
                     },
                     "handler": "index.handler",
                     "role": {
@@ -820,36 +820,36 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.69"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.69"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "cdk-synthetics-canary-auto-delete/BootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnParameter",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.69"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "cdk-synthetics-canary-auto-delete/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnRule",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.69"
             }
           }
         },
         "constructInfo": {
-          "fqn": "aws-cdk-lib.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.2.69"
         }
       },
       "cdk-integ-synthetics-canary-auto-delete": {
@@ -876,22 +876,22 @@
                     "id": "BootstrapVersion",
                     "path": "cdk-integ-synthetics-canary-auto-delete/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnParameter",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.69"
                     }
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
                     "path": "cdk-integ-synthetics-canary-auto-delete/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnRule",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.69"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Stack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.69"
                 }
               }
             },
@@ -916,8 +916,8 @@
       }
     },
     "constructInfo": {
-      "fqn": "aws-cdk-lib.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.2.69"
     }
   }
 }
