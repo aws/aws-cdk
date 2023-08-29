@@ -1669,6 +1669,23 @@ describe('vpc', () => {
         },
       });
     });
+
+    test('with networkAclName, adds Name tag with the name', () => {
+      // GIVEN
+      const stack = getTestStack();
+      const vpc = new Vpc(stack, 'TheVPC', { ipAddresses: IpAddresses.cidr('192.168.0.0/16') });
+
+      // WHEN
+      new NetworkAcl(stack, 'ACL', {
+        vpc,
+        networkAclName: 'CustomNetworkAclName',
+      });
+
+      Template.fromStack(stack).hasResource('AWS::EC2::NetworkAcl', hasTags([{
+        Key: 'Name',
+        Value: 'CustomNetworkAclName',
+      }]));
+    });
   });
 
   describe('When creating a VPC with a custom CIDR range', () => {
