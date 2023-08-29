@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { Template } from '../../../assertions';
+import { Match, Template } from '../../../assertions';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
@@ -62,7 +62,7 @@ describe('stacks', () => {
   });
 
   test('creates the actual function and supporting resources in us-east-1 stack', () => {
-    new cloudfront.experimental.EdgeFunction(stack, 'MyFn', defaultEdgeFunctionProps());
+    const edgeFn = new cloudfront.experimental.EdgeFunction(stack, 'MyFn', defaultEdgeFunctionProps());
 
     const fnStack = getFnStack();
 
@@ -97,7 +97,7 @@ describe('stacks', () => {
     });
     Template.fromStack(fnStack).hasResourceProperties('AWS::SSM::Parameter', {
       Type: 'String',
-      Value: { Ref: 'MyFnCurrentVersion309B29FC565d8e08ba88650b100357cd5eaf4bbb' },
+      Value: { Ref: Match.stringLikeRegexp(stack.getLogicalId(edgeFn.currentVersion.node.defaultChild as lambda.CfnVersion)) },
       Name: '/cdk/EdgeFunctionArn/testregion/Stack/MyFn',
     });
   });
