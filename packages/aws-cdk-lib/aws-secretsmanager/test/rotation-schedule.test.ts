@@ -634,7 +634,7 @@ test('rotation schedule should have a dependency on lambda permissions', () => {
   // GIVEN
   const secret = new secretsmanager.Secret(stack, 'Secret');
   const rotationLambda = new lambda.Function(stack, 'Lambda', {
-    runtime: lambda.Runtime.NODEJS_14_X,
+    runtime: lambda.Runtime.NODEJS_18_X,
     code: lambda.Code.fromInline('export.handler = event => event;'),
     handler: 'index.handler',
   });
