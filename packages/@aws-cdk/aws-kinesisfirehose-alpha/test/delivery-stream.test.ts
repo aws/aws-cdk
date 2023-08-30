@@ -71,7 +71,7 @@ describe('delivery stream', () => {
     expect(deliveryStream.grantPrincipal).toBe(role);
   });
 
-  test('not providing role creates one', () => {
+  test('not providing sourceStream or encryptionKey creates only one role (used for S3 destination)', () => {
     new firehose.DeliveryStream(stack, 'Delivery Stream', {
       destinations: [mockS3Destination],
     });
@@ -87,6 +87,54 @@ describe('delivery stream', () => {
         ],
       },
     });
+
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 1);
+  });
+
+  test('not providing role but specifying sourceStream creates two roles', () => {
+    const sourceStream = new kinesis.Stream(stack, 'Source Stream');
+
+    new firehose.DeliveryStream(stack, 'Delivery Stream', {
+      destinations: [mockS3Destination],
+      sourceStream: sourceStream,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          Match.objectLike({
+            Principal: {
+              Service: 'firehose.amazonaws.com',
+            },
+          }),
+        ],
+      },
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 2);
+  });
+
+  test('not providing role but specifying encryptionKey creates two roles', () => {
+    const key = new kms.Key(stack, 'Key');
+
+    new firehose.DeliveryStream(stack, 'Delivery Stream', {
+      destinations: [mockS3Destination],
+      encryptionKey: key,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          Match.objectLike({
+            Principal: {
+              Service: 'firehose.amazonaws.com',
+            },
+          }),
+        ],
+      },
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 2);
   });
 
   test('providing source stream creates configuration and grants permission', () => {

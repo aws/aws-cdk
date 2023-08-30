@@ -322,10 +322,13 @@ export class DeliveryStream extends DeliveryStreamBase {
       throw new Error(`Only one destination is allowed per delivery stream, given ${props.destinations.length}`);
     }
 
-    const role = props.role ?? new iam.Role(this, 'Service Role', {
-      assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
-    });
-    this.grantPrincipal = role;
+    let role = props.role;
+    if (props.encryptionKey || props.sourceStream) {
+      role = role ?? new iam.Role(this, 'Service Role', {
+        assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
+      });
+    }
+    this.grantPrincipal = role ?? new iam.UnknownPrincipal({ resource: this });
 
     if (
       props.sourceStream &&
@@ -351,13 +354,19 @@ export class DeliveryStream extends DeliveryStreamBase {
      * period where data will be buffered and retried if access is denied to the encryption key. For that reason, it is
      * acceptable to omit the dependency for now. See: https://github.com/aws/aws-cdk/issues/15790
      */
-    encryptionKey?.grantEncryptDecrypt(role);
+    if (role && encryptionKey) {
+      encryptionKey.grantEncryptDecrypt(role);
+    }
 
-    const sourceStreamConfig = props.sourceStream ? {
-      kinesisStreamArn: props.sourceStream.streamArn,
-      roleArn: role.roleArn,
-    } : undefined;
-    const readStreamGrant = props.sourceStream?.grantRead(role);
+    let sourceStreamConfig = undefined;
+    let readStreamGrant = undefined;
+    if (role && props.sourceStream) {
+      sourceStreamConfig = {
+        kinesisStreamArn: props.sourceStream.streamArn,
+        roleArn: role.roleArn,
+      };
+      readStreamGrant = props.sourceStream.grantRead(role);
+    }
 
     const destinationConfig = props.destinations[0].bind(this, {});
 
