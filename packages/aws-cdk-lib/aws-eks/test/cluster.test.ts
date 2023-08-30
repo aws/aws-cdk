@@ -2173,6 +2173,23 @@ describe('cluster', () => {
         },
       });
     });
+
+    test('associating an openIdConnectProvider with a cluster after creation', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+      const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
+
+      // WHEN
+      const provider = cluster.associateOpenIdConnectProvider('arn:aws:iam::1111111:oidc-provider/oid-already-associated-to-cluster');
+      const albController = new eks.AlbController(stack, 'albController', {
+        cluster: cluster,
+        version: eks.AlbControllerVersion.V2_4_1,
+      });
+
+      // THEN
+      expect(provider).toEqual(cluster.openIdConnectProvider);
+    });
+
     test('inference instances are supported', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();

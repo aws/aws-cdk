@@ -1870,6 +1870,20 @@ export class Cluster extends ClusterBase {
   }
 
   /**
+   * Manually associate an `OpenIdConnectProvider` resource to this cluster. Skips the lazy
+   * allocation of an OpenIdConnectProvider.
+   *
+   * @param arn the arn of the OIDC provider
+   */
+  public associateOpenIdConnectProvider(arn: string): iam.IOpenIdConnectProvider {
+    if (this._openIdConnectProvider) {
+      throw new Error('Cluster already has an OIDC provider associated.');
+    }
+    this._openIdConnectProvider = OpenIdConnectProvider.fromOpenIdConnectProviderArn(this, 'OpenIdConnectProvider', arn);
+    return this._openIdConnectProvider;
+  }
+
+  /**
    * Internal API used by `FargateProfile` to keep inventory of Fargate profiles associated with
    * this cluster, for the sake of ensuring the profiles are created sequentially.
    *
