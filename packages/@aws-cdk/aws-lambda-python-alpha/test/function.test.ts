@@ -112,7 +112,7 @@ test('throws when entry does not exist', () => {
 test('throws with the wrong runtime family', () => {
   expect(() => new PythonFunction(stack, 'handler1', {
     entry: path.join(__dirname, 'lambda-handler'),
-    runtime: Runtime.NODEJS_14_X,
+    runtime: Runtime.NODEJS_16_X,
   })).toThrow(/Only `PYTHON` runtimes are supported/);
 });
 
