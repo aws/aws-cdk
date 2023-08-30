@@ -38,7 +38,7 @@ called every hour by Event Bridge Scheduler with custom payload. You can optiona
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 
 const fn = new lambda.Function(this, 'MyFunc', {
-    runtime: lambda.Runtime.NODEJS_14_X,
+    runtime: lambda.Runtime.NODEJS_LATEST,
     handler: 'index.handler',
     code: lambda.Code.fromInline(`exports.handler = handler.toString()`),
 });
