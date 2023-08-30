@@ -493,6 +493,9 @@ describe('cluster new api', () => {
 
       //THEN
       expect(cluster.instanceIdentifiers).toHaveLength(2);
+      expect(stack.resolve(cluster.instanceIdentifiers[0])).toEqual({
+        Ref: 'Databasewriter2462CC03',
+      });
     });
   });
 
