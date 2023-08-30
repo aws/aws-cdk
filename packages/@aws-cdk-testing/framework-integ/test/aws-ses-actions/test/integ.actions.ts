@@ -6,6 +6,16 @@ import * as sns from 'aws-cdk-lib/aws-sns';
 import * as cdk from 'aws-cdk-lib';
 import * as actions from 'aws-cdk-lib/aws-ses-actions';
 
+/**********************************************************************************************************************
+ *
+ *    Warning! This test case can not be deployed!
+ *
+ *    Save yourself some time and move on.
+ *    The latest given reason is:
+ *    - 2023-08-30: Uses a hardcoded email address that is not verified, @mrgrain
+ *
+ *********************************************************************************************************************/
+
 const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-ses-receipt');
@@ -15,7 +25,7 @@ const topic = new sns.Topic(stack, 'Topic');
 const fn = new lambda.Function(stack, 'Function', {
   code: lambda.Code.fromInline('exports.handler = async (event) => event;'),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: lambda.Runtime.NODEJS_16_X,
 });
 
 const bucket = new s3.Bucket(stack, 'Bucket');

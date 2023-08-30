@@ -1,0 +1,22 @@
+"use strict";
+/* eslint-disable no-console */
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.handler = void 0;
+// Adapted from https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-action-lambda-example-functions.html
+async function handler(event) {
+    console.log('Spam filter');
+    const sesNotification = event.Records[0].ses;
+    console.log('SES Notification: %j', sesNotification);
+    // Check if any spam check failed
+    if (sesNotification.receipt.spfVerdict.status === 'FAIL'
+        || sesNotification.receipt.dkimVerdict.status === 'FAIL'
+        || sesNotification.receipt.spamVerdict.status === 'FAIL'
+        || sesNotification.receipt.virusVerdict.status === 'FAIL') {
+        console.log('Dropping spam');
+        // Stop processing rule set, dropping message
+        return { disposition: 'STOP_RULE_SET' };
+    }
+    return null;
+}
+exports.handler = handler;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJpbmRleC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiO0FBQUEsK0JBQStCOzs7QUFFL0IsMEhBQTBIO0FBQ25ILEtBQUssVUFBVSxPQUFPLENBQUMsS0FBeUI7SUFDckQsT0FBTyxDQUFDLEdBQUcsQ0FBQyxhQUFhLENBQUMsQ0FBQztJQUUzQixNQUFNLGVBQWUsR0FBRyxLQUFLLENBQUMsT0FBTyxDQUFDLENBQUMsQ0FBQyxDQUFDLEdBQUcsQ0FBQztJQUM3QyxPQUFPLENBQUMsR0FBRyxDQUFDLHNCQUFzQixFQUFFLGVBQWUsQ0FBQyxDQUFDO0lBRXJELGlDQUFpQztJQUNqQyxJQUFJLGVBQWUsQ0FBQyxPQUFPLENBQUMsVUFBVSxDQUFDLE1BQU0sS0FBSyxNQUFNO1dBQ2pELGVBQWUsQ0FBQyxPQUFPLENBQUMsV0FBVyxDQUFDLE1BQU0sS0FBSyxNQUFNO1dBQ3JELGVBQWUsQ0FBQyxPQUFPLENBQUMsV0FBVyxDQUFDLE1BQU0sS0FBSyxNQUFNO1dBQ3JELGVBQWUsQ0FBQyxPQUFPLENBQUMsWUFBWSxDQUFDLE1BQU0sS0FBSyxNQUFNLEVBQUU7UUFDN0QsT0FBTyxDQUFDLEdBQUcsQ0FBQyxlQUFlLENBQUMsQ0FBQztRQUU3Qiw2Q0FBNkM7UUFDN0MsT0FBTyxFQUFFLFdBQVcsRUFBRSxlQUFlLEVBQUUsQ0FBQztLQUN6QztJQUVELE9BQU8sSUFBSSxDQUFDO0FBQ2QsQ0FBQztBQWxCRCwwQkFrQkMiLCJzb3VyY2VzQ29udGVudCI6WyIvKiBlc2xpbnQtZGlzYWJsZSBuby1jb25zb2xlICovXG5cbi8vIEFkYXB0ZWQgZnJvbSBodHRwczovL2RvY3MuYXdzLmFtYXpvbi5jb20vc2VzL2xhdGVzdC9EZXZlbG9wZXJHdWlkZS9yZWNlaXZpbmctZW1haWwtYWN0aW9uLWxhbWJkYS1leGFtcGxlLWZ1bmN0aW9ucy5odG1sXG5leHBvcnQgYXN5bmMgZnVuY3Rpb24gaGFuZGxlcihldmVudDogQVdTTGFtYmRhLlNFU0V2ZW50KTogUHJvbWlzZTx7IGRpc3Bvc2l0aW9uOiBzdHJpbmcgfSB8IG51bGw+IHtcbiAgY29uc29sZS5sb2coJ1NwYW0gZmlsdGVyJyk7XG5cbiAgY29uc3Qgc2VzTm90aWZpY2F0aW9uID0gZXZlbnQuUmVjb3Jkc1swXS5zZXM7XG4gIGNvbnNvbGUubG9nKCdTRVMgTm90aWZpY2F0aW9uOiAlaicsIHNlc05vdGlmaWNhdGlvbik7XG5cbiAgLy8gQ2hlY2sgaWYgYW55IHNwYW0gY2hlY2sgZmFpbGVkXG4gIGlmIChzZXNOb3RpZmljYXRpb24ucmVjZWlwdC5zcGZWZXJkaWN0LnN0YXR1cyA9PT0gJ0ZBSUwnXG4gICAgICB8fCBzZXNOb3RpZmljYXRpb24ucmVjZWlwdC5ka2ltVmVyZGljdC5zdGF0dXMgPT09ICdGQUlMJ1xuICAgICAgfHwgc2VzTm90aWZpY2F0aW9uLnJlY2VpcHQuc3BhbVZlcmRpY3Quc3RhdHVzID09PSAnRkFJTCdcbiAgICAgIHx8IHNlc05vdGlmaWNhdGlvbi5yZWNlaXB0LnZpcnVzVmVyZGljdC5zdGF0dXMgPT09ICdGQUlMJykge1xuICAgIGNvbnNvbGUubG9nKCdEcm9wcGluZyBzcGFtJyk7XG5cbiAgICAvLyBTdG9wIHByb2Nlc3NpbmcgcnVsZSBzZXQsIGRyb3BwaW5nIG1lc3NhZ2VcbiAgICByZXR1cm4geyBkaXNwb3NpdGlvbjogJ1NUT1BfUlVMRV9TRVQnIH07XG4gIH1cblxuICByZXR1cm4gbnVsbDtcbn1cbiJdfQ==

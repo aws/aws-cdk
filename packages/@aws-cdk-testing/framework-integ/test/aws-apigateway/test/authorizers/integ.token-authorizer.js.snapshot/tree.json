@@ -107,14 +107,14 @@
                       },
                       "s3Key": "6ef24b26328dec9135be0bd32fff8f588f9a4564f32df911d1de82cfb78183f0.zip"
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "MyAuthorizerFunctionServiceRole8A34C19E",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
-                    "runtime": "nodejs14.x"
+                    "runtime": "nodejs16.x"
                   }
                 },
                 "constructInfo": {
@@ -186,11 +186,6 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ApiGateway::Authorizer",
                   "aws:cdk:cloudformation:props": {
-                    "name": "TokenAuthorizerIntegMyAuthorizer793B1D5F",
-                    "restApiId": {
-                      "Ref": "MyRestApi2D1F47A9"
-                    },
-                    "type": "TOKEN",
                     "authorizerUri": {
                       "Fn::Join": [
                         "",
@@ -240,7 +235,12 @@
                         ]
                       ]
                     },
-                    "identitySource": "method.request.header.Authorization"
+                    "identitySource": "method.request.header.Authorization",
+                    "name": "TokenAuthorizerIntegMyAuthorizer793B1D5F",
+                    "restApiId": {
+                      "Ref": "MyRestApi2D1F47A9"
+                    },
+                    "type": "TOKEN"
                   }
                 },
                 "constructInfo": {
@@ -358,10 +358,10 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::ApiGateway::Deployment",
                       "aws:cdk:cloudformation:props": {
+                        "description": "Automatically created by the RestApi construct",
                         "restApiId": {
                           "Ref": "MyRestApi2D1F47A9"
-                        },
-                        "description": "Automatically created by the RestApi construct"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -385,11 +385,11 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::ApiGateway::Stage",
                       "aws:cdk:cloudformation:props": {
-                        "restApiId": {
-                          "Ref": "MyRestApi2D1F47A9"
-                        },
                         "deploymentId": {
                           "Ref": "MyRestApiDeploymentB555B582e0e53f2547b469b538202de55968eaf0"
+                        },
+                        "restApiId": {
+                          "Ref": "MyRestApi2D1F47A9"
                         },
                         "stageName": "prod"
                       }
@@ -427,18 +427,9 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
                           "aws:cdk:cloudformation:props": {
-                            "httpMethod": "OPTIONS",
-                            "resourceId": {
-                              "Fn::GetAtt": [
-                                "MyRestApi2D1F47A9",
-                                "RootResourceId"
-                              ]
-                            },
-                            "restApiId": {
-                              "Ref": "MyRestApi2D1F47A9"
-                            },
                             "apiKeyRequired": false,
                             "authorizationType": "NONE",
+                            "httpMethod": "OPTIONS",
                             "integration": {
                               "type": "MOCK",
                               "requestTemplates": {
@@ -464,7 +455,16 @@
                                   "method.response.header.Access-Control-Allow-Methods": true
                                 }
                               }
-                            ]
+                            ],
+                            "resourceId": {
+                              "Fn::GetAtt": [
+                                "MyRestApi2D1F47A9",
+                                "RootResourceId"
+                              ]
+                            },
+                            "restApiId": {
+                              "Ref": "MyRestApi2D1F47A9"
+                            }
                           }
                         },
                         "constructInfo": {
@@ -488,20 +488,11 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
                           "aws:cdk:cloudformation:props": {
-                            "httpMethod": "ANY",
-                            "resourceId": {
-                              "Fn::GetAtt": [
-                                "MyRestApi2D1F47A9",
-                                "RootResourceId"
-                              ]
-                            },
-                            "restApiId": {
-                              "Ref": "MyRestApi2D1F47A9"
-                            },
                             "authorizationType": "CUSTOM",
                             "authorizerId": {
                               "Ref": "MyAuthorizer6575980E"
                             },
+                            "httpMethod": "ANY",
                             "integration": {
                               "type": "MOCK",
                               "requestTemplates": {
@@ -518,7 +509,16 @@
                               {
                                 "statusCode": "200"
                               }
-                            ]
+                            ],
+                            "resourceId": {
+                              "Fn::GetAtt": [
+                                "MyRestApi2D1F47A9",
+                                "RootResourceId"
+                              ]
+                            },
+                            "restApiId": {
+                              "Ref": "MyRestApi2D1F47A9"
+                            }
                           }
                         },
                         "constructInfo": {
@@ -637,14 +637,14 @@
                         ]
                       }
                     },
+                    "handler": "index.handler",
+                    "memorySize": 250,
                     "role": {
                       "Fn::GetAtt": [
                         "InvokeFunctionServiceRole3B980FD2",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
-                    "memorySize": 250,
                     "runtime": "nodejs16.x",
                     "timeout": 10
                   }
@@ -675,7 +675,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.26"
+              "version": "10.2.69"
             }
           },
           "BootstrapVersion": {
@@ -713,7 +713,7 @@
                 "path": "apigw-token-auth/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.26"
+                  "version": "10.2.69"
                 }
               },
               "DeployAssert": {
@@ -733,7 +733,7 @@
                             "path": "apigw-token-auth/DefaultTest/DeployAssert/LambdaInvoke3deec958b1e945795e38da5fc2f86753/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.26"
+                              "version": "10.2.69"
                             }
                           }
                         },
@@ -813,7 +813,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.26"
+                      "version": "10.2.69"
                     }
                   },
                   "LambdaInvoke8e1b9f979f2329abf1ed6574d33d391a": {
@@ -829,7 +829,7 @@
                             "path": "apigw-token-auth/DefaultTest/DeployAssert/LambdaInvoke8e1b9f979f2329abf1ed6574d33d391a/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.26"
+                              "version": "10.2.69"
                             }
                           }
                         },
@@ -891,7 +891,7 @@
                             "path": "apigw-token-auth/DefaultTest/DeployAssert/LambdaInvoke0532e3d95b2a56b147278c621e5800c4/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.26"
+                              "version": "10.2.69"
                             }
                           }
                         },
@@ -979,7 +979,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.26"
+          "version": "10.2.69"
         }
       }
     },
