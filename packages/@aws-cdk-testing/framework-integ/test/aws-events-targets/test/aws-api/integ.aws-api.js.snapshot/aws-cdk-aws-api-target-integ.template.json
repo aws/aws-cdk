@@ -130,16 +130,16 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b4065f27128bfec53dda4059f9632e1a428f29038cfaaf8b3a4fd7185beac355.zip"
+     "S3Key": "929f138a16c2945b26e6edbf345143d4213432f8ac4c51b4c1335f258ba94252.zip"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "AWSb4cf1abd4e4f4bc699441af7ccd9ec37ServiceRole9FFE9C50",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs16.x"
    },
    "DependsOn": [
     "AWSb4cf1abd4e4f4bc699441af7ccd9ec37ServiceRoleDefaultPolicy4D43A7C1",

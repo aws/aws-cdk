@@ -13,8 +13,8 @@
     "ApiId": {
      "Ref": "MyHttpApi8AEAAC21"
     },
-    "StageName": "$default",
-    "AutoDeploy": true
+    "AutoDeploy": true,
+    "StageName": "$default"
    }
   },
   "MyHttpApiGETRootIntegration5068C5B0": {
@@ -76,11 +76,11 @@
     "ApiId": {
      "Ref": "MyHttpApi8AEAAC21"
     },
-    "RouteKey": "GET /",
     "AuthorizationType": "CUSTOM",
     "AuthorizerId": {
      "Ref": "MyHttpApiLambdaAuthorizerB8A0E2A4"
     },
+    "RouteKey": "GET /",
     "Target": {
      "Fn::Join": [
       "",
@@ -100,10 +100,9 @@
     "ApiId": {
      "Ref": "MyHttpApi8AEAAC21"
     },
-    "AuthorizerType": "REQUEST",
-    "Name": "my-simple-authorizer",
     "AuthorizerPayloadFormatVersion": "2.0",
     "AuthorizerResultTtlInSeconds": 300,
+    "AuthorizerType": "REQUEST",
     "AuthorizerUri": {
      "Fn::Join": [
       "",
@@ -130,7 +129,8 @@
     "EnableSimpleResponses": true,
     "IdentitySource": [
      "$request.header.X-API-Key"
-    ]
+    ],
+    "Name": "my-simple-authorizer"
    }
   },
   "MyHttpApiAuthorizerIntegMyHttpApiLambdaAuthorizerB89228D7Permission82260331": {
@@ -211,16 +211,16 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "74589072567ba0ad5a12f277a47a8c3b7b5151e9290901fae0a4ce72fe7e3a3a.zip"
+     "S3Key": "d7d3785243d748927f2a8d6edcecf909f96191df27a815e305aaeba98bcd2c64.zip"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "authfunctionServiceRoleFCB72198",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs16.x"
    },
    "DependsOn": [
     "authfunctionServiceRoleFCB72198"
@@ -264,16 +264,16 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "1fd1c15cb7d5e2e36a11745fd10b4b7c3ca8eb30642b41954630413d2b913cda.zip"
+     "S3Key": "54deaef2af5b9afbfc9cbcbb9261b1c0d4cce6560831d7ae1959f3da899011c8.zip"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "lambdaServiceRole494E4CA6",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs16.x"
    },
    "DependsOn": [
     "lambdaServiceRole494E4CA6"

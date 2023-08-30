@@ -25,7 +25,7 @@ You can create a topic rule with an action that invoke the Lambda action as foll
 
 ```ts
 const func = new lambda.Function(this, 'MyFunction', {
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`
     exports.handler = (event) => {
