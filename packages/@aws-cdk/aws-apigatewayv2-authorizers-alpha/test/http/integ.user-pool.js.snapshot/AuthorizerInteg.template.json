@@ -13,8 +13,8 @@
     "ApiId": {
      "Ref": "MyHttpApi8AEAAC21"
     },
-    "StageName": "$default",
-    "AutoDeploy": true
+    "AutoDeploy": true,
+    "StageName": "$default"
    }
   },
   "MyHttpApiGETRootIntegratin93150A89": {
@@ -76,11 +76,11 @@
     "ApiId": {
      "Ref": "MyHttpApi8AEAAC21"
     },
-    "RouteKey": "GET /",
     "AuthorizationType": "JWT",
     "AuthorizerId": {
      "Ref": "MyHttpApiUserPoolAuthorizer8754262B"
     },
+    "RouteKey": "GET /",
     "Target": {
      "Fn::Join": [
       "",
@@ -101,7 +101,6 @@
      "Ref": "MyHttpApi8AEAAC21"
     },
     "AuthorizerType": "JWT",
-    "Name": "UserPoolAuthorizer",
     "IdentitySource": [
      "$request.header.Authorization"
     ],
@@ -126,7 +125,8 @@
        ]
       ]
      }
-    }
+    },
+    "Name": "UserPoolAuthorizer"
    }
   },
   "userpool0AC4AA96": {
@@ -163,9 +163,6 @@
   "userpoolUserPoolAuthorizerClient6A7486E8": {
    "Type": "AWS::Cognito::UserPoolClient",
    "Properties": {
-    "UserPoolId": {
-     "Ref": "userpool0AC4AA96"
-    },
     "AllowedOAuthFlows": [
      "implicit",
      "code"
@@ -183,7 +180,10 @@
     ],
     "SupportedIdentityProviders": [
      "COGNITO"
-    ]
+    ],
+    "UserPoolId": {
+     "Ref": "userpool0AC4AA96"
+    }
    }
   },
   "lambdaServiceRole494E4CA6": {
@@ -224,16 +224,16 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "7410bbb25893071ddf955447cf906ac518465ea509469e6b012c28dde8f8b5cd.zip"
+     "S3Key": "867837e91f97aaf9c29d20a4fea18e3f520bb65d84e9bb59ec84058226225ffc.zip"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "lambdaServiceRole494E4CA6",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs16.x"
    },
    "DependsOn": [
     "lambdaServiceRole494E4CA6"

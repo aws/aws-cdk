@@ -294,14 +294,14 @@
                     "code": {
                       "zipFile": "exports.handler = {}"
                     },
+                    "handler": "hello.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "LambdaFunctionServiceRoleC555A460",
                         "Arn"
                       ]
                     },
-                    "handler": "hello.handler",
-                    "runtime": "nodejs14.x"
+                    "runtime": "nodejs16.x"
                   }
                 },
                 "constructInfo": {
@@ -455,10 +455,6 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::CloudTrail::Trail",
                   "aws:cdk:cloudformation:props": {
-                    "isLogging": true,
-                    "s3BucketName": {
-                      "Ref": "TrailS30071F172"
-                    },
                     "enableLogFileValidation": true,
                     "eventSelectors": [
                       {
@@ -501,7 +497,11 @@
                       }
                     ],
                     "includeGlobalServiceEvents": true,
+                    "isLogging": true,
                     "isMultiRegionTrail": true,
+                    "s3BucketName": {
+                      "Ref": "TrailS30071F172"
+                    },
                     "snsTopicName": {
                       "Fn::GetAtt": [
                         "TopicBFC7AF6E",
@@ -548,7 +548,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.55"
+          "version": "10.2.69"
         }
       }
     },

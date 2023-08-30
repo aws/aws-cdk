@@ -37,21 +37,21 @@
     "Code": {
      "ZipFile": "exports.handler = async () => { console.log('hello world'); };"
     },
+    "Description": "version-hash:e4f1ce9a596138fa2eae3cac20930f53",
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "MyLambdaServiceRole4539ECB6",
       "Arn"
      ]
     },
-    "Description": "version-hash:7c384e097d7f7605c9405f788cdf9f7b",
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs16.x"
    },
    "DependsOn": [
     "MyLambdaServiceRole4539ECB6"
    ]
   },
-  "MyLambdaCurrentVersionE7A382CC0be4c7f7b82230afaf72d130ee920da9": {
+  "MyLambdaCurrentVersionE7A382CC9ef7d0f7e3b3b55a2ac4da5225352f4d": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -67,7 +67,7 @@
     },
     "FunctionVersion": {
      "Fn::GetAtt": [
-      "MyLambdaCurrentVersionE7A382CC0be4c7f7b82230afaf72d130ee920da9",
+      "MyLambdaCurrentVersionE7A382CC9ef7d0f7e3b3b55a2ac4da5225352f4d",
       "Version"
      ]
     },
@@ -118,7 +118,6 @@
      ]
     },
     "ScalableDimension": "lambda:function:ProvisionedConcurrency",
-    "ServiceNamespace": "lambda",
     "ScheduledActions": [
      {
       "ScalableTargetAction": {
@@ -134,7 +133,8 @@
       "Schedule": "cron(0 20 * * ? *)",
       "ScheduledActionName": "ScaleDownAtNight"
      }
-    ]
+    ],
+    "ServiceNamespace": "lambda"
    }
   },
   "AliasAliasScalingTargetTrackingA7718D48": {

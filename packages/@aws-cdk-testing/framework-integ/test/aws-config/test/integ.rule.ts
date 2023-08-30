@@ -5,6 +5,17 @@ import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as config from 'aws-cdk-lib/aws-config';
 
+/**********************************************************************************************************************
+ *
+ *    Warning! This test case can not be deployed!
+ *
+ *    Save yourself some time and move on.
+ *    The latest given reason is:
+ *    - 2023-08-30: `config.CloudFormationStackDriftDetectionCheck` fails due to missing prerequisites
+ *                  Adding the required resources to the stack might fix it, @mrgrain
+ *
+ *********************************************************************************************************************/
+
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-config-custompolicy');
 
@@ -12,7 +23,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-config-custompolicy');
 const fn = new lambda.Function(stack, 'CustomFunction', {
   code: lambda.AssetCode.fromInline('exports.handler = (event) => console.log(event);'),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: lambda.Runtime.NODEJS_16_X,
 });
 
 new config.CustomRule(stack, 'Custom', {

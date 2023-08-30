@@ -18,7 +18,7 @@ const stack = new Stack(app, 'AuthorizerInteg');
 const httpApi = new HttpApi(stack, 'MyHttpApi');
 
 const authHandler = new lambda.Function(stack, 'auth-function', {
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: lambda.Runtime.NODEJS_16_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, '../auth-handler')),
 });
@@ -30,7 +30,7 @@ const authorizer = new HttpLambdaAuthorizer('LambdaAuthorizer', authHandler, {
 });
 
 const handler = new lambda.Function(stack, 'lambda', {
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: lambda.Runtime.NODEJS_16_X,
   handler: 'index.handler',
   code: lambda.AssetCode.fromAsset(path.join(__dirname, '../integ.lambda.handler')),
 });

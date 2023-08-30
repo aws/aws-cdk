@@ -78,14 +78,14 @@
                     "code": {
                       "zipFile": "foo"
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "MyLambdaServiceRole4539ECB6",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
-                    "runtime": "nodejs14.x"
+                    "runtime": "nodejs16.x"
                   }
                 },
                 "constructInfo": {
@@ -127,10 +127,10 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::ApiGateway::Deployment",
                       "aws:cdk:cloudformation:props": {
+                        "description": "Automatically created by the RestApi construct",
                         "restApiId": {
                           "Ref": "MyRestApi2D1F47A9"
-                        },
-                        "description": "Automatically created by the RestApi construct"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -154,11 +154,11 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::ApiGateway::Stage",
                       "aws:cdk:cloudformation:props": {
-                        "restApiId": {
-                          "Ref": "MyRestApi2D1F47A9"
-                        },
                         "deploymentId": {
                           "Ref": "MyRestApiDeploymentB555B582f86f07eb1bf053df446e77125b5ae767"
+                        },
+                        "restApiId": {
+                          "Ref": "MyRestApi2D1F47A9"
                         },
                         "stageName": "prod"
                       }
@@ -290,18 +290,9 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
                           "aws:cdk:cloudformation:props": {
-                            "httpMethod": "GET",
-                            "resourceId": {
-                              "Fn::GetAtt": [
-                                "MyRestApi2D1F47A9",
-                                "RootResourceId"
-                              ]
-                            },
-                            "restApiId": {
-                              "Ref": "MyRestApi2D1F47A9"
-                            },
                             "apiKeyRequired": true,
                             "authorizationType": "NONE",
+                            "httpMethod": "GET",
                             "integration": {
                               "type": "AWS_PROXY",
                               "uri": {
@@ -328,6 +319,15 @@
                                 ]
                               },
                               "integrationHttpMethod": "POST"
+                            },
+                            "resourceId": {
+                              "Fn::GetAtt": [
+                                "MyRestApi2D1F47A9",
+                                "RootResourceId"
+                              ]
+                            },
+                            "restApiId": {
+                              "Ref": "MyRestApi2D1F47A9"
                             }
                           }
                         },
@@ -446,18 +446,9 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
                           "aws:cdk:cloudformation:props": {
-                            "httpMethod": "POST",
-                            "resourceId": {
-                              "Fn::GetAtt": [
-                                "MyRestApi2D1F47A9",
-                                "RootResourceId"
-                              ]
-                            },
-                            "restApiId": {
-                              "Ref": "MyRestApi2D1F47A9"
-                            },
                             "apiKeyRequired": false,
                             "authorizationType": "NONE",
+                            "httpMethod": "POST",
                             "integration": {
                               "type": "AWS_PROXY",
                               "uri": {
@@ -484,6 +475,15 @@
                                 ]
                               },
                               "integrationHttpMethod": "POST"
+                            },
+                            "resourceId": {
+                              "Fn::GetAtt": [
+                                "MyRestApi2D1F47A9",
+                                "RootResourceId"
+                              ]
+                            },
+                            "restApiId": {
+                              "Ref": "MyRestApi2D1F47A9"
                             }
                           }
                         },
@@ -545,7 +545,7 @@
                 "path": "LambdaTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.26"
+                  "version": "10.2.69"
                 }
               },
               "DeployAssert": {
@@ -591,7 +591,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.26"
+          "version": "10.2.69"
         }
       }
     },

@@ -27,7 +27,7 @@ class StackUnderTest extends Stack {
     super(scope, id, props);
 
     new Function(this, 'MyFunc1', {
-      runtime: Runtime.NODEJS_14_X,
+      runtime: Runtime.NODEJS_16_X,
       handler: 'index.handler',
       code: Code.fromInline(`exports.handler = ${handler.toString()}`),
       architecture: props.architecture,

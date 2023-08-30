@@ -112,7 +112,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "3e6ea85c994cf2198f02e67a9e98e8f23456efa8bd72dd55b3a86454c4db9d5f.zip"
+     "S3Key": "216218e507a977a1bb3592f29c1a62ab3e0a9eb25569109a395315638e154329.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -178,14 +178,14 @@
     "Code": {
      "ZipFile": "exports.handler = {}"
     },
+    "Handler": "hello.handler",
     "Role": {
      "Fn::GetAtt": [
       "LambdaFunctionServiceRoleC555A460",
       "Arn"
      ]
     },
-    "Handler": "hello.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs16.x"
    },
    "DependsOn": [
     "LambdaFunctionServiceRoleC555A460"
@@ -320,10 +320,6 @@
   "Trail022F0CF2": {
    "Type": "AWS::CloudTrail::Trail",
    "Properties": {
-    "IsLogging": true,
-    "S3BucketName": {
-     "Ref": "S3486F821D"
-    },
     "EnableLogFileValidation": true,
     "EventSelectors": [
      {
@@ -366,7 +362,11 @@
      }
     ],
     "IncludeGlobalServiceEvents": true,
-    "IsMultiRegionTrail": true
+    "IsLogging": true,
+    "IsMultiRegionTrail": true,
+    "S3BucketName": {
+     "Ref": "S3486F821D"
+    }
    },
    "DependsOn": [
     "S3Policy2E4AA1D6"

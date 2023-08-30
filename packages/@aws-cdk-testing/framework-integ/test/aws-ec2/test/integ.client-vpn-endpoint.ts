@@ -5,6 +5,17 @@ import { Construct } from 'constructs';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 
+/**********************************************************************************************************************
+ *
+ *    Warning! This test case can not be deployed!
+ *
+ *    Save yourself some time and move on.
+ *    The latest given reason is:
+ *    - 2023-08-30: Required cert files are missing, when re-instated failing because certs are expired
+ *                  Generating to cert files will likely resolve this, @mrgrain
+ *
+ *********************************************************************************************************************/
+
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
@@ -40,7 +51,7 @@ class ImportCertificates extends Construct {
 
     const serviceToken = CustomResourceProvider.getOrCreate(this, IMPORT_CERTIFICATES_RESOURCE_TYPE, {
       codeDirectory: path.join(__dirname, 'import-certificates-handler'),
-      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_16_X,
       policyStatements: [{
         Effect: 'Allow',
         Action: ['acm:ImportCertificate', 'acm:DeleteCertificate'],

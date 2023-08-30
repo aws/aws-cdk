@@ -8,19 +8,19 @@ class BookStack extends cdk.Stack {
     super(scope, id);
 
     const booksHandler = new apigw.LambdaIntegration(new lambda.Function(this, 'BooksHandler', {
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_16_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`exports.handler = ${echoHandlerCode}`),
     }));
 
     const bookHandler = new apigw.LambdaIntegration(new lambda.Function(this, 'BookHandler', {
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_16_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`exports.handler = ${echoHandlerCode}`),
     }));
 
     const hello = new apigw.LambdaIntegration(new lambda.Function(this, 'Hello', {
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_16_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`exports.handler = ${helloCode}`),
     }));

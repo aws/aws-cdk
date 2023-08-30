@@ -30,7 +30,7 @@ describe('schedule target input', () => {
     func = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       tracing: lambda.Tracing.PASS_THROUGH,
     });
   });

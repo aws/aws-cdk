@@ -114,10 +114,10 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::ApiGateway::Deployment",
                       "aws:cdk:cloudformation:props": {
+                        "description": "beta stage",
                         "restApiId": {
                           "Ref": "myapi4C7BF186"
-                        },
-                        "description": "beta stage"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -141,9 +141,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::ApiGateway::Stage",
                       "aws:cdk:cloudformation:props": {
-                        "restApiId": {
-                          "Ref": "myapi4C7BF186"
-                        },
                         "cacheClusterEnabled": true,
                         "cacheClusterSize": "0.5",
                         "deploymentId": {
@@ -164,6 +161,9 @@
                             "dataTraceEnabled": false
                           }
                         ],
+                        "restApiId": {
+                          "Ref": "myapi4C7BF186"
+                        },
                         "stageName": "beta"
                       }
                     },
@@ -345,15 +345,9 @@
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
                                   "aws:cdk:cloudformation:props": {
-                                    "httpMethod": "GET",
-                                    "resourceId": {
-                                      "Ref": "myapiv1toysA55FCBC4"
-                                    },
-                                    "restApiId": {
-                                      "Ref": "myapi4C7BF186"
-                                    },
                                     "apiKeyRequired": true,
                                     "authorizationType": "NONE",
+                                    "httpMethod": "GET",
                                     "integration": {
                                       "type": "AWS_PROXY",
                                       "uri": {
@@ -380,6 +374,12 @@
                                         ]
                                       },
                                       "integrationHttpMethod": "POST"
+                                    },
+                                    "resourceId": {
+                                      "Ref": "myapiv1toysA55FCBC4"
+                                    },
+                                    "restApiId": {
+                                      "Ref": "myapi4C7BF186"
                                     }
                                   }
                                 },
@@ -404,16 +404,16 @@
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
                                   "aws:cdk:cloudformation:props": {
+                                    "authorizationType": "NONE",
                                     "httpMethod": "POST",
+                                    "integration": {
+                                      "type": "MOCK"
+                                    },
                                     "resourceId": {
                                       "Ref": "myapiv1toysA55FCBC4"
                                     },
                                     "restApiId": {
                                       "Ref": "myapi4C7BF186"
-                                    },
-                                    "authorizationType": "NONE",
-                                    "integration": {
-                                      "type": "MOCK"
                                     }
                                   }
                                 },
@@ -438,16 +438,16 @@
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
                                   "aws:cdk:cloudformation:props": {
+                                    "authorizationType": "NONE",
                                     "httpMethod": "PUT",
+                                    "integration": {
+                                      "type": "MOCK"
+                                    },
                                     "resourceId": {
                                       "Ref": "myapiv1toysA55FCBC4"
                                     },
                                     "restApiId": {
                                       "Ref": "myapi4C7BF186"
-                                    },
-                                    "authorizationType": "NONE",
-                                    "integration": {
-                                      "type": "MOCK"
                                     }
                                   }
                                 },
@@ -502,16 +502,16 @@
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
                                   "aws:cdk:cloudformation:props": {
+                                    "authorizationType": "NONE",
                                     "httpMethod": "GET",
+                                    "integration": {
+                                      "type": "MOCK"
+                                    },
                                     "resourceId": {
                                       "Ref": "myapiv1appliancesallCF8C6A16"
                                     },
                                     "restApiId": {
                                       "Ref": "myapi4C7BF186"
-                                    },
-                                    "authorizationType": "NONE",
-                                    "integration": {
-                                      "type": "MOCK"
                                     }
                                   }
                                 },
@@ -660,14 +660,8 @@
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
                                   "aws:cdk:cloudformation:props": {
-                                    "httpMethod": "GET",
-                                    "resourceId": {
-                                      "Ref": "myapiv1books1D4BE6C1"
-                                    },
-                                    "restApiId": {
-                                      "Ref": "myapi4C7BF186"
-                                    },
                                     "authorizationType": "NONE",
+                                    "httpMethod": "GET",
                                     "integration": {
                                       "type": "AWS_PROXY",
                                       "uri": {
@@ -694,6 +688,12 @@
                                         ]
                                       },
                                       "integrationHttpMethod": "POST"
+                                    },
+                                    "resourceId": {
+                                      "Ref": "myapiv1books1D4BE6C1"
+                                    },
+                                    "restApiId": {
+                                      "Ref": "myapi4C7BF186"
                                     }
                                   }
                                 },
@@ -812,14 +812,8 @@
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
                                   "aws:cdk:cloudformation:props": {
-                                    "httpMethod": "POST",
-                                    "resourceId": {
-                                      "Ref": "myapiv1books1D4BE6C1"
-                                    },
-                                    "restApiId": {
-                                      "Ref": "myapi4C7BF186"
-                                    },
                                     "authorizationType": "NONE",
+                                    "httpMethod": "POST",
                                     "integration": {
                                       "type": "AWS_PROXY",
                                       "uri": {
@@ -846,6 +840,12 @@
                                         ]
                                       },
                                       "integrationHttpMethod": "POST"
+                                    },
+                                    "resourceId": {
+                                      "Ref": "myapiv1books1D4BE6C1"
+                                    },
+                                    "restApiId": {
+                                      "Ref": "myapi4C7BF186"
                                     }
                                   }
                                 },
@@ -1056,14 +1056,14 @@
                     "code": {
                       "zipFile": "exports.handler = function handlerCode(event, _, callback) {\n            return callback(undefined, {\n                isBase64Encoded: false,\n                statusCode: 200,\n                headers: { 'content-type': 'application/json' },\n                body: JSON.stringify(event),\n            });\n        }"
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "MyHandlerServiceRoleFFA06653",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
-                    "runtime": "nodejs14.x"
+                    "runtime": "nodejs16.x"
                   }
                 },
                 "constructInfo": {
@@ -1113,11 +1113,11 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ApiGateway::Stage",
                   "aws:cdk:cloudformation:props": {
-                    "restApiId": {
-                      "Ref": "myapi4C7BF186"
-                    },
                     "deploymentId": {
                       "Ref": "TestDeploymentD77B56865531eba1e8fde4b8e6988d5af7b2efd6"
+                    },
+                    "restApiId": {
+                      "Ref": "myapi4C7BF186"
                     },
                     "stageName": "prod"
                   }
@@ -1202,7 +1202,7 @@
                 "path": "apigateway-restapi/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "version": "10.2.69"
                 }
               },
               "DeployAssert": {
@@ -1248,7 +1248,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.55"
+          "version": "10.2.69"
         }
       }
     },

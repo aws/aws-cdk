@@ -48,7 +48,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "25f7dc8c7a6d65604d70050f2d9d19d6bfc5060a3d74662fc86589f4385e3a1b.zip"
+                      "s3Key": "9202bb21d52e07810fc1da0f6acf2dcb75a40a43a9a2efbcfc9ae39535c6260c.zip"
                     },
                     "description": "/opt/nodejs/node_modules/proxy-agent"
                   }
@@ -64,17 +64,17 @@
               "version": "0.0.0"
             }
           },
-          "Lambda$Node14": {
-            "id": "Lambda$Node14",
-            "path": "lambda-layer-node-proxy-agent-integ-stack/Lambda$Node14",
+          "Lambda$Node16": {
+            "id": "Lambda$Node16",
+            "path": "lambda-layer-node-proxy-agent-integ-stack/Lambda$Node16",
             "children": {
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "lambda-layer-node-proxy-agent-integ-stack/Lambda$Node14/ServiceRole",
+                "path": "lambda-layer-node-proxy-agent-integ-stack/Lambda$Node16/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "lambda-layer-node-proxy-agent-integ-stack/Lambda$Node14/ServiceRole/ImportServiceRole",
+                    "path": "lambda-layer-node-proxy-agent-integ-stack/Lambda$Node16/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -82,7 +82,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "lambda-layer-node-proxy-agent-integ-stack/Lambda$Node14/ServiceRole/Resource",
+                    "path": "lambda-layer-node-proxy-agent-integ-stack/Lambda$Node16/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -127,11 +127,11 @@
               },
               "Code": {
                 "id": "Code",
-                "path": "lambda-layer-node-proxy-agent-integ-stack/Lambda$Node14/Code",
+                "path": "lambda-layer-node-proxy-agent-integ-stack/Lambda$Node16/Code",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "lambda-layer-node-proxy-agent-integ-stack/Lambda$Node14/Code/Stage",
+                    "path": "lambda-layer-node-proxy-agent-integ-stack/Lambda$Node16/Code/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -139,7 +139,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "lambda-layer-node-proxy-agent-integ-stack/Lambda$Node14/Code/AssetBucket",
+                    "path": "lambda-layer-node-proxy-agent-integ-stack/Lambda$Node16/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
@@ -153,7 +153,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "lambda-layer-node-proxy-agent-integ-stack/Lambda$Node14/Resource",
+                "path": "lambda-layer-node-proxy-agent-integ-stack/Lambda$Node16/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
@@ -161,13 +161,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "06c04d53e96719c6077dd6ff79d66b48853e9fe13d109ba06cbec8c094a69657.zip"
-                    },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "LambdaNode14ServiceRole3CFE3F36",
-                        "Arn"
-                      ]
+                      "s3Key": "345594d759614f5236f4ca12814574d91bda79debb65252f6a19d8d9a316690b.zip"
                     },
                     "handler": "index.handler",
                     "layers": [
@@ -176,7 +170,13 @@
                       }
                     ],
                     "memorySize": 512,
-                    "runtime": "nodejs14.x",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "LambdaNode16ServiceRole639A5B64",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs16.x",
                     "timeout": 30
                   }
                 },
@@ -191,21 +191,21 @@
               "version": "0.0.0"
             }
           },
-          "ProviderNode14": {
-            "id": "ProviderNode14",
-            "path": "lambda-layer-node-proxy-agent-integ-stack/ProviderNode14",
+          "ProviderNode16": {
+            "id": "ProviderNode16",
+            "path": "lambda-layer-node-proxy-agent-integ-stack/ProviderNode16",
             "children": {
               "framework-onEvent": {
                 "id": "framework-onEvent",
-                "path": "lambda-layer-node-proxy-agent-integ-stack/ProviderNode14/framework-onEvent",
+                "path": "lambda-layer-node-proxy-agent-integ-stack/ProviderNode16/framework-onEvent",
                 "children": {
                   "ServiceRole": {
                     "id": "ServiceRole",
-                    "path": "lambda-layer-node-proxy-agent-integ-stack/ProviderNode14/framework-onEvent/ServiceRole",
+                    "path": "lambda-layer-node-proxy-agent-integ-stack/ProviderNode16/framework-onEvent/ServiceRole",
                     "children": {
                       "ImportServiceRole": {
                         "id": "ImportServiceRole",
-                        "path": "lambda-layer-node-proxy-agent-integ-stack/ProviderNode14/framework-onEvent/ServiceRole/ImportServiceRole",
+                        "path": "lambda-layer-node-proxy-agent-integ-stack/ProviderNode16/framework-onEvent/ServiceRole/ImportServiceRole",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "0.0.0"
@@ -213,7 +213,7 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "lambda-layer-node-proxy-agent-integ-stack/ProviderNode14/framework-onEvent/ServiceRole/Resource",
+                        "path": "lambda-layer-node-proxy-agent-integ-stack/ProviderNode16/framework-onEvent/ServiceRole/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                           "aws:cdk:cloudformation:props": {
@@ -252,11 +252,11 @@
                       },
                       "DefaultPolicy": {
                         "id": "DefaultPolicy",
-                        "path": "lambda-layer-node-proxy-agent-integ-stack/ProviderNode14/framework-onEvent/ServiceRole/DefaultPolicy",
+                        "path": "lambda-layer-node-proxy-agent-integ-stack/ProviderNode16/framework-onEvent/ServiceRole/DefaultPolicy",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "lambda-layer-node-proxy-agent-integ-stack/ProviderNode14/framework-onEvent/ServiceRole/DefaultPolicy/Resource",
+                            "path": "lambda-layer-node-proxy-agent-integ-stack/ProviderNode16/framework-onEvent/ServiceRole/DefaultPolicy/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                               "aws:cdk:cloudformation:props": {
@@ -268,7 +268,7 @@
                                       "Resource": [
                                         {
                                           "Fn::GetAtt": [
-                                            "LambdaNode146E3D4F58",
+                                            "LambdaNode168CB141CB",
                                             "Arn"
                                           ]
                                         },
@@ -278,7 +278,7 @@
                                             [
                                               {
                                                 "Fn::GetAtt": [
-                                                  "LambdaNode146E3D4F58",
+                                                  "LambdaNode168CB141CB",
                                                   "Arn"
                                                 ]
                                               },
@@ -291,10 +291,10 @@
                                   ],
                                   "Version": "2012-10-17"
                                 },
-                                "policyName": "ProviderNode14frameworkonEventServiceRoleDefaultPolicyE34339F9",
+                                "policyName": "ProviderNode16frameworkonEventServiceRoleDefaultPolicyBED16F1E",
                                 "roles": [
                                   {
-                                    "Ref": "ProviderNode14frameworkonEventServiceRoleFAE87DBE"
+                                    "Ref": "ProviderNode16frameworkonEventServiceRole2CA3DCA3"
                                   }
                                 ]
                               }
@@ -318,11 +318,11 @@
                   },
                   "Code": {
                     "id": "Code",
-                    "path": "lambda-layer-node-proxy-agent-integ-stack/ProviderNode14/framework-onEvent/Code",
+                    "path": "lambda-layer-node-proxy-agent-integ-stack/ProviderNode16/framework-onEvent/Code",
                     "children": {
                       "Stage": {
                         "id": "Stage",
-                        "path": "lambda-layer-node-proxy-agent-integ-stack/ProviderNode14/framework-onEvent/Code/Stage",
+                        "path": "lambda-layer-node-proxy-agent-integ-stack/ProviderNode16/framework-onEvent/Code/Stage",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.AssetStaging",
                           "version": "0.0.0"
@@ -330,7 +330,7 @@
                       },
                       "AssetBucket": {
                         "id": "AssetBucket",
-                        "path": "lambda-layer-node-proxy-agent-integ-stack/ProviderNode14/framework-onEvent/Code/AssetBucket",
+                        "path": "lambda-layer-node-proxy-agent-integ-stack/ProviderNode16/framework-onEvent/Code/AssetBucket",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                           "version": "0.0.0"
@@ -344,7 +344,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "lambda-layer-node-proxy-agent-integ-stack/ProviderNode14/framework-onEvent/Resource",
+                    "path": "lambda-layer-node-proxy-agent-integ-stack/ProviderNode16/framework-onEvent/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                       "aws:cdk:cloudformation:props": {
@@ -354,24 +354,24 @@
                           },
                           "s3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
                         },
-                        "role": {
-                          "Fn::GetAtt": [
-                            "ProviderNode14frameworkonEventServiceRoleFAE87DBE",
-                            "Arn"
-                          ]
-                        },
-                        "description": "AWS CDK resource provider framework - onEvent (lambda-layer-node-proxy-agent-integ-stack/ProviderNode14)",
+                        "description": "AWS CDK resource provider framework - onEvent (lambda-layer-node-proxy-agent-integ-stack/ProviderNode16)",
                         "environment": {
                           "variables": {
                             "USER_ON_EVENT_FUNCTION_ARN": {
                               "Fn::GetAtt": [
-                                "LambdaNode146E3D4F58",
+                                "LambdaNode168CB141CB",
                                 "Arn"
                               ]
                             }
                           }
                         },
                         "handler": "framework.onEvent",
+                        "role": {
+                          "Fn::GetAtt": [
+                            "ProviderNode16frameworkonEventServiceRole2CA3DCA3",
+                            "Arn"
+                          ]
+                        },
                         "runtime": "nodejs18.x",
                         "timeout": 900
                       }
@@ -393,13 +393,13 @@
               "version": "0.0.0"
             }
           },
-          "CustomResourceNode14": {
-            "id": "CustomResourceNode14",
-            "path": "lambda-layer-node-proxy-agent-integ-stack/CustomResourceNode14",
+          "CustomResourceNode16": {
+            "id": "CustomResourceNode16",
+            "path": "lambda-layer-node-proxy-agent-integ-stack/CustomResourceNode16",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "lambda-layer-node-proxy-agent-integ-stack/CustomResourceNode14/Default",
+                "path": "lambda-layer-node-proxy-agent-integ-stack/CustomResourceNode16/Default",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnResource",
                   "version": "0.0.0"
@@ -446,7 +446,7 @@
                 "path": "lambda-layer-node-proxy-agent-integ-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "version": "10.2.69"
                 }
               },
               "DeployAssert": {
@@ -492,7 +492,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.55"
+          "version": "10.2.69"
         }
       }
     },

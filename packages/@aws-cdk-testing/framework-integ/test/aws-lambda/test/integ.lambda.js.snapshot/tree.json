@@ -124,7 +124,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs14.x"
+                    "runtime": "nodejs16.x"
                   }
                 },
                 "constructInfo": {
@@ -209,7 +209,7 @@
                     },
                     "functionVersion": {
                       "Fn::GetAtt": [
-                        "MyLambdaCurrentVersionE7A382CCac1a0c5f52d7e233eaf45e0c00b74629",
+                        "MyLambdaCurrentVersionE7A382CC1bbf26fffae216f511ef7223d3cba742",
                         "Version"
                       ]
                     },

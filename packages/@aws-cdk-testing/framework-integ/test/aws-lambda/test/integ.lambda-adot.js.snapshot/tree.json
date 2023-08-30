@@ -149,7 +149,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs14.x",
+                    "runtime": "nodejs16.x",
                     "tracingConfig": {
                       "mode": "Active"
                     }
@@ -993,7 +993,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs14.x",
+                    "runtime": "nodejs16.x",
                     "tracingConfig": {
                       "mode": "Active"
                     }
