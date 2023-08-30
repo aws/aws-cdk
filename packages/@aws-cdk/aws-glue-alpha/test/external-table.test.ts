@@ -786,16 +786,26 @@ describe('validate', () => {
   });
 });
 
-test('Table.fromTableArn', () => {
-  // GIVEN
-  const stack = new cdk.Stack();
+describe('Table.fromTableArn', () => {
+  test('success', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
 
-  // WHEN
-  const table = glue.ExternalTable.fromTableArn(stack, 'boom', 'arn:aws:glue:us-east-1:123456789012:table/db1/tbl1');
+    // WHEN
+    const table = glue.ExternalTable.fromTableArn(stack, 'boom', 'arn:aws:glue:us-east-1:123456789012:table/db1/tbl1');
 
-  // THEN
-  expect(table.tableArn).toEqual('arn:aws:glue:us-east-1:123456789012:table/db1/tbl1');
-  expect(table.tableName).toEqual('tbl1');
+    // THEN
+    expect(table.tableArn).toEqual('arn:aws:glue:us-east-1:123456789012:table/db1/tbl1');
+    expect(table.tableName).toEqual('tbl1');
+  });
+
+  test('throws if no ARN is provided', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    expect(() => glue.ExternalTable.fromTableArn(stack, 'boom', '')).toThrowError(/ARNs must start with \"arn:\" and have at least 6 components: /);
+  });
 });
 
 test.each([
