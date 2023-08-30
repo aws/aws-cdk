@@ -1917,6 +1917,19 @@ describe('instance', () => {
     });
   });
 
+  test('with CA certificate', () => {
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+      vpc,
+      caCertificate: rds.CaCertificate.RDS_CA_RDS2048_G1,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      CACertificateIdentifier: 'rds-ca-rsa2048-g1',
+    });
+  });
+
   test('throws with storage throughput and not GP3', () => {
     expect(() => new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),

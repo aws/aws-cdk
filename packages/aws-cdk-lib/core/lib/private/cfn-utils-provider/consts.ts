@@ -1,7 +1,7 @@
 /**
  * Supported resource type.
  */
-export const enum CfnUtilsResourceType {
+export enum CfnUtilsResourceType {
   /**
    * CfnJson
    */
