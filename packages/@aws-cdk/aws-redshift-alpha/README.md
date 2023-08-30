@@ -561,6 +561,7 @@ as it's a fast operation and typically completes in minutes. Elastic resize is o
   * ra3.xlplus
   * ra3.4xlarge
   * ra3.16xlarge 
+
 There are other constraints to be aware of, for example, elastic resizing does not support single-node clusters and there are 
 limits on the number of nodes you can add to a cluster. See the [AWS Redshift Documentation](https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-operations.html#rs-resize-tutorial) for more details.
 
