@@ -37,7 +37,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 
 const bucket = new s3.Bucket(this, 'Bucket');
 const fn = new lambda.Function(this, 'MyFunction', {
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
 });

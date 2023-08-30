@@ -1470,8 +1470,8 @@ function undefinedIfNoKeys<A extends { [key:string]: unknown }>(struct: A): A | 
 }
 
 /**
- * Aspect for upgrading function versions when the feature flag
- * provided feature flag present. This can be necessary when the feature flag
+ * Aspect for upgrading function versions when the provided feature flag
+ * is enabled. This can be necessary when the feature flag
  * changes the function hash, as such changes must be associated with a new
  * version. This aspect will change the function description in these cases,
  * which "validates" the new function hash.

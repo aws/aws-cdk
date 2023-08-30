@@ -1,5 +1,5 @@
 {
-  "version": "33.0.0",
+  "version": "34.0.0",
   "files": {
     "a37d3ef54c18e7738fe5dc008504591bd3b1f14c6a09ee91eac6d55f7ca5ba5f": {
       "source": {
@@ -14,7 +14,7 @@
         }
       }
     },
-    "931b3e911bae7029fea07c3a55bc0b5bd8a87b82655f47d331322d9b0245b56f": {
+    "27e008564565b1f55dbc00a9221c62a613dd46f0ace47ecd64d6af97a64bae37": {
       "source": {
         "path": "aws-cdk-lambda-1.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "931b3e911bae7029fea07c3a55bc0b5bd8a87b82655f47d331322d9b0245b56f.json",
+          "objectKey": "27e008564565b1f55dbc00a9221c62a613dd46f0ace47ecd64d6af97a64bae37.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
