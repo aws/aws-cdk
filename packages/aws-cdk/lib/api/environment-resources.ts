@@ -78,6 +78,7 @@ export class EnvironmentResources {
     if (ssmParameterName !== undefined) {
       try {
         doValidate(await this.versionFromSsmParameter(ssmParameterName));
+        return;
       } catch (e: any) {
         if (e.code !== 'AccessDeniedException') { throw e; }
 
@@ -95,7 +96,7 @@ export class EnvironmentResources {
           return;
         }
 
-        throw e;
+        throw new Error(`This CDK deployment requires bootstrap stack version '${expectedVersion}', but during the confirmation via SSM parameter ${ssmParameterName} the following error occurred: ${e}`);
       }
     }
 
