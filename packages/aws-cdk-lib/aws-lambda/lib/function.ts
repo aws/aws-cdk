@@ -310,6 +310,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * this property, unsetting it doesn't remove the log retention policy. To
    * remove the retention policy, set the value to `INFINITE`.
    *
+   * @deprecated Use `logGroup` instead
    * @default logs.RetentionDays.INFINITE
    */
   readonly logRetention?: logs.RetentionDays;
@@ -318,6 +319,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * The IAM role for the Lambda function associated with the custom resource
    * that sets the retention policy.
    *
+   * @deprecated Use `logGroup` instead
    * @default - A new role is created.
    */
   readonly logRetentionRole?: iam.IRole;
@@ -326,6 +328,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * When log retention is specified, a custom resource attempts to create the CloudWatch log group.
    * These options control the retry policy when interacting with CloudWatch APIs.
    *
+   * @deprecated Use `logGroup` instead
    * @default - Default AWS SDK retry options.
    */
   readonly logRetentionRetryOptions?: LogRetentionRetryOptions;
@@ -385,6 +388,13 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default Auto
    */
   readonly runtimeManagementMode?: RuntimeManagementMode;
+
+  /**
+   * Configure the log group of the lambda function
+   *
+   * @default - Use service defaults
+   */
+  readonly logGroupProps?: logs.BaseLogGroupProps;
 }
 
 export interface FunctionProps extends FunctionOptions {
@@ -680,6 +690,7 @@ export class Function extends FunctionBase {
   public readonly _layers: ILayerVersion[] = [];
 
   private _logGroup?: logs.ILogGroup;
+  private _logGroupProps?: logs.LogGroupProps;
 
   /**
    * Environment variables for this function
@@ -875,7 +886,18 @@ export class Function extends FunctionBase {
       this.addEventSource(event);
     }
 
-    // Log retention
+    // Can use only one log group implementation
+    if (props.logGroupProps && props.logRetention) {
+      throw new Error('Only one of "logGroupProps" or "logRetention" is allowed, but not both. Prefer to use "logGroupProps".');
+    }
+
+    // Log Group
+    this._logGroupProps = props.logGroupProps;
+    if (this._logGroupProps) {
+      this.logGroup;
+    }
+
+    // Log retention @deprecated
     if (props.logRetention) {
       const logRetention = new logs.LogRetention(this, 'LogRetention', {
         logGroupName: `/aws/lambda/${this.functionName}`,
@@ -1100,11 +1122,24 @@ export class Function extends FunctionBase {
    */
   public get logGroup(): logs.ILogGroup {
     if (!this._logGroup) {
-      const logRetention = new logs.LogRetention(this, 'LogRetention', {
-        logGroupName: `/aws/lambda/${this.functionName}`,
-        retention: logs.RetentionDays.INFINITE,
+      const managedLogGroup = new logs.ServiceManagedLogGroup(this, 'LogGroup', this._logGroupProps);
+      managedLogGroup.bind({
+        parent: this,
+        logGroupArn: Stack.of(this).formatArn({
+          service: 'logs',
+          resource: 'log-group',
+          resourceName: `/aws/lambda/${this.functionName}`,
+          arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+        }),
+        tagging: {
+          service: 'lambda',
+          action: 'ListTags',
+          requestField: 'Resource',
+          responseField: 'Tags',
+        },
       });
-      this._logGroup = logs.LogGroup.fromLogGroupArn(this, `${this.node.id}-LogGroup`, logRetention.logGroupArn);
+
+      this._logGroup = managedLogGroup;
     }
     return this._logGroup;
   }
