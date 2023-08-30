@@ -37,7 +37,7 @@ export class CfnResourceReflection {
    * Returns all CFN resource classes within an assembly.
    */
   public static findAll(assembly: reflect.Assembly) {
-    return assembly.classes
+    return assembly.allClasses
       .filter(c => CoreTypes.isCfnResource(c))
       .map(c => new CfnResourceReflection(c));
   }
