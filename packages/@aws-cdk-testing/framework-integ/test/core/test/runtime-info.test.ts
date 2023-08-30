@@ -176,7 +176,7 @@ class TestConstruct extends Construct {
 function localCdkVersion(): string {
   if (!_cdkVersion) {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const pkgJson = findParentPkgJson(__dirname);
+    const pkgJson = findParentPkgJson(require.resolve('aws-cdk-lib'));
     _cdkVersion = pkgJson.version;
     if (!_cdkVersion) {
       throw new Error('Unable to determine CDK version');
