@@ -73,13 +73,16 @@ export class Annotations {
   }
 
   /**
-   * Adds a warning metadata entry to this construct.
+   * Adds a warning metadata entry to this construct. Prefer using `addWarningV2`.
    *
    * The CLI will display the warning when an app is synthesized, or fail if run
-   * in --strict mode.
+   * in `--strict` mode.
+   *
+   * Warnings added by this call cannot be acknowledged. This will block users from
+   * running in `--strict` mode until the deal with the warning, which makes it
+   * effectively not very different from `addError`. Prefer using `addWarningV2` instead.
    *
    * @param message The warning message.
-   * @deprecated - use addWarningV2 instead
    */
   public addWarning(message: string) {
     this.addMessage(cxschema.ArtifactMetadataEntryType.WARN, message);
