@@ -476,6 +476,26 @@ describe('cluster new api', () => {
     });
   });
 
+  describe('instanceIdentifiers', () => {
+    test('should contain writer and reader instance IDs', () => {
+      //GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      //WHEN
+      const cluster = new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        readers: [ClusterInstance.serverlessV2('reader')],
+        iamAuthentication: true,
+      });
+
+      //THEN
+      expect(cluster.instanceIdentifiers).toHaveLength(2);
+    });
+  });
+
   describe('provisioned writer with serverless readers', () => {
     test('serverless reader in promotion tier 2 throws warning', () => {
       // GIVEN
