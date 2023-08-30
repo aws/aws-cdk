@@ -560,11 +560,11 @@ as it's a fast operation and typically completes in minutes. Elastic resize is o
   * ds2.8xlarge
   * ra3.xlplus
   * ra3.4xlarge
-  * ra3.16xlarge 
-
-There are other constraints to be aware of, for example, elastic resizing does not support single-node clusters and there are 
-limits on the number of nodes you can add to a cluster. See the [AWS Redshift Documentation](https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-operations.html#rs-resize-tutorial) for more details.
+  * ra3.16xlarge
 
 * Classic resize - Number of nodes, node type, or both, can be changed. This operation takes longer to complete, 
 but is useful when the resize operation doesn't meet the criteria of an elastic resize. If you prefer classic resizing,
 you can set the `classicResizing` flag when creating the cluster.
+
+There are other constraints to be aware of, for example, elastic resizing does not support single-node clusters and there are 
+limits on the number of nodes you can add to a cluster. See the [AWS Redshift Documentation](https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-operations.html#rs-resize-tutorial) and [AWS API Documentation](https://docs.aws.amazon.com/redshift/latest/APIReference/API_ResizeCluster.html) for more details.
