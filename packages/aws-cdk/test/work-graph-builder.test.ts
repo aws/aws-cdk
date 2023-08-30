@@ -3,6 +3,8 @@ import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudAssemblyBuilder } from '@aws-cdk/cx-api';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { expect } from '@jest/globals';
 import { WorkGraph } from '../lib/util/work-graph';
 import { WorkGraphBuilder } from '../lib/util/work-graph-builder';
 import { AssetBuildNode, AssetPublishNode, StackNode, WorkNode } from '../lib/util/work-graph-types';
@@ -16,6 +18,25 @@ afterEach(() => {
   rootBuilder.delete();
 });
 
+function superset<A>(xs: A[]): Set<A> {
+  const ret = new Set(xs);
+  (ret as any).isSuperset = true;
+  return ret;
+}
+
+expect.addEqualityTesters([
+  function(exp: unknown, act: unknown): boolean | undefined {
+    if (exp instanceof Set && isIterable(act)) {
+      if ((exp as any).isSuperset) {
+        const actSet = new Set(act);
+        return Array.from(exp as any).every((x) => actSet.has(x));
+      }
+      return this.equals(Array.from(exp).sort(), Array.from(act).sort());
+    }
+    return undefined;
+  },
+]);
+
 describe('with some stacks and assets', () => {
   let assembly: cxapi.CloudAssembly;
   beforeEach(() => {
@@ -28,34 +49,34 @@ describe('with some stacks and assets', () => {
 
     expect(assertableNode(graph.node('stack2'))).toEqual(expect.objectContaining({
       type: 'stack',
-      dependencies: expect.arrayContaining(['F1:D1-publish']),
-    } as StackNode));
+      dependencies: superset(['publish-F1-add54bdbcb']),
+    } as Partial<StackNode>));
   });
 
   test('asset publishing step depends on asset building step', () => {
     const graph = new WorkGraphBuilder(true).build(assembly.artifacts);
 
-    expect(graph.node('F1:D1-publish')).toEqual(expect.objectContaining({
+    expect(graph.node('publish-F1-add54bdbcb')).toEqual(expect.objectContaining({
       type: 'asset-publish',
-      dependencies: new Set(['F1-build']),
-    } as Partial<AssetPublishNode>));
+      dependencies: superset(['build-F1-a533139934']),
+    } satisfies Partial<AssetPublishNode>));
   });
 
   test('with prebuild off, asset building inherits dependencies from their parent stack', () => {
     const graph = new WorkGraphBuilder(false).build(assembly.artifacts);
 
-    expect(graph.node('F1-build')).toEqual(expect.objectContaining({
+    expect(graph.node('build-F1-a533139934')).toEqual(expect.objectContaining({
       type: 'asset-build',
-      dependencies: new Set(['stack0', 'stack1']),
+      dependencies: superset(['stack0', 'stack1']),
     } as Partial<AssetBuildNode>));
   });
 
   test('with prebuild on, assets only have their own dependencies', () => {
     const graph = new WorkGraphBuilder(true).build(assembly.artifacts);
 
-    expect(graph.node('F1-build')).toEqual(expect.objectContaining({
+    expect(graph.node('build-F1-a533139934')).toEqual(expect.objectContaining({
       type: 'asset-build',
-      dependencies: new Set(['stack0']),
+      dependencies: superset(['stack0']),
     } as Partial<AssetBuildNode>));
   });
 });
@@ -84,13 +105,16 @@ test('can handle nested assemblies', async () => {
 
   let workDone = 0;
   const graph = new WorkGraphBuilder(true).build(assembly.artifacts);
+
   await graph.doParallel(10, {
     deployStack: async () => { workDone += 1; },
     buildAsset: async () => { },
     publishAsset: async () => { workDone += 1; },
   });
 
-  expect(workDone).toEqual(8);
+  // The asset is shared between parent assembly and nested assembly, but the stacks will be deployed
+  // 3 stacks + 1 asset + 3 stacks (1 reused asset)
+  expect(workDone).toEqual(7);
 });
 
 test('dependencies on unselected artifacts are silently ignored', async () => {
@@ -143,8 +167,8 @@ describe('tests that use assets', () => {
     const traversal = await traverseAndRecord(graph);
 
     expect(traversal).toEqual([
-      'work-graph-builder.test.js-build',
-      'work-graph-builder.test.js:D1-publish',
+      expect.stringMatching(/^build-work-graph-builder.test.js-.*$/),
+      expect.stringMatching(/^publish-work-graph-builder.test.js-.*$/),
       'StackA',
       'StackB',
     ]);
@@ -205,11 +229,56 @@ describe('tests that use assets', () => {
     const traversal = await traverseAndRecord(graph);
 
     expect(traversal).toEqual([
-      'abcdef-build',
-      'abcdef:D1-publish',
-      'abcdef:D2-publish',
+      expect.stringMatching(/^build-abcdef-.*$/),
+      expect.stringMatching(/^publish-abcdef-.*$/),
+      expect.stringMatching(/^publish-abcdef-.*$/),
       'StackA',
-      'abcdef:D3-publish',
+      expect.stringMatching(/^publish-abcdef-.*$/),
+      'StackB',
+    ]);
+  });
+
+  test('different parameters for the same named definition are both published', async () => {
+    addStack(rootBuilder, 'StackA', {
+      environment: 'aws://11111/us-east-1',
+      dependencies: ['StackA.assets'],
+    });
+    addAssets(rootBuilder, 'StackA.assets', {
+      files: {
+        abcdef: {
+          source: { path: __dirname },
+          destinations: {
+            D: { bucketName: 'bucket1', objectKey: 'key' },
+          },
+        },
+      },
+    });
+
+    addStack(rootBuilder, 'StackB', {
+      environment: 'aws://11111/us-east-1',
+      dependencies: ['StackB.assets', 'StackA'],
+    });
+    addAssets(rootBuilder, 'StackB.assets', {
+      files: {
+        abcdef: {
+          source: { path: __dirname },
+          destinations: {
+            D: { bucketName: 'bucket2', objectKey: 'key' },
+          },
+        },
+      },
+    });
+
+    const assembly = rootBuilder.buildAssembly();
+
+    const graph = new WorkGraphBuilder(true).build(assembly.artifacts);
+    const traversal = await traverseAndRecord(graph);
+
+    expect(traversal).toEqual([
+      expect.stringMatching(/^build-abcdef-.*$/),
+      expect.stringMatching(/^publish-abcdef-.*$/),
+      'StackA',
+      expect.stringMatching(/^publish-abcdef-.*$/),
       'StackB',
     ]);
   });
@@ -302,4 +371,8 @@ async function traverseAndRecord(graph: WorkGraph) {
     publishAsset: async (node) => { ret.push(node.id); },
   });
   return ret;
+}
+
+function isIterable(x: unknown): x is Iterable<any> {
+  return x && typeof x === 'object' && (x as any)[Symbol.iterator];
 }

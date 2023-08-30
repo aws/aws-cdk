@@ -217,19 +217,16 @@ export class WorkGraph {
     function renderNode(id: string, node: WorkNode): string[] {
       const ret = [];
       if (node.deploymentState === DeploymentState.COMPLETED) {
-        ret.push(`  "${simplifyId(id)}" [style=filled,fillcolor=yellow];`);
+        ret.push(`  ${gv(id, { style: 'filled', fillcolor: 'yellow', comment: node.note })};`);
       } else {
-        ret.push(`  "${simplifyId(id)}";`);
+        ret.push(`  ${gv(id, { comment: node.note })};`);
       }
       for (const dep of node.dependencies) {
-        ret.push(`  "${simplifyId(id)}" -> "${simplifyId(dep)}";`);
+        ret.push(`  ${gv(id)} -> ${gv(dep)};`);
       }
       return ret;
     }
 
-    function simplifyId(id: string) {
-      return id.replace(/([0-9a-f]{6})[0-9a-f]{6,}/g, '$1');
-    }
   }
 
   /**
@@ -391,4 +388,14 @@ function sum(xs: number[]) {
 
 function retainOnly<A>(xs: A[], pred: (x: A) => boolean) {
   xs.splice(0, xs.length, ...xs.filter(pred));
+}
+
+function gv(id: string, attrs?: Record<string, string | undefined>) {
+  const attrString = Object.entries(attrs ?? {}).flatMap(([k, v]) => v !== undefined ? [`${k}="${v}"`] : []).join(',');
+
+  return attrString ? `"${simplifyId(id)}" [${attrString}]` : `"${simplifyId(id)}"`;
+}
+
+function simplifyId(id: string) {
+  return id.replace(/([0-9a-f]{6})[0-9a-f]{6,}/g, '$1');
 }
