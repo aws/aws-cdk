@@ -546,16 +546,24 @@ cluster.addIamRole(role);
 
 ## Resizing
 
-As your data warehousing needs change, it's possible to resize your Redshift cluster, but it's important to understand certain caveats.
-Most importantly, if the cluster was deployed via CDK, the cluster should be resized via CDK so it's registered in the AWS CloudFormation template.
-This ensures the `NumberOfNodes` parameter gets updated so the correct type of resize is done. There are two types of resize operations:
+As your data warehousing needs change, it's possible to resize your Redshift cluster. If the cluster was deployed via CDK, 
+it's important to resize it via CDK so the change is registered in the AWS CloudFormation template. 
+There are two types of resize operations:
 
-* Elastic resize - You can add nodes to or remove nodes from the cluster. Also, you can change the node type, such as from DS2 nodes to RA3 nodes.
-AWS recommmends elastic resize as the first option, as it's a fast operation and typically completes in minutes. Elastic resize is appropriate when you:
-  * Add or reduce nodes in your existing cluster, but don't change the node type.
-  * Change the node type of your cluster.
+* Elastic resize - Number of nodes and node type can be changed, but not at the same time. Elastic resize is the default behavior, 
+as it's a fast operation and typically completes in minutes. Elastic resize is only supported on clusters of the following types:
+  * dc1.large (if your cluster is in a VPC)
+  * dc1.8xlarge (if your cluster is in a VPC)
+  * dc2.large
+  * dc2.8xlarge
+  * ds2.xlarge
+  * ds2.8xlarge
+  * ra3.xlplus
+  * ra3.4xlarge
+  * ra3.16xlarge 
+There are other constraints to be aware of, for example, elastic resizing does not support single-node clusters and there are 
+limits on the number of nodes you can add to a cluster. See the [AWS Redshift Documentation](https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-operations.html#rs-resize-tutorial) for more details.
 
-* Classic resize - Number of nodes, node type, or both, can be changed. This operation takes longer to complete, but is useful when the resize operation
-doesn't meet the criteria of an elastic resize. See [AWS Knowledge Center](https://repost.aws/knowledge-center/redshift-troubleshoot-elastic-resize) for further conditions that require classic resizing.
-
-See the [AWS Redshift documentation](https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-operations.html#rs-resize-tutorial) for full details on Redshift cluster resizing.
+* Classic resize - Number of nodes, node type, or both, can be changed. This operation takes longer to complete, 
+but is useful when the resize operation doesn't meet the criteria of an elastic resize. If you prefer classic resizing,
+you can set the `classicResizing` flag when creating the cluster.
