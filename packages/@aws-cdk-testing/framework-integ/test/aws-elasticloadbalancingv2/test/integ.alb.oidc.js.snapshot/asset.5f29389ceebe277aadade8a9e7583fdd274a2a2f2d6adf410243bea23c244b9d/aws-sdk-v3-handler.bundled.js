@@ -1,4 +1,3 @@
-"use strict";
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -718,7 +717,8 @@ async function handler(event, context) {
         };
         const { fromTemporaryCredentials } = await import("@aws-sdk/credential-providers");
         credentials = fromTemporaryCredentials({
-          params
+          params,
+          clientConfig: call.region !== void 0 ? { region: call.region } : void 0
         });
       }
       awsSdk = await awsSdk;
