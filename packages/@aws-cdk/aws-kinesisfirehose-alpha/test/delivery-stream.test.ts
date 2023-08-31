@@ -387,6 +387,13 @@ describe('delivery stream', () => {
     })).toThrowError(/Only one destination is allowed per delivery stream/);
   });
 
+  test('creating new stream should return IAM role for grantPrincipal (for backwards compatibility)', () => {
+    const deliveryStream = new firehose.DeliveryStream(stack, 'Delivery Stream', {
+      destinations: [mockS3Destination],
+    });
+    expect(deliveryStream.grantPrincipal).toBeInstanceOf(iam.Role);
+  });
+
   describe('metric methods provide a Metric with configured and attached properties', () => {
     let deliveryStream: firehose.DeliveryStream;
 
