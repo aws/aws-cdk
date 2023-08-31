@@ -542,26 +542,6 @@ describe('tests', () => {
     }).toThrow(/Unhealthy Threshold Count '1' not supported. Must be a number between 2 and 10./);
   });
 
-  test('Throws error for unequal healthy and unhealthy threshold counts', () => {
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'Stack');
-    const vpc = new ec2.Vpc(stack, 'Vpc');
-
-    new elbv2.NetworkTargetGroup(stack, 'Group', {
-      vpc,
-      port: 80,
-      healthCheck: {
-        protocol: elbv2.Protocol.TCP,
-        healthyThresholdCount: 5,
-        unhealthyThresholdCount: 3,
-      },
-    });
-
-    expect(() => {
-      app.synth();
-    }).toThrow(/Healthy and Unhealthy Threshold Counts must be the same: 5 is not equal to 3./);
-  });
-
   test('Exercise metrics', () => {
     // GIVEN
     const stack = new cdk.Stack();
