@@ -24,8 +24,8 @@ const stack = new cdk.Stack(app, 'aws-glue-job');
 const script = glue.Code.fromAsset(path.join(__dirname, 'job-script/hello_world.py'));
 
 [glue.GlueVersion.V2_0, glue.GlueVersion.V3_0, glue.GlueVersion.V4_0].forEach((glueVersion) => {
-  const etlJob = new glue.Job(stack, 'EtlJob' + glueVersion.name, {
-    jobName: 'EtlJob' + glueVersion.name,
+  const etlJob = new glue.JobLegacy(stack, 'EtlJob' + glueVersion, {
+    jobName: 'EtlJob' + glueVersion,
     executable: glue.JobExecutable.pythonEtl({
       pythonVersion: glue.PythonVersion.THREE,
       glueVersion,
@@ -42,9 +42,6 @@ const script = glue.Code.fromAsset(path.join(__dirname, 'job-script/hello_world.
       'arg2': 'value2',
       '--conf': 'valueConf',
     },
-    sparkUI: {
-      enabled: true,
-    },
     continuousLogging: {
       enabled: true,
       quiet: true,
@@ -56,8 +53,8 @@ const script = glue.Code.fromAsset(path.join(__dirname, 'job-script/hello_world.
     },
   });
   etlJob.metricSuccess();
-  new glue.Job(stack, 'StreamingJob' + glueVersion.name, {
-    jobName: 'StreamingJob' + glueVersion.name,
+  new glue.JobLegacy(stack, 'StreamingJob' + glueVersion, {
+    jobName: 'StreamingJob' + glueVersion,
     executable: glue.JobExecutable.pythonStreaming({
       pythonVersion: glue.PythonVersion.THREE,
       glueVersion,
@@ -75,7 +72,7 @@ const script = glue.Code.fromAsset(path.join(__dirname, 'job-script/hello_world.
   });
 });
 
-new glue.Job(stack, 'ShellJob', {
+new glue.JobLegacy(stack, 'ShellJob', {
   jobName: 'ShellJob',
   executable: glue.JobExecutable.pythonShell({
     glueVersion: glue.GlueVersion.V1_0,
@@ -91,7 +88,7 @@ new glue.Job(stack, 'ShellJob', {
   },
 });
 
-new glue.Job(stack, 'ShellJob39', {
+new glue.JobLegacy(stack, 'ShellJob39', {
   jobName: 'ShellJob39',
   executable: glue.JobExecutable.pythonShell({
     glueVersion: glue.GlueVersion.V1_0,
@@ -107,7 +104,7 @@ new glue.Job(stack, 'ShellJob39', {
   },
 });
 
-new glue.Job(stack, 'RayJob', {
+new glue.JobLegacy(stack, 'RayJob', {
   jobName: 'RayJob',
   executable: glue.JobExecutable.pythonRay({
     glueVersion: glue.GlueVersion.V4_0,
@@ -126,7 +123,7 @@ new glue.Job(stack, 'RayJob', {
   },
 });
 
-new glue.Job(stack, 'EtlJobWithFLEX', {
+new glue.JobLegacy(stack, 'EtlJobWithFLEX', {
   jobName: 'EtlJobWithFLEX',
   executable: glue.JobExecutable.pythonEtl({
     glueVersion: glue.GlueVersion.V3_0,
