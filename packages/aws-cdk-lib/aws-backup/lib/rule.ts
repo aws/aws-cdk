@@ -45,6 +45,17 @@ export interface BackupPlanRuleProps {
   readonly scheduleExpression?: events.Schedule;
 
   /**
+   * The name of the time zone for the schedule expression, following the IANA time zone standard.
+   *
+   * @example America/Los_Angeles
+   *
+   * @see https://www.iana.org/time-zones
+   *
+   * @default - UTC
+   */
+  readonly scheduleExpressionTimezone?: string;
+
+  /**
    * The duration after a backup is scheduled before a job is canceled if it doesn't start successfully.
    *
    * @default - 8 hours
