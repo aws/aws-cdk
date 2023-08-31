@@ -9,7 +9,7 @@
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
        "Principal": {
-        "AWS": "arn:aws:iam::339304370841:root"
+        "AWS": "arn:aws:iam::234567890123:root"
        }
       }
      ],

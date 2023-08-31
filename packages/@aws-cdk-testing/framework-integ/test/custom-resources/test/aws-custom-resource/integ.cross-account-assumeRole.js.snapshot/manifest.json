@@ -11,20 +11,20 @@
     },
     "role-stack": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://111279636657/us-east-1",
+      "environment": "aws://12345678/us-east-1",
       "properties": {
         "templateFile": "role-stack.template.json",
         "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::111279636657:role/cdk-hnb659fds-deploy-role-111279636657-us-east-1",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::111279636657:role/cdk-hnb659fds-cfn-exec-role-111279636657-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-111279636657-us-east-1/5625b44320800c190884cdc17c444997ea3ed40879a41ba05694e54588ed97f9.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-us-east-1/3eb6fd0ca4c47b396b9bfa11712c9ac73ac1e8e8638224ea3d97612f839ac65e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
           "role-stack.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::111279636657:role/cdk-hnb659fds-lookup-role-111279636657-us-east-1",
+          "arn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-lookup-role-12345678-us-east-1",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
@@ -64,20 +64,20 @@
     },
     "cross-account-stack": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://339304370841/us-east-1",
+      "environment": "aws://234567890123/us-east-1",
       "properties": {
         "templateFile": "cross-account-stack.template.json",
         "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::339304370841:role/cdk-hnb659fds-deploy-role-339304370841-us-east-1",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::339304370841:role/cdk-hnb659fds-cfn-exec-role-339304370841-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-339304370841-us-east-1/33aeb595531ae7ac22396da0c9734f6357891a8b8565eead5d383c8a2a3747cb.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-deploy-role-234567890123-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-cfn-exec-role-234567890123-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-234567890123-us-east-1/fe02cd3614aca1cb5888709f4cc8443274fe5e6296fea2d448ab1ab58524dfa8.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
           "cross-account-stack.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::339304370841:role/cdk-hnb659fds-lookup-role-339304370841-us-east-1",
+          "arn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-lookup-role-234567890123-us-east-1",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
@@ -136,20 +136,20 @@
     },
     "cross-account-opt-in-stack": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://339304370841/af-south-1",
+      "environment": "aws://234567890123/af-south-1",
       "properties": {
         "templateFile": "cross-account-opt-in-stack.template.json",
         "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::339304370841:role/cdk-hnb659fds-deploy-role-339304370841-af-south-1",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::339304370841:role/cdk-hnb659fds-cfn-exec-role-339304370841-af-south-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-339304370841-af-south-1/704e835e6bde67755a1ff71377a1c8d82d05ffd460b50508db5908882f36ef84.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-deploy-role-234567890123-af-south-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-cfn-exec-role-234567890123-af-south-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-234567890123-af-south-1/95bde49eeef842653d2fdc3aed1665f74f4c90ff5e016ba076b184b0eeb3d8d3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
           "cross-account-opt-in-stack.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::339304370841:role/cdk-hnb659fds-lookup-role-339304370841-af-south-1",
+          "arn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-lookup-role-234567890123-af-south-1",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }

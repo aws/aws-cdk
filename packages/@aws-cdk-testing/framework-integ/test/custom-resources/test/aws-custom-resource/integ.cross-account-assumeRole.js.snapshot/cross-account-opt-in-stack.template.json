@@ -9,7 +9,7 @@
       "Arn"
      ]
     },
-    "Create": "{\"assumedRoleArn\":\"arn:aws:iam::111279636657:role/MyUniqueRole\",\"region\":\"us-west-1\",\"service\":\"@aws-sdk/client-sts\",\"action\":\"GetCallerIdentityCommand\",\"physicalResourceId\":{\"id\":\"id\"}}",
+    "Create": "{\"assumedRoleArn\":\"arn:aws:iam::12345678:role/MyUniqueRole\",\"region\":\"us-west-1\",\"service\":\"@aws-sdk/client-sts\",\"action\":\"GetCallerIdentityCommand\",\"physicalResourceId\":{\"id\":\"id\"}}",
     "InstallLatestAwsSdk": false
    },
    "DependsOn": [
@@ -26,7 +26,7 @@
       {
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
-       "Resource": "arn:aws:iam::111279636657:role/MyUniqueRole"
+       "Resource": "arn:aws:iam::12345678:role/MyUniqueRole"
       }
      ],
      "Version": "2012-10-17"
@@ -74,8 +74,8 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "S3Bucket": "cdk-hnb659fds-assets-339304370841-af-south-1",
-     "S3Key": "5f261fda6ce862e76898690434e65f5c50aa14a3f63055f1f862b2aa3c20ccb5.zip"
+     "S3Bucket": "cdk-hnb659fds-assets-234567890123-af-south-1",
+     "S3Key": "5f29389ceebe277aadade8a9e7583fdd274a2a2f2d6adf410243bea23c244b9d.zip"
     },
     "Handler": "index.handler",
     "Role": {
