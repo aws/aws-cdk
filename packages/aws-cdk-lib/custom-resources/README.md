@@ -688,7 +688,7 @@ new cr.AwsCustomResource(this, 'CrossAccount', {
   policy: cr.AwsCustomResourcePolicy.fromStatements([iam.PolicyStatement.fromJson({
     Effect: "Allow",
     Action: "sts:AssumeRole",
-    Resource: assumedRoleArn,
+    Resource: crossAccountRoleArn,
   })]),
 });
 ```
