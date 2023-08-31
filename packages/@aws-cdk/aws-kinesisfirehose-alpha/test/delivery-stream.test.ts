@@ -387,7 +387,7 @@ describe('delivery stream', () => {
     })).toThrowError(/Only one destination is allowed per delivery stream/);
   });
 
-  test('creating new stream should return IAM role for grantPrincipal (for backwards compatibility)', () => {
+  test('creating new stream should return IAM role when calling getter for grantPrincipal (backwards compatibility)', () => {
     const deliveryStream = new firehose.DeliveryStream(stack, 'Delivery Stream', {
       destinations: [mockS3Destination],
     });
