@@ -29,6 +29,8 @@ group.configureHealthCheck({
   interval: cdk.Duration.seconds(250),
   timeout: cdk.Duration.seconds(100),
   protocol: elbv2.Protocol.TCP,
+  healthyThresholdCount: 5,
+  unhealthyThresholdCount: 2,
 });
 
 vpc.publicSubnets.forEach(subnet => group.node.addDependency(subnet));
