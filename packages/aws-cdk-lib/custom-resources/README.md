@@ -667,3 +667,28 @@ new cr.AwsCustomResource(this, 'GetParameter', {
   },
 });
 ```
+
+#### Making Cross Account Calls
+
+Example of making a cross account call using an assumed role. If deploying the custom resource in a region where the cross account role is not defined (i.e. an opt-in region that is not enabled in the account owning the role), set the region parameter to a region enabled in that account.
+
+```ts
+const crossAccountRoleArn = 'arn:aws:iam::OTHERACCOUNT:role/CrossAccountRoleName'; // arn of role deployed in separate account
+
+const callRegion = 'us-west-1'; // sdk call to be made in specified region (optional)
+
+new cr.AwsCustomResource(this, 'CrossAccount', {
+  onCreate: {
+    assumedRoleArn: crossAccountRoleArn,
+    region: callRegion, // optional
+    service: '@aws-sdk/client-sts',
+    action: 'GetCallerIdentityCommand',
+    physicalResourceId: cr.PhysicalResourceId.of('id'),
+  },
+  policy: cr.AwsCustomResourcePolicy.fromStatements([iam.PolicyStatement.fromJson({
+    Effect: "Allow",
+    Action: "sts:AssumeRole",
+    Resource: crossAccountRoleArn,
+  })]),
+});
+```
