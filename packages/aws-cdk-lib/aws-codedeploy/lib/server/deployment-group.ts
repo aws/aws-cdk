@@ -210,6 +210,13 @@ export interface ServerDeploymentGroupProps {
    * @default - default AutoRollbackConfig.
    */
   readonly autoRollback?: AutoRollbackConfig;
+
+  /**
+   * Whether to skip the step of checking CloudWatch alarms during the deployment process
+   *
+   * @default false
+   */
+  readonly ignoreAlarmConfiguration?: boolean;
 }
 
 /**
@@ -286,7 +293,11 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
       ec2TagSet: this.ec2TagSet(props.ec2InstanceTags),
       onPremisesTagSet: this.onPremiseTagSet(props.onPremiseInstanceTags),
       alarmConfiguration: cdk.Lazy.any({
-        produce: () => renderAlarmConfiguration(this.alarms, props.ignorePollAlarmsFailure, removeAlarmsFromDeploymentGroup),
+        produce: () => renderAlarmConfiguration(
+          this.alarms, props.ignorePollAlarmsFailure,
+          removeAlarmsFromDeploymentGroup,
+          props.ignoreAlarmConfiguration,
+        ),
       }),
       autoRollbackConfiguration: cdk.Lazy.any({ produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback) }),
     });

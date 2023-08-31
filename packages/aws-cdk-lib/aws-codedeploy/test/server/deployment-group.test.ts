@@ -540,4 +540,28 @@ describe('CodeDeploy Server Deployment Group', () => {
       ));
     });
   });
+
+  test('can ignore alarm status when alarms are present', () => {
+    const stack = new cdk.Stack();
+
+    new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
+      alarms: [
+        new cloudwatch.Alarm(stack, 'Alarm1', {
+          metric: new cloudwatch.Metric({
+            metricName: 'Errors',
+            namespace: 'my.namespace',
+          }),
+          threshold: 1,
+          evaluationPeriods: 1,
+        }),
+      ],
+      ignoreAlarmConfiguration: true,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
+      AlarmConfiguration: {
+        Enabled: false,
+      },
+    });
+  });
 });
