@@ -855,4 +855,90 @@ describe('Graphs', () => {
       },
     }]);
   });
+
+  test('add start and end properties to GraphWidget', () => {
+    // GIVEN
+    const stack = new Stack();
+    const widget = new GraphWidget({
+      left: [new Metric({ namespace: 'CDK', metricName: 'Test' })],
+      view: GraphWidgetView.PIE,
+      start: '-9H',
+      end: '2018-12-17T06:00:00.000Z',
+    });
+
+    // THEN
+    expect(stack.resolve(widget.toJson())).toEqual([{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'pie',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          ['CDK', 'Test'],
+        ],
+        yAxis: {},
+        start: '-9H',
+        end: '2018-12-17T06:00:00.000Z',
+      },
+    }]);
+  });
+
+  test('add start and end properties to SingleValueWidget', () => {
+    // GIVEN
+    const stack = new Stack();
+    const widget = new SingleValueWidget({
+      metrics: [new Metric({ namespace: 'CDK', metricName: 'Test' })],
+      start: '-9H',
+      end: '2018-12-17T06:00:00.000Z',
+    });
+
+    // THEN
+    expect(stack.resolve(widget.toJson())).toEqual([{
+      type: 'metric',
+      width: 6,
+      height: 3,
+      properties: {
+        view: 'singleValue',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          ['CDK', 'Test'],
+        ],
+        start: '-9H',
+        end: '2018-12-17T06:00:00.000Z',
+      },
+    }]);
+  });
+
+  test('add start and end properties to GaugeWidget', () => {
+    // GIVEN
+    const stack = new Stack();
+    const widget = new GaugeWidget({
+      metrics: [new Metric({ namespace: 'CDK', metricName: 'Test' })],
+      start: '-9H',
+      end: '2018-12-17T06:00:00.000Z',
+    });
+
+    // THEN
+    expect(stack.resolve(widget.toJson())).toEqual([{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'gauge',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          ['CDK', 'Test'],
+        ],
+        yAxis: {
+          left: {
+            min: 0,
+            max: 100,
+          },
+        },
+        start: '-9H',
+        end: '2018-12-17T06:00:00.000Z',
+      },
+    }]);
+  });
 });
