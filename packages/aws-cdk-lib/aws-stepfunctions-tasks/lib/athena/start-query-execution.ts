@@ -100,25 +100,31 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
       }),
     );
 
+    const outputLocation = this.props.resultConfiguration?.outputLocation;
+    const makeS3Arn = (resource: string, resourceName: string) =>
+      cdk.Stack.of(this).formatArn({
+        // S3 Bucket names are globally unique in a partition,
+        // and so their ARNs have empty region and account components
+        region: '',
+        account: '',
+        service: 's3',
+        resource,
+        resourceName: `${resourceName}/*`,
+      });
+    let resource = '*';
+    if (typeof outputLocation === 'string') {
+      const parts = outputLocation.split('/');
+      resource = makeS3Arn(parts[2], parts.at(3) || '');
+    } else if (typeof outputLocation === 'object') {
+      resource = makeS3Arn(outputLocation.bucketName, outputLocation.objectKey);
+    }
     policyStatements.push(
       new iam.PolicyStatement({
         actions: ['s3:AbortMultipartUpload',
           's3:ListBucketMultipartUploads',
           's3:ListMultipartUploadParts',
           's3:PutObject'],
-        resources: [
-          this.props.resultConfiguration?.outputLocation?.bucketName
-            ? cdk.Stack.of(this).formatArn({
-              // S3 Bucket names are globally unique in a partition,
-              // and so their ARNs have empty region and account components
-              region: '',
-              account: '',
-              service: 's3',
-              resource: this.props.resultConfiguration?.outputLocation?.bucketName,
-              resourceName: `${this.props.resultConfiguration?.outputLocation?.objectKey}/*`,
-            })
-            : '*',
-        ],
+        resources: [resource],
       }),
     );
 
@@ -195,6 +201,10 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
    * @internal
    */
   protected _renderTask(): any {
+    let outputLocation = this.props.resultConfiguration?.outputLocation;
+    if (typeof outputLocation === 'object') {
+      outputLocation = `s3://${outputLocation.bucketName}/${outputLocation.objectKey}/`;
+    }
     return {
       Resource: integrationResourceArn('athena', 'startQueryExecution', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
@@ -206,7 +216,7 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
         } : undefined,
         ResultConfiguration: {
           EncryptionConfiguration: this.renderEncryption(),
-          OutputLocation: this.props.resultConfiguration?.outputLocation ? `s3://${this.props.resultConfiguration.outputLocation.bucketName}/${this.props.resultConfiguration.outputLocation.objectKey}/` : undefined,
+          OutputLocation: outputLocation || undefined,
         },
         WorkGroup: this.props?.workGroup,
       }),
@@ -228,7 +238,7 @@ export interface ResultConfiguration {
    *
    * @default - Query Result Location set in Athena settings for this workgroup
   */
-  readonly outputLocation?: s3.Location;
+  readonly outputLocation?: s3.Location | string;
 
   /**
    * Encryption option used if enabled in S3
