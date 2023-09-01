@@ -16,7 +16,7 @@ const app = new App();
 const stack = new Stack(app, 'TokenAuthorizerIAMRoleInteg');
 
 const authorizerFn = new lambda.Function(stack, 'MyAuthorizerFunction', {
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: lambda.Runtime.NODEJS_16_X,
   handler: 'index.handler',
   code: lambda.AssetCode.fromAsset(path.join(__dirname, 'integ.token-authorizer.handler')),
 });

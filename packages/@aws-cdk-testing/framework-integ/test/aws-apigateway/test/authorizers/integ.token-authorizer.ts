@@ -8,7 +8,7 @@ const app = new App();
 const stack = new Stack(app, 'TokenAuthorizerInteg');
 
 const authorizerFn = new lambda.Function(stack, 'MyAuthorizerFunction', {
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: lambda.Runtime.NODEJS_16_X,
   handler: 'index.handler',
   code: lambda.AssetCode.fromAsset(path.join(__dirname, 'integ.token-authorizer.handler')),
 });
@@ -101,7 +101,7 @@ const invokeGet = integ.assertions.invokeFunction({
   }),
 });
 invokeGet.expect(ExpectedResult.objectLike({
-  Payload: Match.stringLikeRegexp('200'),
+  Payload: { statusCode: 200 },
 }));
 
 const invokeGetDeny = integ.assertions.invokeFunction({
@@ -112,7 +112,7 @@ const invokeGetDeny = integ.assertions.invokeFunction({
   }),
 });
 invokeGetDeny.expect(ExpectedResult.objectLike({
-  Payload: Match.stringLikeRegexp('User is not authorized to access this resource with an explicit deny'),
+  Payload: { body: Match.stringLikeRegexp('User is not authorized to access this resource with an explicit deny') },
 }));
 
 const invokeOptions = integ.assertions.invokeFunction({
@@ -122,5 +122,5 @@ const invokeOptions = integ.assertions.invokeFunction({
   }),
 });
 invokeOptions.expect(ExpectedResult.objectLike({
-  Payload: Match.stringLikeRegexp('204'),
+  Payload: { statusCode: 204 },
 }));

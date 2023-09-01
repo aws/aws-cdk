@@ -10,7 +10,7 @@ class LateBoundDeploymentStageStack extends Stack {
 
     const fn = new Function(this, 'myfn', {
       code: Code.fromInline('foo'),
-      runtime: Runtime.NODEJS_14_X,
+      runtime: Runtime.NODEJS_16_X,
       handler: 'index.handler',
     });
 
