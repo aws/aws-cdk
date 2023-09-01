@@ -10,7 +10,6 @@ All notable changes to this project will be documented in this file. See [standa
 * **apigateway:** L2 construct for Sagemaker Integration ([#25459](https://github.com/aws/aws-cdk/issues/25459)) ([53d61bb](https://github.com/aws/aws-cdk/commit/53d61bbc9c96708147dc4d2e285eb8122409d700))
 * **appsync:** merged APIs ([#26895](https://github.com/aws/aws-cdk/issues/26895)) ([fe930a5](https://github.com/aws/aws-cdk/commit/fe930a53998d449c6e1687fa40c2e94577339792)), closes [#25960](https://github.com/aws/aws-cdk/issues/25960)
 * **cloudfront:** Add RealtimeLogConfig to Distribution ([#26808](https://github.com/aws/aws-cdk/issues/26808)) ([b1f4e27](https://github.com/aws/aws-cdk/commit/b1f4e277e466c0a79249ce4cc75edb2861e901ba))
-* **dynamodb:** global table L2 ([#26563](https://github.com/aws/aws-cdk/issues/26563)) ([49dab34](https://github.com/aws/aws-cdk/commit/49dab34daf5b58189ce59fc90591e0933709abc2)), closes [#16118](https://github.com/aws/aws-cdk/issues/16118)
 * **ec2:** add c7gn instance type ([#26905](https://github.com/aws/aws-cdk/issues/26905)) ([8cc9ecb](https://github.com/aws/aws-cdk/commit/8cc9ecb9f77dc18853326077c3dbdecd0271a8c2)), closes [#23147](https://github.com/aws/aws-cdk/issues/23147)
 * **ec2:** contributor insight rules for vpc endpoint service  ([#25965](https://github.com/aws/aws-cdk/issues/25965)) ([c6a96f0](https://github.com/aws/aws-cdk/commit/c6a96f062e32b6c99d0a4b27a3d18881c1efb85a))
 * **lambda:** L2 constructs for SnapStart ([#26761](https://github.com/aws/aws-cdk/issues/26761)) ([356f302](https://github.com/aws/aws-cdk/commit/356f30221ae8bc352b2ad94517dacd2bd3cf83ad)), closes [#23153](https://github.com/aws/aws-cdk/issues/23153) [/github.com/aws/aws-cdk/issues/23153#issuecomment-1407779812](https://github.com/aws//github.com/aws/aws-cdk/issues/23153/issues/issuecomment-1407779812)
@@ -42,11 +41,6 @@ All notable changes to this project will be documented in this file. See [standa
 * **secrets-manager:** SecretRotationApplication creates lambda on python 3.7 which is EOL ([#26884](https://github.com/aws/aws-cdk/issues/26884)) ([2d9d8d6](https://github.com/aws/aws-cdk/commit/2d9d8d64c28554cd17e2c96d994800d8d989b378)), closes [#26866](https://github.com/aws/aws-cdk/issues/26866)
 * **servicecatalog:** only one ProductStack per Portfolio can use assets ([#26885](https://github.com/aws/aws-cdk/issues/26885)) ([9cb395c](https://github.com/aws/aws-cdk/commit/9cb395c48c0c04f6e38f4441a95f9a514fb4a08c)), closes [#25189](https://github.com/aws/aws-cdk/issues/25189)
 * **sqs:** encryptionType is incorrect when encryptionMasterKey is provided ([#26886](https://github.com/aws/aws-cdk/issues/26886)) ([bf441fa](https://github.com/aws/aws-cdk/commit/bf441fab2d34e087ce2490d544ca32689664adcb)), closes [#26719](https://github.com/aws/aws-cdk/issues/26719)
-
-
-### Reverts
-
-* "feat(dynamodb): global table L2" ([#26960](https://github.com/aws/aws-cdk/issues/26960)) ([d6b71ad](https://github.com/aws/aws-cdk/commit/d6b71adb41cb2cccf30e2301f872806e12ad4a87)), closes [aws/aws-cdk#26563](https://github.com/aws/aws-cdk/issues/26563)
 
 ## [2.93.0](https://github.com/aws/aws-cdk/compare/v2.92.0...v2.93.0) (2023-08-23)
 
