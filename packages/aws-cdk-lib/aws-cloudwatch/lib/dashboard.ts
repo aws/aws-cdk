@@ -41,7 +41,7 @@ export interface DashboardProps {
    *
    * @default When the dashboard loads, the defaultInterval time will be the default time range.
    */
-  readonly defaultInterval?: Duration
+  readonly defaultInterval?: Duration;
 
   /**
    * The start of the time range to use for each widget on the dashboard.
