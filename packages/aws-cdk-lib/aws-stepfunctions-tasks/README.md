@@ -258,6 +258,15 @@ const startQueryExecutionJob = new tasks.AthenaStartQueryExecution(this, 'Start 
   },
 });
 ```
+Alternatively, we could also use the following for `outputLocation`
+```
+resultConfiguration: {
+  outputLocation: sfn.JsonPath.format(
+    's3://query-results-bucket/folder/{}',
+    sfn.JsonPath.format('$.folder'),
+  )
+}
+```
 
 ### GetQueryExecution
 
