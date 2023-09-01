@@ -77,7 +77,7 @@ export interface S3TableProps extends TableProps {
 }
 
 /**
- * A Glue table that targets an S3 dataset.
+ * A Glue table that targets a S3 dataset.
  */
 export class S3Table extends TableBase {
   /**
