@@ -348,6 +348,54 @@ export enum NetworkType {
 }
 
 /**
+ * The CA certificate used for this DB instance.
+ *
+ * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL.html
+ */
+export class CaCertificate {
+  /**
+   * rds-ca-2019 certificate authority
+   */
+  public static readonly RDS_CA_2019 = CaCertificate.of('rds-ca-2019');
+
+  /**
+   * rds-ca-ecc384-g1 certificate authority
+   */
+  public static readonly RDS_CA_ECC384_G1 = CaCertificate.of('rds-ca-ecc384-g1');
+
+  /**
+   * rds-ca-rsa2048-g1 certificate authority
+   */
+  public static readonly RDS_CA_RDS2048_G1 = CaCertificate.of('rds-ca-rsa2048-g1');
+
+  /**
+   * rds-ca-rsa4096-g1 certificate authority
+   */
+  public static readonly RDS_CA_RDS4096_G1 = CaCertificate.of('rds-ca-rsa4096-g1');
+
+  /**
+   * Custom CA certificate
+   *
+   * @param identifier - CA certificate identifier
+   */
+  public static of(identifier: string) {
+    return new CaCertificate(identifier);
+  }
+
+  /**
+   * @param identifier - CA certificate identifier
+   */
+  private constructor(private readonly identifier: string) { }
+
+  /**
+   * Returns the CA certificate identifier as a string
+   */
+  public toString(): string {
+    return this.identifier;
+  }
+}
+
+/**
  * Construction properties for a DatabaseInstanceNew
  */
 export interface DatabaseInstanceNewProps {
@@ -713,6 +761,20 @@ export interface DatabaseInstanceNewProps {
    * @default - IPV4
    */
   readonly networkType?: NetworkType;
+
+  /**
+   * The identifier of the CA certificate for this DB instance.
+   *
+   * Specifying or updating this property triggers a reboot.
+   *
+   * For RDS DB engines:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL-certificate-rotation.html
+   * For Aurora DB engines:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/UsingWithRDS.SSL-certificate-rotation.html
+   *
+   * @default - RDS will choose a certificate authority
+   */
+  readonly caCertificate?: CaCertificate;
 }
 
 /**
@@ -865,6 +927,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       domain: this.domainId,
       domainIamRoleName: this.domainRole?.roleName,
       networkType: props.networkType,
+      caCertificateIdentifier: props.caCertificate ? props.caCertificate.toString() : undefined,
     };
   }
 

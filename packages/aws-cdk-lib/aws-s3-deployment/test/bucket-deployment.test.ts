@@ -1638,3 +1638,33 @@ function readDataFile(casm: cxapi.CloudAssembly, relativePath: string): string {
 
   throw new Error(`File ${relativePath} not found in any of the assets of the assembly`);
 }
+
+test('DeployTimeSubstitutedFile allows custom role to be supplied', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Test');
+  const bucket = new s3.Bucket(stack, 'Bucket');
+  const existingRole = new iam.Role(stack, 'Role', {
+    assumedBy: new iam.ServicePrincipal('lambda.amazon.com'),
+  });
+
+  new s3deploy.DeployTimeSubstitutedFile(stack, 'MyFile', {
+    source: path.join(__dirname, 'file-substitution-test', 'sample-definition.yaml'),
+    destinationBucket: bucket,
+    substitutions: {
+      testMethod: 'changedTestMethodSuccess',
+      mock: 'changedMockTypeSuccess',
+    },
+    role: existingRole,
+  });
+
+  Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 1);
+  Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 1);
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    Role: {
+      'Fn::GetAtt': [
+        'Role1ABCC5F0',
+        'Arn',
+      ],
+    },
+  });
+});

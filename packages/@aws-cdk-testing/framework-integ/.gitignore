@@ -15,3 +15,5 @@ nyc.config.js
 !**/*.snapshot/**/asset.*/**
 
 **/*.ts.snapshot
+
+!jest.config.js

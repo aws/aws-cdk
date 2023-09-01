@@ -94,4 +94,11 @@ export interface DeployOptions extends DefaultCdkOptions {
    * @default false
    */
   readonly ci?: boolean;
+
+  /**
+   * Deploy multiple stacks in parallel
+   *
+   * @default 1
+   */
+  readonly concurrency?: number;
 }

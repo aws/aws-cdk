@@ -3,14 +3,16 @@
 This document describes the purpose of integration tests as well as acting as a guide
 on what type of changes require integrations tests and how you should write integration tests.
 
-- [What are CDK Integration Tests](#what-are-cdk-integration-tests)
-- [When are integration tests required](#when-are-integration-tests-required)
-- [How to write Integration Tests](#how-to-write-integration-tests)
-  - [Creating a test](#creating-a-test)
-  - [New L2 Constructs](#new-l2-constructs)
-  - [Existing L2 Constructs](#existing-l2-constructs)
-  - [Assertions](#assertions)
-- [Running Integration Tests](#running-integration-tests)
+- [Integration Tests](#integration-tests)
+  - [What are CDK Integration Tests](#what-are-cdk-integration-tests)
+  - [When are Integration Tests Required](#when-are-integration-tests-required)
+  - [How to write Integration Tests](#how-to-write-integration-tests)
+    - [Creating a Test](#creating-a-test)
+    - [New L2 Constructs](#new-l2-constructs)
+    - [Existing L2 Constructs](#existing-l2-constructs)
+    - [Assertions](#assertions)
+  - [Running Integration Tests](#running-integration-tests)
+    - [Running large numbers of Tests](#running-large-numbers-of-tests)
 
 ## What are CDK Integration Tests
 
@@ -94,7 +96,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-lambda-1');
 const fn = new lambda.Function(stack, 'MyLambda', {
   code: new lambda.InlineCode('foo'),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
 });
 
 new integ.IntegTest(app, 'LambdaTest', {

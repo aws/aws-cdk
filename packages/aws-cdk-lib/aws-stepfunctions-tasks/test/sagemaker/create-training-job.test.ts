@@ -134,7 +134,7 @@ test('create complex training job', () => {
     role,
     algorithmSpecification: {
       algorithmName: 'BlazingText',
-      trainingInputMode: tasks.InputMode.FILE,
+      trainingInputMode: tasks.InputMode.FAST_FILE,
       metricDefinitions: [
         {
           name: 'mymetric', regex: 'regex_pattern',
@@ -218,7 +218,7 @@ test('create complex training job', () => {
       TrainingJobName: 'MyTrainJob',
       RoleArn: { 'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'] },
       AlgorithmSpecification: {
-        TrainingInputMode: 'File',
+        TrainingInputMode: 'FastFile',
         AlgorithmName: 'BlazingText',
         MetricDefinitions: [
           { Name: 'mymetric', Regex: 'regex_pattern' },
@@ -407,4 +407,147 @@ test('Cannot create a SageMaker train task with both algorithm name and image na
     },
   }))
     .toThrowError(/Must define either an algorithm name or training image URI in the algorithm specification/);
+});
+
+test('Cannot create a SageMaker train task with both algorithm name and image name defined', () => {
+
+  expect(() => new SageMakerCreateTrainingJob(stack, 'SageMakerTrainingTask', {
+    trainingJobName: 'myTrainJob',
+    algorithmSpecification: {
+      algorithmName: 'BlazingText',
+      trainingImage: tasks.DockerImage.fromJsonExpression(sfn.JsonPath.stringAt('$.Training.imageName')),
+    },
+    inputDataConfig: [
+      {
+        channelName: 'train',
+        dataSource: {
+          s3DataSource: {
+            s3DataType: tasks.S3DataType.S3_PREFIX,
+            s3Location: tasks.S3Location.fromJsonExpression('$.S3Bucket'),
+          },
+        },
+      },
+    ],
+    outputDataConfig: {
+      s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'Bucket', 'mybucket'), 'myoutputpath/'),
+    },
+  }))
+    .toThrowError(/Cannot define both an algorithm name and training image URI in the algorithm specification/);
+});
+
+test('create a SageMaker train task with trainingImage', () => {
+
+  const task = new SageMakerCreateTrainingJob(stack, 'SageMakerTrainingTask', {
+    trainingJobName: 'myTrainJob',
+    algorithmSpecification: {
+      trainingImage: tasks.DockerImage.fromJsonExpression(sfn.JsonPath.stringAt('$.Training.imageName')),
+    },
+    inputDataConfig: [
+      {
+        channelName: 'train',
+        dataSource: {
+          s3DataSource: {
+            s3DataType: tasks.S3DataType.S3_PREFIX,
+            s3Location: tasks.S3Location.fromJsonExpression('$.S3Bucket'),
+          },
+        },
+      },
+    ],
+    outputDataConfig: {
+      s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'Bucket', 'mybucket'), 'myoutputpath/'),
+    },
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toMatchObject({
+    Parameters: {
+      AlgorithmSpecification: {
+        'TrainingImage.$': '$.Training.imageName',
+        'TrainingInputMode': 'File',
+      },
+    },
+  });
+});
+
+test('create a SageMaker train task with image URI algorithmName', () => {
+
+  const task = new SageMakerCreateTrainingJob(stack, 'SageMakerTrainingTask', {
+    trainingJobName: 'myTrainJob',
+    algorithmSpecification: {
+      algorithmName: 'arn:aws:sagemaker:us-east-1:123456789012:algorithm/scikit-decision-trees',
+    },
+    inputDataConfig: [
+      {
+        channelName: 'train',
+        dataSource: {
+          s3DataSource: {
+            s3DataType: tasks.S3DataType.S3_PREFIX,
+            s3Location: tasks.S3Location.fromJsonExpression('$.S3Bucket'),
+          },
+        },
+      },
+    ],
+    outputDataConfig: {
+      s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'Bucket', 'mybucket'), 'myoutputpath/'),
+    },
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toMatchObject({
+    Parameters: {
+      AlgorithmSpecification: {
+        AlgorithmName: 'arn:aws:sagemaker:us-east-1:123456789012:algorithm/scikit-decision-trees',
+      },
+    },
+  });
+});
+
+test('Cannot create a SageMaker train task when algorithmName length is 171 or more', () => {
+
+  expect(() => new SageMakerCreateTrainingJob(stack, 'SageMakerTrainingTask', {
+    trainingJobName: 'myTrainJob',
+    algorithmSpecification: {
+      algorithmName: 'a'.repeat(171), // maximum length is 170
+    },
+    inputDataConfig: [
+      {
+        channelName: 'train',
+        dataSource: {
+          s3DataSource: {
+            s3DataType: tasks.S3DataType.S3_PREFIX,
+            s3Location: tasks.S3Location.fromJsonExpression('$.S3Bucket'),
+          },
+        },
+      },
+    ],
+    outputDataConfig: {
+      s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'Bucket', 'mybucket'), 'myoutputpath/'),
+    },
+  }))
+    .toThrowError(/Algorithm name length must be between 1 and 170, but got 171/);
+});
+
+test('Cannot create a SageMaker train task with incorrect algorithmName', () => {
+
+  expect(() => new SageMakerCreateTrainingJob(stack, 'SageMakerTrainingTask', {
+    trainingJobName: 'myTrainJob',
+    algorithmSpecification: {
+      algorithmName: 'Blazing_Text', // underscores are not allowed
+    },
+    inputDataConfig: [
+      {
+        channelName: 'train',
+        dataSource: {
+          s3DataSource: {
+            s3DataType: tasks.S3DataType.S3_PREFIX,
+            s3Location: tasks.S3Location.fromJsonExpression('$.S3Bucket'),
+          },
+        },
+      },
+    ],
+    outputDataConfig: {
+      s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'Bucket', 'mybucket'), 'myoutputpath/'),
+    },
+  }))
+    .toThrowError(/Expected algorithm name to match pattern/);
 });

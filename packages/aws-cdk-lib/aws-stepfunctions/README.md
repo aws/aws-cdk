@@ -467,8 +467,27 @@ execute the same steps for multiple entries of an array in the state input.
 const map = new sfn.Map(this, 'Map State', {
   maxConcurrency: 1,
   itemsPath: sfn.JsonPath.stringAt('$.inputForMap'),
+  parameters: {
+    item: sfn.JsonPath.stringAt('$$.Map.Item.Value'),
+  },
+  resultPath: '$.mapOutput',
 });
-map.iterator(new sfn.Pass(this, 'Pass State'));
+
+// The Map iterator can contain a IChainable, which can be an individual or multiple steps chained together.
+// Below example is with a Choice and Pass step
+const choice = new sfn.Choice(this, 'Choice');
+const condition1 = sfn.Condition.stringEquals('$.item.status', 'SUCCESS');
+const step1 = new sfn.Pass(this, 'Step1');
+const step2 = new sfn.Pass(this, 'Step2');
+const finish = new sfn.Pass(this, 'Finish');
+
+const definition = choice
+    .when(condition1, step1)
+    .otherwise(step2)
+    .afterwards()
+    .next(finish);
+
+map.iterator(definition);
 ```
 
 ### Custom State

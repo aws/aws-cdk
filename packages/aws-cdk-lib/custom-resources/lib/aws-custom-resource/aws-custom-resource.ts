@@ -164,9 +164,10 @@ export interface AwsSdkCall {
   readonly outputPaths?: string[];
 
   /**
-   * Used for running the SDK calls in underlying lambda with a different role
+   * Used for running the SDK calls in underlying lambda with a different role.
    * Can be used primarily for cross-account requests to for example connect
-   * hostedzone with a shared vpc
+   * hostedzone with a shared vpc.
+   * Region controls where assumeRole call is made.
    *
    * Example for Route53 / associateVPCWithHostedZone
    *

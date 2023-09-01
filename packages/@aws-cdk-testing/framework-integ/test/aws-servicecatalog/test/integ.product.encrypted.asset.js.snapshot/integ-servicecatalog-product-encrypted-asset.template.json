@@ -78,7 +78,7 @@
       "Value": "true"
      },
      {
-      "Key": "aws-cdk:cr-owned:173c1279",
+      "Key": "aws-cdk:cr-owned:d060b5bf",
       "Value": "true"
      }
     ]
@@ -242,6 +242,53 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "TestAssetBucketProductAssetsDeploymentAwsCliLayerD1E52C82": {
+   "Type": "AWS::Lambda::LayerVersion",
+   "Properties": {
+    "Content": {
+     "S3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
+     "S3Key": "e2277687077a2abf9ae1af1cc9565e6715e2ebb62f79ec53aa75a1af9298f642.zip"
+    },
+    "Description": "/opt/awscli/aws"
+   }
+  },
+  "TestAssetBucketProductAssetsDeploymentCustomResource5F81E30F": {
+   "Type": "Custom::CDKBucketDeployment",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536",
+      "Arn"
+     ]
+    },
+    "SourceBucketNames": [
+     "cdk-hnb659fds-assets-12345678-test-region",
+     "cdk-hnb659fds-assets-12345678-test-region"
+    ],
+    "SourceObjectKeys": [
+     "d3833f63e813b3a96ea04c8c50ca98209330867f5f6ac358efca11f85a3476c2.zip",
+     "e2204c9fddfc339ea362dec9143b4c22f883d4c18dd38c456f8f6a7161c1073d.zip"
+    ],
+    "SourceMarkers": [
+     {},
+     {}
+    ],
+    "DestinationBucketName": {
+     "Ref": "TestAssetBucket9434EFAE"
+    },
+    "RetainOnDelete": true,
+    "Extract": false,
+    "Prune": false,
+    "SystemMetadata": {
+     "sse": "aws:kms",
+     "sse-kms-key-id": {
+      "Ref": "KmsKey46693ADD"
+     }
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -269,7 +316,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
-     "S3Key": "89c643a8a6c919d906e0b1cb079b0c5e131cf3cc19c05126f90fc118647fb08c.zip"
+     "S3Key": "216218e507a977a1bb3592f29c1a62ab3e0a9eb25569109a395315638e154329.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -297,52 +344,6 @@
    "DependsOn": [
     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
    ]
-  },
-  "AssetsBucketDeploymentAwsCliLayer9BCEE17F": {
-   "Type": "AWS::Lambda::LayerVersion",
-   "Properties": {
-    "Content": {
-     "S3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
-     "S3Key": "292870ae2617f1c4d62ff18422e009afd534a342c17877fd1b931fb8d8a62abc.zip"
-    },
-    "Description": "/opt/awscli/aws"
-   }
-  },
-  "AssetsBucketDeploymentCustomResource283760D6": {
-   "Type": "Custom::CDKBucketDeployment",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536",
-      "Arn"
-     ]
-    },
-    "SourceBucketNames": [
-     "cdk-hnb659fds-assets-12345678-test-region",
-     "cdk-hnb659fds-assets-12345678-test-region"
-    ],
-    "SourceObjectKeys": [
-     "d3833f63e813b3a96ea04c8c50ca98209330867f5f6ac358efca11f85a3476c2.zip",
-     "e2204c9fddfc339ea362dec9143b4c22f883d4c18dd38c456f8f6a7161c1073d.zip"
-    ],
-    "SourceMarkers": [
-     {},
-     {}
-    ],
-    "DestinationBucketName": {
-     "Ref": "TestAssetBucket9434EFAE"
-    },
-    "Extract": false,
-    "Prune": false,
-    "SystemMetadata": {
-     "sse": "aws:kms",
-     "sse-kms-key-id": {
-      "Ref": "KmsKey46693ADD"
-     }
-    }
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
   },
   "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265": {
    "Type": "AWS::IAM::Role",
@@ -493,7 +494,7 @@
     "Handler": "index.handler",
     "Layers": [
      {
-      "Ref": "AssetsBucketDeploymentAwsCliLayer9BCEE17F"
+      "Ref": "TestAssetBucketProductAssetsDeploymentAwsCliLayerD1E52C82"
      }
     ],
     "Role": {

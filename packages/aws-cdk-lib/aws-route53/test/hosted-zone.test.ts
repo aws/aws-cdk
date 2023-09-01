@@ -288,19 +288,18 @@ test('grantDelegation', () => {
   });
 });
 
-test('grantDelegation on imported public zones', () => {
+test('grantDelegation on imported zones', () => {
   // GIVEN
   const stack = new cdk.Stack(undefined, 'TestStack', {
     env: { account: '123456789012', region: 'us-east-1' },
   });
 
   const role = new iam.Role(stack, 'Role', {
-    assumedBy: new iam.AccountPrincipal('22222222222222'),
+    assumedBy: new iam.AccountRootPrincipal(),
   });
 
-  const zone = PublicHostedZone.fromPublicHostedZoneId(stack, 'Zone', 'hosted-id');
-
   // WHEN
+  const zone = HostedZone.fromHostedZoneId(stack, 'Zone', 'hosted-id');
   zone.grantDelegation(role);
 
   // THEN
@@ -319,6 +318,106 @@ test('grantDelegation on imported public zones', () => {
                   Ref: 'AWS::Partition',
                 },
                 ':route53:::hostedzone/hosted-id',
+              ],
+            ],
+          },
+          Condition: {
+            'ForAllValues:StringEquals': {
+              'route53:ChangeResourceRecordSetsRecordTypes': ['NS'],
+              'route53:ChangeResourceRecordSetsActions': ['UPSERT', 'DELETE'],
+            },
+          },
+        },
+        {
+          Action: 'route53:ListHostedZonesByName',
+          Effect: 'Allow',
+          Resource: '*',
+        },
+      ],
+    },
+  });
+});
+
+test('grantDelegation on public imported zones', () => {
+  // GIVEN
+  const stack = new cdk.Stack(undefined, 'TestStack', {
+    env: { account: '123456789012', region: 'us-east-1' },
+  });
+
+  const role = new iam.Role(stack, 'Role', {
+    assumedBy: new iam.AccountRootPrincipal(),
+  });
+
+  // WHEN
+  const publicZone = PublicHostedZone.fromPublicHostedZoneId(stack, 'PublicZone', 'public-hosted-id');
+  publicZone.grantDelegation(role);
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'route53:ChangeResourceRecordSets',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':route53:::hostedzone/public-hosted-id',
+              ],
+            ],
+          },
+          Condition: {
+            'ForAllValues:StringEquals': {
+              'route53:ChangeResourceRecordSetsRecordTypes': ['NS'],
+              'route53:ChangeResourceRecordSetsActions': ['UPSERT', 'DELETE'],
+            },
+          },
+        },
+        {
+          Action: 'route53:ListHostedZonesByName',
+          Effect: 'Allow',
+          Resource: '*',
+        },
+      ],
+    },
+  });
+});
+
+test('grantDelegation on private imported zones', () => {
+  // GIVEN
+  const stack = new cdk.Stack(undefined, 'TestStack', {
+    env: { account: '123456789012', region: 'us-east-1' },
+  });
+
+  const role = new iam.Role(stack, 'Role', {
+    assumedBy: new iam.AccountRootPrincipal(),
+  });
+
+  // WHEN
+  const privateZone = PrivateHostedZone.fromPrivateHostedZoneId(stack, 'PrivateZone', 'private-hosted-id');
+  privateZone.grantDelegation(role);
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'route53:ChangeResourceRecordSets',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':route53:::hostedzone/private-hosted-id',
               ],
             ],
           },

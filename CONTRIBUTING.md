@@ -1139,6 +1139,7 @@ Most build issues can be solved by doing a full clean rebuild:
 
 ```shell
 $ git clean -fqdx .
+$ yarn install
 $ yarn build
 ```
 

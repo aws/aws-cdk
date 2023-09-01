@@ -12,7 +12,7 @@ class TestStack extends Stack {
 
     new lambda.NodejsFunction(this, 'ts-handler', {
       entry: path.join(__dirname, 'integ-handlers/ts-handler.ts'),
-      runtime: Runtime.NODEJS_14_X,
+      runtime: Runtime.NODEJS_16_X,
       bundling: {
         minify: true,
         sourceMap: true,
@@ -22,18 +22,18 @@ class TestStack extends Stack {
 
     new lambda.NodejsFunction(this, 'js-handler', {
       entry: path.join(__dirname, 'integ-handlers/js-handler.js'),
-      runtime: Runtime.NODEJS_14_X,
+      runtime: Runtime.NODEJS_16_X,
     });
 
     new lambda.NodejsFunction(this, 'ts-handler-vpc', {
       entry: path.join(__dirname, 'integ-handlers/ts-handler.ts'),
-      runtime: Runtime.NODEJS_14_X,
+      runtime: Runtime.NODEJS_16_X,
       vpc: new Vpc(this, 'Vpc', { restrictDefaultSecurityGroup: false }),
     });
 
     new lambda.NodejsFunction(this, 'ts-handler-custom-handler-no-dots', {
       entry: path.join(__dirname, 'integ-handlers/ts-handler.ts'),
-      runtime: Runtime.NODEJS_14_X,
+      runtime: Runtime.NODEJS_16_X,
       bundling: {
         minify: true,
         sourceMap: true,
@@ -44,7 +44,7 @@ class TestStack extends Stack {
 
     new lambda.NodejsFunction(this, 'ts-handler-custom-handler-dots', {
       entry: path.join(__dirname, 'integ-handlers/ts-web-handler.ts'),
-      runtime: Runtime.NODEJS_14_X,
+      runtime: Runtime.NODEJS_16_X,
       bundling: {
         minify: true,
         sourceMap: true,

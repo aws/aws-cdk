@@ -8,6 +8,7 @@ import { IOrigin, OriginBindConfig, OriginBindOptions } from './origin';
 import { IOriginRequestPolicy } from './origin-request-policy';
 import { CacheBehavior } from './private/cache-behavior';
 import { formatDistributionArn } from './private/utils';
+import { IRealtimeLogConfig } from './realtime-log-config';
 import { IResponseHeadersPolicy } from './response-headers-policy';
 import * as acm from '../../aws-certificatemanager';
 import * as iam from '../../aws-iam';
@@ -776,6 +777,13 @@ export interface AddBehaviorOptions {
    * @default - none
    */
   readonly originRequestPolicy?: IOriginRequestPolicy;
+
+  /**
+   * The real-time log configuration to be attached to this cache behavior.
+   *
+   * @default - none
+   */
+  readonly realtimeLogConfig?: IRealtimeLogConfig;
 
   /**
    * The response headers policy for this behavior. The response headers policy determines which headers are included in responses

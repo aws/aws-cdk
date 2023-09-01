@@ -1,29 +1,44 @@
-import { Stack } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
+
 import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { ContextAttribute, ScheduleExpression, ScheduleTargetInput } from '../lib';
-import { Schedule, targets } from '../lib/private';
+import { ContextAttribute, IScheduleTarget, ScheduleExpression, ScheduleTargetConfig, ScheduleTargetInput } from '../lib';
+import { Schedule } from '../lib/schedule';
+
+class SomeLambdaTarget implements IScheduleTarget {
+  public constructor(private readonly fn: lambda.IFunction, private readonly input: ScheduleTargetInput) {
+  }
+
+  public bind(): ScheduleTargetConfig {
+    return {
+      arn: this.fn.functionArn,
+      input: this.input,
+      role: iam.Role.fromRoleArn(this.fn, 'ImportedRole', 'arn:aws:iam::123456789012:role/someRole'),
+    };
+  }
+}
 
 describe('schedule target input', () => {
   let stack: Stack;
-  let role: iam.IRole;
   let func: lambda.IFunction;
   const expr = ScheduleExpression.at(new Date(Date.UTC(1969, 10, 20, 0, 0, 0)));
 
   beforeEach(() => {
-    stack = new Stack();
-    role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/johndoe');
-    func = lambda.Function.fromFunctionArn(stack, 'Function', 'arn:aws:lambda:us-east-1:123456789012:function/somefunc');
+    const app = new App();
+    stack = new Stack(app);
+    func = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      tracing: lambda.Tracing.PASS_THROUGH,
+    });
   });
 
   test('create an input from text', () => {
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
-      target: new targets.LambdaInvoke({
-        role,
-        input: ScheduleTargetInput.fromText('test'),
-      }, func),
+      target: new SomeLambdaTarget(func, ScheduleTargetInput.fromText('test')),
     });
     Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
       Properties: {
@@ -37,10 +52,7 @@ describe('schedule target input', () => {
   test('create an input from text with a ref inside', () => {
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
-      target: new targets.LambdaInvoke({
-        role,
-        input: ScheduleTargetInput.fromText(stack.account),
-      }, func),
+      target: new SomeLambdaTarget(func, ScheduleTargetInput.fromText(stack.account)),
     });
     Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
       Properties: {
@@ -54,14 +66,12 @@ describe('schedule target input', () => {
   });
 
   test('create an input from object', () => {
+    const input = ScheduleTargetInput.fromObject({
+      test: 'test',
+    });
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
-      target: new targets.LambdaInvoke({
-        role,
-        input: ScheduleTargetInput.fromObject({
-          test: 'test',
-        }),
-      }, func),
+      target: new SomeLambdaTarget(func, input),
     });
     Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
       Properties: {
@@ -73,14 +83,12 @@ describe('schedule target input', () => {
   });
 
   test('create an input from object with a ref', () => {
+    const input = ScheduleTargetInput.fromObject({
+      test: stack.account,
+    });
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
-      target: new targets.LambdaInvoke({
-        role,
-        input: ScheduleTargetInput.fromObject({
-          test: stack.account,
-        }),
-      }, func),
+      target: new SomeLambdaTarget(func, input),
     });
     Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
       Properties: {
@@ -98,12 +106,11 @@ describe('schedule target input', () => {
   });
 
   test('create an input with fromText with ContextAttribute', () => {
+    const input = ScheduleTargetInput.fromText(`Test=${ContextAttribute.scheduleArn}`);
+
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
-      target: new targets.LambdaInvoke({
-        role,
-        input: ScheduleTargetInput.fromText(`Test=${ContextAttribute.scheduleArn}`),
-      }, func),
+      target: new SomeLambdaTarget(func, input),
     });
     Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
       Properties: {
@@ -115,18 +122,17 @@ describe('schedule target input', () => {
   });
 
   test('create an input with fromObject with ContextAttribute', () => {
+    const input = ScheduleTargetInput.fromObject({
+      arn: ContextAttribute.scheduleArn,
+      att: ContextAttribute.attemptNumber,
+      xid: ContextAttribute.executionId,
+      tim: ContextAttribute.scheduledTime,
+      cus: ContextAttribute.fromName('escapehatch'),
+    });
+
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
-      target: new targets.LambdaInvoke({
-        role,
-        input: ScheduleTargetInput.fromObject({
-          arn: ContextAttribute.scheduleArn,
-          att: ContextAttribute.attemptNumber,
-          xid: ContextAttribute.executionId,
-          tim: ContextAttribute.scheduledTime,
-          cus: ContextAttribute.fromName('escapehatch'),
-        }),
-      }, func),
+      target: new SomeLambdaTarget(func, input),
     });
     Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
       Properties: {

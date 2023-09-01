@@ -1,0 +1,12 @@
+{
+  "version": "33.0.0",
+  "testCases": {
+    "integ-realtime-config/realtime-log-config/DefaultTest": {
+      "stacks": [
+        "integ-realtime-config"
+      ],
+      "assertionStack": "integ-realtime-config/realtime-log-config/DefaultTest/DeployAssert",
+      "assertionStackName": "integrealtimeconfigrealtimelogconfigDefaultTestDeployAssert02ABDB2F"
+    }
+  }
+}

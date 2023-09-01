@@ -1,10 +1,11 @@
 {
-  "version": "32.0.0",
+  "version": "34.0.0",
   "testCases": {
     "IntegProviderFrameworkTest/DefaultTest": {
       "stacks": [
         "integ-provider-framework"
       ],
+      "diffAssets": true,
       "assertionStack": "IntegProviderFrameworkTest/DefaultTest/DeployAssert",
       "assertionStackName": "IntegProviderFrameworkTestDefaultTestDeployAssertAEF9AF2E"
     }

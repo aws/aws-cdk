@@ -531,7 +531,7 @@ describe('instance', () => {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.fromInline('dummy'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_16_X,
     });
 
     // WHEN
@@ -1914,6 +1914,19 @@ describe('instance', () => {
       StorageType: 'gp3',
       StorageThroughput: 500,
       Iops: 4000,
+    });
+  });
+
+  test('with CA certificate', () => {
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+      vpc,
+      caCertificate: rds.CaCertificate.RDS_CA_RDS2048_G1,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      CACertificateIdentifier: 'rds-ca-rsa2048-g1',
     });
   });
 

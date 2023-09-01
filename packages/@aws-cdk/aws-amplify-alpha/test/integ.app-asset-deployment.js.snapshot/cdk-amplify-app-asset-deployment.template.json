@@ -29,7 +29,8 @@
       "AppRole1AF9B530",
       "Arn"
      ]
-    }
+    },
+    "Platform": "WEB"
    }
   }
  },

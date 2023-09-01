@@ -14,7 +14,7 @@ class GraphQLApiLambdaAuthStack extends cdk.Stack {
         path.join(__dirname, 'verify/lambda-tutorial'),
       ),
       handler: 'lambda-tutorial.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_16_X,
     });
 
     new appsync.GraphqlApi(this, 'api1', {

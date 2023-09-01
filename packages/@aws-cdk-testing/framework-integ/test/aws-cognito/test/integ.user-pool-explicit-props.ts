@@ -95,7 +95,7 @@ function dummyTrigger(name: string): IFunction {
   return new Function(stack, name, {
     functionName: name,
     handler: 'index.handler',
-    runtime: Runtime.NODEJS_14_X,
+    runtime: Runtime.NODEJS_16_X,
     code: Code.fromInline('foo'),
   });
 }

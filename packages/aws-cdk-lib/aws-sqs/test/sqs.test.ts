@@ -358,6 +358,7 @@ describe('queue encryption', () => {
     const queue = new sqs.Queue(stack, 'Queue', { encryptionMasterKey: key });
 
     expect(queue.encryptionMasterKey).toEqual(key);
+    expect(queue.encryptionType).toEqual(sqs.QueueEncryption.KMS);
     Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
       'KmsMasterKeyId': { 'Fn::GetAtt': ['CustomKey1E6D0D07', 'Arn'] },
     });
@@ -491,6 +492,19 @@ describe('queue encryption', () => {
       encryption: sqs.QueueEncryption.SQS_MANAGED,
       encryptionMasterKey: key,
     })).toThrow(/'encryptionMasterKey' is not supported if encryption type 'SQS_MANAGED' is used/);
+  });
+
+  test('encryptionType is always KMS, when an encryptionMasterKey is provided', () => {
+    // GIVEN
+    const stack = new Stack();
+    const key = new kms.Key(stack, 'CustomKey');
+    const queue = new sqs.Queue(stack, 'Queue', {
+      encryption: sqs.QueueEncryption.KMS_MANAGED,
+      encryptionMasterKey: key,
+    });
+
+    // THEN
+    expect(queue.encryptionType).toBe(sqs.QueueEncryption.KMS);
   });
 });
 

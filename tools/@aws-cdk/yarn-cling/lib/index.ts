@@ -187,7 +187,7 @@ export function formatPackageLock(entry: PackageLockEntry) {
  * 1.    require.resolve(`${depName}/package.json`, { paths: [rootDir] });
  *
  * Breaks with ES Modules if `package.json` has not been exported, which is
- * being enforced starting Node12.
+ * being enforced starting Node >= 12.
  *
  * 2.    findPackageJsonUpwardFrom(require.resolve(depName, { paths: [rootDir] }))
  *

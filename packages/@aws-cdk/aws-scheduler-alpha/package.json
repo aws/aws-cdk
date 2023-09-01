@@ -114,5 +114,10 @@
       "naming/package-matches-directory",
       "assert/assert-dependency"
     ]
+  },
+  "jsiiRosetta": {
+    "exampleDependencies": {
+      "@aws-cdk/aws-scheduler-targets-alpha": "*"
+    }
   }
 }

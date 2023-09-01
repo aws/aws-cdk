@@ -24,6 +24,12 @@ export interface LambdaRuntimeProps {
    * @default false
    */
   readonly supportsCodeGuruProfiling?: boolean;
+
+  /**
+   * Whether this runtime supports SnapStart.
+   * @default false
+   */
+  readonly supportsSnapStart?: boolean;
 }
 
 export enum RuntimeFamily {
@@ -84,6 +90,7 @@ export class Runtime {
 
   /**
    * The NodeJS 14.x runtime (nodejs14.x)
+   * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest NodeJS runtime.
    */
   public static readonly NODEJS_14_X = new Runtime('nodejs14.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
@@ -179,6 +186,7 @@ export class Runtime {
    */
   public static readonly JAVA_11 = new Runtime('java11', RuntimeFamily.JAVA, {
     supportsCodeGuruProfiling: true,
+    supportsSnapStart: true,
   });
 
   /**
@@ -186,6 +194,7 @@ export class Runtime {
    */
   public static readonly JAVA_17 = new Runtime('java17', RuntimeFamily.JAVA, {
     supportsCodeGuruProfiling: true,
+    supportsSnapStart: true,
   });
 
   /**
@@ -219,6 +228,7 @@ export class Runtime {
 
   /**
    * The Go 1.x runtime (go1.x)
+   * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the PROVIDED_AL2 runtime.
    */
   public static readonly GO_1_X = new Runtime('go1.x', RuntimeFamily.GO);
 
@@ -240,6 +250,7 @@ export class Runtime {
 
   /**
    * The custom provided runtime (provided)
+   * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest provided.al2 runtime.
    */
   public static readonly PROVIDED = new Runtime('provided', RuntimeFamily.OTHER);
 
@@ -268,6 +279,11 @@ export class Runtime {
    * Whether this runtime is integrated with and supported for profiling using Amazon CodeGuru Profiler.
    */
   public readonly supportsCodeGuruProfiling: boolean;
+
+  /**
+   * Whether this runtime supports snapstart.
+   */
+  public readonly supportsSnapStart: boolean;
 
   /**
    * The runtime family.
@@ -300,6 +316,7 @@ export class Runtime {
     this.bundlingDockerImage = DockerImage.fromRegistry(imageName);
     this.bundlingImage = this.bundlingDockerImage;
     this.supportsCodeGuruProfiling = props.supportsCodeGuruProfiling ?? false;
+    this.supportsSnapStart = props.supportsSnapStart ?? false;
 
     Runtime.ALL.push(this);
   }

@@ -423,18 +423,18 @@
                       },
                       "s3Key": "f634c102f4aa6cdd9b6c00b836e98f2d5c03e65b02bd9efa16f83a2f348f149f.zip"
                     },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "DataProcessorFunctionServiceRole12E05500",
-                        "Arn"
-                      ]
-                    },
                     "environment": {
                       "variables": {
                         "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
                       }
                     },
                     "handler": "index.handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "DataProcessorFunctionServiceRole12E05500",
+                        "Arn"
+                      ]
+                    },
                     "runtime": "nodejs18.x",
                     "timeout": 60
                   }
@@ -1029,7 +1029,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.55"
+          "version": "10.2.69"
         }
       }
     },

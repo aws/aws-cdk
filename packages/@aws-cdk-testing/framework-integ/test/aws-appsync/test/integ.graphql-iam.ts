@@ -87,7 +87,7 @@ testDS.createResolver('MutationAddTest', {
   responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
 });
 
-const lambdaIAM = new Role(stack, 'LambdaIAM', { assumedBy: new ServicePrincipal('lambda') });
+const lambdaIAM = new Role(stack, 'LambdaIAM', { assumedBy: new ServicePrincipal('lambda.amazonaws.com') });
 
 api.grant(lambdaIAM, IamResource.custom('types/Query/fields/getTests'), 'appsync:graphql');
 api.grant(lambdaIAM, IamResource.ofType('test'), 'appsync:GraphQL');
@@ -96,14 +96,14 @@ api.grantMutation(lambdaIAM, 'addTest');
 new Function(stack, 'testQuery', {
   code: Code.fromAsset(join(__dirname, 'verify/iam-query')),
   handler: 'iam-query.handler',
-  runtime: Runtime.NODEJS_14_X,
+  runtime: Runtime.NODEJS_16_X,
   environment: { APPSYNC_ENDPOINT: api.graphqlUrl },
   role: lambdaIAM,
 });
 new Function(stack, 'testFail', {
   code: Code.fromAsset(join(__dirname, 'verify/iam-query')),
   handler: 'iam-query.handler',
-  runtime: Runtime.NODEJS_14_X,
+  runtime: Runtime.NODEJS_16_X,
   environment: { APPSYNC_ENDPOINT: api.graphqlUrl },
 });
 
