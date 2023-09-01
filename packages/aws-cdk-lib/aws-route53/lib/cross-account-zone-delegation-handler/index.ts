@@ -1,5 +1,9 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { Credentials, Route53, STS } from 'aws-sdk';
+import { Route53 } from '@aws-sdk/client-route-53';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
+
+// import { Credentials, Route53, STS } from 'aws-sdk';
 
 interface ResourceProperties {
   AssumeRoleArn: string,
@@ -30,8 +34,21 @@ async function cfnEventHandler(props: ResourceProperties, isDeleteEvent: boolean
     throw Error('One of ParentZoneId or ParentZoneName must be specified');
   }
 
-  const credentials = await getCrossAccountCredentials(AssumeRoleArn, !!UseRegionalStsEndpoint);
-  const route53 = new Route53({ credentials });
+  //const credentials = await getCrossAccountCredentials(AssumeRoleArn, !!UseRegionalStsEndpoint);
+  //const route53 = new Route53({ credentials });
+  const timestamp = (new Date()).getTime();
+  const route53 = new Route53({
+    credentials: fromTemporaryCredentials({
+      clientConfig: {
+        useGlobalEndpoint: !UseRegionalStsEndpoint,
+        region: 'us-east-1', // hardcoding is one option to avoid denied permission errors
+      },
+      params: {
+        RoleArn: AssumeRoleArn,
+        RoleSessionName: `cross-account-zone-delegation-${timestamp}`,
+      },
+    }),
+  });
 
   const parentZoneId = ParentZoneId ?? await getHostedZoneIdByName(ParentZoneName!, route53);
 
@@ -48,9 +65,10 @@ async function cfnEventHandler(props: ResourceProperties, isDeleteEvent: boolean
         },
       }],
     },
-  }).promise();
+  }); //.promise();
 }
 
+/*
 async function getCrossAccountCredentials(roleArn: string, regionalEndpoint: boolean): Promise<Credentials> {
   const sts = new STS(regionalEndpoint ? { stsRegionalEndpoints: 'regional' } : {});
   const timestamp = (new Date()).getTime();
@@ -72,7 +90,9 @@ async function getCrossAccountCredentials(roleArn: string, regionalEndpoint: boo
     sessionToken: assumedCredentials.SessionToken,
   });
 }
+*/
 
+/*
 async function getHostedZoneIdByName(name: string, route53: Route53): Promise<string> {
   const zones = await route53.listHostedZonesByName({ DNSName: name }).promise();
   const matchedZones = zones.HostedZones.filter(zone => zone.Name === `${name}.`);
@@ -82,4 +102,17 @@ async function getHostedZoneIdByName(name: string, route53: Route53): Promise<st
   }
 
   return matchedZones[0].Id;
+}
+*/
+
+async function getHostedZoneIdByName(name: string, route53: Route53): Promise<string> {
+  const zones = await route53.listHostedZonesByName({ DNSName: name });
+  const matchedZones = zones.HostedZones?.filter(zone => zone.Name === `${name}.`) ?? [];
+
+  if (matchedZones && matchedZones.length !== 1) {
+    throw Error(`Expected one hosted zone to match the given name but found ${matchedZones.length}`);
+  }
+
+  // will always be defined because we throw if length !==1
+  return matchedZones[0].Id!;
 }
