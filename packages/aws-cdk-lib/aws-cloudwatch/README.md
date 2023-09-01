@@ -479,6 +479,20 @@ dashboard.addWidgets(new cloudwatch.GraphWidget({
 }));
 ```
 
+The `start` and `end` properties can be used to specify the time range for each graph widget independently from those of the dashboard.
+The parameters can be specified at `GraphWidget`, `GaugeWidget`, and `SingleValueWidget`.
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+
+dashboard.addWidgets(new cloudwatch.GraphWidget({
+  // ...
+
+  start: '-P7D',
+  end: '2018-12-17T06:00:00.000Z',
+}));
+```
+
 ### Gauge widget
 
 Gauge graph requires the max and min value of the left Y axis, if no value is informed the limits will be from 0 to 100.
