@@ -16,6 +16,14 @@
               "version": "0.0.0"
             }
           },
+          "Start Athena Query Output String": {
+            "id": "Start Athena Query Output String",
+            "path": "aws-stepfunctions-tasks-athena-start-query-execution-integ/Start Athena Query Output String",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.AthenaStartQueryExecution",
+              "version": "0.0.0"
+            }
+          },
           "StateMachine": {
             "id": "StateMachine",
             "path": "aws-stepfunctions-tasks-athena-start-query-execution-integ/StateMachine",
@@ -138,18 +146,32 @@
                                     "s3:PutObject"
                                   ],
                                   "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::Join": [
-                                      "",
-                                      [
-                                        "arn:",
-                                        {
-                                          "Ref": "AWS::Partition"
-                                        },
-                                        ":s3:::query-results-bucket/folder/*"
+                                  "Resource": [
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":s3::://*"
+                                        ]
                                       ]
-                                    ]
-                                  }
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":s3:::query-results-bucket/folder/*"
+                                        ]
+                                      ]
+                                    }
+                                  ]
                                 },
                                 {
                                   "Action": [
@@ -291,22 +313,26 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
                   "aws:cdk:cloudformation:props": {
-                    "roleArn": {
-                      "Fn::GetAtt": [
-                        "StateMachineRoleB840431D",
-                        "Arn"
-                      ]
-                    },
                     "definitionString": {
                       "Fn::Join": [
                         "",
                         [
-                          "{\"StartAt\":\"Start Athena Query\",\"States\":{\"Start Athena Query\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+                          "{\"StartAt\":\"Start Athena Query\",\"States\":{\"Start Athena Query\":{\"Next\":\"Start Athena Query Output String\",\"Type\":\"Task\",\"Resource\":\"arn:",
                           {
                             "Ref": "AWS::Partition"
                           },
-                          ":states:::athena:startQueryExecution\",\"Parameters\":{\"QueryString.$\":\"$.queryString\",\"QueryExecutionContext\":{\"Database\":\"mydatabase\"},\"ResultConfiguration\":{\"EncryptionConfiguration\":{\"EncryptionOption\":\"SSE_S3\"},\"OutputLocation\":\"s3://query-results-bucket/folder/\"}}}},\"TimeoutSeconds\":30}"
+                          ":states:::athena:startQueryExecution\",\"Parameters\":{\"QueryString.$\":\"$.queryString\",\"QueryExecutionContext\":{\"Database\":\"mydatabase\"},\"ResultConfiguration\":{\"EncryptionConfiguration\":{\"EncryptionOption\":\"SSE_S3\"},\"OutputLocation\":\"s3://query-results-bucket/folder/\"}}},\"Start Athena Query Output String\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":states:::athena:startQueryExecution\",\"Parameters\":{\"QueryString.$\":\"$.queryString\",\"QueryExecutionContext\":{\"Database\":\"mydatabase\"},\"ResultConfiguration\":{\"EncryptionConfiguration\":{\"EncryptionOption\":\"SSE_S3\"},\"OutputLocation.$\":\"States.Format('s3://query-results-bucket/folder/{}', $.output)\"}}}},\"TimeoutSeconds\":30}"
                         ]
+                      ]
+                    },
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "StateMachineRoleB840431D",
+                        "Arn"
                       ]
                     }
                   }
@@ -357,7 +383,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.26"
+          "version": "10.2.70"
         }
       }
     },

@@ -27,7 +27,27 @@ const startQueryExecutionJob = new AthenaStartQueryExecution(stack, 'Start Athen
   },
 });
 
-const chain = sfn.Chain.start(startQueryExecutionJob);
+const startQueryExecutionWithOutputLocationString = new AthenaStartQueryExecution(
+  stack,
+  'Start Athena Query Output String',
+  {
+    queryString: sfn.JsonPath.stringAt('$.queryString'),
+    queryExecutionContext: {
+      databaseName: 'mydatabase',
+    },
+    resultConfiguration: {
+      encryptionConfiguration: {
+        encryptionOption: EncryptionOption.S3_MANAGED,
+      },
+      outputLocation: sfn.JsonPath.format(
+        's3://query-results-bucket/folder/{}',
+        sfn.JsonPath.stringAt('$.output'),
+      ),
+    },
+  });
+
+const chain = sfn.Chain.start(startQueryExecutionJob)
+  .next(startQueryExecutionWithOutputLocationString);
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {
   definition: chain,
