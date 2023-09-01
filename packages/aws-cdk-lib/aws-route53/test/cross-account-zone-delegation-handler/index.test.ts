@@ -16,7 +16,7 @@ const mockRoute53Client = {
 jest.mock('@aws-sdk/client-sts', () => {
   return {
     STS: jest.fn().mockImplementation(() => {
-      return mockStsClient;;
+      return mockStsClient;
     }),
   };
 });
