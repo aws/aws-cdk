@@ -26,7 +26,7 @@ import * as cdk from 'aws-cdk-lib';
 const stack = new cdk.Stack();
 const bucket = new s3.Bucket(stack, 'MyBucket');
 const handler = new lambda.Function(stack, 'MyFunction', {
-	runtime: lambda.Runtime.NODEJS_14_X,
+	runtime: lambda.Runtime.NODEJS_LATEST,
 	handler: 'index.handler',
 	code: lambda.Code.fromAsset('lambda.zip'),
 });
@@ -53,7 +53,7 @@ import * as cdk from 'aws-cdk-lib';
 const stack = new cdk.Stack();
 const bucket = new s3.Bucket(stack, 'MyBucket');
 const handler = new lambda.Function(stack, 'MyFunction', {
-	runtime: lambda.Runtime.NODEJS_14_X,
+	runtime: lambda.Runtime.NODEJS_LATEST,
 	handler: 'index.handler',
 	code: lambda.Code.fromAsset('lambda.zip'),
 });
@@ -79,7 +79,7 @@ import * as cdk from 'aws-cdk-lib';
 const stack = new cdk.Stack();
 const bucket = new s3.Bucket(stack, 'MyBucket');
 const handler = new lambda.Function(stack, 'MyFunction', {
-	runtime: lambda.Runtime.NODEJS_14_X,
+	runtime: lambda.Runtime.NODEJS_LATEST,
 	handler: 'index.handler',
 	code: lambda.Code.fromAsset('lambda.zip'),
 });
