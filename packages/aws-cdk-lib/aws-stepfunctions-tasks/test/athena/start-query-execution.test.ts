@@ -224,4 +224,51 @@ describe('Start Query Execution', () => {
       }),
     });
   });
+
+  test('bucket arn as expected when outputLocation is string', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const task = new AthenaStartQueryExecution(stack, 'Query', {
+      queryString: 'CREATE DATABASE database',
+      clientRequestToken: 'unique-client-request-token',
+      resultConfiguration: {
+        outputLocation: 's3://query-results-bucket/folder/',
+      },
+    });
+
+    new sfn.StateMachine(stack, 'StateMachine', {
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: Match.objectLike({
+        Statement: Match.arrayWith([
+          {
+            Action: [
+              's3:AbortMultipartUpload',
+              's3:ListBucketMultipartUploads',
+              's3:ListMultipartUploadParts',
+              's3:PutObject',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':s3:::query-results-bucket/folder/*',
+                ],
+              ],
+            },
+          },
+        ]),
+      }),
+    });
+  });
 });
