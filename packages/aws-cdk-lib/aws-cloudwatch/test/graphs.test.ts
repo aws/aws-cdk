@@ -862,7 +862,7 @@ describe('Graphs', () => {
     const widget = new GraphWidget({
       left: [new Metric({ namespace: 'CDK', metricName: 'Test' })],
       view: GraphWidgetView.PIE,
-      start: '-9H',
+      start: '-P7D',
       end: '2018-12-17T06:00:00.000Z',
     });
 
@@ -878,7 +878,7 @@ describe('Graphs', () => {
           ['CDK', 'Test'],
         ],
         yAxis: {},
-        start: '-9H',
+        start: '-P7D',
         end: '2018-12-17T06:00:00.000Z',
       },
     }]);
@@ -889,7 +889,7 @@ describe('Graphs', () => {
     const stack = new Stack();
     const widget = new SingleValueWidget({
       metrics: [new Metric({ namespace: 'CDK', metricName: 'Test' })],
-      start: '-9H',
+      start: '-P7D',
       end: '2018-12-17T06:00:00.000Z',
     });
 
@@ -904,7 +904,7 @@ describe('Graphs', () => {
         metrics: [
           ['CDK', 'Test'],
         ],
-        start: '-9H',
+        start: '-P7D',
         end: '2018-12-17T06:00:00.000Z',
       },
     }]);
@@ -915,7 +915,7 @@ describe('Graphs', () => {
     const stack = new Stack();
     const widget = new GaugeWidget({
       metrics: [new Metric({ namespace: 'CDK', metricName: 'Test' })],
-      start: '-9H',
+      start: '-P7D',
       end: '2018-12-17T06:00:00.000Z',
     });
 
@@ -936,7 +936,7 @@ describe('Graphs', () => {
             max: 100,
           },
         },
-        start: '-9H',
+        start: '-P7D',
         end: '2018-12-17T06:00:00.000Z',
       },
     }]);
