@@ -127,6 +127,7 @@ export class Table extends Resource implements ITable {
 
     this.database = props.database;
     this.dataFormat = props.dataFormat;
+    this.s3Prefix = props.s3Prefix ?? '';
 
     validateSchema(props.columns, props.partitionKeys);
     this.columns = props.columns;
@@ -134,8 +135,6 @@ export class Table extends Resource implements ITable {
     this.storageParameters = props.storageParameters;
 
     this.compressed = props.compressed ?? false;
-
-    this.s3Prefix = props.s3Prefix ?? '';
     const { bucket, encryption, encryptionKey } = createBucket(this, props);
     this.bucket = bucket;
     this.encryption = encryption;
