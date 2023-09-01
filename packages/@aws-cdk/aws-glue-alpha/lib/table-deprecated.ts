@@ -11,7 +11,7 @@ import { IDatabase } from './database';
 import { S3Table, S3TableProps, TableEncryption } from './s3-table';
 import { Column } from './schema';
 import { StorageParameter } from './storage-parameter';
-import { ITable, PartitionIndex, TableAttributes, TableBase } from './table-base';
+import { ITable, PartitionIndex, TableAttributes } from './table-base';
 
 /**
  * A Glue table.
@@ -23,7 +23,7 @@ export class Table extends Resource implements ITable {
   public static fromTableArn(scope: Construct, id: string, tableArn: string): ITable {
     const tableName = Fn.select(1, Fn.split('/', Stack.of(scope).splitArn(tableArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!));
 
-    return TableBase.fromTableAttributes(scope, id, {
+    return Table.fromTableAttributes(scope, id, {
       tableArn,
       tableName,
     });
