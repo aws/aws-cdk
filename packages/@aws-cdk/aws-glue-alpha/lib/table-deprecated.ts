@@ -58,7 +58,7 @@ export class Table extends Resource implements ITable {
   /**
    * The type of encryption enabled for the table.
    */
-  public readonly encryption?: TableEncryption;
+  public readonly encryption: TableEncryption;
 
   /**
    * The KMS key used to secure the data if `encryption` is set to `CSE-KMS` or `SSE-KMS`. Otherwise, `undefined`.
@@ -68,12 +68,12 @@ export class Table extends Resource implements ITable {
   /**
    * S3 bucket in which the table's data resides.
    */
-  public readonly bucket?: s3.IBucket;
+  public readonly bucket: s3.IBucket;
 
   /**
    * S3 Key Prefix under which this table's files are stored in S3.
    */
-  public readonly s3Prefix?: string;
+  public readonly s3Prefix: string;
 
   /**
    * Name of this table.
@@ -104,11 +104,6 @@ export class Table extends Resource implements ITable {
    * This table's partition indexes.
    */
   public readonly partitionIndexes?: PartitionIndex[];
-
-  /**
-   * The location of the tables' data.
-   */
-  readonly location?: string;
 
   /**
    * The tables' storage descriptor properties.
@@ -145,7 +140,6 @@ export class Table extends Resource implements ITable {
     this.bucket = bucket;
     this.encryption = encryption;
     this.encryptionKey = encryptionKey;
-    this.location = `s3://${bucket.bucketName}/${this.s3Prefix}`;
 
     const tableResource = new CfnTable(this, 'Table', {
       catalogId: props.database.catalogId,
@@ -164,7 +158,7 @@ export class Table extends Resource implements ITable {
           'partition_filtering.enabled': props.enablePartitionFiltering,
         },
         storageDescriptor: {
-          location: this.location,
+          location: `s3://${this.bucket.bucketName}/${this.s3Prefix}`,
           compressed: this.compressed,
           storedAsSubDirectories: props.storedAsSubDirectories ?? false,
           columns: renderColumns(props.columns),
@@ -276,10 +270,8 @@ export class Table extends Resource implements ITable {
    */
   public grantRead(grantee: iam.IGrantable): iam.Grant {
     const ret = this.grant(grantee, readPermissions);
-    if (this.bucket) {
-      if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantDecrypt(grantee); }
-      this.bucket.grantRead(grantee, this.generateS3PrefixForGrant());
-    }
+    if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantDecrypt(grantee); }
+    this.bucket.grantRead(grantee, this.generateS3PrefixForGrant());
     return ret;
   }
 
@@ -290,10 +282,8 @@ export class Table extends Resource implements ITable {
    */
   public grantWrite(grantee: iam.IGrantable): iam.Grant {
     const ret = this.grant(grantee, writePermissions);
-    if (this.bucket) {
-      if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantEncrypt(grantee); }
-      this.bucket.grantWrite(grantee, this.generateS3PrefixForGrant());
-    }
+    if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantEncrypt(grantee); }
+    this.bucket.grantWrite(grantee, this.generateS3PrefixForGrant());
     return ret;
   }
 
@@ -304,10 +294,8 @@ export class Table extends Resource implements ITable {
    */
   public grantReadWrite(grantee: iam.IGrantable): iam.Grant {
     const ret = this.grant(grantee, [...readPermissions, ...writePermissions]);
-    if (this.bucket) {
-      if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantEncryptDecrypt(grantee); }
-      this.bucket.grantReadWrite(grantee, this.generateS3PrefixForGrant());
-    }
+    if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantEncryptDecrypt(grantee); }
+    this.bucket.grantReadWrite(grantee, this.generateS3PrefixForGrant());
     return ret;
   }
 
@@ -338,7 +326,7 @@ export class Table extends Resource implements ITable {
     });
   }
 
-  protected generateS3PrefixForGrant() {
+  private generateS3PrefixForGrant() {
     return this.s3Prefix + '*';
   }
 }
