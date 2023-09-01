@@ -37,6 +37,8 @@ export interface DashboardProps {
    * Interval duration for metrics.
    * You can specify defaultInterval with the relative time(eg. cdk.Duration.days(7)).
    *
+   * Both properties `defaultInterval` and `start` cannot be set at once.
+   *
    * @default When the dashboard loads, the defaultInterval time will be the default time range.
    */
   readonly defaultInterval?: Duration
@@ -49,7 +51,9 @@ export interface DashboardProps {
    * You can also use start along with an end field, to specify an absolute time range.
    * When specifying an absolute time range, use the ISO 8601 format. For example, 2018-12-17T06:00:00.000Z.
    *
-   * @default When the dashboard loads, the start time will be the default time range.
+   * Both properties `defaultInterval` and `start` cannot be set at once.
+   *
+  * @default When the dashboard loads, the start time will be the default time range.
    */
   readonly start?: string;
 
