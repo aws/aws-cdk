@@ -40,18 +40,18 @@
      },
      "S3Key": "50a8879346510e33e69a511e29d588e7b2d2b477b6989a4db677027bb8605b9f.zip"
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "externalServiceRole85A00A90",
-      "Arn"
-     ]
-    },
     "Environment": {
      "Variables": {
       "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
      }
     },
     "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "externalServiceRole85A00A90",
+      "Arn"
+     ]
+    },
     "Runtime": "nodejs16.x"
    },
    "DependsOn": [

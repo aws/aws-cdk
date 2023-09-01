@@ -23,7 +23,7 @@ const userPool = new cognito.UserPool(stack, 'userpool');
 const authorizer = new HttpUserPoolAuthorizer('UserPoolAuthorizer', userPool);
 
 const handler = new lambda.Function(stack, 'lambda', {
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: lambda.Runtime.NODEJS_16_X,
   handler: 'index.handler',
   code: lambda.AssetCode.fromAsset(path.join(__dirname, '../integ.user-pool.handler')),
 });
