@@ -53,7 +53,7 @@ export interface DashboardProps {
    *
    * Both properties `defaultInterval` and `start` cannot be set at once.
    *
-  * @default When the dashboard loads, the start time will be the default time range.
+   * @default When the dashboard loads, the start time will be the default time range.
    */
   readonly start?: string;
 
