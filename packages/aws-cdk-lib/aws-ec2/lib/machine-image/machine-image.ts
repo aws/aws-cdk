@@ -669,6 +669,7 @@ export class GenericWindowsImage implements IMachineImage {
  * will be used on future runs. To refresh the AMI lookup, you will have to
  * evict the value from the cache using the `cdk context` command. See
  * https://docs.aws.amazon.com/cdk/latest/guide/context.html for more information.
+ * If `props.linkContextToScope` is true, the context key will be tied to the passed scope rather than global
  */
 export class LookupMachineImage implements IMachineImage {
   constructor(private readonly props: LookupMachineImageProps) {
@@ -676,10 +677,8 @@ export class LookupMachineImage implements IMachineImage {
 
   /**
    * Return the correct image
-   *
-   * If linkContextToScope is true, the context key will be tied to the passed scope rather than global
    */
-  public getImage(scope: Construct, linkContextToScope?: boolean): MachineImageConfig {
+  public getImage(scope: Construct): MachineImageConfig {
     // Need to know 'windows' or not before doing the query to return the right
     // osType for the dummy value, so might as well add it to the filter.
     const filters: Record<string, string[] | undefined> = {
@@ -697,7 +696,7 @@ export class LookupMachineImage implements IMachineImage {
         filters,
       } as cxschema.AmiContextQuery,
       dummyValue: 'ami-1234',
-      includeScope: linkContextToScope,
+      includeScope: this.props.linkContextToScope,
     }).value as cxapi.AmiContextResponse;
 
     if (typeof value !== 'string') {
@@ -751,5 +750,12 @@ export interface LookupMachineImageProps {
    * @default - Empty user data appropriate for the platform type
    */
   readonly userData?: UserData;
+
+  /**
+   * If true, the context key will be tied to the passed scope rather than global
+   *
+   * @default false
+   */
+  readonly linkContextToScope?: boolean
 }
 
