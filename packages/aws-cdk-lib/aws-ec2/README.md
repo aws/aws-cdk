@@ -504,6 +504,10 @@ The result of the `Vpc.fromLookup()` operation will be written to a file
 called `cdk.context.json`. You must commit this file to source control so
 that the lookup values are available in non-privileged environments such
 as CI build steps, and to ensure your template builds are repeatable.
+If you want the key of the context variable to be tied to the scope
+passed to `fromLookup` instead of being global (usinwhich would use the same
+value any time you call `fromLookup` across your entire app),
+you can set the `linkContextToScope` argument to `true`
 
 Here's how `Vpc.fromLookup()` can be used:
 
@@ -744,7 +748,7 @@ If the security group ID is known and configuration details are unknown, use met
 const sg = ec2.SecurityGroup.fromLookupById(this, 'SecurityGroupLookup', 'sg-1234');
 ```
 
-The result of `SecurityGroup.fromLookupByName` and `SecurityGroup.fromLookupById` operations will be written to a file called `cdk.context.json`. You must commit this file to source control so that the lookup values are available in non-privileged environments such as CI build steps, and to ensure your template builds are repeatable.
+The result of `SecurityGroup.fromLookupByName` and `SecurityGroup.fromLookupById` operations will be written to a file called `cdk.context.json`. You must commit this file to source control so that the lookup values are available in non-privileged environments such as CI build steps, and to ensure your template builds are repeatable. If you want the key of the context variable to be tied to the scope passed to `fromLookupByName`/`fromLookupById` instead of being global (which would use the same value any time you call `fromLookup` across your entire app), you can set the `linkContextToScope` argument to `true`
 
 ### Cross Stack Connections
 
@@ -831,6 +835,10 @@ examples of images you might want to use:
 > `cdk.context.json`, or use the `cdk context` command. For more information, see
 > [Runtime Context](https://docs.aws.amazon.com/cdk/latest/guide/context.html) in the CDK
 > developer guide.
+> 
+> If you want the key of the context variable to be tied to the scope
+> passed to `lookup` instead of being global (which would use the same value any
+> time you call `lookup` across your entire app), you can set the `linkContextToScope` argument to `true`
 >
 > `MachineImage.genericLinux()`, `MachineImage.genericWindows()` will use `CfnMapping` in
 > an agnostic stack.
@@ -1151,6 +1159,31 @@ new ec2.Instance(this, 'LatestAl2023', {
   // context cache is turned on by default
   machineImage: new ec2.AmazonLinux2023ImageSsmParameter(),
 });
+
+// or
+new ec2.Instance(this, 'LatestAl2023', {
+  vpc,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.C7G, ec2.InstanceSize.LARGE),
+  machineImage: ec2.MachineImage.latestAmazonLinux2023({
+    cachedInContext: true,
+    // creates a distinct context variable for this image, instead of resolving to the same
+    // value anywhere this lookup is done in your app
+    linkContextToScope: true,
+  }),
+});
+
+// or
+new ec2.Instance(this, 'LatestAl2023', {
+  vpc,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.C7G, ec2.InstanceSize.LARGE),
+  // context cache is turned on by default
+  machineImage: new ec2.AmazonLinux2023ImageSsmParameter({
+    // creates a distinct context variable for this image, instead of resolving to the same
+    // value anywhere this lookup is done in your app
+    linkContextToScope: true,
+  }),
+});
+
 ```
 
 #### Kernel Versions

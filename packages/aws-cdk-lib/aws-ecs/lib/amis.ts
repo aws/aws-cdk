@@ -92,6 +92,13 @@ export interface EcsOptimizedAmiProps {
    * @default false
    */
   readonly cachedInContext?: boolean;
+
+  /**
+   * If true and cachedInContext is true, the context key will be tied to the passed scope rather than global
+   *
+   * @default false
+   */
+  readonly linkContextToScope?: boolean
 }
 
 /*
@@ -109,6 +116,7 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
 
   private readonly amiParameterName: string;
   private readonly cachedInContext: boolean;
+  private readonly linkContextToScope: boolean;
 
   /**
    * Constructs a new instance of the EcsOptimizedAmi class.
@@ -145,13 +153,14 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
       + (this.windowsVersion ? 'image_id' : 'recommended/image_id');
 
     this.cachedInContext = props?.cachedInContext ?? false;
+    this.linkContextToScope = props?.linkContextToScope ?? false;
   }
 
   /**
    * Return the correct image
    */
   public getImage(scope: Construct): ec2.MachineImageConfig {
-    const ami = lookupImage(scope, this.cachedInContext, this.amiParameterName);
+    const ami = lookupImage(scope, this.cachedInContext && this.linkContextToScope ? 'scope' : this.cachedInContext, this.amiParameterName);
 
     const osType = this.windowsVersion ? ec2.OperatingSystemType.WINDOWS : ec2.OperatingSystemType.LINUX;
     return {
@@ -186,6 +195,13 @@ export interface EcsOptimizedImageOptions {
    * @default false
    */
   readonly cachedInContext?: boolean;
+
+  /**
+   * If true and cachedInContext is true, the context key will be tied to the passed scope rather than global
+   *
+   * @default false
+   */
+  readonly linkContextToScope?: boolean
 }
 
 /**
@@ -233,6 +249,7 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
 
   private readonly amiParameterName: string;
   private readonly cachedInContext: boolean;
+  private readonly linkContextToScope: boolean;
 
   /**
    * Constructs a new instance of the EcsOptimizedAmi class.
@@ -258,14 +275,15 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
       + (this.hwType === AmiHardwareType.ARM ? 'arm64/' : '')
       + (this.windowsVersion ? 'image_id' : 'recommended/image_id');
 
-    this.cachedInContext = props?.cachedInContext ?? false;
+    this.cachedInContext = props.cachedInContext ?? false;
+    this.linkContextToScope = props.linkContextToScope ?? false;
   }
 
   /**
    * Return the correct image
    */
   public getImage(scope: Construct): ec2.MachineImageConfig {
-    const ami = lookupImage(scope, this.cachedInContext, this.amiParameterName);
+    const ami = lookupImage(scope, this.cachedInContext && this.linkContextToScope ? 'scope' : this.cachedInContext, this.amiParameterName);
 
     const osType = this.windowsVersion ? ec2.OperatingSystemType.WINDOWS : ec2.OperatingSystemType.LINUX;
     return {
@@ -326,6 +344,13 @@ export interface BottleRocketImageProps {
    * @default false
    */
   readonly cachedInContext?: boolean;
+
+  /**
+   * If true and cachedInContext is true, the context key will be tied to the passed scope rather than global
+   *
+   * @default false
+   */
+  readonly linkContextToScope?: boolean
 }
 
 /**
@@ -352,6 +377,8 @@ export class BottleRocketImage implements ec2.IMachineImage {
 
   private readonly cachedInContext: boolean;
 
+  private readonly linkContextToScope: boolean;
+
   /**
    * Constructs a new instance of the BottleRocketImage class.
    */
@@ -363,13 +390,16 @@ export class BottleRocketImage implements ec2.IMachineImage {
     this.amiParameterName = `/aws/service/bottlerocket/${this.variant}/${this.architecture}/latest/image_id`;
 
     this.cachedInContext = props.cachedInContext ?? false;
+    this.linkContextToScope = props.linkContextToScope ?? false;
   }
 
   /**
    * Return the correct image
+   *
+   * If linkContextToScope is true, the context key will be tied to the passed scope rather than global
    */
   public getImage(scope: Construct): ec2.MachineImageConfig {
-    const ami = lookupImage(scope, this.cachedInContext, this.amiParameterName);
+    const ami = lookupImage(scope, this.cachedInContext && this.linkContextToScope ? 'scope' : this.cachedInContext, this.amiParameterName);
 
     return {
       imageId: ami,
@@ -385,8 +415,8 @@ Object.defineProperty(BottleRocketImage.prototype, BR_IMAGE_SYMBOL, {
   writable: false,
 });
 
-function lookupImage(scope: Construct, cachedInContext: boolean | undefined, parameterName: string) {
+function lookupImage(scope: Construct, cachedInContext: boolean | undefined | 'scope', parameterName: string) {
   return cachedInContext
-    ? ssm.StringParameter.valueFromLookup(scope, parameterName)
+    ? ssm.StringParameter.valueFromLookup(scope, parameterName, cachedInContext === 'scope')
     : ssm.StringParameter.valueForTypedStringParameterV2(scope, parameterName, ssm.ParameterValueType.AWS_EC2_IMAGE_ID);
 }

@@ -117,8 +117,10 @@ export interface NetworkListenerLookupOptions extends BaseListenerLookupOptions 
 export class NetworkListener extends BaseListener implements INetworkListener {
   /**
    * Looks up a network listener
+   *
+   * If linkContextToScope is true, the cached context key will be tied to the passed scope rather than global
    */
-  public static fromLookup(scope: Construct, id: string, options: NetworkListenerLookupOptions): INetworkListener {
+  public static fromLookup(scope: Construct, id: string, options: NetworkListenerLookupOptions, linkContextToScope?: boolean): INetworkListener {
     let listenerProtocol: cxschema.LoadBalancerListenerProtocol | undefined;
     if (options.listenerProtocol) {
       validateNetworkProtocol(options.listenerProtocol);
@@ -135,7 +137,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
       userOptions: options,
       listenerProtocol: listenerProtocol,
       loadBalancerType: cxschema.LoadBalancerType.NETWORK,
-    });
+    }, linkContextToScope);
 
     class LookedUp extends Resource implements INetworkListener {
       public listenerArn = props.listenerArn;

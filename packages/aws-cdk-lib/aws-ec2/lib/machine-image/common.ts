@@ -47,6 +47,13 @@ export interface AmazonLinuxImageSsmParameterBaseOptions {
   readonly cachedInContext?: boolean;
 
   /**
+   * If true and cachedInContext is true, the context key will be tied to the passed scope rather than global
+   *
+   * @default false
+   */
+  readonly linkContextToScope?: boolean
+
+  /**
    * Initial user data
    *
    * @default - Empty UserData for Linux machines

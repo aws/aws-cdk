@@ -76,7 +76,7 @@ export abstract class BaseListener extends Resource implements IListener {
    * listener info.
    * @internal
    */
-  protected static _queryContextProvider(scope: Construct, options: ListenerQueryContextProviderOptions) {
+  protected static _queryContextProvider(scope: Construct, options: ListenerQueryContextProviderOptions, linkContextToScope?: boolean) {
     if (Token.isUnresolved(options.userOptions.loadBalancerArn)
       || Object.values(options.userOptions.loadBalancerTags ?? {}).some(Token.isUnresolved)
       || Token.isUnresolved(options.userOptions.listenerPort)) {
@@ -104,6 +104,7 @@ export abstract class BaseListener extends Resource implements IListener {
         listenerPort: 80,
         securityGroupIds: ['sg-123456789012'],
       } as cxapi.LoadBalancerListenerContextResponse,
+      includeScope: linkContextToScope,
     }).value;
 
     return props;

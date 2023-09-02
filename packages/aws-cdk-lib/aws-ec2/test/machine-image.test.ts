@@ -207,6 +207,27 @@ test('cached lookups of Amazon Linux', () => {
   ]);
 });
 
+test('cached lookups of Amazon Linux linked to scope', () => {
+  // WHEN
+  const ami = ec2.MachineImage.latestAmazonLinux({ cachedInContext: true, linkContextToScope: true }).getImage(stack).imageId;
+
+  // THEN
+  expect(ami).toEqual('dummy-value-for-Stack-/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2');
+  expect(app.synth().manifest.missing).toEqual([
+    {
+      key: 'ssm:account=1234:parameterName=/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2:region=testregion:scope=Stack',
+      props: {
+        account: '1234',
+        lookupRoleArn: 'arn:${AWS::Partition}:iam::1234:role/cdk-hnb659fds-lookup-role-1234-testregion',
+        region: 'testregion',
+        parameterName: '/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2',
+        scope: 'Stack',
+      },
+      provider: 'ssm',
+    },
+  ]);
+});
+
 test('cached lookups of Amazon Linux 2', () => {
   // WHEN
   const ami = ec2.MachineImage.latestAmazonLinux({

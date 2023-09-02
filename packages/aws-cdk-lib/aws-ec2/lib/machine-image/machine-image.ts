@@ -303,6 +303,13 @@ export interface SsmParameterImageOptions {
   readonly cachedInContext?: boolean;
 
   /**
+   * If true and cachedInContext is true, the context key will be tied to the passed scope rather than global
+   *
+   * @default false
+   */
+  readonly linkContextToScope?: boolean
+
+  /**
    * The version of the SSM parameter.
    *
    * @default no version specified.
@@ -328,7 +335,7 @@ class GenericSsmParameterImage implements IMachineImage {
    * Return the image to use in the given context
    */
   public getImage(scope: Construct): MachineImageConfig {
-    const imageId = lookupImage(scope, this.props.cachedInContext, this.parameterName);
+    const imageId = lookupImage(scope, this.props.cachedInContext && this.props.linkContextToScope ? 'scope' : this.props.cachedInContext, this.parameterName);
 
     const osType = this.props.os ?? OperatingSystemType.LINUX;
     return {
@@ -459,6 +466,13 @@ export interface AmazonLinuxImageProps {
    * @default false
    */
   readonly cachedInContext?: boolean;
+
+  /**
+   * If true and cachedInContext is true, the context key will be tied to the passed scope rather than global
+   *
+   * @default false
+   */
+  readonly linkContextToScope?: boolean
 }
 
 /**
@@ -511,17 +525,20 @@ export class AmazonLinuxImage extends GenericSSMParameterImage {
 
   private readonly cachedInContext: boolean;
 
+  private readonly linkContextToScope: boolean;
+
   constructor(private readonly props: AmazonLinuxImageProps = {}) {
     super(AmazonLinuxImage.ssmParameterName(props), OperatingSystemType.LINUX, props.userData);
 
     this.cachedInContext = props.cachedInContext ?? false;
+    this.linkContextToScope = props.linkContextToScope ?? false;
   }
 
   /**
    * Return the image to use in the given context
    */
   public getImage(scope: Construct): MachineImageConfig {
-    const imageId = lookupImage(scope, this.cachedInContext, this.parameterName);
+    const imageId = lookupImage(scope, this.cachedInContext && this.linkContextToScope ? 'scope' : this.cachedInContext, this.parameterName);
 
     const osType = OperatingSystemType.LINUX;
     return {
@@ -657,7 +674,12 @@ export class LookupMachineImage implements IMachineImage {
   constructor(private readonly props: LookupMachineImageProps) {
   }
 
-  public getImage(scope: Construct): MachineImageConfig {
+  /**
+   * Return the correct image
+   *
+   * If linkContextToScope is true, the context key will be tied to the passed scope rather than global
+   */
+  public getImage(scope: Construct, linkContextToScope?: boolean): MachineImageConfig {
     // Need to know 'windows' or not before doing the query to return the right
     // osType for the dummy value, so might as well add it to the filter.
     const filters: Record<string, string[] | undefined> = {
@@ -675,6 +697,7 @@ export class LookupMachineImage implements IMachineImage {
         filters,
       } as cxschema.AmiContextQuery,
       dummyValue: 'ami-1234',
+      includeScope: linkContextToScope,
     }).value as cxapi.AmiContextResponse;
 
     if (typeof value !== 'string') {

@@ -247,6 +247,15 @@ route53.HostedZone.fromLookup(this, 'MyZone', {
 });
 ```
 
+The result of the `HostedZone.fromLookup()` operation will be written to a file
+called `cdk.context.json`. You must commit this file to source control so
+that the lookup values are available in non-privileged environments such
+as CI build steps, and to ensure your template builds are repeatable.
+If you want the key of the context variable to be tied to the scope
+passed to `fromLookup` instead of being global (usinwhich would use the same
+value any time you call `fromLookup` across your entire app),
+you can set the `linkContextToScope` argument to `true`
+
 `HostedZone.fromLookup` requires an environment to be configured. Check
 out the [documentation](https://docs.aws.amazon.com/cdk/latest/guide/environments.html) for more documentation and examples. CDK
 automatically looks into your `~/.aws/config` file for the `[default]` profile.

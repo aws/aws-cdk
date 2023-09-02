@@ -133,8 +133,15 @@ export interface ApplicationListenerLookupOptions extends BaseListenerLookupOpti
 export class ApplicationListener extends BaseListener implements IApplicationListener {
   /**
    * Look up an ApplicationListener.
+   *
+   * If linkContextToScope is true, the cached context key will be tied to the passed scope rather than global
    */
-  public static fromLookup(scope: Construct, id: string, options: ApplicationListenerLookupOptions): IApplicationListener {
+  public static fromLookup(
+    scope: Construct,
+    id: string,
+    options: ApplicationListenerLookupOptions,
+    linkContextToScope?: boolean,
+  ): IApplicationListener {
     if (Token.isUnresolved(options.listenerArn)) {
       throw new Error('All arguments to look up a load balancer listener must be concrete (no Tokens)');
     }
@@ -150,7 +157,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
       listenerArn: options.listenerArn,
       listenerProtocol,
-    });
+    }, linkContextToScope);
 
     return new LookedUpApplicationListener(scope, id, props);
   }

@@ -122,9 +122,11 @@ export class HostedZone extends Resource implements IHostedZone {
    *
    * Use to easily query hosted zones.
    *
+   * If linkContextToScope is true, the context key will be tied to the passed scope rather than global
+   *
    * @see https://docs.aws.amazon.com/cdk/latest/guide/environments.html
    */
-  public static fromLookup(scope: Construct, id: string, query: HostedZoneProviderProps): IHostedZone {
+  public static fromLookup(scope: Construct, id: string, query: HostedZoneProviderProps, linkContextToScope?: boolean): IHostedZone {
     if (!query.domainName) {
       throw new Error('Cannot use undefined value for attribute `domainName`');
     }
@@ -143,6 +145,7 @@ export class HostedZone extends Resource implements IHostedZone {
       provider: cxschema.ContextProvider.HOSTED_ZONE_PROVIDER,
       dummyValue: DEFAULT_HOSTED_ZONE,
       props: query,
+      includeScope: linkContextToScope,
     }).value;
 
     // CDK handles the '.' at the end, so remove it here

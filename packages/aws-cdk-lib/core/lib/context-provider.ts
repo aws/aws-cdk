@@ -24,6 +24,13 @@ export interface GetContextKeyOptions {
    * @default true
    */
   readonly includeEnvironment?: boolean;
+
+  /**
+   * Whether to include the scope automatically
+   *
+   * @default false
+   */
+  readonly includeScope?: boolean;
 }
 
 /**
@@ -67,9 +74,11 @@ export class ContextProvider {
   public static getKey(scope: Construct, options: GetContextKeyOptions): GetContextKeyResult {
     const stack = Stack.of(scope);
 
-    const props = options.includeEnvironment ?? true
-      ? { account: stack.account, region: stack.region, ...options.props }
-      : (options.props ?? {});
+    const props = {
+      ...((options.includeEnvironment ?? true) ? { account: stack.account, region: stack.region } : {}),
+      ...(options.includeScope ? { scope: scope.node.path } : {}),
+      ...options.props,
+    };
 
     if (Object.values(props).find(x => Token.isUnresolved(x))) {
       throw new Error(

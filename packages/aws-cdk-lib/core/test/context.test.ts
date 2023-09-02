@@ -134,6 +134,34 @@ describe('context', () => {
     });
   });
 
+  test('Key generation includes the scope when requested', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
+    const resource = new Construct(stack, 'resource');
+
+    // WHEN
+    const result = ContextProvider.getKey(resource, {
+      provider: 'provider',
+      props: {
+        p1: 42,
+        p2: undefined,
+      },
+      includeScope: true,
+    });
+
+    // THEN
+    expect(result).toEqual({
+      key: 'provider:account=12345:p1=42:region=us-east-1:scope=TestStack/resource',
+      props: {
+        account: '12345',
+        region: 'us-east-1',
+        p1: 42,
+        p2: undefined,
+        scope: 'TestStack/resource',
+      },
+    });
+  });
+
   test('context provider errors are attached to tree', () => {
     const contextProps = { provider: 'availability-zones' };
     const contextKey = 'availability-zones:account=12345:region=us-east-1'; // Depends on the mangling algo

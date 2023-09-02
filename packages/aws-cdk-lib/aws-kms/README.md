@@ -95,6 +95,10 @@ The result of the `Key.fromLookup()` operation will be written to a file
 called `cdk.context.json`. You must commit this file to source control so
 that the lookup values are available in non-privileged environments such
 as CI build steps, and to ensure your template builds are repeatable.
+If you want the key of the context variable to be tied to the scope
+passed to `fromLookup` instead of being global (usinwhich would use the same
+value any time you call `fromLookup` across your entire app),
+you can set the `linkContextToScope` argument to `true`
 
 Here's how `Key.fromLookup()` can be used:
 

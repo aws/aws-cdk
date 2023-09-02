@@ -156,6 +156,19 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
+If you want to create a distinct context variable for the AutoScalingGroup instead of
+using a global variable that will resolve to the same variable across your entire app,
+you can pass `linkContextToScope: true`:
+
+```ts
+declare const vpc: ec2.Vpc;
+const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
+  machineImage: ecs.EcsOptimizedImage.amazonLinux({ cachedInContext: true, linkContextToScope: true }),
+  vpc,
+  instanceType: new ec2.InstanceType('t2.micro'),
+});
+```
+
 To use `LaunchTemplate` with `AsgCapacityProvider`, make sure to specify the `userData` in the `LaunchTemplate`:
 
 ```ts
