@@ -103,6 +103,7 @@ export class AmazonLinux2ImageSsmParameter extends AmazonLinuxImageSsmParameterB
     super({
       parameterName: AmazonLinux2ImageSsmParameter.ssmParameterName(props),
       cachedInContext: props.cachedInContext,
+      linkContextToScope: props.linkContextToScope,
       userData: props.userData,
     });
   }
