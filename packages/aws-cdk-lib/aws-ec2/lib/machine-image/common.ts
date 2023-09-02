@@ -76,7 +76,7 @@ export abstract class AmazonLinuxImageSsmParameterBase implements IMachineImage 
   private readonly linkContextToScope: boolean;
   constructor(private readonly props: AmazonLinuxImageSsmParameterBaseProps) {
     this.cachedInContext = this.props.cachedInContext ?? true;
-    this.linkContextToScope = this.props.linkContextToScope ?? true;
+    this.linkContextToScope = this.props.linkContextToScope ?? false;
   }
 
   getImage(scope: Construct): MachineImageConfig {
