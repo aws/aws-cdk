@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/6110c57085f3942fd06f447c35d36d8649b434ca69763c6e7c0adce298dfeef1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/b377d63fffd8297ea8ff3722d1b313faadf0a8fab1a05b53dacd9a8b1550ea75.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -350,12 +350,11 @@
   },
   "missing": [
     {
-      "key": "ssm:account=12345678:parameterName=/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-6.1-x86_64:region=test-region:scope=integ-ec2-machine-image-cached-test/al2023Cached",
+      "key": "ssm:account=12345678:parameterName=/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-6.1-x86_64:region=test-region",
       "provider": "ssm",
       "props": {
         "account": "12345678",
         "region": "test-region",
-        "scope": "integ-ec2-machine-image-cached-test/al2023Cached",
         "parameterName": "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-6.1-x86_64",
         "lookupRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-lookup-role-12345678-test-region"
       }

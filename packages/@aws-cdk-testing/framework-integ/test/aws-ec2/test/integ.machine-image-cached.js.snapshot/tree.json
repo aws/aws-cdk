@@ -1016,7 +1016,7 @@
                     "iamInstanceProfile": {
                       "Ref": "al2023CachedInstanceProfileD264357E"
                     },
-                    "imageId": "dummy-value-for-integ-ec2-machine-image-cached-test/al2023Cached-/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-6.1-x86_64",
+                    "imageId": "dummy-value-for-/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-6.1-x86_64",
                     "instanceType": "t2.nano",
                     "securityGroupIds": [
                       {
