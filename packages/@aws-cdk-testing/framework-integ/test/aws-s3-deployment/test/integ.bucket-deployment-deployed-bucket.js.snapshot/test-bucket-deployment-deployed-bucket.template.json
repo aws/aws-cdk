@@ -432,6 +432,9 @@
    "ap-southeast-3": {
     "endpoint": "s3-website.ap-southeast-3.amazonaws.com"
    },
+   "ap-southeast-4": {
+    "endpoint": "s3-website.ap-southeast-4.amazonaws.com"
+   },
    "ca-central-1": {
     "endpoint": "s3-website.ca-central-1.amazonaws.com"
    },
@@ -464,6 +467,9 @@
    },
    "eu-west-3": {
     "endpoint": "s3-website.eu-west-3.amazonaws.com"
+   },
+   "il-central-1": {
+    "endpoint": "s3-website.il-central-1.amazonaws.com"
    },
    "me-central-1": {
     "endpoint": "s3-website.me-central-1.amazonaws.com"

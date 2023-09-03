@@ -9,33 +9,39 @@ running on AWS Lambda, or any web application.
 
 ## Table of Contents
 
-- [Defining APIs](#defining-apis)
-  - [Breaking up Methods and Resources across Stacks](#breaking-up-methods-and-resources-across-stacks)
-- [AWS Lambda-backed APIs](#aws-lambda-backed-apis)
-- [AWS StepFunctions backed APIs](#aws-stepfunctions-backed-APIs)
-- [Integration Targets](#integration-targets)
-- [Usage Plan & API Keys](#usage-plan--api-keys)
-- [Working with models](#working-with-models)
-- [Default Integration and Method Options](#default-integration-and-method-options)
-- [Proxy Routes](#proxy-routes)
-- [Authorizers](#authorizers)
-  - [IAM-based authorizer](#iam-based-authorizer)
-  - [Lambda-based token authorizer](#lambda-based-token-authorizer)
-  - [Lambda-based request authorizer](#lambda-based-request-authorizer)
-  - [Cognito User Pools authorizer](#cognito-user-pools-authorizer)
-- [Mutual TLS](#mutal-tls-mtls)
-- [Deployments](#deployments)
-  - [Deep dive: Invalidation of deployments](#deep-dive-invalidation-of-deployments)
-- [Custom Domains](#custom-domains)
-- [Access Logging](#access-logging)
-- [Cross Origin Resource Sharing (CORS)](#cross-origin-resource-sharing-cors)
-- [Endpoint Configuration](#endpoint-configuration)
-- [Private Integrations](#private-integrations)
-- [Gateway Response](#gateway-response)
-- [OpenAPI Definition](#openapi-definition)
-  - [Endpoint configuration](#endpoint-configuration)
-- [Metrics](#metrics)
-- [APIGateway v2](#apigateway-v2)
+- [Amazon API Gateway Construct Library](#amazon-api-gateway-construct-library)
+  - [Table of Contents](#table-of-contents)
+  - [Defining APIs](#defining-apis)
+  - [AWS Lambda-backed APIs](#aws-lambda-backed-apis)
+  - [AWS StepFunctions backed APIs](#aws-stepfunctions-backed-apis)
+    - [Breaking up Methods and Resources across Stacks](#breaking-up-methods-and-resources-across-stacks)
+  - [Integration Targets](#integration-targets)
+  - [Usage Plan \& API Keys](#usage-plan--api-keys)
+    - [Adding an API Key to an imported RestApi](#adding-an-api-key-to-an-imported-restapi)
+    - [⚠️ Multiple API Keys](#️-multiple-api-keys)
+    - [Rate Limited API Key](#rate-limited-api-key)
+  - [Working with models](#working-with-models)
+  - [Default Integration and Method Options](#default-integration-and-method-options)
+  - [Proxy Routes](#proxy-routes)
+  - [Authorizers](#authorizers)
+    - [IAM-based authorizer](#iam-based-authorizer)
+    - [Lambda-based token authorizer](#lambda-based-token-authorizer)
+    - [Lambda-based request authorizer](#lambda-based-request-authorizer)
+    - [Cognito User Pools authorizer](#cognito-user-pools-authorizer)
+  - [Mutual TLS (mTLS)](#mutual-tls-mtls)
+  - [Deployments](#deployments)
+    - [Deep dive: Invalidation of deployments](#deep-dive-invalidation-of-deployments)
+  - [Custom Domains](#custom-domains)
+    - [Custom Domains with multi-level api mapping](#custom-domains-with-multi-level-api-mapping)
+  - [Access Logging](#access-logging)
+  - [Cross Origin Resource Sharing (CORS)](#cross-origin-resource-sharing-cors)
+  - [Endpoint Configuration](#endpoint-configuration)
+  - [Private Integrations](#private-integrations)
+  - [Gateway response](#gateway-response)
+  - [OpenAPI Definition](#openapi-definition)
+    - [Endpoint configuration](#endpoint-configuration-1)
+  - [Metrics](#metrics)
+  - [APIGateway v2](#apigateway-v2)
 
 ## Defining APIs
 
@@ -257,9 +263,10 @@ method is called. API Gateway supports the following integrations:
 
 - `MockIntegration` - can be used to test APIs. This is the default
    integration if one is not specified.
-- `LambdaIntegration` - can be used to invoke an AWS Lambda function.
 - `AwsIntegration` - can be used to invoke arbitrary AWS service APIs.
 - `HttpIntegration` - can be used to invoke HTTP endpoints.
+- `LambdaIntegration` - can be used to invoke an AWS Lambda function.
+- `SagemakerIntegration` - can be used to invoke Sagemaker Endpoints.
 
 The following example shows how to integrate the `GET /book/{book_id}` method to
 an AWS Lambda function:
@@ -457,7 +464,7 @@ have to define your models and mappings for the request, response, and integrati
 
 ```ts
 const hello = new lambda.Function(this, 'hello', {
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
   handler: 'hello.handler',
   code: lambda.Code.fromAsset('lambda')
 });
@@ -788,7 +795,7 @@ class MyStack extends Stack {
     super(scope, id);
 
     const authorizerFn = new lambda.Function(this, 'MyAuthorizerFunction', {
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler',
       code: lambda.AssetCode.fromAsset(path.join(__dirname, 'integ.token-authorizer.handler')),
     });
@@ -964,6 +971,19 @@ so if you create multiple `RestApi`s with `cloudWatchRole=true` each new `RestAp
 will overwrite the `CfnAccount`. It is recommended to set `cloudWatchRole=false`
 (the default behavior if `@aws-cdk/aws-apigateway:disableCloudWatchRole` is enabled)
 and only create a single CloudWatch role and account per environment.
+
+You can specify the CloudWatch Role and Account sub-resources removal policy with the
+`cloudWatchRoleRemovalPolicy` property, which defaults to `RemovalPolicy.RETAIN`.
+This option requires `cloudWatchRole` to be enabled.
+
+```ts
+import * as cdk from 'aws-cdk-lib/core';
+
+const api = new apigateway.RestApi(this, 'books', {
+  cloudWatchRole: true,
+  cloudWatchRoleRemovalPolicy: cdk.RemovalPolicy.DESTROY,
+});
+```
 
 ### Deep dive: Invalidation of deployments
 

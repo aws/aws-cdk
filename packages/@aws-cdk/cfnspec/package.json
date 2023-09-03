@@ -33,10 +33,10 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^9.0.13",
-    "@types/jest": "^29.5.3",
+    "@types/jest": "^29.5.4",
     "@types/md5": "^2.3.2",
     "fast-json-patch": "^3.1.1",
-    "jest": "^29.6.2",
+    "jest": "^29.6.4",
     "json-diff": "^0.10.0",
     "sort-json": "^2.0.1",
     "ts-node": "^10.9.1"

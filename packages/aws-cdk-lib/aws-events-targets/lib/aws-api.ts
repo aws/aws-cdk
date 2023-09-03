@@ -86,7 +86,7 @@ export class AwsApi implements events.IRuleTarget {
       code: lambda.Code.fromAsset(path.join(__dirname, 'aws-api-handler'), {
         exclude: ['*.ts'],
       }),
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_16_X,
       handler: 'index.handler',
       uuid: 'b4cf1abd-4e4f-4bc6-9944-1af7ccd9ec37',
       lambdaPurpose: 'AWS',
@@ -129,7 +129,7 @@ export class AwsApi implements events.IRuleTarget {
 function checkServiceExists(service: string, handler: lambda.SingletonFunction) {
   const sdkService = awsSdkMetadata[service.toLowerCase()];
   if (!sdkService) {
-    Annotations.of(handler).addWarning(`Service ${service} does not exist in the AWS SDK. Check the list of available \
+    Annotations.of(handler).addWarningV2(`@aws-cdk/aws-events-targets:${service}DoesNotExist`, `Service ${service} does not exist in the AWS SDK. Check the list of available \
 services and actions from https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html`);
   }
 }

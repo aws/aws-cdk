@@ -328,7 +328,7 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
     const ret = new Array<string>();
 
     if (this.targetType === undefined && this.targetsJson.length === 0) {
-      cdk.Annotations.of(this).addWarning("When creating an empty TargetGroup, you should specify a 'targetType' (this warning may become an error in the future).");
+      cdk.Annotations.of(this).addWarningV2('@aws-cdk/aws-elbv2:targetGroupSpecifyTargetTypeForEmptyTargetGroup', "When creating an empty TargetGroup, you should specify a 'targetType' (this warning may become an error in the future).");
     }
 
     if (this.targetType !== TargetType.LAMBDA && this.vpc === undefined) {

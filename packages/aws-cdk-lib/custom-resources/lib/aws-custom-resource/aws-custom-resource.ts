@@ -164,9 +164,10 @@ export interface AwsSdkCall {
   readonly outputPaths?: string[];
 
   /**
-   * Used for running the SDK calls in underlying lambda with a different role
+   * Used for running the SDK calls in underlying lambda with a different role.
    * Can be used primarily for cross-account requests to for example connect
-   * hostedzone with a shared vpc
+   * hostedzone with a shared vpc.
+   * Region controls where assumeRole call is made.
    *
    * Example for Route53 / associateVPCWithHostedZone
    *
@@ -453,7 +454,7 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
 
     if (installLatestAwsSdk && props.installLatestAwsSdk === undefined) {
       // This is dangerous. Add a warning.
-      Annotations.of(this).addWarning([
+      Annotations.of(this).addWarningV2('@aws-cdk/custom-resources:installLatestAwsSdkNotSpecified', [
         'installLatestAwsSdk was not specified, and defaults to true. You probably do not want this.',
         `Set the global context flag \'${cxapi.AWS_CUSTOM_RESOURCE_LATEST_SDK_DEFAULT}\' to false to switch this behavior off project-wide,`,
         'or set the property explicitly to true if you know you need to call APIs that are not in Lambda\'s built-in SDK version.',

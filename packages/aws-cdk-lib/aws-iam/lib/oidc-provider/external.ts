@@ -1,11 +1,4 @@
 /* istanbul ignore file */
-// the X509 certificate API is available only in node16.
-// since we compile the repo against node 14, typechecking it will fail.
-// its currently too complex to configure node16 only on this
-// file (jsii doesn't support custom tsconfig)
-// so we disable typechecking. don't worry, we have sufficient integ tests that
-// validate this code doesn't break.
-// @ts-nocheck
 import { X509Certificate } from 'node:crypto';
 import * as tls from 'tls';
 import * as url from 'url';
@@ -94,7 +87,7 @@ function printCertificate(cert: X509Certificate) {
  * @param certDate The valid to date for the certificate
  * @returns The number of days the certificate is valid wrt current date
  */
-function getCertificateValidity(certDate: Date): Number {
+function getCertificateValidity(certDate: Date): number {
   const millisecondsInDay = 24 * 60 * 60 * 1000;
   const currentDate = new Date();
 

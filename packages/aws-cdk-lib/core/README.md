@@ -498,12 +498,12 @@ Custom resources are backed by a **custom resource provider** which can be
 implemented in one of the following ways. The following table compares the
 various provider types (ordered from low-level to high-level):
 
-| Provider                                                             | Compute Type | Error Handling | Submit to CloudFormation | Max Timeout     | Language | Footprint |
-|----------------------------------------------------------------------|:------------:|:--------------:|:------------------------:|:---------------:|:--------:|:---------:|
-| [sns.Topic](#amazon-sns-topic)                                       | Self-managed | Manual         | Manual                   | Unlimited       | Any      | Depends   |
-| [lambda.Function](#aws-lambda-function)                              | AWS Lambda   | Manual         | Manual                   | 15min           | Any      | Small     |
-| [core.CustomResourceProvider](#the-corecustomresourceprovider-class) | AWS Lambda   | Auto           | Auto                     | 15min           | Node.js  | Small     |
-| [custom-resources.Provider](#the-custom-resource-provider-framework) | AWS Lambda   | Auto           | Auto                     | Unlimited Async | Any      | Large     |
+| Provider                                                             | Compute Type | Error Handling | Submit to CloudFormation |   Max Timeout   | Language | Footprint |
+| -------------------------------------------------------------------- | :----------: | :------------: | :----------------------: | :-------------: | :------: | :-------: |
+| [sns.Topic](#amazon-sns-topic)                                       | Self-managed |     Manual     |          Manual          |    Unlimited    |   Any    |  Depends  |
+| [lambda.Function](#aws-lambda-function)                              |  AWS Lambda  |     Manual     |          Manual          |      15min      |   Any    |   Small   |
+| [core.CustomResourceProvider](#the-corecustomresourceprovider-class) |  AWS Lambda  |      Auto      |           Auto           |      15min      | Node.js  |   Small   |
+| [custom-resources.Provider](#the-custom-resource-provider-framework) |  AWS Lambda  |      Auto      |           Auto           | Unlimited Async |   Any    |   Large   |
 
 Legend:
 
@@ -605,7 +605,7 @@ stack-unique identifier and returns the service token:
 ```ts
 const serviceToken = CustomResourceProvider.getOrCreate(this, 'Custom::MyCustomResourceType', {
   codeDirectory: `${__dirname}/my-handler`,
-  runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+  runtime: CustomResourceProviderRuntime.NODEJS_18_X,
   description: "Lambda function created by the custom resource provider",
 });
 
@@ -700,7 +700,7 @@ export class Sum extends Construct {
     const resourceType = 'Custom::Sum';
     const serviceToken = CustomResourceProvider.getOrCreate(this, resourceType, {
       codeDirectory: `${__dirname}/sum-handler`,
-      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_18_X,
     });
 
     const resource = new CustomResource(this, 'Resource', {
@@ -730,7 +730,7 @@ built-in singleton method:
 ```ts
 const provider = CustomResourceProvider.getOrCreateProvider(this, 'Custom::MyCustomResourceType', {
   codeDirectory: `${__dirname}/my-handler`,
-  runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+  runtime: CustomResourceProviderRuntime.NODEJS_18_X,
 });
 
 const roleArn = provider.roleArn;
@@ -743,7 +743,7 @@ To add IAM policy statements to this role, use `addToRolePolicy()`:
 ```ts
 const provider = CustomResourceProvider.getOrCreateProvider(this, 'Custom::MyCustomResourceType', {
   codeDirectory: `${__dirname}/my-handler`,
-  runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+  runtime: CustomResourceProviderRuntime.NODEJS_18_X,
 });
 provider.addToRolePolicy({
   Effect: 'Allow',
@@ -1452,5 +1452,41 @@ part of the installation of your package. With `npm`, for example, you can run
 add it to the `postinstall`
 [script](https://docs.npmjs.com/cli/v9/using-npm/scripts) in the `package.json`
 file.
+
+## Annotations
+
+Construct authors can add annotations to constructs to report at three different
+levels: `ERROR`, `WARN`, `INFO`.
+
+Typically warnings are added for things that are important for the user to be
+aware of, but will not cause deployment errors in all cases. Some common
+scenarios are (non-exhaustive list):
+
+- Warn when the user needs to take a manual action, e.g. IAM policy should be
+  added to an referenced resource.
+- Warn if the user configuration might not follow best practices (but is still
+  valid)
+- Warn if the user is using a deprecated API
+
+### Acknowledging Warnings
+
+If you would like to run with `--strict` mode enabled (warnings will throw
+errors) it is possible to `acknowledge` warnings to make the warning go away.
+
+For example, if > 10 IAM managed policies are added to an IAM Group, a warning
+will be created:
+
+```
+IAM:Group:MaxPoliciesExceeded: You added 11 to IAM Group my-group. The maximum number of managed policies attached to an IAM group is 10.
+```
+
+If you have requested a [quota increase](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_iam-quotas.html#reference_iam-quotas-entities)
+you may have the ability to add > 10 managed policies which means that this
+warning does not apply to you. You can acknowledge this by `acknowledging` the
+warning by the `id`.
+
+```ts
+Annotations.of(this).acknowledgeWarning('IAM:Group:MaxPoliciesExceeded', 'Account has quota increased to 20');
+```
 
 <!--END CORE DOCUMENTATION-->

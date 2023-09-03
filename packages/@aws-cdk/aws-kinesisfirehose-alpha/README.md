@@ -401,7 +401,7 @@ configuration.
 // Provide a Lambda function that will transform records before delivery, with custom
 // buffering and retry configuration
 const lambdaFunction = new lambda.Function(this, 'Processor', {
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'process-records')),
 });
@@ -505,7 +505,7 @@ permissions. In this case, use the delivery stream as an `IGrantable`, as follow
 ```ts
 const fn = new lambda.Function(this, 'Function', {
   code: lambda.Code.fromInline('exports.handler = (event) => {}'),
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
   handler: 'index.handler',
 });
 

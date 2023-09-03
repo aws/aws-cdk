@@ -46,7 +46,7 @@ test('esbuild bundling in Docker', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_14_X,
+    runtime: Runtime.NODEJS_16_X,
     architecture: Architecture.X86_64,
     environment: {
       KEY: 'value',
@@ -66,7 +66,7 @@ test('esbuild bundling in Docker', () => {
       },
       command: [
         'bash', '-c',
-        'esbuild --bundle "/asset-input/lib/handler.ts" --target=node14 --platform=node --outfile="/asset-output/index.js" --external:aws-sdk --loader:.png=dataurl',
+        'esbuild --bundle "/asset-input/lib/handler.ts" --target=node16 --platform=node --outfile="/asset-output/index.js" --external:aws-sdk --loader:.png=dataurl',
       ],
       workingDirectory: '/',
     }),
@@ -85,7 +85,7 @@ test('esbuild bundling with handler named index.ts', () => {
     entry: '/project/lib/index.ts',
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_14_X,
+    runtime: Runtime.NODEJS_16_X,
     architecture: Architecture.X86_64,
     forceDockerBundling: true,
   });
@@ -96,7 +96,7 @@ test('esbuild bundling with handler named index.ts', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'esbuild --bundle "/asset-input/lib/index.ts" --target=node14 --platform=node --outfile="/asset-output/index.js" --external:aws-sdk',
+        'esbuild --bundle "/asset-input/lib/index.ts" --target=node16 --platform=node --outfile="/asset-output/index.js" --external:aws-sdk',
       ],
     }),
   });
@@ -107,7 +107,7 @@ test('esbuild bundling with tsx handler', () => {
     entry: '/project/lib/handler.tsx',
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_14_X,
+    runtime: Runtime.NODEJS_16_X,
     architecture: Architecture.X86_64,
     forceDockerBundling: true,
   });
@@ -118,7 +118,7 @@ test('esbuild bundling with tsx handler', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'esbuild --bundle "/asset-input/lib/handler.tsx" --target=node14 --platform=node --outfile="/asset-output/index.js" --external:aws-sdk',
+        'esbuild --bundle "/asset-input/lib/handler.tsx" --target=node16 --platform=node --outfile="/asset-output/index.js" --external:aws-sdk',
       ],
     }),
   });
@@ -133,7 +133,7 @@ test('esbuild with Windows paths', () => {
 
   Bundling.bundle(stack, {
     entry: 'C:\\my-project\\lib\\entry.ts',
-    runtime: Runtime.NODEJS_14_X,
+    runtime: Runtime.NODEJS_16_X,
     architecture: Architecture.X86_64,
     projectRoot: 'C:\\my-project',
     depsLockFilePath: 'C:\\my-project\\package-lock.json',
@@ -157,7 +157,7 @@ test('esbuild bundling with externals and dependencies', () => {
     entry: __filename,
     projectRoot: path.dirname(packageLock),
     depsLockFilePath: packageLock,
-    runtime: Runtime.NODEJS_14_X,
+    runtime: Runtime.NODEJS_16_X,
     architecture: Architecture.X86_64,
     externalModules: ['abc'],
     nodeModules: ['delay'],
@@ -171,7 +171,7 @@ test('esbuild bundling with externals and dependencies', () => {
       command: [
         'bash', '-c',
         [
-          'esbuild --bundle "/asset-input/test/bundling.test.ts" --target=node14 --platform=node --outfile="/asset-output/index.js" --external:abc --external:delay',
+          'esbuild --bundle "/asset-input/test/bundling.test.ts" --target=node16 --platform=node --outfile="/asset-output/index.js" --external:abc --external:delay',
           `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > "/asset-output/package.json"`,
           'cp "/asset-input/package-lock.json" "/asset-output/package-lock.json"',
           'cd "/asset-output"',
@@ -187,7 +187,7 @@ test('esbuild bundling with esbuild options', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_14_X,
+    runtime: Runtime.NODEJS_16_X,
     architecture: Architecture.X86_64,
     minify: true,
     sourceMap: true,
@@ -264,7 +264,7 @@ test('esbuild bundling source map default', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_14_X,
+    runtime: Runtime.NODEJS_16_X,
     architecture: Architecture.X86_64,
     sourceMap: true,
     sourceMapMode: SourceMapMode.DEFAULT,
@@ -277,7 +277,7 @@ test('esbuild bundling source map default', () => {
       command: [
         'bash', '-c',
         [
-          'esbuild --bundle "/asset-input/lib/handler.ts" --target=node14 --platform=node --outfile="/asset-output/index.js"',
+          'esbuild --bundle "/asset-input/lib/handler.ts" --target=node16 --platform=node --outfile="/asset-output/index.js"',
           '--sourcemap --external:aws-sdk',
         ].join(' '),
       ],
@@ -311,7 +311,7 @@ test('esbuild bundling source map inline', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_14_X,
+    runtime: Runtime.NODEJS_16_X,
     architecture: Architecture.X86_64,
     sourceMap: true,
     sourceMapMode: SourceMapMode.INLINE,
@@ -324,7 +324,7 @@ test('esbuild bundling source map inline', () => {
       command: [
         'bash', '-c',
         [
-          'esbuild --bundle "/asset-input/lib/handler.ts" --target=node14 --platform=node --outfile="/asset-output/index.js"',
+          'esbuild --bundle "/asset-input/lib/handler.ts" --target=node16 --platform=node --outfile="/asset-output/index.js"',
           '--sourcemap=inline --external:aws-sdk',
         ].join(' '),
       ],
@@ -337,7 +337,7 @@ test('esbuild bundling is correctly done with custom runtime matching predefined
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: new Runtime('nodejs14.x', RuntimeFamily.NODEJS, { supportsInlineCode: true }),
+    runtime: new Runtime('nodejs16.x', RuntimeFamily.NODEJS, { supportsInlineCode: true }),
     architecture: Architecture.X86_64,
     sourceMapMode: SourceMapMode.INLINE,
   });
@@ -348,7 +348,7 @@ test('esbuild bundling is correctly done with custom runtime matching predefined
       command: [
         'bash', '-c',
         [
-          'esbuild --bundle "/asset-input/lib/handler.ts" --target=node14 --platform=node --outfile="/asset-output/index.js"',
+          'esbuild --bundle "/asset-input/lib/handler.ts" --target=node16 --platform=node --outfile="/asset-output/index.js"',
           '--sourcemap=inline --external:aws-sdk',
         ].join(' '),
       ],
@@ -361,7 +361,7 @@ test('esbuild bundling source map enabled when only source map mode exists', () 
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_14_X,
+    runtime: Runtime.NODEJS_16_X,
     architecture: Architecture.X86_64,
     sourceMapMode: SourceMapMode.INLINE,
   });
@@ -373,7 +373,7 @@ test('esbuild bundling source map enabled when only source map mode exists', () 
       command: [
         'bash', '-c',
         [
-          'esbuild --bundle "/asset-input/lib/handler.ts" --target=node14 --platform=node --outfile="/asset-output/index.js"',
+          'esbuild --bundle "/asset-input/lib/handler.ts" --target=node16 --platform=node --outfile="/asset-output/index.js"',
           '--sourcemap=inline --external:aws-sdk',
         ].join(' '),
       ],
@@ -387,7 +387,7 @@ test('esbuild bundling throws when sourceMapMode used with false sourceMap', () 
       entry,
       projectRoot,
       depsLockFilePath,
-      runtime: Runtime.NODEJS_14_X,
+      runtime: Runtime.NODEJS_16_X,
       architecture: Architecture.X86_64,
       sourceMap: false,
       sourceMapMode: SourceMapMode.INLINE,
@@ -401,7 +401,7 @@ test('Detects yarn.lock', () => {
     entry: __filename,
     projectRoot: path.dirname(yarnLock),
     depsLockFilePath: yarnLock,
-    runtime: Runtime.NODEJS_14_X,
+    runtime: Runtime.NODEJS_16_X,
     architecture: Architecture.X86_64,
     nodeModules: ['delay'],
     forceDockerBundling: true,
@@ -424,7 +424,7 @@ test('Detects pnpm-lock.yaml', () => {
     entry: __filename,
     projectRoot,
     depsLockFilePath: pnpmLock,
-    runtime: Runtime.NODEJS_14_X,
+    runtime: Runtime.NODEJS_16_X,
     architecture: Architecture.X86_64,
     nodeModules: ['delay'],
     forceDockerBundling: true,
@@ -446,7 +446,7 @@ test('with Docker build args', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_14_X,
+    runtime: Runtime.NODEJS_16_X,
     architecture: Architecture.X86_64,
     buildArgs: {
       HELLO: 'WORLD',
@@ -475,7 +475,7 @@ test('Local bundling', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_14_X,
+    runtime: Runtime.NODEJS_16_X,
     architecture: Architecture.X86_64,
     environment: {
       KEY: 'value',
@@ -485,7 +485,7 @@ test('Local bundling', () => {
 
   expect(bundler.local).toBeDefined();
 
-  const tryBundle = bundler.local?.tryBundle('/outdir', { image: Runtime.NODEJS_14_X.bundlingDockerImage });
+  const tryBundle = bundler.local?.tryBundle('/outdir', { image: Runtime.NODEJS_16_X.bundlingDockerImage });
   expect(tryBundle).toBe(true);
 
   expect(spawnSyncMock).toHaveBeenCalledWith(
@@ -513,12 +513,12 @@ test('Incorrect esbuild version', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_14_X,
+    runtime: Runtime.NODEJS_16_X,
     architecture: Architecture.X86_64,
   });
 
   expect(() => bundler.local?.tryBundle('/outdir', {
-    image: Runtime.NODEJS_14_X.bundlingImage,
+    image: Runtime.NODEJS_16_X.bundlingImage,
   })).toThrow(/Expected esbuild version 0.x but got 3.4.5/);
 });
 
@@ -527,7 +527,7 @@ test('Custom bundling docker image', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_14_X,
+    runtime: Runtime.NODEJS_16_X,
     architecture: Architecture.X86_64,
     dockerImage: DockerImage.fromRegistry('my-custom-image'),
     forceDockerBundling: true,
@@ -546,7 +546,7 @@ test('with command hooks', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_14_X,
+    runtime: Runtime.NODEJS_16_X,
     architecture: Architecture.X86_64,
     commandHooks: {
       beforeBundling(inputDir: string, outputDir: string): string[] {
@@ -582,7 +582,7 @@ test('esbuild bundling with projectRoot', () => {
     projectRoot: '/project',
     depsLockFilePath,
     tsconfig,
-    runtime: Runtime.NODEJS_14_X,
+    runtime: Runtime.NODEJS_16_X,
     architecture: Architecture.X86_64,
   });
 
@@ -592,7 +592,7 @@ test('esbuild bundling with projectRoot', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'esbuild --bundle "/asset-input/lib/index.ts" --target=node14 --platform=node --outfile="/asset-output/index.js" --external:aws-sdk --tsconfig=/asset-input/lib/custom-tsconfig.ts',
+        'esbuild --bundle "/asset-input/lib/index.ts" --target=node16 --platform=node --outfile="/asset-output/index.js" --external:aws-sdk --tsconfig=/asset-input/lib/custom-tsconfig.ts',
       ],
     }),
   });
@@ -605,7 +605,7 @@ test('esbuild bundling with projectRoot and externals and dependencies', () => {
     entry: __filename,
     projectRoot: repoRoot,
     depsLockFilePath: packageLock,
-    runtime: Runtime.NODEJS_14_X,
+    runtime: Runtime.NODEJS_16_X,
     architecture: Architecture.X86_64,
     externalModules: ['abc'],
     nodeModules: ['delay'],
@@ -619,7 +619,7 @@ test('esbuild bundling with projectRoot and externals and dependencies', () => {
       command: [
         'bash', '-c',
         [
-          'esbuild --bundle "/asset-input/packages/aws-cdk-lib/aws-lambda-nodejs/test/bundling.test.ts" --target=node14 --platform=node --outfile="/asset-output/index.js" --external:abc --external:delay',
+          'esbuild --bundle "/asset-input/packages/aws-cdk-lib/aws-lambda-nodejs/test/bundling.test.ts" --target=node16 --platform=node --outfile="/asset-output/index.js" --external:abc --external:delay',
           `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > "/asset-output/package.json"`,
           'cp "/asset-input/common/package-lock.json" "/asset-output/package-lock.json"',
           'cd "/asset-output"',
@@ -637,7 +637,7 @@ test('esbuild bundling with pre compilations', () => {
     entry: __filename.replace('.js', '.ts'),
     projectRoot: path.dirname(packageLock),
     depsLockFilePath: packageLock,
-    runtime: Runtime.NODEJS_14_X,
+    runtime: Runtime.NODEJS_16_X,
     preCompilation: true,
     forceDockerBundling: true,
     architecture: Architecture.X86_64,
@@ -653,7 +653,7 @@ test('esbuild bundling with pre compilations', () => {
         'bash', '-c',
         [
           `tsc \"/asset-input/test/bundling.test.ts\" ${compilerOptions} &&`,
-          'esbuild --bundle \"/asset-input/test/bundling.test.js\" --target=node14 --platform=node --outfile=\"/asset-output/index.js\" --external:aws-sdk',
+          'esbuild --bundle \"/asset-input/test/bundling.test.js\" --target=node16 --platform=node --outfile=\"/asset-output/index.js\" --external:aws-sdk',
         ].join(' '),
       ],
     }),
@@ -668,7 +668,7 @@ test('throws with pre compilation and not found tsconfig', () => {
       entry,
       projectRoot,
       depsLockFilePath,
-      runtime: Runtime.NODEJS_14_X,
+      runtime: Runtime.NODEJS_16_X,
       forceDockerBundling: true,
       preCompilation: true,
       architecture: Architecture.X86_64,
@@ -682,7 +682,7 @@ test('with custom hash', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_14_X,
+    runtime: Runtime.NODEJS_16_X,
     forceDockerBundling: true,
     assetHash: 'custom',
     architecture: Architecture.X86_64,
@@ -700,7 +700,7 @@ test('Custom bundling entrypoint', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_14_X,
+    runtime: Runtime.NODEJS_16_X,
     architecture: Architecture.X86_64,
     forceDockerBundling: true,
     entrypoint: ['/cool/entrypoint', '--cool-entrypoint-arg'],
@@ -719,7 +719,7 @@ test('Custom bundling volumes', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_14_X,
+    runtime: Runtime.NODEJS_16_X,
     architecture: Architecture.X86_64,
     forceDockerBundling: true,
     volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
@@ -738,7 +738,7 @@ test('Custom bundling volumesFrom', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_14_X,
+    runtime: Runtime.NODEJS_16_X,
     architecture: Architecture.X86_64,
     forceDockerBundling: true,
     volumesFrom: ['777f7dc92da7'],
@@ -757,7 +757,7 @@ test('Custom bundling workingDirectory', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_14_X,
+    runtime: Runtime.NODEJS_16_X,
     architecture: Architecture.X86_64,
     forceDockerBundling: true,
     workingDirectory: '/working-directory',
@@ -776,7 +776,7 @@ test('Custom bundling user', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_14_X,
+    runtime: Runtime.NODEJS_16_X,
     architecture: Architecture.X86_64,
     forceDockerBundling: true,
     user: 'user:group',
@@ -795,7 +795,7 @@ test('Custom bundling securityOpt', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_14_X,
+    runtime: Runtime.NODEJS_16_X,
     architecture: Architecture.X86_64,
     forceDockerBundling: true,
     securityOpt: 'no-new-privileges',
@@ -814,7 +814,7 @@ test('Custom bundling network', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_14_X,
+    runtime: Runtime.NODEJS_16_X,
     architecture: Architecture.X86_64,
     forceDockerBundling: true,
     network: 'host',
@@ -833,7 +833,7 @@ test('Custom bundling file copy variant', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_14_X,
+    runtime: Runtime.NODEJS_16_X,
     architecture: Architecture.X86_64,
     forceDockerBundling: true,
     bundlingFileAccess: BundlingFileAccess.VOLUME_COPY,
@@ -878,7 +878,7 @@ test('bundling with <= Node16 warns when sdk v3 is external', () => {
   });
 
   Annotations.fromStack(stack).hasWarning('*',
-    'If you are relying on AWS SDK v3 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 18 or higher.',
+    'If you are relying on AWS SDK v3 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 18 or higher. [ack: @aws-cdk/aws-lambda-nodejs:sdkV3NotInRuntime]',
   );
 });
 
@@ -893,7 +893,7 @@ test('bundling with >= Node18 warns when sdk v3 is external', () => {
   });
 
   Annotations.fromStack(stack).hasWarning('*',
-    'If you are relying on AWS SDK v2 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 16 or lower.',
+    'If you are relying on AWS SDK v2 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 16 or lower. [ack: @aws-cdk/aws-lambda-nodejs:sdkV2NotInRuntime]',
   );
 });
 
@@ -908,7 +908,7 @@ test('bundling with NODEJS_LATEST warns when any dependencies are external', () 
   });
 
   Annotations.fromStack(stack).hasWarning('*',
-    'When using NODEJS_LATEST the runtime version may change as new runtimes are released, this may affect the availability of packages shipped with the environment. Ensure that any external dependencies are available through layers or specify a specific runtime version.',
+    'When using NODEJS_LATEST the runtime version may change as new runtimes are released, this may affect the availability of packages shipped with the environment. Ensure that any external dependencies are available through layers or specify a specific runtime version. [ack: @aws-cdk/aws-lambda-nodejs:variableRuntimeExternals]',
   );
 });
 

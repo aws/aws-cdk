@@ -86,10 +86,10 @@
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/integ-tests-alpha": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^29.5.3",
+    "@types/jest": "^29.5.4",
     "aws-cdk-lib": "0.0.0",
     "constructs": "^10.0.0",
-    "jest": "^29.6.2"
+    "jest": "^29.6.4"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {

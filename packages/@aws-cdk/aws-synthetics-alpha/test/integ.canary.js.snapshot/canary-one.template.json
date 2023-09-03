@@ -333,8 +333,131 @@
      "DurationInSeconds": "0",
      "Expression": "rate(1 minute)"
     },
-    "StartCanaryAfterCreation": true
+    "StartCanaryAfterCreation": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-underlying-resources",
+      "Value": "true"
+     }
+    ]
    }
+  },
+  "InlineAssetAutoDeleteUnderlyingResourcesCustomResourceFABA77C7": {
+   "Type": "Custom::SyntheticsAutoDeleteUnderlyingResources",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomSyntheticsAutoDeleteUnderlyingResourcesCustomResourceProviderHandler26776D4E",
+      "Arn"
+     ]
+    },
+    "CanaryName": {
+     "Ref": "InlineAsset5EAEB9B5"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomSyntheticsAutoDeleteUnderlyingResourcesCustomResourceProviderRole2D11A112": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Allow",
+         "Action": [
+          "lambda:DeleteFunction"
+         ],
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":lambda:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":function:cwsyn-*"
+           ]
+          ]
+         }
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "synthetics:GetCanary"
+         ],
+         "Resource": "*"
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "CustomSyntheticsAutoDeleteUnderlyingResourcesCustomResourceProviderHandler26776D4E": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "086fe534b1e7545fbc662251685b8a7d91ab2061bbfe98d857b27478442487cb.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomSyntheticsAutoDeleteUnderlyingResourcesCustomResourceProviderRole2D11A112",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Lambda function for auto-deleting underlying resources created by ",
+       {
+        "Ref": "InlineAsset5EAEB9B5"
+       },
+       "."
+      ]
+     ]
+    }
+   },
+   "DependsOn": [
+    "CustomSyntheticsAutoDeleteUnderlyingResourcesCustomResourceProviderRole2D11A112"
+   ]
   },
   "DirectoryAssetArtifactsBucketA79AFD6C": {
    "Type": "AWS::S3::Bucket",
@@ -516,9 +639,8 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4914857a6c9238eb37ddc008b7f94fd44599625d49d95ee13c68e8e177dee7e9.zip"
+     "S3Key": "d6b51cbdd22d449b9e57c20ef9d0977e1cfbf06806f8008ce376101a2ad432a8.zip"
     },
-    "DeleteLambdaResourcesOnCanaryDeletion": true,
     "ExecutionRoleArn": {
      "Fn::GetAtt": [
       "DirectoryAssetServiceRole6C204C16",
@@ -559,8 +681,30 @@
      "DurationInSeconds": "0",
      "Expression": "rate(5 minutes)"
     },
-    "StartCanaryAfterCreation": true
+    "StartCanaryAfterCreation": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-underlying-resources",
+      "Value": "true"
+     }
+    ]
    }
+  },
+  "DirectoryAssetAutoDeleteUnderlyingResourcesCustomResourceD943D9DD": {
+   "Type": "Custom::SyntheticsAutoDeleteUnderlyingResources",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomSyntheticsAutoDeleteUnderlyingResourcesCustomResourceProviderHandler26776D4E",
+      "Arn"
+     ]
+    },
+    "CanaryName": {
+     "Ref": "DirectoryAssetB49EFE5C"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "FolderAssetArtifactsBucket4233584C": {
    "Type": "AWS::S3::Bucket",
@@ -742,9 +886,8 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4914857a6c9238eb37ddc008b7f94fd44599625d49d95ee13c68e8e177dee7e9.zip"
+     "S3Key": "d6b51cbdd22d449b9e57c20ef9d0977e1cfbf06806f8008ce376101a2ad432a8.zip"
     },
-    "DeleteLambdaResourcesOnCanaryDeletion": true,
     "ExecutionRoleArn": {
      "Fn::GetAtt": [
       "FolderAssetServiceRole87AE7EF1",
@@ -785,8 +928,30 @@
      "DurationInSeconds": "0",
      "Expression": "rate(5 minutes)"
     },
-    "StartCanaryAfterCreation": true
+    "StartCanaryAfterCreation": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-underlying-resources",
+      "Value": "true"
+     }
+    ]
    }
+  },
+  "FolderAssetAutoDeleteUnderlyingResourcesCustomResource9ED8468D": {
+   "Type": "Custom::SyntheticsAutoDeleteUnderlyingResources",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomSyntheticsAutoDeleteUnderlyingResourcesCustomResourceProviderHandler26776D4E",
+      "Arn"
+     ]
+    },
+    "CanaryName": {
+     "Ref": "FolderAssetDC62ADA6"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "ZipAssetArtifactsBucket8D4ED76C": {
    "Type": "AWS::S3::Bucket",
@@ -990,8 +1155,30 @@
      "DurationInSeconds": "0",
      "Expression": "rate(5 minutes)"
     },
-    "StartCanaryAfterCreation": true
+    "StartCanaryAfterCreation": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-underlying-resources",
+      "Value": "true"
+     }
+    ]
    }
+  },
+  "ZipAssetAutoDeleteUnderlyingResourcesCustomResource0AD8D2D4": {
+   "Type": "Custom::SyntheticsAutoDeleteUnderlyingResources",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomSyntheticsAutoDeleteUnderlyingResourcesCustomResourceProviderHandler26776D4E",
+      "Arn"
+     ]
+    },
+    "CanaryName": {
+     "Ref": "ZipAssetA028C65F"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "SynNodejsPuppeteer39ArtifactsBucketC3BBB932": {
    "Type": "AWS::S3::Bucket",
@@ -1173,7 +1360,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4914857a6c9238eb37ddc008b7f94fd44599625d49d95ee13c68e8e177dee7e9.zip"
+     "S3Key": "d6b51cbdd22d449b9e57c20ef9d0977e1cfbf06806f8008ce376101a2ad432a8.zip"
     },
     "ExecutionRoleArn": {
      "Fn::GetAtt": [
@@ -1215,8 +1402,30 @@
      "DurationInSeconds": "0",
      "Expression": "rate(5 minutes)"
     },
-    "StartCanaryAfterCreation": true
+    "StartCanaryAfterCreation": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-underlying-resources",
+      "Value": "true"
+     }
+    ]
    }
+  },
+  "SynNodejsPuppeteer39AutoDeleteUnderlyingResourcesCustomResourceB6D0DB57": {
+   "Type": "Custom::SyntheticsAutoDeleteUnderlyingResources",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomSyntheticsAutoDeleteUnderlyingResourcesCustomResourceProviderHandler26776D4E",
+      "Arn"
+     ]
+    },
+    "CanaryName": {
+     "Ref": "SynNodejsPuppeteer3978815E0A"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "SynNodejsPuppeteer40ArtifactsBucket30A9D9DC": {
    "Type": "AWS::S3::Bucket",
@@ -1398,7 +1607,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4914857a6c9238eb37ddc008b7f94fd44599625d49d95ee13c68e8e177dee7e9.zip"
+     "S3Key": "d6b51cbdd22d449b9e57c20ef9d0977e1cfbf06806f8008ce376101a2ad432a8.zip"
     },
     "ExecutionRoleArn": {
      "Fn::GetAtt": [
@@ -1440,8 +1649,30 @@
      "DurationInSeconds": "0",
      "Expression": "rate(5 minutes)"
     },
-    "StartCanaryAfterCreation": true
+    "StartCanaryAfterCreation": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-underlying-resources",
+      "Value": "true"
+     }
+    ]
    }
+  },
+  "SynNodejsPuppeteer40AutoDeleteUnderlyingResourcesCustomResourceD78DC158": {
+   "Type": "Custom::SyntheticsAutoDeleteUnderlyingResources",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomSyntheticsAutoDeleteUnderlyingResourcesCustomResourceProviderHandler26776D4E",
+      "Arn"
+     ]
+    },
+    "CanaryName": {
+     "Ref": "SynNodejsPuppeteer406C46FFAF"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "SynPythonSelenium13ArtifactsBucket084C41C8": {
    "Type": "AWS::S3::Bucket",
@@ -1623,7 +1854,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4914857a6c9238eb37ddc008b7f94fd44599625d49d95ee13c68e8e177dee7e9.zip"
+     "S3Key": "d6b51cbdd22d449b9e57c20ef9d0977e1cfbf06806f8008ce376101a2ad432a8.zip"
     },
     "ExecutionRoleArn": {
      "Fn::GetAtt": [
@@ -1665,8 +1896,30 @@
      "DurationInSeconds": "0",
      "Expression": "rate(5 minutes)"
     },
-    "StartCanaryAfterCreation": true
+    "StartCanaryAfterCreation": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-underlying-resources",
+      "Value": "true"
+     }
+    ]
    }
+  },
+  "SynPythonSelenium13AutoDeleteUnderlyingResourcesCustomResourceA39E1D51": {
+   "Type": "Custom::SyntheticsAutoDeleteUnderlyingResources",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomSyntheticsAutoDeleteUnderlyingResourcesCustomResourceProviderHandler26776D4E",
+      "Arn"
+     ]
+    },
+    "CanaryName": {
+     "Ref": "SynPythonSelenium13F92D8275"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {

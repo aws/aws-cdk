@@ -1669,6 +1669,23 @@ describe('vpc', () => {
         },
       });
     });
+
+    test('with networkAclName, adds Name tag with the name', () => {
+      // GIVEN
+      const stack = getTestStack();
+      const vpc = new Vpc(stack, 'TheVPC', { ipAddresses: IpAddresses.cidr('192.168.0.0/16') });
+
+      // WHEN
+      new NetworkAcl(stack, 'ACL', {
+        vpc,
+        networkAclName: 'CustomNetworkAclName',
+      });
+
+      Template.fromStack(stack).hasResource('AWS::EC2::NetworkAcl', hasTags([{
+        Key: 'Name',
+        Value: 'CustomNetworkAclName',
+      }]));
+    });
   });
 
   describe('When creating a VPC with a custom CIDR range', () => {
@@ -1911,7 +1928,7 @@ describe('vpc', () => {
         subnetIds: { 'Fn::Split': [',', { 'Fn::ImportValue': 'myPublicSubnetIds' }] },
       });
 
-      Annotations.fromStack(stack).hasWarning('/TestStack/VPC', "fromVpcAttributes: 'availabilityZones' is a list token: the imported VPC will not work with constructs that require a list of subnets at synthesis time. Use 'Vpc.fromLookup()' or 'Fn.importListValue' instead.");
+      Annotations.fromStack(stack).hasWarning('/TestStack/VPC', "fromVpcAttributes: 'availabilityZones' is a list token: the imported VPC will not work with constructs that require a list of subnets at synthesis time. Use 'Vpc.fromLookup()' or 'Fn.importListValue' instead. [ack: @aws-cdk/aws-ec2:vpcAttributeIsListTokenavailabilityZones]");
     });
 
     test('fromVpcAttributes using fixed-length list tokens', () => {
