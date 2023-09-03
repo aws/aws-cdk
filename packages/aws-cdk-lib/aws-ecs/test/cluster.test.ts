@@ -1020,7 +1020,6 @@ describe('cluster', () => {
 
   });
 
-
   test('allows returning the correct image for linux 2023 for EcsOptimizedImage', () => {
     // GIVEN
     const stack = new cdk.Stack();
