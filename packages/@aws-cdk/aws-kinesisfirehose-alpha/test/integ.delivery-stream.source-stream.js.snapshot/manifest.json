@@ -105,37 +105,10 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "Key961B73FD": [
+        "DeliveryStreamNoSourceorEncryptionKey49457027": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Key961B73FD",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "DeliveryStreamWithEncryptionKeyServiceRoleDE2535B9": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DeliveryStreamWithEncryptionKeyServiceRoleDE2535B9",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "DeliveryStreamWithEncryptionKeyServiceRoleDefaultPolicy4AEF2A6E": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DeliveryStreamWithEncryptionKeyServiceRoleDefaultPolicy4AEF2A6E",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "DeliveryStreamWithEncryptionKey286376A0": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DeliveryStreamWithEncryptionKey286376A0",
+            "data": "DeliveryStreamNoSourceorEncryptionKey49457027",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
