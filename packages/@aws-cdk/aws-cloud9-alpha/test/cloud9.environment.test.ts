@@ -5,6 +5,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
 import * as cloud9 from '../lib';
 import { ConnectionType, ImageId, Owner } from '../lib';
+import { AnyPrincipal, CfnRole } from 'aws-cdk-lib/aws-iam';
 
 let stack: cdk.Stack;
 let vpc: ec2.IVpc;
@@ -128,6 +129,28 @@ test('environment owner can be an IAM user', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::Cloud9::EnvironmentEC2', {
     OwnerArn: {
       'Fn::GetAtt': ['User00B015A1', 'Arn'],
+    },
+  });
+});
+
+test('environment owner can be an IAM role', () => {
+  // WHEN
+  const role = new iam.Role(stack, 'Role', {
+    roleName: "TestRole",
+    assumedBy: new AnyPrincipal()
+  });
+  new cloud9.Ec2Environment(stack, 'C9Env', {
+    vpc,
+    imageId: cloud9.ImageId.AMAZON_LINUX_2,
+    owner: Owner.role(role),
+  });
+  // THEN
+
+  const roleLogicalId = stack.getLogicalId(role.node.defaultChild as CfnRole);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Cloud9::EnvironmentEC2', {
+    OwnerArn: {
+      'Fn::GetAtt': [roleLogicalId, 'Arn'],
     },
   });
 });
