@@ -1,6 +1,6 @@
 import * as codecommit from 'aws-cdk-lib/aws-codecommit';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { IUser } from 'aws-cdk-lib/aws-iam';
+import { IUser, IRole } from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnEnvironmentEC2 } from 'aws-cdk-lib/aws-cloud9';
@@ -255,6 +255,15 @@ export class Owner {
    */
   public static user(user: IUser): Owner {
     return { ownerArn: user.userArn };
+  }
+
+  /**
+   * Make an IAM role the environment owner
+   *
+   * @param role the Role object to use as the environment owner
+   */
+  public static role(role: IRole): Owner {
+    return { ownerArn: role.roleArn };
   }
 
   /**
