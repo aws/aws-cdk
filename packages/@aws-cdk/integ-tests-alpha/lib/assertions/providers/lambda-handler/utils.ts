@@ -1,11 +1,12 @@
-export function parseJsonPayload(payload: any): any {
-  // sdk v3 returns payloads in Uint8Array
-  // If the payload is not convertible to a buffer or parsable as JSON, we don't touch it
+export function parseJsonPayload(payload: string | Buffer | Uint8Array): any {
+  // sdk v3 returns payloads in Uint8Array, either it or a string or Buffer
+  // can be cast into a buffer and then decoded.
+  const text = new TextDecoder().decode(Buffer.from(payload));
+  if (!text) { return { }; }
   try {
-    const buffer = Buffer.from(payload);
-    return JSON.parse(new TextDecoder().decode(buffer));
+    return JSON.parse(text);
   } catch {
-    return payload;
+    throw new Error(`return values from user-handlers must be JSON objects. got: "${text}"`);
   }
 }
 
