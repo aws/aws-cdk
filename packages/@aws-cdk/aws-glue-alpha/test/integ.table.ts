@@ -146,7 +146,7 @@ new glue.ExternalTable(stack, 'MyTableWithCustomLocation', {
 new glue.Table(stack, 'MyDeprecatedTable', {
   database,
   bucket,
-  tableName: 'custom_serde_table',
+  tableName: 'deprecated_table',
   columns,
   dataFormat: glue.DataFormat.JSON,
 });
