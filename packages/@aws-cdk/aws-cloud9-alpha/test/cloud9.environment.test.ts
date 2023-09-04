@@ -5,7 +5,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
 import * as cloud9 from '../lib';
 import { ConnectionType, ImageId, Owner } from '../lib';
-import { AnyPrincipal, CfnRole, CfnUser } from 'aws-cdk-lib/aws-iam';
+import { CfnUser } from 'aws-cdk-lib/aws-iam';
 
 let stack: cdk.Stack;
 let vpc: ec2.IVpc;
@@ -135,25 +135,30 @@ test('environment owner can be an IAM user', () => {
   });
 });
 
-test('environment owner can be an IAM role', () => {
+test('environment owner can be an IAM Assumed Role', () => {
   // WHEN
-  const role = new iam.Role(stack, 'Role', {
-    roleName: 'TestRole',
-    assumedBy: new AnyPrincipal(),
-  });
   new cloud9.Ec2Environment(stack, 'C9Env', {
     vpc,
     imageId: cloud9.ImageId.AMAZON_LINUX_2,
-    owner: Owner.role(role),
+    owner: Owner.assumedRole('123456789098', 'Admin'),
   });
   // THEN
 
-  const roleLogicalId = stack.getLogicalId(role.node.defaultChild as CfnRole);
-
   Template.fromStack(stack).hasResourceProperties('AWS::Cloud9::EnvironmentEC2', {
-    OwnerArn: {
-      'Fn::GetAtt': [roleLogicalId, 'Arn'],
-    },
+    OwnerArn: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':sts::123456789098:assumed-role/Admin']] },
+  });
+});
+
+test('environment owner can be an IAM Federated User', () => {
+  // WHEN
+  new cloud9.Ec2Environment(stack, 'C9Env', {
+    vpc,
+    imageId: cloud9.ImageId.AMAZON_LINUX_2,
+    owner: Owner.federatedUser('123456789098', 'Admin'),
+  });
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Cloud9::EnvironmentEC2', {
+    OwnerArn: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':sts::123456789098:federated-user/Admin']] },
   });
 });
 
