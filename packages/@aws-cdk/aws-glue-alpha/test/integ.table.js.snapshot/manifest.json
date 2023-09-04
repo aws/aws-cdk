@@ -1,5 +1,5 @@
 {
-  "version": "33.0.0",
+  "version": "34.0.0",
   "artifacts": {
     "aws-cdk-glue.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5f9f9d1c02cf84a8d8e0742f90161a825f9d867c85ac45b9dbbc4e025a539b55.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/40e8a4e6d6f2beed80f0b9d7f9ea729ab78da8ccac9b479b28baa412b63fd2c8.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -115,6 +115,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyTableWithCustomLocationTable43A19D42"
+          }
+        ],
+        "/aws-cdk-glue/MyDeprecatedTable/Table": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyDeprecatedTableAA0364FD"
           }
         ],
         "/aws-cdk-glue/MyUser/Resource": [

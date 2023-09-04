@@ -194,7 +194,7 @@ export class S3Table extends TableBase {
   public grantRead(grantee: iam.IGrantable): iam.Grant {
     const ret = this.grant(grantee, readPermissions);
     if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantDecrypt(grantee); }
-    this.bucket.grantRead(grantee, this.getS3PrefixForGrant());
+    this.bucket.grantRead(grantee, this.generateS3PrefixForGrant());
     return ret;
   }
 
@@ -206,7 +206,7 @@ export class S3Table extends TableBase {
   public grantWrite(grantee: iam.IGrantable): iam.Grant {
     const ret = this.grant(grantee, writePermissions);
     if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantEncrypt(grantee); }
-    this.bucket.grantWrite(grantee, this.getS3PrefixForGrant());
+    this.bucket.grantWrite(grantee, this.generateS3PrefixForGrant());
     return ret;
   }
 
@@ -218,11 +218,11 @@ export class S3Table extends TableBase {
   public grantReadWrite(grantee: iam.IGrantable): iam.Grant {
     const ret = this.grant(grantee, [...readPermissions, ...writePermissions]);
     if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantEncryptDecrypt(grantee); }
-    this.bucket.grantReadWrite(grantee, this.getS3PrefixForGrant());
+    this.bucket.grantReadWrite(grantee, this.generateS3PrefixForGrant());
     return ret;
   }
 
-  private getS3PrefixForGrant() {
+  protected generateS3PrefixForGrant() {
     return this.s3Prefix + '*';
   }
 }

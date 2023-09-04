@@ -143,6 +143,14 @@ new glue.ExternalTable(stack, 'MyTableWithCustomLocation', {
   externalDataLocation: 'default_db.public.test',
 });
 
+new glue.Table(stack, 'MyDeprecatedTable', {
+  database,
+  bucket,
+  tableName: 'custom_serde_table',
+  columns,
+  dataFormat: glue.DataFormat.JSON,
+});
+
 const user = new iam.User(stack, 'MyUser');
 csvTable.grantReadWrite(user);
 encryptedTable.grantReadWrite(user);
