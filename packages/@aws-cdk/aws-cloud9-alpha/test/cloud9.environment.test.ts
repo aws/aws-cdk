@@ -138,8 +138,8 @@ test('environment owner can be an IAM user', () => {
 test('environment owner can be an IAM role', () => {
   // WHEN
   const role = new iam.Role(stack, 'Role', {
-    roleName: "TestRole",
-    assumedBy: new AnyPrincipal()
+    roleName: 'TestRole',
+    assumedBy: new AnyPrincipal(),
   });
   new cloud9.Ec2Environment(stack, 'C9Env', {
     vpc,
