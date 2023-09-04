@@ -95,7 +95,7 @@ test('partitioned JSON table', () => {
   });
   expect(table.encryption).toEqual(glue.TableEncryption.S3_MANAGED);
   expect(table.encryptionKey).toEqual(undefined);
-  expect(table.bucket?.encryptionKey).toEqual(undefined);
+  expect(table.bucket.encryptionKey).toEqual(undefined);
 
   Template.fromStack(tableStack).hasResourceProperties('AWS::Glue::Table', {
     CatalogId: {
@@ -163,7 +163,7 @@ test('compressed table', () => {
     dataFormat: glue.DataFormat.JSON,
   });
   expect(table.encryptionKey).toEqual(undefined);
-  expect(table.bucket?.encryptionKey).toEqual(undefined);
+  expect(table.bucket.encryptionKey).toEqual(undefined);
 
   Template.fromStack(stack).hasResourceProperties('AWS::Glue::Table', {
     CatalogId: {
@@ -246,7 +246,7 @@ test('encrypted table: SSE-S3', () => {
   });
   expect(table.encryption).toEqual(glue.TableEncryption.S3_MANAGED);
   expect(table.encryptionKey).toEqual(undefined);
-  expect(table.bucket?.encryptionKey).toEqual(undefined);
+  expect(table.bucket.encryptionKey).toEqual(undefined);
 
   Template.fromStack(stack).hasResourceProperties('AWS::Glue::Table', {
     CatalogId: {
@@ -320,7 +320,7 @@ test('encrypted table: SSE-KMS (implicitly created key)', () => {
     dataFormat: glue.DataFormat.JSON,
   });
   expect(table.encryption).toEqual(glue.TableEncryption.KMS);
-  expect(table.encryptionKey).toEqual(table.bucket?.encryptionKey);
+  expect(table.encryptionKey).toEqual(table.bucket.encryptionKey);
 
   Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
     Description: 'Created by Default/Table/Bucket',
@@ -408,7 +408,7 @@ test('encrypted table: SSE-KMS (explicitly created key)', () => {
     dataFormat: glue.DataFormat.JSON,
   });
   expect(table.encryption).toEqual(glue.TableEncryption.KMS);
-  expect(table.encryptionKey).toEqual(table.bucket?.encryptionKey);
+  expect(table.encryptionKey).toEqual(table.bucket.encryptionKey);
   expect(table.encryptionKey).not.toEqual(undefined);
 
   Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
@@ -494,7 +494,7 @@ test('encrypted table: SSE-KMS_MANAGED', () => {
   });
   expect(table.encryption).toEqual(glue.TableEncryption.KMS_MANAGED);
   expect(table.encryptionKey).toEqual(undefined);
-  expect(table.bucket?.encryptionKey).toEqual(undefined);
+  expect(table.bucket.encryptionKey).toEqual(undefined);
 
   Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
     BucketEncryption: {
@@ -569,7 +569,7 @@ test('encrypted table: CSE-KMS (implicitly created key)', () => {
   });
   expect(table.encryption).toEqual(glue.TableEncryption.CLIENT_SIDE_KMS);
   expect(table.encryptionKey).not.toEqual(undefined);
-  expect(table.bucket?.encryptionKey).toEqual(undefined);
+  expect(table.bucket.encryptionKey).toEqual(undefined);
 
   Template.fromStack(stack).resourceCountIs('AWS::KMS::Key', 1);
 
@@ -638,7 +638,7 @@ test('encrypted table: CSE-KMS (explicitly created key)', () => {
   });
   expect(table.encryption).toEqual(glue.TableEncryption.CLIENT_SIDE_KMS);
   expect(table.encryptionKey).not.toEqual(undefined);
-  expect(table.bucket?.encryptionKey).toEqual(undefined);
+  expect(table.bucket.encryptionKey).toEqual(undefined);
 
   Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
     Description: 'MyKey',
@@ -711,7 +711,7 @@ test('encrypted table: CSE-KMS (explicitly passed bucket and key)', () => {
   });
   expect(table.encryption).toEqual(glue.TableEncryption.CLIENT_SIDE_KMS);
   expect(table.encryptionKey).not.toEqual(undefined);
-  expect(table.bucket?.encryptionKey).toEqual(undefined);
+  expect(table.bucket.encryptionKey).toEqual(undefined);
 
   Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
     Description: 'MyKey',
