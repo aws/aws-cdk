@@ -146,11 +146,11 @@ async function invokeUserFunction<A extends { ResponseURL: '...' }>(functionArnE
   return jsonPayload;
 }
 
-function parseJsonPayload(payload: any): any {
-  if (!payload) { return { }; }
+function parseJsonPayload(payload: string | Buffer | Uint8Arr): any {
   // sdk v3 returns payloads in Uint8Array, either it or a string or Buffer
   // can be cast into a buffer and then decoded.
-  let text = new TextDecoder().decode(Buffer.from(payload));
+  const text = new TextDecoder().decode(Buffer.from(payload));
+  if (!text) { return { }; }
   try {
     return JSON.parse(text);
   } catch {
