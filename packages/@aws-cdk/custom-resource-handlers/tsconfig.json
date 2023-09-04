@@ -14,11 +14,13 @@
         "noFallthroughCasesInSwitch": true,
         "resolveJsonModule": true,
         "composite": true,
-        "incremental": true
-      },
+        "incremental": true,
+    },
     "include": [
         "**/*.ts",
         "**/*.d.ts",
-    ]
+    ],
+    "exclude": [
+        "**/test/**/*.ts",
+    ],
 }
-
