@@ -318,7 +318,7 @@ export abstract class State extends Construct implements IChainable {
   /**
    * Add a choice branch to this state
    */
-  protected addChoice(condition: Condition, next: State, options: IChoiceTransitionOptions) {
+  protected addChoice(condition: Condition, next: State, options?: IChoiceTransitionOptions) {
     this.choices.push({ condition, next, ...options });
     next.startState.addIncoming(this);
     if (this.containingGraph) {
