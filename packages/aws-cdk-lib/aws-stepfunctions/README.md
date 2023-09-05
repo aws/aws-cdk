@@ -351,6 +351,15 @@ const shipTheItem = new sfn.Pass(this, 'ShipTheItem');
 choice.afterwards().next(shipTheItem);
 ```
 
+You can add comments to `Choice` states as well as conditions that use `choice.when`.
+
+```ts
+const choice = new sfn.Choice(stack, 'What color is it?', {
+  comment: 'color comment',
+});
+choice.when(sfn.Condition.stringEquals('$.color', 'BLUE'), handleBlueItem, 'blue item comment');
+```
+
 If your `Choice` doesn't have an `otherwise()` and none of the conditions match
 the JSON state, a `NoChoiceMatched` error will be thrown. Wrap the state machine
 in a `Parallel` state if you want to catch and recover from this.

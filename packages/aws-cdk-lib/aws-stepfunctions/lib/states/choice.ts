@@ -53,8 +53,8 @@ export class Choice extends State {
   /**
    * If the given condition matches, continue execution with the given state
    */
-  public when(condition: Condition, next: IChainable): Choice {
-    super.addChoice(condition, next.startState);
+  public when(condition: Condition, next: IChainable, comment?: string): Choice {
+    super.addChoice(condition, next.startState, comment);
     return this;
   }
 

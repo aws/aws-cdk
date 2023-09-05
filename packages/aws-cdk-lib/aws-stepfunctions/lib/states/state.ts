@@ -318,8 +318,8 @@ export abstract class State extends Construct implements IChainable {
   /**
    * Add a choice branch to this state
    */
-  protected addChoice(condition: Condition, next: State) {
-    this.choices.push({ condition, next });
+  protected addChoice(condition: Condition, next: State, comment?: string) {
+    this.choices.push({ condition, next, comment });
     next.startState.addIncoming(this);
     if (this.containingGraph) {
       next.startState.bindToGraph(this.containingGraph);
@@ -327,7 +327,7 @@ export abstract class State extends Construct implements IChainable {
   }
 
   /**
-   * Add a paralle branch to this state
+   * Add a parallel branch to this state
    */
   protected addBranch(branch: StateGraph) {
     this.branches.push(branch);
@@ -489,6 +489,13 @@ interface ChoiceTransition {
    * Condition for this transition
    */
   condition: Condition;
+
+  /**
+   * An optional description for this choice transition
+   *
+   * @default No comment
+   */
+  comment?: string;
 }
 
 /**
@@ -498,6 +505,7 @@ function renderChoice(c: ChoiceTransition) {
   return {
     ...c.condition.renderCondition(),
     Next: c.next.stateId,
+    Comment: c.comment,
   };
 }
 
