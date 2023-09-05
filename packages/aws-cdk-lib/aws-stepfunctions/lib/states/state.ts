@@ -318,8 +318,8 @@ export abstract class State extends Construct implements IChainable {
   /**
    * Add a choice branch to this state
    */
-  protected addChoice(condition: Condition, next: State, comment?: string) {
-    this.choices.push({ condition, next, comment });
+  protected addChoice(condition: Condition, next: State, options: ChoiceTransitionOptions) {
+    this.choices.push({ condition, next, ...options });
     next.startState.addIncoming(this);
     if (this.containingGraph) {
       next.startState.bindToGraph(this.containingGraph);
@@ -479,7 +479,7 @@ export interface FindStateOptions {
 /**
  * A Choice Transition
  */
-interface ChoiceTransition {
+interface ChoiceTransition extends ChoiceTransitionOptions {
   /**
    * State to transition to
    */
@@ -489,9 +489,14 @@ interface ChoiceTransition {
    * Condition for this transition
    */
   condition: Condition;
+}
 
+/**
+ * Options for Choice Transition
+ */
+export interface ChoiceTransitionOptions {
   /**
-   * An optional description for this choice transition
+   * An optional description for the choice transition
    *
    * @default No comment
    */

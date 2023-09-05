@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { StateType } from './private/state-type';
-import { State } from './state';
+import { ChoiceTransitionOptions, State } from './state';
 import { Chain } from '../chain';
 import { Condition } from '../condition';
 import { IChainable, INextable } from '../types';
@@ -53,8 +53,8 @@ export class Choice extends State {
   /**
    * If the given condition matches, continue execution with the given state
    */
-  public when(condition: Condition, next: IChainable, comment?: string): Choice {
-    super.addChoice(condition, next.startState, comment);
+  public when(condition: Condition, next: IChainable, options: ChoiceTransitionOptions = {}): Choice {
+    super.addChoice(condition, next.startState, options);
     return this;
   }
 

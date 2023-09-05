@@ -24,7 +24,9 @@ const choice = new sfn.Choice(stack, 'choice', {
 
 const success = new sfn.Succeed(stack, 'success');
 
-choice.when(sfn.Condition.isPresent('$.success'), success, 'this is a comment for the when condition');
+choice.when(sfn.Condition.isPresent('$.success'), success, {
+  comment: 'this is a comment for the when condition',
+});
 choice.when(sfn.Condition.isPresent('$.noComment'), shortWait);
 choice.otherwise(success);
 wait.next(choice);

@@ -359,7 +359,9 @@ const choice = new sfn.Choice(this, 'What color is it?', {
 });
 const handleBlueItem = new sfn.Pass(this, 'HandleBlueItem');
 const handleOtherItemColor = new sfn.Pass(this, 'HanldeOtherItemColor');
-choice.when(sfn.Condition.stringEquals('$.color', 'BLUE'), handleBlueItem, 'blue item comment');
+choice.when(sfn.Condition.stringEquals('$.color', 'BLUE'), handleBlueItem, {
+  comment: 'blue item comment',
+});
 choice.otherwise(handleOtherItemColor);
 ```
 

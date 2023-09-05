@@ -631,7 +631,9 @@ describe('State Machine', () => {
       comment: 'nebraska',
     });
     const success = new sfn.Succeed(stack, 'success');
-    choice.when(sfn.Condition.isPresent('$.success'), success, 'london');
+    choice.when(sfn.Condition.isPresent('$.success'), success, {
+      comment: 'london',
+    });
     choice.otherwise(success);
 
     // WHEN
