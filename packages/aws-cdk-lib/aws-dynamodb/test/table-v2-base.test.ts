@@ -5,7 +5,7 @@ import { Alarm, Metric } from '../../aws-cloudwatch';
 import { User } from '../../aws-iam';
 import { Key } from '../../aws-kms';
 import { Stack, StackProps, App } from '../../core';
-import { GlobalTable, AttributeType, TableEncryptionV2, ITable, IGlobalTable, Operation } from '../lib';
+import { TableV2, AttributeType, TableEncryptionV2, ITable, ITableV2, Operation } from '../lib';
 
 function testForKey(stack: Stack) {
   Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
@@ -45,7 +45,7 @@ describe('grants', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
     const user = new User(stack, 'User');
-    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+    const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       replicas: [
         { region: 'us-east-1' },
@@ -86,7 +86,7 @@ describe('grants', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
     const user = new User(stack, 'User');
-    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+    const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       replicas: [
         { region: 'us-east-1' },
@@ -141,7 +141,7 @@ describe('grants', () => {
       'us-east-2': 'arn:aws:kms:us-east-2:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
     };
     const tableKey = new Key(stack, 'Key');
-    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+    const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       encryption: TableEncryptionV2.customerManagedKey(tableKey, replicaKeyArns),
       replicas: [
@@ -206,7 +206,7 @@ describe('grants', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
     const user = new User(stack, 'User');
-    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+    const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       replicas: [
         { region: 'us-east-1' },
@@ -258,7 +258,7 @@ describe('grants', () => {
       'us-east-2': 'arn:aws:kms:us-east-2:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
     };
     const tableKey = new Key(stack, 'Key');
-    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+    const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       encryption: TableEncryptionV2.customerManagedKey(tableKey, replicaKeyArns),
       replicas: [
@@ -323,7 +323,7 @@ describe('grants', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
     const user = new User(stack, 'User');
-    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+    const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       replicas: [
         { region: 'us-east-1' },
@@ -382,7 +382,7 @@ describe('grants', () => {
       'us-east-2': 'arn:aws:kms:us-east-2:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
     };
     const tableKey = new Key(stack, 'Key');
-    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+    const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       encryption: TableEncryptionV2.customerManagedKey(tableKey, replicaKeyArns),
       replicas: [
@@ -454,7 +454,7 @@ describe('grants', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
     const user = new User(stack, 'User');
-    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+    const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       replicas: [
         { region: 'us-east-1' },
@@ -500,7 +500,7 @@ describe('grants', () => {
       'us-east-2': 'arn:aws:kms:us-east-2:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
     };
     const tableKey = new Key(stack, 'Key');
-    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+    const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       encryption: TableEncryptionV2.customerManagedKey(tableKey, replicaKeyArns),
       replicas: [
@@ -559,7 +559,7 @@ describe('grants', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
     const user = new User(stack, 'User');
-    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+    const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       globalSecondaryIndexes: [
         {
@@ -631,7 +631,7 @@ describe('grants', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
     const user = new User(stack, 'User');
-    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+    const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       replicas: [
         { region: 'us-east-1' },
@@ -674,7 +674,7 @@ describe('grants', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
     const user = new User(stack, 'Stack');
-    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+    const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       replicas: [
         { region: 'us-east-1' },
@@ -728,7 +728,7 @@ describe('grants', () => {
       'us-east-2': 'arn:aws:kms:us-east-2:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
     };
     const tableKey = new Key(stack, 'Key');
-    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+    const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       encryption: TableEncryptionV2.customerManagedKey(tableKey, replicaKeyArns),
       replicas: [
@@ -792,7 +792,7 @@ describe('grants', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
     const user = new User(stack, 'User');
-    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+    const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       replicas: [
         { region: 'us-east-1' },
@@ -838,7 +838,7 @@ describe('grants', () => {
       'us-east-2': 'arn:aws:kms:us-east-2:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
     };
     const tableKey = new Key(stack, 'Key');
-    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+    const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       encryption: TableEncryptionV2.customerManagedKey(tableKey, replicaKeyArns),
       replicas: [
@@ -936,7 +936,7 @@ describe('grants', () => {
       'us-east-2': 'arn:aws:kms:us-east-2:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
     };
     const tableKey = new Key(stack, 'Key');
-    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+    const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       encryption: TableEncryptionV2.customerManagedKey(tableKey, replicaKeyArns),
       replicas: [
@@ -1007,12 +1007,12 @@ describe('grants', () => {
 
   test('can grant to replica in different stack when table name not provided', () => {
     class FooStack extends Stack {
-      public readonly globalTable: GlobalTable;
+      public readonly globalTable: TableV2;
 
       public constructor(scope: Construct, id: string, props: StackProps) {
         super(scope, id, props);
 
-        this.globalTable = new GlobalTable(this, 'GlobalTable', {
+        this.globalTable = new TableV2(this, 'GlobalTable', {
           partitionKey: { name: 'pk', type: AttributeType.STRING },
           replicas: [
             { region: 'us-east-1' },
@@ -1087,7 +1087,7 @@ describe('grants', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
     const user = new User(stack, 'User');
-    const globalTable = GlobalTable.fromTableName(stack, 'GlobalTable', 'my-global-table');
+    const globalTable = TableV2.fromTableName(stack, 'GlobalTable', 'my-global-table');
 
     // WHEN
     globalTable.grantReadData(user);
@@ -1145,7 +1145,7 @@ describe('grants', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
     const user = new User(stack, 'User');
-    const globalTable = GlobalTable.fromTableArn(stack, 'GlobalTable', 'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table');
+    const globalTable = TableV2.fromTableArn(stack, 'GlobalTable', 'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table');
 
     // WHEN
     globalTable.grantReadData(user);
@@ -1185,7 +1185,7 @@ describe('grants', () => {
     const stack = new Stack(undefined, 'Stack');
     const user = new User(stack, 'User');
     const tableKey = new Key(stack, 'Key');
-    const globalTable = GlobalTable.fromTableAttributes(stack, 'GlobalTable', {
+    const globalTable = TableV2.fromTableAttributes(stack, 'GlobalTable', {
       tableArn: 'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table',
       encryptionKey: tableKey,
     });
@@ -1240,7 +1240,7 @@ describe('grants', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
     const user = new User(stack, 'User');
-    const globalTable = GlobalTable.fromTableAttributes(stack, 'GlobalTable', {
+    const globalTable = TableV2.fromTableAttributes(stack, 'GlobalTable', {
       tableArn: 'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table',
       grantIndexPermissions: true,
     });
@@ -1285,7 +1285,7 @@ describe('grants', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
     const user = new User(stack, 'User');
-    const globalTable = GlobalTable.fromTableAttributes(stack, 'GlobalTable', {
+    const globalTable = TableV2.fromTableAttributes(stack, 'GlobalTable', {
       tableArn: 'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table',
       globalIndexes: ['gsi'],
     });
@@ -1330,7 +1330,7 @@ describe('grants', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
     const user = new User(stack, 'User');
-    const globalTable = GlobalTable.fromTableName(stack, 'GlobalTable', 'my-global-table');
+    const globalTable = TableV2.fromTableName(stack, 'GlobalTable', 'my-global-table');
 
     // WHEN / THEN
     expect(() => {
@@ -1343,7 +1343,7 @@ describe('metrics', () => {
   test('can use metricConsumedReadCapacityUnits on a global table', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+    const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
 
@@ -1369,7 +1369,7 @@ describe('metrics', () => {
   test('can use metricConsumedWriteCapacityUnits on a global table', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+    const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
 
@@ -1395,7 +1395,7 @@ describe('metrics', () => {
   test('using metricSystemErrorsForOperations with no operations will default to all', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+    const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
 
@@ -1421,7 +1421,7 @@ describe('metrics', () => {
   test('can use metricSystemErrorsForOperations on a global table', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+    const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
 
@@ -1475,7 +1475,7 @@ describe('metrics', () => {
   test('can use metricUserErrors on a global table', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+    const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
 
@@ -1497,7 +1497,7 @@ describe('metrics', () => {
   test('can use metricConditionalCheckFailedRequests on a global table', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+    const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
 
@@ -1519,7 +1519,7 @@ describe('metrics', () => {
   test('can use metricSuccessfulRequestLatency without TableName dimension', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+    const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
 
@@ -1533,7 +1533,7 @@ describe('metrics', () => {
   test('can use metricSuccessfulRequestLatency on a global table', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+    const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
 
@@ -1557,7 +1557,7 @@ describe('metrics', () => {
   test('can use metricThrottledRequestsForOperation on a global table', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+    const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
 
@@ -1579,7 +1579,7 @@ describe('metrics', () => {
   test('can use metricThrottledRequestForOperations on a global table', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+    const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
 
@@ -1633,7 +1633,7 @@ describe('metrics', () => {
   test('can use metrics on a global table imported by name', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = GlobalTable.fromTableName(stack, 'GlobalTable', 'my-global-table');
+    const globalTable = TableV2.fromTableName(stack, 'GlobalTable', 'my-global-table');
 
     // WHEN / THEN
     expect(stack.resolve(globalTable.metricConsumedReadCapacityUnits())).toEqual({
@@ -1655,7 +1655,7 @@ describe('metrics', () => {
   test('can use metrics on a global table imported by arn', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = GlobalTable.fromTableArn(stack, 'GlobalTable', 'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table');
+    const globalTable = TableV2.fromTableArn(stack, 'GlobalTable', 'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table');
 
     // WHEN / THEN
     expect(stack.resolve(globalTable.metricConsumedReadCapacityUnits())).toEqual({
@@ -1676,12 +1676,12 @@ describe('metrics', () => {
 
   test('can configure alarm with global table configured in a different stack', () => {
     class FooStack extends Stack {
-      public readonly globalTable: GlobalTable;
+      public readonly globalTable: TableV2;
 
       public constructor(scope: Construct, id: string, props: StackProps) {
         super(scope, id, props);
 
-        this.globalTable = new GlobalTable(this, 'GlobalTable', {
+        this.globalTable = new TableV2(this, 'GlobalTable', {
           partitionKey: { name: 'pk', type: AttributeType.STRING },
           replicas: [{ region: 'us-east-1' }],
         });
@@ -1689,7 +1689,7 @@ describe('metrics', () => {
     }
 
     interface BarStackProps extends StackProps {
-      readonly replicaTable: IGlobalTable;
+      readonly replicaTable: ITableV2;
     }
 
     class BarStack extends Stack {
@@ -1756,7 +1756,7 @@ describe('metrics', () => {
   testDeprecated('can use metricThrottledRequests on a global table', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+    const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
 
@@ -1778,7 +1778,7 @@ describe('metrics', () => {
   testDeprecated('can use metricSystemErrors without TableName dimension', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+    const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
 
@@ -1792,7 +1792,7 @@ describe('metrics', () => {
   testDeprecated('can use metricSystemErrors on a global table', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+    const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
 
@@ -1814,7 +1814,7 @@ describe('metrics', () => {
   test('throws when using metricUserErrors with dimensions', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+    const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
 
@@ -1827,7 +1827,7 @@ describe('metrics', () => {
   test('throws when using metricSuccessfulRequestLatency without Operation dimension', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+    const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
 
@@ -1840,7 +1840,7 @@ describe('metrics', () => {
   testDeprecated('throws when using metricSystemErrors without Operation dimension', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+    const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
 

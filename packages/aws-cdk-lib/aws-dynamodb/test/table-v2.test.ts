@@ -3,7 +3,7 @@ import { Stream } from '../../aws-kinesis';
 import { Key } from '../../aws-kms';
 import { CfnDeletionPolicy, Lazy, RemovalPolicy, Stack } from '../../core';
 import {
-  AttributeType, Billing, Capacity, GlobalSecondaryIndexPropsV2, GlobalTable,
+  AttributeType, Billing, Capacity, GlobalSecondaryIndexPropsV2, TableV2,
   LocalSecondaryIndexProps, ProjectionType, StreamViewType, TableClass, TableEncryptionV2,
 } from '../lib';
 
@@ -13,7 +13,7 @@ describe('global table', () => {
     const stack = new Stack(undefined, 'Stack');
 
     // WHEN
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
 
@@ -43,7 +43,7 @@ describe('global table', () => {
     const stack = new Stack(undefined, 'Stack');
 
     // WHEN
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       dynamoStream: StreamViewType.NEW_IMAGE,
     });
@@ -61,7 +61,7 @@ describe('global table', () => {
     const stack = new Stack(undefined, 'Stack');
 
     // WHEN
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       sortKey: { name: 'sk', type: AttributeType.NUMBER },
     });
@@ -84,7 +84,7 @@ describe('global table', () => {
     const stack = new Stack(undefined, 'Stack');
 
     // WHEN
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       contributorInsights: true,
     });
@@ -109,7 +109,7 @@ describe('global table', () => {
     const stack = new Stack(undefined, 'Stack');
 
     // WHEN
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       deletionProtection: true,
     });
@@ -132,7 +132,7 @@ describe('global table', () => {
     const stack = new Stack(undefined, 'Stack');
 
     // WHEN
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       pointInTimeRecovery: true,
     });
@@ -157,7 +157,7 @@ describe('global table', () => {
     const stack = new Stack(undefined, 'Stack');
 
     // WHEN
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       tableClass: TableClass.STANDARD,
     });
@@ -180,7 +180,7 @@ describe('global table', () => {
     const stack = new Stack(undefined, 'Stack');
 
     // WHEN
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       tableClass: TableClass.STANDARD_INFREQUENT_ACCESS,
     });
@@ -204,7 +204,7 @@ describe('global table', () => {
     const kinesisStream = new Stream(stack, 'Stream');
 
     // WHEN
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       kinesisStream,
     });
@@ -234,7 +234,7 @@ describe('global table', () => {
     const stack = new Stack(undefined, 'Stack');
 
     // WHEN
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       tableName: 'my-global-table',
     });
@@ -250,7 +250,7 @@ describe('global table', () => {
     const stack = new Stack(undefined, 'Stack');
 
     // WHEN
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       timeToLiveAttribute: 'attribute',
     });
@@ -269,7 +269,7 @@ describe('global table', () => {
     const stack = new Stack(undefined, 'Stack');
 
     // WHEN
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       removalPolicy: RemovalPolicy.DESTROY,
     });
@@ -283,7 +283,7 @@ describe('global table', () => {
     const stack = new Stack(undefined, 'Stack');
 
     // WHEN
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       billing: Billing.onDemand(),
     });
@@ -299,7 +299,7 @@ describe('global table', () => {
     const stack = new Stack(undefined, 'Stack');
 
     // WHEN
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       billing: Billing.provisioned({
         readCapacity: Capacity.fixed(10),
@@ -337,7 +337,7 @@ describe('global table', () => {
     const stack = new Stack(undefined, 'Stack');
 
     // WHEN
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       tableName: 'global-table',
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       billing: Billing.provisioned({
@@ -382,7 +382,7 @@ describe('global table', () => {
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
 
     // WHEN
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       replicas: [{ region: 'us-east-1' }],
     });
@@ -401,7 +401,7 @@ describe('global table', () => {
     const stack = new Stack(undefined, 'Stack');
 
     // WHEN
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       sortKey: { name: 'sk', type: AttributeType.BINARY },
       globalSecondaryIndexes: [
@@ -454,7 +454,7 @@ describe('global table', () => {
     const stack = new Stack(undefined, 'Stack');
 
     // WHEN
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       sortKey: { name: 'sk', type: AttributeType.BINARY },
       localSecondaryIndexes: [
@@ -496,7 +496,7 @@ describe('global table', () => {
     const stack = new Stack(undefined, 'Stack');
 
     // WHEN
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       encryption: TableEncryptionV2.dynamoOwnedKey(),
     });
@@ -514,7 +514,7 @@ describe('global table', () => {
     const stack = new Stack(undefined, 'Stack');
 
     // WHEN
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       encryption: TableEncryptionV2.awsManagedKey(),
     });
@@ -534,7 +534,7 @@ describe('global table', () => {
     const tableKey = new Key(stack, 'Key');
 
     // WHEN
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       encryption: TableEncryptionV2.customerManagedKey(tableKey),
     });
@@ -560,7 +560,7 @@ describe('global table', () => {
     };
 
     // WHEN
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       tableName: 'my-global-table',
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       sortKey: { name: 'sk', type: AttributeType.NUMBER },
@@ -863,7 +863,7 @@ describe('global table', () => {
   test('can add global secondary index', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+    const globalTable = new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       sortKey: { name: 'sk', type: AttributeType.BINARY },
     });
@@ -916,7 +916,7 @@ describe('global table', () => {
   test('can add local secondary index', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+    const globalTable = new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       sortKey: { name: 'sk', type: AttributeType.BINARY },
     });
@@ -960,7 +960,7 @@ describe('global table', () => {
 
     // WHEN / THEN
     expect(() => {
-      new GlobalTable(stack, 'GlobalTable', {
+      new TableV2(stack, 'Table', {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
         replicas: [{ region: 'us-east-1' }],
       });
@@ -970,7 +970,7 @@ describe('global table', () => {
   test('throws if getting replica table from global table in region agnostic stack', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+    const globalTable = new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
 
@@ -987,7 +987,7 @@ describe('replica tables', () => {
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
 
     // WHEN
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       billing: Billing.provisioned({
         readCapacity: Capacity.fixed(5),
@@ -1022,7 +1022,7 @@ describe('replica tables', () => {
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
 
     // WHEN
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       billing: Billing.provisioned({
         readCapacity: Capacity.fixed(5),
@@ -1068,7 +1068,7 @@ describe('replica tables', () => {
     const kinesisStream2 = Stream.fromStreamArn(stack, 'Stream2', 'arn:aws:kinesis:us-east-1:123456789012:stream/my-stream');
 
     // WHEN
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       kinesisStream: kinesisStream1,
       replicas: [
@@ -1115,7 +1115,7 @@ describe('replica tables', () => {
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
 
     // WHEN
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       contributorInsights: true,
       globalSecondaryIndexes: [
@@ -1220,7 +1220,7 @@ describe('replica tables', () => {
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
 
     // WHEN
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       billing: Billing.provisioned({
         readCapacity: Capacity.fixed(10),
@@ -1334,7 +1334,7 @@ describe('replica tables', () => {
   test('throws if replica table region is a token', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
-    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+    const globalTable = new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
 
@@ -1347,7 +1347,7 @@ describe('replica tables', () => {
   test('throws if adding replica table in deployment region', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
-    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+    const globalTable = new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
 
@@ -1360,7 +1360,7 @@ describe('replica tables', () => {
   test('throws if adding duplicate replica table', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
-    const globalTable = new GlobalTable(stack, 'GlobalTable', {
+    const globalTable = new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       replicas: [{ region: 'us-east-1' }],
     });
@@ -1377,7 +1377,7 @@ describe('replica tables', () => {
 
     // WHEN / THEN
     expect(() => {
-      new GlobalTable(stack, 'GlobalTable', {
+      new TableV2(stack, 'Table', {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
         replicas: [
           {
@@ -1392,7 +1392,7 @@ describe('replica tables', () => {
   test('throws if configuring options for non-existent global secondary index', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       globalSecondaryIndexes: [
         {
@@ -1421,7 +1421,7 @@ describe('replica tables', () => {
   test('throws if read capacity is configured as global secondary index options when billing mode is PAY_PER_REQUEST', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       globalSecondaryIndexes: [
         {
@@ -1454,7 +1454,7 @@ describe('secondary indexes', () => {
     const stack = new Stack(undefined, 'Stack');
 
     // WHEN
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       globalSecondaryIndexes: [
         {
@@ -1521,7 +1521,7 @@ describe('secondary indexes', () => {
     const stack = new Stack(undefined, 'Stack');
 
     // WHEN
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       globalSecondaryIndexes: [
         {
@@ -1587,7 +1587,7 @@ describe('secondary indexes', () => {
     const stack = new Stack(undefined, 'Stack');
 
     // WHEN
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       globalSecondaryIndexes: [
         {
@@ -1659,7 +1659,7 @@ describe('secondary indexes', () => {
     const stack = new Stack(undefined, 'Stack');
 
     // WHEN
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       globalSecondaryIndexes: [
         {
@@ -1730,7 +1730,7 @@ describe('secondary indexes', () => {
     const stack = new Stack(undefined, 'Stack');
 
     // WHEN
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       sortKey: { name: 'sk', type: AttributeType.STRING },
       localSecondaryIndexes: [
@@ -1787,7 +1787,7 @@ describe('secondary indexes', () => {
     const stack = new Stack(undefined, 'Stack');
 
     // WHEN
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       sortKey: { name: 'sk', type: AttributeType.STRING },
       localSecondaryIndexes: [
@@ -1843,7 +1843,7 @@ describe('secondary indexes', () => {
     const stack = new Stack(undefined, 'Stack');
 
     // WHEN
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       sortKey: { name: 'sk', type: AttributeType.STRING },
       globalSecondaryIndexes: [
@@ -1915,7 +1915,7 @@ describe('secondary indexes', () => {
     const stack = new Stack(undefined, 'Stack');
 
     // WHEN
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       billing: Billing.provisioned({
         readCapacity: Capacity.fixed(10),
@@ -1984,7 +1984,7 @@ describe('secondary indexes', () => {
     const stack = new Stack(undefined, 'Stack');
 
     // WHEN
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       billing: Billing.provisioned({
         readCapacity: Capacity.fixed(10),
@@ -2052,7 +2052,7 @@ describe('secondary indexes', () => {
     const stack = new Stack(undefined, 'Stack');
 
     // WHEN
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       globalSecondaryIndexes: [
         {
@@ -2103,7 +2103,7 @@ describe('secondary indexes', () => {
     const stack = new Stack(undefined, 'Stack');
 
     // WHEN
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       globalSecondaryIndexes: [
         {
@@ -2156,7 +2156,7 @@ describe('secondary indexes', () => {
     const stack = new Stack(undefined, 'Stack');
 
     // WHEN
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       sortKey: { name: 'sk', type: AttributeType.STRING },
       localSecondaryIndexes: [
@@ -2199,7 +2199,7 @@ describe('secondary indexes', () => {
     const stack = new Stack(undefined, 'Stack');
 
     // WHEN
-    new GlobalTable(stack, 'GlobalTable', {
+    new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       sortKey: { name: 'sk', type: AttributeType.STRING },
       localSecondaryIndexes: [
@@ -2245,7 +2245,7 @@ describe('secondary indexes', () => {
 
     // WHEN / THEN
     expect(() => {
-      new GlobalTable(stack, 'GlobalTable', {
+      new TableV2(stack, 'Table', {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
         globalSecondaryIndexes: [
           {
@@ -2267,7 +2267,7 @@ describe('secondary indexes', () => {
 
     // WHEN / THEN
     expect(() => {
-      new GlobalTable(stack, 'GlobalTable', {
+      new TableV2(stack, 'Table', {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
         sortKey: { name: 'sk', type: AttributeType.STRING },
         localSecondaryIndexes: [
@@ -2290,7 +2290,7 @@ describe('secondary indexes', () => {
 
     // WHEN / THEN
     expect(() => {
-      new GlobalTable(stack, 'GlobalTable', {
+      new TableV2(stack, 'Table', {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
         sortKey: { name: 'sk', type: AttributeType.STRING },
         globalSecondaryIndexes: [
@@ -2315,7 +2315,7 @@ describe('secondary indexes', () => {
 
     // WHEN / THEN
     expect(() => {
-      new GlobalTable(stack, 'GlobalTable', {
+      new TableV2(stack, 'Table', {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
         globalSecondaryIndexes: [
           {
@@ -2337,7 +2337,7 @@ describe('secondary indexes', () => {
 
     // WHEN / THEN
     expect(() => {
-      new GlobalTable(stack, 'GlobalTable', {
+      new TableV2(stack, 'Table', {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
         sortKey: { name: 'sk', type: AttributeType.STRING },
         localSecondaryIndexes: [
@@ -2360,7 +2360,7 @@ describe('secondary indexes', () => {
 
     // WHEN / THEN
     expect(() => {
-      new GlobalTable(stack, 'GlobalTable', {
+      new TableV2(stack, 'Table', {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
         sortKey: { name: 'sk', type: AttributeType.STRING },
         globalSecondaryIndexes: [
@@ -2385,7 +2385,7 @@ describe('secondary indexes', () => {
 
     // WHEN / THEN
     expect(() => {
-      new GlobalTable(stack, 'GlobalTable', {
+      new TableV2(stack, 'Table', {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
         globalSecondaryIndexes: [
           {
@@ -2403,7 +2403,7 @@ describe('secondary indexes', () => {
 
     // WHEN / THEN
     expect(() => {
-      new GlobalTable(stack, 'GlobalTable', {
+      new TableV2(stack, 'Table', {
         partitionKey: { name: 'key', type: AttributeType.STRING },
         sortKey: { name: 'sk', type: AttributeType.STRING },
         localSecondaryIndexes: [
@@ -2422,7 +2422,7 @@ describe('secondary indexes', () => {
 
     // WHEN / THEN
     expect(() => {
-      new GlobalTable(stack, 'GlobalTable', {
+      new TableV2(stack, 'Table', {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
         globalSecondaryIndexes: [
           {
@@ -2441,7 +2441,7 @@ describe('secondary indexes', () => {
 
     // WHEN / THEN
     expect(() => {
-      new GlobalTable(stack, 'GlobalTable', {
+      new TableV2(stack, 'Table', {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
         globalSecondaryIndexes: [
           {
@@ -2468,7 +2468,7 @@ describe('secondary indexes', () => {
 
     // WHEN / THEN
     expect(() => {
-      new GlobalTable(stack, 'GlobalTable', {
+      new TableV2(stack, 'Table', {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
         globalSecondaryIndexes,
       });
@@ -2489,7 +2489,7 @@ describe('secondary indexes', () => {
 
     // WHEN / THEN
     expect(() => {
-      new GlobalTable(stack, 'GlobalTable', {
+      new TableV2(stack, 'Table', {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
         sortKey: { name: 'sk', type: AttributeType.STRING },
         localSecondaryIndexes,
@@ -2503,7 +2503,7 @@ describe('secondary indexes', () => {
 
     // WHEN / THEN
     expect(() => {
-      new GlobalTable(stack, 'GlobalTable', {
+      new TableV2(stack, 'Table', {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
         globalSecondaryIndexes: [
           {
@@ -2522,7 +2522,7 @@ describe('secondary indexes', () => {
 
     // WHEN / THEN
     expect(() => {
-      new GlobalTable(stack, 'GlobalTable', {
+      new TableV2(stack, 'Table', {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
         globalSecondaryIndexes: [
           {
@@ -2542,7 +2542,7 @@ describe('secondary indexes', () => {
 
     // WHEN / THEN
     expect(() => {
-      new GlobalTable(stack, 'GlobalTable', {
+      new TableV2(stack, 'Table', {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
         globalSecondaryIndexes: [
           {
@@ -2562,7 +2562,7 @@ describe('secondary indexes', () => {
 
     // WHEN / THEN
     expect(() => {
-      new GlobalTable(stack, 'GlobalTable', {
+      new TableV2(stack, 'Table', {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
         sortKey: { name: 'sk', type: AttributeType.STRING },
         localSecondaryIndexes: [
@@ -2582,7 +2582,7 @@ describe('secondary indexes', () => {
 
     // WHEN / THEN
     expect(() => {
-      new GlobalTable(stack, 'GlobalTable', {
+      new TableV2(stack, 'Table', {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
         sortKey: { name: 'sk', type: AttributeType.STRING },
         localSecondaryIndexes: [
@@ -2603,7 +2603,7 @@ describe('secondary indexes', () => {
 
     // WHEN / THEN
     expect(() => {
-      new GlobalTable(stack, 'GlobalTable', {
+      new TableV2(stack, 'Table', {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
         sortKey: { name: 'sk', type: AttributeType.STRING },
         localSecondaryIndexes: [
@@ -2624,7 +2624,7 @@ describe('secondary indexes', () => {
 
     // WHEN / THEN
     expect(() => {
-      new GlobalTable(stack, 'GlobalTable', {
+      new TableV2(stack, 'Table', {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
         localSecondaryIndexes: [
           {
@@ -2643,7 +2643,7 @@ describe('imports', () => {
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2', account: '123456789012' } });
 
     // WHEN
-    const globalTable = GlobalTable.fromTableName(stack, 'GlobalTable', 'my-global-table');
+    const globalTable = TableV2.fromTableName(stack, 'Table', 'my-global-table');
 
     // THEN
     expect(globalTable.tableName).toEqual('my-global-table');
@@ -2666,7 +2666,7 @@ describe('imports', () => {
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2', account: '123456789012' } });
 
     // WHEN
-    const globalTable = GlobalTable.fromTableArn(stack, 'GlobalTable', 'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table');
+    const globalTable = TableV2.fromTableArn(stack, 'Table', 'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table');
 
     // THEN
     expect(globalTable.tableArn).toEqual('arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table');
@@ -2679,7 +2679,7 @@ describe('imports', () => {
     const tableKey = new Key(stack, 'Key');
 
     // WHEN
-    const globalTable = GlobalTable.fromTableAttributes(stack, 'GlobalTable', {
+    const globalTable = TableV2.fromTableAttributes(stack, 'Table', {
       tableArn: 'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table',
       tableStreamArn: 'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table/stream/*',
       tableId: 'a123b456-01ab-23cd-123a-111222aaabbb',
@@ -2698,7 +2698,7 @@ describe('imports', () => {
 
     // WHEN / THEN
     expect(() => {
-      GlobalTable.fromTableAttributes(stack, 'GlobalTable', {
+      TableV2.fromTableAttributes(stack, 'Table', {
         tableStreamArn: 'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table/stream/*',
       });
     }).toThrow('At least one of `tableArn` or `tableName` must be provided');
@@ -2710,7 +2710,7 @@ describe('imports', () => {
 
     // WHEN / THEN
     expect(() => {
-      GlobalTable.fromTableAttributes(stack, 'GlobalTable', {
+      TableV2.fromTableAttributes(stack, 'Table', {
         tableName: 'my-global-table',
         tableArn: 'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table',
       });
@@ -2723,7 +2723,7 @@ describe('imports', () => {
 
     // WHEN / THEN
     expect(() => {
-      GlobalTable.fromTableAttributes(stack, 'GlobalTable', {
+      TableV2.fromTableAttributes(stack, 'Table', {
         tableArn: 'arn:aws:dynamodb:us-east-2:123456789012:table/',
       });
     }).toThrow('Table ARN must be of the form: arn:<partition>:dynamodb:<region>:<account>:table/<table-name>');
