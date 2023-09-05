@@ -1,5 +1,5 @@
 {
-  "version": "33.0.0",
+  "version": "34.0.0",
   "files": {
     "c7bba0d9d477c86c6dc2adb0eb95842634a1c040dd3a66b42eec2bb604644d4f": {
       "source": {
@@ -14,7 +14,7 @@
         }
       }
     },
-    "1680a1a109d409e5d8dfb509472821013a45d099b60b8498e38e31ac2cb1562b": {
+    "0cc1681b59d7456fa47ee61cb91884542f825e1d36afb4b442a57bf959e4d742": {
       "source": {
         "path": "stack-cors-allow-multiple-origins.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "1680a1a109d409e5d8dfb509472821013a45d099b60b8498e38e31ac2cb1562b.json",
+          "objectKey": "0cc1681b59d7456fa47ee61cb91884542f825e1d36afb4b442a57bf959e4d742.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -371,23 +371,6 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "DeliveryStreamServiceRole964EEBCC": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "firehose.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   }
-  },
   "DeliveryStreamS3DestinationRole500FC089": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -728,6 +711,9 @@
    },
    "ap-southeast-3": {
     "FirehoseCidrBlock": "108.136.221.64/27"
+   },
+   "ap-southeast-4": {
+    "FirehoseCidrBlock": "16.50.161.128/27"
    },
    "ca-central-1": {
     "FirehoseCidrBlock": "35.183.92.128/27"

@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a46e0d4b705cb918b722556b3452dcbd9e33671292604168c9d113b3e3788c02.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f75ab8f9b4f9b4569a43902e069684cc217226d66b42e025930c87f6f6dd1cb4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -55,12 +55,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyBucketF68F3FF0"
-          }
-        ],
-        "/test-stack/MyStream/Service Role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyStreamServiceRole8C50608A"
           }
         ],
         "/test-stack/MyStream/S3 Destination Role/Resource": [
@@ -109,6 +103,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "MyStreamServiceRole8C50608A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyStreamServiceRole8C50608A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

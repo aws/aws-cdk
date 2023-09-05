@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "34.0.0",
   "artifacts": {
     "test-apigateway-restapi.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c00b67076079aca10705c26d8b2f87803ff864e13c715f333bcec05a6e7021af.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fcad319ca99a224f1bb623ae64e6053222954f203a51f69533af4e49ac59bd36.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -223,24 +223,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "myapiDeployment92F2CB496a6dee9579dae89ab3a0b094b4d193eb": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myapiDeployment92F2CB496a6dee9579dae89ab3a0b094b4d193eb",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "TestDeploymentD77B56860a9c34c1bc306bfbc7d318827eacd1e1": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestDeploymentD77B56860a9c34c1bc306bfbc7d318827eacd1e1",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },

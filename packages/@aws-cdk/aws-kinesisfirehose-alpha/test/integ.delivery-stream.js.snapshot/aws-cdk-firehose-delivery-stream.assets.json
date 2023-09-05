@@ -1,7 +1,7 @@
 {
   "version": "34.0.0",
   "files": {
-    "8fba9094634baf9d67159e2a9b92ca27c6838026b5c8064012d1decf8d4b398b": {
+    "f08cb1eab080f1654e59530816541dc69a75d3a1248eac16524a832b8a62a463": {
       "source": {
         "path": "aws-cdk-firehose-delivery-stream.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "8fba9094634baf9d67159e2a9b92ca27c6838026b5c8064012d1decf8d4b398b.json",
+          "objectKey": "f08cb1eab080f1654e59530816541dc69a75d3a1248eac16524a832b8a62a463.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
