@@ -17,7 +17,7 @@ describe('findUp', () => {
   });
 
   test('Starting at a specific path', () => {
-    expect(findUp('utils.test.ts', path.join(__dirname, 'integ-handlers'))).toMatch(/aws-lambda-go-alpha\/test\/utils.test.ts$/);
+    expect(findUp('util.test.ts', path.join(__dirname, 'integ-handlers'))).toMatch(/aws-lambda-go-alpha\/test\/utils.test.ts$/);
   });
 
   test('Non existing file starting at a non existing relative path', () => {
@@ -25,7 +25,7 @@ describe('findUp', () => {
   });
 
   test('Starting at a relative path', () => {
-    expect(findUp('utils.test.ts', 'test/integ-handlers')).toMatch(/aws-lambda-go-alpha\/test\/utils.test.ts$/);
+    expect(findUp('util.test.ts', 'test/integ-handlers')).toMatch(/aws-lambda-go-alpha\/test\/utils.test.ts$/);
   });
 });
 
