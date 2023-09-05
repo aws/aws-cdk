@@ -6,7 +6,6 @@ import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import { CfnParameter, Duration, Stack, Tags } from '../../core';
 import { AccountRecovery, Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle, UserPoolEmail, AdvancedSecurityMode } from '../lib';
-import { DEFAULT_UNITTEST_RUNTIME } from '../../aws-lambda/lib/helpers-internal';
 
 describe('User Pool', () => {
   test('default setup', () => {
@@ -521,12 +520,12 @@ describe('User Pool', () => {
 
     const fn1 = new lambda.Function(stack, 'fn1', {
       code: lambda.Code.fromInline('foo'),
-      runtime: DEFAULT_UNITTEST_RUNTIME,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler',
     });
     const fn2 = new lambda.Function(stack, 'fn2', {
       code: lambda.Code.fromInline('foo'),
-      runtime: DEFAULT_UNITTEST_RUNTIME,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler',
     });
 
@@ -2115,7 +2114,7 @@ function fooFunction(scope: Construct, name: string): lambda.IFunction {
   return new lambda.Function(scope, name, {
     functionName: name,
     code: lambda.Code.fromInline('foo'),
-    runtime: DEFAULT_UNITTEST_RUNTIME,
+    runtime: lambda.Runtime.NODEJS_LATEST,
     handler: 'index.handler',
   });
 }

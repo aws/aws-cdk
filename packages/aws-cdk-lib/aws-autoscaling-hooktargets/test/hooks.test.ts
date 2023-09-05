@@ -4,7 +4,6 @@ import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
-import { DEFAULT_UNITTEST_RUNTIME } from '../../aws-lambda/lib/helpers-internal';
 import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
 import { Stack } from '../../core';
@@ -121,7 +120,7 @@ describe('given an AutoScalingGroup and no role', () => {
     // GIVEN
     const fn = new lambda.Function(stack, 'Fn', {
       code: lambda.Code.fromInline('foo'),
-      runtime: DEFAULT_UNITTEST_RUNTIME,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.index',
     });
 
@@ -165,7 +164,7 @@ describe('given an AutoScalingGroup and no role', () => {
     const key = new kms.Key(stack, 'key');
     const fn = new lambda.Function(stack, 'Fn', {
       code: lambda.Code.fromInline('foo'),
-      runtime: DEFAULT_UNITTEST_RUNTIME,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.index',
     });
 
@@ -297,7 +296,7 @@ describe('given an AutoScalingGroup and a role', () => {
     // GIVEN
     const fn = new lambda.Function(stack, 'Fn', {
       code: lambda.Code.fromInline('foo'),
-      runtime: DEFAULT_UNITTEST_RUNTIME,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.index',
     });
     const myrole = new iam.Role(stack, 'MyRole', {

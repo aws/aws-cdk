@@ -22,7 +22,6 @@ import {
   SecurityPolicyProtocol,
   SSLMethod,
 } from '../lib';
-import { DEFAULT_UNITTEST_RUNTIME } from '../../aws-lambda/lib/helpers-internal';
 
 let app: App;
 let stack: Stack;
@@ -667,7 +666,7 @@ describe('with Lambda@Edge functions', () => {
 
   beforeEach(() => {
     lambdaFunction = new lambda.Function(stack, 'Function', {
-      runtime: DEFAULT_UNITTEST_RUNTIME,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       code: lambda.Code.fromInline('whatever'),
       handler: 'index.handler',
     });
@@ -795,7 +794,7 @@ describe('with Lambda@Edge functions', () => {
 
   test('with removable env vars', () => {
     const envLambdaFunction = new lambda.Function(stack, 'EnvFunction', {
-      runtime: DEFAULT_UNITTEST_RUNTIME,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       code: lambda.Code.fromInline('whateverwithenv'),
       handler: 'index.handler',
     });
@@ -823,7 +822,7 @@ describe('with Lambda@Edge functions', () => {
 
   test('with incompatible env vars', () => {
     const envLambdaFunction = new lambda.Function(stack, 'EnvFunction', {
-      runtime: DEFAULT_UNITTEST_RUNTIME,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       code: lambda.Code.fromInline('whateverwithenv'),
       handler: 'index.handler',
       environment: {
@@ -849,7 +848,7 @@ describe('with Lambda@Edge functions', () => {
   test('with singleton function', () => {
     const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
       uuid: 'singleton-for-cloudfront',
-      runtime: DEFAULT_UNITTEST_RUNTIME,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       code: lambda.Code.fromInline('code'),
       handler: 'index.handler',
     });

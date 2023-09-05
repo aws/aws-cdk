@@ -4,7 +4,6 @@ import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import * as lambda from '../lib';
-import { DEFAULT_UNITTEST_RUNTIME } from '../lib/helpers-internal';
 
 describe('layers', () => {
   test('creating a layer', () => {
@@ -16,7 +15,7 @@ describe('layers', () => {
     // WHEN
     new lambda.LayerVersion(stack, 'LayerVersion', {
       code,
-      compatibleRuntimes: [DEFAULT_UNITTEST_RUNTIME],
+      compatibleRuntimes: [lambda.Runtime.NODEJS_LATEST],
     });
 
     // THEN
@@ -25,7 +24,7 @@ describe('layers', () => {
         S3Bucket: stack.resolve(bucket.bucketName),
         S3Key: 'ObjectKey',
       },
-      CompatibleRuntimes: ['nodejs99.x'],
+      CompatibleRuntimes: [lambda.Runtime.NODEJS_LATEST.name],
     });
   });
 
@@ -36,7 +35,7 @@ describe('layers', () => {
     const code = new lambda.S3Code(bucket, 'ObjectKey');
     const layer = new lambda.LayerVersion(stack, 'LayerVersion', {
       code,
-      compatibleRuntimes: [DEFAULT_UNITTEST_RUNTIME],
+      compatibleRuntimes: [lambda.Runtime.NODEJS_LATEST],
     });
 
     // WHEN

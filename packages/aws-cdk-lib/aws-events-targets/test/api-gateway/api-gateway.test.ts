@@ -7,7 +7,6 @@ import * as lambda from '../../../aws-lambda';
 import * as sqs from '../../../aws-sqs';
 import * as cdk from '../../../core';
 import * as targets from '../../lib';
-import { DEFAULT_UNITTEST_RUNTIME } from '../../../aws-lambda/lib/helpers-internal';
 
 test('use api gateway rest api as an event rule target', () => {
   // GIVEN
@@ -256,7 +255,7 @@ function newTestRestApi(scope: constructs.Construct, suffix = '') {
   const lambdaFunctin = new lambda.Function(scope, `MyLambda${suffix}`, {
     code: new lambda.InlineCode('foo'),
     handler: 'bar',
-    runtime: DEFAULT_UNITTEST_RUNTIME,
+    runtime: lambda.Runtime.NODEJS_LATEST,
   });
   return new api.LambdaRestApi( scope, `MyLambdaRestApi${suffix}`, {
     handler: lambdaFunctin,

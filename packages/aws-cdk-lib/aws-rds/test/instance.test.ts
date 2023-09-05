@@ -4,7 +4,6 @@ import * as targets from '../../aws-events-targets';
 import { ManagedPolicy, Role, ServicePrincipal, AccountPrincipal } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
-import { DEFAULT_UNITTEST_RUNTIME } from '../../aws-lambda/lib/helpers-internal';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
@@ -532,7 +531,7 @@ describe('instance', () => {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.fromInline('dummy'),
       handler: 'index.handler',
-      runtime: DEFAULT_UNITTEST_RUNTIME,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
     // WHEN

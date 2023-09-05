@@ -3,7 +3,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as firehose from '@aws-cdk/aws-kinesisfirehose-alpha';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { DEFAULT_UNITTEST_RUNTIME } from 'aws-cdk-lib/aws-lambda/lib/helpers-internal';
+import { lambda.Runtime.NODEJS_LATEST } from 'aws-cdk-lib/aws-lambda/lib/helpers-internal';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
@@ -241,7 +241,7 @@ describe('S3 destination', () => {
 
     beforeEach(() => {
       lambdaFunction = new lambda.Function(stack, 'DataProcessorFunction', {
-        runtime: DEFAULT_UNITTEST_RUNTIME,
+        runtime: lambda.Runtime.NODEJS_LATEST,
         code: lambda.Code.fromInline('foo'),
         handler: 'bar',
       });

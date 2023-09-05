@@ -3,7 +3,6 @@ import * as lambda from '../../../aws-lambda';
 import * as sfn from '../../../aws-stepfunctions';
 import { Stack } from '../../../core';
 import { LambdaInvocationType, LambdaInvoke } from '../../lib';
-import { DEFAULT_UNITTEST_RUNTIME } from '../../../aws-lambda/lib/helpers-internal';
 
 /* eslint-disable quote-props */
 
@@ -18,7 +17,7 @@ describe('LambdaInvoke', () => {
     lambdaFunction = new lambda.Function(stack, 'Fn', {
       code: lambda.Code.fromInline('foo'),
       handler: 'handler',
-      runtime: DEFAULT_UNITTEST_RUNTIME,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
   });
 

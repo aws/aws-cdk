@@ -3,7 +3,6 @@ import { Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as cdk from '../../core';
 import * as lambda from '../lib';
-import { DEFAULT_UNITTEST_RUNTIME } from '../lib/helpers-internal';
 
 describe('lambda + vpc', () => {
   describe('lambda in vpc', () => {
@@ -22,7 +21,7 @@ describe('lambda + vpc', () => {
       fn = new lambda.Function(stack, 'Lambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: DEFAULT_UNITTEST_RUNTIME,
+        runtime: lambda.Runtime.NODEJS_LATEST,
         vpc: vpc,
         allowAllOutbound: false,
       });
@@ -48,7 +47,7 @@ describe('lambda + vpc', () => {
       new lambda.Function(stack, 'LambdaWithCustomSG', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: DEFAULT_UNITTEST_RUNTIME,
+        runtime: lambda.Runtime.NODEJS_LATEST,
         vpc,
         securityGroup: new ec2.SecurityGroup(stack, 'CustomSecurityGroupX', { vpc }),
       });
@@ -71,7 +70,7 @@ describe('lambda + vpc', () => {
       new lambda.Function(stack, 'LambdaWithCustomSGList', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: DEFAULT_UNITTEST_RUNTIME,
+        runtime: lambda.Runtime.NODEJS_LATEST,
         vpc,
         securityGroups: [
           new ec2.SecurityGroup(stack, 'CustomSecurityGroupA', { vpc }),
@@ -99,7 +98,7 @@ describe('lambda + vpc', () => {
         new lambda.Function(stack, 'LambdaWithWrongProps', {
           code: new lambda.InlineCode('foo'),
           handler: 'index.handler',
-          runtime: DEFAULT_UNITTEST_RUNTIME,
+          runtime: lambda.Runtime.NODEJS_LATEST,
           vpc,
           securityGroup: new ec2.SecurityGroup(stack, 'CustomSecurityGroupB', { vpc }),
           securityGroups: [
@@ -190,7 +189,7 @@ describe('lambda + vpc', () => {
     const lambdaFn = new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: DEFAULT_UNITTEST_RUNTIME,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
     // WHEN
@@ -209,7 +208,7 @@ describe('lambda + vpc', () => {
       allowPublicSubnet: true,
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: DEFAULT_UNITTEST_RUNTIME,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       vpc,
       vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
     });
@@ -237,7 +236,7 @@ describe('lambda + vpc', () => {
     new lambda.Function(stack, 'PrivateLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: DEFAULT_UNITTEST_RUNTIME,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       vpc,
       vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
     });
@@ -273,7 +272,7 @@ describe('lambda + vpc', () => {
     new lambda.Function(stack, 'IsolatedLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: DEFAULT_UNITTEST_RUNTIME,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       vpc,
       vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
     });
@@ -318,7 +317,7 @@ describe('lambda + vpc', () => {
       new lambda.Function(stack, 'PublicLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: DEFAULT_UNITTEST_RUNTIME,
+        runtime: lambda.Runtime.NODEJS_LATEST,
         vpc,
         vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
       });
@@ -334,7 +333,7 @@ describe('lambda + vpc', () => {
       new lambda.Function(stack, 'Function', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: DEFAULT_UNITTEST_RUNTIME,
+        runtime: lambda.Runtime.NODEJS_LATEST,
         vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
       });
     }).toThrow('Cannot configure \'vpcSubnets\' without configuring a VPC');

@@ -1,13 +1,12 @@
 import * as constructs from 'constructs';
 import * as lambda from '../../aws-lambda';
-import { DEFAULT_UNITTEST_RUNTIME } from '../../aws-lambda/lib/helpers-internal';
 
 export class TestFunction extends lambda.Function {
   constructor(scope: constructs.Construct, id: string) {
     super(scope, id, {
       handler: 'index.handler',
       code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`),
-      runtime: DEFAULT_UNITTEST_RUNTIME,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
   }
 }

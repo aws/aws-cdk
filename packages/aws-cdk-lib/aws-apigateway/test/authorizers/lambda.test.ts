@@ -1,7 +1,6 @@
 import { Match, Template } from '../../../assertions';
 import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
-import { DEFAULT_UNITTEST_RUNTIME } from '../../../aws-lambda/lib/helpers-internal';
 import { Duration, Stack } from '../../../core';
 import { AuthorizationType, IdentitySource, RequestAuthorizer, RestApi, TokenAuthorizer } from '../../lib';
 
@@ -12,7 +11,7 @@ describe('lambda authorizer', () => {
     const func = new lambda.Function(stack, 'myfunction', {
       handler: 'handler',
       code: lambda.Code.fromInline('foo'),
-      runtime: DEFAULT_UNITTEST_RUNTIME,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
     const auth = new TokenAuthorizer(stack, 'myauthorizer', {
@@ -85,7 +84,7 @@ describe('lambda authorizer', () => {
     const func = new lambda.Function(stack, 'myfunction', {
       handler: 'handler',
       code: lambda.Code.fromInline('foo'),
-      runtime: DEFAULT_UNITTEST_RUNTIME,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
     const auth = new RequestAuthorizer(stack, 'myauthorizer', {
@@ -160,7 +159,7 @@ describe('lambda authorizer', () => {
     const func = new lambda.Function(stack, 'myfunction', {
       handler: 'handler',
       code: lambda.Code.fromInline('foo'),
-      runtime: DEFAULT_UNITTEST_RUNTIME,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
     expect(() => new RequestAuthorizer(stack, 'myauthorizer', {
@@ -176,7 +175,7 @@ describe('lambda authorizer', () => {
     const func = new lambda.Function(stack, 'myfunction', {
       handler: 'handler',
       code: lambda.Code.fromInline('foo'),
-      runtime: DEFAULT_UNITTEST_RUNTIME,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
     const auth = new TokenAuthorizer(stack, 'myauthorizer', {
@@ -249,7 +248,7 @@ describe('lambda authorizer', () => {
     const func = new lambda.Function(stack, 'myfunction', {
       handler: 'handler',
       code: lambda.Code.fromInline('foo'),
-      runtime: DEFAULT_UNITTEST_RUNTIME,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
     const auth = new RequestAuthorizer(stack, 'myauthorizer', {
@@ -320,7 +319,7 @@ describe('lambda authorizer', () => {
     const func = new lambda.Function(stack, 'myfunction', {
       handler: 'handler',
       code: lambda.Code.fromInline('foo'),
-      runtime: DEFAULT_UNITTEST_RUNTIME,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
     const role = new iam.Role(stack, 'authorizerassumerole', {
@@ -410,7 +409,7 @@ describe('lambda authorizer', () => {
     const func = new lambda.Function(stack, 'myfunction', {
       handler: 'handler',
       code: lambda.Code.fromInline('foo'),
-      runtime: DEFAULT_UNITTEST_RUNTIME,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
     const role = new iam.Role(stack, 'authorizerassumerole', {
@@ -501,7 +500,7 @@ describe('lambda authorizer', () => {
     const func = new lambda.Function(stack, 'myfunction', {
       handler: 'handler',
       code: lambda.Code.fromInline('foo'),
-      runtime: DEFAULT_UNITTEST_RUNTIME,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
     const auth = new TokenAuthorizer(stack, 'myauthorizer', {
       handler: func,
@@ -515,7 +514,7 @@ describe('lambda authorizer', () => {
     const func = new lambda.Function(stack, 'myfunction', {
       handler: 'handler',
       code: lambda.Code.fromInline('foo'),
-      runtime: DEFAULT_UNITTEST_RUNTIME,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
     const auth = new RequestAuthorizer(stack, 'myauthorizer', {
       handler: func,
@@ -560,7 +559,7 @@ describe('lambda authorizer', () => {
     const func = new lambda.Function(stack, 'myfunction', {
       handler: 'handler',
       code: lambda.Code.fromInline('foo'),
-      runtime: DEFAULT_UNITTEST_RUNTIME,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
     const auth = new RequestAuthorizer(stack, 'myauthorizer', {

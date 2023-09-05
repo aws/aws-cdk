@@ -2,7 +2,6 @@ import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import * as lambda from '../lib';
-import { DEFAULT_UNITTEST_RUNTIME } from '../lib/helpers-internal';
 
 describe('FunctionUrl', () => {
   test('default function url', () => {
@@ -11,7 +10,7 @@ describe('FunctionUrl', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: DEFAULT_UNITTEST_RUNTIME,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
     // WHEN
@@ -37,7 +36,7 @@ describe('FunctionUrl', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: DEFAULT_UNITTEST_RUNTIME,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
     // WHEN
@@ -95,7 +94,7 @@ describe('FunctionUrl', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: DEFAULT_UNITTEST_RUNTIME,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
     const aliasName = 'prod';
     const alias = new lambda.Alias(stack, 'Alias', {
@@ -125,7 +124,7 @@ describe('FunctionUrl', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: DEFAULT_UNITTEST_RUNTIME,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
     const version = new lambda.Version(stack, 'Version', {
       lambda: fn,
@@ -147,7 +146,7 @@ describe('FunctionUrl', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: DEFAULT_UNITTEST_RUNTIME,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
     // WHEN
@@ -170,7 +169,7 @@ describe('FunctionUrl', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: DEFAULT_UNITTEST_RUNTIME,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
     const fnUrl = new lambda.FunctionUrl(stack, 'FunctionUrl', {
       function: fn,

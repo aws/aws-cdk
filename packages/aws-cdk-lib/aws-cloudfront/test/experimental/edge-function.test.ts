@@ -5,7 +5,6 @@ import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
 import * as cdk from '../../../core';
 import * as cloudfront from '../../lib';
-import { DEFAULT_UNITTEST_RUNTIME } from '../../../aws-lambda/lib/helpers-internal';
 
 let app: cdk.App;
 let stack: cdk.Stack;
@@ -91,7 +90,7 @@ describe('stacks', () => {
       Code: { ZipFile: 'foo' },
       Handler: 'index.handler',
       Role: { 'Fn::GetAtt': ['MyFnServiceRoleF3016589', 'Arn'] },
-      Runtime: 'nodejs99.x',
+      Runtime: lambda.Runtime.NODEJS_LATEST.name,
     });
     Template.fromStack(fnStack).hasResourceProperties('AWS::Lambda::Version', {
       FunctionName: { Ref: 'MyFn6F8F742F' },
@@ -153,7 +152,7 @@ describe('stacks', () => {
       Code: { ZipFile: 'foo' },
       Handler: 'index.handler',
       Role: { 'Fn::GetAtt': ['MyFnServiceRole3F9D41E1', 'Arn'] },
-      Runtime: 'nodejs99.x',
+      Runtime: lambda.Runtime.NODEJS_LATEST.name,
     });
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Version', {
       FunctionName: { Ref: 'MyFn223608AD' },
@@ -311,7 +310,7 @@ function defaultEdgeFunctionProps(stackId?: string) {
   return {
     code: lambda.Code.fromInline('foo'),
     handler: 'index.handler',
-    runtime: DEFAULT_UNITTEST_RUNTIME,
+    runtime: lambda.Runtime.NODEJS_LATEST,
     stackId: stackId,
   };
 }

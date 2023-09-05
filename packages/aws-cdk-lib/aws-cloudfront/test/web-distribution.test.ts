@@ -21,7 +21,6 @@ import {
   ViewerCertificate,
   ViewerProtocolPolicy,
 } from '../lib';
-import { DEFAULT_UNITTEST_RUNTIME } from '../../aws-lambda/lib/helpers-internal';
 
 /* eslint-disable quote-props */
 
@@ -838,7 +837,7 @@ added the ellipsis so a user would know there was more to r...`,
     const lambdaFunction = new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.fromInline('foo'),
       handler: 'index.handler',
-      runtime: DEFAULT_UNITTEST_RUNTIME,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
     new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
@@ -887,7 +886,7 @@ added the ellipsis so a user would know there was more to r...`,
     const lambdaFunction = new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.fromInline('foo'),
       handler: 'index.handler',
-      runtime: DEFAULT_UNITTEST_RUNTIME,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
     lambdaFunction.addEnvironment('KEY', 'value', { removeInEdge: true });
 
@@ -924,7 +923,7 @@ added the ellipsis so a user would know there was more to r...`,
     const lambdaFunction = new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.fromInline('foo'),
       handler: 'index.handler',
-      runtime: DEFAULT_UNITTEST_RUNTIME,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       environment: {
         KEY: 'value',
       },
@@ -1308,7 +1307,7 @@ added the ellipsis so a user would know there was more to r...`,
     const fn = new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.fromInline('foo'),
       handler: 'index.handler',
-      runtime: DEFAULT_UNITTEST_RUNTIME,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
     const lambdaVersion = new lambda.Version(stack, 'LambdaVersion', { lambda: fn });
 

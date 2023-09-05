@@ -1,6 +1,5 @@
 import { Template } from '../../assertions';
 import * as lambda from '../../aws-lambda';
-import { DEFAULT_UNITTEST_RUNTIME } from '../../aws-lambda/lib/helpers-internal';
 import * as sns from '../../aws-sns';
 import { Duration, Stack } from '../../core';
 import * as triggers from '../lib';
@@ -12,7 +11,7 @@ test('minimal trigger function', () => {
   // WHEN
   new triggers.TriggerFunction(stack, 'MyTrigger', {
     handler: 'index.handler',
-    runtime: DEFAULT_UNITTEST_RUNTIME,
+    runtime: lambda.Runtime.NODEJS_LATEST,
     code: lambda.Code.fromInline('foo'),
   });
 
@@ -34,7 +33,7 @@ test('before/after', () => {
 
   // WHEN
   const myTrigger = new triggers.TriggerFunction(stack, 'MyTrigger', {
-    runtime: DEFAULT_UNITTEST_RUNTIME,
+    runtime: lambda.Runtime.NODEJS_LATEST,
     code: lambda.Code.fromInline('zoo'),
     handler: 'index.handler',
 
@@ -74,13 +73,13 @@ test('multiple functions', () => {
   // WHEN
   new triggers.TriggerFunction(stack, 'MyTrigger', {
     handler: 'index.handler',
-    runtime: DEFAULT_UNITTEST_RUNTIME,
+    runtime: lambda.Runtime.NODEJS_LATEST,
     code: lambda.Code.fromInline('foo'),
   });
 
   new triggers.TriggerFunction(stack, 'MySecondTrigger', {
     handler: 'index.handler',
-    runtime: DEFAULT_UNITTEST_RUNTIME,
+    runtime: lambda.Runtime.NODEJS_LATEST,
     code: lambda.Code.fromInline('bar'),
   });
 
@@ -96,7 +95,7 @@ test('minimal trigger', () => {
   const stack = new Stack();
   const func = new lambda.Function(stack, 'MyFunction', {
     handler: 'index.handler',
-    runtime: DEFAULT_UNITTEST_RUNTIME,
+    runtime: lambda.Runtime.NODEJS_LATEST,
     code: lambda.Code.fromInline('foo'),
   });
 
@@ -119,7 +118,7 @@ test('trigger with optional properties', () => {
   const stack = new Stack();
   const func = new lambda.Function(stack, 'MyFunction', {
     handler: 'index.handler',
-    runtime: DEFAULT_UNITTEST_RUNTIME,
+    runtime: lambda.Runtime.NODEJS_LATEST,
     code: lambda.Code.fromInline('foo'),
   });
 

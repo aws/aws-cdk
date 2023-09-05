@@ -363,7 +363,6 @@
     "./aws-kms": "./aws-kms/index.js",
     "./aws-lakeformation": "./aws-lakeformation/index.js",
     "./aws-lambda": "./aws-lambda/index.js",
-    "./aws-lambda/lib/helpers-internal": "./aws-lambda/lib/helpers-internal/index.js",
     "./aws-lambda-destinations": "./aws-lambda-destinations/index.js",
     "./aws-lambda-event-sources": "./aws-lambda-event-sources/index.js",
     "./aws-lambda-nodejs": "./aws-lambda-nodejs/index.js",

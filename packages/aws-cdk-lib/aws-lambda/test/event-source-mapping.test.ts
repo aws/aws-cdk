@@ -1,7 +1,6 @@
 import { Match, Template } from '../../assertions';
 import * as cdk from '../../core';
 import { Code, EventSourceMapping, Function, Runtime, Alias, StartingPosition, FilterRule, FilterCriteria } from '../lib';
-import { DEFAULT_UNITTEST_RUNTIME } from '../lib/helpers-internal';
 
 let stack: cdk.Stack;
 let fn: Function;
@@ -10,7 +9,7 @@ beforeEach(() => {
   fn = new Function(stack, 'fn', {
     handler: 'index.handler',
     code: Code.fromInline('exports.handler = ${handler.toString()}'),
-    runtime: DEFAULT_UNITTEST_RUNTIME,
+    runtime: lambda.Runtime.NODEJS_LATEST,
   });
 });
 

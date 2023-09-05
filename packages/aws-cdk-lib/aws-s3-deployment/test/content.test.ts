@@ -1,5 +1,4 @@
 import * as lambda from '../../aws-lambda';
-import { DEFAULT_UNITTEST_RUNTIME } from '../../aws-lambda/lib/helpers-internal';
 import * as s3 from '../../aws-s3';
 import { Lazy, Stack } from '../../core';
 import { Source } from '../lib';
@@ -85,7 +84,7 @@ test('json-encoded string', () => {
 
 test('markers are returned in the source config', () => {
   const stack = new Stack();
-  const handler = new lambda.Function(stack, 'Handler', { runtime: DEFAULT_UNITTEST_RUNTIME, code: lambda.Code.fromInline('foo'), handler: 'index.handler' });
+  const handler = new lambda.Function(stack, 'Handler', { runtime: lambda.Runtime.NODEJS_LATEST, code: lambda.Code.fromInline('foo'), handler: 'index.handler' });
   const actual = Source.data('file1.txt', `boom-${stack.account}`).bind(stack, { handlerRole: handler.role! });
   expect(actual.markers).toStrictEqual({
     '<<marker:0xbaba:0>>': { Ref: 'AWS::AccountId' },

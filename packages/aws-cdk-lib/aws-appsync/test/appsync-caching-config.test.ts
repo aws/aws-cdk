@@ -4,7 +4,6 @@ import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
 import { Duration } from '../../core';
 import * as appsync from '../lib';
-import { DEFAULT_UNITTEST_RUNTIME } from '../../aws-lambda/lib/helpers-internal';
 
 let stack: cdk.Stack;
 let api: appsync.GraphqlApi;
@@ -26,7 +25,7 @@ describe('Lambda caching config', () => {
     func = new lambda.Function(stack, 'func', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'verify/lambda-tutorial')),
       handler: 'lambda-tutorial.handler',
-      runtime: DEFAULT_UNITTEST_RUNTIME,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
   });
 

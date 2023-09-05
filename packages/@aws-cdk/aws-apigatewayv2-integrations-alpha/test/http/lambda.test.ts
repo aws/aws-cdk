@@ -1,7 +1,7 @@
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { HttpApi, HttpRoute, HttpRouteKey, MappingValue, ParameterMapping, PayloadFormatVersion } from '@aws-cdk/aws-apigatewayv2-alpha';
 import { Code, Function } from 'aws-cdk-lib/aws-lambda';
-import { DEFAULT_UNITTEST_RUNTIME } from 'aws-cdk-lib/aws-lambda/lib/helpers-internal';
+import { lambda.Runtime.NODEJS_LATEST } from 'aws-cdk-lib/aws-lambda/lib/helpers-internal';
 import { App, Stack } from 'aws-cdk-lib';
 import { HttpLambdaIntegration } from '../../lib';
 
@@ -112,7 +112,7 @@ describe('LambdaProxyIntegration', () => {
 function fooFunction(stack: Stack, id: string) {
   return new Function(stack, id, {
     code: Code.fromInline('foo'),
-    runtime: DEFAULT_UNITTEST_RUNTIME,
+    runtime: lambda.Runtime.NODEJS_LATEST,
     handler: 'index.handler',
   });
 }

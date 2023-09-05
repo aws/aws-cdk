@@ -17,7 +17,7 @@ function functionWithInsightsVersion(
     functionName: id,
     code: new lambda.InlineCode('foo'),
     handler: 'index.handler',
-    runtime: DEFAULT_UNITTEST_RUNTIME,
+    runtime: lambda.Runtime.NODEJS_LATEST,
     architecture,
     insightsVersion,
   });
