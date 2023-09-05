@@ -1,5 +1,6 @@
 import { Template } from 'aws-cdk-lib/assertions';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { DEFAULT_UNITTEST_RUNTIME } from 'aws-cdk-lib/aws-lambda/lib/helpers-internal';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
 import { AccessPoint } from '../lib';
@@ -12,7 +13,7 @@ beforeEach(() => {
   stack = new cdk.Stack();
   bucket = new s3.Bucket(stack, 'MyBucket');
   handler = new lambda.Function(stack, 'MyFunction', {
-    runtime: lambda.Runtime.NODEJS_16_X,
+    runtime: DEFAULT_UNITTEST_RUNTIME,
     handler: 'index.hello',
     code: new lambda.InlineCode('def hello(): pass'),
   });

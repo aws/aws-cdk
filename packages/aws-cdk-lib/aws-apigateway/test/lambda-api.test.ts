@@ -1,5 +1,6 @@
 import { Match, Template } from '../../assertions';
 import * as lambda from '../../aws-lambda';
+import { DEFAULT_UNITTEST_RUNTIME } from '../../aws-lambda/lib/helpers-internal';
 import * as cdk from '../../core';
 import * as apigw from '../lib';
 import { LambdaRestApi } from '../lib';
@@ -12,7 +13,7 @@ describe('lambda api', () => {
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
       code: lambda.Code.fromInline('boom'),
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: DEFAULT_UNITTEST_RUNTIME,
     });
 
     // WHEN
@@ -74,7 +75,7 @@ describe('lambda api', () => {
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
       code: lambda.Code.fromInline('boom'),
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: DEFAULT_UNITTEST_RUNTIME,
     });
     const alias = new lambda.Alias(stack, 'alias', {
       aliasName: 'my-alias',
@@ -139,7 +140,7 @@ describe('lambda api', () => {
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
       code: lambda.Code.fromInline('boom'),
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: DEFAULT_UNITTEST_RUNTIME,
     });
 
     // WHEN
@@ -203,7 +204,7 @@ describe('lambda api', () => {
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
       code: lambda.Code.fromInline('boom'),
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: DEFAULT_UNITTEST_RUNTIME,
     });
 
     expect(() => new apigw.LambdaRestApi(stack, 'lambda-rest-api', {
@@ -224,7 +225,7 @@ describe('lambda api', () => {
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
       code: lambda.Code.fromInline('boom'),
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: DEFAULT_UNITTEST_RUNTIME,
     });
 
     // WHEN
@@ -278,7 +279,7 @@ describe('lambda api', () => {
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
       code: lambda.Code.fromInline('boom'),
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: DEFAULT_UNITTEST_RUNTIME,
     });
 
     // WHEN
@@ -340,7 +341,7 @@ describe('lambda api', () => {
       handler: new lambda.Function(stack, 'handler', {
         handler: 'index.handler',
         code: lambda.Code.fromInline('boom'),
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: DEFAULT_UNITTEST_RUNTIME,
       }),
       restApiName: cdk.PhysicalName.GENERATE_IF_NEEDED,
     });

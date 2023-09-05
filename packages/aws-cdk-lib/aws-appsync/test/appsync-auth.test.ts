@@ -4,6 +4,7 @@ import * as cognito from '../../aws-cognito';
 import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
 import * as appsync from '../lib';
+import { DEFAULT_UNITTEST_RUNTIME } from '../../aws-lambda/lib/helpers-internal';
 
 // GIVEN
 let stack: cdk.Stack;
@@ -637,7 +638,7 @@ describe('AppSync Lambda Authorization', () => {
   let fn: lambda.Function;
   beforeEach(() => {
     fn = new lambda.Function(stack, 'auth-function', {
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: DEFAULT_UNITTEST_RUNTIME,
       handler: 'index.handler',
       code: lambda.Code.fromInline('/* lambda authentication code here.*/'),
     });

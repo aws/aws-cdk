@@ -1,6 +1,7 @@
 import * as path from 'path';
 import { Template } from '../../assertions';
 import * as lambda from '../../aws-lambda';
+import { DEFAULT_UNITTEST_RUNTIME } from '../../aws-lambda/lib/helpers-internal';
 import { CfnResource, Lazy, Stack } from '../../core';
 import * as apigateway from '../lib';
 
@@ -198,12 +199,12 @@ describe('deployment', () => {
     const stack2 = new Stack();
     const handler1 = new lambda.Function(stack1, 'handler1', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'lambda')),
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: DEFAULT_UNITTEST_RUNTIME,
       handler: 'index.handler',
     });
     const handler2 = new lambda.Function(stack2, 'handler2', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'lambda')),
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: DEFAULT_UNITTEST_RUNTIME,
       handler: 'index.handler',
     });
 

@@ -1,5 +1,6 @@
 import { Template } from '../../assertions';
 import * as lambda from '../../aws-lambda';
+import { DEFAULT_UNITTEST_RUNTIME } from '../../aws-lambda/lib/helpers-internal';
 import * as logs from '../../aws-logs';
 import * as cdk from '../../core';
 import * as dests from '../lib';
@@ -14,7 +15,7 @@ beforeEach(() => {
   fn = new lambda.Function(stack, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'index.handler',
-    runtime: lambda.Runtime.NODEJS_16_X,
+    runtime: DEFAULT_UNITTEST_RUNTIME,
   });
   logGroup = new logs.LogGroup(stack, 'LogGroup');
 });

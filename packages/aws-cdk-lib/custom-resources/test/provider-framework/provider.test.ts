@@ -8,6 +8,7 @@ import * as logs from '../../../aws-logs';
 import { Duration, Stack } from '../../../core';
 import * as cr from '../../lib';
 import * as util from '../../lib/provider-framework/util';
+import { DEFAULT_UNITTEST_RUNTIME } from '../../../aws-lambda/lib/helpers-internal';
 
 test('security groups are applied to all framework functions', () => {
 
@@ -22,12 +23,12 @@ test('security groups are applied to all framework functions', () => {
     onEventHandler: new lambda.Function(stack, 'OnEvent', {
       code: lambda.Code.fromInline('foo'),
       handler: 'index.onEvent',
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: DEFAULT_UNITTEST_RUNTIME,
     }),
     isCompleteHandler: new lambda.Function(stack, 'IsComplete', {
       code: lambda.Code.fromInline('foo'),
       handler: 'index.isComplete',
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: DEFAULT_UNITTEST_RUNTIME,
     }),
     vpc: vpc,
     vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
@@ -90,12 +91,12 @@ test('vpc is applied to all framework functions', () => {
     onEventHandler: new lambda.Function(stack, 'OnEvent', {
       code: lambda.Code.fromInline('foo'),
       handler: 'index.onEvent',
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: DEFAULT_UNITTEST_RUNTIME,
     }),
     isCompleteHandler: new lambda.Function(stack, 'IsComplete', {
       code: lambda.Code.fromInline('foo'),
       handler: 'index.isComplete',
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: DEFAULT_UNITTEST_RUNTIME,
     }),
     vpc: vpc,
     vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
@@ -142,7 +143,7 @@ test('minimal setup', () => {
     onEventHandler: new lambda.Function(stack, 'MyHandler', {
       code: lambda.Code.fromAsset(path.join(__dirname, './integration-test-fixtures/s3-file-handler')),
       handler: 'index.onEvent',
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: DEFAULT_UNITTEST_RUNTIME,
     }),
   });
 
@@ -174,7 +175,7 @@ test('if isComplete is specified, the isComplete framework handler is also inclu
   const handler = new lambda.Function(stack, 'MyHandler', {
     code: lambda.Code.fromAsset(path.join(__dirname, './integration-test-fixtures/s3-file-handler')),
     handler: 'index.onEvent',
-    runtime: lambda.Runtime.NODEJS_16_X,
+    runtime: DEFAULT_UNITTEST_RUNTIME,
   });
 
   // WHEN
@@ -248,7 +249,7 @@ test('fails if "queryInterval" and/or "totalTimeout" are set without "isComplete
   const handler = new lambda.Function(stack, 'MyHandler', {
     code: lambda.Code.fromAsset(path.join(__dirname, './integration-test-fixtures/s3-file-handler')),
     handler: 'index.onEvent',
-    runtime: lambda.Runtime.NODEJS_16_X,
+    runtime: DEFAULT_UNITTEST_RUNTIME,
   });
 
   // THEN
@@ -304,7 +305,7 @@ describe('log retention', () => {
       onEventHandler: new lambda.Function(stack, 'MyHandler', {
         code: lambda.Code.fromAsset(path.join(__dirname, './integration-test-fixtures/s3-file-handler')),
         handler: 'index.onEvent',
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: DEFAULT_UNITTEST_RUNTIME,
       }),
       logRetention: logs.RetentionDays.ONE_WEEK,
     });
@@ -335,7 +336,7 @@ describe('log retention', () => {
       onEventHandler: new lambda.Function(stack, 'MyHandler', {
         code: lambda.Code.fromAsset(path.join(__dirname, './integration-test-fixtures/s3-file-handler')),
         handler: 'index.onEvent',
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: DEFAULT_UNITTEST_RUNTIME,
       }),
     });
 
@@ -354,7 +355,7 @@ describe('role', () => {
       onEventHandler: new lambda.Function(stack, 'MyHandler', {
         code: lambda.Code.fromAsset(path.join(__dirname, './integration-test-fixtures/s3-file-handler')),
         handler: 'index.onEvent',
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: DEFAULT_UNITTEST_RUNTIME,
       }),
       role: new iam.Role(stack, 'MyRole', {
         assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
@@ -382,7 +383,7 @@ describe('role', () => {
       onEventHandler: new lambda.Function(stack, 'MyHandler', {
         code: lambda.Code.fromAsset(path.join(__dirname, './integration-test-fixtures/s3-file-handler')),
         handler: 'index.onEvent',
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: DEFAULT_UNITTEST_RUNTIME,
       }),
     });
 
@@ -409,7 +410,7 @@ describe('name', () => {
       onEventHandler: new lambda.Function(stack, 'MyHandler', {
         code: lambda.Code.fromAsset(path.join(__dirname, './integration-test-fixtures/s3-file-handler')),
         handler: 'index.onEvent',
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: DEFAULT_UNITTEST_RUNTIME,
       }),
       providerFunctionName,
     });
@@ -434,7 +435,7 @@ describe('environment encryption', () => {
       onEventHandler: new lambda.Function(stack, 'MyHandler', {
         code: lambda.Code.fromAsset(path.join(__dirname, './integration-test-fixtures/s3-file-handler')),
         handler: 'index.onEvent',
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: DEFAULT_UNITTEST_RUNTIME,
       }),
       providerFunctionEnvEncryption: key,
     });

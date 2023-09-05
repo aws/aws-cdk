@@ -1,6 +1,7 @@
 import * as path from 'path';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Code, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { DEFAULT_UNITTEST_RUNTIME } from 'aws-cdk-lib/aws-lambda/lib/helpers-internal';
 import { AssetHashType, DockerImage, Stack } from 'aws-cdk-lib';
 import { PythonFunction } from '../lib';
 import { Bundling, BundlingProps } from '../lib/bundling';
@@ -112,7 +113,7 @@ test('throws when entry does not exist', () => {
 test('throws with the wrong runtime family', () => {
   expect(() => new PythonFunction(stack, 'handler1', {
     entry: path.join(__dirname, 'lambda-handler'),
-    runtime: Runtime.NODEJS_16_X,
+    runtime: DEFAULT_UNITTEST_RUNTIME,
   })).toThrow(/Only `PYTHON` runtimes are supported/);
 });
 

@@ -6,6 +6,7 @@ import { App, CfnOutput, CfnResource, Stack } from '../../core';
 import * as cxapi from '../../cx-api';
 import * as lambda from '../lib';
 import { calculateFunctionHash, trimFromStart, VERSION_LOCKED } from '../lib/function-hash';
+import { DEFAULT_UNITTEST_RUNTIME } from '../lib/helpers-internal';
 
 describe('function hash', () => {
   describe('trimFromStart', () => {
@@ -32,14 +33,14 @@ describe('function hash', () => {
       });
       const stack1 = new Stack(app, 'Stack1');
       const fn1 = new lambda.Function(stack1, 'MyFunction1', {
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: DEFAULT_UNITTEST_RUNTIME,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         handler: 'index.handler',
       });
 
       const stack2 = new Stack(app, 'Stack2');
       const fn2 = new lambda.Function(stack2, 'MyFunction1', {
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: DEFAULT_UNITTEST_RUNTIME,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         handler: 'index.handler',
       });
@@ -57,7 +58,7 @@ describe('function hash', () => {
     });
     const stack1 = new Stack(app);
     const fn1 = new lambda.Function(stack1, 'MyFunction1', {
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: DEFAULT_UNITTEST_RUNTIME,
       code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
       handler: 'index.handler',
     });
@@ -74,7 +75,7 @@ describe('function hash', () => {
     });
     const stack1 = new Stack(app, 'Stack1');
     const fn1 = new lambda.Function(stack1, 'MyFunction', {
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: DEFAULT_UNITTEST_RUNTIME,
       code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
       handler: 'index.handler',
       environment: {
@@ -84,7 +85,7 @@ describe('function hash', () => {
 
     const stack2 = new Stack(app);
     const fn2 = new lambda.Function(stack2, 'MyFunction', {
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: DEFAULT_UNITTEST_RUNTIME,
       code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
       handler: 'index.handler',
       environment: {
@@ -104,7 +105,7 @@ describe('function hash', () => {
     });
     const stack1 = new Stack(app, 'Stack1');
     const fn1 = new lambda.Function(stack1, 'MyFunction', {
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: DEFAULT_UNITTEST_RUNTIME,
       code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
       handler: 'index.handler',
       environment: {
@@ -114,7 +115,7 @@ describe('function hash', () => {
 
     const stack2 = new Stack(app);
     const fn2 = new lambda.Function(stack2, 'MyFunction', {
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: DEFAULT_UNITTEST_RUNTIME,
       code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
       handler: 'index.handler',
       environment: {
@@ -129,14 +130,14 @@ describe('function hash', () => {
   test('inline code change impacts the hash', () => {
     const stack1 = new Stack();
     const fn1 = new lambda.Function(stack1, 'MyFunction', {
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: DEFAULT_UNITTEST_RUNTIME,
       code: lambda.Code.fromInline('foo'),
       handler: 'index.handler',
     });
 
     const stack2 = new Stack();
     const fn2 = new lambda.Function(stack2, 'MyFunction', {
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: DEFAULT_UNITTEST_RUNTIME,
       code: lambda.Code.fromInline('foo bar'),
       handler: 'index.handler',
     });
@@ -153,13 +154,13 @@ describe('function hash', () => {
       stack1 = new Stack();
       layer1 = new lambda.LayerVersion(stack1, 'MyLayer', {
         code: lambda.Code.fromAsset(path.join(__dirname, 'layer-code')),
-        compatibleRuntimes: [lambda.Runtime.NODEJS_16_X],
+        compatibleRuntimes: [DEFAULT_UNITTEST_RUNTIME],
         license: 'Apache-2.0',
         description: 'A layer to test the L2 construct',
       });
       layer2 = new lambda.LayerVersion(stack1, 'MyLayer2', {
         code: lambda.Code.fromAsset(path.join(__dirname, 'layer-code')),
-        compatibleRuntimes: [lambda.Runtime.NODEJS_16_X],
+        compatibleRuntimes: [DEFAULT_UNITTEST_RUNTIME],
         license: 'Apache-2.0',
         description: 'A layer to test the L2 construct',
       });
@@ -168,7 +169,7 @@ describe('function hash', () => {
     test('same configuration yields the same hash', () => {
       const stack2 = new Stack();
       const fn1 = new lambda.Function(stack2, 'MyFunction', {
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: DEFAULT_UNITTEST_RUNTIME,
         code: lambda.Code.fromInline('foo'),
         handler: 'index.handler',
         layers: [layer1],
@@ -176,7 +177,7 @@ describe('function hash', () => {
 
       const stack3 = new Stack();
       const fn2 = new lambda.Function(stack3, 'MyFunction', {
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: DEFAULT_UNITTEST_RUNTIME,
         code: lambda.Code.fromInline('foo'),
         handler: 'index.handler',
         layers: [layer1],
@@ -189,7 +190,7 @@ describe('function hash', () => {
     test('different layers impacts hash', () => {
       const stack2 = new Stack();
       const fn1 = new lambda.Function(stack2, 'MyFunction', {
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: DEFAULT_UNITTEST_RUNTIME,
         code: lambda.Code.fromInline('foo'),
         handler: 'index.handler',
         layers: [layer1],
@@ -197,7 +198,7 @@ describe('function hash', () => {
 
       const stack3 = new Stack();
       const fn2 = new lambda.Function(stack3, 'MyFunction', {
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: DEFAULT_UNITTEST_RUNTIME,
         code: lambda.Code.fromInline('foo'),
         handler: 'index.handler',
         layers: [layer2],
@@ -211,7 +212,7 @@ describe('function hash', () => {
       test('without feature flag, preserve old behavior to avoid unnecessary invalidation of templates', () => {
         const stack2 = new Stack();
         const fn1 = new lambda.Function(stack2, 'MyFunction', {
-          runtime: lambda.Runtime.NODEJS_16_X,
+          runtime: DEFAULT_UNITTEST_RUNTIME,
           code: lambda.Code.fromInline('foo'),
           handler: 'index.handler',
           layers: [layer1, layer2],
@@ -219,7 +220,7 @@ describe('function hash', () => {
 
         const stack3 = new Stack();
         const fn2 = new lambda.Function(stack3, 'MyFunction', {
-          runtime: lambda.Runtime.NODEJS_16_X,
+          runtime: DEFAULT_UNITTEST_RUNTIME,
           code: lambda.Code.fromInline('foo'),
           handler: 'index.handler',
           layers: [layer2, layer1],
@@ -234,7 +235,7 @@ describe('function hash', () => {
 
         const stack2 = new Stack(app, 'stack2');
         const fn1 = new lambda.Function(stack2, 'MyFunction', {
-          runtime: lambda.Runtime.NODEJS_16_X,
+          runtime: DEFAULT_UNITTEST_RUNTIME,
           code: lambda.Code.fromInline('foo'),
           handler: 'index.handler',
           layers: [layer1, layer2],
@@ -242,7 +243,7 @@ describe('function hash', () => {
 
         const stack3 = new Stack(app, 'stack3');
         const fn2 = new lambda.Function(stack3, 'MyFunction', {
-          runtime: lambda.Runtime.NODEJS_16_X,
+          runtime: DEFAULT_UNITTEST_RUNTIME,
           code: lambda.Code.fromInline('foo'),
           handler: 'index.handler',
           layers: [layer2, layer1],
@@ -258,7 +259,7 @@ describe('function hash', () => {
       const stack2 = new Stack(app, 'stack2');
       const importedLayer1 = lambda.LayerVersion.fromLayerVersionArn(stack2, 'imported-layer', 'arn:aws:lambda:<region>:<account>:layer:<layer-name>:<version1>');
       const fn1 = new lambda.Function(stack2, 'MyFunction', {
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: DEFAULT_UNITTEST_RUNTIME,
         code: lambda.Code.fromInline('foo'),
         handler: 'index.handler',
         layers: [importedLayer1],
@@ -267,7 +268,7 @@ describe('function hash', () => {
       const stack3 = new Stack(app, 'stack3');
       const importedLayer2 = lambda.LayerVersion.fromLayerVersionArn(stack3, 'imported-layer', 'arn:aws:lambda:<region>:<account>:layer:<layer-name>:<version2>');
       const fn2 = new lambda.Function(stack3, 'MyFunction', {
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: DEFAULT_UNITTEST_RUNTIME,
         code: lambda.Code.fromInline('foo'),
         handler: 'index.handler',
         layers: [importedLayer2],
@@ -281,7 +282,7 @@ describe('function hash', () => {
     test('without "currentVersion", we preserve old behavior to avoid unnecessary invalidation of templates', () => {
       const stack1 = new Stack();
       const fn1 = new lambda.Function(stack1, 'MyFunction', {
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: DEFAULT_UNITTEST_RUNTIME,
         code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
         handler: 'index.handler',
         environment: {
@@ -292,7 +293,7 @@ describe('function hash', () => {
 
       const stack2 = new Stack();
       const fn2 = new lambda.Function(stack2, 'MyFunction', {
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: DEFAULT_UNITTEST_RUNTIME,
         code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
         handler: 'index.handler',
         environment: {
@@ -307,7 +308,7 @@ describe('function hash', () => {
     test('with "currentVersion", we sort env keys so order is consistent', () => {
       const stack1 = new Stack();
       const fn1 = new lambda.Function(stack1, 'MyFunction', {
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: DEFAULT_UNITTEST_RUNTIME,
         code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
         handler: 'index.handler',
         environment: {
@@ -320,7 +321,7 @@ describe('function hash', () => {
 
       const stack2 = new Stack();
       const fn2 = new lambda.Function(stack2, 'MyFunction', {
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: DEFAULT_UNITTEST_RUNTIME,
         code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
         handler: 'index.handler',
         environment: {
@@ -349,14 +350,14 @@ describe('function hash', () => {
     test('DependsOn does not impact function hash', () => {
       const stack1 = new Stack(app, 'Stack1');
       const fn1 = new lambda.Function(stack1, 'MyFunction1', {
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: DEFAULT_UNITTEST_RUNTIME,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         handler: 'index.handler',
       });
 
       const stack2 = new Stack(app, 'Stack2');
       const fn2 = new lambda.Function(stack2, 'MyFunction1', {
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: DEFAULT_UNITTEST_RUNTIME,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         handler: 'index.handler',
       });
@@ -375,14 +376,14 @@ describe('function hash', () => {
     test('properties not locked to the version do not impact function hash', () => {
       const stack1 = new Stack(app, 'Stack1');
       const fn1 = new lambda.Function(stack1, 'MyFunction', {
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: DEFAULT_UNITTEST_RUNTIME,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         handler: 'index.handler',
       });
 
       const stack2 = new Stack(app, 'Stack2');
       const fn2 = new lambda.Function(stack2, 'MyFunction', {
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: DEFAULT_UNITTEST_RUNTIME,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         handler: 'index.handler',
 
@@ -396,7 +397,7 @@ describe('function hash', () => {
     test('unclassified property throws an error', () => {
       const stack = new Stack(app);
       const fn1 = new lambda.Function(stack, 'MyFunction1', {
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: DEFAULT_UNITTEST_RUNTIME,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         handler: 'index.handler',
       });
@@ -408,7 +409,7 @@ describe('function hash', () => {
     test('manual classification as version locked', () => {
       const stack = new Stack(app);
       const fn1 = new lambda.Function(stack, 'MyFunction1', {
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: DEFAULT_UNITTEST_RUNTIME,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         handler: 'index.handler',
       });
@@ -422,7 +423,7 @@ describe('function hash', () => {
     test('manual classification as not version locked', () => {
       const stack = new Stack(app);
       const fn1 = new lambda.Function(stack, 'MyFunction1', {
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: DEFAULT_UNITTEST_RUNTIME,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         handler: 'index.handler',
       });

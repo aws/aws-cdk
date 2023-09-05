@@ -3,6 +3,7 @@ import { Template } from '../../../assertions';
 import { Code, Function as lambdaFn, Runtime } from '../../../aws-lambda';
 import { Duration, Stack } from '../../../core';
 import { WaiterStateMachine } from '../../lib/provider-framework/waiter-state-machine';
+import { DEFAULT_UNITTEST_RUNTIME } from '../../../aws-lambda/lib/helpers-internal';
 
 describe('state machine', () => {
   test('contains the needed resources', () => {
@@ -12,12 +13,12 @@ describe('state machine', () => {
 
     const isCompleteHandler = new lambdaFn(stack, 'isComplete', {
       code: Code.fromInline('foo'),
-      runtime: Runtime.NODEJS_16_X,
+      runtime: DEFAULT_UNITTEST_RUNTIME,
       handler: 'index.handler',
     });
     const timeoutHandler = new lambdaFn(stack, 'isTimeout', {
       code: Code.fromInline('foo'),
-      runtime: Runtime.NODEJS_16_X,
+      runtime: DEFAULT_UNITTEST_RUNTIME,
       handler: 'index.handler',
     });
     const interval = Duration.hours(2);

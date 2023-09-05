@@ -11,6 +11,8 @@ import { PackageInstallation } from '../lib/package-installation';
 import { Charset, LogLevel, OutputFormat, SourceMapMode } from '../lib/types';
 import * as util from '../lib/util';
 
+const STANDARD_RUNTIME = Runtime.NODEJS_16_X;
+
 let detectPackageInstallationMock: jest.SpyInstance<PackageInstallation | undefined>;
 const app = new App();
 const stack = new Stack(app, 'MyTestStack');
@@ -46,7 +48,7 @@ test('esbuild bundling in Docker', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_16_X,
+    runtime: STANDARD_RUNTIME,
     architecture: Architecture.X86_64,
     environment: {
       KEY: 'value',
@@ -85,7 +87,7 @@ test('esbuild bundling with handler named index.ts', () => {
     entry: '/project/lib/index.ts',
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_16_X,
+    runtime: STANDARD_RUNTIME,
     architecture: Architecture.X86_64,
     forceDockerBundling: true,
   });
@@ -107,7 +109,7 @@ test('esbuild bundling with tsx handler', () => {
     entry: '/project/lib/handler.tsx',
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_16_X,
+    runtime: STANDARD_RUNTIME,
     architecture: Architecture.X86_64,
     forceDockerBundling: true,
   });
@@ -133,7 +135,7 @@ test('esbuild with Windows paths', () => {
 
   Bundling.bundle(stack, {
     entry: 'C:\\my-project\\lib\\entry.ts',
-    runtime: Runtime.NODEJS_16_X,
+    runtime: STANDARD_RUNTIME,
     architecture: Architecture.X86_64,
     projectRoot: 'C:\\my-project',
     depsLockFilePath: 'C:\\my-project\\package-lock.json',
@@ -157,7 +159,7 @@ test('esbuild bundling with externals and dependencies', () => {
     entry: __filename,
     projectRoot: path.dirname(packageLock),
     depsLockFilePath: packageLock,
-    runtime: Runtime.NODEJS_16_X,
+    runtime: STANDARD_RUNTIME,
     architecture: Architecture.X86_64,
     externalModules: ['abc'],
     nodeModules: ['delay'],
@@ -187,7 +189,7 @@ test('esbuild bundling with esbuild options', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_16_X,
+    runtime: STANDARD_RUNTIME,
     architecture: Architecture.X86_64,
     minify: true,
     sourceMap: true,
@@ -264,7 +266,7 @@ test('esbuild bundling source map default', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_16_X,
+    runtime: STANDARD_RUNTIME,
     architecture: Architecture.X86_64,
     sourceMap: true,
     sourceMapMode: SourceMapMode.DEFAULT,
@@ -311,7 +313,7 @@ test('esbuild bundling source map inline', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_16_X,
+    runtime: STANDARD_RUNTIME,
     architecture: Architecture.X86_64,
     sourceMap: true,
     sourceMapMode: SourceMapMode.INLINE,
@@ -361,7 +363,7 @@ test('esbuild bundling source map enabled when only source map mode exists', () 
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_16_X,
+    runtime: STANDARD_RUNTIME,
     architecture: Architecture.X86_64,
     sourceMapMode: SourceMapMode.INLINE,
   });
@@ -387,7 +389,7 @@ test('esbuild bundling throws when sourceMapMode used with false sourceMap', () 
       entry,
       projectRoot,
       depsLockFilePath,
-      runtime: Runtime.NODEJS_16_X,
+      runtime: STANDARD_RUNTIME,
       architecture: Architecture.X86_64,
       sourceMap: false,
       sourceMapMode: SourceMapMode.INLINE,
@@ -401,7 +403,7 @@ test('Detects yarn.lock', () => {
     entry: __filename,
     projectRoot: path.dirname(yarnLock),
     depsLockFilePath: yarnLock,
-    runtime: Runtime.NODEJS_16_X,
+    runtime: STANDARD_RUNTIME,
     architecture: Architecture.X86_64,
     nodeModules: ['delay'],
     forceDockerBundling: true,
@@ -424,7 +426,7 @@ test('Detects pnpm-lock.yaml', () => {
     entry: __filename,
     projectRoot,
     depsLockFilePath: pnpmLock,
-    runtime: Runtime.NODEJS_16_X,
+    runtime: STANDARD_RUNTIME,
     architecture: Architecture.X86_64,
     nodeModules: ['delay'],
     forceDockerBundling: true,
@@ -446,7 +448,7 @@ test('with Docker build args', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_16_X,
+    runtime: STANDARD_RUNTIME,
     architecture: Architecture.X86_64,
     buildArgs: {
       HELLO: 'WORLD',
@@ -475,7 +477,7 @@ test('Local bundling', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_16_X,
+    runtime: STANDARD_RUNTIME,
     architecture: Architecture.X86_64,
     environment: {
       KEY: 'value',
@@ -485,7 +487,7 @@ test('Local bundling', () => {
 
   expect(bundler.local).toBeDefined();
 
-  const tryBundle = bundler.local?.tryBundle('/outdir', { image: Runtime.NODEJS_16_X.bundlingDockerImage });
+  const tryBundle = bundler.local?.tryBundle('/outdir', { image: STANDARD_RUNTIME.bundlingDockerImage });
   expect(tryBundle).toBe(true);
 
   expect(spawnSyncMock).toHaveBeenCalledWith(
@@ -513,12 +515,12 @@ test('Incorrect esbuild version', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_16_X,
+    runtime: STANDARD_RUNTIME,
     architecture: Architecture.X86_64,
   });
 
   expect(() => bundler.local?.tryBundle('/outdir', {
-    image: Runtime.NODEJS_16_X.bundlingImage,
+    image: STANDARD_RUNTIME.bundlingImage,
   })).toThrow(/Expected esbuild version 0.x but got 3.4.5/);
 });
 
@@ -527,7 +529,7 @@ test('Custom bundling docker image', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_16_X,
+    runtime: STANDARD_RUNTIME,
     architecture: Architecture.X86_64,
     dockerImage: DockerImage.fromRegistry('my-custom-image'),
     forceDockerBundling: true,
@@ -546,7 +548,7 @@ test('with command hooks', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_16_X,
+    runtime: STANDARD_RUNTIME,
     architecture: Architecture.X86_64,
     commandHooks: {
       beforeBundling(inputDir: string, outputDir: string): string[] {
@@ -582,7 +584,7 @@ test('esbuild bundling with projectRoot', () => {
     projectRoot: '/project',
     depsLockFilePath,
     tsconfig,
-    runtime: Runtime.NODEJS_16_X,
+    runtime: STANDARD_RUNTIME,
     architecture: Architecture.X86_64,
   });
 
@@ -605,7 +607,7 @@ test('esbuild bundling with projectRoot and externals and dependencies', () => {
     entry: __filename,
     projectRoot: repoRoot,
     depsLockFilePath: packageLock,
-    runtime: Runtime.NODEJS_16_X,
+    runtime: STANDARD_RUNTIME,
     architecture: Architecture.X86_64,
     externalModules: ['abc'],
     nodeModules: ['delay'],
@@ -637,7 +639,7 @@ test('esbuild bundling with pre compilations', () => {
     entry: __filename.replace('.js', '.ts'),
     projectRoot: path.dirname(packageLock),
     depsLockFilePath: packageLock,
-    runtime: Runtime.NODEJS_16_X,
+    runtime: STANDARD_RUNTIME,
     preCompilation: true,
     forceDockerBundling: true,
     architecture: Architecture.X86_64,
@@ -668,7 +670,7 @@ test('throws with pre compilation and not found tsconfig', () => {
       entry,
       projectRoot,
       depsLockFilePath,
-      runtime: Runtime.NODEJS_16_X,
+      runtime: STANDARD_RUNTIME,
       forceDockerBundling: true,
       preCompilation: true,
       architecture: Architecture.X86_64,
@@ -682,7 +684,7 @@ test('with custom hash', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_16_X,
+    runtime: STANDARD_RUNTIME,
     forceDockerBundling: true,
     assetHash: 'custom',
     architecture: Architecture.X86_64,
@@ -700,7 +702,7 @@ test('Custom bundling entrypoint', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_16_X,
+    runtime: STANDARD_RUNTIME,
     architecture: Architecture.X86_64,
     forceDockerBundling: true,
     entrypoint: ['/cool/entrypoint', '--cool-entrypoint-arg'],
@@ -719,7 +721,7 @@ test('Custom bundling volumes', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_16_X,
+    runtime: STANDARD_RUNTIME,
     architecture: Architecture.X86_64,
     forceDockerBundling: true,
     volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
@@ -738,7 +740,7 @@ test('Custom bundling volumesFrom', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_16_X,
+    runtime: STANDARD_RUNTIME,
     architecture: Architecture.X86_64,
     forceDockerBundling: true,
     volumesFrom: ['777f7dc92da7'],
@@ -757,7 +759,7 @@ test('Custom bundling workingDirectory', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_16_X,
+    runtime: STANDARD_RUNTIME,
     architecture: Architecture.X86_64,
     forceDockerBundling: true,
     workingDirectory: '/working-directory',
@@ -776,7 +778,7 @@ test('Custom bundling user', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_16_X,
+    runtime: STANDARD_RUNTIME,
     architecture: Architecture.X86_64,
     forceDockerBundling: true,
     user: 'user:group',
@@ -795,7 +797,7 @@ test('Custom bundling securityOpt', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_16_X,
+    runtime: STANDARD_RUNTIME,
     architecture: Architecture.X86_64,
     forceDockerBundling: true,
     securityOpt: 'no-new-privileges',
@@ -814,7 +816,7 @@ test('Custom bundling network', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_16_X,
+    runtime: STANDARD_RUNTIME,
     architecture: Architecture.X86_64,
     forceDockerBundling: true,
     network: 'host',
@@ -833,7 +835,7 @@ test('Custom bundling file copy variant', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_16_X,
+    runtime: STANDARD_RUNTIME,
     architecture: Architecture.X86_64,
     forceDockerBundling: true,
     bundlingFileAccess: BundlingFileAccess.VOLUME_COPY,
@@ -872,7 +874,7 @@ test('bundling with <= Node16 warns when sdk v3 is external', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_16_X,
+    runtime: STANDARD_RUNTIME,
     architecture: Architecture.X86_64,
     externalModules: ['@aws-sdk/client-s3'],
   });

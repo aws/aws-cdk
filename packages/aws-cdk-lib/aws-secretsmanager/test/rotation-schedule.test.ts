@@ -2,6 +2,7 @@ import { Match, Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
+import { DEFAULT_UNITTEST_RUNTIME } from '../../aws-lambda/lib/helpers-internal';
 import * as cdk from '../../core';
 import { Duration } from '../../core';
 import * as secretsmanager from '../lib';
@@ -15,7 +16,7 @@ test('create a rotation schedule with a rotation Lambda', () => {
   // GIVEN
   const secret = new secretsmanager.Secret(stack, 'Secret');
   const rotationLambda = new lambda.Function(stack, 'Lambda', {
-    runtime: lambda.Runtime.NODEJS_16_X,
+    runtime: DEFAULT_UNITTEST_RUNTIME,
     code: lambda.Code.fromInline('export.handler = event => event;'),
     handler: 'index.handler',
   });
@@ -47,7 +48,7 @@ test('create a rotation schedule without immediate rotation', () => {
   // GIVEN
   const secret = new secretsmanager.Secret(stack, 'Secret');
   const rotationLambda = new lambda.Function(stack, 'Lambda', {
-    runtime: lambda.Runtime.NODEJS_16_X,
+    runtime: DEFAULT_UNITTEST_RUNTIME,
     code: lambda.Code.fromInline('export.handler = event => event;'),
     handler: 'index.handler',
   });
@@ -75,7 +76,7 @@ test('assign permissions for rotation schedule with a rotation Lambda', () => {
   // GIVEN
   const secret = new secretsmanager.Secret(stack, 'Secret');
   const rotationLambda = new lambda.Function(stack, 'Lambda', {
-    runtime: lambda.Runtime.NODEJS_16_X,
+    runtime: DEFAULT_UNITTEST_RUNTIME,
     code: lambda.Code.fromInline('export.handler = event => event;'),
     handler: 'index.handler',
   });
@@ -134,7 +135,7 @@ test('grants correct permissions for secret imported by name', () => {
   // GIVEN
   const secret = secretsmanager.Secret.fromSecretNameV2(stack, 'Secret', 'mySecretName');
   const rotationLambda = new lambda.Function(stack, 'Lambda', {
-    runtime: lambda.Runtime.NODEJS_16_X,
+    runtime: DEFAULT_UNITTEST_RUNTIME,
     code: lambda.Code.fromInline('export.handler = event => event;'),
     handler: 'index.handler',
   });
@@ -186,7 +187,7 @@ test('assign kms permissions for rotation schedule with a rotation Lambda', () =
   const encryptionKey = new kms.Key(stack, 'Key');
   const secret = new secretsmanager.Secret(stack, 'Secret', { encryptionKey });
   const rotationLambda = new lambda.Function(stack, 'Lambda', {
-    runtime: lambda.Runtime.NODEJS_16_X,
+    runtime: DEFAULT_UNITTEST_RUNTIME,
     code: lambda.Code.fromInline('export.handler = event => event;'),
     handler: 'index.handler',
   });
@@ -598,7 +599,7 @@ describe('manual rotations', () => {
       const localStack = new cdk.Stack();
       const secret = new secretsmanager.Secret(localStack, 'Secret');
       const rotationLambda = new lambda.Function(localStack, 'Lambda', {
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: DEFAULT_UNITTEST_RUNTIME,
         code: lambda.Code.fromInline('export.handler = event => event;'),
         handler: 'index.handler',
       });

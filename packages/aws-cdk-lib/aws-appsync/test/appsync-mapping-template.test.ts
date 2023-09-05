@@ -3,6 +3,7 @@ import { Template } from '../../assertions';
 import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
 import * as appsync from '../lib';
+import { DEFAULT_UNITTEST_RUNTIME } from '../../aws-lambda/lib/helpers-internal';
 
 let stack: cdk.Stack;
 let api: appsync.GraphqlApi;
@@ -26,7 +27,7 @@ describe('Lambda Mapping Templates', () => {
     func = new lambda.Function(stack, 'func', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'verify/lambda-tutorial')),
       handler: 'lambda-tutorial.handler',
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: DEFAULT_UNITTEST_RUNTIME,
     });
   });
 

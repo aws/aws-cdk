@@ -3,6 +3,7 @@ import * as iot from '@aws-cdk/aws-iot-alpha';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 import * as actions from '../../lib';
+import { DEFAULT_UNITTEST_RUNTIME } from 'aws-cdk-lib/aws-lambda/lib/helpers-internal';
 
 test('create a topic rule with lambda action and a lambda permission to be invoked by the topic rule', () => {
   // GIVEN
@@ -11,7 +12,7 @@ test('create a topic rule with lambda action and a lambda permission to be invok
     sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
   });
   const func = new lambda.Function(stack, 'MyFunction', {
-    runtime: lambda.Runtime.NODEJS_16_X,
+    runtime: DEFAULT_UNITTEST_RUNTIME,
     handler: 'index.handler',
     code: lambda.Code.fromInline('console.log("foo")'),
   });
@@ -60,7 +61,7 @@ test('create two different permissions, when two topic rules have the same actio
   // GIVEN
   const stack = new cdk.Stack();
   const func = new lambda.Function(stack, 'MyFunction', {
-    runtime: lambda.Runtime.NODEJS_16_X,
+    runtime: DEFAULT_UNITTEST_RUNTIME,
     handler: 'index.handler',
     code: lambda.Code.fromInline('console.log("foo")'),
   });

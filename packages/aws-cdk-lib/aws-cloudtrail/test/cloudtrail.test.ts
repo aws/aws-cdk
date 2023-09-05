@@ -8,6 +8,7 @@ import * as s3 from '../../aws-s3';
 import * as sns from '../../aws-sns';
 import { Stack } from '../../core';
 import { ManagementEventSources, ReadWriteType, Trail, InsightType } from '../lib';
+import { DEFAULT_UNITTEST_RUNTIME } from '../../aws-lambda/lib/helpers-internal';
 
 const ExpectedBucketPolicyProperties = {
   PolicyDocument: {
@@ -571,7 +572,7 @@ describe('cloudtrail', () => {
       test('for Lambda function data event', () => {
         const stack = getTestStack();
         const lambdaFunction = new lambda.Function(stack, 'LambdaFunction', {
-          runtime: lambda.Runtime.NODEJS_16_X,
+          runtime: DEFAULT_UNITTEST_RUNTIME,
           handler: 'hello.handler',
           code: lambda.Code.fromInline('exports.handler = {}'),
         });

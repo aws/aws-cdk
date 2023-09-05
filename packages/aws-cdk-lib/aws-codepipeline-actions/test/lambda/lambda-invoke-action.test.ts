@@ -1,6 +1,7 @@
 import { Template, Match } from '../../../assertions';
 import * as codepipeline from '../../../aws-codepipeline';
 import * as lambda from '../../../aws-lambda';
+import { DEFAULT_UNITTEST_RUNTIME } from '../../../aws-lambda/lib/helpers-internal';
 import * as s3 from '../../../aws-s3';
 import * as sns from '../../../aws-sns';
 import { App, Aws, Lazy, SecretValue, Stack, Token } from '../../../core';
@@ -357,7 +358,7 @@ function stackIncludingLambdaInvokeCodePipeline(props: HelperProps, app?: App) {
             lambda: new lambda.Function(stack, 'Lambda', {
               code: lambda.Code.fromCfnParameters(),
               handler: 'index.handler',
-              runtime: lambda.Runtime.NODEJS_16_X,
+              runtime: DEFAULT_UNITTEST_RUNTIME,
             }),
             userParameters: props.userParams,
             userParametersString: props.userParamsString,

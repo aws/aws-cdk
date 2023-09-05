@@ -1,5 +1,6 @@
 import { Template } from '../../assertions';
 import * as lambda from '../../aws-lambda';
+import { DEFAULT_UNITTEST_RUNTIME } from '../../aws-lambda/lib/helpers-internal';
 import { Duration, Stack } from '../../core';
 import * as apigw from '../lib';
 
@@ -634,7 +635,7 @@ describe('cors', () => {
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
       code: lambda.Code.fromInline('boom'),
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: DEFAULT_UNITTEST_RUNTIME,
     });
 
     // WHEN

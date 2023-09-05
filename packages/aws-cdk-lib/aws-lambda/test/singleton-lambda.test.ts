@@ -5,6 +5,7 @@ import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import * as lambda from '../lib';
+import { DEFAULT_UNITTEST_RUNTIME } from '../lib/helpers-internal';
 
 describe('singleton lambda', () => {
   test('can add same singleton Lambda multiple times, only instantiated once in template', () => {
@@ -248,7 +249,7 @@ describe('singleton lambda', () => {
     const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
       uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
       code: new lambda.InlineCode('foo'),
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: DEFAULT_UNITTEST_RUNTIME,
       handler: 'index.handler',
     });
 
@@ -276,7 +277,7 @@ describe('singleton lambda', () => {
     const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
       uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
       code: new lambda.InlineCode('foo'),
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: DEFAULT_UNITTEST_RUNTIME,
       handler: 'index.handler',
       securityGroups: [securityGroup],
       vpc: vpc,

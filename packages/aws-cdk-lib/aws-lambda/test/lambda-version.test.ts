@@ -2,6 +2,7 @@ import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../assertions';
 import * as cdk from '../../core';
 import * as lambda from '../lib';
+import { DEFAULT_UNITTEST_RUNTIME } from '../lib/helpers-internal';
 
 describe('lambda version', () => {
   test('can import a Lambda version by ARN', () => {
@@ -31,7 +32,7 @@ describe('lambda version', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Fn', {
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: DEFAULT_UNITTEST_RUNTIME,
       handler: 'index.handler',
       code: lambda.Code.fromInline('foo'),
     });
@@ -63,7 +64,7 @@ describe('lambda version', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Fn', {
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: DEFAULT_UNITTEST_RUNTIME,
       handler: 'index.handler',
       code: lambda.Code.fromInline('foo'),
     });
@@ -108,7 +109,7 @@ describe('lambda version', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Fn', {
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: DEFAULT_UNITTEST_RUNTIME,
       handler: 'index.handler',
       code: lambda.Code.fromInline('foo'),
     });
@@ -136,7 +137,7 @@ describe('lambda version', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Fn', {
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: DEFAULT_UNITTEST_RUNTIME,
       handler: 'index.handler',
       code: lambda.Code.fromInline('foo'),
     });
@@ -160,7 +161,7 @@ describe('lambda version', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack');
     const fn = new lambda.Function(stack, 'Fn', {
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: DEFAULT_UNITTEST_RUNTIME,
       handler: 'index.handler',
       code: lambda.Code.fromInline('foo'),
     });
@@ -168,7 +169,7 @@ describe('lambda version', () => {
 
     // WHEN
     new lambda.Function(stack, 'OtherFn', {
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: DEFAULT_UNITTEST_RUNTIME,
       handler: 'index.handler',
       code: lambda.Code.fromInline('foo'),
       environment: {
@@ -189,7 +190,7 @@ describe('lambda version', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: DEFAULT_UNITTEST_RUNTIME,
     });
     const version = new lambda.Version(stack, 'Version', {
       lambda: fn,

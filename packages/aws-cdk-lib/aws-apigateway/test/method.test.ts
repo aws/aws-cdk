@@ -4,6 +4,7 @@ import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
 import * as apigw from '../lib';
+import { DEFAULT_UNITTEST_RUNTIME } from '../../aws-lambda/lib/helpers-internal';
 
 const DUMMY_AUTHORIZER: apigw.IAuthorizer = {
   authorizerId: 'dummyauthorizer',
@@ -643,7 +644,7 @@ describe('method', () => {
     const func = new lambda.Function(stack, 'myfunction', {
       handler: 'handler',
       code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: DEFAULT_UNITTEST_RUNTIME,
     });
 
     const auth = new apigw.TokenAuthorizer(stack, 'myauthorizer1', {

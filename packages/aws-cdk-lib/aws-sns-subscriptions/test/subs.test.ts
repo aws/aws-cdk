@@ -1,6 +1,7 @@
 import { Template } from '../../assertions';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
+import { DEFAULT_UNITTEST_RUNTIME } from '../../aws-lambda/lib/helpers-internal';
 import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
 import { App, CfnParameter, Duration, RemovalPolicy, Stack, Token } from '../../core';
@@ -1235,7 +1236,7 @@ test('importing SQS queue and specify this as subscription', () => {
 
 test('lambda subscription', () => {
   const func = new lambda.Function(stack, 'MyFunc', {
-    runtime: lambda.Runtime.NODEJS_16_X,
+    runtime: DEFAULT_UNITTEST_RUNTIME,
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
   });
@@ -1295,7 +1296,7 @@ test('lambda subscription', () => {
               'Arn',
             ],
           },
-          'Runtime': 'nodejs16.x',
+          'Runtime': 'nodejs99.x',
         },
         'DependsOn': [
           'MyFuncServiceRole54065130',
@@ -1346,7 +1347,7 @@ test('lambda subscription, cross region env agnostic', () => {
     displayName: 'displayName',
   });
   const func = new lambda.Function(lambdaStack, 'MyFunc', {
-    runtime: lambda.Runtime.NODEJS_16_X,
+    runtime: DEFAULT_UNITTEST_RUNTIME,
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
   });
@@ -1399,7 +1400,7 @@ test('lambda subscription, cross region env agnostic', () => {
             ],
           },
           'Handler': 'index.handler',
-          'Runtime': 'nodejs16.x',
+          'Runtime': 'nodejs99.x',
         },
         'DependsOn': [
           'MyFuncServiceRole54065130',
@@ -1460,7 +1461,7 @@ test('lambda subscription, cross region', () => {
     displayName: 'displayName',
   });
   const func = new lambda.Function(lambdaStack, 'MyFunc', {
-    runtime: lambda.Runtime.NODEJS_16_X,
+    runtime: DEFAULT_UNITTEST_RUNTIME,
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
   });
@@ -1513,7 +1514,7 @@ test('lambda subscription, cross region', () => {
             ],
           },
           'Handler': 'index.handler',
-          'Runtime': 'nodejs16.x',
+          'Runtime': 'nodejs99.x',
         },
         'DependsOn': [
           'MyFuncServiceRole54065130',
@@ -1746,7 +1747,7 @@ test('email and url subscriptions with unresolved - four subscriptions', () => {
 test('multiple subscriptions', () => {
   const queue = new sqs.Queue(stack, 'MyQueue');
   const func = new lambda.Function(stack, 'MyFunc', {
-    runtime: lambda.Runtime.NODEJS_16_X,
+    runtime: DEFAULT_UNITTEST_RUNTIME,
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
   });
@@ -1862,7 +1863,7 @@ test('multiple subscriptions', () => {
               'Arn',
             ],
           },
-          'Runtime': 'nodejs16.x',
+          'Runtime': 'nodejs99.x',
         },
         'DependsOn': [
           'MyFuncServiceRole54065130',
@@ -1914,7 +1915,7 @@ test('throws with mutliple subscriptions of the same subscriber', () => {
 
 test('with filter policy', () => {
   const func = new lambda.Function(stack, 'MyFunc', {
-    runtime: lambda.Runtime.NODEJS_16_X,
+    runtime: DEFAULT_UNITTEST_RUNTIME,
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
   });
@@ -1969,7 +1970,7 @@ test('with filter policy', () => {
 
 test('with filter policy scope MessageBody', () => {
   const func = new lambda.Function(stack, 'MyFunc', {
-    runtime: lambda.Runtime.NODEJS_16_X,
+    runtime: DEFAULT_UNITTEST_RUNTIME,
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
   });
@@ -2040,7 +2041,7 @@ test('region property on an imported topic as a parameter - sqs', () => {
 test('region property is present on an imported topic - lambda', () => {
   const imported = sns.Topic.fromTopicArn(stack, 'mytopic', 'arn:aws:sns:us-east-1:1234567890:mytopic');
   const func = new lambda.Function(stack, 'MyFunc', {
-    runtime: lambda.Runtime.NODEJS_16_X,
+    runtime: DEFAULT_UNITTEST_RUNTIME,
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
   });
@@ -2055,7 +2056,7 @@ test('region property on an imported topic as a parameter - lambda', () => {
   const topicArn = new CfnParameter(stack, 'topicArn');
   const imported = sns.Topic.fromTopicArn(stack, 'mytopic', topicArn.valueAsString);
   const func = new lambda.Function(stack, 'MyFunc', {
-    runtime: lambda.Runtime.NODEJS_16_X,
+    runtime: DEFAULT_UNITTEST_RUNTIME,
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
   });

@@ -2,6 +2,7 @@ import { Match, Template } from '../../../assertions';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
+import { DEFAULT_UNITTEST_RUNTIME } from '../../../aws-lambda/lib/helpers-internal';
 import * as cdk from '../../../core';
 import { Stack } from '../../../core';
 import * as codedeploy from '../../lib';
@@ -11,7 +12,7 @@ function mockFunction(stack: cdk.Stack, id: string) {
   return new lambda.Function(stack, id, {
     code: lambda.Code.fromInline('mock'),
     handler: 'index.handler',
-    runtime: lambda.Runtime.NODEJS_16_X,
+    runtime: DEFAULT_UNITTEST_RUNTIME,
   });
 }
 function mockAlias(stack: cdk.Stack) {

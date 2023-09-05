@@ -5,6 +5,7 @@ import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
 import * as secretsmanager from '../lib';
+import { DEFAULT_UNITTEST_RUNTIME } from '../../aws-lambda/lib/helpers-internal';
 
 let app: cdk.App;
 let stack: cdk.Stack;
@@ -1177,7 +1178,7 @@ test('add a rotation schedule to an attached secret', () => {
     }),
   });
   const rotationLambda = new lambda.Function(stack, 'Lambda', {
-    runtime: lambda.Runtime.NODEJS_16_X,
+    runtime: DEFAULT_UNITTEST_RUNTIME,
     code: lambda.Code.fromInline('export.handler = event => event;'),
     handler: 'index.handler',
   });

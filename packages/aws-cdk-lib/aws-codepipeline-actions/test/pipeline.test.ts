@@ -5,6 +5,7 @@ import * as codepipeline from '../../aws-codepipeline';
 import * as targets from '../../aws-events-targets';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
+import { DEFAULT_UNITTEST_RUNTIME } from '../../aws-lambda/lib/helpers-internal';
 import * as s3 from '../../aws-s3';
 import * as sns from '../../aws-sns';
 import { App, Aws, CfnParameter, SecretValue, Stack } from '../../core';
@@ -427,7 +428,7 @@ describe('pipeline', () => {
     const lambdaFun = new lambda.Function(stack, 'Function', {
       code: new lambda.InlineCode('bla'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: DEFAULT_UNITTEST_RUNTIME,
     });
 
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');

@@ -1,6 +1,7 @@
 import { Template } from '../../assertions';
 import * as events from '../../aws-events';
 import * as lambda from '../../aws-lambda';
+import { DEFAULT_UNITTEST_RUNTIME } from '../../aws-lambda/lib/helpers-internal';
 import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
 import { Stack } from '../../core';
@@ -14,7 +15,7 @@ beforeEach(() => {
 const lambdaProps = {
   code: new lambda.InlineCode('foo'),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_16_X,
+  runtime: DEFAULT_UNITTEST_RUNTIME,
 };
 
 test('event bus as destination', () => {

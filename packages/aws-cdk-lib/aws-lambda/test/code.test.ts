@@ -4,6 +4,7 @@ import * as ecr from '../../aws-ecr';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import * as lambda from '../lib';
+import { DEFAULT_UNITTEST_RUNTIME } from '../lib/helpers-internal';
 
 /* eslint-disable dot-notation */
 
@@ -37,13 +38,13 @@ describe('code', () => {
       // WHEN
       new lambda.Function(stack, 'Func1', {
         handler: 'foom',
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: DEFAULT_UNITTEST_RUNTIME,
         code: directoryAsset,
       });
 
       new lambda.Function(stack, 'Func2', {
         handler: 'foom',
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: DEFAULT_UNITTEST_RUNTIME,
         code: directoryAsset,
       });
 
@@ -65,7 +66,7 @@ describe('code', () => {
       // WHEN
       new lambda.Function(stack, 'Func1', {
         code: lambda.Code.fromAsset(location),
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: DEFAULT_UNITTEST_RUNTIME,
         handler: 'foom',
       });
 
@@ -87,14 +88,14 @@ describe('code', () => {
       const stack1 = new cdk.Stack(app, 'Stack1');
       new lambda.Function(stack1, 'Func', {
         code: asset,
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: DEFAULT_UNITTEST_RUNTIME,
         handler: 'foom',
       });
 
       const stack2 = new cdk.Stack(app, 'Stack2');
       expect(() => new lambda.Function(stack2, 'Func', {
         code: asset,
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: DEFAULT_UNITTEST_RUNTIME,
         handler: 'foom',
       })).toThrow(/already associated/);
     });
@@ -106,7 +107,7 @@ describe('code', () => {
       const code = new lambda.CfnParametersCode();
       new lambda.Function(stack, 'Function', {
         code,
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: DEFAULT_UNITTEST_RUNTIME,
         handler: 'index.handler',
       });
 
@@ -152,7 +153,7 @@ describe('code', () => {
 
       new lambda.Function(stack, 'Function', {
         code,
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: DEFAULT_UNITTEST_RUNTIME,
         handler: 'index.handler',
       });
 
@@ -434,7 +435,7 @@ describe('code', () => {
       new lambda.Function(stack, 'Fn', {
         code: lambda.Code.fromDockerBuild(path.join(__dirname, 'docker-build-lambda')),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: DEFAULT_UNITTEST_RUNTIME,
       });
 
       // then
@@ -460,7 +461,7 @@ describe('code', () => {
           imagePath: '/my/image/path',
         }),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: DEFAULT_UNITTEST_RUNTIME,
       });
 
       // then
@@ -477,7 +478,7 @@ describe('code', () => {
           imagePath: '/my/image/path/',
         }),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: DEFAULT_UNITTEST_RUNTIME,
       });
 
       // then
@@ -486,7 +487,7 @@ describe('code', () => {
   });
 });
 
-function defineFunction(code: lambda.Code, runtime: lambda.Runtime = lambda.Runtime.NODEJS_16_X) {
+function defineFunction(code: lambda.Code, runtime: lambda.Runtime = DEFAULT_UNITTEST_RUNTIME) {
   const stack = new cdk.Stack();
   return new lambda.Function(stack, 'Func', {
     handler: 'foom',

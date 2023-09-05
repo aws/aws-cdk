@@ -1,6 +1,7 @@
 
 import { App, Stack } from '../../core';
 import * as lambda from '../lib';
+import { DEFAULT_UNITTEST_RUNTIME } from '../lib/helpers-internal';
 
 describe('architecture', () => {
   const app = new App();
@@ -11,7 +12,7 @@ describe('architecture', () => {
     const testLambda = new lambda.Function(stack, 'testLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: DEFAULT_UNITTEST_RUNTIME,
     },
     );
 

@@ -3,6 +3,7 @@ import { Template } from '../../assertions';
 import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
 import * as appsync from '../lib';
+import { DEFAULT_UNITTEST_RUNTIME } from '../../aws-lambda/lib/helpers-internal';
 
 // GLOBAL GIVEN
 let stack: cdk.Stack;
@@ -22,7 +23,7 @@ describe('Lambda Data Source configuration', () => {
     func = new lambda.Function(stack, 'func', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'verify/iam-query')),
       handler: 'iam-query.handler',
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: DEFAULT_UNITTEST_RUNTIME,
     });
   });
 
@@ -78,7 +79,7 @@ describe('Lambda Data Source configuration', () => {
       const dummyFunction = new lambda.Function(newStack, 'func', {
         code: lambda.Code.fromAsset(path.join(__dirname, 'verify/iam-query')),
         handler: 'iam-query.handler',
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: DEFAULT_UNITTEST_RUNTIME,
       });
       graphqlapi.addLambdaDataSource(`data-${badCharacter}-source`, dummyFunction);
 
@@ -132,7 +133,7 @@ describe('adding lambda data source from imported api', () => {
     func = new lambda.Function(stack, 'func', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'verify/iam-query')),
       handler: 'iam-query.handler',
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: DEFAULT_UNITTEST_RUNTIME,
     });
   });
 

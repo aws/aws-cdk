@@ -2,6 +2,7 @@ import { Template } from '../../assertions';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import * as lambda from '../lib';
+import { DEFAULT_UNITTEST_RUNTIME } from '../lib/helpers-internal';
 
 describe('ADOT Lambda Layer', () => {
 
@@ -95,7 +96,7 @@ describe('ADOT Lambda Layer', () => {
       const fn = new lambda.Function(stack, 'Function', {
         code: new lambda.InlineCode('FooBar'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: DEFAULT_UNITTEST_RUNTIME,
         architecture: lambda.Architecture.ARM_64,
       });
 

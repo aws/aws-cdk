@@ -1,6 +1,7 @@
 import { Template } from 'aws-cdk-lib/assertions';
 import { WebSocketApi } from '@aws-cdk/aws-apigatewayv2-alpha';
-import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Code, Function } from 'aws-cdk-lib/aws-lambda';
+import { DEFAULT_UNITTEST_RUNTIME } from 'aws-cdk-lib/aws-lambda/lib/helpers-internal';
 import { Stack } from 'aws-cdk-lib';
 import { WebSocketLambdaIntegration } from '../../lib';
 
@@ -50,7 +51,7 @@ describe('LambdaWebSocketIntegration', () => {
 function fooFunction(stack: Stack, id: string) {
   return new Function(stack, id, {
     code: Code.fromInline('foo'),
-    runtime: Runtime.NODEJS_16_X,
+    runtime: DEFAULT_UNITTEST_RUNTIME,
     handler: 'index.handler',
   });
 }
