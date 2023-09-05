@@ -1,6 +1,7 @@
 import { Node } from 'constructs';
 import { Template } from '../../../assertions';
-import { Code, Function as lambdaFn, Runtime } from '../../../aws-lambda';
+import * as lambda from '../../../aws-lambda';
+import { Code, Function as lambdaFn } from '../../../aws-lambda';
 import { Duration, Stack } from '../../../core';
 import { WaiterStateMachine } from '../../lib/provider-framework/waiter-state-machine';
 

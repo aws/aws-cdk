@@ -4,6 +4,10 @@ import * as sns from '../../aws-sns';
 import { Duration, Stack } from '../../core';
 import * as triggers from '../lib';
 
+const THE_RUNTIME = new lambda.Runtime('node99.x', lambda.RuntimeFamily.NODEJS, {
+  supportsInlineCode: true,
+});
+
 test('minimal trigger function', () => {
   // GIVEN
   const stack = new Stack();
@@ -11,7 +15,7 @@ test('minimal trigger function', () => {
   // WHEN
   new triggers.TriggerFunction(stack, 'MyTrigger', {
     handler: 'index.handler',
-    runtime: lambda.Runtime.NODEJS_LATEST,
+    runtime: THE_RUNTIME,
     code: lambda.Code.fromInline('foo'),
   });
 
@@ -19,7 +23,7 @@ test('minimal trigger function', () => {
   const template = Template.fromStack(stack);
   template.hasResourceProperties('AWS::Lambda::Function', {});
   template.hasResourceProperties('Custom::Trigger', {
-    HandlerArn: { Ref: 'MyTriggerCurrentVersion8802742B9328233c8b1874b980ce987912273063' },
+    HandlerArn: { Ref: 'MyTriggerCurrentVersion8802742B72295cabb31be670d73807d916cd8e38' },
   });
 });
 
@@ -33,7 +37,7 @@ test('before/after', () => {
 
   // WHEN
   const myTrigger = new triggers.TriggerFunction(stack, 'MyTrigger', {
-    runtime: lambda.Runtime.NODEJS_LATEST,
+    runtime: THE_RUNTIME,
     code: lambda.Code.fromInline('zoo'),
     handler: 'index.handler',
 
@@ -73,13 +77,13 @@ test('multiple functions', () => {
   // WHEN
   new triggers.TriggerFunction(stack, 'MyTrigger', {
     handler: 'index.handler',
-    runtime: lambda.Runtime.NODEJS_LATEST,
+    runtime: THE_RUNTIME,
     code: lambda.Code.fromInline('foo'),
   });
 
   new triggers.TriggerFunction(stack, 'MySecondTrigger', {
     handler: 'index.handler',
-    runtime: lambda.Runtime.NODEJS_LATEST,
+    runtime: THE_RUNTIME,
     code: lambda.Code.fromInline('bar'),
   });
 
@@ -95,7 +99,7 @@ test('minimal trigger', () => {
   const stack = new Stack();
   const func = new lambda.Function(stack, 'MyFunction', {
     handler: 'index.handler',
-    runtime: lambda.Runtime.NODEJS_LATEST,
+    runtime: THE_RUNTIME,
     code: lambda.Code.fromInline('foo'),
   });
 
@@ -108,7 +112,7 @@ test('minimal trigger', () => {
   const template = Template.fromStack(stack);
   template.hasResourceProperties('AWS::Lambda::Function', {});
   template.hasResourceProperties('Custom::Trigger', {
-    HandlerArn: { Ref: 'MyFunctionCurrentVersion197490AF55e50858f6b564bc4745996ce85ee3a6' },
+    HandlerArn: { Ref: 'MyFunctionCurrentVersion197490AF59d1c466d521624079e3bb96ed594215' },
     ExecuteOnHandlerChange: true,
   });
 });
@@ -118,7 +122,7 @@ test('trigger with optional properties', () => {
   const stack = new Stack();
   const func = new lambda.Function(stack, 'MyFunction', {
     handler: 'index.handler',
-    runtime: lambda.Runtime.NODEJS_LATEST,
+    runtime: THE_RUNTIME,
     code: lambda.Code.fromInline('foo'),
   });
 
@@ -134,7 +138,7 @@ test('trigger with optional properties', () => {
   const template = Template.fromStack(stack);
   template.hasResourceProperties('AWS::Lambda::Function', {});
   template.hasResourceProperties('Custom::Trigger', {
-    HandlerArn: { Ref: 'MyFunctionCurrentVersion197490AF55e50858f6b564bc4745996ce85ee3a6' },
+    HandlerArn: { Ref: 'MyFunctionCurrentVersion197490AF59d1c466d521624079e3bb96ed594215' },
     Timeout: '600000',
     InvocationType: 'Event',
     ExecuteOnHandlerChange: false,

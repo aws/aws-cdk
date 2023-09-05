@@ -1,5 +1,6 @@
 import { Match, Template } from '../../assertions';
 import * as cdk from '../../core';
+import * as lambda from '../lib';
 import { Code, EventSourceMapping, Function, Runtime, Alias, StartingPosition, FilterRule, FilterCriteria } from '../lib';
 
 let stack: cdk.Stack;

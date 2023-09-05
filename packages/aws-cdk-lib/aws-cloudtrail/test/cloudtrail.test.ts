@@ -8,7 +8,6 @@ import * as s3 from '../../aws-s3';
 import * as sns from '../../aws-sns';
 import { Stack } from '../../core';
 import { ManagementEventSources, ReadWriteType, Trail, InsightType } from '../lib';
-import { lambda.Runtime.NODEJS_LATEST } from '../../aws-lambda/lib/helpers-internal';
 
 const ExpectedBucketPolicyProperties = {
   PolicyDocument: {

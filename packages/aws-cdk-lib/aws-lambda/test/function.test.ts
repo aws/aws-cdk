@@ -3331,6 +3331,7 @@ test('function using a reserved environment variable', () => {
 });
 
 test('test 2.87.0 version hash stability', () => {
+  const theRuntime = new lambda.Runtime('node99.x');
   // GIVEN
   const app = new cdk.App({
     context: {
@@ -3343,7 +3344,7 @@ test('test 2.87.0 version hash stability', () => {
   const layer = new lambda.LayerVersion(stack, 'MyLayer', {
     code: lambda.Code.fromAsset(path.join(__dirname, 'x.zip')),
     compatibleRuntimes: [
-      lambda.Runtime.NODEJS_LATEST,
+      theRuntime,
     ],
   });
 
@@ -3356,7 +3357,7 @@ test('test 2.87.0 version hash stability', () => {
   });
 
   const lambdaFn = new lambda.Function(stack, 'MyLambda', {
-    runtime: lambda.Runtime.NODEJS_LATEST,
+    runtime: theRuntime,
     memorySize: 128,
     handler: 'index.handler',
     timeout: cdk.Duration.seconds(30),
@@ -3384,7 +3385,7 @@ test('test 2.87.0 version hash stability', () => {
     Properties: {
       FunctionVersion: {
         'Fn::GetAtt': [
-          'MyLambdaCurrentVersionE7A382CCf807e688af4b50b3d420129f528d7d1d',
+          'MyLambdaCurrentVersionE7A382CC36ba24a5a2aa206296d3e383129fd83a',
           'Version',
         ],
       },

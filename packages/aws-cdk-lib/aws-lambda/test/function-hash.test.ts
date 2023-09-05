@@ -97,7 +97,7 @@ describe('function hash', () => {
     });
 
     expect(calculateFunctionHash(fn1)).toEqual('d5df63ad7377cf03dd0f49c60c6f0fc1');
-    expect(calculateFunctionHash(fn2)).toEqual('11c06ba9d7b70ad28b8d48183bad18e9');
+    expect(calculateFunctionHash(fn2)).toEqual('6ca1f12d5210d52fe5e5d8933cd29634');
   });
 
   test('runtime impacts hash', () => {
@@ -127,7 +127,7 @@ describe('function hash', () => {
     });
 
     expect(calculateFunctionHash(fn1)).toEqual('d5df63ad7377cf03dd0f49c60c6f0fc1');
-    expect(calculateFunctionHash(fn2)).toEqual('11c06ba9d7b70ad28b8d48183bad18e9');
+    expect(calculateFunctionHash(fn2)).toEqual('6ca1f12d5210d52fe5e5d8933cd29634');
   });
 
   test('inline code change impacts the hash', () => {
@@ -146,7 +146,7 @@ describe('function hash', () => {
     });
 
     expect(calculateFunctionHash(fn1)).toEqual('e6e08236949a28be9ade77a2323e8391');
-    expect(calculateFunctionHash(fn2)).toEqual('6e144e45237f91e92a8f0c757baa7251');
+    expect(calculateFunctionHash(fn2)).toEqual('48e10e13160453b41f24975434c2d3f3');
   });
 
   describe('lambda layers', () => {
@@ -208,7 +208,7 @@ describe('function hash', () => {
       });
 
       expect(calculateFunctionHash(fn1)).toEqual('3b500cb399914c341ec5c39ef3bd182c');
-      expect(calculateFunctionHash(fn2)).toEqual('e5b139e844ae371180cdeec538c5dbb1');
+      expect(calculateFunctionHash(fn2)).toEqual('aec62de1c572402fe8e75ca60c9fd96f');
     });
 
     describe('impact of lambda layer order on hash', () => {
@@ -230,7 +230,7 @@ describe('function hash', () => {
         });
 
         expect(calculateFunctionHash(fn1)).toEqual('443ca997f1a9bb2ff4378f44cab76f67');
-        expect(calculateFunctionHash(fn2)).toEqual('37a4fec56aae4ff2d69fd2c23a0b5804');
+        expect(calculateFunctionHash(fn2)).toEqual('2330cb52a944876c13cd69f5947415cd');
       });
 
       test('with feature flag, we sort layers so order is consistent', () => {
