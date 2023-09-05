@@ -224,6 +224,10 @@ export class BackupPlanRule {
       throw new Error('`scheduleExpression` must be of type `cron`');
     }
 
+    if (props.scheduleExpressionTimezone && !props.scheduleExpression) {
+      throw new Error('Cannot specify `scheduleExpressionTimezone` for a rule without a `scheduleExpression`');
+    }
+
     const deleteAfter = (props.enableContinuousBackup && !props.deleteAfter) ? Duration.days(35) : props.deleteAfter;
 
     if (props.enableContinuousBackup && props.moveToColdStorageAfter) {

@@ -373,6 +373,41 @@ test('create a plan and add rule with recoveryPointTags', () => {
   });
 });
 
+test('specify timezone for schedule expression', () => {
+  // WHEN
+  new BackupPlan(stack, 'Plan', {
+    backupPlanRules: [
+      new BackupPlanRule({
+        scheduleExpression: events.Schedule.cron({
+          hour: '6',
+          minute: '0',
+        }),
+        scheduleExpressionTimezone: 'America/Los_Angeles',
+      }),
+    ],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupPlan', {
+    BackupPlan: {
+      BackupPlanName: 'Plan',
+      BackupPlanRule: [
+        {
+          RuleName: 'PlanRule0',
+          TargetBackupVault: {
+            'Fn::GetAtt': [
+              'PlanVault0284B0C2',
+              'BackupVaultName',
+            ],
+          },
+          ScheduleExpression: 'cron(0 6 * * ? *)',
+          ScheduleExpressionTimezone: 'America/Los_Angeles',
+        },
+      ],
+    },
+  });
+});
+
 test('throws when deleteAfter is not greater than moveToColdStorageAfter', () => {
   expect(() => new BackupPlanRule({
     deleteAfter: Duration.days(5),

@@ -1,5 +1,6 @@
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as efs from 'aws-cdk-lib/aws-efs';
+import * as events from 'aws-cdk-lib/aws-events';
 import { App, Duration, RemovalPolicy, Stack, StackProps, CfnParameter } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as backup from 'aws-cdk-lib/aws-backup';
@@ -60,6 +61,15 @@ class TestStack extends Stack {
       recoveryPointTags: {
         stage: 'prod',
       },
+    }));
+
+    plan.addRule(new backup.BackupPlanRule({
+      scheduleExpression: events.Schedule.cron({
+        day: '15',
+        hour: '4',
+        minute: '0',
+      }),
+      scheduleExpressionTimezone: 'Europe/Brussels',
     }));
   }
 }
