@@ -71,6 +71,7 @@ plan.addRule(new backup.BackupPlanRule({
     hour: '3',
     minute: '30',
   }),
+  scheduleExpressionTimezone: 'Europe/Brussels', // Optional, defaults to UTC
   moveToColdStorageAfter: Duration.days(30),
 }));
 ```
