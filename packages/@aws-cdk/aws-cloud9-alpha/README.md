@@ -153,7 +153,7 @@ declare const vpc: ec2.Vpc;
 new cloud9.Ec2Environment(this, 'C9Env', {
   vpc,
   imageId: cloud9.ImageId.AMAZON_LINUX_2,
-  owner: federatedUser(Stack.of(this).account, "Admin/johndoe")
+  owner: cloud9.Owner.federatedUser(Stack.of(this).account, "Admin/johndoe")
 })
 ```
 
@@ -166,7 +166,7 @@ declare const vpc: ec2.Vpc;
 new cloud9.Ec2Environment(this, 'C9Env', {
   vpc,
   imageId: cloud9.ImageId.AMAZON_LINUX_2,
-  owner: assumedRole(Stack.of(this).account, "Admin/johndoe-role")
+  owner: cloud9.Owner.assumedRole(Stack.of(this).account, "Admin/johndoe-role")
 })
 ```
 
