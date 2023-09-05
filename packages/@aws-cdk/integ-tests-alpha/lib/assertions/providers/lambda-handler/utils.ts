@@ -23,15 +23,17 @@ export function decodeParameters(obj: Record<string, string>): any {
 
 function decodeValue(value: string): any {
   const parsed = JSON.parse(value);
-  const entries = Object.entries(parsed);
 
-  if (isByteArray(entries)) {
-    const bytes = entries
-      .map(([k, v]) => [parseInt(k), v])
-      .sort(([k1, _v1], [k2, _v2]) => k1 - k2)
-      .map(([_k, v]) => v);
+  if (parsed != null && !Array.isArray(parsed) && typeof parsed === 'object') {
+    const entries = Object.entries(parsed);
+    if (isByteArray(entries)) {
+      const bytes = entries
+        .map(([k, v]) => [parseInt(k), v])
+        .sort(([k1, _v1], [k2, _v2]) => k1 - k2)
+        .map(([_k, v]) => v);
 
-    return Uint8Array.from([...bytes]);
+      return Uint8Array.from([...bytes]);
+    }
   }
   return parsed;
 }
