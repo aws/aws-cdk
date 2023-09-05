@@ -1,7 +1,7 @@
-export function parseJsonPayload(payload: string | Buffer | Uint8Array): any {
+export function parseJsonPayload(payload: string | Buffer | Uint8Array | undefined | null): any {
   // sdk v3 returns payloads in Uint8Array, either it or a string or Buffer
   // can be cast into a buffer and then decoded.
-  const text = new TextDecoder().decode(Buffer.from(payload));
+  const text = new TextDecoder().decode(Buffer.from(payload ?? ''));
   if (!text) { return { }; }
   try {
     return JSON.parse(text);
