@@ -616,7 +616,7 @@ const ADOT_LAMBDA_LAYER_JAVA_SDK_ARNS: { [version: string]: { [arch: string]: { 
       'eu-west-1': 'arn:aws:lambda:eu-west-1:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-28-1:1',
       'eu-west-2': 'arn:aws:lambda:eu-west-2:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-28-1:1',
       'eu-west-3': 'arn:aws:lambda:eu-west-3:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-28-1:1',
-      //'il-central-1': 'arn:aws:lambda:il-central-1:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-28-1:1',
+      // 'il-central-1': 'arn:aws:lambda:il-central-1:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-28-1:1',
       // 'me-central-1': 'arn:aws:lambda:me-central-1:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-28-1:1',
       'me-south-1': 'arn:aws:lambda:me-south-1:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-28-1:1',
       'sa-east-1': 'arn:aws:lambda:sa-east-1:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-28-1:1',
