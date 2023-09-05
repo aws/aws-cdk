@@ -99,10 +99,10 @@ export interface ParameterOptions {
   readonly parameterName?: string;
 
   /**
-   * Indicates of the parameter name is a simple name (i.e. does not include "/"
+   * Indicates if the parameter name is a simple name (i.e. does not include "/"
    * separators).
    *
-   * This is only required only if `parameterName` is a token, which means we
+   * This is required only if `parameterName` is a token, which means we
    * are unable to detect if the name is simple or "path-like" for the purpose
    * of rendering SSM parameter ARNs.
    *
@@ -168,7 +168,7 @@ abstract class ParameterBase extends Resource implements IParameter {
   /**
    * The encryption key that is used to encrypt this parameter.
    *
-   * * @default - default master key
+   * @default - default master key
    */
   public readonly encryptionKey?: kms.IKey;
 
@@ -337,10 +337,10 @@ export interface CommonStringParameterAttributes {
   readonly parameterName: string;
 
   /**
-   * Indicates of the parameter name is a simple name (i.e. does not include "/"
+   * Indicates if the parameter name is a simple name (i.e. does not include "/"
    * separators).
    *
-   * This is only required only if `parameterName` is a token, which means we
+   * This is required only if `parameterName` is a token, which means we
    * are unable to detect if the name is simple or "path-like" for the purpose
    * of rendering SSM parameter ARNs.
    *
