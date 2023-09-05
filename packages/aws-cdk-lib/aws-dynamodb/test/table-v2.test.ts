@@ -7,7 +7,7 @@ import {
   LocalSecondaryIndexProps, ProjectionType, StreamViewType, TableClass, TableEncryptionV2,
 } from '../lib';
 
-describe('global table', () => {
+describe('table', () => {
   test('with default properties', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
@@ -236,12 +236,12 @@ describe('global table', () => {
     // WHEN
     new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
-      tableName: 'my-global-table',
+      tableName: 'my-table',
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
-      TableName: 'my-global-table',
+      TableName: 'my-table',
     });
   });
 
@@ -338,7 +338,6 @@ describe('global table', () => {
 
     // WHEN
     new TableV2(stack, 'Table', {
-      tableName: 'global-table',
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       billing: Billing.provisioned({
         readCapacity: Capacity.autoscaled({ minCapacity: 1, maxCapacity: 10 }),
@@ -561,7 +560,7 @@ describe('global table', () => {
 
     // WHEN
     new TableV2(stack, 'Table', {
-      tableName: 'my-global-table',
+      tableName: 'my-table',
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       sortKey: { name: 'sk', type: AttributeType.NUMBER },
       billing: Billing.provisioned({
@@ -843,7 +842,7 @@ describe('global table', () => {
       StreamSpecification: {
         StreamViewType: 'NEW_AND_OLD_IMAGES',
       },
-      TableName: 'my-global-table',
+      TableName: 'my-table',
       TimeToLiveSpecification: {
         AttributeName: 'attribute',
         Enabled: true,
@@ -863,7 +862,7 @@ describe('global table', () => {
   test('can add global secondary index', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = new TableV2(stack, 'Table', {
+    const table = new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       sortKey: { name: 'sk', type: AttributeType.BINARY },
     });
@@ -874,7 +873,7 @@ describe('global table', () => {
     };
 
     // WHEN
-    globalTable.addGlobalSecondaryIndex(globalSecondaryIndex);
+    table.addGlobalSecondaryIndex(globalSecondaryIndex);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
@@ -916,7 +915,7 @@ describe('global table', () => {
   test('can add local secondary index', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = new TableV2(stack, 'Table', {
+    const table = new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       sortKey: { name: 'sk', type: AttributeType.BINARY },
     });
@@ -926,7 +925,7 @@ describe('global table', () => {
     };
 
     // WHEN
-    globalTable.addLocalSecondaryIndex(localSecondaryIndex);
+    table.addLocalSecondaryIndex(localSecondaryIndex);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
@@ -964,20 +963,20 @@ describe('global table', () => {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
         replicas: [{ region: 'us-east-1' }],
       });
-    }).toThrow('Replica Tables are not supported in a region agnostic stack');
+    }).toThrow('Replica tables are not supported in a region agnostic stack');
   });
 
-  test('throws if getting replica table from global table in region agnostic stack', () => {
+  test('throws if getting replica table in region agnostic stack', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = new TableV2(stack, 'Table', {
+    const table = new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
 
     // WHEN / THEN
     expect(() => {
-      globalTable.replica('us-west-2');
-    }).toThrow('Replica Tables are not supported in a region agnostic stack');
+      table.replica('us-west-2');
+    }).toThrow('Replica tables are not supported in a region agnostic stack');
   });
 });
 
@@ -987,7 +986,7 @@ describe('replica tables', () => {
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
 
     // WHEN
-    new TableV2(stack, 'Table', {
+    new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       billing: Billing.provisioned({
         readCapacity: Capacity.fixed(5),
@@ -1022,7 +1021,7 @@ describe('replica tables', () => {
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
 
     // WHEN
-    new TableV2(stack, 'Table', {
+    new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       billing: Billing.provisioned({
         readCapacity: Capacity.fixed(5),
@@ -1068,7 +1067,7 @@ describe('replica tables', () => {
     const kinesisStream2 = Stream.fromStreamArn(stack, 'Stream2', 'arn:aws:kinesis:us-east-1:123456789012:stream/my-stream');
 
     // WHEN
-    new TableV2(stack, 'Table', {
+    new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       kinesisStream: kinesisStream1,
       replicas: [
@@ -1115,7 +1114,7 @@ describe('replica tables', () => {
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
 
     // WHEN
-    new TableV2(stack, 'Table', {
+    new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       contributorInsights: true,
       globalSecondaryIndexes: [
@@ -1220,7 +1219,7 @@ describe('replica tables', () => {
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
 
     // WHEN
-    new TableV2(stack, 'Table', {
+    new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       billing: Billing.provisioned({
         readCapacity: Capacity.fixed(10),
@@ -1334,41 +1333,41 @@ describe('replica tables', () => {
   test('throws if replica table region is a token', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
-    const globalTable = new TableV2(stack, 'Table', {
+    const table = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
 
     // WHEN / THEN
     expect(() => {
-      globalTable.addReplica({ region: Lazy.string({ produce: () => 'us-east-1' }) });
-    }).toThrow('Replica Table region must not be a token');
+      table.addReplica({ region: Lazy.string({ produce: () => 'us-east-1' }) });
+    }).toThrow('Replica table region must not be a token');
   });
 
   test('throws if adding replica table in deployment region', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
-    const globalTable = new TableV2(stack, 'Table', {
+    const table = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
 
     // WHEN / THEN
     expect(() => {
-      globalTable.addReplica({ region: 'us-west-2' });
-    }).toThrow('A Replica Table in Global Table deployment region is configured by default and cannot be added explicitly');
+      table.addReplica({ region: 'us-west-2' });
+    }).toThrow('You cannot add a replica table in the same region as the primary table - the primary table region is us-west-2');
   });
 
   test('throws if adding duplicate replica table', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
-    const globalTable = new TableV2(stack, 'Table', {
+    const table = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       replicas: [{ region: 'us-east-1' }],
     });
 
     // WHEN / THEN
     expect(() => {
-      globalTable.addReplica({ region: 'us-east-1' });
-    }).toThrow('Duplicate Relica Table region, us-east-1, is not allowed');
+      table.addReplica({ region: 'us-east-1' });
+    }).toThrow('Duplicate replica table region, us-east-1, is not allowed');
   });
 
   test('throws if read capacity is configured on replica table when billing mode is PAY_PER_REQUEST', () => {
@@ -1377,7 +1376,7 @@ describe('replica tables', () => {
 
     // WHEN / THEN
     expect(() => {
-      new TableV2(stack, 'Table', {
+      new TableV2(stack, 'GlobalTable', {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
         replicas: [
           {
@@ -1386,13 +1385,13 @@ describe('replica tables', () => {
           },
         ],
       });
-    }).toThrow("You cannot provide 'readCapacity' on a Replica Table when the billing mode is PAY_PER_REQUEST");
+    }).toThrow("You cannot provide 'readCapacity' on a replica table when the billing mode is PAY_PER_REQUEST");
   });
 
   test('throws if configuring options for non-existent global secondary index', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
-    new TableV2(stack, 'Table', {
+    new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       globalSecondaryIndexes: [
         {
@@ -1415,13 +1414,13 @@ describe('replica tables', () => {
     // WHEN / THEN
     expect(() => {
       Template.fromStack(stack);
-    }).toThrow('Cannot configure replica global secondary index, global, because it is not defined on the global table');
+    }).toThrow('Cannot configure replica global secondary index, global, because it is not defined on the primary table');
   });
 
   test('throws if read capacity is configured as global secondary index options when billing mode is PAY_PER_REQUEST', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
-    new TableV2(stack, 'Table', {
+    new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       globalSecondaryIndexes: [
         {
@@ -2472,7 +2471,7 @@ describe('secondary indexes', () => {
         partitionKey: { name: 'pk', type: AttributeType.STRING },
         globalSecondaryIndexes,
       });
-    }).toThrow('You may not provide more than 20 global secondary indexes to a Global Table');
+    }).toThrow('You may not provide more than 20 global secondary indexes');
   });
 
   test('throws if local secondary index count is greater than 5', () => {
@@ -2494,7 +2493,7 @@ describe('secondary indexes', () => {
         sortKey: { name: 'sk', type: AttributeType.STRING },
         localSecondaryIndexes,
       });
-    }).toThrow('You may not provide more than 5 local secondary indexes to a Global Table');
+    }).toThrow('You may not provide more than 5 local secondary indexes');
   });
 
   test('throws if global secondary index has INCLUDE projection type and no non-key attributes', () => {
@@ -2618,7 +2617,7 @@ describe('secondary indexes', () => {
     }).toThrow('Non-key attributes should not be specified when not using INCLUDE projection type');
   });
 
-  test('throws if local secondary index is specified without global table sort key', () => {
+  test('throws if local secondary index is specified without sort key', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
 
@@ -2633,21 +2632,21 @@ describe('secondary indexes', () => {
           },
         ],
       });
-    }).toThrow('The Global Table must have a sort key in order to add local secondary indexes');
+    }).toThrow('The table must have a sort key in order to add a local secondary index');
   });
 });
 
 describe('imports', () => {
-  test('can import a global table by name', () => {
+  test('can import a table by name', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2', account: '123456789012' } });
 
     // WHEN
-    const globalTable = TableV2.fromTableName(stack, 'Table', 'my-global-table');
+    const table = TableV2.fromTableName(stack, 'Table', 'my-table');
 
     // THEN
-    expect(globalTable.tableName).toEqual('my-global-table');
-    expect(stack.resolve(globalTable.tableArn)).toEqual({
+    expect(table.tableName).toEqual('my-table');
+    expect(stack.resolve(table.tableArn)).toEqual({
       'Fn::Join': [
         '',
         [
@@ -2655,41 +2654,41 @@ describe('imports', () => {
           {
             Ref: 'AWS::Partition',
           },
-          ':dynamodb:us-west-2:123456789012:table/my-global-table',
+          ':dynamodb:us-west-2:123456789012:table/my-table',
         ],
       ],
     });
   });
 
-  test('can import a global table by arn', () => {
+  test('can import a table by arn', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2', account: '123456789012' } });
 
     // WHEN
-    const globalTable = TableV2.fromTableArn(stack, 'Table', 'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table');
+    const table = TableV2.fromTableArn(stack, 'Table', 'arn:aws:dynamodb:us-east-2:123456789012:table/my-table');
 
     // THEN
-    expect(globalTable.tableArn).toEqual('arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table');
-    expect(globalTable.tableName).toEqual('my-global-table');
+    expect(table.tableArn).toEqual('arn:aws:dynamodb:us-east-2:123456789012:table/my-table');
+    expect(table.tableName).toEqual('my-table');
   });
 
-  test('can import a global table with attributes', () => {
+  test('can import a table with attributes', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2', account: '123456789012' } });
     const tableKey = new Key(stack, 'Key');
 
     // WHEN
-    const globalTable = TableV2.fromTableAttributes(stack, 'Table', {
-      tableArn: 'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table',
-      tableStreamArn: 'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table/stream/*',
+    const table = TableV2.fromTableAttributes(stack, 'Table', {
+      tableArn: 'arn:aws:dynamodb:us-east-2:123456789012:table/my-table',
+      tableStreamArn: 'arn:aws:dynamodb:us-east-2:123456789012:table/my-table/stream/*',
       tableId: 'a123b456-01ab-23cd-123a-111222aaabbb',
       encryptionKey: tableKey,
     });
 
     // THEN
-    expect(globalTable.tableStreamArn).toEqual('arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table/stream/*');
-    expect(globalTable.encryptionKey?.keyArn).toEqual(tableKey.keyArn);
-    expect(globalTable.tableId).toEqual('a123b456-01ab-23cd-123a-111222aaabbb');
+    expect(table.tableStreamArn).toEqual('arn:aws:dynamodb:us-east-2:123456789012:table/my-table/stream/*');
+    expect(table.encryptionKey?.keyArn).toEqual(tableKey.keyArn);
+    expect(table.tableId).toEqual('a123b456-01ab-23cd-123a-111222aaabbb');
   });
 
   test('throws if name or arn are not provided', () => {
@@ -2699,7 +2698,7 @@ describe('imports', () => {
     // WHEN / THEN
     expect(() => {
       TableV2.fromTableAttributes(stack, 'Table', {
-        tableStreamArn: 'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table/stream/*',
+        tableStreamArn: 'arn:aws:dynamodb:us-east-2:123456789012:table/my-table/stream/*',
       });
     }).toThrow('At least one of `tableArn` or `tableName` must be provided');
   });
@@ -2711,8 +2710,8 @@ describe('imports', () => {
     // WHEN / THEN
     expect(() => {
       TableV2.fromTableAttributes(stack, 'Table', {
-        tableName: 'my-global-table',
-        tableArn: 'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table',
+        tableName: 'my-table',
+        tableArn: 'arn:aws:dynamodb:us-east-2:123456789012:table/my-table',
       });
     }).toThrow('Only one of `tableArn` or `tableName` can be provided, but not both');
   });

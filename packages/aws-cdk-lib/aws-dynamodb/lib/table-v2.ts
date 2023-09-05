@@ -77,7 +77,7 @@ export interface GlobalSecondaryIndexPropsV2 extends SecondaryIndexProps {
 }
 
 /**
- * Common options used to configure a DynamoDB table.
+ * Options used to configure a DynamoDB table.
  */
 export interface TableOptionsV2 {
   /**

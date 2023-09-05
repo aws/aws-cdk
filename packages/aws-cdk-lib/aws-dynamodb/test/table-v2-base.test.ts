@@ -41,7 +41,7 @@ function testForKey(stack: Stack) {
 }
 
 describe('grants', () => {
-  test('grant with arbitrary actions on global table', () => {
+  test('grant with arbitrary actions', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
     const user = new User(stack, 'User');
@@ -132,7 +132,7 @@ describe('grants', () => {
     });
   });
 
-  test('grantReadData on global table with customer managed keys', () => {
+  test('grantReadData with customer managed keys', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
     const user = new User(stack, 'User');
@@ -1083,14 +1083,14 @@ describe('grants', () => {
     });
   });
 
-  test('can grant with a global table imported by name', () => {
+  test('can grant with a table imported by name', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
     const user = new User(stack, 'User');
-    const globalTable = TableV2.fromTableName(stack, 'GlobalTable', 'my-global-table');
+    const table = TableV2.fromTableName(stack, 'Table', 'my-table');
 
     // WHEN
-    globalTable.grantReadData(user);
+    table.grantReadData(user);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -1124,7 +1124,7 @@ describe('grants', () => {
                   {
                     Ref: 'AWS::AccountId',
                   },
-                  ':table/my-global-table',
+                  ':table/my-table',
                 ],
               ],
             },
@@ -1141,14 +1141,14 @@ describe('grants', () => {
     });
   });
 
-  test('can grant with a global table imported by arn', () => {
+  test('can grant with a table imported by arn', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
     const user = new User(stack, 'User');
-    const globalTable = TableV2.fromTableArn(stack, 'GlobalTable', 'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table');
+    const table = TableV2.fromTableArn(stack, 'Table', 'arn:aws:dynamodb:us-east-2:123456789012:table/my-table');
 
     // WHEN
-    globalTable.grantReadData(user);
+    table.grantReadData(user);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -1166,7 +1166,7 @@ describe('grants', () => {
               'dynamodb:DescribeTable',
             ],
             Effect: 'Allow',
-            Resource: 'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table',
+            Resource: 'arn:aws:dynamodb:us-east-2:123456789012:table/my-table',
           },
         ],
         Version: '2012-10-17',
@@ -1180,18 +1180,18 @@ describe('grants', () => {
     });
   });
 
-  test('can grant with a global table imported with an encryption key', () => {
+  test('can grant with a table imported with an encryption key', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
     const user = new User(stack, 'User');
     const tableKey = new Key(stack, 'Key');
-    const globalTable = TableV2.fromTableAttributes(stack, 'GlobalTable', {
-      tableArn: 'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table',
+    const table = TableV2.fromTableAttributes(stack, 'Table', {
+      tableArn: 'arn:aws:dynamodb:us-east-2:123456789012:table/my-table',
       encryptionKey: tableKey,
     });
 
     // WHEN
-    globalTable.grantReadData(user);
+    table.grantReadData(user);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -1222,7 +1222,7 @@ describe('grants', () => {
               'dynamodb:DescribeTable',
             ],
             Effect: 'Allow',
-            Resource: 'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table',
+            Resource: 'arn:aws:dynamodb:us-east-2:123456789012:table/my-table',
           },
         ],
         Version: '2012-10-17',
@@ -1236,17 +1236,17 @@ describe('grants', () => {
     });
   });
 
-  test('can grant with a global table imported with secondary index permission', () => {
+  test('can grant with a table imported with secondary index permission', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
     const user = new User(stack, 'User');
-    const globalTable = TableV2.fromTableAttributes(stack, 'GlobalTable', {
-      tableArn: 'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table',
+    const table = TableV2.fromTableAttributes(stack, 'Table', {
+      tableArn: 'arn:aws:dynamodb:us-east-2:123456789012:table/my-table',
       grantIndexPermissions: true,
     });
 
     // WHEN
-    globalTable.grantReadData(user);
+    table.grantReadData(user);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -1265,8 +1265,8 @@ describe('grants', () => {
             ],
             Effect: 'Allow',
             Resource: [
-              'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table',
-              'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table/index/*',
+              'arn:aws:dynamodb:us-east-2:123456789012:table/my-table',
+              'arn:aws:dynamodb:us-east-2:123456789012:table/my-table/index/*',
             ],
           },
         ],
@@ -1281,17 +1281,17 @@ describe('grants', () => {
     });
   });
 
-  test('can grant with a global table imported with secondary index', () => {
+  test('can grant with a table imported with secondary index', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
     const user = new User(stack, 'User');
-    const globalTable = TableV2.fromTableAttributes(stack, 'GlobalTable', {
-      tableArn: 'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table',
+    const table = TableV2.fromTableAttributes(stack, 'Table', {
+      tableArn: 'arn:aws:dynamodb:us-east-2:123456789012:table/my-table',
       globalIndexes: ['gsi'],
     });
 
     // WHEN
-    globalTable.grantReadData(user);
+    table.grantReadData(user);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -1310,8 +1310,8 @@ describe('grants', () => {
             ],
             Effect: 'Allow',
             Resource: [
-              'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table',
-              'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table/index/*',
+              'arn:aws:dynamodb:us-east-2:123456789012:table/my-table',
+              'arn:aws:dynamodb:us-east-2:123456789012:table/my-table/index/*',
             ],
           },
         ],
@@ -1330,25 +1330,25 @@ describe('grants', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
     const user = new User(stack, 'User');
-    const globalTable = TableV2.fromTableName(stack, 'GlobalTable', 'my-global-table');
+    const table = TableV2.fromTableName(stack, 'Table', 'my-table');
 
     // WHEN / THEN
     expect(() => {
-      globalTable.grantStreamRead(user);
-    }).toThrow('No stream ARN found on the table Stack/GlobalTable');
+      table.grantStreamRead(user);
+    }).toThrow('No stream ARN found on the table Stack/Table');
   });
 });
 
 describe('metrics', () => {
-  test('can use metricConsumedReadCapacityUnits on a global table', () => {
+  test('can use metricConsumedReadCapacityUnits on a table', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = new TableV2(stack, 'GlobalTable', {
+    const table = new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
 
     // WHEN / THEN
-    expect(stack.resolve(globalTable.metricConsumedReadCapacityUnits())).toEqual({
+    expect(stack.resolve(table.metricConsumedReadCapacityUnits())).toEqual({
       period: {
         amount: 5,
         unit: { label: 'minutes', isoLabel: 'M', inMillis: 60000 },
@@ -1366,15 +1366,15 @@ describe('metrics', () => {
     });
   });
 
-  test('can use metricConsumedWriteCapacityUnits on a global table', () => {
+  test('can use metricConsumedWriteCapacityUnits on a table', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = new TableV2(stack, 'GlobalTable', {
+    const table = new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
 
     // WHEN / THEN
-    expect(stack.resolve(globalTable.metricConsumedWriteCapacityUnits())).toEqual({
+    expect(stack.resolve(table.metricConsumedWriteCapacityUnits())).toEqual({
       period: {
         amount: 5,
         unit: { label: 'minutes', isoLabel: 'M', inMillis: 60000 },
@@ -1395,12 +1395,12 @@ describe('metrics', () => {
   test('using metricSystemErrorsForOperations with no operations will default to all', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = new TableV2(stack, 'GlobalTable', {
+    const table = new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
 
     // WHEN / THEN
-    expect(Object.keys(globalTable.metricSystemErrorsForOperations().toMetricConfig().mathExpression!.usingMetrics)).toEqual([
+    expect(Object.keys(table.metricSystemErrorsForOperations().toMetricConfig().mathExpression!.usingMetrics)).toEqual([
       'getitem',
       'batchgetitem',
       'scan',
@@ -1418,15 +1418,15 @@ describe('metrics', () => {
     ]);
   });
 
-  test('can use metricSystemErrorsForOperations on a global table', () => {
+  test('can use metricSystemErrorsForOperations on a table', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = new TableV2(stack, 'GlobalTable', {
+    const table = new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
 
     // WHEN / THEN
-    expect(stack.resolve(globalTable.metricSystemErrorsForOperations({ operations: [Operation.GET_ITEM, Operation.PUT_ITEM] }))).toEqual({
+    expect(stack.resolve(table.metricSystemErrorsForOperations({ operations: [Operation.GET_ITEM, Operation.PUT_ITEM] }))).toEqual({
       expression: 'getitem + putitem',
       label: 'Sum of errors across all operations',
       period: {
@@ -1472,15 +1472,15 @@ describe('metrics', () => {
     });
   });
 
-  test('can use metricUserErrors on a global table', () => {
+  test('can use metricUserErrors on a table', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = new TableV2(stack, 'GlobalTable', {
+    const table = new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
 
     // WHEN / THEN
-    expect(stack.resolve(globalTable.metricUserErrors())).toEqual({
+    expect(stack.resolve(table.metricUserErrors())).toEqual({
       period: {
         amount: 5,
         unit: { label: 'minutes', isoLabel: 'M', inMillis: 60000 },
@@ -1494,15 +1494,15 @@ describe('metrics', () => {
     });
   });
 
-  test('can use metricConditionalCheckFailedRequests on a global table', () => {
+  test('can use metricConditionalCheckFailedRequests on a table', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = new TableV2(stack, 'GlobalTable', {
+    const table = new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
 
     // WHEN / THEN
-    expect(stack.resolve(globalTable.metricConditionalCheckFailedRequests())).toEqual({
+    expect(stack.resolve(table.metricConditionalCheckFailedRequests())).toEqual({
       period: {
         amount: 5,
         unit: { label: 'minutes', isoLabel: 'M', inMillis: 60000 },
@@ -1519,27 +1519,27 @@ describe('metrics', () => {
   test('can use metricSuccessfulRequestLatency without TableName dimension', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = new TableV2(stack, 'GlobalTable', {
+    const table = new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
 
     // WHEN / THEN
-    expect(globalTable.metricSuccessfulRequestLatency({ dimensionsMap: { Operation: 'GetItem' } }).dimensions).toEqual({
-      TableName: globalTable.tableName,
+    expect(table.metricSuccessfulRequestLatency({ dimensionsMap: { Operation: 'GetItem' } }).dimensions).toEqual({
+      TableName: table.tableName,
       Operation: 'GetItem',
     });
   });
 
-  test('can use metricSuccessfulRequestLatency on a global table', () => {
+  test('can use metricSuccessfulRequestLatency on a table', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = new TableV2(stack, 'GlobalTable', {
+    const table = new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
 
     // WHEN / THEN
-    expect(stack.resolve(globalTable.metricSuccessfulRequestLatency({
-      dimensionsMap: { TableName: globalTable.tableName, Operation: 'GetItem' },
+    expect(stack.resolve(table.metricSuccessfulRequestLatency({
+      dimensionsMap: { TableName: table.tableName, Operation: 'GetItem' },
     }))).toEqual({
       period: {
         amount: 5,
@@ -1554,15 +1554,15 @@ describe('metrics', () => {
     });
   });
 
-  test('can use metricThrottledRequestsForOperation on a global table', () => {
+  test('can use metricThrottledRequestsForOperation on a table', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = new TableV2(stack, 'GlobalTable', {
+    const table = new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
 
     // WHEN / THEN
-    expect(stack.resolve(globalTable.metricThrottledRequestsForOperation(Operation.PUT_ITEM))).toEqual({
+    expect(stack.resolve(table.metricThrottledRequestsForOperation(Operation.PUT_ITEM))).toEqual({
       period: {
         amount: 5,
         unit: { label: 'minutes', isoLabel: 'M', inMillis: 60000 },
@@ -1576,15 +1576,15 @@ describe('metrics', () => {
     });
   });
 
-  test('can use metricThrottledRequestForOperations on a global table', () => {
+  test('can use metricThrottledRequestForOperations on a table', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = new TableV2(stack, 'GlobalTable', {
+    const table = new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
 
     // WHEN / THEN
-    expect(stack.resolve(globalTable.metricThrottledRequestsForOperations({ operations: [Operation.GET_ITEM, Operation.PUT_ITEM] }))).toEqual({
+    expect(stack.resolve(table.metricThrottledRequestsForOperations({ operations: [Operation.GET_ITEM, Operation.PUT_ITEM] }))).toEqual({
       expression: 'getitem + putitem',
       label: 'Sum of throttled requests across all operations',
       period: {
@@ -1630,19 +1630,19 @@ describe('metrics', () => {
     });
   });
 
-  test('can use metrics on a global table imported by name', () => {
+  test('can use metrics on a table imported by name', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = TableV2.fromTableName(stack, 'GlobalTable', 'my-global-table');
+    const table = TableV2.fromTableName(stack, 'Table', 'my-table');
 
     // WHEN / THEN
-    expect(stack.resolve(globalTable.metricConsumedReadCapacityUnits())).toEqual({
+    expect(stack.resolve(table.metricConsumedReadCapacityUnits())).toEqual({
       period: {
         amount: 5,
         unit: { label: 'minutes', isoLabel: 'M', inMillis: 60000 },
       },
       dimensions: {
-        TableName: 'my-global-table',
+        TableName: 'my-table',
       },
       namespace: 'AWS/DynamoDB',
       metricName: 'ConsumedReadCapacityUnits',
@@ -1652,19 +1652,19 @@ describe('metrics', () => {
     });
   });
 
-  test('can use metrics on a global table imported by arn', () => {
+  test('can use metrics on a table imported by arn', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = TableV2.fromTableArn(stack, 'GlobalTable', 'arn:aws:dynamodb:us-east-2:123456789012:table/my-global-table');
+    const table = TableV2.fromTableArn(stack, 'Table', 'arn:aws:dynamodb:us-east-2:123456789012:table/my-table');
 
     // WHEN / THEN
-    expect(stack.resolve(globalTable.metricConsumedReadCapacityUnits())).toEqual({
+    expect(stack.resolve(table.metricConsumedReadCapacityUnits())).toEqual({
       period: {
         amount: 5,
         unit: { label: 'minutes', isoLabel: 'M', inMillis: 60000 },
       },
       dimensions: {
-        TableName: 'my-global-table',
+        TableName: 'my-table',
       },
       namespace: 'AWS/DynamoDB',
       metricName: 'ConsumedReadCapacityUnits',
@@ -1753,15 +1753,15 @@ describe('metrics', () => {
     });
   });
 
-  testDeprecated('can use metricThrottledRequests on a global table', () => {
+  testDeprecated('can use metricThrottledRequests on a table', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = new TableV2(stack, 'GlobalTable', {
+    const table = new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
 
     // WHEN / THEN
-    expect(stack.resolve(globalTable.metricThrottledRequests())).toEqual({
+    expect(stack.resolve(table.metricThrottledRequests())).toEqual({
       period: {
         amount: 5,
         unit: { label: 'minutes', isoLabel: 'M', inMillis: 60000 },
@@ -1778,26 +1778,26 @@ describe('metrics', () => {
   testDeprecated('can use metricSystemErrors without TableName dimension', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = new TableV2(stack, 'GlobalTable', {
+    const table = new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
 
     // WHEN / THEN
-    expect(globalTable.metricSystemErrors({ dimensions: { Operation: 'GetItem' } }).dimensions).toEqual({
-      TableName: globalTable.tableName,
+    expect(table.metricSystemErrors({ dimensions: { Operation: 'GetItem' } }).dimensions).toEqual({
+      TableName: table.tableName,
       Operation: 'GetItem',
     });
   });
 
-  testDeprecated('can use metricSystemErrors on a global table', () => {
+  testDeprecated('can use metricSystemErrors on a table', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = new TableV2(stack, 'GlobalTable', {
+    const table = new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
 
     // WHEN / THEN
-    expect(stack.resolve(globalTable.metricSystemErrors({ dimensionsMap: { TableName: globalTable.tableName, Operation: 'GetItem' } }))).toEqual({
+    expect(stack.resolve(table.metricSystemErrors({ dimensionsMap: { TableName: table.tableName, Operation: 'GetItem' } }))).toEqual({
       period: {
         amount: 5,
         unit: { label: 'minutes', isoLabel: 'M', inMillis: 60000 },
@@ -1814,39 +1814,39 @@ describe('metrics', () => {
   test('throws when using metricUserErrors with dimensions', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = new TableV2(stack, 'GlobalTable', {
+    const table = new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
 
     // WHEN / THEN
     expect(() => {
-      globalTable.metricUserErrors({ dimensions: { TableName: globalTable.tableName } });
+      table.metricUserErrors({ dimensions: { TableName: table.tableName } });
     }).toThrow('`dimensions` is not supported for the `UserErrors` metric');
   });
 
   test('throws when using metricSuccessfulRequestLatency without Operation dimension', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = new TableV2(stack, 'GlobalTable', {
+    const table = new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
 
     // WHEN / THEN
     expect(() => {
-      globalTable.metricSuccessfulRequestLatency({ dimensionsMap: { TableName: globalTable.tableName } });
+      table.metricSuccessfulRequestLatency({ dimensionsMap: { TableName: table.tableName } });
     }).toThrow('`Operation` dimension must be passed for the `SuccessfulRequestLatency` metric');
   });
 
   testDeprecated('throws when using metricSystemErrors without Operation dimension', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
-    const globalTable = new TableV2(stack, 'GlobalTable', {
+    const table = new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
 
     // WHEN / THEN
     expect(() => {
-      globalTable.metricSystemErrors({ dimensions: { TableName: globalTable.tableName } });
+      table.metricSystemErrors({ dimensions: { TableName: table.tableName } });
     }).toThrow("'Operation' dimension must be passed for the 'SystemErrors' metric.");
   });
 });

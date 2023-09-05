@@ -1,6 +1,6 @@
 # Amazon DynamoDB Construct Library
 
-> The DynamoDB construct library has two table constructs - `Table` and `GlobalTable`. `GlobalTable` is the preferred construct to use for creating a single table or a table with multiple `replicas`. A `GlobalTable` without any `replicas` configured will create a single table in the primary deployment region and will behave in the same way as the `Table` construct.
+> The DynamoDB construct library has two table constructs - `Table` and `TableV2`. `TableV2` is the preferred construct to use for creating a single table or a table with multiple `replicas`.
 
 [`Table` API documentation](./ORIGINAL_API.md)
 
