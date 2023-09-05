@@ -6,9 +6,12 @@ import { Grant, IGrantable } from '../../aws-iam';
 import { IKey } from '../../aws-kms';
 import { Resource } from '../../core';
 
-export interface IGlobalTable extends ITable {
+/**
+ * Represents an instance of a DynamoDB table.
+ */
+export interface ITableV2 extends ITable {
   /**
-   * The ID of the table in the main deployment region.
+   * The ID of the table.
    *
    * @attribute
    */
@@ -16,39 +19,39 @@ export interface IGlobalTable extends ITable {
 }
 
 /**
- * Base class for a Global Table.
+ * Base class for a DynamoDB table.
  */
-export abstract class GlobalTableBase extends Resource implements IGlobalTable {
+export abstract class TableBaseV2 extends Resource implements ITableV2 {
   /**
-   * The ARN of the table in the main deployment region.
+   * The ARN of the table.
    *
    * @attribute
    */
   public abstract readonly tableArn: string;
 
   /**
-   * The name of this Global Table and its Replicas.
+   * The name of the table.
    *
    * @attribute
    */
   public abstract readonly tableName: string;
 
   /**
-   * The stream ARN of the table in the main deployment region.
+   * The stream ARN of the table.
    *
    * @attribute
    */
   public abstract readonly tableStreamArn?: string;
 
   /**
-   * The ID of the table in the main deployment region.
+   * The ID of the table.
    *
    * @attribute
    */
-  readonly tableId?: string;
+  public abstract readonly tableId?: string;
 
   /**
-   * The KMS encryption key associated with the table in the main deployment region.
+   * The KMS encryption key for the table..
    */
   public abstract readonly encryptionKey?: IKey;
 
@@ -57,7 +60,7 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
   protected abstract get hasIndex(): boolean;
 
   /**
-   * Adds an IAM policy statement associated with this Global Table to an IAM principal's policy.
+   * Adds an IAM policy statement associated with this table to an IAM principal's policy.
    *
    * Note: If `encryptionKey` is present, appropriate grants to the key needs to be added
    * separately using the `table.encryptionKey.grant*` methods.
@@ -77,7 +80,7 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
   }
 
   /**
-   * Adds an IAM policy statement associated with this Global Table to an IAM principal's policy.
+   * Adds an IAM policy statement associated with this table to an IAM principal's policy.
    *
    * Note: If `encryptionKey` is present, appropriate grants to the key needs to be added
    * separately using the `table.encryptionKey.grant*` methods.
@@ -98,12 +101,12 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
   }
 
   /**
-   * Adds an IAM policy statement associated with this Global Table to an IAM principal's policy.
+   * Adds an IAM policy statement associated with this table to an IAM principal's policy.
    *
    * Actions: DescribeStream, GetRecords, GetShardIterator, ListStreams.
    *
    * Note: Appropriate grants will also be added to the customer-managed KMS keys associated with this
-   * Global Table if one was configured.
+   * table if one was configured.
    *
    * @param grantee the principal to grant access to
    */
@@ -117,7 +120,7 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
   }
 
   /**
-   * Permits an IAM principal to list streams attached to this Global Table.
+   * Permits an IAM principal to list streams attached to this table.
    *
    * @param grantee the principal to grant access to
    */
@@ -134,12 +137,12 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
   }
 
   /**
-   * Permits an IAM principal all data read operations on this Global Table.
+   * Permits an IAM principal all data read operations on this table.
    *
    * Actions: BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan, DescribeTable.
    *
    * Note: Appropriate grants will also be added to the customer-managed KMS keys associated with this
-   * Global Table if one was configured.
+   * table if one was configured.
    *
    * @param grantee the principal to grant access to
    */
@@ -149,12 +152,12 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
   }
 
   /**
-   * Permits an IAM principal all data write operations on this Global Table.
+   * Permits an IAM principal all data write operations on this table.
    *
    * Actions: BatchWriteItem, PutItem, UpdateItem, DeleteItem, DescribeTable.
    *
    * Note: Appropriate grants will also be added to the customer-managed KMS keys associated with this
-   * Global Table if one was configured.
+   * table if one was configured.
    *
    * @param grantee the principal to grant access to
    */
@@ -165,13 +168,13 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
   }
 
   /**
-   * Permits an IAM principal to all data read/write operations on this Global Table.
+   * Permits an IAM principal to all data read/write operations on this table.
    *
    * Actions: BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan, BatchWriteItem, PutItem, UpdateItem,
    * DeleteItem, DescribeTable.
    *
    * Note: Appropriate grants will also be added to the customer-managed KMS keys associated with this
-   * Global Table if one was configured.
+   * table if one was configured.
    *
    * @param grantee the principal to grant access to
    */
@@ -182,10 +185,10 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
   }
 
   /**
-   * Permits an IAM principal to all DynamoDB operations ('dynamodb:*') on this Global Table.
+   * Permits an IAM principal to all DynamoDB operations ('dynamodb:*') on this table.
    *
    * Note: Appropriate grants will also be added to the customer-managed KMS keys associated with this
-   * Global Table if one was configured.
+   * table if one was configured.
    *
    * @param grantee the principal to grant access to
    */
@@ -195,7 +198,7 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
   }
 
   /**
-   * Return the given named metric for this Global Table.
+   * Return the given named metric for this table.
    *
    * By default, the metric will be calculated as a sum over a period of 5 minutes.
    * You can customize this by using the `statistic` and `period` properties.
@@ -211,7 +214,7 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
   }
 
   /**
-   * Metric for the consumed read capacity units for this Global Table.
+   * Metric for the consumed read capacity units for this table.
    *
    * By default, the metric will be calculated as a sum over a period of 5 minutes.
    * You can customize this by using the `statistic` and `period` properties.
@@ -225,7 +228,7 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
   }
 
   /**
-   * Metric for the consumed write capacity units for this Global Table.
+   * Metric for the consumed write capacity units for this table.
    *
    * By default, the metric will be calculated as a sum over a period of 5 minutes.
    * You can customize this by using the `statistic` and `period` properties.
@@ -239,7 +242,7 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
   }
 
   /**
-   * Metric for the user errors for this Global Table.
+   * Metric for the user errors for this table.
    *
    * Note: This metric reports user errors across all the tables in the account and region the table
    * resides in.
@@ -256,7 +259,7 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
   }
 
   /**
-   * Metric for the conditional check failed requests for this Global Table.
+   * Metric for the conditional check failed requests for this table.
    *
    * By default, the metric will be calculated as a sum over a period of 5 minutes.
    * You can customize this by using the `statistic` and `period` properties.
@@ -266,7 +269,7 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
   }
 
   /**
-   * Metric for the successful request latency for this Global Table.
+   * Metric for the successful request latency for this table.
    *
    * By default, the metric will be calculated as an average over a period of 5 minutes.
    * You can customize this by using the `statistic` and `period` properties.
@@ -290,7 +293,7 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
   }
 
   /**
-   * How many requests are throttled on this Global Table for the given operation
+   * How many requests are throttled on this table for the given operation
    *
    * By default, the metric will be calculated as an average over a period of 5 minutes.
    * You can customize this by using the `statistic` and `period` properties.
@@ -304,7 +307,7 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
   }
 
   /**
-   * How many requests are throttled on this Global Table. This will sum errors across all possible operations.
+   * How many requests are throttled on this table. This will sum errors across all possible operations.
    *
    * By default, each individual metric will be calculated as a sum over a period of 5 minutes.
    * You can customize this by using the `statistic` and `period` properties.
@@ -314,7 +317,7 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
   }
 
   /**
-   * Metric for the system errors for this Global Table. This will sum errors across all possible operations.
+   * Metric for the system errors for this table. This will sum errors across all possible operations.
    *
    * By default, each individual metric will be calculated as a sum over a period of 5 minutes.
    * You can customize this by using the `statistic` and `period` properties.
@@ -324,7 +327,7 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
   }
 
   /**
-   * How many requests are throttled on this Global Table.
+   * How many requests are throttled on this table.
    *
    * By default, each individual metric will be calculated as a sum over a period of 5 minutes.
    * You can customize this by using the `statistic` and `period` properties.
@@ -336,7 +339,7 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
   }
 
   /**
-   * Metric for the system errors a Global Table
+   * Metric for the system errors this table
    *
    * @deprecated use `metricSystemErrorsForOperations`.
    */
@@ -410,7 +413,7 @@ export abstract class GlobalTableBase extends Resource implements IGlobalTable {
   }
 
   /**
-   * Adds an IAM policy statement associated with this Global Table to an IAM principal's policy.
+   * Adds an IAM policy statement associated with this table to an IAM principal's policy.
    *
    * @param grantee the principal (no-op if undefined)
    * @param options options for keyActions, tableActions, and streamActions
