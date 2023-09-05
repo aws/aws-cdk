@@ -9,7 +9,7 @@ beforeEach(() => {
 });
 
 describe('callsites', () => {
-  expect(callsites()[0].getFileName()).toMatch(/\/test\/utils.test.ts$/);
+  expect(callsites()[0].getFileName()).toMatch(/\/test\/util.test.ts$/);
 });
 
 describe('findUp helpers', () => {
