@@ -708,17 +708,17 @@
                 "id": "DeployAssert",
                 "path": "LogGroup/DefaultTest/DeployAssert",
                 "children": {
-                  "AwsApiCallEventBridgeputEvents3248e2eb89ad699e652ea08fbee13f9e": {
-                    "id": "AwsApiCallEventBridgeputEvents3248e2eb89ad699e652ea08fbee13f9e",
-                    "path": "LogGroup/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEvents3248e2eb89ad699e652ea08fbee13f9e",
+                  "AwsApiCallEventBridgeputEventsa11edac78802d8163d4a2e8dce321c8f": {
+                    "id": "AwsApiCallEventBridgeputEventsa11edac78802d8163d4a2e8dce321c8f",
+                    "path": "LogGroup/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEventsa11edac78802d8163d4a2e8dce321c8f",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "LogGroup/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEvents3248e2eb89ad699e652ea08fbee13f9e/SdkProvider",
+                        "path": "LogGroup/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEventsa11edac78802d8163d4a2e8dce321c8f/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "LogGroup/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEvents3248e2eb89ad699e652ea08fbee13f9e/SdkProvider/AssertionsProvider",
+                            "path": "LogGroup/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEventsa11edac78802d8163d4a2e8dce321c8f/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.2.70"
@@ -732,11 +732,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "LogGroup/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEvents3248e2eb89ad699e652ea08fbee13f9e/Default",
+                        "path": "LogGroup/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEventsa11edac78802d8163d4a2e8dce321c8f/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "LogGroup/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEvents3248e2eb89ad699e652ea08fbee13f9e/Default/Default",
+                            "path": "LogGroup/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEventsa11edac78802d8163d4a2e8dce321c8f/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -788,17 +788,17 @@
                       "version": "10.2.70"
                     }
                   },
-                  "AwsApiCallCloudWatchLogsfilterLogEventsbac56f2d40a2b8634eeb01290bc2d519": {
-                    "id": "AwsApiCallCloudWatchLogsfilterLogEventsbac56f2d40a2b8634eeb01290bc2d519",
-                    "path": "LogGroup/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEventsbac56f2d40a2b8634eeb01290bc2d519",
+                  "AwsApiCallCloudWatchLogsfilterLogEvents492c955476ce1c16408114fdbd98ba07": {
+                    "id": "AwsApiCallCloudWatchLogsfilterLogEvents492c955476ce1c16408114fdbd98ba07",
+                    "path": "LogGroup/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents492c955476ce1c16408114fdbd98ba07",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "LogGroup/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEventsbac56f2d40a2b8634eeb01290bc2d519/SdkProvider",
+                        "path": "LogGroup/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents492c955476ce1c16408114fdbd98ba07/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "LogGroup/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEventsbac56f2d40a2b8634eeb01290bc2d519/SdkProvider/AssertionsProvider",
+                            "path": "LogGroup/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents492c955476ce1c16408114fdbd98ba07/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.2.70"
@@ -812,11 +812,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "LogGroup/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEventsbac56f2d40a2b8634eeb01290bc2d519/Default",
+                        "path": "LogGroup/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents492c955476ce1c16408114fdbd98ba07/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "LogGroup/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEventsbac56f2d40a2b8634eeb01290bc2d519/Default/Default",
+                            "path": "LogGroup/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents492c955476ce1c16408114fdbd98ba07/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -830,7 +830,7 @@
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
-                        "path": "LogGroup/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEventsbac56f2d40a2b8634eeb01290bc2d519/AssertionResults",
+                        "path": "LogGroup/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents492c955476ce1c16408114fdbd98ba07/AssertionResults",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnOutput",
                           "version": "0.0.0"

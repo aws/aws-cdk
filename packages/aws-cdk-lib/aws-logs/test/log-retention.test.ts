@@ -534,4 +534,20 @@ describe('log retention', () => {
       },
     });
   });
+
+  test('function timeout is 15 minutes', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new LogRetention(stack, 'MyLambda', {
+      logGroupName: 'group',
+      retention: RetentionDays.ONE_DAY,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Timeout: 900,
+    });
+  });
 });
