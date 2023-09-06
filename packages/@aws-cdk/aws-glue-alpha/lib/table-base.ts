@@ -182,7 +182,6 @@ export abstract class TableBase extends Resource implements ITable {
   protected abstract readonly tableResource: CfnTable;
   public abstract readonly tableName: string;
   public abstract readonly tableArn: string;
-  public abstract readonly location: string;
   public abstract readonly partitionIndexes?: PartitionIndex[];
 
   /**

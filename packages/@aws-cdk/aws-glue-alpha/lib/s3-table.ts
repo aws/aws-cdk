@@ -111,11 +111,6 @@ export class S3Table extends TableBase {
   public readonly encryptionKey?: kms.IKey;
 
   /**
-   * The location of the tables' data.
-   */
-  public readonly location: string;
-
-  /**
    * This table's partition indexes.
    */
   public readonly partitionIndexes?: PartitionIndex[];
@@ -129,7 +124,6 @@ export class S3Table extends TableBase {
     this.bucket = bucket;
     this.encryption = encryption;
     this.encryptionKey = encryptionKey;
-    this.location = `s3://${bucket.bucketName}/${this.s3Prefix}`;
 
     this.tableResource = new CfnTable(this, 'Table', {
       catalogId: props.database.catalogId,
@@ -148,7 +142,7 @@ export class S3Table extends TableBase {
           'partition_filtering.enabled': props.enablePartitionFiltering,
         },
         storageDescriptor: {
-          location: this.location,
+          location: `s3://${this.bucket.bucketName}/${this.s3Prefix}`,
           compressed: this.compressed,
           storedAsSubDirectories: props.storedAsSubDirectories ?? false,
           columns: renderColumns(props.columns),

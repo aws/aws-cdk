@@ -43,11 +43,6 @@ export class ExternalTable extends TableBase {
   public readonly connection: IConnection;
 
   /**
-   * The location of the tables' data.
-   */
-  public readonly location: string;
-
-  /**
    * This table's partition indexes.
    */
   public readonly partitionIndexes?: PartitionIndex[];
@@ -56,7 +51,6 @@ export class ExternalTable extends TableBase {
 
   constructor(scope: Construct, id: string, props: ExternalTableProps) {
     super(scope, id, props);
-    this.location = props.externalDataLocation;
     this.connection = props.connection;
     this.tableResource = new CfnTable(this, 'Table', {
       catalogId: props.database.catalogId,
@@ -76,7 +70,7 @@ export class ExternalTable extends TableBase {
           'connectionName': props.connection.connectionName,
         },
         storageDescriptor: {
-          location: this.location,
+          location: props.externalDataLocation,
           compressed: this.compressed,
           storedAsSubDirectories: props.storedAsSubDirectories ?? false,
           columns: renderColumns(props.columns),
