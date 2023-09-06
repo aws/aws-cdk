@@ -359,7 +359,7 @@ new glue.S3Table(this, 'MyTable', {
 
 Glue connections allow external data connections to third party databases and data warehouses. However, these connections can also be assigned to Glue Tables, allowing you to query external data sources using the Glue Data Catalog.
 
-Whereas `S3Table` will point to (and if needed, create) a bucket to store the table's data, `ExternalTable` will point to an existing table in a data source. For example, to create a table in Glue that points to a table in Redshift:
+Whereas `S3Table` will point to (and if needed, create) a bucket to store the tables' data, `ExternalTable` will point to an existing table in a data source. For example, to create a table in Glue that points to a table in Redshift:
 
 ```ts
 declare const myConnection: glue.Connection;
