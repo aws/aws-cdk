@@ -726,7 +726,7 @@ export class GraphqlApi extends GraphqlApiBase {
       });
       this.mergedApiExecutionRole.addToPolicy(new PolicyStatement({
         resources: sourceApiArns,
-        actions: ['appsync:SourceGraphQL'],
+        actions: ['appsync:*'],
       }));
     }
   }
