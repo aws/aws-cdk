@@ -1,6 +1,7 @@
 import { Template } from 'aws-cdk-lib/assertions';
 import { WebSocketApi } from '@aws-cdk/aws-apigatewayv2-alpha';
 import { Code, Function } from 'aws-cdk-lib/aws-lambda';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Stack } from 'aws-cdk-lib';
 import { WebSocketLambdaIntegration } from '../../lib';
 
