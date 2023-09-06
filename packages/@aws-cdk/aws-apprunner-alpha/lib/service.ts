@@ -891,7 +891,7 @@ export interface HealthCheckConfiguration {
   /**
    * The URL that health check requests are sent to.
    *
-   * `Path` is only applicable when you set `Protocol` to `HTTP`.
+   * `path` is only applicable when you set `protocol` to `HTTP`.
    *
    * @default /
    */
@@ -900,7 +900,7 @@ export interface HealthCheckConfiguration {
   /**
    * The IP protocol that App Runner uses to perform health checks for your service.
    *
-   * If you set `Protocol` to HTTP`, App Runner sends health check requests to the HTTP path specified by `Path`.
+   * If you set `protocol` to `HTTP`, App Runner sends health check requests to the HTTP path specified by `path`.
    *
    * @default HealthCheckProtocolType.TCP
    */
