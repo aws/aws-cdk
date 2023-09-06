@@ -229,7 +229,18 @@ export class AssertionsProvider extends Construct {
     if (!obj) {
       return obj;
     }
-    return Object.fromEntries(Object.entries(obj).map(([key, value]) => [key, JSON.stringify(value)]));
+    return Object.fromEntries(Object.entries(obj).map(([key, value]) => [key, encodeValue(value)]));
+
+    function encodeValue(value: any): any {
+      if (ArrayBuffer.isView(value)) {
+        return {
+          $type: 'ArrayBufferView',
+          string: new TextDecoder().decode(value as Uint8Array),
+        };
+      }
+
+      return JSON.stringify(value);
+    }
   }
 
   /**
