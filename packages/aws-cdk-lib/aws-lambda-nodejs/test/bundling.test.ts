@@ -884,6 +884,24 @@ test('bundling with <= Node16 warns when sdk v3 is external', () => {
   );
 });
 
+test('bundling with <= Node16 does not warn with default externalModules', () => {
+  const myStack = new Stack(app, 'MyTestStack2');
+  Bundling.bundle(myStack, {
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: Runtime.NODEJS_16_X,
+    architecture: Architecture.X86_64,
+  });
+
+  Annotations.fromStack(myStack).hasNoWarning('*',
+    'If you are relying on AWS SDK v3 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 18 or higher. [ack: @aws-cdk/aws-lambda-nodejs:sdkV3NotInRuntime]',
+  );
+  Annotations.fromStack(myStack).hasNoWarning('*',
+    'If you are relying on AWS SDK v2 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 16 or lower. [ack: @aws-cdk/aws-lambda-nodejs:sdkV2NotInRuntime]',
+  );
+});
+
 test('bundling with >= Node18 warns when sdk v3 is external', () => {
   Bundling.bundle(stack, {
     entry,
@@ -895,6 +913,24 @@ test('bundling with >= Node18 warns when sdk v3 is external', () => {
   });
 
   Annotations.fromStack(stack).hasWarning('*',
+    'If you are relying on AWS SDK v2 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 16 or lower. [ack: @aws-cdk/aws-lambda-nodejs:sdkV2NotInRuntime]',
+  );
+});
+
+test('bundling with >= Node18 does not warn with default externalModules', () => {
+  const myStack = new Stack(app, 'MyTestStack3');
+  Bundling.bundle(myStack, {
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: Runtime.NODEJS_18_X,
+    architecture: Architecture.X86_64,
+  });
+
+  Annotations.fromStack(myStack).hasNoWarning('*',
+    'If you are relying on AWS SDK v3 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 18 or higher. [ack: @aws-cdk/aws-lambda-nodejs:sdkV3NotInRuntime]',
+  );
+  Annotations.fromStack(myStack).hasNoWarning('*',
     'If you are relying on AWS SDK v2 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 16 or lower. [ack: @aws-cdk/aws-lambda-nodejs:sdkV2NotInRuntime]',
   );
 });
