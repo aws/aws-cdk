@@ -40,3 +40,15 @@ export function withRetries<A extends Array<any>, B>(options: RetryOptions, fn: 
 async function sleep(ms: number): Promise<void> {
   return new Promise((ok) => setTimeout(ok, ms));
 }
+
+export function parseJsonPayload(payload: string | Buffer | Uint8Array | undefined | null): any {
+  // sdk v3 returns payloads in Uint8Array, either it or a string or Buffer
+  // can be cast into a buffer and then decoded.
+  const text = new TextDecoder().decode(Buffer.from(payload ?? ''));
+  if (!text) { return { }; }
+  try {
+    return JSON.parse(text);
+  } catch {
+    throw new Error(`return values from user-handlers must be JSON objects. got: "${text}"`);
+  }
+}
