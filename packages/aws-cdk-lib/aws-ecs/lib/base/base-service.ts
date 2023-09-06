@@ -345,6 +345,14 @@ export interface BaseServiceOptions {
    * cannot make requests to other services via Service Connect.
    */
   readonly serviceConnectConfiguration?: ServiceConnectProps;
+
+  /**
+   * The revision of the service's task definition to use for tasks in this service
+   * or 'latest' to use the latest ACTIVE task revision
+   *
+   * @default - Uses the revision of the passed task definition deployed by CloudFormation
+   */
+  readonly taskDefinitionRevision?: string;
 }
 
 /**
@@ -640,6 +648,14 @@ export abstract class BaseService extends Resource
       // prevent new task def revisions in the stack from triggering updates
       // to the stack's ECS service resource
       this.resource.taskDefinition = taskDefinition.family;
+      this.node.addDependency(taskDefinition);
+    }
+
+    if (props.taskDefinitionRevision) {
+      this.resource.taskDefinition = taskDefinition.family;
+      if (props.taskDefinitionRevision !== 'latest') {
+        this.resource.taskDefinition += `:${props.taskDefinitionRevision}`;
+      }
       this.node.addDependency(taskDefinition);
     }
 
