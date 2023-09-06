@@ -1,7 +1,6 @@
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { HttpApi, HttpRoute, HttpRouteKey, MappingValue, ParameterMapping, PayloadFormatVersion } from '@aws-cdk/aws-apigatewayv2-alpha';
 import { Code, Function } from 'aws-cdk-lib/aws-lambda';
-import { lambda.Runtime.NODEJS_LATEST } from 'aws-cdk-lib/aws-lambda/lib/helpers-internal';
 import { App, Stack } from 'aws-cdk-lib';
 import { HttpLambdaIntegration } from '../../lib';
 

@@ -2,7 +2,6 @@ import { Template } from 'aws-cdk-lib/assertions';
 import { WebSocketApi } from '@aws-cdk/aws-apigatewayv2-alpha';
 import { WebSocketLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
 import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
-import { lambda.Runtime.NODEJS_LATEST } from 'aws-cdk-lib/aws-lambda/lib/helpers-internal';
 import { Stack } from 'aws-cdk-lib';
 import { WebSocketIamAuthorizer } from '../../lib';
 

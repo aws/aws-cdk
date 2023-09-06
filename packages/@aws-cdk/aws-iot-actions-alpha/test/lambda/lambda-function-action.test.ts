@@ -3,7 +3,6 @@ import * as iot from '@aws-cdk/aws-iot-alpha';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 import * as actions from '../../lib';
-import { lambda.Runtime.NODEJS_LATEST } from 'aws-cdk-lib/aws-lambda/lib/helpers-internal';
 
 test('create a topic rule with lambda action and a lambda permission to be invoked by the topic rule', () => {
   // GIVEN
