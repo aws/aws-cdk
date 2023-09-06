@@ -849,6 +849,56 @@ export class GitHubConnection {
 }
 
 /**
+ * Describes the settings for the health check that AWS App Runner performs to monitor the health of a service.
+ */
+export interface HealthCheckConfiguration {
+  /**
+   * The number of consecutive checks that must succeed before App Runner decides that the service is healthy.
+   *
+   * @default - 1
+   */
+  readonly healthyThreshold?: number;
+
+  /**
+   * The time interval, in seconds, between health checks.
+   * TODO: CDK Duration
+   *
+   * @default - 5
+   */
+  readonly interval?: number;
+
+  /**
+   * The URL that health check requests are sent to.
+   *
+   * @default - "/"
+   */
+  readonly path?: string;
+
+  /**
+   * The IP protocol that App Runner uses to perform health checks for your service.
+   * TODO: Enum
+   *
+   * @default - TCP
+   */
+  readonly protocol?: string;
+
+  /**
+   * The time, in seconds, to wait for a health check response before deciding it failed.
+   * TODO: CDK Duration
+   *
+   * @default - 2
+   */
+  readonly timeout?: number;
+
+  /**
+   * The number of consecutive checks that must fail before App Runner decides that the service is unhealthy.
+   *
+   * @default - 5
+   */
+  readonly unhealthyThreshold?: number;
+}
+
+/**
  * Attributes for the App Runner Service
  */
 export interface ServiceAttributes {
