@@ -893,8 +893,6 @@ export interface HealthCheckConfiguration {
    *
    * `Path` is only applicable when you set `Protocol` to `HTTP`.
    *
-   * TODO: Validation whether `Protocol` is `HTTP`.
-   *
    * @default /
    */
   readonly path?: string;
@@ -1147,6 +1145,10 @@ export class Service extends cdk.Resource implements iam.IGrantable {
     if (this.source.codeRepository?.codeConfiguration.configurationSource == ConfigurationSourceType.REPOSITORY &&
       this.source.codeRepository?.codeConfiguration.configurationValues) {
       throw new Error('configurationValues cannot be provided if the ConfigurationSource is Repository');
+    }
+
+    if (this.props.healthCheckConfiguration?.path && this.props.healthCheckConfiguration?.protocol !== HealthCheckProtocolType.HTTP) {
+      throw new Error('Path is only applicable when you set Protocol to HTTP');
     }
 
     const resource = new CfnService(this, 'Resource', {
