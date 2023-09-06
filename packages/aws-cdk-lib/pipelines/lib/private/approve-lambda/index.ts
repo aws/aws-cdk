@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { CodePipeline } from '@aws-sdk/client-codepipeline';
 
-const client = new CodePipeline({ apiVersion: '2015-07-09' });
+const client = new CodePipeline();
 const TIMEOUT_IN_MINUTES = 5;
 
 const sleep = (seconds: number) => {
