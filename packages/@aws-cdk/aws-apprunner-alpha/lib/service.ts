@@ -706,6 +706,13 @@ export interface ServiceProps {
    * @default - no VPC connector, uses the DEFAULT egress type instead
    */
   readonly vpcConnector?: IVpcConnector;
+
+  /**
+   * Settings for the health check that AWS App Runner performs to monitor the health of a service.
+   *
+   * @default - no health check configuration
+   */
+  readonly healthCheckConfiguration?: HealthCheckConfiguration;
 }
 
 /**
@@ -1165,6 +1172,9 @@ export class Service extends cdk.Resource implements iam.IGrantable {
           vpcConnectorArn: this.props.vpcConnector?.vpcConnectorArn,
         },
       },
+      healthCheckConfiguration: this.props.healthCheckConfiguration ?
+        this.renderHealthCheckConfiguration(this.props.healthCheckConfiguration) :
+        undefined,
     });
 
     // grant required privileges for the role
@@ -1326,5 +1336,16 @@ export class Service extends cdk.Resource implements iam.IGrantable {
         runtimeEnvironmentSecrets: Lazy.any({ produce: () => this.renderEnvironmentSecrets() }),
       },
     });
+  }
+
+  private renderHealthCheckConfiguration(props: HealthCheckConfiguration) {
+    return {
+      healthyThreshold: props.healthyThreshold,
+      interval: props.interval?.toSeconds(),
+      path: props.path,
+      protocol: props.protocol,
+      timeout: props.timeout?.toSeconds(),
+      unhealthyThreshold: props.unhealthyThreshold,
+    };
   }
 }
