@@ -463,6 +463,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly XRAY = new InterfaceVpcEndpointAwsService('xray');
   public static readonly SECURITYHUB = new InterfaceVpcEndpointAwsService('securityhub');
   public static readonly EMAIL_SMTP = new InterfaceVpcEndpointAwsService('email-smtp');
+  public static readonly VERIFIED_PERMISSIONS = new InterfaceVpcEndpointAwsService('verifiedpermissions');
 
   /**
    * The name of the service. e.g. com.amazonaws.us-east-1.ecs
