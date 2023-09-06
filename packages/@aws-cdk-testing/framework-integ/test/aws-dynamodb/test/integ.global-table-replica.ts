@@ -1,7 +1,7 @@
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as path from 'path';
 import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
-import { AttributeType, GlobalTable } from 'aws-cdk-lib/aws-dynamodb';
+import { AttributeType, TableV2 } from 'aws-cdk-lib/aws-dynamodb';
 import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 
@@ -16,7 +16,7 @@ class TestStack extends Stack {
       handler: 'index.handler',
     });
 
-    const globalTable = new GlobalTable(this, 'GlobalTable', {
+    const globalTable = new TableV2(this, 'GlobalTable', {
       tableName: 'global-table',
       removalPolicy: RemovalPolicy.DESTROY,
       partitionKey: { name: 'pk', type: AttributeType.STRING },
