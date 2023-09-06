@@ -1116,6 +1116,9 @@ const cluster = eks.Cluster.fromClusterAttributes(this, 'MyCluster', {
   kubectlRoleArn: 'arn:aws:iam::123456:role/service-role/k8sservicerole',
 });
 
+// you can also associate a provider created outside the CDK with an existing cluster
+const provider3 = cluster.associateOpenIdConnectProvider('arn:aws:iam::123456:oidc-provider/oidc.eks.eu-west-1.amazonaws.com/id/AB123456ABC')
+
 const serviceAccount = cluster.addServiceAccount('MyServiceAccount');
 
 const bucket = new s3.Bucket(this, 'Bucket');
