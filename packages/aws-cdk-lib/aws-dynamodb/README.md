@@ -299,7 +299,7 @@ const table = new dynamodb.TableV2(this, 'Table', {
   ],
 });
 
-globalTable.addGlobalSecondaryIndex({
+table.addGlobalSecondaryIndex({
   indexName: 'gsi2',
   partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
 });
@@ -413,7 +413,7 @@ const table = new dynamodb.TableV2(this, 'Table', {
   ],
 });
 
-globalTable.addLocalSecondaryIndex({
+table.addLocalSecondaryIndex({
   indexName: 'lsi2',
   sortKey: { name: 'sk', type: dynamodb.AttributeType.NUMBER },
 });
@@ -598,7 +598,7 @@ declare const user: iam.User;
 
 const table = dynamodb.TableV2.fromTableArn(this, 'ImportedTable', 'arn:aws:dynamodb:us-east-1:123456789012:table/my-table');
 // now you can call methods on the referenced table
-globalTable.grantReadWriteData(user);
+table.grantReadWriteData(user);
 ```
 
 If you intend to use the `tableStreamArn` (including indirectly, for example by creating an
