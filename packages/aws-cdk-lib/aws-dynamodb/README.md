@@ -4,7 +4,7 @@
 
 [`Table` API documentation](./ORIGINAL_API.md)
 
-Here is a minimal deployable DynamoDB table using the `TableV2` construct:
+Here is a minimal deployable DynamoDB table using `TableV2`:
 
 ```ts
 const table = new dynamodb.TableV2(this, 'Table', {
@@ -154,7 +154,7 @@ The `TableV2` construct can be configured with on-demand or provisioned billing:
 
 Note: `writeCapacity` can only be configured using autoscaled capacity.
 
-The following example shows how to configure an instance of the `TableV2` construct with on-demand billing:
+The following example shows how to configure `TableV2` with on-demand billing:
 
 ```ts
 const table = new dynamodb.TableV2(this, 'Table', {
@@ -163,7 +163,7 @@ const table = new dynamodb.TableV2(this, 'Table', {
 })
 ```
 
-When using provisioned billing, you must also specify `readCapacity` and `writeCapacity`. You can choose to configure `readCapacity` with fixed capacity or autoscaled capacity, but `writeCapacity` can only be configured with autoscaled capacity. The following example shows how to configure an instance of the `TableV2` construct with provisioned billing:
+When using provisioned billing, you must also specify `readCapacity` and `writeCapacity`. You can choose to configure `readCapacity` with fixed capacity or autoscaled capacity, but `writeCapacity` can only be configured with autoscaled capacity. The following example shows how to configure `TableV2` with provisioned billing:
 
 ```ts
 const table = new dynamodb.TableV2(this, 'Table', {
@@ -211,7 +211,7 @@ All user data stored in a DynamoDB table is fully encrypted at rest. When creati
 * AWS managed keys - The keys are stored in your account and are managed by AWS KMS (AWS KMS charges apply).
 * Customer managed keys - The keys are stored in your account and are created, owned, and managed by you. You have full control over the KMS keys (AWS KMS charges apply).
 
-The following is an example of how to configure an instance of the `TableV2` construct with encryption using an AWS owned key:
+The following is an example of how to configure `TableV2` with encryption using an AWS owned key:
 
 ```ts
 const table = new dynamodb.TableV2(this, 'Table', {
@@ -220,7 +220,7 @@ const table = new dynamodb.TableV2(this, 'Table', {
 })
 ```
 
-The following is an example of how to configure a n instance of the `TableV2` construct with encryption using an AWS managed key:
+The following is an example of how to configure `TableV2` with encryption using an AWS managed key:
 
 ```ts
 const table = new dynamodb.TableV2(this, 'Table', {
@@ -229,7 +229,7 @@ const table = new dynamodb.TableV2(this, 'Table', {
 })
 ```
 
-When configuring an instance of the `TableV2` construct with encryption using customer managed keys, you must specify the KMS key for the primary table as the `tableKey`. A map of `replicaKeyArns` must be provided containing each replica region and the associated KMS key ARN:
+When configuring `TableV2` with encryption using customer managed keys, you must specify the KMS key for the primary table as the `tableKey`. A map of `replicaKeyArns` must be provided containing each replica region and the associated KMS key ARN:
 
 ```ts
 import * as cdk from 'aws-cdk-lib';
@@ -272,7 +272,7 @@ https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SecondaryIndexe
 
 ### Global Secondary Indexes
 
-An instance of the `TableV2` construct can be configured with `globalSecondaryIndexes` by providing them as a `TableV2` property:
+`TableV2` can be configured with `globalSecondaryIndexes` by providing them as a `TableV2` property:
 
 ```ts
 const table = new dynamodb.TableV2(this, 'Table', {
@@ -305,7 +305,7 @@ globalTable.addGlobalSecondaryIndex({
 });
 ```
 
-You can configure `readCapacity` and `writeCapacity` on a `globalSecondaryIndex` when an instance of the `TableV2` construct is configured with provisioned `billing`. If the `TableV2` instance is configured with provisioned `billing` but `readCapacity` or `writeCapacity` are not configured on a `globalSecondaryIndex`, then they will be inherited from the capacity settings configured with the `billing` configuration:
+You can configure `readCapacity` and `writeCapacity` on a `globalSecondaryIndex` when an `TableV2` is configured with provisioned `billing`. If `TableV2` is configured with provisioned `billing` but `readCapacity` or `writeCapacity` are not configured on a `globalSecondaryIndex`, then they will be inherited from the capacity settings specified with the `billing` configuration:
 
 ```ts
 const table = new dynamodb.TableV2(this, 'Table', {
@@ -382,7 +382,7 @@ const globalTable = new dynamodb.TableV2(stack, 'GlobalTable', {
 
 ### Local Secondary Indexes
 
-An instance of the `TableV2` construct can only be configured with `localSecondaryIndexes` when a `sortKey` is defined as a `TableV2` property.
+`TableV2` can only be configured with `localSecondaryIndexes` when a `sortKey` is defined as a `TableV2` property.
 
 You can provide `localSecondaryIndexes` as a `TableV2` property:
 
@@ -493,7 +493,7 @@ const table = new dynamodb.TableV2(this, 'Table', {
 
 ## Contributor Insights
 
-Enabling `contributorInsights` for a `TableV2` instance will provide information about the most accessed and throttled items in a table or `globalSecondaryIndex`. DynamoDB delivers this information to you via CloudWatch Contributor Insights rules, reports, and graphs of report data.
+Enabling `contributorInsights` for `TableV2` will provide information about the most accessed and throttled items in a table or `globalSecondaryIndex`. DynamoDB delivers this information to you via CloudWatch Contributor Insights rules, reports, and graphs of report data.
 
 ```ts
 const table = new dynamodb.TableV2(this, 'Table', {
