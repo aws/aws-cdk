@@ -51,7 +51,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2 {
   public abstract readonly tableId?: string;
 
   /**
-   * The KMS encryption key for the table..
+   * The KMS encryption key for the table.
    */
   public abstract readonly encryptionKey?: IKey;
 

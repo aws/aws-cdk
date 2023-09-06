@@ -196,13 +196,13 @@
                 "id": "ReplicaTableus-west-1",
                 "path": "BarStack/GlobalTable/ReplicaTableus-west-1",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_dynamodb.GlobalTableBase",
+                  "fqn": "aws-cdk-lib.aws_dynamodb.TableBaseV2",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_dynamodb.GlobalTable",
+              "fqn": "aws-cdk-lib.aws_dynamodb.TableV2",
               "version": "0.0.0"
             }
           },
@@ -282,7 +282,7 @@
                 "path": "aws-cdk-global-table-replica-integ/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.69"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
@@ -302,7 +302,7 @@
                             "path": "aws-cdk-global-table-replica-integ/DefaultTest/DeployAssert/LambdaInvoke4465da4335c2e66e81914dde9d8ac6f9/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.69"
+                              "version": "10.2.70"
                             }
                           }
                         },
@@ -382,7 +382,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.69"
+                      "version": "10.2.70"
                     }
                   },
                   "BootstrapVersion": {
@@ -424,7 +424,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.69"
+          "version": "10.2.70"
         }
       }
     },
