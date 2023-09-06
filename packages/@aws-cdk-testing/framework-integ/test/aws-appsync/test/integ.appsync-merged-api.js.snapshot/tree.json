@@ -268,7 +268,7 @@
                             "policyDocument": {
                               "Statement": [
                                 {
-                                  "Action": "appsync:SourceGraphQL",
+                                  "Action": "appsync:*",
                                   "Effect": "Allow",
                                   "Resource": [
                                     {

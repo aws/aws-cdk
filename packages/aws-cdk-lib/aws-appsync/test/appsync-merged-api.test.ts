@@ -120,7 +120,7 @@ test('appsync supports merged API', () => {
     PolicyDocument: {
       Statement: [
         {
-          Action: 'appsync:SourceGraphQL',
+          Action: 'appsync:*',
           Effect: 'Allow',
           Resource: [
             {
