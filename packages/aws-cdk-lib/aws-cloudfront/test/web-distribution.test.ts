@@ -837,7 +837,7 @@ added the ellipsis so a user would know there was more to r...`,
     const lambdaFunction = new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.fromInline('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
     new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
@@ -886,7 +886,7 @@ added the ellipsis so a user would know there was more to r...`,
     const lambdaFunction = new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.fromInline('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
     lambdaFunction.addEnvironment('KEY', 'value', { removeInEdge: true });
 
@@ -923,7 +923,7 @@ added the ellipsis so a user would know there was more to r...`,
     const lambdaFunction = new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.fromInline('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       environment: {
         KEY: 'value',
       },
@@ -1307,7 +1307,7 @@ added the ellipsis so a user would know there was more to r...`,
     const fn = new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.fromInline('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
     const lambdaVersion = new lambda.Version(stack, 'LambdaVersion', { lambda: fn });
 
