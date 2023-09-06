@@ -855,45 +855,50 @@ export interface HealthCheckConfiguration {
   /**
    * The number of consecutive checks that must succeed before App Runner decides that the service is healthy.
    *
-   * @default - 1
+   * @default 1
    */
   readonly healthyThreshold?: number;
 
   /**
    * The time interval, in seconds, between health checks.
-   * TODO: CDK Duration
    *
-   * @default - 5
+   * @default Duration.seconds(5)
    */
-  readonly interval?: number;
+  readonly interval?: cdk.Duration;
 
   /**
    * The URL that health check requests are sent to.
    *
-   * @default - "/"
+   * `Path` is only applicable when you set `Protocol` to `HTTP`.
+   *
+   * TODO: Validation whether `Protocol` is `HTTP`.
+   *
+   * @default /
    */
   readonly path?: string;
 
   /**
    * The IP protocol that App Runner uses to perform health checks for your service.
+   *
+   * If you set `Protocol` to HTTP`, App Runner sends health check requests to the HTTP path specified by `Path`.
+   *
    * TODO: Enum
    *
-   * @default - TCP
+   * @default TCP
    */
   readonly protocol?: string;
 
   /**
    * The time, in seconds, to wait for a health check response before deciding it failed.
-   * TODO: CDK Duration
    *
-   * @default - 2
+   * @default Duration.seconds(2)
    */
-  readonly timeout?: number;
+  readonly timeout?: cdk.Duration;
 
   /**
    * The number of consecutive checks that must fail before App Runner decides that the service is unhealthy.
    *
-   * @default - 5
+   * @default 5
    */
   readonly unhealthyThreshold?: number;
 }
