@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "34.0.0",
   "files": {
     "216218e507a977a1bb3592f29c1a62ab3e0a9eb25569109a395315638e154329": {
       "source": {
@@ -14,20 +14,20 @@
         }
       }
     },
-    "271a1a7bb81a361380921b21e8273a6acfe4867eba05fe530c4d05c065c17a65": {
+    "8aa652c34c594d3c7ff1fe10240de14208e0d856f77eb4d56bd01bd9fc1f1273": {
       "source": {
-        "path": "asset.271a1a7bb81a361380921b21e8273a6acfe4867eba05fe530c4d05c065c17a65",
+        "path": "asset.8aa652c34c594d3c7ff1fe10240de14208e0d856f77eb4d56bd01bd9fc1f1273",
         "packaging": "zip"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "271a1a7bb81a361380921b21e8273a6acfe4867eba05fe530c4d05c065c17a65.zip",
+          "objectKey": "8aa652c34c594d3c7ff1fe10240de14208e0d856f77eb4d56bd01bd9fc1f1273.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "4e86ee6ea299777f1626e155c79d5a3a170f8881f67661f35e17285a68e45d45": {
+    "b3636352b706c2ca8a526b8f1b05b1c838d403243622947ebc2905da06bba7cc": {
       "source": {
         "path": "PipelineSecurityStack.template.json",
         "packaging": "file"
@@ -35,7 +35,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "4e86ee6ea299777f1626e155c79d5a3a170f8881f67661f35e17285a68e45d45.json",
+          "objectKey": "b3636352b706c2ca8a526b8f1b05b1c838d403243622947ebc2905da06bba7cc.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
