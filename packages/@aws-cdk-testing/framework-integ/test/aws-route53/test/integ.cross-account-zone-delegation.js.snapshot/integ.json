@@ -3,7 +3,8 @@
   "testCases": {
     "Route53CrossAccountInteg/DefaultTest": {
       "stacks": [
-        "aws-cdk-route53-cross-account-integ"
+        "child-stack",
+        "child-opt-in-stack"
       ],
       "diffAssets": true,
       "assertionStack": "Route53CrossAccountInteg/DefaultTest/DeployAssert",
