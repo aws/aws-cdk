@@ -1,8 +1,8 @@
 # Amazon DynamoDB Construct Library
 
-> The DynamoDB construct library has two table constructs - `Table` and `TableV2`. `TableV2` is the preferred construct to use for creating a single table or a table with multiple `replicas`.
+> The DynamoDB construct library has two table constructs - `Table` and `TableV2`. `TableV2` is the preferred construct for all use cases, including creating a single table or a table with multiple `replicas`.
 
-[`Table` API documentation](./ORIGINAL_API.md)
+[`Table` API documentation](./TABLE_V1_API.md)
 
 Here is a minimal deployable DynamoDB table using `TableV2`:
 
