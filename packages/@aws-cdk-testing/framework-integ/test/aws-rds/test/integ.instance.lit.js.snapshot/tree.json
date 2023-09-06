@@ -1653,7 +1653,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.69"
+              "version": "10.2.70"
             }
           },
           "HighCPU": {
@@ -1771,7 +1771,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs14.x"
+                    "runtime": "nodejs16.x"
                   }
                 },
                 "constructInfo": {
@@ -1812,7 +1812,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.69"
+          "version": "10.2.70"
         }
       }
     },

@@ -1,5 +1,4 @@
-import { BillingMode } from '@aws-sdk/client-dynamodb';
-import { Billing, Capacity } from '../lib';
+import { Billing, Capacity, BillingMode } from '../lib';
 
 describe('on-demand billing', () => {
   // GIVEN

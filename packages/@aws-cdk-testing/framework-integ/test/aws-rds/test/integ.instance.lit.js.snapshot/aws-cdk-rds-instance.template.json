@@ -1044,6 +1044,7 @@
    "Properties": {
     "Handler": "index.handler",
     "Runtime": "nodejs18.x",
+    "Timeout": 900,
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
@@ -1126,7 +1127,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs16.x"
    },
    "DependsOn": [
     "FunctionServiceRole675BB04A"

@@ -37,14 +37,14 @@
     "Code": {
      "ZipFile": "exports.handler = async function(event, context) { console.log(event); return { statusCode: 200, body: \"connected\" }; };"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "ConnectHandlerServiceRole7E4A9B1F",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs16.x"
    },
    "DependsOn": [
     "ConnectHandlerServiceRole7E4A9B1F"
@@ -87,14 +87,14 @@
     "Code": {
      "ZipFile": "exports.handler = async function(event, context) { console.log(event); return { statusCode: 200, body: \"disconnected\" }; };"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "DisconnectHandlerServiceRoleE54F14F9",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs16.x"
    },
    "DependsOn": [
     "DisconnectHandlerServiceRoleE54F14F9"
@@ -137,14 +137,14 @@
     "Code": {
      "ZipFile": "exports.handler = async function(event, context) { console.log(event); return { statusCode: 200, body: \"default\" }; };"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "DefaultHandlerServiceRoleDF00569C",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs16.x"
    },
    "DependsOn": [
     "DefaultHandlerServiceRoleDF00569C"
@@ -187,14 +187,14 @@
     "Code": {
      "ZipFile": "exports.handler = async function(event, context) { console.log(event); return { statusCode: 200, body: \"received\" }; };"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "MessageHandlerServiceRoleDF05266A",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs16.x"
    },
    "DependsOn": [
     "MessageHandlerServiceRoleDF05266A"
@@ -283,8 +283,8 @@
     "ApiId": {
      "Ref": "mywsapi32E6CE11"
     },
-    "RouteKey": "$connect",
     "AuthorizationType": "NONE",
+    "RouteKey": "$connect",
     "Target": {
      "Fn::Join": [
       "",
@@ -373,8 +373,8 @@
     "ApiId": {
      "Ref": "mywsapi32E6CE11"
     },
-    "RouteKey": "$disconnect",
     "AuthorizationType": "NONE",
+    "RouteKey": "$disconnect",
     "Target": {
      "Fn::Join": [
       "",
@@ -463,8 +463,8 @@
     "ApiId": {
      "Ref": "mywsapi32E6CE11"
     },
-    "RouteKey": "$default",
     "AuthorizationType": "NONE",
+    "RouteKey": "$default",
     "Target": {
      "Fn::Join": [
       "",
@@ -553,8 +553,8 @@
     "ApiId": {
      "Ref": "mywsapi32E6CE11"
     },
-    "RouteKey": "sendmessage",
     "AuthorizationType": "NONE",
+    "RouteKey": "sendmessage",
     "Target": {
      "Fn::Join": [
       "",
@@ -574,8 +574,8 @@
     "ApiId": {
      "Ref": "mywsapi32E6CE11"
     },
-    "StageName": "dev",
-    "AutoDeploy": true
+    "AutoDeploy": true,
+    "StageName": "dev"
    }
   }
  },

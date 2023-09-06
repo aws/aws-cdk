@@ -273,7 +273,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "66db480cb40e7e6208f01c9d9e882f4c416110a2c66dd0c6d12844e8ca9129b6.zip"
+                      "s3Key": "d64690b87ee4eb4d8bbabafe26f88d8cc557bb629a158ed5fb182b8e48da1bbf.zip"
                     },
                     "handler": "index.handler",
                     "role": {
@@ -368,7 +368,7 @@
                 "path": "CustomResourceAthena/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.69"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
@@ -414,7 +414,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.69"
+          "version": "10.2.70"
         }
       }
     },

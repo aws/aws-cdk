@@ -118,7 +118,7 @@ used by your function. Otherwise bundling will fail.
 ## Local bundling
 
 If `esbuild` is available it will be used to bundle your code in your environment. Otherwise,
-bundling will happen in a [Lambda compatible Docker container](https://gallery.ecr.aws/sam/build-nodejs12.x)
+bundling will happen in a [Lambda compatible Docker container](https://gallery.ecr.aws/sam/build-nodejs18.x)
 with the Docker platform based on the target architecture of the Lambda function.
 
 For macOS the recommended approach is to install `esbuild` as Docker volume performance is really poor.
@@ -221,7 +221,7 @@ new nodejs.NodejsFunction(this, 'my-handler', {
     banner: '/* comments */', // requires esbuild >= 0.9.0, defaults to none
     footer: '/* comments */', // requires esbuild >= 0.9.0, defaults to none
     charset: nodejs.Charset.UTF8, // do not escape non-ASCII characters, defaults to Charset.ASCII
-    format: nodejs.OutputFormat.ESM, // ECMAScript module output format, defaults to OutputFormat.CJS (OutputFormat.ESM requires Node.js 14.x)
+    format: nodejs.OutputFormat.ESM, // ECMAScript module output format, defaults to OutputFormat.CJS (OutputFormat.ESM requires Node.js >= 14)
     mainFields: ['module', 'main'], // prefer ECMAScript versions of dependencies
     inject: ['./my-shim.js', './other-shim.js'], // allows to automatically replace a global variable with an import from another file
     esbuildArgs: { // Pass additional arguments to esbuild

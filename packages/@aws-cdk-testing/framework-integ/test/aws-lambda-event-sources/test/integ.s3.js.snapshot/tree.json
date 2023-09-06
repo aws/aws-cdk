@@ -85,7 +85,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs14.x"
+                    "runtime": "nodejs16.x"
                   }
                 },
                 "constructInfo": {
@@ -224,7 +224,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "version": "10.2.69"
                 }
               },
               "AllowBucketNotificationsTolambdaeventsources3F74160805": {
@@ -408,7 +408,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.55"
+              "version": "10.2.69"
             }
           },
           "BootstrapVersion": {
@@ -446,7 +446,7 @@
                 "path": "LambdaEventSourceS3Integ/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "version": "10.2.69"
                 }
               },
               "DeployAssert": {
@@ -492,7 +492,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.55"
+          "version": "10.2.69"
         }
       }
     },

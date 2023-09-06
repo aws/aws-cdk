@@ -25,7 +25,7 @@ new CfnOutput(stack, 'Endpoint', {
 
 function lambdaProxyEndpoint(s: Stack): HttpApi {
   const handler = new lambda.Function(s, 'AlwaysSuccess', {
-    runtime: lambda.Runtime.NODEJS_14_X,
+    runtime: lambda.Runtime.NODEJS_16_X,
     handler: 'index.handler',
     code: new lambda.InlineCode('exports.handler = async function(event, context) { return { statusCode: 200, body: "success" }; };'),
   });

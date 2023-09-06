@@ -55,7 +55,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.55"
+              "version": "10.2.70"
             }
           },
           "com.amazonaws.cdk.custom-resources.s3file-provider": {
@@ -207,14 +207,14 @@
                           },
                           "s3Key": "0aad228bf32d2d8751bf3c64468fd63177e1d0088a9b7114239e668c667d9674.zip"
                         },
+                        "handler": "index.onEvent",
                         "role": {
                           "Fn::GetAtt": [
                             "comamazonawscdkcustomresourcess3fileproviders3fileoneventServiceRole999CEEB6",
                             "Arn"
                           ]
                         },
-                        "handler": "index.onEvent",
-                        "runtime": "nodejs14.x"
+                        "runtime": "nodejs16.x"
                       }
                     },
                     "constructInfo": {
@@ -389,13 +389,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
-                            },
-                            "role": {
-                              "Fn::GetAtt": [
-                                "comamazonawscdkcustomresourcess3fileproviderframeworkonEventServiceRoleABFCDA11",
-                                "Arn"
-                              ]
+                              "s3Key": "81328426dba578d9ff57b0b54146bc81395a478131b0b61e40236fcc8395c2db.zip"
                             },
                             "description": "AWS CDK resource provider framework - onEvent (integ-provider-framework/com.amazonaws.cdk.custom-resources.s3file-provider/s3file-provider)",
                             "environment": {
@@ -409,6 +403,12 @@
                               }
                             },
                             "handler": "framework.onEvent",
+                            "role": {
+                              "Fn::GetAtt": [
+                                "comamazonawscdkcustomresourcess3fileproviderframeworkonEventServiceRoleABFCDA11",
+                                "Arn"
+                              ]
+                            },
                             "runtime": "nodejs18.x",
                             "timeout": 900
                           }
@@ -433,7 +433,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.55"
+              "version": "10.2.70"
             }
           },
           "file2": {
@@ -461,7 +461,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.55"
+              "version": "10.2.70"
             }
           },
           "file3Utf8": {
@@ -489,7 +489,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.55"
+              "version": "10.2.70"
             }
           },
           "assert-file": {
@@ -517,7 +517,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.55"
+              "version": "10.2.70"
             }
           },
           "com.amazonaws.cdk.custom-resources.s3assert-provider": {
@@ -623,13 +623,13 @@
                           },
                           "s3Key": "4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8.zip"
                         },
+                        "handler": "index.on_event",
                         "role": {
                           "Fn::GetAtt": [
                             "comamazonawscdkcustomresourcess3assertproviders3assertoneventServiceRole012C0033",
                             "Arn"
                           ]
                         },
-                        "handler": "index.on_event",
                         "runtime": "python3.7"
                       }
                     },
@@ -786,13 +786,13 @@
                           },
                           "s3Key": "4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8.zip"
                         },
+                        "handler": "index.is_complete",
                         "role": {
                           "Fn::GetAtt": [
                             "comamazonawscdkcustomresourcess3assertproviders3assertiscompleteServiceRoleACAA755A",
                             "Arn"
                           ]
                         },
-                        "handler": "index.is_complete",
                         "runtime": "python3.7"
                       }
                     },
@@ -995,13 +995,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
-                            },
-                            "role": {
-                              "Fn::GetAtt": [
-                                "comamazonawscdkcustomresourcess3assertproviderframeworkonEventServiceRole34070F2C",
-                                "Arn"
-                              ]
+                              "s3Key": "81328426dba578d9ff57b0b54146bc81395a478131b0b61e40236fcc8395c2db.zip"
                             },
                             "description": "AWS CDK resource provider framework - onEvent (integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider)",
                             "environment": {
@@ -1024,6 +1018,12 @@
                               }
                             },
                             "handler": "framework.onEvent",
+                            "role": {
+                              "Fn::GetAtt": [
+                                "comamazonawscdkcustomresourcess3assertproviderframeworkonEventServiceRole34070F2C",
+                                "Arn"
+                              ]
+                            },
                             "runtime": "nodejs18.x",
                             "timeout": 900
                           }
@@ -1216,13 +1216,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
-                            },
-                            "role": {
-                              "Fn::GetAtt": [
-                                "comamazonawscdkcustomresourcess3assertproviderframeworkisCompleteServiceRole2C8C7983",
-                                "Arn"
-                              ]
+                              "s3Key": "81328426dba578d9ff57b0b54146bc81395a478131b0b61e40236fcc8395c2db.zip"
                             },
                             "description": "AWS CDK resource provider framework - isComplete (integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider)",
                             "environment": {
@@ -1242,6 +1236,12 @@
                               }
                             },
                             "handler": "framework.isComplete",
+                            "role": {
+                              "Fn::GetAtt": [
+                                "comamazonawscdkcustomresourcess3assertproviderframeworkisCompleteServiceRole2C8C7983",
+                                "Arn"
+                              ]
+                            },
                             "runtime": "nodejs18.x",
                             "timeout": 900
                           }
@@ -1434,13 +1434,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
-                            },
-                            "role": {
-                              "Fn::GetAtt": [
-                                "comamazonawscdkcustomresourcess3assertproviderframeworkonTimeoutServiceRole15F6DFA2",
-                                "Arn"
-                              ]
+                              "s3Key": "81328426dba578d9ff57b0b54146bc81395a478131b0b61e40236fcc8395c2db.zip"
                             },
                             "description": "AWS CDK resource provider framework - onTimeout (integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider)",
                             "environment": {
@@ -1460,6 +1454,12 @@
                               }
                             },
                             "handler": "framework.onTimeout",
+                            "role": {
+                              "Fn::GetAtt": [
+                                "comamazonawscdkcustomresourcess3assertproviderframeworkonTimeoutServiceRole15F6DFA2",
+                                "Arn"
+                              ]
+                            },
                             "runtime": "nodejs18.x",
                             "timeout": 900
                           }
@@ -1613,7 +1613,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "version": "10.2.70"
                     }
                   }
                 },
@@ -1625,7 +1625,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.55"
+              "version": "10.2.70"
             }
           },
           "file1-url": {
@@ -1687,7 +1687,7 @@
                 "path": "IntegProviderFrameworkTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
@@ -1733,7 +1733,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.55"
+          "version": "10.2.70"
         }
       }
     },
