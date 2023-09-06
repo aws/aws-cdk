@@ -3,7 +3,7 @@
 import * as cfnResponse from './cfn-response';
 import * as consts from './consts';
 import { invokeFunction, startExecution } from './outbound';
-import { getEnv, log } from './util';
+import { getEnv, log, parseJsonPayload } from './util';
 import { IsCompleteResponse, OnEventResponse } from '../types';
 
 // use consts for handler names to compiler-enforce the coupling with construction code.
@@ -112,6 +112,9 @@ async function invokeUserFunction<A extends { ResponseURL: '...' }>(functionArnE
 
   log('user function response:', resp, typeof(resp));
 
+  // ParseJsonPayload is very defensive. It should not be possible for `Payload`
+  // to be anything other than a JSON encoded string (or intarray). Something weird is
+  // going on if that happens. Still, we should do our best to survive it.
   const jsonPayload = parseJsonPayload(resp.Payload);
   if (resp.FunctionError) {
     log('user function threw an error:', resp.FunctionError);
@@ -144,18 +147,6 @@ async function invokeUserFunction<A extends { ResponseURL: '...' }>(functionArnE
   }
 
   return jsonPayload;
-}
-
-function parseJsonPayload(payload: any): any {
-  if (!payload) { return { }; }
-  // sdk v3 returns payloads in Uint8Array, either it or a string or Buffer
-  // can be cast into a buffer and then decoded.
-  let text = new TextDecoder().decode(Buffer.from(payload));
-  try {
-    return JSON.parse(text);
-  } catch {
-    throw new Error(`return values from user-handlers must be JSON objects. got: "${text}"`);
-  }
 }
 
 function createResponseEvent(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent, onEventResult: OnEventResponse): AWSCDKAsyncCustomResource.IsCompleteRequest {

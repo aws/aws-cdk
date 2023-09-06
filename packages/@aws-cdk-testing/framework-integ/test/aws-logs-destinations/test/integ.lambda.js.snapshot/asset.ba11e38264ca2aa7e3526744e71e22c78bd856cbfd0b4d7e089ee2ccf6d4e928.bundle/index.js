@@ -31674,11 +31674,14 @@ var import_sdk_v2_to_v3_adapter = __toESM(require_lib5());
 
 // lib/assertions/providers/lambda-handler/utils.ts
 function parseJsonPayload(payload) {
+  const text = new TextDecoder().decode(Buffer.from(payload ?? ""));
+  if (!text) {
+    return {};
+  }
   try {
-    const buffer = Buffer.from(payload);
-    return JSON.parse(new TextDecoder().decode(buffer));
+    return JSON.parse(text);
   } catch {
-    return payload;
+    throw new Error(`return values from user-handlers must be JSON objects. got: "${text}"`);
   }
 }
 function decodeParameters(obj) {
