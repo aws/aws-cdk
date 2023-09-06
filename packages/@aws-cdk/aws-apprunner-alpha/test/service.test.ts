@@ -1351,3 +1351,80 @@ test('addToRolePolicy', () => {
     ],
   });
 });
+
+test('Service has healthCheckConfiguration', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  // WHEN
+  new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromEcrPublic({
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
+    healthCheckConfiguration: {
+      healthyThreshold: 1,
+      interval: cdk.Duration.seconds(5),
+      path: '/',
+      protocol: apprunner.HealthCheckProtocolType.HTTP,
+      timeout: cdk.Duration.seconds(2),
+      unhealthyThreshold: 5,
+    },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+    HealthCheckConfiguration: {
+      HealthyThreshold: 1,
+      Interval: 5,
+      Path: '/',
+      Protocol: 'HTTP',
+      Timeout: 2,
+      UnhealthyThreshold: 5,
+    },
+  });
+});
+
+test('Path cannot be specified with TCP protocol in healthCheckConfiguration', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+
+  // WHEN
+  expect(() => {
+    new apprunner.Service(stack, 'DemoService', {
+      source: apprunner.Source.fromEcrPublic({
+        imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+      }),
+      healthCheckConfiguration: {
+        healthyThreshold: 1,
+        interval: cdk.Duration.seconds(5),
+        path: '/',
+        protocol: apprunner.HealthCheckProtocolType.TCP,
+        timeout: cdk.Duration.seconds(2),
+        unhealthyThreshold: 5,
+      },
+    });
+  }).toThrow('Path is only applicable when you set Protocol to HTTP');
+});
+
+test('Path cannot be specified without HTTP protocol in healthCheckConfiguration', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+
+  // WHEN
+  expect(() => {
+    new apprunner.Service(stack, 'DemoService', {
+      source: apprunner.Source.fromEcrPublic({
+        imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+      }),
+      healthCheckConfiguration: {
+        healthyThreshold: 1,
+        interval: cdk.Duration.seconds(5),
+        path: '/',
+        timeout: cdk.Duration.seconds(2),
+        unhealthyThreshold: 5,
+      },
+    });
+  }).toThrow('Path is only applicable when you set Protocol to HTTP');
+});
