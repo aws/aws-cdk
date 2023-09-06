@@ -756,7 +756,7 @@ interface AuthenticationConfiguration {
    * The Amazon Resource Name (ARN) of the IAM role that grants the App Runner service access to a
    * source repository. It's required for ECR image repositories (but not for ECR Public repositories).
    *
-   * @defult - no access role.
+   * @default - no access role.
    */
   readonly accessRoleArn?: string;
 
