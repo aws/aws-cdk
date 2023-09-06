@@ -849,6 +849,21 @@ export class GitHubConnection {
 }
 
 /**
+ * The health check protocol type
+ */
+export enum HealthCheckProtocolType {
+  /**
+   * HTTP protocol
+   */
+  HTTP = 'HTTP',
+
+  /**
+   * TCP protocol
+   */
+  TCP = 'TCP',
+}
+
+/**
  * Describes the settings for the health check that AWS App Runner performs to monitor the health of a service.
  */
 export interface HealthCheckConfiguration {
@@ -882,11 +897,9 @@ export interface HealthCheckConfiguration {
    *
    * If you set `Protocol` to HTTP`, App Runner sends health check requests to the HTTP path specified by `Path`.
    *
-   * TODO: Enum
-   *
-   * @default TCP
+   * @default HealthCheckProtocolType.TCP
    */
-  readonly protocol?: string;
+  readonly protocol?: HealthCheckProtocolType;
 
   /**
    * The time, in seconds, to wait for a health check response before deciding it failed.
