@@ -19,17 +19,20 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "integ-binary-payload:ExportsOutputReffn5FF616E3BE1A8BD6"
+         "Fn::ImportValue": "IntegBinaryPayload:ExportsOutputReffn5FF616E3BE1A8BD6"
         },
         "\""
        ]
       ]
      },
      "InvocationType": "\"RequestResponse\"",
-     "Payload": "{\"0\":123,\"1\":34,\"2\":110,\"3\":97,\"4\":109,\"5\":101,\"6\":34,\"7\":58,\"8\":34,\"9\":119,\"10\":111,\"11\":114,\"12\":108,\"13\":100,\"14\":34,\"15\":125}"
+     "Payload": "{\"name\":\"world\"}"
     },
     "flattenResponse": "false",
-    "salt": "1693905679420"
+    "salt": "1693993263186",
+    "specialTypes": {
+     "Payload": "ArrayBufferView"
+    }
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -92,7 +95,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "f90d66003e92dd5a7616b5988a87d41868cff35dc65c19a8422a44c1677ddee5.zip"
+     "S3Key": "6074e2eaa531b0ceff09fcd8268e8d021a94df977a63ccc572404a8c8e4e70cc.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",

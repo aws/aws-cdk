@@ -1,27 +1,27 @@
 {
   "version": "34.0.0",
   "artifacts": {
-    "integ-binary-payload.assets": {
+    "IntegBinaryPayload.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "integ-binary-payload.assets.json",
+        "file": "IntegBinaryPayload.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "integ-binary-payload": {
+    "IntegBinaryPayload": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "integ-binary-payload.template.json",
+        "templateFile": "IntegBinaryPayload.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/de38a971adcb20703e1352170cbcb14d8a9e96a089f2647f8ff83eb10bf8c746.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e4cbaa0fcf23495e4d555f44c97cf3fdd0bbd04ce558a02ba6a79f7ae1944f60.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "integ-binary-payload.assets"
+          "IntegBinaryPayload.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -30,41 +30,41 @@
         }
       },
       "dependencies": [
-        "integ-binary-payload.assets"
+        "IntegBinaryPayload.assets"
       ],
       "metadata": {
-        "/integ-binary-payload/fn/ServiceRole/Resource": [
+        "/IntegBinaryPayload/fn/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "fnServiceRole5D180AFD"
           }
         ],
-        "/integ-binary-payload/fn/Resource": [
+        "/IntegBinaryPayload/fn/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "fn5FF616E3"
           }
         ],
-        "/integ-binary-payload/Exports/Output{\"Ref\":\"fn5FF616E3\"}": [
+        "/IntegBinaryPayload/Exports/Output{\"Ref\":\"fn5FF616E3\"}": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ExportsOutputReffn5FF616E3BE1A8BD6"
           }
         ],
-        "/integ-binary-payload/BootstrapVersion": [
+        "/IntegBinaryPayload/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/integ-binary-payload/CheckBootstrapVersion": [
+        "/IntegBinaryPayload/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "integ-binary-payload"
+      "displayName": "IntegBinaryPayload"
     },
     "integtestDefaultTestDeployAssert24D5C536.assets": {
       "type": "cdk:asset-manifest",
@@ -82,7 +82,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5a2bcdc9a3fcd9229a10fb819d312a61ba2deebfcf14c9bd8e82163158756804.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8e6b4e24a29425a4a249361002d401a788e300129c05040f677749b6d1daad4f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -95,7 +95,7 @@
         }
       },
       "dependencies": [
-        "integ-binary-payload",
+        "IntegBinaryPayload",
         "integtestDefaultTestDeployAssert24D5C536.assets"
       ],
       "metadata": {

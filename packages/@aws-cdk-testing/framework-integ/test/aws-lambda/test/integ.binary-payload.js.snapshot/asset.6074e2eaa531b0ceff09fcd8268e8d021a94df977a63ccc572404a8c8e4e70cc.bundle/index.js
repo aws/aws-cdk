@@ -31679,26 +31679,20 @@ function parseJsonPayload(payload) {
     return payload;
   }
 }
-function decodeParameters(obj) {
+function decodeParameters(obj, specialTypes = {}) {
   return Object.fromEntries(Object.entries(obj).map(([key, value]) => {
     try {
-      return [key, decodeValue(value)];
+      return [key, decodeValue(value, specialTypes[key])];
     } catch {
       return [key, value];
     }
   }));
 }
-function decodeValue(value) {
-  const parsed = JSON.parse(value);
-  const entries = Object.entries(parsed);
-  if (isByteArray(entries)) {
-    const bytes = entries.map(([k, v]) => [parseInt(k), v]).sort(([k1, _v1], [k2, _v2]) => k1 - k2).map(([_k, v]) => v);
-    return Uint8Array.from([...bytes]);
+function decodeValue(value, specialType) {
+  if (specialType === "ArrayBufferView") {
+    return new TextEncoder().encode(value);
   }
-  return parsed;
-}
-function isByteArray(entries) {
-  return entries.every(([k, v]) => !isNaN(parseInt(k)) && typeof v === "number");
+  return JSON.parse(value);
 }
 
 // lib/assertions/providers/lambda-handler/sdk.ts
@@ -31753,7 +31747,7 @@ var AwsApiCallHandler = class extends CustomResourceHandler {
     const sdkPkg = getServicePackage(request2.service);
     const client = getServiceClient(sdkPkg);
     const Command = getSdkCommand(sdkPkg, request2.api);
-    const commandInput = (request2.parameters && decodeParameters(request2.parameters)) ?? {};
+    const commandInput = (request2.parameters && decodeParameters(request2.parameters, request2.specialTypes)) ?? {};
     console.log(`SDK request to ${sdkPkg.service}.${request2.api} with parameters ${JSON.stringify(commandInput)}`);
     const response = await client.send(new Command(commandInput));
     if (response.Payload) {

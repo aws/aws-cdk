@@ -9,10 +9,10 @@ export function parseJsonPayload(payload: any): any {
   }
 }
 
-export function decodeParameters(obj: Record<string, string>): any {
+export function decodeParameters(obj: Record<string, string>, specialTypes: Record<string, string> = {}): any {
   return Object.fromEntries(Object.entries(obj).map(([key, value]) => {
     try {
-      return [key, decodeValue(value)];
+      return [key, decodeValue(value, specialTypes[key])];
     } catch {
       // if the value cannot be parsed, leave it unchanged
       // this will end up as a string
@@ -21,25 +21,11 @@ export function decodeParameters(obj: Record<string, string>): any {
   }));
 }
 
-function decodeValue(value: string): any {
-  const parsed = JSON.parse(value);
-
-  if (parsed != null && !Array.isArray(parsed) && typeof parsed === 'object') {
-    const entries = Object.entries(parsed);
-    if (isByteArray(entries)) {
-      const bytes = entries
-        .map(([k, v]) => [parseInt(k), v])
-        .sort(([k1, _v1], [k2, _v2]) => k1 - k2)
-        .map(([_k, v]) => v);
-
-      return Uint8Array.from([...bytes]);
-    }
+function decodeValue(value: string, specialType?: string): any {
+  if (specialType === 'ArrayBufferView') {
+    return new TextEncoder().encode(value);
   }
-  return parsed;
+
+  return JSON.parse(value);
 }
 
-function isByteArray(entries: [string, unknown][]): entries is [string, number][] {
-  // Uint8Arrays are stringified as objects like this:
-  // {"0":123,"1":34,"2":110,"3":97,"4":109}
-  return entries.every(([k, v]) => !isNaN(parseInt(k)) && typeof v === 'number');
-}

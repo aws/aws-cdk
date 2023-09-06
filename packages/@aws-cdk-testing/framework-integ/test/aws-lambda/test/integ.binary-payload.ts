@@ -3,7 +3,7 @@ import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
 
 const app = new App();
-const stack = new Stack(app, 'integ-binary-payload');
+const stack = new Stack(app, 'IntegBinaryPayload');
 
 const fn = new Function(stack, 'fn', {
   runtime: Runtime.NODEJS_18_X,

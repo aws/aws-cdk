@@ -4,21 +4,21 @@
     "id": "App",
     "path": "",
     "children": {
-      "integ-binary-payload": {
-        "id": "integ-binary-payload",
-        "path": "integ-binary-payload",
+      "IntegBinaryPayload": {
+        "id": "IntegBinaryPayload",
+        "path": "IntegBinaryPayload",
         "children": {
           "fn": {
             "id": "fn",
-            "path": "integ-binary-payload/fn",
+            "path": "IntegBinaryPayload/fn",
             "children": {
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "integ-binary-payload/fn/ServiceRole",
+                "path": "IntegBinaryPayload/fn/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "integ-binary-payload/fn/ServiceRole/ImportServiceRole",
+                    "path": "IntegBinaryPayload/fn/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -26,7 +26,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "integ-binary-payload/fn/ServiceRole/Resource",
+                    "path": "IntegBinaryPayload/fn/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -71,7 +71,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "integ-binary-payload/fn/Resource",
+                "path": "IntegBinaryPayload/fn/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
@@ -101,11 +101,11 @@
           },
           "Exports": {
             "id": "Exports",
-            "path": "integ-binary-payload/Exports",
+            "path": "IntegBinaryPayload/Exports",
             "children": {
               "Output{\"Ref\":\"fn5FF616E3\"}": {
                 "id": "Output{\"Ref\":\"fn5FF616E3\"}",
-                "path": "integ-binary-payload/Exports/Output{\"Ref\":\"fn5FF616E3\"}",
+                "path": "IntegBinaryPayload/Exports/Output{\"Ref\":\"fn5FF616E3\"}",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
@@ -119,7 +119,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "integ-binary-payload/BootstrapVersion",
+            "path": "IntegBinaryPayload/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -127,7 +127,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "integ-binary-payload/CheckBootstrapVersion",
+            "path": "IntegBinaryPayload/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"

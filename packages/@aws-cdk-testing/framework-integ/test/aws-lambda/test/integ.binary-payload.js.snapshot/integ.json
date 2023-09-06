@@ -3,7 +3,7 @@
   "testCases": {
     "integ-test/DefaultTest": {
       "stacks": [
-        "integ-binary-payload"
+        "IntegBinaryPayload"
       ],
       "assertionStack": "integ-test/DefaultTest/DeployAssert",
       "assertionStackName": "integtestDefaultTestDeployAssert24D5C536"

@@ -4,8 +4,10 @@ describe('utils', () => {
   test('decode parameters', () => {
     const result = decodeParameters({
       foo: 'normal string',
-      bar: '{"0":97,"1":98,"2":99}',
+      bar: 'abc',
       zee: '{"hello": "world"}',
+    }, {
+      bar: 'ArrayBufferView',
     });
 
     expect(result).toEqual({
