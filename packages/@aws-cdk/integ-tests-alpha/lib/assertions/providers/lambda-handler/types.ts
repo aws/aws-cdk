@@ -150,14 +150,6 @@ export interface AwsApiCallRequest {
    * @default - return all data
    */
   readonly outputPaths?: string[];
-
-  /**
-   * Types that can't be properly serialized with JSON.stringify()
-   * are marked here. For example, an entry "foo" -> "ArrayBufferView"
-   * signals to the decoder that "foo" should be handled separately
-   * and treated as an array of bytes.
-   */
-  readonly specialTypes?: Record<string, string>;
 }
 
 /**

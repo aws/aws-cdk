@@ -4,10 +4,8 @@ describe('utils', () => {
   test('decode parameters', () => {
     const result = decodeParameters({
       foo: 'normal string',
-      bar: 'abc',
+      bar: { $type: 'ArrayBufferView', string: 'abc' },
       zee: '{"hello": "world"}',
-    }, {
-      bar: 'ArrayBufferView',
     });
 
     expect(result).toEqual({

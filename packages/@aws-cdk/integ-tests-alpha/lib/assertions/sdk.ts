@@ -96,7 +96,6 @@ export class AwsApiCall extends ApiCallBase {
         flattenResponse: Lazy.string({ produce: () => this.flattenResponse }),
         outputPaths: Lazy.list({ produce: () => this.outputPaths }),
         salt: Date.now().toString(),
-        specialTypes: this.provider.findSpecialTypes(props.parameters),
       },
       resourceType: `${SDK_RESOURCE_TYPE_PREFIX}${this.name}`.substring(0, 60),
     });

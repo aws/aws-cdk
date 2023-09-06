@@ -80,7 +80,7 @@ export class AwsApiCallHandler extends CustomResourceHandler<AwsApiCallRequest, 
     const client = getServiceClient(sdkPkg);
 
     const Command = getSdkCommand(sdkPkg, request.api);
-    const commandInput = (request.parameters && decodeParameters(request.parameters, request.specialTypes)) ?? {};
+    const commandInput = (request.parameters && decodeParameters(request.parameters)) ?? {};
 
     console.log(`SDK request to ${sdkPkg.service}.${request.api} with parameters ${JSON.stringify(commandInput)}`);
     const response = await client.send(new Command(commandInput));

@@ -231,24 +231,16 @@ export class AssertionsProvider extends Construct {
     }
     return Object.fromEntries(Object.entries(obj).map(([key, value]) => [key, encodeValue(value)]));
 
-    function encodeValue(value: any): string {
+    function encodeValue(value: any): any {
       if (ArrayBuffer.isView(value)) {
-        return new TextDecoder().decode(value as Uint8Array);
+        return {
+          $type: 'ArrayBufferView',
+          string: new TextDecoder().decode(value as Uint8Array),
+        };
       }
 
       return JSON.stringify(value);
     }
-  }
-
-  public findSpecialTypes(parameters: any): Record<string, string> {
-    if (parameters == null) {
-      return {};
-    }
-    return Object.fromEntries(
-      Object.entries(parameters)
-        .map(([k, v]) => [k, ArrayBuffer.isView(v) ? 'ArrayBufferView' : undefined])
-        .filter(([_, v]) => v != null),
-    );
   }
 
   /**

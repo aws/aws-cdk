@@ -31679,18 +31679,20 @@ function parseJsonPayload(payload) {
     return payload;
   }
 }
-function decodeParameters(obj, specialTypes = {}) {
+function decodeParameters(obj) {
   return Object.fromEntries(Object.entries(obj).map(([key, value]) => {
     try {
-      return [key, decodeValue(value, specialTypes[key])];
+      return [key, decodeValue(value)];
     } catch {
       return [key, value];
     }
   }));
 }
-function decodeValue(value, specialType) {
-  if (specialType === "ArrayBufferView") {
-    return new TextEncoder().encode(value);
+function decodeValue(value) {
+  if (value != null && !Array.isArray(value) && typeof value === "object") {
+    if (value.$type === "ArrayBufferView") {
+      return new TextEncoder().encode(value.string);
+    }
   }
   return JSON.parse(value);
 }
@@ -31747,7 +31749,7 @@ var AwsApiCallHandler = class extends CustomResourceHandler {
     const sdkPkg = getServicePackage(request2.service);
     const client = getServiceClient(sdkPkg);
     const Command = getSdkCommand(sdkPkg, request2.api);
-    const commandInput = (request2.parameters && decodeParameters(request2.parameters, request2.specialTypes)) ?? {};
+    const commandInput = (request2.parameters && decodeParameters(request2.parameters)) ?? {};
     console.log(`SDK request to ${sdkPkg.service}.${request2.api} with parameters ${JSON.stringify(commandInput)}`);
     const response = await client.send(new Command(commandInput));
     if (response.Payload) {

@@ -26,13 +26,13 @@
       ]
      },
      "InvocationType": "\"RequestResponse\"",
-     "Payload": "{\"name\":\"world\"}"
+     "Payload": {
+      "$type": "ArrayBufferView",
+      "string": "{\"name\":\"world\"}"
+     }
     },
     "flattenResponse": "false",
-    "salt": "1693993263186",
-    "specialTypes": {
-     "Payload": "ArrayBufferView"
-    }
+    "salt": "1693996483504"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -95,7 +95,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "6074e2eaa531b0ceff09fcd8268e8d021a94df977a63ccc572404a8c8e4e70cc.zip"
+     "S3Key": "020364985d409cf8bf611edf535aedca3c0d7c0dd7f21ba847b79a41d9bf0dce.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
