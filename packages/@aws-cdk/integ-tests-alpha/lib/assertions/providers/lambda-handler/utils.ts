@@ -9,10 +9,10 @@ export function parseJsonPayload(payload: any): any {
   }
 }
 
-export function decodeParameters(obj: Record<string, string>): any {
+export function decodeParameters(obj: Record<string, any>): any {
   return Object.fromEntries(Object.entries(obj).map(([key, value]) => {
     try {
-      return [key, JSON.parse(value)];
+      return [key, decodeValue(value)];
     } catch {
       // if the value cannot be parsed, leave it unchanged
       // this will end up as a string
@@ -20,3 +20,14 @@ export function decodeParameters(obj: Record<string, string>): any {
     }
   }));
 }
+
+function decodeValue(value: any): any {
+  if (value != null && !Array.isArray(value) && typeof value === 'object') {
+    if (value.$type === 'ArrayBufferView') {
+      return new TextEncoder().encode(value.string);
+    }
+  }
+
+  return JSON.parse(value);
+}
+
