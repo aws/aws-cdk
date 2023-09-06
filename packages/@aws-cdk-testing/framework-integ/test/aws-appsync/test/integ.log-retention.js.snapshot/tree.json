@@ -304,7 +304,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.69"
+              "version": "10.2.70"
             }
           },
           "Exports": {
@@ -322,7 +322,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.69"
+              "version": "10.2.70"
             }
           },
           "BootstrapVersion": {
@@ -360,7 +360,7 @@
                 "path": "Integ/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.69"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
@@ -380,7 +380,7 @@
                             "path": "Integ/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeLogGroupsb47bd431584c5dacce67df7a7092125e/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.69"
+                              "version": "10.2.70"
                             }
                           }
                         },
@@ -452,7 +452,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.69"
+                      "version": "10.2.70"
                     }
                   },
                   "BootstrapVersion": {
@@ -494,7 +494,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.69"
+          "version": "10.2.70"
         }
       }
     },

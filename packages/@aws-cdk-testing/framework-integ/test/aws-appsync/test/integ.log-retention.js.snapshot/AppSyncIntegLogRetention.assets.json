@@ -1,20 +1,20 @@
 {
-  "version": "33.0.0",
+  "version": "34.0.0",
   "files": {
-    "2634e41ffbfed260b1049b081f0f568b46f60f03bf59422220562d71c9eb720e": {
+    "a8515c042d9c942705087943220417be929ac44f968d8fcef2681681b400c0c0": {
       "source": {
-        "path": "asset.2634e41ffbfed260b1049b081f0f568b46f60f03bf59422220562d71c9eb720e",
+        "path": "asset.a8515c042d9c942705087943220417be929ac44f968d8fcef2681681b400c0c0",
         "packaging": "zip"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "2634e41ffbfed260b1049b081f0f568b46f60f03bf59422220562d71c9eb720e.zip",
+          "objectKey": "a8515c042d9c942705087943220417be929ac44f968d8fcef2681681b400c0c0.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "e7c04bfd0ba12d51c13f271474996399d040fed6d6791d65ac6b25ee347d7448": {
+    "b2c44470595b4a4fc5e8be9f7fc467dc2ca5e1c86bfdee79389a6196b2077a24": {
       "source": {
         "path": "AppSyncIntegLogRetention.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "e7c04bfd0ba12d51c13f271474996399d040fed6d6791d65ac6b25ee347d7448.json",
+          "objectKey": "b2c44470595b4a4fc5e8be9f7fc467dc2ca5e1c86bfdee79389a6196b2077a24.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -126,7 +126,7 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": "false"
+    "InstallLatestAwsSdk": false
    },
    "DependsOn": [
     "DomainAccessPolicyCustomResourcePolicyE61F1845"

@@ -342,7 +342,7 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": "false"
+    "InstallLatestAwsSdk": false
    },
    "DependsOn": [
     "DeleteBucketCustomResourcePolicy99AB6B27"

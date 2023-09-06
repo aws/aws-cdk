@@ -1,5 +1,5 @@
 {
-  "version": "33.0.0",
+  "version": "34.0.0",
   "files": {
     "a8515c042d9c942705087943220417be929ac44f968d8fcef2681681b400c0c0": {
       "source": {
@@ -14,7 +14,7 @@
         }
       }
     },
-    "80155830078966c61d22e5166c107e5a9a1e6bdc892902f37610c6bef961e7c4": {
+    "6e0ea013a6b8c4e2dc3640056b78b26229d014d36e82f53c5ae5ffc68e0481ed": {
       "source": {
         "path": "aws-cdk-log-retention-integ-retries2.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "80155830078966c61d22e5166c107e5a9a1e6bdc892902f37610c6bef961e7c4.json",
+          "objectKey": "6e0ea013a6b8c4e2dc3640056b78b26229d014d36e82f53c5ae5ffc68e0481ed.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
