@@ -1372,12 +1372,12 @@ export class Service extends cdk.Resource implements iam.IGrantable {
     }
     if (healthCheckConfiguration.interval !== undefined) {
       if (healthCheckConfiguration.interval.toSeconds() < 1 || healthCheckConfiguration.interval.toSeconds() > 20) {
-        throw new Error(`interval must be between 1 and 20 seconds, got ${healthCheckConfiguration.interval}`);
+        throw new Error(`interval must be between 1 and 20 seconds, got ${healthCheckConfiguration.interval.toSeconds()}`);
       }
     }
     if (healthCheckConfiguration.timeout !== undefined) {
       if (healthCheckConfiguration.timeout.toSeconds() < 1 || healthCheckConfiguration.timeout.toSeconds() > 20) {
-        throw new Error(`timeout must be between 1 and 20 seconds, got ${healthCheckConfiguration.timeout}`);
+        throw new Error(`timeout must be between 1 and 20 seconds, got ${healthCheckConfiguration.timeout.toSeconds()}`);
       }
     }
   }

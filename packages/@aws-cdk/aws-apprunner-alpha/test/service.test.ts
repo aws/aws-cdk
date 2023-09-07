@@ -1564,7 +1564,7 @@ test('interval must be greater than or equal to 1 in healthCheckConfiguration', 
         unhealthyThreshold: 5,
       },
     });
-  }).toThrow('interval must be between 1 and 20 seconds, got Duration.seconds(0)');
+  }).toThrow('interval must be between 1 and 20 seconds, got 0');
 });
 
 test('interval must be less than or equal to 20 in healthCheckConfiguration', () => {
@@ -1587,7 +1587,7 @@ test('interval must be less than or equal to 20 in healthCheckConfiguration', ()
         unhealthyThreshold: 5,
       },
     });
-  }).toThrow('interval must be between 1 and 20 seconds, got Duration.seconds(21)');
+  }).toThrow('interval must be between 1 and 20 seconds, got 21');
 });
 
 test('timeout must be greater than or equal to 1 in healthCheckConfiguration', () => {
@@ -1610,7 +1610,7 @@ test('timeout must be greater than or equal to 1 in healthCheckConfiguration', (
         unhealthyThreshold: 5,
       },
     });
-  }).toThrow('timeout must be between 1 and 20 seconds, got Duration.seconds(0)');
+  }).toThrow('timeout must be between 1 and 20 seconds, got 0');
 });
 
 test('timeout must be less than or equal to 20 in healthCheckConfiguration', () => {
@@ -1633,5 +1633,5 @@ test('timeout must be less than or equal to 20 in healthCheckConfiguration', () 
         unhealthyThreshold: 5,
       },
     });
-  }).toThrow('timeout must be between 1 and 20 seconds, got Duration.seconds(21)');
+  }).toThrow('timeout must be between 1 and 20 seconds, got 21');
 });
