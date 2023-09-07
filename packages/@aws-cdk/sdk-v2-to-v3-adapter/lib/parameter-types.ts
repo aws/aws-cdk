@@ -1,11 +1,11 @@
-// This file was generated from the aws-sdk-js-v3 at Thu Sep 07 2023 13:59:10 GMT+0200 (Central European Summer Time)
+// This file was generated from the aws-sdk-js-v3 at Thu Sep 07 2023 15:56:12 GMT+0100 (British Summer Time)
 /* eslint-disable quote-props,comma-dangle */
-export interface BlobTypeMapping {
+export interface TypeCoercionMap {
   [service: string]: {
     [action: string]: string[]
   }
 };
-export const blobTypes: BlobTypeMapping = {
+export const UINT8ARRAY_PARAMETERS: TypeCoercionMap = {
   'acm': {
     'exportcertificate': [
       'Passphrase'
