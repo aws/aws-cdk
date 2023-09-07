@@ -342,7 +342,7 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [
     "DeleteBucketCustomResourcePolicy99AB6B27"
@@ -414,7 +414,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "a7daad7bacb0e514491653ee581b9a6554d563c3c58935e94abf501b66781c2e.zip"
+     "S3Key": "8b7bc7591948b5191ed5bdc349ca97eb2d0253f85c01152e019a092f8ba10579.zip"
     },
     "Handler": "index.handler",
     "Role": {
