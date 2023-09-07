@@ -456,7 +456,7 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
 
     const instanceParameterGroup = props.parameterGroup ?? (
       props.parameters
-        ? new ParameterGroup(props.cluster, 'InstanceParameterGroup', {
+        ? new ParameterGroup(props.cluster, `${id}InstanceParameterGroup`, {
           engine: engine,
           parameters: props.parameters,
         })

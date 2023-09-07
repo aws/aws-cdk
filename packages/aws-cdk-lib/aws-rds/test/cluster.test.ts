@@ -803,6 +803,44 @@ describe('cluster new api', () => {
 
       Annotations.fromStack(stack).hasNoWarning('*', '*');
     });
+
+    test('can create with multiple readers with each parameters', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc,
+        writer: ClusterInstance.provisioned('writer', {}),
+        readers: [
+          ClusterInstance.provisioned('reader', {
+            parameters: {},
+          }),
+          ClusterInstance.provisioned('reader2', {
+            parameters: {},
+          }),
+        ],
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.resourceCountIs('AWS::RDS::DBInstance', 3);
+      template.hasResourceProperties('AWS::RDS::DBInstance', {
+        DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
+      });
+      template.hasResourceProperties('AWS::RDS::DBInstance', {
+        DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
+        DBParameterGroupName: { Ref: 'DatabasereaderInstanceParameterGroupA91C7170' },
+      });
+      template.hasResourceProperties('AWS::RDS::DBInstance', {
+        DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
+        DBParameterGroupName: { Ref: 'Databasereader2InstanceParameterGroup71B7B67A' },
+      });
+
+      Annotations.fromStack(stack).hasNoWarning('*', '*');
+    });
   });
 
   describe('mixed readers', () => {
