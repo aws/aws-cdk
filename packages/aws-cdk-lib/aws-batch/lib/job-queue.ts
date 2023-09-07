@@ -1,8 +1,8 @@
-import { ArnFormat, IResource, Lazy, Resource, Stack } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnJobQueue } from './batch.generated';
 import { IComputeEnvironment } from './compute-environment-base';
 import { ISchedulingPolicy } from './scheduling-policy';
+import { ArnFormat, IResource, Lazy, Resource, Stack } from '../../core';
 
 /**
  * Represents a JobQueue

@@ -1,6 +1,6 @@
-import { ArnFormat, Duration, IResource, Lazy, Resource, Stack } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnSchedulingPolicy } from './batch.generated';
+import { ArnFormat, Duration, IResource, Lazy, Resource, Stack } from '../../core';
 
 /**
  * Represents a Scheduling Policy. Scheduling Policies tell the Batch

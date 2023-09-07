@@ -1,8 +1,8 @@
-import { ArnFormat, Lazy, Stack } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
 import { EksContainerDefinition, EmptyDirVolume, HostPathVolume, SecretPathVolume } from './eks-container-definition';
 import { baseJobDefinitionProperties, IJobDefinition, JobDefinitionBase, JobDefinitionProps } from './job-definition-base';
+import { ArnFormat, Lazy, Stack } from '../../core';
 
 /**
  * A JobDefinition that uses Eks orchestration

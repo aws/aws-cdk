@@ -1,10 +1,10 @@
-import { ArnFormat, Stack } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
 import { EcsEc2ContainerDefinition, IEcsContainerDefinition } from './ecs-container-definition';
 import { baseJobDefinitionProperties, IJobDefinition, JobDefinitionBase, JobDefinitionProps } from './job-definition-base';
-import * as iam from 'aws-cdk-lib/aws-iam';
 import { IJobQueue } from './job-queue';
+import * as iam from '../../aws-iam';
+import { ArnFormat, Stack } from '../../core';
 
 /**
  * A JobDefinition that uses ECS orchestration

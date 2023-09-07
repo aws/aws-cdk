@@ -1,7 +1,7 @@
-import * as ecs from 'aws-cdk-lib/aws-ecs';
-import { Lazy, Size } from 'aws-cdk-lib/core';
 import { Construct, IConstruct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
+import * as ecs from '../../aws-ecs';
+import { Lazy, Size } from '../../core';
 
 const EMPTY_DIR_VOLUME_SYMBOL = Symbol.for('aws-cdk-lib/aws-batch/lib/eks-container-definition.EmptyDirVolume');
 const HOST_PATH_VOLUME_SYMBOL = Symbol.for('aws-cdk-lib/aws-batch/lib/eks-container-definition.HostPathVolume');

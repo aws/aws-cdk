@@ -1,13 +1,13 @@
-import * as ecs from 'aws-cdk-lib/aws-ecs';
-import { IFileSystem } from 'aws-cdk-lib/aws-efs';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as ssm from 'aws-cdk-lib/aws-ssm';
-import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
-import { Lazy, PhysicalName, Size } from 'aws-cdk-lib/core';
 import { Construct, IConstruct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
 import { LinuxParameters } from './linux-parameters';
-import { LogGroup } from 'aws-cdk-lib/aws-logs';
+import * as ecs from '../../aws-ecs';
+import { IFileSystem } from '../../aws-efs';
+import * as iam from '../../aws-iam';
+import { LogGroup } from '../../aws-logs';
+import * as secretsmanager from '../../aws-secretsmanager';
+import * as ssm from '../../aws-ssm';
+import { Lazy, PhysicalName, Size } from '../../core';
 
 const EFS_VOLUME_SYMBOL = Symbol.for('aws-cdk-lib/aws-batch/lib/container-definition.EfsVolume');
 const HOST_VOLUME_SYMBOL = Symbol.for('aws-cdk-lib/aws-batch/lib/container-definition.HostVolume');

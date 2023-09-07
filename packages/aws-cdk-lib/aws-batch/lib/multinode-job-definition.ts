@@ -1,10 +1,10 @@
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { ArnFormat, Lazy, Stack } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
 import { IEcsContainerDefinition } from './ecs-container-definition';
 import { Compatibility } from './ecs-job-definition';
 import { baseJobDefinitionProperties, IJobDefinition, JobDefinitionBase, JobDefinitionProps } from './job-definition-base';
+import * as ec2 from '../../aws-ec2';
+import { ArnFormat, Lazy, Stack } from '../../core';
 
 interface IMultiNodeJobDefinition extends IJobDefinition {
   /**

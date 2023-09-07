@@ -1,6 +1,5 @@
-// AWS::Batch CloudFormation Resources:
 export * from './ecs-job-definition';
-export { IComputeEnvironment, ComputeEnvironmentProps } from './compute-environment-base';
+export * from './compute-environment-base';
 export * from './eks-job-definition';
 export * from './ecs-container-definition';
 export * from './eks-container-definition';
@@ -11,3 +10,6 @@ export * from './managed-compute-environment';
 export * from './multinode-job-definition';
 export * from './scheduling-policy';
 export * from './unmanaged-compute-environment';
+
+// AWS::Batch CloudFormation Resources:
+export * from './batch.generated';

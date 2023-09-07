@@ -1,8 +1,8 @@
-import { ManagedPolicy, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { ArnFormat, Stack } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnComputeEnvironment } from './batch.generated';
 import { IComputeEnvironment, ComputeEnvironmentBase, ComputeEnvironmentProps } from './compute-environment-base';
+import { ManagedPolicy, Role, ServicePrincipal } from '../../aws-iam';
+import { ArnFormat, Stack } from '../../core';
 
 /**
  * Represents an UnmanagedComputeEnvironment. Batch will not provision instances on your behalf
