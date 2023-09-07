@@ -86,17 +86,13 @@ describe('State Machine Resources', () => {
     });
 
     // WHEN
-    const failState = fail.toStateJson();
+    const failState = stack.resolve(fail.toStateJson());
 
     // THEN
     expect(failState).toStrictEqual({
-      End: true,
-      Cause: undefined,
       CausePath: '$.cause',
-      Error: undefined,
       ErrorPath: '$.error',
-      Type: 'Task',
-      Comment: undefined,
+      Type: 'Fail',
     });
   }),
 

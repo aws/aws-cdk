@@ -246,7 +246,7 @@ describe('Task base', () => {
             {
               ErrorEquals: ['HTTPError'],
               MaxAttempts: 2,
-              MaxDelay: 10,
+              MaxDelaySeconds: 10,
               JitterStrategy: 'FULL',
             },
             {
