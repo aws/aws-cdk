@@ -69,8 +69,20 @@ async function onUpdate(event: AWSLambda.CloudFormationCustomResourceUpdateEvent
  * Revoke both ingress and egress rules
  */
 async function revokeRules(groupId: string, account: string): Promise<void> {
-  await ec2.revokeSecurityGroupEgress(egressRuleParams(groupId));
-  await ec2.revokeSecurityGroupIngress(ingressRuleParams(groupId, account));
+  try {
+    await ec2.revokeSecurityGroupEgress(egressRuleParams(groupId));
+  } catch (e: any) {
+    if (!(e instanceof Error) || (e instanceof Error && e.name !== 'InvalidPermission.NotFound')) {
+      throw (e);
+    }
+  }
+  try {
+    await ec2.revokeSecurityGroupIngress(ingressRuleParams(groupId, account));
+  } catch (e: any) {
+    if (!(e instanceof Error) || (e instanceof Error && e.name !== 'InvalidPermission.NotFound')) {
+      throw (e);
+    }
+  }
   return;
 }
 
