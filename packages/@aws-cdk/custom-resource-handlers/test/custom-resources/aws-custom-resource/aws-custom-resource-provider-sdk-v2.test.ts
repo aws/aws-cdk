@@ -1,10 +1,12 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import * as SDK from 'aws-sdk';
 import * as AWS from 'aws-sdk-mock';
 import * as fs from 'fs-extra';
 import * as nock from 'nock';
 import * as sinon from 'sinon';
-import { AwsSdkCall, PhysicalResourceId } from '../../lib';
-import { handler, forceSdkInstallation } from '../../lib/aws-custom-resource/runtime/aws-sdk-v2-handler';
+import { v2handler as handler } from '../../../lib/custom-resources/aws-custom-resource-handler';
+import { forceSdkInstallation } from '../../../lib/custom-resources/aws-custom-resource-handler/aws-sdk-v2-handler';
+import { AwsSdkCall } from '../../../lib/custom-resources/aws-custom-resource-handler/construct-types';
 
 // This test performs an 'npm install' which may take longer than the default
 // 5s timeout
@@ -65,8 +67,8 @@ test('create event with physical resource id path', async () => {
         parameters: {
           Bucket: 'my-bucket',
         },
-        physicalResourceId: PhysicalResourceId.fromResponse('Contents.1.ETag'),
-      } as AwsSdkCall),
+        physicalResourceId: { responsePath: 'Contents.1.ETag' },
+      } satisfies AwsSdkCall),
     },
   };
 
@@ -104,8 +106,8 @@ test('update event with physical resource id', async () => {
           Message: 'hello',
           TopicArn: 'topicarn',
         },
-        physicalResourceId: PhysicalResourceId.of('topicarn'),
-      } as AwsSdkCall),
+        physicalResourceId: { id: 'topicarn' },
+      } satisfies AwsSdkCall),
     },
   };
 
@@ -136,8 +138,8 @@ test('delete event', async () => {
         parameters: {
           Bucket: 'my-bucket',
         },
-        physicalResourceId: PhysicalResourceId.fromResponse('Contents.1.ETag'),
-      } as AwsSdkCall),
+        physicalResourceId: { responsePath: 'Contents.1.ETag' },
+      } satisfies AwsSdkCall),
     },
   };
 
@@ -171,7 +173,7 @@ test('delete event with Delete call and no physical resource id in call', async 
         parameters: {
           Name: 'my-param',
         },
-      } as AwsSdkCall),
+      } satisfies AwsSdkCall),
     },
   };
 
@@ -205,7 +207,7 @@ test('create event with Delete call only', async () => {
         parameters: {
           Name: 'my-param',
         },
-      } as AwsSdkCall),
+      } satisfies AwsSdkCall),
     },
   };
 
@@ -239,9 +241,9 @@ test('catch errors', async () => {
         parameters: {
           Bucket: 'my-bucket',
         },
-        physicalResourceId: PhysicalResourceId.of('physicalResourceId'),
+        physicalResourceId: { id: 'physicalResourceId' },
         ignoreErrorCodesMatching: 'NoSuchBucket',
-      } as AwsSdkCall),
+      } satisfies AwsSdkCall),
     },
   };
 
@@ -283,9 +285,9 @@ test('restrict output path', async () => {
         parameters: {
           Bucket: 'my-bucket',
         },
-        physicalResourceId: PhysicalResourceId.of('id'),
+        physicalResourceId: { id: 'id' },
         outputPath: 'Contents.0',
-      } as AwsSdkCall),
+      } satisfies AwsSdkCall),
     },
   };
 
@@ -328,9 +330,9 @@ test('restrict output paths', async () => {
         parameters: {
           Bucket: 'my-bucket',
         },
-        physicalResourceId: PhysicalResourceId.of('id'),
+        physicalResourceId: { id: 'id' },
         outputPaths: ['Contents.0.Key', 'Contents.1.Key'],
-      } as AwsSdkCall),
+      } satisfies AwsSdkCall),
     },
   };
 
@@ -367,8 +369,8 @@ test('can specify apiVersion and region', async () => {
         },
         apiVersion: '2010-03-31',
         region: 'eu-west-1',
-        physicalResourceId: PhysicalResourceId.of('id'),
-      } as AwsSdkCall),
+        physicalResourceId: { id: 'id' },
+      } satisfies AwsSdkCall),
     },
   };
 
@@ -410,8 +412,8 @@ test('installs the latest SDK', async () => {
           Message: 'message',
           TopicArn: 'topic',
         },
-        physicalResourceId: PhysicalResourceId.of('id'),
-      } as AwsSdkCall),
+        physicalResourceId: { id: 'id' },
+      } satisfies AwsSdkCall),
       InstallLatestAwsSdk: 'true',
     },
   };
@@ -449,8 +451,8 @@ test('invalid service name throws explicit error', async () => {
           Message: 'message',
           TopicArn: 'topic',
         },
-        physicalResourceId: PhysicalResourceId.of('id'),
-      } as AwsSdkCall),
+        physicalResourceId: { id: 'id' },
+      } satisfies AwsSdkCall),
     },
   };
 
