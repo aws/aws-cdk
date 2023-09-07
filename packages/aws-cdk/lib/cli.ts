@@ -356,8 +356,6 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
     },
   });
 
-  const cloudFormation = new Deployments({ sdkProvider });
-
   let outDirLock: ILock | undefined;
   const cloudExecutable = new CloudExecutable({
     configuration,
@@ -441,6 +439,8 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
   async function main(command: string, args: any): Promise<number | void> {
     const toolkitStackName: string = ToolkitInfo.determineName(configuration.settings.get(['toolkitStackName']));
     debug(`Toolkit stack: ${chalk.bold(toolkitStackName)}`);
+
+    const cloudFormation = new Deployments({ sdkProvider, toolkitStackName });
 
     if (args.all && args.STACKS) {
       throw new Error('You must either specify a list of Stacks or the `--all` argument');
