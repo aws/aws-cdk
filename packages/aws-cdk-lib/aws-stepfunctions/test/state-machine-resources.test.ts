@@ -77,6 +77,29 @@ describe('State Machine Resources', () => {
     });
   }),
 
+  test('Fail should render ErrorPath / CausePath correctly', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fail = new stepfunctions.Fail(stack, 'Fail', {
+      errorPath: stepfunctions.JsonPath.stringAt('$.error'),
+      causePath: stepfunctions.JsonPath.stringAt('$.cause'),
+    });
+
+    // WHEN
+    const failState = fail.toStateJson();
+
+    // THEN
+    expect(failState).toStrictEqual({
+      End: true,
+      Cause: undefined,
+      CausePath: '$.cause',
+      Error: undefined,
+      ErrorPath: '$.error',
+      Type: 'Task',
+      Comment: undefined,
+    });
+  }),
+
   testDeprecated('Task should render InputPath / Parameters / OutputPath correctly', () => {
     // GIVEN
     const stack = new cdk.Stack();

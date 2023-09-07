@@ -128,6 +128,8 @@ These properties impact how each individual step interacts with the state machin
 * `resultSelector`: the part of the step result that should be added to the state machine data
 * `resultPath`: where in the state machine data the step result should be inserted
 * `outputPath`: what part of the state machine data should be retained
+* `errorPath`: the part of the data object that gets returned as the step error
+* `causePath`: the part of the data object that gets returned as the step cause
 
 Their values should be a string indicating a [JSON path](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-paths.html) into the State Machine Data object (like `"$.MyKey"`). If absent, the values are treated as if they were `"$"`, which means the entire object.
 
@@ -421,8 +423,8 @@ parallel.branch(shipItem);
 parallel.branch(sendInvoice);
 parallel.branch(restock);
 
-// Retry the whole workflow if something goes wrong
-parallel.addRetry({ maxAttempts: 1 });
+// Retry the whole workflow if something goes wrong with exponential backoff
+parallel.addRetry({ maxAttempts: 1, maxDelay: cdk.Duration.seconds(5), jitterStrategy: sfn.JitterType.FULL });
 
 // How to recover from errors
 const sendFailureNotification = new sfn.Pass(this, 'SendFailureNotification');
@@ -449,9 +451,18 @@ failure status. The fail state should report the reason for the failure.
 Failures can be caught by encompassing `Parallel` states.
 
 ```ts
-const success = new sfn.Fail(this, 'Fail', {
+const fail = new sfn.Fail(this, 'Fail', {
   error: 'WorkflowFailure',
   cause: "Something went wrong",
+});
+```
+
+The `Fail` state also supports returning dynamic values as the error and cause that are selected from the input with a path.
+
+```ts
+const fail = new sfn.Fail(this, 'Fail', {
+  errorPath: stepfunctions.JsonPath.stringAt('$.someError'),
+  causePath: stepfunctions.JsonPath.stringAt('$.someCause'),
 });
 ```
 
