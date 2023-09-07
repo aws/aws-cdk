@@ -434,7 +434,7 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
     this.props = props;
 
     const provider = new lambda.SingletonFunction(this, 'Provider', {
-      code: lambda.Code.fromAsset(path.join(__dirname, '..', '..', '..', 'custom-resource-handlers', 'dist', 'custom-resources', 'aws-custom-resource')),
+      code: lambda.Code.fromAsset(path.join(__dirname, '..', '..', '..', 'custom-resource-handlers', 'dist', 'custom-resources', 'aws-custom-resource-handler')),
       runtime: lambda.Runtime.NODEJS_18_X,
       handler: 'index.handler',
       uuid: AwsCustomResource.PROVIDER_FUNCTION_UUID,
