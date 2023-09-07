@@ -161,6 +161,7 @@ function renderMappingToTypeScript(blobMap: TypeCoercionMap) {
 
   lines.push(
     `// This file was generated from the aws-sdk-js-v3 at ${new Date()}`,
+    '/* eslint-disable quote-props,comma-dangle */',
     'export interface TypeCoercionMap {',
     '  [service: string]: {',
     '    [action: string]: string[]',

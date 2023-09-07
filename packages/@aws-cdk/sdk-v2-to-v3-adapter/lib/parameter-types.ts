@@ -1,4 +1,5 @@
 // This file was generated from the aws-sdk-js-v3 at Thu Sep 07 2023 13:59:10 GMT+0200 (Central European Summer Time)
+/* eslint-disable quote-props,comma-dangle */
 export interface BlobTypeMapping {
   [service: string]: {
     [action: string]: string[]
