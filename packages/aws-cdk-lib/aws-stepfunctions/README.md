@@ -424,7 +424,11 @@ parallel.branch(sendInvoice);
 parallel.branch(restock);
 
 // Retry the whole workflow if something goes wrong with exponential backoff
-parallel.addRetry({ maxAttempts: 1, maxDelay: cdk.Duration.seconds(5), jitterStrategy: sfn.JitterType.FULL });
+parallel.addRetry({
+  maxAttempts: 1,
+  maxDelay: Duration.seconds(5),
+  jitterStrategy: sfn.JitterType.FULL,
+});
 
 // How to recover from errors
 const sendFailureNotification = new sfn.Pass(this, 'SendFailureNotification');
@@ -461,8 +465,8 @@ The `Fail` state also supports returning dynamic values as the error and cause t
 
 ```ts
 const fail = new sfn.Fail(this, 'Fail', {
-  errorPath: stepfunctions.JsonPath.stringAt('$.someError'),
-  causePath: stepfunctions.JsonPath.stringAt('$.someCause'),
+  errorPath: sfn.JsonPath.stringAt('$.someError'),
+  causePath: sfn.JsonPath.stringAt('$.someCause'),
 });
 ```
 
@@ -972,12 +976,12 @@ const stack = new Stack(app, 'MyStack');
 sfn.StateMachine.fromStateMachineArn(
   this,
   "ViaArnImportedStateMachine",
-  "arn:aws:states:us-east-1:123456789012:stateMachine:StateMachine2E01A3A5-N5TJppzoevKQ"
+  "arn:aws:states:us-east-1:123456789012:stateMachine:StateMachine2E01A3A5-N5TJppzoevKQ",
 );
 
 sfn.StateMachine.fromStateMachineName(
   this,
   "ViaResourceNameImportedStateMachine",
-  "StateMachine2E01A3A5-N5TJppzoevKQ"
+  "StateMachine2E01A3A5-N5TJppzoevKQ",
 );
 ```
