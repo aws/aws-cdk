@@ -9,8 +9,8 @@ import { findV3ClientConstructor, getV3ClientPackageName } from '@aws-cdk/sdk-v2
 // fails in the CDK app executed with ts-node
 /* eslint-disable-next-line import/no-extraneous-dependencies,import/no-unresolved */
 import type * as AWSLambda from 'aws-lambda';
+import type { AwsSdkCall } from './construct-types';
 import { decodeCall, decodeSpecialValues, filterKeys, flatten, respond, startsWithOneOf } from './shared';
-import type { AwsSdkCall } from '../aws-custom-resource';
 
 let installedSdk: { [service: string]: boolean } = {};
 

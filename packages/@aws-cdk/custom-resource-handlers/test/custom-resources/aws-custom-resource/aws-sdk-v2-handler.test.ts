@@ -1,6 +1,6 @@
 import * as AWS from 'aws-sdk';
-import { PhysicalResourceId } from '../../../lib';
-import { handler } from '../../../lib/aws-custom-resource/runtime/aws-sdk-v2-handler';
+import { v2handler as handler } from '../../../lib/custom-resources/aws-custom-resource-handler';
+import { AwsSdkCall } from '../../../lib/custom-resources/aws-custom-resource-handler/construct-types';
 
 /* eslint-disable no-console */
 console.log = jest.fn();
@@ -54,9 +54,9 @@ test('SDK global credentials are never set', async () => {
         parameters: {
           Name: 'foo',
         },
-        physicalResourceId: PhysicalResourceId.of('id'),
+        physicalResourceId: { id: 'id' },
         service: 'SSM',
-      }),
+      } satisfies AwsSdkCall),
       ServiceToken: 'serviceToken',
     },
     ResourceType: 'resourceType',
@@ -86,9 +86,9 @@ test('SDK credentials are not persisted across subsequent invocations', async ()
         parameters: {
           Name: 'foo',
         },
-        physicalResourceId: PhysicalResourceId.of('id'),
+        physicalResourceId: { id: 'id' },
         service: 'SSM',
-      }),
+      } satisfies AwsSdkCall),
       ServiceToken: 'serviceToken',
     },
     ResourceType: 'resourceType',
@@ -108,9 +108,9 @@ test('SDK credentials are not persisted across subsequent invocations', async ()
         parameters: {
           Name: 'foo',
         },
-        physicalResourceId: PhysicalResourceId.of('id'),
+        physicalResourceId: { id: 'id' },
         service: 'SSM',
-      }),
+      } satisfies AwsSdkCall),
       ServiceToken: 'serviceToken',
     },
     ResourceType: 'resourceType',
@@ -129,9 +129,9 @@ test('SDK credentials are not persisted across subsequent invocations', async ()
         parameters: {
           Name: 'foo',
         },
-        physicalResourceId: PhysicalResourceId.of('id'),
+        physicalResourceId: { id: 'id' },
         service: 'SSM',
-      }),
+      } satisfies AwsSdkCall),
       ServiceToken: 'serviceToken',
     },
     ResourceType: 'resourceType',

@@ -8,8 +8,8 @@ import { join } from 'path';
 // fails in the CDK app executed with ts-node
 /* eslint-disable-next-line import/no-extraneous-dependencies,import/no-unresolved */
 import * as AWSLambda from 'aws-lambda';
+import { AwsSdkCall } from './construct-types';
 import { decodeCall, decodeSpecialValues, filterKeys, flatten, respond, startsWithOneOf } from './shared';
-import { AwsSdkCall } from '../aws-custom-resource';
 
 let latestSdkInstalled = false;
 

@@ -40,8 +40,6 @@
       "./scripts/airlift-custom-resource-handlers.sh"
     ],
     "post": [
-      "AWS_EXECUTION_ENV=AWS_Lambda_nodejs16.x node custom-resources/lib/aws-custom-resource/runtime/index.js",
-      "AWS_EXECUTION_ENV=AWS_Lambda_nodejs18.x node custom-resources/lib/aws-custom-resource/runtime/index.js",
       "ts-node ./scripts/verify-imports-resolve-same.ts",
       "ts-node ./scripts/verify-imports-shielded.ts",
       "ts-node ./cx-api/build-tools/flag-report.ts"

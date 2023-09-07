@@ -1,4 +1,4 @@
-import { flatten } from '../../../lib/aws-custom-resource/runtime/shared';
+import { flatten } from '../../../lib/custom-resources/aws-custom-resource-handler/shared';
 
 test('flatten correctly flattens a nested object', () => {
   expect(flatten({
