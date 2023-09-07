@@ -827,6 +827,7 @@ describe('cluster new api', () => {
       // THEN
       const template = Template.fromStack(stack);
       template.resourceCountIs('AWS::RDS::DBInstance', 3);
+      template.resourceCountIs('AWS::RDS::DBParameterGroup', 2);
       template.hasResourceProperties('AWS::RDS::DBInstance', {
         DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
       });
