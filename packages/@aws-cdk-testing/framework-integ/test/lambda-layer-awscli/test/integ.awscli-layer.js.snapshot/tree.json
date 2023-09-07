@@ -163,12 +163,6 @@
                       },
                       "s3Key": "5dff6208ccd5fb196bb0354fd6e47faa8431a789e6125d20386586fef761ed48.zip"
                     },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "Lambdapython37ServiceRoleB5A704D4",
-                        "Arn"
-                      ]
-                    },
                     "handler": "index.handler",
                     "layers": [
                       {
@@ -176,6 +170,12 @@
                       }
                     ],
                     "memorySize": 512,
+                    "role": {
+                      "Fn::GetAtt": [
+                        "Lambdapython37ServiceRoleB5A704D4",
+                        "Arn"
+                      ]
+                    },
                     "runtime": "python3.7",
                     "timeout": 30
                   }
@@ -352,13 +352,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
-                        },
-                        "role": {
-                          "Fn::GetAtt": [
-                            "Providerpython37frameworkonEventServiceRole9EA6B2B0",
-                            "Arn"
-                          ]
+                          "s3Key": "81328426dba578d9ff57b0b54146bc81395a478131b0b61e40236fcc8395c2db.zip"
                         },
                         "description": "AWS CDK resource provider framework - onEvent (lambda-layer-awscli-integ-stack/Providerpython3.7)",
                         "environment": {
@@ -372,6 +366,12 @@
                           }
                         },
                         "handler": "framework.onEvent",
+                        "role": {
+                          "Fn::GetAtt": [
+                            "Providerpython37frameworkonEventServiceRole9EA6B2B0",
+                            "Arn"
+                          ]
+                        },
                         "runtime": "nodejs18.x",
                         "timeout": 900
                       }
@@ -510,12 +510,6 @@
                       },
                       "s3Key": "5dff6208ccd5fb196bb0354fd6e47faa8431a789e6125d20386586fef761ed48.zip"
                     },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "Lambdapython39ServiceRoleE2CFED77",
-                        "Arn"
-                      ]
-                    },
                     "handler": "index.handler",
                     "layers": [
                       {
@@ -523,6 +517,12 @@
                       }
                     ],
                     "memorySize": 512,
+                    "role": {
+                      "Fn::GetAtt": [
+                        "Lambdapython39ServiceRoleE2CFED77",
+                        "Arn"
+                      ]
+                    },
                     "runtime": "python3.9",
                     "timeout": 30
                   }
@@ -699,13 +699,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
-                        },
-                        "role": {
-                          "Fn::GetAtt": [
-                            "Providerpython39frameworkonEventServiceRoleA299F5C1",
-                            "Arn"
-                          ]
+                          "s3Key": "81328426dba578d9ff57b0b54146bc81395a478131b0b61e40236fcc8395c2db.zip"
                         },
                         "description": "AWS CDK resource provider framework - onEvent (lambda-layer-awscli-integ-stack/Providerpython3.9)",
                         "environment": {
@@ -719,6 +713,12 @@
                           }
                         },
                         "handler": "framework.onEvent",
+                        "role": {
+                          "Fn::GetAtt": [
+                            "Providerpython39frameworkonEventServiceRoleA299F5C1",
+                            "Arn"
+                          ]
+                        },
                         "runtime": "nodejs18.x",
                         "timeout": 900
                       }
@@ -793,7 +793,7 @@
                 "path": "lambda-layer-awscli-integ-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.69"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
@@ -839,7 +839,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.69"
+          "version": "10.2.70"
         }
       }
     },
