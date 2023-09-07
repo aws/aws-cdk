@@ -229,8 +229,12 @@ describe('Task base', () => {
 
   test('add retry configuration', () => {
     // WHEN
-    task.addRetry({ errors: ['HTTPError'], maxAttempts: 2 })
-      .addRetry(); // adds default retry
+    task.addRetry({
+      errors: ['HTTPError'],
+      maxAttempts: 2,
+      maxDelay: cdk.Duration.seconds(10),
+      jitterStrategy: sfn.JitterType.FULL,
+    }).addRetry();
 
     // THEN
     expect(renderGraph(task)).toEqual({
@@ -242,6 +246,8 @@ describe('Task base', () => {
             {
               ErrorEquals: ['HTTPError'],
               MaxAttempts: 2,
+              MaxDelaySeconds: 10,
+              JitterStrategy: 'FULL',
             },
             {
               ErrorEquals: ['States.ALL'],
