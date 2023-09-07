@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.95.0](https://github.com/aws/aws-cdk/compare/v2.94.0...v2.95.0) (2023-09-07)
+
+
+### Features
+
+* **dynamodb:** TableV2 supports imports, drift detection, and better control over replicas ([#27023](https://github.com/aws/aws-cdk/issues/27023)) ([e52acd8](https://github.com/aws/aws-cdk/commit/e52acd8d449e491a60f5c78dbf7f00e333eb442c))
+* **stepfunctions:** properties for ErrorPath, CausePath, MaxDelay, Jitter ([#27051](https://github.com/aws/aws-cdk/issues/27051)) ([dfe29ce](https://github.com/aws/aws-cdk/commit/dfe29ce7b2835a482c1cff3aac036abc13632154))
+* update AWS Service Spec ([#26999](https://github.com/aws/aws-cdk/issues/26999)) ([a0458b7](https://github.com/aws/aws-cdk/commit/a0458b7bfae493c3c750904fed2888e75951d3d5))
+
+
+### Bug Fixes
+
+* **cli:** deployment stops on AccessDenied looking up bootstrap stack ([#26925](https://github.com/aws/aws-cdk/issues/26925)) ([6f3e838](https://github.com/aws/aws-cdk/commit/6f3e8386f483fe715a4ce7dc8e54e87843400030)), closes [#26588](https://github.com/aws/aws-cdk/issues/26588) [#26588](https://github.com/aws/aws-cdk/issues/26588)
+* **custom-resources:** empty Lambda response payload causes deployment failure ([#27000](https://github.com/aws/aws-cdk/issues/27000)) ([e260d30](https://github.com/aws/aws-cdk/commit/e260d30dab3815e2bd650df5b61ad7aa8fb72ea8)), closes [#26429](https://github.com/aws/aws-cdk/issues/26429)
+* **events-targets:** AwsApi fails when SDKv3 Command expects Uint8Array ([#27034](https://github.com/aws/aws-cdk/issues/27034)) ([641f9e8](https://github.com/aws/aws-cdk/commit/641f9e8166d3356c8352b067d2c4f1d5d0d0b1ce)), closes [#27002](https://github.com/aws/aws-cdk/issues/27002)
+* **events-targets:** AwsApi is still using Node 16 ([#27002](https://github.com/aws/aws-cdk/issues/27002)) ([49e5739](https://github.com/aws/aws-cdk/commit/49e5739c71869d09271934953b34bbd419daebd9)), closes [#26998](https://github.com/aws/aws-cdk/issues/26998)
+* **firehose:** remove unused role during DeliveryStream creation ([#26930](https://github.com/aws/aws-cdk/issues/26930)) ([993ee48](https://github.com/aws/aws-cdk/commit/993ee48a2dfa0732aaa5384220c4e12957f7dd13)), closes [#26927](https://github.com/aws/aws-cdk/issues/26927)
+* **lambda-nodejs:** incorrect SDK v2 warning generated ([#27014](https://github.com/aws/aws-cdk/issues/27014)) ([856b303](https://github.com/aws/aws-cdk/commit/856b30371fba60cab6adf693725d934316b072dc)), closes [#26966](https://github.com/aws/aws-cdk/issues/26966)
+* **logs:** log retention custom resource timed out during deploy ([#26995](https://github.com/aws/aws-cdk/issues/26995)) ([a73f256](https://github.com/aws/aws-cdk/commit/a73f256d7699e817d43622fd2bcede8d823c85a4)), closes [#24485](https://github.com/aws/aws-cdk/issues/24485)
+* **route53:** `CrossAccountZoneDelegationRecord` is still using Node 16 ([#26980](https://github.com/aws/aws-cdk/issues/26980)) ([d69c51a](https://github.com/aws/aws-cdk/commit/d69c51a2e10864e69d4610b6df30d40a9bfec3ac)), closes [#26212](https://github.com/aws/aws-cdk/issues/26212) [#26593](https://github.com/aws/aws-cdk/issues/26593) [#26976](https://github.com/aws/aws-cdk/issues/26976)
+
 ## [2.94.0](https://github.com/aws/aws-cdk/compare/v2.93.0...v2.94.0) (2023-09-01)
 
 
