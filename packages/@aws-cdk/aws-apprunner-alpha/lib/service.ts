@@ -1147,8 +1147,33 @@ export class Service extends cdk.Resource implements iam.IGrantable {
       throw new Error('configurationValues cannot be provided if the ConfigurationSource is Repository');
     }
 
-    if (this.props.healthCheckConfiguration?.path && this.props.healthCheckConfiguration?.protocol !== HealthCheckProtocolType.HTTP) {
-      throw new Error('Path is only applicable when you set Protocol to HTTP');
+    if (this.props.healthCheckConfiguration?.path !== undefined) {
+      if (this.props.healthCheckConfiguration?.protocol !== HealthCheckProtocolType.HTTP) {
+        throw new Error('path is only applicable when you set Protocol to HTTP');
+      }
+      if (this.props.healthCheckConfiguration?.path.length === 0) {
+        throw new Error('path length must be greater than 0');
+      }
+    }
+    if (this.props.healthCheckConfiguration?.healthyThreshold !== undefined) {
+      if (this.props.healthCheckConfiguration?.healthyThreshold < 1 || this.props.healthCheckConfiguration?.healthyThreshold > 20) {
+        throw new Error('healthyThreshold must be greater than or equal to 1 and less than or equal to 20');
+      }
+    }
+    if (this.props.healthCheckConfiguration?.unhealthyThreshold !== undefined) {
+      if (this.props.healthCheckConfiguration?.unhealthyThreshold < 1 || this.props.healthCheckConfiguration?.unhealthyThreshold > 20) {
+        throw new Error('unhealthyThreshold must be greater than or equal to 1 and less than or equal to 20');
+      }
+    }
+    if (this.props.healthCheckConfiguration?.interval !== undefined) {
+      if (this.props.healthCheckConfiguration?.interval.toSeconds() < 1 || this.props.healthCheckConfiguration?.interval.toSeconds() > 20) {
+        throw new Error('interval must be greater than or equal to 1 and less than or equal to 20');
+      }
+    }
+    if (this.props.healthCheckConfiguration?.timeout !== undefined) {
+      if (this.props.healthCheckConfiguration?.timeout.toSeconds() < 1 || this.props.healthCheckConfiguration?.timeout.toSeconds() > 20) {
+        throw new Error('timeout must be greater than or equal to 1 and less than or equal to 20');
+      }
     }
 
     const resource = new CfnService(this, 'Resource', {
