@@ -1,0 +1,12 @@
+{
+  "version": "34.0.0",
+  "testCases": {
+    "ApplicationAutoScalingTimeZone/DefaultTest": {
+      "stacks": [
+        "aws-cdk-applicationautoscaling-timezone-integ"
+      ],
+      "assertionStack": "ApplicationAutoScalingTimeZone/DefaultTest/DeployAssert",
+      "assertionStackName": "ApplicationAutoScalingTimeZoneDefaultTestDeployAssertE1AF4BB7"
+    }
+  }
+}
