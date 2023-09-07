@@ -1,4 +1,3 @@
-"use strict";
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -2275,20 +2274,25 @@ var require_chain = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.chain = void 0;
     var ProviderError_1 = require_ProviderError();
-    function chain(...providers) {
-      return () => {
-        let promise = Promise.reject(new ProviderError_1.ProviderError("No providers in chain"));
-        for (const provider of providers) {
-          promise = promise.catch((err) => {
-            if (err === null || err === void 0 ? void 0 : err.tryNextLink) {
-              return provider();
-            }
-            throw err;
-          });
+    var chain = (...providers) => async () => {
+      if (providers.length === 0) {
+        throw new ProviderError_1.ProviderError("No providers in chain");
+      }
+      let lastProviderError;
+      for (const provider of providers) {
+        try {
+          const credentials = await provider();
+          return credentials;
+        } catch (err) {
+          lastProviderError = err;
+          if (err === null || err === void 0 ? void 0 : err.tryNextLink) {
+            continue;
+          }
+          throw err;
         }
-        return promise;
-      };
-    }
+      }
+      throw lastProviderError;
+    };
     exports.chain = chain;
   }
 });
@@ -10574,7 +10578,7 @@ var require_package = __commonJS({
     module2.exports = {
       name: "@aws-sdk/client-sfn",
       description: "AWS SDK for JavaScript Sfn Client for Node.js, Browser and React Native",
-      version: "3.398.0",
+      version: "3.405.0",
       scripts: {
         build: "concurrently 'yarn:build:cjs' 'yarn:build:es' 'yarn:build:types'",
         "build:cjs": "tsc -p tsconfig.cjs.json",
@@ -10594,8 +10598,8 @@ var require_package = __commonJS({
       dependencies: {
         "@aws-crypto/sha256-browser": "3.0.0",
         "@aws-crypto/sha256-js": "3.0.0",
-        "@aws-sdk/client-sts": "3.398.0",
-        "@aws-sdk/credential-provider-node": "3.398.0",
+        "@aws-sdk/client-sts": "3.405.0",
+        "@aws-sdk/credential-provider-node": "3.405.0",
         "@aws-sdk/middleware-host-header": "3.398.0",
         "@aws-sdk/middleware-logger": "3.398.0",
         "@aws-sdk/middleware-recursion-detection": "3.398.0",
@@ -10604,7 +10608,7 @@ var require_package = __commonJS({
         "@aws-sdk/types": "3.398.0",
         "@aws-sdk/util-endpoints": "3.398.0",
         "@aws-sdk/util-user-agent-browser": "3.398.0",
-        "@aws-sdk/util-user-agent-node": "3.398.0",
+        "@aws-sdk/util-user-agent-node": "3.405.0",
         "@smithy/config-resolver": "^2.0.5",
         "@smithy/fetch-http-handler": "^2.0.5",
         "@smithy/hash-node": "^2.0.5",
@@ -10614,7 +10618,7 @@ var require_package = __commonJS({
         "@smithy/middleware-retry": "^2.0.5",
         "@smithy/middleware-serde": "^2.0.5",
         "@smithy/middleware-stack": "^2.0.0",
-        "@smithy/node-config-provider": "^2.0.5",
+        "@smithy/node-config-provider": "^2.0.6",
         "@smithy/node-http-handler": "^2.0.5",
         "@smithy/protocol-http": "^2.0.5",
         "@smithy/smithy-client": "^2.0.5",
@@ -10623,8 +10627,8 @@ var require_package = __commonJS({
         "@smithy/util-base64": "^2.0.0",
         "@smithy/util-body-length-browser": "^2.0.0",
         "@smithy/util-body-length-node": "^2.1.0",
-        "@smithy/util-defaults-mode-browser": "^2.0.5",
-        "@smithy/util-defaults-mode-node": "^2.0.5",
+        "@smithy/util-defaults-mode-browser": "^2.0.6",
+        "@smithy/util-defaults-mode-node": "^2.0.6",
         "@smithy/util-retry": "^2.0.0",
         "@smithy/util-utf8": "^2.0.0",
         tslib: "^2.5.0"
@@ -10713,7 +10717,7 @@ var require_package2 = __commonJS({
     module2.exports = {
       name: "@aws-sdk/client-sts",
       description: "AWS SDK for JavaScript Sts Client for Node.js, Browser and React Native",
-      version: "3.398.0",
+      version: "3.405.0",
       scripts: {
         build: "concurrently 'yarn:build:cjs' 'yarn:build:es' 'yarn:build:types'",
         "build:cjs": "tsc -p tsconfig.cjs.json",
@@ -10735,7 +10739,7 @@ var require_package2 = __commonJS({
       dependencies: {
         "@aws-crypto/sha256-browser": "3.0.0",
         "@aws-crypto/sha256-js": "3.0.0",
-        "@aws-sdk/credential-provider-node": "3.398.0",
+        "@aws-sdk/credential-provider-node": "3.405.0",
         "@aws-sdk/middleware-host-header": "3.398.0",
         "@aws-sdk/middleware-logger": "3.398.0",
         "@aws-sdk/middleware-recursion-detection": "3.398.0",
@@ -10745,7 +10749,7 @@ var require_package2 = __commonJS({
         "@aws-sdk/types": "3.398.0",
         "@aws-sdk/util-endpoints": "3.398.0",
         "@aws-sdk/util-user-agent-browser": "3.398.0",
-        "@aws-sdk/util-user-agent-node": "3.398.0",
+        "@aws-sdk/util-user-agent-node": "3.405.0",
         "@smithy/config-resolver": "^2.0.5",
         "@smithy/fetch-http-handler": "^2.0.5",
         "@smithy/hash-node": "^2.0.5",
@@ -10755,7 +10759,7 @@ var require_package2 = __commonJS({
         "@smithy/middleware-retry": "^2.0.5",
         "@smithy/middleware-serde": "^2.0.5",
         "@smithy/middleware-stack": "^2.0.0",
-        "@smithy/node-config-provider": "^2.0.5",
+        "@smithy/node-config-provider": "^2.0.6",
         "@smithy/node-http-handler": "^2.0.5",
         "@smithy/protocol-http": "^2.0.5",
         "@smithy/smithy-client": "^2.0.5",
@@ -10764,8 +10768,8 @@ var require_package2 = __commonJS({
         "@smithy/util-base64": "^2.0.0",
         "@smithy/util-body-length-browser": "^2.0.0",
         "@smithy/util-body-length-node": "^2.1.0",
-        "@smithy/util-defaults-mode-browser": "^2.0.5",
-        "@smithy/util-defaults-mode-node": "^2.0.5",
+        "@smithy/util-defaults-mode-browser": "^2.0.6",
+        "@smithy/util-defaults-mode-node": "^2.0.6",
         "@smithy/util-retry": "^2.0.0",
         "@smithy/util-utf8": "^2.0.0",
         "fast-xml-parser": "4.2.5",
@@ -13944,6 +13948,14 @@ var require_getHomeDir = __commonJS({
     exports.getHomeDir = void 0;
     var os_1 = require("os");
     var path_1 = require("path");
+    var process_1 = require("process");
+    var homeDirCache = {};
+    var getHomeDirCacheKey = () => {
+      if (process_1.geteuid) {
+        return `${(0, process_1.geteuid)()}`;
+      }
+      return "DEFAULT";
+    };
     var getHomeDir = () => {
       const { HOME, USERPROFILE, HOMEPATH, HOMEDRIVE = `C:${path_1.sep}` } = process.env;
       if (HOME)
@@ -13952,7 +13964,10 @@ var require_getHomeDir = __commonJS({
         return USERPROFILE;
       if (HOMEPATH)
         return `${HOMEDRIVE}${HOMEPATH}`;
-      return (0, os_1.homedir)();
+      const homeDirCacheKey = getHomeDirCacheKey();
+      if (!homeDirCache[homeDirCacheKey])
+        homeDirCache[homeDirCacheKey] = (0, os_1.homedir)();
+      return homeDirCache[homeDirCacheKey];
     };
     exports.getHomeDir = getHomeDir;
   }
@@ -14984,7 +14999,7 @@ var require_package3 = __commonJS({
     module2.exports = {
       name: "@aws-sdk/client-sso",
       description: "AWS SDK for JavaScript Sso Client for Node.js, Browser and React Native",
-      version: "3.398.0",
+      version: "3.405.0",
       scripts: {
         build: "concurrently 'yarn:build:cjs' 'yarn:build:es' 'yarn:build:types'",
         "build:cjs": "tsc -p tsconfig.cjs.json",
@@ -15011,7 +15026,7 @@ var require_package3 = __commonJS({
         "@aws-sdk/types": "3.398.0",
         "@aws-sdk/util-endpoints": "3.398.0",
         "@aws-sdk/util-user-agent-browser": "3.398.0",
-        "@aws-sdk/util-user-agent-node": "3.398.0",
+        "@aws-sdk/util-user-agent-node": "3.405.0",
         "@smithy/config-resolver": "^2.0.5",
         "@smithy/fetch-http-handler": "^2.0.5",
         "@smithy/hash-node": "^2.0.5",
@@ -15021,7 +15036,7 @@ var require_package3 = __commonJS({
         "@smithy/middleware-retry": "^2.0.5",
         "@smithy/middleware-serde": "^2.0.5",
         "@smithy/middleware-stack": "^2.0.0",
-        "@smithy/node-config-provider": "^2.0.5",
+        "@smithy/node-config-provider": "^2.0.6",
         "@smithy/node-http-handler": "^2.0.5",
         "@smithy/protocol-http": "^2.0.5",
         "@smithy/smithy-client": "^2.0.5",
@@ -15030,8 +15045,8 @@ var require_package3 = __commonJS({
         "@smithy/util-base64": "^2.0.0",
         "@smithy/util-body-length-browser": "^2.0.0",
         "@smithy/util-body-length-node": "^2.1.0",
-        "@smithy/util-defaults-mode-browser": "^2.0.5",
-        "@smithy/util-defaults-mode-node": "^2.0.5",
+        "@smithy/util-defaults-mode-browser": "^2.0.6",
+        "@smithy/util-defaults-mode-node": "^2.0.6",
         "@smithy/util-retry": "^2.0.0",
         "@smithy/util-utf8": "^2.0.0",
         tslib: "^2.5.0"
@@ -30859,6 +30874,632 @@ var require_lib4 = __commonJS({
   }
 });
 
+// ../sdk-v2-to-v3-adapter/lib/parameter-types.ts
+var UINT8ARRAY_PARAMETERS;
+var init_parameter_types = __esm({
+  "../sdk-v2-to-v3-adapter/lib/parameter-types.ts"() {
+    "use strict";
+    UINT8ARRAY_PARAMETERS = {
+      "acm": {
+        "exportcertificate": [
+          "Passphrase"
+        ],
+        "importcertificate": [
+          "Certificate",
+          "CertificateChain",
+          "PrivateKey"
+        ]
+      },
+      "acm-pca": {
+        "importcertificateauthoritycertificate": [
+          "Certificate",
+          "CertificateChain"
+        ],
+        "issuecertificate": [
+          "Csr"
+        ]
+      },
+      "apigateway": {
+        "importapikeys": [
+          "body"
+        ],
+        "importdocumentationparts": [
+          "body"
+        ],
+        "importrestapi": [
+          "body"
+        ],
+        "putrestapi": [
+          "body"
+        ],
+        "posttoconnection": [
+          "Data"
+        ]
+      },
+      "appconfig": {
+        "createhostedconfigurationversion": [
+          "Content"
+        ]
+      },
+      "appsync": {
+        "startschemacreation": [
+          "definition"
+        ]
+      },
+      "awsmobilehubservice": {
+        "createproject": [
+          "contents"
+        ],
+        "updateproject": [
+          "contents"
+        ]
+      },
+      "backup-storage": {
+        "notifyobjectcomplete": [
+          "MetadataBlob"
+        ],
+        "putchunk": [
+          "Data"
+        ],
+        "putobject": [
+          "InlineChunk"
+        ]
+      },
+      "cloudfront": {
+        "createfunction": [
+          "FunctionCode"
+        ],
+        "testfunction": [
+          "EventObject"
+        ],
+        "updatefunction": [
+          "FunctionCode"
+        ]
+      },
+      "cloudsearch": {
+        "uploaddocuments": [
+          "documents"
+        ]
+      },
+      "codeartifact": {
+        "publishpackageversion": [
+          "assetContent"
+        ]
+      },
+      "codecommit": {
+        "createcommit": [
+          "putFiles.*.fileContent"
+        ],
+        "createunreferencedmergecommit": [
+          "conflictResolution.replaceContents.*.content"
+        ],
+        "mergebranchesbysquash": [
+          "conflictResolution.replaceContents.*.content"
+        ],
+        "mergebranchesbythreeway": [
+          "conflictResolution.replaceContents.*.content"
+        ],
+        "mergepullrequestbysquash": [
+          "conflictResolution.replaceContents.*.content"
+        ],
+        "mergepullrequestbythreeway": [
+          "conflictResolution.replaceContents.*.content"
+        ],
+        "putfile": [
+          "fileContent"
+        ]
+      },
+      "cognito-idp": {
+        "setuicustomization": [
+          "ImageFile"
+        ]
+      },
+      "comprehend": {
+        "classifydocument": [
+          "Bytes"
+        ],
+        "detectentities": [
+          "Bytes"
+        ]
+      },
+      "datasync": {
+        "createlocationhdfs": [
+          "KerberosKeytab",
+          "KerberosKrb5Conf"
+        ],
+        "createlocationobjectstorage": [
+          "ServerCertificate"
+        ],
+        "updatelocationhdfs": [
+          "KerberosKeytab",
+          "KerberosKrb5Conf"
+        ],
+        "updatelocationobjectstorage": [
+          "ServerCertificate"
+        ]
+      },
+      "dms": {
+        "importcertificate": [
+          "CertificateWallet"
+        ]
+      },
+      "ebs": {
+        "putsnapshotblock": [
+          "BlockData"
+        ]
+      },
+      "ec2": {
+        "bundleinstance": [
+          "Storage.S3.UploadPolicy"
+        ],
+        "importkeypair": [
+          "PublicKeyMaterial"
+        ],
+        "modifyinstanceattribute": [
+          "UserData.Value"
+        ]
+      },
+      "ecr": {
+        "uploadlayerpart": [
+          "layerPartBlob"
+        ]
+      },
+      "ecr-public": {
+        "createrepository": [
+          "catalogData.logoImageBlob"
+        ],
+        "putrepositorycatalogdata": [
+          "catalogData.logoImageBlob"
+        ],
+        "uploadlayerpart": [
+          "layerPartBlob"
+        ]
+      },
+      "firehose": {
+        "putrecord": [
+          "Record.Data"
+        ],
+        "putrecordbatch": [
+          "Records.*.Data"
+        ]
+      },
+      "gamelift": {
+        "createscript": [
+          "ZipFile"
+        ],
+        "updatescript": [
+          "ZipFile"
+        ]
+      },
+      "gamesparks": {
+        "importgameconfiguration": [
+          "ImportSource.File"
+        ]
+      },
+      "glacier": {
+        "uploadarchive": [
+          "body"
+        ],
+        "uploadmultipartpart": [
+          "body"
+        ]
+      },
+      "glue": {
+        "updatecolumnstatisticsforpartition": [
+          "ColumnStatisticsList.*.StatisticsData.DecimalColumnStatisticsData.MaximumValue.UnscaledValue"
+        ],
+        "updatecolumnstatisticsfortable": [
+          "ColumnStatisticsList.*.StatisticsData.DecimalColumnStatisticsData.MaximumValue.UnscaledValue"
+        ]
+      },
+      "greengrass": {
+        "createcomponentversion": [
+          "inlineRecipe"
+        ]
+      },
+      "iot": {
+        "createotaupdate": [
+          "files.*.codeSigning.customCodeSigning.signature.inlineDocument"
+        ],
+        "testinvokeauthorizer": [
+          "mqttContext.password"
+        ]
+      },
+      "iotanalytics": {
+        "batchputmessage": [
+          "messages.*.payload"
+        ],
+        "runpipelineactivity": [
+          "payloads.*"
+        ]
+      },
+      "iotdata": {
+        "publish": [
+          "payload"
+        ],
+        "updatethingshadow": [
+          "payload"
+        ]
+      },
+      "ioteventsdata": {
+        "batchputmessage": [
+          "messages.*.payload"
+        ]
+      },
+      "iotsitewise": {
+        "createportal": [
+          "portalLogoImageFile.data"
+        ],
+        "updateportal": [
+          "portalLogoImage.file.data"
+        ]
+      },
+      "iotwireless": {
+        "updateresourceposition": [
+          "GeoJsonPayload"
+        ]
+      },
+      "kafka": {
+        "createconfiguration": [
+          "ServerProperties"
+        ],
+        "updateconfiguration": [
+          "ServerProperties"
+        ]
+      },
+      "kendra": {
+        "batchputdocument": [
+          "Documents.*.Blob"
+        ]
+      },
+      "kinesis": {
+        "putrecord": [
+          "Data"
+        ],
+        "putrecords": [
+          "Records.*.Data"
+        ]
+      },
+      "kinesisanalytics": {
+        "createapplication": [
+          "ApplicationConfiguration.ApplicationCodeConfiguration.CodeContent.ZipFileContent"
+        ],
+        "updateapplication": [
+          "ApplicationConfigurationUpdate.ApplicationCodeConfigurationUpdate.CodeContentUpdate.ZipFileContentUpdate"
+        ]
+      },
+      "kms": {
+        "decrypt": [
+          "CiphertextBlob",
+          "Recipient.AttestationDocument"
+        ],
+        "encrypt": [
+          "Plaintext"
+        ],
+        "generatedatakey": [
+          "Recipient.AttestationDocument"
+        ],
+        "generatedatakeypair": [
+          "Recipient.AttestationDocument"
+        ],
+        "generatemac": [
+          "Message"
+        ],
+        "generaterandom": [
+          "Recipient.AttestationDocument"
+        ],
+        "importkeymaterial": [
+          "EncryptedKeyMaterial"
+        ],
+        "reencrypt": [
+          "CiphertextBlob"
+        ],
+        "sign": [
+          "Message"
+        ],
+        "verify": [
+          "Message",
+          "Signature"
+        ],
+        "verifymac": [
+          "Mac",
+          "Message"
+        ]
+      },
+      "lambda": {
+        "createfunction": [
+          "Code.ZipFile"
+        ],
+        "invoke": [
+          "Payload"
+        ],
+        "invokeasync": [
+          "InvokeArgs"
+        ],
+        "invokewithresponsestream": [
+          "Payload"
+        ],
+        "publishlayerversion": [
+          "Content.ZipFile"
+        ],
+        "updatefunctioncode": [
+          "ZipFile"
+        ]
+      },
+      "lex": {
+        "startimport": [
+          "payload"
+        ],
+        "postcontent": [
+          "inputStream"
+        ],
+        "recognizeutterance": [
+          "inputStream"
+        ]
+      },
+      "lookoutvision": {
+        "detectanomalies": [
+          "Body"
+        ],
+        "updatedatasetentries": [
+          "Changes"
+        ]
+      },
+      "mediastore": {
+        "putobject": [
+          "Body"
+        ]
+      },
+      "mobiletargeting": {
+        "sendmessages": [
+          "MessageRequest.MessageConfiguration.EmailMessage.RawEmail.Data"
+        ],
+        "sendusersmessages": [
+          "SendUsersMessageRequest.MessageConfiguration.EmailMessage.RawEmail.Data"
+        ]
+      },
+      "qldb": {
+        "sendcommand": [
+          "CommitTransaction.CommitDigest",
+          "ExecuteStatement.Parameters.*.IonBinary"
+        ]
+      },
+      "quicksight": {
+        "startassetbundleimportjob": [
+          "AssetBundleImportSource.Body"
+        ]
+      },
+      "rekognition": {
+        "comparefaces": [
+          "SourceImage.Bytes"
+        ],
+        "detectcustomlabels": [
+          "Image.Bytes"
+        ],
+        "detectfaces": [
+          "Image.Bytes"
+        ],
+        "detectlabels": [
+          "Image.Bytes"
+        ],
+        "detectmoderationlabels": [
+          "Image.Bytes"
+        ],
+        "detectprotectiveequipment": [
+          "Image.Bytes"
+        ],
+        "detecttext": [
+          "Image.Bytes"
+        ],
+        "indexfaces": [
+          "Image.Bytes"
+        ],
+        "recognizecelebrities": [
+          "Image.Bytes"
+        ],
+        "searchfacesbyimage": [
+          "Image.Bytes"
+        ],
+        "searchusersbyimage": [
+          "Image.Bytes"
+        ],
+        "updatedatasetentries": [
+          "Changes.GroundTruth"
+        ]
+      },
+      "s3": {
+        "putobject": [
+          "Body"
+        ],
+        "uploadpart": [
+          "Body"
+        ],
+        "writegetobjectresponse": [
+          "Body"
+        ]
+      },
+      "sagemaker": {
+        "invokeendpoint": [
+          "Body"
+        ],
+        "invokeendpointwithresponsestream": [
+          "Body"
+        ]
+      },
+      "secretsmanager": {
+        "createsecret": [
+          "SecretBinary"
+        ],
+        "putsecretvalue": [
+          "SecretBinary"
+        ],
+        "updatesecret": [
+          "SecretBinary"
+        ]
+      },
+      "ses": {
+        "createdeliverabilitytestreport": [
+          "Content.Raw.Data",
+          "Content.Raw.Data"
+        ],
+        "sendemail": [
+          "Content.Raw.Data",
+          "Content.Raw.Data"
+        ],
+        "sendrawemail": [
+          "RawMessage.Data"
+        ]
+      },
+      "signer": {
+        "signpayload": [
+          "payload"
+        ]
+      },
+      "ssm": {
+        "registertaskwithmaintenancewindow": [
+          "TaskInvocationParameters.Lambda.Payload"
+        ],
+        "updatemaintenancewindowtask": [
+          "TaskInvocationParameters.Lambda.Payload"
+        ]
+      },
+      "support": {
+        "addattachmentstoset": [
+          "attachments.*.data"
+        ]
+      },
+      "synthetics": {
+        "createcanary": [
+          "Code.ZipFile"
+        ],
+        "updatecanary": [
+          "Code.ZipFile"
+        ]
+      },
+      "textract": {
+        "analyzedocument": [
+          "Document.Bytes"
+        ],
+        "analyzeexpense": [
+          "Document.Bytes"
+        ],
+        "analyzeid": [
+          "DocumentPages.*.Bytes"
+        ],
+        "detectdocumenttext": [
+          "Document.Bytes"
+        ]
+      },
+      "translate": {
+        "importterminology": [
+          "TerminologyData.File"
+        ],
+        "translatedocument": [
+          "Document.Content"
+        ]
+      },
+      "waf": {
+        "updatebytematchset": [
+          "Updates.*.ByteMatchTuple.TargetString"
+        ]
+      },
+      "waf-regional": {
+        "updatebytematchset": [
+          "Updates.*.ByteMatchTuple.TargetString"
+        ]
+      },
+      "wafv2": {
+        "checkcapacity": [
+          "Rules.*.Statement.ByteMatchStatement.SearchString"
+        ],
+        "createrulegroup": [
+          "Rules.*.Statement.ByteMatchStatement.SearchString"
+        ],
+        "createwebacl": [
+          "Rules.*.Statement.ByteMatchStatement.SearchString"
+        ],
+        "updaterulegroup": [
+          "Rules.*.Statement.ByteMatchStatement.SearchString"
+        ],
+        "updatewebacl": [
+          "Rules.*.Statement.ByteMatchStatement.SearchString"
+        ]
+      },
+      "workspaces": {
+        "importclientbranding": [
+          "DeviceTypeAndroid.Logo",
+          "DeviceTypeIos.Logo",
+          "DeviceTypeIos.Logo2x",
+          "DeviceTypeIos.Logo3x"
+        ]
+      }
+    };
+  }
+});
+
+// ../sdk-v2-to-v3-adapter/lib/coerce-api-parameters.ts
+var coerce_api_parameters_exports = {};
+__export(coerce_api_parameters_exports, {
+  coerceApiParametersToUint8Array: () => coerceApiParametersToUint8Array,
+  coerceToUint8Array: () => coerceToUint8Array
+});
+function coerceApiParametersToUint8Array(service, action, parameters = {}) {
+  const pathsToCoerce = UINT8ARRAY_PARAMETERS?.[service.toLowerCase()]?.[action.toLowerCase()] ?? [];
+  for (const path of pathsToCoerce) {
+    coerceToUint8Array(parameters, path.split("."));
+  }
+  return parameters;
+}
+function coerceToUint8Array(obj, path) {
+  if (path.length === 0) {
+    return coerceValueToUint8Array(obj);
+  }
+  if (path[0] === "*" && Array.isArray(obj)) {
+    return obj.map((e) => coerceToUint8Array(e, path.slice(1)));
+  }
+  if (obj && typeof obj === "object") {
+    if (path[0] in obj) {
+      obj[path[0]] = coerceToUint8Array(obj[path[0]], path.slice(1));
+    }
+    return obj;
+  }
+  return obj;
+}
+function coerceValueToUint8Array(x) {
+  if (x instanceof Uint8Array) {
+    return x;
+  }
+  if (typeof x === "string" || typeof x === "number") {
+    return new TextEncoder().encode(x.toString());
+  }
+  return x;
+}
+var init_coerce_api_parameters = __esm({
+  "../sdk-v2-to-v3-adapter/lib/coerce-api-parameters.ts"() {
+    "use strict";
+    init_parameter_types();
+  }
+});
+
+// ../sdk-v2-to-v3-adapter/lib/find-client-constructor.ts
+var find_client_constructor_exports = {};
+__export(find_client_constructor_exports, {
+  findV3ClientConstructor: () => findV3ClientConstructor
+});
+function findV3ClientConstructor(pkg) {
+  const [_clientName, ServiceClient] = Object.entries(pkg).find(
+    ([name]) => {
+      return name.endsWith("Client") && name !== "__Client";
+    }
+  );
+  return ServiceClient;
+}
+var init_find_client_constructor = __esm({
+  "../sdk-v2-to-v3-adapter/lib/find-client-constructor.ts"() {
+    "use strict";
+  }
+});
+
 // ../sdk-v2-to-v3-adapter/lib/client-names.ts
 var CLIENT_NAMES;
 var init_client_names = __esm({
@@ -31340,22 +31981,51 @@ var init_get_v3_client_package_name = __esm({
   }
 });
 
-// ../sdk-v2-to-v3-adapter/lib/find-client-constructor.ts
-var find_client_constructor_exports = {};
-__export(find_client_constructor_exports, {
-  findV3ClientConstructor: () => findV3ClientConstructor
+// ../sdk-v2-to-v3-adapter/lib/sdk-v3-helpers.ts
+var sdk_v3_helpers_exports = {};
+__export(sdk_v3_helpers_exports, {
+  getV3Client: () => getV3Client,
+  getV3Command: () => getV3Command,
+  loadV3ClientPackage: () => loadV3ClientPackage
 });
-function findV3ClientConstructor(pkg) {
-  const [_clientName, ServiceClient] = Object.entries(pkg).find(
-    ([name]) => {
-      return name.endsWith("Client") && name !== "__Client";
-    }
-  );
-  return ServiceClient;
+function loadV3ClientPackage(service) {
+  const packageName = service.startsWith("@aws-sdk/") ? service : getV3ClientPackageName(service);
+  try {
+    const pkg = require(packageName);
+    const { version: version2 } = require(packageName + "/package.json");
+    return {
+      service: packageName.replace("@aws-sdk/client-", ""),
+      pkg,
+      packageName,
+      packageVersion: version2
+    };
+  } catch (e) {
+    throw Error(`Service ${service} client package with name '${packageName}' does not exist.`);
+  }
 }
-var init_find_client_constructor = __esm({
-  "../sdk-v2-to-v3-adapter/lib/find-client-constructor.ts"() {
+function getV3Client(sdkPkg, clientOptions = {}) {
+  try {
+    const ServiceClient = findV3ClientConstructor(sdkPkg.pkg);
+    return new ServiceClient(clientOptions);
+  } catch (e) {
+    throw Error(`No client constructor found within package: ${sdkPkg.packageName}`);
+  }
+}
+function getV3Command(sdkPkg, action) {
+  const commandName = action.endsWith("Command") ? action : `${action}Command`;
+  const command = Object.entries(sdkPkg.pkg).find(
+    ([name]) => name.toLowerCase() === commandName.toLowerCase()
+  )?.[1];
+  if (!command) {
+    throw new Error(`Unable to find command named: ${commandName} for api: ${action} in service package`);
+  }
+  return command;
+}
+var init_sdk_v3_helpers = __esm({
+  "../sdk-v2-to-v3-adapter/lib/sdk-v3-helpers.ts"() {
     "use strict";
+    init_find_client_constructor();
+    init_get_v3_client_package_name();
   }
 });
 
@@ -31363,16 +32033,41 @@ var init_find_client_constructor = __esm({
 var require_lib5 = __commonJS({
   "../sdk-v2-to-v3-adapter/lib/index.js"(exports) {
     "use strict";
+    var __createBinding3 = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
+      if (k2 === void 0)
+        k2 = k;
+      var desc = Object.getOwnPropertyDescriptor(m, k);
+      if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+        desc = { enumerable: true, get: function() {
+          return m[k];
+        } };
+      }
+      Object.defineProperty(o, k2, desc);
+    } : function(o, m, k, k2) {
+      if (k2 === void 0)
+        k2 = k;
+      o[k2] = m[k];
+    });
+    var __exportStar3 = exports && exports.__exportStar || function(m, exports2) {
+      for (var p in m)
+        if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports2, p))
+          __createBinding3(exports2, m, p);
+    };
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.findV3ClientConstructor = exports.getV3ClientPackageName = void 0;
-    var get_v3_client_package_name_1 = (init_get_v3_client_package_name(), __toCommonJS(get_v3_client_package_name_exports));
-    Object.defineProperty(exports, "getV3ClientPackageName", { enumerable: true, get: function() {
-      return get_v3_client_package_name_1.getV3ClientPackageName;
+    exports.getV3ClientPackageName = exports.findV3ClientConstructor = exports.coerceApiParametersToUint8Array = void 0;
+    var coerce_api_parameters_1 = (init_coerce_api_parameters(), __toCommonJS(coerce_api_parameters_exports));
+    Object.defineProperty(exports, "coerceApiParametersToUint8Array", { enumerable: true, get: function() {
+      return coerce_api_parameters_1.coerceApiParametersToUint8Array;
     } });
     var find_client_constructor_1 = (init_find_client_constructor(), __toCommonJS(find_client_constructor_exports));
     Object.defineProperty(exports, "findV3ClientConstructor", { enumerable: true, get: function() {
       return find_client_constructor_1.findV3ClientConstructor;
     } });
+    var get_v3_client_package_name_1 = (init_get_v3_client_package_name(), __toCommonJS(get_v3_client_package_name_exports));
+    Object.defineProperty(exports, "getV3ClientPackageName", { enumerable: true, get: function() {
+      return get_v3_client_package_name_1.getV3ClientPackageName;
+    } });
+    __exportStar3((init_sdk_v3_helpers(), __toCommonJS(sdk_v3_helpers_exports)), exports);
   }
 });
 
@@ -31396,7 +32091,6 @@ var CustomResourceHandler = class {
   constructor(event, context) {
     this.event = event;
     this.context = context;
-    this.timedOut = false;
     this.timeout = setTimeout(async () => {
       await this.respond({
         status: "FAILED",
@@ -31408,6 +32102,9 @@ var CustomResourceHandler = class {
     this.event = event;
     this.physicalResourceId = extractPhysicalResourceId(event);
   }
+  physicalResourceId;
+  timeout;
+  timedOut = false;
   /**
    * Handles executing the custom resource event. If `stateMachineArn` is present
    * in the props then trigger the waiter statemachine
@@ -31541,6 +32238,7 @@ var AssertionHandler = class extends CustomResourceHandler {
   }
 };
 var MatchCreator = class {
+  parsedObj;
   constructor(obj) {
     this.parsedObj = {
       matcher: obj
@@ -31672,24 +32370,29 @@ var import_sdk_v2_to_v3_adapter = __toESM(require_lib5());
 
 // lib/assertions/providers/lambda-handler/utils.ts
 function parseJsonPayload(payload) {
-  const text = new TextDecoder().decode(Buffer.from(payload ?? ""));
-  if (!text) {
-    return {};
-  }
   try {
-    return JSON.parse(text);
+    const buffer = Buffer.from(payload);
+    return JSON.parse(new TextDecoder().decode(buffer));
   } catch {
-    throw new Error(`return values from user-handlers must be JSON objects. got: "${text}"`);
+    return payload;
   }
 }
 function decodeParameters(obj) {
   return Object.fromEntries(Object.entries(obj).map(([key, value]) => {
     try {
-      return [key, JSON.parse(value)];
+      return [key, decodeValue(value)];
     } catch {
       return [key, value];
     }
   }));
+}
+function decodeValue(value) {
+  if (value != null && !Array.isArray(value) && typeof value === "object") {
+    if (value.$type === "ArrayBufferView") {
+      return new TextEncoder().encode(value.string);
+    }
+  }
+  return JSON.parse(value);
 }
 
 // lib/assertions/providers/lambda-handler/sdk.ts
