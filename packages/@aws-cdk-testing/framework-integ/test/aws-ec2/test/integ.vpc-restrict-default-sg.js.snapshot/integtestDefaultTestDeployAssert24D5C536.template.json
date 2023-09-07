@@ -27,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1691698955701"
+    "salt": "1694075157743"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -81,7 +81,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "854c68e9b071accbb9b7c92951a2a38b51aa01c67b21ba5813d089a8b3473228.zip"
+     "S3Key": "020364985d409cf8bf611edf535aedca3c0d7c0dd7f21ba847b79a41d9bf0dce.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
