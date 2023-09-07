@@ -1328,5 +1328,12 @@
   "managedblockchainquery": {
     "prefix": "managedblockchain-query",
     "name": "ManagedBlockchainQuery"
+  },
+  "neptunedata": {
+    "name": "Neptunedata"
+  },
+  "pcaconnectorad": {
+    "prefix": "pca-connector-ad",
+    "name": "PcaConnectorAd"
   }
 }

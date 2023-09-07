@@ -306,7 +306,7 @@ export function mockBootstrapStack(sdk: ISDK | undefined, stack?: Partial<AWS.Cl
 
 export function mockToolkitInfo(stack?: Partial<AWS.CloudFormation.Stack>) {
   const sdk = new MockSdk();
-  return ToolkitInfo.fromStack(mockBootstrapStack(sdk, stack), sdk);
+  return ToolkitInfo.fromStack(mockBootstrapStack(sdk, stack));
 }
 
 export function mockResolvedEnvironment(): cxapi.Environment {

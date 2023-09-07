@@ -137,7 +137,7 @@ export class Bundling implements cdk.BundlingOptions {
     // their environment.
     if (isV2Runtime && externals.some((pkgName) => pkgName.startsWith('@aws-sdk/'))) {
       cdk.Annotations.of(scope).addWarningV2('@aws-cdk/aws-lambda-nodejs:sdkV3NotInRuntime', 'If you are relying on AWS SDK v3 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 18 or higher.');
-    } else if (externals.includes('aws-sdk')) {
+    } else if (!isV2Runtime && externals.includes('aws-sdk')) {
       cdk.Annotations.of(scope).addWarningV2('@aws-cdk/aws-lambda-nodejs:sdkV2NotInRuntime', 'If you are relying on AWS SDK v2 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 16 or lower.');
     }
 

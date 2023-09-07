@@ -1023,32 +1023,6 @@ describe('record set', () => {
     }
   });
 
-  testDeprecated('Cross account zone context flag', () => {
-    // GIVEN
-    const stack = new Stack();
-    stack.node.setContext('@aws-cdk/aws-route53:useRegionalStsEndpoint', true);
-    const parentZone = new route53.PublicHostedZone(stack, 'ParentHostedZone', {
-      zoneName: 'myzone.com',
-      crossAccountZoneDelegationPrincipal: new iam.AccountPrincipal('123456789012'),
-    });
-
-    // WHEN
-    const childZone = new route53.PublicHostedZone(stack, 'ChildHostedZone', {
-      zoneName: 'sub.myzone.com',
-    });
-    new route53.CrossAccountZoneDelegationRecord(stack, 'Delegation', {
-      delegatedZone: childZone,
-      parentHostedZoneName: 'myzone.com',
-      delegationRole: parentZone.crossAccountZoneDelegationRole!,
-      ttl: Duration.seconds(60),
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('Custom::CrossAccountZoneDelegation', {
-      UseRegionalStsEndpoint: 'true',
-    });
-  });
-
   test('Delete existing record', () => {
     // GIVEN
     const stack = new Stack();
