@@ -1147,34 +1147,7 @@ export class Service extends cdk.Resource implements iam.IGrantable {
       throw new Error('configurationValues cannot be provided if the ConfigurationSource is Repository');
     }
 
-    if (this.props.healthCheckConfiguration?.path !== undefined) {
-      if (this.props.healthCheckConfiguration?.protocol !== HealthCheckProtocolType.HTTP) {
-        throw new Error('path is only applicable when you set Protocol to HTTP');
-      }
-      if (this.props.healthCheckConfiguration?.path.length === 0) {
-        throw new Error('path length must be greater than 0');
-      }
-    }
-    if (this.props.healthCheckConfiguration?.healthyThreshold !== undefined) {
-      if (this.props.healthCheckConfiguration?.healthyThreshold < 1 || this.props.healthCheckConfiguration?.healthyThreshold > 20) {
-        throw new Error('healthyThreshold must be greater than or equal to 1 and less than or equal to 20');
-      }
-    }
-    if (this.props.healthCheckConfiguration?.unhealthyThreshold !== undefined) {
-      if (this.props.healthCheckConfiguration?.unhealthyThreshold < 1 || this.props.healthCheckConfiguration?.unhealthyThreshold > 20) {
-        throw new Error('unhealthyThreshold must be greater than or equal to 1 and less than or equal to 20');
-      }
-    }
-    if (this.props.healthCheckConfiguration?.interval !== undefined) {
-      if (this.props.healthCheckConfiguration?.interval.toSeconds() < 1 || this.props.healthCheckConfiguration?.interval.toSeconds() > 20) {
-        throw new Error('interval must be greater than or equal to 1 and less than or equal to 20');
-      }
-    }
-    if (this.props.healthCheckConfiguration?.timeout !== undefined) {
-      if (this.props.healthCheckConfiguration?.timeout.toSeconds() < 1 || this.props.healthCheckConfiguration?.timeout.toSeconds() > 20) {
-        throw new Error('timeout must be greater than or equal to 1 and less than or equal to 20');
-      }
-    }
+    this.validateHealthCheckConfiguration(this.props.healthCheckConfiguration);
 
     const resource = new CfnService(this, 'Resource', {
       serviceName: this.props.serviceName,
@@ -1374,5 +1347,38 @@ export class Service extends cdk.Resource implements iam.IGrantable {
       timeout: props.timeout?.toSeconds(),
       unhealthyThreshold: props.unhealthyThreshold,
     };
+  }
+
+  private validateHealthCheckConfiguration(healthCheckConfiguration?: HealthCheckConfiguration) {
+    if (!healthCheckConfiguration) return;
+
+    if (healthCheckConfiguration.path !== undefined) {
+      if (healthCheckConfiguration.protocol !== HealthCheckProtocolType.HTTP) {
+        throw new Error('path is only applicable when you set Protocol to HTTP');
+      }
+      if (healthCheckConfiguration.path.length === 0) {
+        throw new Error('path length must be greater than 0');
+      }
+    }
+    if (healthCheckConfiguration.healthyThreshold !== undefined) {
+      if (healthCheckConfiguration.healthyThreshold < 1 || healthCheckConfiguration.healthyThreshold > 20) {
+        throw new Error(`healthyThreshold must be between 1 and 20, got ${healthCheckConfiguration.healthyThreshold}`);
+      }
+    }
+    if (healthCheckConfiguration.unhealthyThreshold !== undefined) {
+      if (healthCheckConfiguration.unhealthyThreshold < 1 || healthCheckConfiguration.unhealthyThreshold > 20) {
+        throw new Error(`unhealthyThreshold must be between 1 and 20, got ${healthCheckConfiguration.unhealthyThreshold}`);
+      }
+    }
+    if (healthCheckConfiguration.interval !== undefined) {
+      if (healthCheckConfiguration.interval.toSeconds() < 1 || healthCheckConfiguration.interval.toSeconds() > 20) {
+        throw new Error(`interval must be between 1 and 20 seconds, got ${healthCheckConfiguration.interval}`);
+      }
+    }
+    if (healthCheckConfiguration.timeout !== undefined) {
+      if (healthCheckConfiguration.timeout.toSeconds() < 1 || healthCheckConfiguration.timeout.toSeconds() > 20) {
+        throw new Error(`timeout must be between 1 and 20 seconds, got ${healthCheckConfiguration.timeout}`);
+      }
+    }
   }
 }

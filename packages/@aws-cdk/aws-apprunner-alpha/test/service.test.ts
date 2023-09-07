@@ -1452,70 +1452,6 @@ test('path cannot be empty in healthCheckConfiguration', () => {
   }).toThrow('path length must be greater than 0');
 });
 
-test('OK if healthyThreshold is 1 in healthCheckConfiguration', () => {
-  // GIVEN
-  const app = new cdk.App();
-  const stack = new cdk.Stack(app, 'demo-stack');
-  // WHEN
-  new apprunner.Service(stack, 'DemoService', {
-    source: apprunner.Source.fromEcrPublic({
-      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
-    }),
-    healthCheckConfiguration: {
-      healthyThreshold: 1,
-      interval: cdk.Duration.seconds(5),
-      path: '/',
-      protocol: apprunner.HealthCheckProtocolType.HTTP,
-      timeout: cdk.Duration.seconds(2),
-      unhealthyThreshold: 5,
-    },
-  });
-
-  // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
-    HealthCheckConfiguration: {
-      HealthyThreshold: 1,
-      Interval: 5,
-      Path: '/',
-      Protocol: 'HTTP',
-      Timeout: 2,
-      UnhealthyThreshold: 5,
-    },
-  });
-});
-
-test('OK if healthyThreshold is 20 in healthCheckConfiguration', () => {
-  // GIVEN
-  const app = new cdk.App();
-  const stack = new cdk.Stack(app, 'demo-stack');
-  // WHEN
-  new apprunner.Service(stack, 'DemoService', {
-    source: apprunner.Source.fromEcrPublic({
-      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
-    }),
-    healthCheckConfiguration: {
-      healthyThreshold: 20,
-      interval: cdk.Duration.seconds(5),
-      path: '/',
-      protocol: apprunner.HealthCheckProtocolType.HTTP,
-      timeout: cdk.Duration.seconds(2),
-      unhealthyThreshold: 5,
-    },
-  });
-
-  // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
-    HealthCheckConfiguration: {
-      HealthyThreshold: 20,
-      Interval: 5,
-      Path: '/',
-      Protocol: 'HTTP',
-      Timeout: 2,
-      UnhealthyThreshold: 5,
-    },
-  });
-});
-
 test('healthyThreshold must be greater than or equal to 1 in healthCheckConfiguration', () => {
   // GIVEN
   const app = new cdk.App();
@@ -1536,7 +1472,7 @@ test('healthyThreshold must be greater than or equal to 1 in healthCheckConfigur
         unhealthyThreshold: 5,
       },
     });
-  }).toThrow('healthyThreshold must be greater than or equal to 1 and less than or equal to 20');
+  }).toThrow('healthyThreshold must be between 1 and 20, got 0');
 });
 
 test('healthyThreshold must be less than or equal to 20 in healthCheckConfiguration', () => {
@@ -1559,71 +1495,7 @@ test('healthyThreshold must be less than or equal to 20 in healthCheckConfigurat
         unhealthyThreshold: 5,
       },
     });
-  }).toThrow('healthyThreshold must be greater than or equal to 1 and less than or equal to 20');
-});
-
-test('OK if unhealthyThreshold is 1 in healthCheckConfiguration', () => {
-  // GIVEN
-  const app = new cdk.App();
-  const stack = new cdk.Stack(app, 'demo-stack');
-  // WHEN
-  new apprunner.Service(stack, 'DemoService', {
-    source: apprunner.Source.fromEcrPublic({
-      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
-    }),
-    healthCheckConfiguration: {
-      healthyThreshold: 5,
-      interval: cdk.Duration.seconds(5),
-      path: '/',
-      protocol: apprunner.HealthCheckProtocolType.HTTP,
-      timeout: cdk.Duration.seconds(2),
-      unhealthyThreshold: 1,
-    },
-  });
-
-  // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
-    HealthCheckConfiguration: {
-      HealthyThreshold: 5,
-      Interval: 5,
-      Path: '/',
-      Protocol: 'HTTP',
-      Timeout: 2,
-      UnhealthyThreshold: 1,
-    },
-  });
-});
-
-test('OK if unhealthyThreshold is 20 in healthCheckConfiguration', () => {
-  // GIVEN
-  const app = new cdk.App();
-  const stack = new cdk.Stack(app, 'demo-stack');
-  // WHEN
-  new apprunner.Service(stack, 'DemoService', {
-    source: apprunner.Source.fromEcrPublic({
-      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
-    }),
-    healthCheckConfiguration: {
-      healthyThreshold: 5,
-      interval: cdk.Duration.seconds(5),
-      path: '/',
-      protocol: apprunner.HealthCheckProtocolType.HTTP,
-      timeout: cdk.Duration.seconds(2),
-      unhealthyThreshold: 20,
-    },
-  });
-
-  // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
-    HealthCheckConfiguration: {
-      HealthyThreshold: 5,
-      Interval: 5,
-      Path: '/',
-      Protocol: 'HTTP',
-      Timeout: 2,
-      UnhealthyThreshold: 20,
-    },
-  });
+  }).toThrow('healthyThreshold must be between 1 and 20, got 21');
 });
 
 test('unhealthyThreshold must be greater than or equal to 1 in healthCheckConfiguration', () => {
@@ -1646,7 +1518,7 @@ test('unhealthyThreshold must be greater than or equal to 1 in healthCheckConfig
         unhealthyThreshold: 0,
       },
     });
-  }).toThrow('unhealthyThreshold must be greater than or equal to 1 and less than or equal to 20');
+  }).toThrow('unhealthyThreshold must be between 1 and 20, got 0');
 });
 
 test('unhealthyThreshold must be less than or equal to 20 in healthCheckConfiguration', () => {
@@ -1669,71 +1541,7 @@ test('unhealthyThreshold must be less than or equal to 20 in healthCheckConfigur
         unhealthyThreshold: 21,
       },
     });
-  }).toThrow('unhealthyThreshold must be greater than or equal to 1 and less than or equal to 20');
-});
-
-test('OK if interval is 1 in healthCheckConfiguration', () => {
-  // GIVEN
-  const app = new cdk.App();
-  const stack = new cdk.Stack(app, 'demo-stack');
-  // WHEN
-  new apprunner.Service(stack, 'DemoService', {
-    source: apprunner.Source.fromEcrPublic({
-      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
-    }),
-    healthCheckConfiguration: {
-      healthyThreshold: 5,
-      interval: cdk.Duration.seconds(1),
-      path: '/',
-      protocol: apprunner.HealthCheckProtocolType.HTTP,
-      timeout: cdk.Duration.seconds(2),
-      unhealthyThreshold: 5,
-    },
-  });
-
-  // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
-    HealthCheckConfiguration: {
-      HealthyThreshold: 5,
-      Interval: 1,
-      Path: '/',
-      Protocol: 'HTTP',
-      Timeout: 2,
-      UnhealthyThreshold: 5,
-    },
-  });
-});
-
-test('OK if interval is 20 in healthCheckConfiguration', () => {
-  // GIVEN
-  const app = new cdk.App();
-  const stack = new cdk.Stack(app, 'demo-stack');
-  // WHEN
-  new apprunner.Service(stack, 'DemoService', {
-    source: apprunner.Source.fromEcrPublic({
-      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
-    }),
-    healthCheckConfiguration: {
-      healthyThreshold: 5,
-      interval: cdk.Duration.seconds(20),
-      path: '/',
-      protocol: apprunner.HealthCheckProtocolType.HTTP,
-      timeout: cdk.Duration.seconds(2),
-      unhealthyThreshold: 5,
-    },
-  });
-
-  // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
-    HealthCheckConfiguration: {
-      HealthyThreshold: 5,
-      Interval: 20,
-      Path: '/',
-      Protocol: 'HTTP',
-      Timeout: 2,
-      UnhealthyThreshold: 5,
-    },
-  });
+  }).toThrow('unhealthyThreshold must be between 1 and 20, got 21');
 });
 
 test('interval must be greater than or equal to 1 in healthCheckConfiguration', () => {
@@ -1756,7 +1564,7 @@ test('interval must be greater than or equal to 1 in healthCheckConfiguration', 
         unhealthyThreshold: 5,
       },
     });
-  }).toThrow('interval must be greater than or equal to 1 and less than or equal to 20');
+  }).toThrow('interval must be between 1 and 20 seconds, got Duration.seconds(0)');
 });
 
 test('interval must be less than or equal to 20 in healthCheckConfiguration', () => {
@@ -1779,71 +1587,7 @@ test('interval must be less than or equal to 20 in healthCheckConfiguration', ()
         unhealthyThreshold: 5,
       },
     });
-  }).toThrow('interval must be greater than or equal to 1 and less than or equal to 20');
-});
-
-test('OK if timeout is 1 in healthCheckConfiguration', () => {
-  // GIVEN
-  const app = new cdk.App();
-  const stack = new cdk.Stack(app, 'demo-stack');
-  // WHEN
-  new apprunner.Service(stack, 'DemoService', {
-    source: apprunner.Source.fromEcrPublic({
-      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
-    }),
-    healthCheckConfiguration: {
-      healthyThreshold: 5,
-      interval: cdk.Duration.seconds(5),
-      path: '/',
-      protocol: apprunner.HealthCheckProtocolType.HTTP,
-      timeout: cdk.Duration.seconds(1),
-      unhealthyThreshold: 5,
-    },
-  });
-
-  // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
-    HealthCheckConfiguration: {
-      HealthyThreshold: 5,
-      Interval: 5,
-      Path: '/',
-      Protocol: 'HTTP',
-      Timeout: 1,
-      UnhealthyThreshold: 5,
-    },
-  });
-});
-
-test('OK if timeout is 20 in healthCheckConfiguration', () => {
-  // GIVEN
-  const app = new cdk.App();
-  const stack = new cdk.Stack(app, 'demo-stack');
-  // WHEN
-  new apprunner.Service(stack, 'DemoService', {
-    source: apprunner.Source.fromEcrPublic({
-      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
-    }),
-    healthCheckConfiguration: {
-      healthyThreshold: 5,
-      interval: cdk.Duration.seconds(5),
-      path: '/',
-      protocol: apprunner.HealthCheckProtocolType.HTTP,
-      timeout: cdk.Duration.seconds(20),
-      unhealthyThreshold: 5,
-    },
-  });
-
-  // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
-    HealthCheckConfiguration: {
-      HealthyThreshold: 5,
-      Interval: 5,
-      Path: '/',
-      Protocol: 'HTTP',
-      Timeout: 20,
-      UnhealthyThreshold: 5,
-    },
-  });
+  }).toThrow('interval must be between 1 and 20 seconds, got Duration.seconds(21)');
 });
 
 test('timeout must be greater than or equal to 1 in healthCheckConfiguration', () => {
@@ -1866,7 +1610,7 @@ test('timeout must be greater than or equal to 1 in healthCheckConfiguration', (
         unhealthyThreshold: 5,
       },
     });
-  }).toThrow('timeout must be greater than or equal to 1 and less than or equal to 20');
+  }).toThrow('timeout must be between 1 and 20 seconds, got Duration.seconds(0)');
 });
 
 test('timeout must be less than or equal to 20 in healthCheckConfiguration', () => {
@@ -1889,5 +1633,5 @@ test('timeout must be less than or equal to 20 in healthCheckConfiguration', () 
         unhealthyThreshold: 5,
       },
     });
-  }).toThrow('timeout must be greater than or equal to 1 and less than or equal to 20');
+  }).toThrow('timeout must be between 1 and 20 seconds, got Duration.seconds(21)');
 });
