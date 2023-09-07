@@ -6,13 +6,16 @@
 import * as path from 'path';
 import { promises as fs } from 'fs';
 
+/**
+ * For every Smithy .json file in a directory, extract relevant types into a mapping and render them to a TypeScript file
+ */
 async function main(argv: string[]) {
   if (!argv[0]) {
-    throw new Error('Usage: update-sdkv3-blobs-model <DIRECTORY>');
+    throw new Error('Usage: update-sdkv3-parameters-model <DIRECTORY>');
   }
   const root = argv[0];
 
-  const mapping: BlobTypeMapping = {};
+  const blobMapping: TypeCoercionMap = {};
 
   const dir = path.join(root, 'codegen', 'sdk-codegen', 'aws-models');
   for (const entry of await fs.readdir(dir, { withFileTypes: true, encoding: 'utf-8' })) {
@@ -23,24 +26,27 @@ async function main(argv: string[]) {
         continue;
       }
       try {
-        await doFile(mapping, contents);
+        await doFile(blobMapping, contents);
       } catch (e) {
         throw new Error(`Error handling ${entry.name}: ${e}`);
       }
     }
   }
 
-  if (Object.entries(mapping).length === 0) {
+  if (Object.entries(blobMapping).length === 0) {
     throw new Error('No mappings found!');
   }
 
   // Sort the map so we're independent of the order the OS gave us the files in, or what the filenames are
-  const sortedMapping = Object.fromEntries(Object.entries(mapping).sort(sortByKey));
+  const sortedMapping = Object.fromEntries(Object.entries(blobMapping).sort(sortByKey));
 
   renderMappingToTypeScript(sortedMapping);
 }
 
-async function doFile(mapping: BlobTypeMapping, model: SmithyFile) {
+/**
+ * Recurse through all the types of a singly Smithy model, and record the blobs
+ */
+async function doFile(blobMap: TypeCoercionMap, model: SmithyFile) {
   const shapes = model.shapes;
 
   const service = Object.values(shapes).find(isShape('service'));
@@ -70,6 +76,9 @@ async function doFile(mapping: BlobTypeMapping, model: SmithyFile) {
     }
   }
 
+  /**
+   * Recurse through type shapes, finding the blobs
+   */
   function recurse(id: string, opName: string, memberPath: string[], seen: string[]) {
     if (id.startsWith('smithy.api#') || seen.includes(id)) {
       return;
@@ -78,7 +87,7 @@ async function doFile(mapping: BlobTypeMapping, model: SmithyFile) {
     const shape = shapes[id];
 
     if (isShape('blob')(shape)) {
-      addToMapping(opName, memberPath);
+      addToBlobs(opName, memberPath);
       return;
     }
     if (isShape('structure')(shape)) {
@@ -93,18 +102,18 @@ async function doFile(mapping: BlobTypeMapping, model: SmithyFile) {
     }
   }
 
-  function addToMapping(opName: string, memberPath: string[]) {
-    if (!mapping[shortName]) {
-      mapping[shortName] = {};
+  function addToBlobs(opName: string, memberPath: string[]) {
+    if (!blobMap[shortName]) {
+      blobMap[shortName] = {};
     }
-    if (!mapping[shortName][opName]) {
-      mapping[shortName][opName] = [];
+    if (!blobMap[shortName][opName]) {
+      blobMap[shortName][opName] = [];
     }
-    mapping[shortName][opName].push(memberPath.join('.'));
+    blobMap[shortName][opName].push(memberPath.join('.'));
   }
 }
 
-interface BlobTypeMapping {
+interface TypeCoercionMap {
   [service: string]: {
     [action: string]: string[]
   }
@@ -144,19 +153,22 @@ function sortByKey<A>(e1: [string, A], e2: [string, A]) {
   return e1[0].localeCompare(e2[0]);
 }
 
-function renderMappingToTypeScript(sortedMapping: BlobTypeMapping) {
+/**
+ * Render the given mapping to a TypeScript source file
+ */
+function renderMappingToTypeScript(blobMap: TypeCoercionMap) {
   const lines = new Array<string>();
 
   lines.push(
     `// This file was generated from the aws-sdk-js-v3 at ${new Date()}`,
-    'export interface BlobTypeMapping {',
+    'export interface TypeCoercionMap {',
     '  [service: string]: {',
     '    [action: string]: string[]',
     '  }',
     '};'
   );
 
-  lines.push('export const blobTypes: BlobTypeMapping = ' + JSON.stringify(sortedMapping, undefined, 2).replace(/"/g, '\'') + ';');
+  lines.push('export const UINT8ARRAY_PARAMETERS: TypeCoercionMap = ' + JSON.stringify(blobMap, undefined, 2).replace(/"/g, '\'') + ';');
 
   console.log(lines.join('\n'));
 }

@@ -13,7 +13,7 @@ curl -SfL -o $tmpdir/main.zip "$zip"
 (cd $tmpdir && unzip -q main.zip)
 
 echo "🖨️ Generating..."
-npx ts-node $scriptdir/update-sdkv3-blobs-model.ts $tmpdir/$ziprootentry > "$target_file"
+npx ts-node $scriptdir/update-sdkv3-parameters-model.ts $tmpdir/$ziprootentry > "$target_file"
 
 echo "🚮 Cleaning up..."
 rm -rf $tmpdir
