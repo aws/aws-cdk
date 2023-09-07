@@ -139,14 +139,14 @@ export interface RetryProps {
   /**
    * Maximum limit on retry interval growth during exponential backoff.
    *
-   * @default No max delay
+   * @default - No max delay
    */
   readonly maxDelay?: Duration;
 
   /**
    * Introduces a randomization over the retry interval.
    *
-   * @default No jitter strategy
+   * @default - No jitter strategy
    */
   readonly jitterStrategy?: JitterType;
 
