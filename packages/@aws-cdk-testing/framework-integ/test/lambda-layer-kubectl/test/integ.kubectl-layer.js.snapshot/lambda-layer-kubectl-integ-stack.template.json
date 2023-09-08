@@ -52,12 +52,6 @@
      },
      "S3Key": "d7e7dde0df178e20d82e70ae55bb9fb58d53bfb2da9dbb92c07f1437c7bdf841.zip"
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "Lambdapython37ServiceRoleB5A704D4",
-      "Arn"
-     ]
-    },
     "Handler": "index.handler",
     "Layers": [
      {
@@ -65,6 +59,12 @@
      }
     ],
     "MemorySize": 512,
+    "Role": {
+     "Fn::GetAtt": [
+      "Lambdapython37ServiceRoleB5A704D4",
+      "Arn"
+     ]
+    },
     "Runtime": "python3.7",
     "Timeout": 30
    },
@@ -152,13 +152,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
-    },
-    "Role": {
-     "Fn::GetAtt": [
-      "Providerpython37frameworkonEventServiceRole9EA6B2B0",
-      "Arn"
-     ]
+     "S3Key": "81328426dba578d9ff57b0b54146bc81395a478131b0b61e40236fcc8395c2db.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (lambda-layer-kubectl-integ-stack/Providerpython3.7)",
     "Environment": {
@@ -172,6 +166,12 @@
      }
     },
     "Handler": "framework.onEvent",
+    "Role": {
+     "Fn::GetAtt": [
+      "Providerpython37frameworkonEventServiceRole9EA6B2B0",
+      "Arn"
+     ]
+    },
     "Runtime": "nodejs18.x",
     "Timeout": 900
    },
@@ -233,12 +233,6 @@
      },
      "S3Key": "d7e7dde0df178e20d82e70ae55bb9fb58d53bfb2da9dbb92c07f1437c7bdf841.zip"
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "Lambdapython39ServiceRoleE2CFED77",
-      "Arn"
-     ]
-    },
     "Handler": "index.handler",
     "Layers": [
      {
@@ -246,6 +240,12 @@
      }
     ],
     "MemorySize": 512,
+    "Role": {
+     "Fn::GetAtt": [
+      "Lambdapython39ServiceRoleE2CFED77",
+      "Arn"
+     ]
+    },
     "Runtime": "python3.9",
     "Timeout": 30
    },
@@ -333,13 +333,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
-    },
-    "Role": {
-     "Fn::GetAtt": [
-      "Providerpython39frameworkonEventServiceRoleA299F5C1",
-      "Arn"
-     ]
+     "S3Key": "81328426dba578d9ff57b0b54146bc81395a478131b0b61e40236fcc8395c2db.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (lambda-layer-kubectl-integ-stack/Providerpython3.9)",
     "Environment": {
@@ -353,6 +347,12 @@
      }
     },
     "Handler": "framework.onEvent",
+    "Role": {
+     "Fn::GetAtt": [
+      "Providerpython39frameworkonEventServiceRoleA299F5C1",
+      "Arn"
+     ]
+    },
     "Runtime": "nodejs18.x",
     "Timeout": 900
    },

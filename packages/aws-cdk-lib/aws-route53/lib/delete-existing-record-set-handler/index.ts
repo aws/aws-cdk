@@ -14,7 +14,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     return;
   }
 
-  const route53 = new Route53({ apiVersion: '2013-04-01' });
+  const route53 = new Route53();
 
   const listResourceRecordSets = await route53.listResourceRecordSets({
     HostedZoneId: resourceProps.HostedZoneId,
@@ -46,7 +46,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     },
   });
 
-  await waitUntilResourceRecordSetsChanged({ client: route53, maxWaitTime: 60 }, { Id: changeResourceRecordSets?.ChangeInfo?.Id });
+  await waitUntilResourceRecordSetsChanged({ client: route53, maxWaitTime: 890 }, { Id: changeResourceRecordSets?.ChangeInfo?.Id });
 
   return {
     PhysicalResourceId: `${existingRecord.Name}-${existingRecord.Type}`,

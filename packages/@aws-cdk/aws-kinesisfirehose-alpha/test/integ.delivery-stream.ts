@@ -40,4 +40,8 @@ new firehose.DeliveryStream(stack, 'Delivery Stream', {
   encryptionKey: key,
 });
 
+new firehose.DeliveryStream(stack, 'Delivery Stream No Source Or Encryption Key', {
+  destinations: [mockS3Destination],
+});
+
 app.synth();
