@@ -1,6 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 process.env.AWS_REGION = 'us-east-1';
 
+import { EncryptCommand, KMSClient } from '@aws-sdk/client-kms';
 import * as S3 from '@aws-sdk/client-s3';
 import { mockClient } from 'aws-sdk-client-mock';
 import * as fs from 'fs-extra';
@@ -8,6 +9,7 @@ import * as nock from 'nock';
 import { v3handler as handler } from '../../../lib/custom-resources/aws-custom-resource-handler';
 import { forceSdkInstallation } from '../../../lib/custom-resources/aws-custom-resource-handler/aws-sdk-v3-handler';
 import { AwsSdkCall } from '../../../lib/custom-resources/aws-custom-resource-handler/construct-types';
+import 'aws-sdk-client-mock-jest' ;
 
 // This test performs an 'npm install' which may take longer than the default
 // 5s timeout
@@ -708,4 +710,38 @@ test('invalid v2 service name throws explicit error', async () => {
   await handler(event, {} as AWSLambda.Context);
 
   expect(request.isDone()).toBeTruthy();
+});
+
+test('automatic Uint8Array conversion when necessary', async () => {
+  const kmsMock = mockClient(KMSClient);
+  kmsMock.on(EncryptCommand).resolves({
+    CiphertextBlob: new TextEncoder().encode('dummy-data'),
+    KeyId: 'key-id',
+    EncryptionAlgorithm: 'SYMMETRIC_DEFAULT',
+  });
+
+  await handler({
+    ...eventCommon,
+    RequestType: 'Create',
+    ResourceProperties: {
+      ServiceToken: 'token',
+      Create: JSON.stringify({
+        service: 'KMS',
+        action: 'encrypt',
+        parameters: {
+          KeyId: 'key-id',
+          Plaintext: 'dummy-data',
+        },
+      } satisfies AwsSdkCall),
+    },
+  }, {} as AWSLambda.Context);
+
+  expect(kmsMock).toHaveReceivedCommandWith(EncryptCommand, {
+    KeyId: 'key-id',
+    Plaintext: new Uint8Array([
+      100, 117, 109, 109,
+      121, 45, 100, 97,
+      116, 97,
+    ]),
+  });
 });
