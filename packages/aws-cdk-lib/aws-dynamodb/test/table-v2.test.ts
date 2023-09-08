@@ -4,7 +4,7 @@ import { Key } from '../../aws-kms';
 import { CfnDeletionPolicy, Lazy, RemovalPolicy, Stack } from '../../core';
 import {
   AttributeType, Billing, Capacity, GlobalSecondaryIndexPropsV2, TableV2,
-  LocalSecondaryIndexProps, ProjectionType, StreamViewType, TableClass, TableEncryptionV2, CfnGlobalTable,
+  LocalSecondaryIndexProps, ProjectionType, StreamViewType, TableClass, TableEncryptionV2,
 } from '../lib';
 
 describe('table', () => {
