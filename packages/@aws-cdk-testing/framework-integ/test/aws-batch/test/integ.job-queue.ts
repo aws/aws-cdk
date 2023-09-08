@@ -1,8 +1,7 @@
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
-import { App, Stack, Duration } from 'aws-cdk-lib';
+import { App, Stack, Duration } from 'aws-cdk-lib/';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import * as batch from '../lib';
-import { ManagedEc2EcsComputeEnvironment } from '../lib';
+import * as batch from 'aws-cdk-lib/aws-batch';
 
 const app = new App();
 const stack = new Stack(app, 'stack');
@@ -20,7 +19,7 @@ const fairsharePolicy = new batch.FairshareSchedulingPolicy(stack, 'fairshare', 
 
 const queue = new batch.JobQueue(stack, 'joBBQ', {
   computeEnvironments: [{
-    computeEnvironment: new ManagedEc2EcsComputeEnvironment(stack, 'managedEc2CE', {
+    computeEnvironment: new batch.ManagedEc2EcsComputeEnvironment(stack, 'managedEc2CE', {
       vpc,
     }),
     order: 1,
@@ -35,7 +34,7 @@ fairsharePolicy.addShare({
 });
 
 queue.addComputeEnvironment(
-  new ManagedEc2EcsComputeEnvironment(stack, 'newManagedEc2CE', {
+  new batch.ManagedEc2EcsComputeEnvironment(stack, 'newManagedEc2CE', {
     vpc,
   }),
   2,

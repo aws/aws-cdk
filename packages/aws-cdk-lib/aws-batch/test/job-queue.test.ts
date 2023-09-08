@@ -1,6 +1,6 @@
-import { Template } from 'aws-cdk-lib/assertions';
-import { DefaultTokenResolver, Stack, StringConcat, Tokenization } from 'aws-cdk-lib';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { Template } from '../../assertions';
+import * as ec2 from '../../aws-ec2';
+import { DefaultTokenResolver, Stack, StringConcat, Tokenization } from '../../core';
 import { FairshareSchedulingPolicy, JobQueue, ManagedEc2EcsComputeEnvironment } from '../lib';
 
 test('JobQueue respects computeEnvironments', () => {

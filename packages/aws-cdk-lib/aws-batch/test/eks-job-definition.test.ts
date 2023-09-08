@@ -1,6 +1,6 @@
-import { Template } from 'aws-cdk-lib/assertions';
-import * as ecs from 'aws-cdk-lib/aws-ecs';
-import { Stack } from 'aws-cdk-lib';
+import { Template } from '../../assertions';
+import * as ecs from '../../aws-ecs';
+import { Stack } from '../../core';
 import { DnsPolicy, EksContainerDefinition, EksJobDefinition } from '../lib';
 
 test('EcsJobDefinition respects dnsPolicy', () => {

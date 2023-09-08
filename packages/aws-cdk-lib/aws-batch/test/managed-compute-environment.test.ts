@@ -1,12 +1,10 @@
-import { Template } from 'aws-cdk-lib/assertions';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as eks from 'aws-cdk-lib/aws-eks';
-import { ArnPrincipal, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { Stack, Duration, Tags } from 'aws-cdk-lib';
 import { capitalizePropertyNames } from './utils';
-import * as batch from '../lib';
-import { AllocationStrategy, ManagedEc2EcsComputeEnvironment, ManagedEc2EcsComputeEnvironmentProps, ManagedEc2EksComputeEnvironment, ManagedEc2EksComputeEnvironmentProps, FargateComputeEnvironment } from '../lib';
-import { CfnComputeEnvironmentProps } from 'aws-cdk-lib/aws-batch';
+import { Template } from '../../assertions';
+import * as ec2 from '../../aws-ec2';
+import * as eks from '../../aws-eks';
+import { ArnPrincipal, Role, ServicePrincipal } from '../../aws-iam';
+import { Stack, Duration, Tags } from '../../core';
+import { AllocationStrategy, CfnComputeEnvironmentProps, ManagedEc2EcsComputeEnvironment, ManagedEc2EcsComputeEnvironmentProps, ManagedEc2EksComputeEnvironment, ManagedEc2EksComputeEnvironmentProps, FargateComputeEnvironment, EcsMachineImageType, EksMachineImageType } from '../lib';
 
 const defaultExpectedEcsProps: CfnComputeEnvironmentProps = {
   type: 'managed',
@@ -36,7 +34,7 @@ const defaultExpectedEcsProps: CfnComputeEnvironmentProps = {
       'Fn::GetAtt': ['MyCESecurityGroup81DCAA06', 'GroupId'],
     }] as any,
     spotIamFleetRole: undefined,
-    updateToLatestImageVersion: true,
+    updateToLatestImageVersion: undefined,
   },
   replaceComputeEnvironment: false,
 };
@@ -168,7 +166,7 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
     });
   });
 
-  test('spot => AllocationStrategy.SPOT_CAPACITY_OPTIMIZED', () => {
+  test('spot => AllocationStrategy.SPOT_PRICE_CAPACITY_OPTIMIZED', () => {
     // WHEN
     new ComputeEnvironment(stack, 'MyCE', {
       ...defaultProps,
@@ -182,15 +180,15 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
       ComputeResources: {
         ...defaultComputeResources,
         Type: 'SPOT',
-        AllocationStrategy: 'SPOT_CAPACITY_OPTIMIZED',
+        AllocationStrategy: 'SPOT_PRICE_CAPACITY_OPTIMIZED',
       },
     });
   });
 
   test('images are correctly rendered as EC2ConfigurationObjects', () => {
     const expectedImageType = ComputeEnvironment === ManagedEc2EcsComputeEnvironment
-      ? batch.EcsMachineImageType.ECS_AL2
-      : batch.EksMachineImageType.EKS_AL2;
+      ? EcsMachineImageType.ECS_AL2
+      : EksMachineImageType.EKS_AL2;
 
     // WHEN
     new ComputeEnvironment(stack, 'MyCE', {
@@ -643,6 +641,17 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
     }).toThrow(/Managed ComputeEnvironment 'MyCE' specifies 'AllocationStrategy.SPOT_CAPACITY_OPTIMIZED' without using spot instances/);
   });
 
+  test('throws error when AllocationStrategy.SPOT_PRICE_CAPACITY_OPTIMIZED is used without specfiying spot', () => {
+    // THEN
+    expect(() => {
+      new ComputeEnvironment(stack, 'MyCE', {
+        ...defaultProps,
+        vpc,
+        allocationStrategy: AllocationStrategy.SPOT_PRICE_CAPACITY_OPTIMIZED,
+      });
+    }).toThrow(/Managed ComputeEnvironment 'MyCE' specifies 'AllocationStrategy.SPOT_PRICE_CAPACITY_OPTIMIZED' without using spot instances/);
+  });
+
   test('throws error when spotBidPercentage is specified without spot', () => {
     // THEN
     expect(() => {
@@ -750,7 +759,7 @@ describe('ManagedEc2EcsComputeEnvironment', () => {
       ...pascalCaseExpectedEcsProps,
       ComputeResources: {
         ...defaultComputeResources,
-        AllocationStrategy: AllocationStrategy.SPOT_CAPACITY_OPTIMIZED,
+        AllocationStrategy: AllocationStrategy.SPOT_PRICE_CAPACITY_OPTIMIZED,
         Type: 'SPOT',
         SpotIamFleetRole: {
           'Fn::GetAtt': ['SpotFleetRole6D4F7558', 'Arn'],
@@ -766,7 +775,7 @@ describe('ManagedEc2EcsComputeEnvironment', () => {
       vpc,
       images: [
         {
-          imageType: batch.EcsMachineImageType.ECS_AL2_NVIDIA,
+          imageType: EcsMachineImageType.ECS_AL2_NVIDIA,
         },
       ],
     });
@@ -891,7 +900,7 @@ describe('ManagedEc2EksComputeEnvironment', () => {
       vpc,
       images: [
         {
-          imageType: batch.EksMachineImageType.EKS_AL2_NVIDIA,
+          imageType: EksMachineImageType.EKS_AL2_NVIDIA,
         },
       ],
     });

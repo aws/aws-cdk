@@ -1,5 +1,5 @@
-import { Template } from 'aws-cdk-lib/assertions';
-import { Duration, Stack } from 'aws-cdk-lib/core';
+import { Template } from '../../assertions';
+import { Duration, Stack } from '../../core';
 import { FairshareSchedulingPolicy } from '../lib';
 
 test('empty fairshare policy', () => {

@@ -3,7 +3,7 @@ import { LaunchTemplate } from 'aws-cdk-lib/aws-ec2';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { App, Duration, Stack, Tags } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { AllocationStrategy, FargateComputeEnvironment, ManagedEc2EcsComputeEnvironment } from '../lib';
+import { AllocationStrategy, FargateComputeEnvironment, ManagedEc2EcsComputeEnvironment } from 'aws-cdk-lib/aws-batch';
 
 const app = new App();
 const stack = new Stack(app, 'batch-stack');
@@ -57,6 +57,16 @@ new ManagedEc2EcsComputeEnvironment(stack, 'SpotEc2', {
   spotFleetRole: new Role(stack, 'SpotFleetRole', {
     assumedBy: new ServicePrincipal('batch.amazonaws.com'),
   }),
+});
+
+new ManagedEc2EcsComputeEnvironment(stack, 'AllocationStrategySPOT_CAPACITY', {
+  vpc,
+  images: [{
+    image: new ec2.AmazonLinuxImage(),
+  }],
+  spot: true,
+  spotBidPercentage: 95,
+  allocationStrategy: AllocationStrategy.SPOT_CAPACITY_OPTIMIZED,
 });
 
 const taggedEc2Ecs = new ManagedEc2EcsComputeEnvironment(stack, 'taggedCE', {

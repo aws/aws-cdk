@@ -1,7 +1,7 @@
 import { ContainerImage } from 'aws-cdk-lib/aws-ecs';
 import { App, Stack, Size } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import * as batch from '../lib';
+import * as batch from 'aws-cdk-lib/aws-batch';
 
 const app = new App();
 const stack = new Stack(app, 'stack');

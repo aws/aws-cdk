@@ -1,9 +1,9 @@
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import { ContainerImage } from 'aws-cdk-lib/aws-ecs';
-import { App, Size, Stack } from 'aws-cdk-lib';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as targets from 'aws-cdk-lib/aws-events-targets';
-import * as integ from '@aws-cdk/integ-tests-alpha';
-import * as batch from '../lib';
+import { App, Size, Stack } from 'aws-cdk-lib/core';
+import * as batch from 'aws-cdk-lib/aws-batch';
 
 const app = new App();
 const stack = new Stack(app, 'stack');

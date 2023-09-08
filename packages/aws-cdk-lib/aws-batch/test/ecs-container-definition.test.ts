@@ -1,19 +1,18 @@
-import { Template } from 'aws-cdk-lib/assertions';
 import * as path from 'path';
-import { Vpc } from 'aws-cdk-lib/aws-ec2';
-import * as ecs from 'aws-cdk-lib/aws-ecs';
-import * as ecr from 'aws-cdk-lib/aws-ecr';
-import * as efs from 'aws-cdk-lib/aws-efs';
-import * as ssm from 'aws-cdk-lib/aws-ssm';
-import { ArnPrincipal, Role } from 'aws-cdk-lib/aws-iam';
-import * as logs from 'aws-cdk-lib/aws-logs';
-import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
-import { Size, Stack } from 'aws-cdk-lib';
-import * as cdk from 'aws-cdk-lib';
-import { EcsContainerDefinitionProps, EcsEc2ContainerDefinition, EcsFargateContainerDefinition, EcsJobDefinition, EcsVolume, IEcsEc2ContainerDefinition, LinuxParameters, Secret, UlimitName } from '../lib';
-import { CfnJobDefinitionProps } from 'aws-cdk-lib/aws-batch';
 import { capitalizePropertyNames } from './utils';
-import { DockerImageAsset } from 'aws-cdk-lib/aws-ecr-assets';
+import { Size, Stack } from '../..';
+import * as cdk from '../..';
+import { Template } from '../../assertions';
+import { Vpc } from '../../aws-ec2';
+import * as ecr from '../../aws-ecr';
+import { DockerImageAsset } from '../../aws-ecr-assets';
+import * as ecs from '../../aws-ecs';
+import * as efs from '../../aws-efs';
+import { ArnPrincipal, Role } from '../../aws-iam';
+import * as logs from '../../aws-logs';
+import * as secretsmanager from '../../aws-secretsmanager';
+import * as ssm from '../../aws-ssm';
+import { CfnJobDefinitionProps, EcsContainerDefinitionProps, EcsEc2ContainerDefinition, EcsFargateContainerDefinition, EcsJobDefinition, EcsVolume, IEcsEc2ContainerDefinition, LinuxParameters, Secret, UlimitName } from '../lib';
 
 // GIVEN
 const defaultContainerProps: EcsContainerDefinitionProps = {

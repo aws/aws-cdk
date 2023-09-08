@@ -1,7 +1,7 @@
 import { ManagedPolicy, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { UnmanagedComputeEnvironment } from '../lib';
+import { UnmanagedComputeEnvironment } from 'aws-cdk-lib/aws-batch';
 
 const app = new App();
 const stack = new Stack(app, 'batch-stack');

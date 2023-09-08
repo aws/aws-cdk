@@ -1,9 +1,8 @@
-import { Template } from 'aws-cdk-lib/assertions';
-import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { Stack } from 'aws-cdk-lib/core';
 import { capitalizePropertyNames } from './utils';
-import { CfnComputeEnvironmentProps } from 'aws-cdk-lib/aws-batch';
-import { UnmanagedComputeEnvironment } from '../lib/unmanaged-compute-environment';
+import { Template } from '../../assertions';
+import { Role, ServicePrincipal } from '../../aws-iam';
+import { Stack } from '../../core';
+import { CfnComputeEnvironmentProps, UnmanagedComputeEnvironment } from '../lib/';
 
 const defaultExpectedProps: CfnComputeEnvironmentProps = {
   type: 'unmanaged',

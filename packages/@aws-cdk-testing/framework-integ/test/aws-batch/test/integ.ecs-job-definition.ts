@@ -1,14 +1,14 @@
+import * as path from 'path';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
+import { DockerImageAsset } from 'aws-cdk-lib/aws-ecr-assets';
 import { ContainerImage, FargatePlatformVersion } from 'aws-cdk-lib/aws-ecs';
-import * as efs from 'aws-cdk-lib/aws-efs';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
+import * as efs from 'aws-cdk-lib/aws-efs';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import { App, Duration, Size, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import * as batch from '../lib';
-import { DockerImageAsset } from 'aws-cdk-lib/aws-ecr-assets';
-import * as path from 'path';
-import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+import * as batch from 'aws-cdk-lib/aws-batch';
 
 const app = new App();
 const stack = new Stack(app, 'stack');
