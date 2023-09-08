@@ -1,5 +1,5 @@
-import { Stack } from 'aws-cdk-lib';
 import { IConstruct } from 'constructs';
+import { Stack } from '../../core';
 
 /**
  * Given an object, converts all keys to PascalCase given they are currently in camel case.

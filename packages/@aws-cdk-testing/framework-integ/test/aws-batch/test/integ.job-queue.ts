@@ -1,5 +1,5 @@
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
-import { App, Stack, Duration } from 'aws-cdk-lib/';
+import { App, Stack, Duration } from 'aws-cdk-lib/core';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as batch from 'aws-cdk-lib/aws-batch';
 

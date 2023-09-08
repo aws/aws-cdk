@@ -1,10 +1,10 @@
 import * as path from 'path';
-import * as batch from '../../lib';
-import * as cdk from 'aws-cdk-lib';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as ecs from 'aws-cdk-lib/aws-ecs';
-import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
-import { BatchSubmitJob } from 'aws-cdk-lib/aws-stepfunctions-tasks';
+import * as batch from '../../../aws-batch';
+import * as ec2 from '../../../aws-ec2';
+import * as ecs from '../../../aws-ecs';
+import * as sfn from '../../../aws-stepfunctions';
+import { BatchSubmitJob } from '../../../aws-stepfunctions-tasks';
+import * as cdk from '../../../core';
 
 let stack: cdk.Stack;
 let batchJobDefinition: batch.IJobDefinition;

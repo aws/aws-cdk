@@ -428,8 +428,7 @@
        "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
       }
      ],
-     "Type": "FARGATE",
-     "UpdateToLatestImageVersion": true
+     "Type": "FARGATE"
     },
     "ReplaceComputeEnvironment": false,
     "State": "ENABLED",
@@ -584,8 +583,7 @@
        "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
       }
      ],
-     "Type": "EC2",
-     "UpdateToLatestImageVersion": true
+     "Type": "EC2"
     },
     "ReplaceComputeEnvironment": false,
     "State": "ENABLED",
@@ -742,8 +740,7 @@
        "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
       }
      ],
-     "Type": "EC2",
-     "UpdateToLatestImageVersion": true
+     "Type": "EC2"
     },
     "ReplaceComputeEnvironment": true,
     "State": "ENABLED",
@@ -875,8 +872,7 @@
        "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
       }
      ],
-     "Type": "SPOT",
-     "UpdateToLatestImageVersion": true
+     "Type": "SPOT"
     },
     "ReplaceComputeEnvironment": false,
     "State": "ENABLED",
@@ -982,8 +978,7 @@
        "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
       }
      ],
-     "Type": "SPOT",
-     "UpdateToLatestImageVersion": true
+     "Type": "SPOT"
     },
     "ReplaceComputeEnvironment": false,
     "State": "ENABLED",
@@ -1112,8 +1107,7 @@
       "foo": "bar",
       "super": "salamander"
      },
-     "Type": "EC2",
-     "UpdateToLatestImageVersion": true
+     "Type": "EC2"
     },
     "ReplaceComputeEnvironment": false,
     "State": "ENABLED",

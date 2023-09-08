@@ -698,7 +698,6 @@
                     "computeResources": {
                       "maxvCpus": 512,
                       "type": "FARGATE",
-                      "updateToLatestImageVersion": true,
                       "securityGroupIds": [
                         {
                           "Fn::GetAtt": [
@@ -729,7 +728,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch-alpha.FargateComputeEnvironment",
+              "fqn": "aws-cdk-lib.aws_batch.FargateComputeEnvironment",
               "version": "0.0.0"
             }
           },
@@ -815,7 +814,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch-alpha.FargateComputeEnvironment",
+              "fqn": "aws-cdk-lib.aws_batch.FargateComputeEnvironment",
               "version": "0.0.0"
             }
           },
@@ -941,7 +940,6 @@
                     "computeResources": {
                       "maxvCpus": 256,
                       "type": "EC2",
-                      "updateToLatestImageVersion": true,
                       "securityGroupIds": [
                         {
                           "Fn::GetAtt": [
@@ -991,7 +989,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch-alpha.ManagedEc2EcsComputeEnvironment",
+              "fqn": "aws-cdk-lib.aws_batch.ManagedEc2EcsComputeEnvironment",
               "version": "0.0.0"
             }
           },
@@ -1211,7 +1209,6 @@
                     "computeResources": {
                       "maxvCpus": 512,
                       "type": "EC2",
-                      "updateToLatestImageVersion": true,
                       "securityGroupIds": [
                         {
                           "Fn::GetAtt": [
@@ -1275,7 +1272,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch-alpha.ManagedEc2EcsComputeEnvironment",
+              "fqn": "aws-cdk-lib.aws_batch.ManagedEc2EcsComputeEnvironment",
               "version": "0.0.0"
             }
           },
@@ -1444,7 +1441,6 @@
                     "computeResources": {
                       "maxvCpus": 256,
                       "type": "SPOT",
-                      "updateToLatestImageVersion": true,
                       "securityGroupIds": [
                         {
                           "Fn::GetAtt": [
@@ -1501,7 +1497,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch-alpha.ManagedEc2EcsComputeEnvironment",
+              "fqn": "aws-cdk-lib.aws_batch.ManagedEc2EcsComputeEnvironment",
               "version": "0.0.0"
             }
           },
@@ -1627,7 +1623,6 @@
                     "computeResources": {
                       "maxvCpus": 256,
                       "type": "SPOT",
-                      "updateToLatestImageVersion": true,
                       "securityGroupIds": [
                         {
                           "Fn::GetAtt": [
@@ -1678,7 +1673,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch-alpha.ManagedEc2EcsComputeEnvironment",
+              "fqn": "aws-cdk-lib.aws_batch.ManagedEc2EcsComputeEnvironment",
               "version": "0.0.0"
             }
           },
@@ -1824,7 +1819,6 @@
                     "computeResources": {
                       "maxvCpus": 256,
                       "type": "EC2",
-                      "updateToLatestImageVersion": true,
                       "securityGroupIds": [
                         {
                           "Fn::GetAtt": [
@@ -1882,7 +1876,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch-alpha.ManagedEc2EcsComputeEnvironment",
+              "fqn": "aws-cdk-lib.aws_batch.ManagedEc2EcsComputeEnvironment",
               "version": "0.0.0"
             }
           },
@@ -1921,7 +1915,7 @@
                 "path": "BatchManagedComputeEnvironmentTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.69"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
@@ -1967,7 +1961,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.69"
+          "version": "10.2.70"
         }
       }
     },

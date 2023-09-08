@@ -480,8 +480,7 @@
        "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
       }
      ],
-     "Type": "EC2",
-     "UpdateToLatestImageVersion": true
+     "Type": "EC2"
     },
     "ReplaceComputeEnvironment": false,
     "State": "ENABLED",
