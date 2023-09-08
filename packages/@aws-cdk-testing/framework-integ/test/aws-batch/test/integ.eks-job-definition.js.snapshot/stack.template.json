@@ -3,7 +3,6 @@
   "EksJobDefn6E91457D": {
    "Type": "AWS::Batch::JobDefinition",
    "Properties": {
-    "Type": "container",
     "EksProperties": {
      "PodProperties": {
       "Containers": [
@@ -95,7 +94,8 @@
      }
     },
     "RetryStrategy": {},
-    "Timeout": {}
+    "Timeout": {},
+    "Type": "container"
    }
   }
  },

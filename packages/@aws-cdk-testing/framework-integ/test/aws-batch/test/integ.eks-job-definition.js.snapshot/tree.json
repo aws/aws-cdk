@@ -12,8 +12,8 @@
             "id": "EksContainer",
             "path": "stack/EksContainer",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.52"
+              "fqn": "aws-cdk-lib.aws_batch.EksContainerDefinition",
+              "version": "0.0.0"
             }
           },
           "EksJobDefn": {
@@ -26,7 +26,6 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Batch::JobDefinition",
                   "aws:cdk:cloudformation:props": {
-                    "type": "container",
                     "eksProperties": {
                       "podProperties": {
                         "containers": [
@@ -118,7 +117,8 @@
                       }
                     },
                     "retryStrategy": {},
-                    "timeout": {}
+                    "timeout": {},
+                    "type": "container"
                   }
                 },
                 "constructInfo": {
@@ -128,7 +128,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "aws-cdk-lib.aws_batch.EksJobDefinition",
               "version": "0.0.0"
             }
           },
@@ -167,7 +167,7 @@
                 "path": "BatchEcsJobDefinitionTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.52"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
@@ -213,7 +213,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.52"
+          "version": "10.2.70"
         }
       }
     },

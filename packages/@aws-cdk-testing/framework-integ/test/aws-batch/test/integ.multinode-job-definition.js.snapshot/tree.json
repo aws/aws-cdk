@@ -126,8 +126,8 @@
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.55"
+              "fqn": "aws-cdk-lib.aws_batch.EcsEc2ContainerDefinition",
+              "version": "0.0.0"
             }
           },
           "SingleContainerMultiNodeJob": {
@@ -140,7 +140,6 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Batch::JobDefinition",
                   "aws:cdk:cloudformation:props": {
-                    "type": "multinode",
                     "nodeProperties": {
                       "mainNode": 0,
                       "nodeRangeProperties": [
@@ -177,7 +176,8 @@
                     ],
                     "propagateTags": true,
                     "retryStrategy": {},
-                    "timeout": {}
+                    "timeout": {},
+                    "type": "multinode"
                   }
                 },
                 "constructInfo": {
@@ -187,7 +187,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "aws-cdk-lib.aws_batch.MultiNodeJobDefinition",
               "version": "0.0.0"
             }
           },
@@ -309,8 +309,8 @@
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.55"
+              "fqn": "aws-cdk-lib.aws_batch.EcsEc2ContainerDefinition",
+              "version": "0.0.0"
             }
           },
           "MultiContainerMultiNodeJob": {
@@ -323,7 +323,6 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Batch::JobDefinition",
                   "aws:cdk:cloudformation:props": {
-                    "type": "multinode",
                     "nodeProperties": {
                       "mainNode": 0,
                       "nodeRangeProperties": [
@@ -384,7 +383,8 @@
                       "EC2"
                     ],
                     "retryStrategy": {},
-                    "timeout": {}
+                    "timeout": {},
+                    "type": "multinode"
                   }
                 },
                 "constructInfo": {
@@ -394,7 +394,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "aws-cdk-lib.aws_batch.MultiNodeJobDefinition",
               "version": "0.0.0"
             }
           },
@@ -516,8 +516,8 @@
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.55"
+              "fqn": "aws-cdk-lib.aws_batch.EcsEc2ContainerDefinition",
+              "version": "0.0.0"
             }
           },
           "BootstrapVersion": {
@@ -555,7 +555,7 @@
                 "path": "BatchMultiNodeJobDefinitionTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
@@ -601,7 +601,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.55"
+          "version": "10.2.70"
         }
       }
     },

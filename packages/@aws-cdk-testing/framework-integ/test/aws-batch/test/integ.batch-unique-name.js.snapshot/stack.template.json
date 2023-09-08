@@ -34,14 +34,14 @@
   "ComputeEnvironmentC570994D": {
    "Type": "AWS::Batch::ComputeEnvironment",
    "Properties": {
-    "Type": "unmanaged",
     "ServiceRole": {
      "Fn::GetAtt": [
       "ComputeEnvironmentBatchServiceRole3533BE31",
       "Arn"
      ]
     },
-    "State": "ENABLED"
+    "State": "ENABLED",
+    "Type": "unmanaged"
    }
   },
   "MyQueueE6CA6235": {
@@ -125,7 +125,6 @@
   "MyJob8719E923": {
    "Type": "AWS::Batch::JobDefinition",
    "Properties": {
-    "Type": "container",
     "ContainerProperties": {
      "Environment": [],
      "ExecutionRoleArn": {
@@ -151,7 +150,8 @@
      "EC2"
     ],
     "RetryStrategy": {},
-    "Timeout": {}
+    "Timeout": {},
+    "Type": "container"
    }
   },
   "MyJobEventsRoleCF43C336": {

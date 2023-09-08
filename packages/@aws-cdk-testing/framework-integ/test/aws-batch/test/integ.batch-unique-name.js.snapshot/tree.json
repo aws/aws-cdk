@@ -75,14 +75,14 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Batch::ComputeEnvironment",
                   "aws:cdk:cloudformation:props": {
-                    "type": "unmanaged",
                     "serviceRole": {
                       "Fn::GetAtt": [
                         "ComputeEnvironmentBatchServiceRole3533BE31",
                         "Arn"
                       ]
                     },
-                    "state": "ENABLED"
+                    "state": "ENABLED",
+                    "type": "unmanaged"
                   }
                 },
                 "constructInfo": {
@@ -92,7 +92,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "aws-cdk-lib.aws_batch.UnmanagedComputeEnvironment",
               "version": "0.0.0"
             }
           },
@@ -128,7 +128,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "aws-cdk-lib.aws_batch.JobQueue",
               "version": "0.0.0"
             }
           },
@@ -250,8 +250,8 @@
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.55"
+              "fqn": "aws-cdk-lib.aws_batch.EcsEc2ContainerDefinition",
+              "version": "0.0.0"
             }
           },
           "MyJob": {
@@ -264,7 +264,6 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Batch::JobDefinition",
                   "aws:cdk:cloudformation:props": {
-                    "type": "container",
                     "containerProperties": {
                       "image": "test-repo",
                       "environment": [],
@@ -290,7 +289,8 @@
                       "EC2"
                     ],
                     "retryStrategy": {},
-                    "timeout": {}
+                    "timeout": {},
+                    "type": "container"
                   }
                 },
                 "constructInfo": {
@@ -392,7 +392,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "aws-cdk-lib.aws_batch.EcsJobDefinition",
               "version": "0.0.0"
             }
           },
@@ -479,7 +479,7 @@
                 "path": "BatchUniqueNameTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
@@ -525,7 +525,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.55"
+          "version": "10.2.70"
         }
       }
     },

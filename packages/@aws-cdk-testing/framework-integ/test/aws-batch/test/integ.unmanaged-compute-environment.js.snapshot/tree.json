@@ -20,8 +20,8 @@
                     "id": "ImportBatchServiceRole",
                     "path": "batch-stack/minimalProps/BatchServiceRole/ImportBatchServiceRole",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -59,13 +59,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -75,24 +75,24 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Batch::ComputeEnvironment",
                   "aws:cdk:cloudformation:props": {
-                    "type": "unmanaged",
                     "serviceRole": {
                       "Fn::GetAtt": [
                         "minimalPropsBatchServiceRole9654F574",
                         "Arn"
                       ]
                     },
-                    "state": "ENABLED"
+                    "state": "ENABLED",
+                    "type": "unmanaged"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-batch.CfnComputeEnvironment",
+                  "fqn": "aws-cdk-lib.aws_batch.CfnComputeEnvironment",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch.UnmanagedComputeEnvironment",
+              "fqn": "aws-cdk-lib.aws_batch.UnmanagedComputeEnvironment",
               "version": "0.0.0"
             }
           },
@@ -104,8 +104,8 @@
                 "id": "ImportIntegServiceRole",
                 "path": "batch-stack/IntegServiceRole/ImportIntegServiceRole",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
                 }
               },
               "Resource": {
@@ -143,13 +143,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.CfnRole",
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-iam.Role",
+              "fqn": "aws-cdk-lib.aws_iam.Role",
               "version": "0.0.0"
             }
           },
@@ -163,7 +163,6 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Batch::ComputeEnvironment",
                   "aws:cdk:cloudformation:props": {
-                    "type": "unmanaged",
                     "computeEnvironmentName": "unmanagedIntegTestCE",
                     "serviceRole": {
                       "Fn::GetAtt": [
@@ -172,17 +171,18 @@
                       ]
                     },
                     "state": "ENABLED",
+                    "type": "unmanaged",
                     "unmanagedvCpus": 256
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-batch.CfnComputeEnvironment",
+                  "fqn": "aws-cdk-lib.aws_batch.CfnComputeEnvironment",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch.UnmanagedComputeEnvironment",
+              "fqn": "aws-cdk-lib.aws_batch.UnmanagedComputeEnvironment",
               "version": "0.0.0"
             }
           },
@@ -190,22 +190,22 @@
             "id": "BootstrapVersion",
             "path": "batch-stack/BootstrapVersion",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.270"
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "batch-stack/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.270"
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
         }
       },
       "BatchManagedComputeEnvironmentTest": {
@@ -221,7 +221,7 @@
                 "path": "BatchManagedComputeEnvironmentTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
@@ -232,33 +232,33 @@
                     "id": "BootstrapVersion",
                     "path": "BatchManagedComputeEnvironmentTest/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
                     }
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
                     "path": "BatchManagedComputeEnvironmentTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
           "version": "0.0.0"
         }
       },
@@ -267,13 +267,13 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.2.70"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.270"
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
     }
   }
 }
