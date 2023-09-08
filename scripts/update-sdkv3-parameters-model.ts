@@ -13,11 +13,10 @@ async function main(argv: string[]) {
   if (!argv[0]) {
     throw new Error('Usage: update-sdkv3-parameters-model <DIRECTORY>');
   }
-  const root = argv[0];
+  const dir = argv[0];
 
   const blobMapping: TypeCoercionMap = {};
 
-  const dir = path.join(root, 'codegen', 'sdk-codegen', 'aws-models');
   for (const entry of await fs.readdir(dir, { withFileTypes: true, encoding: 'utf-8' })) {
     if (entry.isFile() && entry.name.endsWith('.json')) {
       const contents = JSON.parse(await fs.readFile(path.join(dir, entry.name), { encoding: 'utf-8' }));
@@ -83,14 +82,14 @@ async function doFile(blobMap: TypeCoercionMap, model: SmithyFile) {
     if (id.startsWith('smithy.api#') || seen.includes(id)) {
       return;
     }
-    seen.push(id);
+    seen = [...seen, id];
     const shape = shapes[id];
 
     if (isShape('blob')(shape)) {
       addToBlobs(opName, memberPath);
       return;
     }
-    if (isShape('structure')(shape)) {
+    if (isShape('structure')(shape) || isShape('union')(shape)) {
       for (const [field, member] of Object.entries(shape.members ?? {}).sort(sortByKey)) {
         recurse(member.target, opName, [...memberPath, field], seen);
       }
@@ -98,6 +97,11 @@ async function doFile(blobMap: TypeCoercionMap, model: SmithyFile) {
     }
     if (isShape('list')(shape)) {
       recurse(shape.member.target, opName, [...memberPath, '*'], seen);
+      return;
+    }
+    if (isShape('map')(shape)) {
+      // Keys can't be Uint8Arrays anyway in JS, so check only values
+      recurse(shape.value.target, opName, [...memberPath, '*'], seen);
       return;
     }
   }
@@ -128,6 +132,8 @@ type SmithyShape =
   | { type: 'operation', input?: SmithyTarget, output: SmithyTarget, traits?: SmithyTraits }
   | { type: 'structure', members?: Record<string, SmithyTarget>, traits?: SmithyTraits }
   | { type: 'list', member: SmithyTarget }
+  | { type: 'map', key: SmithyTarget, value: SmithyTarget }
+  | { type: 'union', members?: Record<string, SmithyTarget> }
   | { type: string }
   ;
 
