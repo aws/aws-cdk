@@ -35,6 +35,9 @@ Workloads that are fault-tolerant or stateless can take advantage of spot pricin
 To use spot spot instances, set `spot` to `true` on a managed Ec2 or Fargate Compute Environment:
 
 ```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as batch from 'aws-cdk-lib/aws-batch';
+
 const vpc = new ec2.Vpc(this, 'VPC');
 new batch.FargateComputeEnvironment(this, 'myFargateComputeEnv', {
   vpc,
