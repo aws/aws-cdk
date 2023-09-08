@@ -487,7 +487,7 @@ CDK integration tests.
 
 * Create a commit with your changes and push them to a
   [fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo).
-  > **Important**
+  > [!IMPORTANT]
   > We will not be able to accept your contribution if you do not allow commits to your PR branch, as it introduces
   > friction in our review process and breaks our automation that syncs with the main branch. In these scenarios, we will close
   > your pull request and ask that you recreate it with the necessary permissions.
@@ -496,7 +496,7 @@ CDK integration tests.
   > [Allowing changes to a pull request branch created from a fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/allowing-changes-to-a-pull-request-branch-created-from-a-fork)
   > for more information.
   
-  > **Note**
+  > [!NOTE]
   > CDK core members can push to a branch on the AWS CDK repo (naming convention: `<user>/<feature-bug-name>`).
 
 * Create a [pull request on
@@ -603,7 +603,7 @@ dependency.**
 
 #### Adding new unconventional dependencies
 
-> **Warning**
+> [!WARNING]
 > Do not add these. If there is a tool that you want to use in your
 > CDK constructs, see [Adding construct runtime
 > dependencies](#Adding-construct-runtime-dependencies).
