@@ -489,7 +489,7 @@ CDK integration tests.
   [fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo).
   > **Important**
   > We will not be able to accept your contribution if you do not allow commits to your PR branch, as it introduces
-  > friction in our review process and breaks our automation that syncs with main. In these scenarios, we will close
+  > friction in our review process and breaks our automation that syncs with the main branch. In these scenarios, we will close
   > your pull request and ask that you recreate it with the necessary permissions.
   > This means that you must contribute from a fork within your personal account and also develop
   > your contribution on a branch other than `main`. See
