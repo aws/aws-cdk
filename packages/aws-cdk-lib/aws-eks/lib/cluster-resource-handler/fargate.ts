@@ -108,7 +108,7 @@ export class FargateProfileResourceHandler extends ResourceHandler {
 
       return status;
     } catch (describeFargateProfileError: any) {
-      if (describeFargateProfileError instanceof EKS.ResourceNotFoundException) {
+      if (describeFargateProfileError.name === 'ResourceNotFoundException') {
         this.log('received ResourceNotFoundException, this means the profile has been deleted (or never existed)');
         return 'NOT_FOUND';
       }
