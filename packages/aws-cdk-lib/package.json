@@ -34,14 +34,11 @@
     "pre": [
       "ts-node -P tsconfig.dev.json region-info/build-tools/generate-static-data.ts",
       "(cp -f $(node -p 'require.resolve(\"aws-sdk/apis/metadata.json\")') custom-resources/lib/aws-custom-resource/sdk-api-metadata.json && rm -rf custom-resources/test/aws-custom-resource/cdk.out)",
-      "esbuild --bundle custom-resources/lib/aws-custom-resource/runtime/aws-sdk-v3-handler.ts --target=node18 --platform=node --external:'@aws-sdk/*' --outfile=custom-resources/lib/aws-custom-resource/runtime/aws-sdk-v3-handler.bundled.js",
       "(rm -rf core/test/fs/fixtures && cd core/test/fs && tar -xzf fixtures.tar.gz)",
       "(rm -rf assets/test/fs/fixtures && cd assets/test/fs && tar -xzvf fixtures.tar.gz)",
       "./scripts/airlift-custom-resource-handlers.sh"
     ],
     "post": [
-      "AWS_EXECUTION_ENV=AWS_Lambda_nodejs16.x node custom-resources/lib/aws-custom-resource/runtime/index.js",
-      "AWS_EXECUTION_ENV=AWS_Lambda_nodejs18.x node custom-resources/lib/aws-custom-resource/runtime/index.js",
       "ts-node ./scripts/verify-imports-resolve-same.ts",
       "ts-node ./scripts/verify-imports-shielded.ts",
       "ts-node ./cx-api/build-tools/flag-report.ts"
