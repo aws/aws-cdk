@@ -1148,7 +1148,7 @@ const lambdaInvokeAction = new codepipeline_actions.LambdaInvokeAction({
     runtime: lambda.Runtime.NODEJS_LATEST,
     handler: 'index.handler',
     code: lambda.Code.fromInline(`
-        const AWS = require('aws-sdk');
+        const { CodePipeline } = require('@aws-sdk/client-codepipeline');
 
         exports.handler = async function(event, context) {
             const codepipeline = new AWS.CodePipeline();
@@ -1157,7 +1157,7 @@ const lambdaInvokeAction = new codepipeline_actions.LambdaInvokeAction({
                 outputVariables: {
                     MY_VAR: "some value",
                 },
-            }).promise();
+            });
         }
     `),
   }),

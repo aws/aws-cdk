@@ -6,8 +6,9 @@
  *   - GetAtt.Attribute1: "foo"
  *   - GetAtt.Attribute2: 1234
  */
-import { App, CfnOutput, CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, Stack, Token } from 'aws-cdk-lib';
+import { App, CfnOutput, CustomResource, CustomResourceProvider, Stack, Token } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
+import { STANDARD_CUSTOM_RESOURCE_PROVIDER_RUNTIME } from '../../config';
 
 /* eslint-disable @aws-cdk/no-core-construct */
 
@@ -20,7 +21,7 @@ class TestStack extends Stack {
 
     const serviceToken = CustomResourceProvider.getOrCreate(this, resourceType, {
       codeDirectory: `${__dirname}/core-custom-resource-provider-fixture`,
-      runtime: CustomResourceProviderRuntime.NODEJS_16_X,
+      runtime: STANDARD_CUSTOM_RESOURCE_PROVIDER_RUNTIME,
       description: 'veni vidi vici',
     });
 
