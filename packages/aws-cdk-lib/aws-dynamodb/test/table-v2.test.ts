@@ -4,7 +4,7 @@ import { Key } from '../../aws-kms';
 import { CfnDeletionPolicy, Lazy, RemovalPolicy, Stack } from '../../core';
 import {
   AttributeType, Billing, Capacity, GlobalSecondaryIndexPropsV2, TableV2,
-  LocalSecondaryIndexProps, ProjectionType, StreamViewType, TableClass, TableEncryptionV2,
+  LocalSecondaryIndexProps, ProjectionType, StreamViewType, TableClass, TableEncryptionV2, CfnGlobalTable,
 } from '../lib';
 
 describe('table', () => {
@@ -951,6 +951,25 @@ describe('table', () => {
         },
       ],
     });
+  });
+
+  test('multiple tables', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+
+    // WHEN
+    new TableV2(stack, 'Table1', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+    new TableV2(stack, 'Table2', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+    new TableV2(stack, 'Table3', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+
+    // THEN
+    Template.fromStack(stack).resourceCountIs('AWS::DynamoDB::GlobalTable', 3);
   });
 
   test('throws if defining non-default replica table in region agnostic stack', () => {
