@@ -24,9 +24,11 @@ const RESOURCE_DETECTORS: { [key:string]: HotswapDetector } = {
   'AWS::Lambda::Function': isHotswappableLambdaFunctionChange,
   'AWS::Lambda::Version': isHotswappableLambdaFunctionChange,
   'AWS::Lambda::Alias': isHotswappableLambdaFunctionChange,
+
   // AppSync
   'AWS::AppSync::Resolver': isHotswappableAppSyncChange,
   'AWS::AppSync::FunctionConfiguration': isHotswappableAppSyncChange,
+  'AWS::AppSync::GraphQLSchema': isHotswappableAppSyncChange,
 
   'AWS::ECS::TaskDefinition': isHotswappableEcsServiceChange,
   'AWS::CodeBuild::Project': isHotswappableCodeBuildProjectChange,

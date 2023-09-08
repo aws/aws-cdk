@@ -19,8 +19,11 @@ export async function isHotswappableAppSyncChange(
 
   const classifiedChanges = classifyChanges(change, [
     'RequestMappingTemplate',
+    'RequestMappingTemplateS3Location',
     'ResponseMappingTemplate',
+    'ResponseMappingTemplateS3Location',
     'Definition',
+    'DefinitionS3Location',
   ]);
   classifiedChanges.reportNonHotswappablePropertyChanges(ret);
 
@@ -48,6 +51,7 @@ export async function isHotswappableAppSyncChange(
         const sdkProperties: { [name: string]: any } = {
           ...change.oldValue.Properties,
           Definition: change.newValue.Properties?.Definition,
+          DefinitionS3Location: change.newValue.Properties?.DefinitionS3Location,
           requestMappingTemplate: change.newValue.Properties?.RequestMappingTemplate,
           responseMappingTemplate: change.newValue.Properties?.ResponseMappingTemplate,
         };
@@ -57,13 +61,28 @@ export async function isHotswappableAppSyncChange(
         if (isResolver) {
           await sdk.appsync().updateResolver(sdkRequestObject).promise();
         } else if (isFunction) {
+          if (sdkRequestObject.requestMappingTemplateS3Location) {
+            //code is in an S3 file but AppSync expects inline code
+            sdkRequestObject.requestMappingTemplate = (await fetchFileFromS3(sdkRequestObject.requestMappingTemplateS3Location, sdk))?.toString('utf8');
+            delete sdkRequestObject.requestMappingTemplateS3Location;
+          }
+          if (sdkRequestObject.responseMappingTemplateS3Location) {
+            //code is in an S3 file but AppSync expects inline code
+            sdkRequestObject.responseMappingTemplate = (await fetchFileFromS3(sdkRequestObject.responseMappingTemplateS3Location, sdk))?.toString('utf8');
+            delete sdkRequestObject.responseMappingTemplateS3Location;
+          }
           const { functions } = await sdk.appsync().listFunctions({ apiId: sdkRequestObject.apiId }).promise();
           const { functionId } = functions?.find(fn => fn.name === physicalName) ?? {};
-          await sdk.appsync().updateFunction({
-            ...sdkRequestObject,
-            functionId: functionId!,
-          }).promise();
+          await simpleRetry(
+            () => sdk.appsync().updateFunction({ ...sdkRequestObject, functionId: functionId! }).promise(),
+            3,
+            'ConcurrentModificationException');
         } else {
+          if (sdkRequestObject.definitionS3Location) {
+            // code is in an S3 file but AppSync expects inline code
+            sdkRequestObject.definition = await fetchFileFromS3(sdkRequestObject.definitionS3Location, sdk);
+            delete sdkRequestObject.definitionS3Location;
+          }
           let schemaCreationResponse: GetSchemaCreationStatusResponse = await sdk.appsync().startSchemaCreation(sdkRequestObject).promise();
           while (schemaCreationResponse.status && ['PROCESSING', 'DELETING'].some(status => status === schemaCreationResponse.status)) {
             await new Promise(resolve => setTimeout(resolve, 1000)); // poll every second
@@ -81,4 +100,24 @@ export async function isHotswappableAppSyncChange(
   }
 
   return ret;
+}
+
+async function fetchFileFromS3(s3Url: string, sdk: ISDK) {
+  const s3PathParts = s3Url.split('/');
+  const s3Bucket = s3PathParts[2]; // first two are "s3:"" and "" due to two //
+  const s3Key = s3PathParts.splice(3).join('/'); // after removing first three we reconstruct the key
+  return (await sdk.s3().getObject({ Bucket: s3Bucket, Key: s3Key }).promise()).Body;
+}
+
+async function simpleRetry(fn: () => Promise<any>, numOfRetries: number, errorCodeToRetry: string) {
+  try {
+    await fn();
+  } catch (error: any) {
+    if (error && error.code === errorCodeToRetry && numOfRetries > 0) {
+      await new Promise((resolve) => setTimeout(resolve, 500)); // wait half a second
+      await simpleRetry(fn, numOfRetries - 1, errorCodeToRetry);
+    } else {
+      throw error;
+    }
+  }
 }
