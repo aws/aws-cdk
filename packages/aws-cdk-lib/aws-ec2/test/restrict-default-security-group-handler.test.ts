@@ -215,7 +215,7 @@ test('invoking when rules are not found should not throw error', async () => {
   });
 });
 
-test('other errors should be thrown', async () => {
+test('other errors in RevokeSecurityGroupEgressCommand should be thrown', async () => {
   // GIVEN
   const event: Partial<AWSLambda.CloudFormationCustomResourceCreateEvent> = {
     RequestType: 'Create',
@@ -226,6 +226,21 @@ test('other errors should be thrown', async () => {
     },
   };
   mockEc2Client.on(RevokeSecurityGroupEgressCommand).rejects({ name: 'Some.Other.Errors' });
+
+  // THEN
+  await expect(invokeHandler(event)).rejects.toThrow();
+});
+
+test('other errors in RevokeSecurityGroupIngressCommand should be thrown', async () => {
+  // GIVEN
+  const event: Partial<AWSLambda.CloudFormationCustomResourceCreateEvent> = {
+    RequestType: 'Create',
+    ResourceProperties: {
+      ServiceToken: 'Foo',
+      DefaultSecurityGroupId: 'sg-abc123',
+      Account: '12345678912',
+    },
+  };
   mockEc2Client.on(RevokeSecurityGroupIngressCommand).rejects({ name: 'Some.Other.Errors' });
 
   // THEN
