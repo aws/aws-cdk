@@ -479,7 +479,7 @@ export interface FindStateOptions {
 /**
  * A Choice Transition
  */
-export interface ChoiceTransition extends ChoiceTransitionOptions {
+interface ChoiceTransition extends ChoiceTransitionOptions {
   /**
    * State to transition to
    */
