@@ -35,9 +35,6 @@ Workloads that are fault-tolerant or stateless can take advantage of spot pricin
 To use spot spot instances, set `spot` to `true` on a managed Ec2 or Fargate Compute Environment:
 
 ```ts
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as batch from 'aws-cdk-lib/aws-batch';
-
 const vpc = new ec2.Vpc(this, 'VPC');
 new batch.FargateComputeEnvironment(this, 'myFargateComputeEnv', {
   vpc,
@@ -202,8 +199,6 @@ new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2ComputeEnv', {
 You can tag any instances launched by your managed EC2 ComputeEnvironments by using the CDK `Tags` API:
 
 ```ts
-import { Tags } from 'aws-cdk-lib';
-
 declare const vpc: ec2.IVpc;
 
 const tagCE = new batch.ManagedEc2EcsComputeEnvironment(this, 'CEThatMakesTaggedInstnaces', {
@@ -332,7 +327,6 @@ but after a whole minute the scheduler pretends they don't exist for fairness ca
 The following code specifies a `shareDecay` of 5 minutes:
 
 ```ts
-import * as cdk from 'aws-cdk-lib'
 const fairsharePolicy = new batch.FairshareSchedulingPolicy(this, 'myFairsharePolicy', {
    shareDecay: cdk.Duration.minutes(5),
 });
@@ -411,8 +405,6 @@ To specify common `exitCode`s, `reason`s, or `statusReason`s, use the correspond
 the `Reason` class. This example shows some common failure reasons:
 
 ```ts
-import * as cdk from 'aws-cdk-lib';
-
 const jobDefn = new batch.EcsJobDefinition(this, 'JobDefn', {
    container: new batch.EcsEc2ContainerDefinition(this, 'containerDefn', {
     image: ecs.ContainerImage.fromRegistry('public.ecr.aws/amazonlinux/amazonlinux:latest'),
@@ -453,10 +445,6 @@ Batch can run jobs on ECS or EKS. ECS jobs can be defined as single container or
 This example creates a `JobDefinition` that runs a single container with ECS:
 
 ```ts
-import * as cdk from 'aws-cdk-lib';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as efs from 'aws-cdk-lib/aws-efs';
-
 declare const myFileSystem: efs.IFileSystem;
 declare const myJobRole: iam.Role;
 myFileSystem.grantRead(myJobRole);
@@ -481,8 +469,6 @@ For workflows that need persistent storage, batch supports mounting `Volume`s to
 You can both provision the volume and mount it to the container in a single operation:
 
 ```ts
-import * as efs from 'aws-cdk-lib/aws-efs';
-
 declare const myFileSystem: efs.IFileSystem;
 declare const jobDefn: batch.EcsJobDefinition;
 
@@ -500,8 +486,6 @@ The following example defines the `MY_SECRET_ENV_VAR` environment variable that 
 ARN of the Secret defined by `mySecret`:
 
 ```ts
-import * as cdk from 'aws-cdk-lib';
-
 declare const mySecret: secretsmanager.ISecret;
 
 const jobDefn = new batch.EcsJobDefinition(this, 'JobDefn', {
@@ -521,7 +505,6 @@ const jobDefn = new batch.EcsJobDefinition(this, 'JobDefn', {
 Batch also supports running workflows on EKS. The following example creates a `JobDefinition` that runs on EKS:
 
 ```ts
-import * as cdk from 'aws-cdk-lib';
 const jobDefn = new batch.EksJobDefinition(this, 'eksf2', {
   container: new batch.EksContainerDefinition(this, 'container', {
     image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
@@ -572,7 +555,6 @@ see this [blog post](https://aws.amazon.com/blogs/compute/building-a-tightly-cou
 In particular, the environment variable that tells the containers which one is the main node can be configured on your `MultiNodeJobDefinition` as follows:
 
 ```ts
-import * as cdk from 'aws-cdk-lib';
 const multiNodeJob = new batch.MultiNodeJobDefinition(this, 'JobDefinition', {
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.R4, ec2.InstanceSize.LARGE),
   containers: [{
@@ -611,7 +593,6 @@ const multiNodeJob = new batch.MultiNodeJobDefinition(this, 'JobDefinition', {
 Batch allows you define parameters in your `JobDefinition`, which can be referenced in the container command. For example:
 
 ```ts
-import * as cdk from 'aws-cdk-lib';
 new batch.EcsJobDefinition(this, 'JobDefn', {
   parameters: { echoParam: 'foobar' },
   container: new batch.EcsEc2ContainerDefinition(this, 'containerDefn', {
@@ -657,9 +638,6 @@ The alternative would be to use the `BEST_FIT_PROGRESSIVE` strategy in order for
 You can grant any Principal the `batch:submitJob` permission on both a job definition and a job queue like this:
 
 ```ts
-import * as cdk from 'aws-cdk-lib';
-import * as iam from 'aws-cdk-lib/aws-iam';
-
 declare const vpc: ec2.IVpc;
 
 const ecsJob = new batch.EcsJobDefinition(this, 'JobDefn', {
