@@ -19,7 +19,7 @@
     }
    }
   },
-  "Resource": {
+  "GlobalTable89F068B2": {
    "Type": "AWS::DynamoDB::GlobalTable",
    "Properties": {
     "AttributeDefinitions": [
