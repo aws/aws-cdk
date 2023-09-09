@@ -215,7 +215,7 @@ to the target.
 ```ts
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
-import * as batch from '@aws-cdk/aws-batch-alpha';
+import * as batch from 'aws-cdk-lib/aws-batch';
 import { ContainerImage } from 'aws-cdk-lib/aws-ecs';
 
 declare const vpc: ec2.Vpc;
