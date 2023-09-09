@@ -491,7 +491,7 @@ CDK integration tests.
   > We will not be able to accept your contribution if you do not allow commits to your PR branch, as it introduces
   > friction in our review process and breaks our automation that syncs with the main branch. In these scenarios, we will close
   > your pull request and ask that you recreate it with the necessary permissions.
-  > This means that you must contribute from a fork within your personal account (as opposed to an organisation owned account) and also develop
+  > This means that you must contribute from a fork within your personal account (as opposed to an organization owned account) and also develop
   > your contribution on a branch other than `main`. See
   > [Allowing changes to a pull request branch created from a fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/allowing-changes-to-a-pull-request-branch-created-from-a-fork)
   > for more information.
