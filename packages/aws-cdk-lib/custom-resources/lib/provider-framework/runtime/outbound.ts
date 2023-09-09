@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 import * as https from 'https';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { Lambda, waitUntilFunctionActive, InvocationResponse, InvokeCommandInput } from '@aws-sdk/client-lambda';
+import { Lambda, waitUntilFunctionActiveV2, InvocationResponse, InvokeCommandInput } from '@aws-sdk/client-lambda';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { SFN, StartExecutionInput, StartExecutionOutput } from '@aws-sdk/client-sfn';
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -57,20 +57,15 @@ async function defaultInvokeFunction(req: InvokeCommandInput): Promise<Invocatio
      */
     return await lambda.invoke(req);
   } catch {
-
     /**
      * The status of the Lambda function is checked every second for up to 300 seconds.
      * Exits the loop on 'Active' state and throws an error on 'Inactive' or 'Failed'.
      *
      * And now we wait.
-     *
-     * Use functionActive instead of functionActiveV2, since functionActiveV2 is only
-     * available on SDK 2.1080.0 and up, Lambda installs 2.1055.0 by default,
-     * and we use the SDK version that Lambda includes by default.
      */
-    await waitUntilFunctionActive({
+    await waitUntilFunctionActiveV2({
       client: lambda,
-      maxWaitTime: 60,
+      maxWaitTime: 300,
     }, {
       FunctionName: req.FunctionName,
     });

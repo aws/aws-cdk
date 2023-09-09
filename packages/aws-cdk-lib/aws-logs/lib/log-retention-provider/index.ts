@@ -26,7 +26,7 @@ async function createLogGroupSafe(logGroupName: string, client: Logs.CloudWatchL
       await client.send(command);
 
     } catch (error: any) {
-      if (error instanceof Logs.ResourceAlreadyExistsException || error.name === 'ResourceAlreadyExistsException') {
+      if (error.name === 'ResourceAlreadyExistsException') {
         // The log group is already created by the lambda execution
         return;
       }
@@ -47,7 +47,7 @@ async function deleteLogGroup(logGroupName: string, client: Logs.CloudWatchLogsC
       await client.send(command);
 
     } catch (error: any) {
-      if (error instanceof Logs.ResourceNotFoundException || error.name === 'ResourceNotFoundException') {
+      if (error.name === 'ResourceNotFoundException') {
         // The log group doesn't exist
         return;
       }
@@ -205,8 +205,7 @@ function makeWithDelay(
         return await block();
       } catch (error: any) {
         if (
-          error instanceof Logs.OperationAbortedException
-          || error.name === 'OperationAbortedException'
+          error.name === 'OperationAbortedException'
           || error.name === 'ThrottlingException' // There is no class to check with instanceof, see https://github.com/aws/aws-sdk-js-v3/issues/5140
         ) {
           if (attempts < maxRetries ) {

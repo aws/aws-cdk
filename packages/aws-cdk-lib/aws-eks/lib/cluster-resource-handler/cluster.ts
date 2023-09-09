@@ -69,7 +69,7 @@ export class ClusterResourceHandler extends ResourceHandler {
     try {
       await this.eks.deleteCluster({ name: this.clusterName });
     } catch (e: any) {
-      if (!(e instanceof EKS.ResourceNotFoundException)) {
+      if (e.name !== 'ResourceNotFoundException') {
         throw e;
       } else {
         console.log(`cluster ${this.clusterName} not found, idempotently succeeded`);
@@ -87,8 +87,7 @@ export class ClusterResourceHandler extends ResourceHandler {
       const resp = await this.eks.describeCluster({ name: this.clusterName });
       console.log('describeCluster returned:', JSON.stringify(resp, undefined, 2));
     } catch (e: any) {
-      // see https://aws.amazon.com/blogs/developer/service-error-handling-modular-aws-sdk-js/
-      if (e instanceof EKS.ResourceNotFoundException) {
+      if (e.name === 'ResourceNotFoundException') {
         console.log('received ResourceNotFoundException, this means the cluster has been deleted (or never existed)');
         return { IsComplete: true };
       }

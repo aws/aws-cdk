@@ -1,5 +1,5 @@
 import * as path from 'path';
-import * as batch from '@aws-cdk/aws-batch-alpha';
+import * as batch from 'aws-cdk-lib/aws-batch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';

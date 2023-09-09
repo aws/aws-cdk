@@ -1,4 +1,4 @@
-import * as batch from '@aws-cdk/aws-batch-alpha';
+import * as batch from 'aws-cdk-lib/aws-batch';
 import { ContainerImage } from 'aws-cdk-lib/aws-ecs';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
