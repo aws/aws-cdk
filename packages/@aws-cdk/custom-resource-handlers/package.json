@@ -39,7 +39,8 @@
     "@aws-sdk/client-lambda": "^3.405.0",
     "@aws-sdk/client-synthetics": "^3.405.0",
     "@aws-sdk/client-ecr": "^3.405.0",
-    "@aws-sdk/client-s3": "^3.405.0"
+    "@aws-sdk/client-s3": "^3.405.0",
+    "@aws-sdk/client-route53resolver": "^3.405.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
