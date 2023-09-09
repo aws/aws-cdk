@@ -32,7 +32,7 @@ test('importing managed domain list creates custom resource', () => {
             {
               Effect: 'Allow',
               Action: ['route53resolver:ListFirewallDomainLists'],
-              Resource: ['*'],
+              Resource: '*',
             },
           ],
         },

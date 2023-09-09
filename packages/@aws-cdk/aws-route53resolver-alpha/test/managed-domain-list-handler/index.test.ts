@@ -2,7 +2,7 @@
 import { Route53ResolverClient, ListFirewallDomainListsCommand } from '@aws-sdk/client-route53resolver';
 import { mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest' ;
-import { handler } from '../../lib/aws-route53resolver-alpha/managed-domain-list-handler/index';
+import { handler } from '../../lib/managed-domain-list-handler/index';
 
 console.log = jest.fn();
 
