@@ -1,4 +1,5 @@
 export * from './firewall-domain-list';
+export * from './firewall-managed-domain-list';
 export * from './firewall-rule-group';
 export * from './firewall-rule-group-association';
 

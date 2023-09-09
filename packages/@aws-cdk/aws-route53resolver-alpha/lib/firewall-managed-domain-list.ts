@@ -6,7 +6,7 @@ import { IFirewallDomainList } from './firewall-domain-list';
 /**
  * Properties for a Firewall Managed Domain List
  */
-export interface FirewallDomainListProps {
+export interface FirewallManagedDomainListProps {
   /**
    * The managed domain list
    */
@@ -19,7 +19,7 @@ export interface FirewallDomainListProps {
 export class FirewallManagedDomainList extends Resource implements IFirewallDomainList {
   public readonly firewallDomainListId: string;
 
-  constructor(scope: Construct, id: string, props: FirewallDomainListProps) {
+  constructor(scope: Construct, id: string, props: FirewallManagedDomainListProps) {
     super(scope, id);
 
     this.firewallDomainListId = this.getManagedDomainListId(props.managedDomainList);
