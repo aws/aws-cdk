@@ -68,7 +68,7 @@ Use `FirewallManagedDomainList` to import an [AWS managed domain list](https://d
 ```ts
 // AWSManagedDomainsMalwareDomainList
 const malwareList = new route53resolver.FirewallManagedDomainList(this, 'MalwareList', {
-  managedDomainList: route53resolver.ManagedDomain.MalwareDomainList,
+  managedDomainList: route53resolver.ManagedDomain.MALWARE_DOMAIN_LIST,
 });
 ```
 

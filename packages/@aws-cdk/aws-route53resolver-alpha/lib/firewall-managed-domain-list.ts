@@ -54,28 +54,28 @@ export class FirewallManagedDomainList extends Resource implements IFirewallDoma
  *
  * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-dns-firewall-managed-domain-lists.html
  */
-enum ManagedDomain {
+export enum ManagedDomain {
   /**
    * Domains associated with multiple DNS threat categories including malware, ransomware, botnet, spyware,
    * and DNS tunneling to help block multiple types of threats.
    * Includes the `AmazonGuardDutyThreatList.`
    */
-  AggregateThreatList = 'AWSManagedDomainsAggregateThreatList',
+  AGGREGATE_THREAT_LIST = 'AWSManagedDomainsAggregateThreatList',
 
   /**
    * Domains associated with Amazon GuardDuty DNS security findings.
    * The domains are sourced from the GuardDuty's threat intelligence systems only,
    * and do not contain domains sourced from external third-party sources.
    */
-  AmazonGuardDutyThreatList = 'AWSManagedDomainsAmazonGuardDutyThreatList',
+  AMAZON_GUARDDUTY_THREAT_LIST = 'AWSManagedDomainsAmazonGuardDutyThreatList',
 
   /**
    * Domains associated with controlling networks of computers that are infected with spamming malware.
    */
-  BotnetCommandandControl = 'AWSManagedDomainsBotnetCommandandControl',
+  BOTNET_COMMANDAND_CONTROL = 'AWSManagedDomainsBotnetCommandandControl',
 
   /**
    * Domains associated with sending malware, hosting malware, or distributing malware.
    */
-  MalwareDomainList = 'AWSManagedDomainsMalwareDomainList',
+  MALWARE_DOMAIN_LIST = 'AWSManagedDomainsMalwareDomainList',
 }
