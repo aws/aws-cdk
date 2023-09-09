@@ -16,6 +16,9 @@ class TestStack extends Stack {
     const overrideList = new route53resolver.FirewallDomainList(this, 'OverrideList', {
       domains: route53resolver.FirewallDomains.fromList(['override-domain.com']),
     });
+    const managedMalwareList = new route53resolver.FirewallManagedDomainList(this, 'ManagedMalwareList', {
+      managedDomainList: route53resolver.ManagedDomain.MALWARE_DOMAIN_LIST,
+    });
 
     new route53resolver.FirewallDomainList(this, 'OtherList', {
       domains: route53resolver.FirewallDomains.fromAsset(path.join(__dirname, 'domains.txt')),
@@ -32,6 +35,11 @@ class TestStack extends Stack {
       priority: 20,
       firewallDomainList: overrideList,
       action: route53resolver.FirewallRuleAction.block(route53resolver.DnsBlockResponse.override('amazon.com')),
+    });
+    ruleGroup.addRule({
+      priority: 30,
+      firewallDomainList: managedMalwareList,
+      action: route53resolver.FirewallRuleAction.block(),
     });
 
     ruleGroup.associate('Association', {
