@@ -51,16 +51,28 @@ const assetList = new route53resolver.FirewallDomainList(this, 'AssetList', {
 
 The file must be a text file and must contain a single domain per line.
 
-Use `FirewallDomainList.fromFirewallDomainListId()` to import an existing or [AWS managed domain list](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-dns-firewall-managed-domain-lists.html):
+Use `FirewallDomainList.fromFirewallDomainListId()` to import an existing domain list.
 
 ```ts
-// AWSManagedDomainsMalwareDomainList in us-east-1
 const malwareList = route53resolver.FirewallDomainList.fromFirewallDomainListId(
   this,
   'Malware',
-  'rslvr-fdl-2c46f2ecbfec4dcc',
+  'rslvr-fdl-123456789',
 );
 ```
+
+### AWS Managed Domain lists
+
+Use `FirewallManagedDomainList` to import an [AWS managed domain list](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-dns-firewall-managed-domain-lists.html):
+
+```ts
+// AWSManagedDomainsMalwareDomainList
+const malwareList = new route53resolver.FirewallManagedDomainList(this, 'MalwareList', {
+  managedDomainList: route53resolver.ManagedDomain.MalwareDomainList,
+});
+```
+
+AWS managed domain lists are region-specific.
 
 ### Rule group
 
