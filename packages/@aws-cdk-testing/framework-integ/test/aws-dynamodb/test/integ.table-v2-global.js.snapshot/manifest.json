@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/68a3bb36a940031cf3b515e0cad696adef98469abd9e58c2eb45fb68296fcd2e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/116ecd47ef9b5b3d293d7b3733b6a742a38eb54e2d54d79f9009fdbbb8c36dff.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -49,14 +49,14 @@
           {
             "type": "aws:cdk:hasPhysicalName",
             "data": {
-              "Ref": "Resource"
+              "Ref": "GlobalTable89F068B2"
             }
           }
         ],
-        "/aws-cdk-global-table/Resource": [
+        "/aws-cdk-global-table/GlobalTable/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Resource"
+            "data": "GlobalTable89F068B2"
           }
         ],
         "/aws-cdk-global-table/BootstrapVersion": [
