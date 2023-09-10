@@ -1,4 +1,4 @@
-// This file was generated from the aws-sdk-js-v3 at Thu Sep 07 2023 15:56:12 GMT+0100 (British Summer Time)
+// This file was generated from the aws-sdk-js-v3 at Fri Sep 08 2023 19:02:40 GMT+0200 (Central European Summer Time)
 /* eslint-disable quote-props,comma-dangle */
 export interface TypeCoercionMap {
   [service: string]: {
@@ -69,6 +69,72 @@ export const UINT8ARRAY_PARAMETERS: TypeCoercionMap = {
     ],
     'putobject': [
       'InlineChunk'
+    ]
+  },
+  'clouddirectory': {
+    'addfacettoobject': [
+      'ObjectAttributeList.*.Value.BinaryValue'
+    ],
+    'attachtypedlink': [
+      'Attributes.*.Value.BinaryValue'
+    ],
+    'batchread': [
+      'Operations.*.GetLinkAttributes.TypedLinkSpecifier.IdentityAttributeValues.*.Value.BinaryValue',
+      'Operations.*.ListIncomingTypedLinks.FilterAttributeRanges.*.Range.EndValue.BinaryValue',
+      'Operations.*.ListIncomingTypedLinks.FilterAttributeRanges.*.Range.StartValue.BinaryValue',
+      'Operations.*.ListIndex.RangesOnIndexedValues.*.Range.EndValue.BinaryValue',
+      'Operations.*.ListIndex.RangesOnIndexedValues.*.Range.StartValue.BinaryValue',
+      'Operations.*.ListOutgoingTypedLinks.FilterAttributeRanges.*.Range.EndValue.BinaryValue',
+      'Operations.*.ListOutgoingTypedLinks.FilterAttributeRanges.*.Range.StartValue.BinaryValue'
+    ],
+    'batchwrite': [
+      'Operations.*.AddFacetToObject.ObjectAttributeList.*.Value.BinaryValue',
+      'Operations.*.AttachTypedLink.Attributes.*.Value.BinaryValue',
+      'Operations.*.CreateObject.ObjectAttributeList.*.Value.BinaryValue',
+      'Operations.*.DetachTypedLink.TypedLinkSpecifier.IdentityAttributeValues.*.Value.BinaryValue',
+      'Operations.*.UpdateLinkAttributes.AttributeUpdates.*.AttributeAction.AttributeUpdateValue.BinaryValue',
+      'Operations.*.UpdateLinkAttributes.TypedLinkSpecifier.IdentityAttributeValues.*.Value.BinaryValue',
+      'Operations.*.UpdateObjectAttributes.AttributeUpdates.*.ObjectAttributeAction.ObjectAttributeUpdateValue.BinaryValue'
+    ],
+    'createfacet': [
+      'Attributes.*.AttributeDefinition.DefaultValue.BinaryValue'
+    ],
+    'createobject': [
+      'ObjectAttributeList.*.Value.BinaryValue'
+    ],
+    'createtypedlinkfacet': [
+      'Facet.Attributes.*.DefaultValue.BinaryValue'
+    ],
+    'detachtypedlink': [
+      'TypedLinkSpecifier.IdentityAttributeValues.*.Value.BinaryValue'
+    ],
+    'getlinkattributes': [
+      'TypedLinkSpecifier.IdentityAttributeValues.*.Value.BinaryValue'
+    ],
+    'listincomingtypedlinks': [
+      'FilterAttributeRanges.*.Range.EndValue.BinaryValue',
+      'FilterAttributeRanges.*.Range.StartValue.BinaryValue'
+    ],
+    'listindex': [
+      'RangesOnIndexedValues.*.Range.EndValue.BinaryValue',
+      'RangesOnIndexedValues.*.Range.StartValue.BinaryValue'
+    ],
+    'listoutgoingtypedlinks': [
+      'FilterAttributeRanges.*.Range.EndValue.BinaryValue',
+      'FilterAttributeRanges.*.Range.StartValue.BinaryValue'
+    ],
+    'updatefacet': [
+      'AttributeUpdates.*.Attribute.AttributeDefinition.DefaultValue.BinaryValue'
+    ],
+    'updatelinkattributes': [
+      'AttributeUpdates.*.AttributeAction.AttributeUpdateValue.BinaryValue',
+      'TypedLinkSpecifier.IdentityAttributeValues.*.Value.BinaryValue'
+    ],
+    'updateobjectattributes': [
+      'AttributeUpdates.*.ObjectAttributeAction.ObjectAttributeUpdateValue.BinaryValue'
+    ],
+    'updatetypedlinkfacet': [
+      'AttributeUpdates.*.Attribute.DefaultValue.BinaryValue'
     ]
   },
   'cloudfront': {
@@ -149,6 +215,106 @@ export const UINT8ARRAY_PARAMETERS: TypeCoercionMap = {
       'CertificateWallet'
     ]
   },
+  'dynamodb': {
+    'batchexecutestatement': [
+      'Statements.*.Parameters.*.B',
+      'Statements.*.Parameters.*.BS.*'
+    ],
+    'batchgetitem': [
+      'RequestItems.*.Keys.*.*.B',
+      'RequestItems.*.Keys.*.*.BS.*'
+    ],
+    'batchwriteitem': [
+      'RequestItems.*.*.DeleteRequest.Key.*.B',
+      'RequestItems.*.*.DeleteRequest.Key.*.BS.*',
+      'RequestItems.*.*.PutRequest.Item.*.B',
+      'RequestItems.*.*.PutRequest.Item.*.BS.*'
+    ],
+    'deleteitem': [
+      'Expected.*.AttributeValueList.*.B',
+      'Expected.*.AttributeValueList.*.BS.*',
+      'Expected.*.Value.B',
+      'Expected.*.Value.BS.*',
+      'ExpressionAttributeValues.*.B',
+      'ExpressionAttributeValues.*.BS.*',
+      'Key.*.B',
+      'Key.*.BS.*'
+    ],
+    'executestatement': [
+      'Parameters.*.B',
+      'Parameters.*.BS.*'
+    ],
+    'executetransaction': [
+      'TransactStatements.*.Parameters.*.B',
+      'TransactStatements.*.Parameters.*.BS.*'
+    ],
+    'getitem': [
+      'Key.*.B',
+      'Key.*.BS.*'
+    ],
+    'putitem': [
+      'Expected.*.AttributeValueList.*.B',
+      'Expected.*.AttributeValueList.*.BS.*',
+      'Expected.*.Value.B',
+      'Expected.*.Value.BS.*',
+      'ExpressionAttributeValues.*.B',
+      'ExpressionAttributeValues.*.BS.*',
+      'Item.*.B',
+      'Item.*.BS.*'
+    ],
+    'query': [
+      'ExclusiveStartKey.*.B',
+      'ExclusiveStartKey.*.BS.*',
+      'ExpressionAttributeValues.*.B',
+      'ExpressionAttributeValues.*.BS.*',
+      'KeyConditions.*.AttributeValueList.*.B',
+      'KeyConditions.*.AttributeValueList.*.BS.*',
+      'QueryFilter.*.AttributeValueList.*.B',
+      'QueryFilter.*.AttributeValueList.*.BS.*'
+    ],
+    'scan': [
+      'ExclusiveStartKey.*.B',
+      'ExclusiveStartKey.*.BS.*',
+      'ExpressionAttributeValues.*.B',
+      'ExpressionAttributeValues.*.BS.*',
+      'ScanFilter.*.AttributeValueList.*.B',
+      'ScanFilter.*.AttributeValueList.*.BS.*'
+    ],
+    'transactgetitems': [
+      'TransactItems.*.Get.Key.*.B',
+      'TransactItems.*.Get.Key.*.BS.*'
+    ],
+    'transactwriteitems': [
+      'TransactItems.*.ConditionCheck.ExpressionAttributeValues.*.B',
+      'TransactItems.*.ConditionCheck.ExpressionAttributeValues.*.BS.*',
+      'TransactItems.*.ConditionCheck.Key.*.B',
+      'TransactItems.*.ConditionCheck.Key.*.BS.*',
+      'TransactItems.*.Delete.ExpressionAttributeValues.*.B',
+      'TransactItems.*.Delete.ExpressionAttributeValues.*.BS.*',
+      'TransactItems.*.Delete.Key.*.B',
+      'TransactItems.*.Delete.Key.*.BS.*',
+      'TransactItems.*.Put.ExpressionAttributeValues.*.B',
+      'TransactItems.*.Put.ExpressionAttributeValues.*.BS.*',
+      'TransactItems.*.Put.Item.*.B',
+      'TransactItems.*.Put.Item.*.BS.*',
+      'TransactItems.*.Update.ExpressionAttributeValues.*.B',
+      'TransactItems.*.Update.ExpressionAttributeValues.*.BS.*',
+      'TransactItems.*.Update.Key.*.B',
+      'TransactItems.*.Update.Key.*.BS.*'
+    ],
+    'updateitem': [
+      'AttributeUpdates.*.Value.B',
+      'AttributeUpdates.*.Value.BS.*',
+      'Expected.*.AttributeValueList.*.B',
+      'Expected.*.AttributeValueList.*.BS.*',
+      'Expected.*.Value.B',
+      'Expected.*.Value.BS.*',
+      'ExpressionAttributeValues.*.B',
+      'ExpressionAttributeValues.*.BS.*',
+      'Key.*.B',
+      'Key.*.BS.*'
+    ]
+  },
   'ebs': {
     'putsnapshotblock': [
       'BlockData'
@@ -189,6 +355,11 @@ export const UINT8ARRAY_PARAMETERS: TypeCoercionMap = {
       'Records.*.Data'
     ]
   },
+  'frauddetector': {
+    'geteventprediction': [
+      'externalModelEndpointDataBlobs.*.byteBuffer'
+    ]
+  },
   'gamelift': {
     'createscript': [
       'ZipFile'
@@ -212,10 +383,12 @@ export const UINT8ARRAY_PARAMETERS: TypeCoercionMap = {
   },
   'glue': {
     'updatecolumnstatisticsforpartition': [
-      'ColumnStatisticsList.*.StatisticsData.DecimalColumnStatisticsData.MaximumValue.UnscaledValue'
+      'ColumnStatisticsList.*.StatisticsData.DecimalColumnStatisticsData.MaximumValue.UnscaledValue',
+      'ColumnStatisticsList.*.StatisticsData.DecimalColumnStatisticsData.MinimumValue.UnscaledValue'
     ],
     'updatecolumnstatisticsfortable': [
-      'ColumnStatisticsList.*.StatisticsData.DecimalColumnStatisticsData.MaximumValue.UnscaledValue'
+      'ColumnStatisticsList.*.StatisticsData.DecimalColumnStatisticsData.MaximumValue.UnscaledValue',
+      'ColumnStatisticsList.*.StatisticsData.DecimalColumnStatisticsData.MinimumValue.UnscaledValue'
     ]
   },
   'greengrass': {
@@ -315,7 +488,8 @@ export const UINT8ARRAY_PARAMETERS: TypeCoercionMap = {
       'Recipient.AttestationDocument'
     ],
     'importkeymaterial': [
-      'EncryptedKeyMaterial'
+      'EncryptedKeyMaterial',
+      'ImportToken'
     ],
     'reencrypt': [
       'CiphertextBlob'
@@ -361,6 +535,9 @@ export const UINT8ARRAY_PARAMETERS: TypeCoercionMap = {
     ],
     'recognizeutterance': [
       'inputStream'
+    ],
+    'startconversation': [
+      'requestEventStream.AudioInputEvent.audioChunk'
     ]
   },
   'lookoutvision': {
@@ -374,6 +551,12 @@ export const UINT8ARRAY_PARAMETERS: TypeCoercionMap = {
   'mediastore': {
     'putobject': [
       'Body'
+    ]
+  },
+  'medical-imaging': {
+    'updateimagesetmetadata': [
+      'updateImageSetMetadataUpdates.DICOMUpdates.removableAttributes',
+      'updateImageSetMetadataUpdates.DICOMUpdates.updatableAttributes'
     ]
   },
   'mobiletargeting': {
@@ -395,9 +578,18 @@ export const UINT8ARRAY_PARAMETERS: TypeCoercionMap = {
       'AssetBundleImportSource.Body'
     ]
   },
+  'rds-data': {
+    'batchexecutestatement': [
+      'parameterSets.*.*.value.blobValue'
+    ],
+    'executestatement': [
+      'parameters.*.value.blobValue'
+    ]
+  },
   'rekognition': {
     'comparefaces': [
-      'SourceImage.Bytes'
+      'SourceImage.Bytes',
+      'TargetImage.Bytes'
     ],
     'detectcustomlabels': [
       'Image.Bytes'
@@ -431,6 +623,9 @@ export const UINT8ARRAY_PARAMETERS: TypeCoercionMap = {
     ],
     'updatedatasetentries': [
       'Changes.GroundTruth'
+    ],
+    'startfacelivenesssession': [
+      'LivenessRequestStream.VideoEvent.VideoChunk'
     ]
   },
   's3': {
@@ -481,6 +676,28 @@ export const UINT8ARRAY_PARAMETERS: TypeCoercionMap = {
       'payload'
     ]
   },
+  'sns': {
+    'publish': [
+      'MessageAttributes.*.BinaryValue'
+    ],
+    'publishbatch': [
+      'PublishBatchRequestEntries.*.MessageAttributes.*.BinaryValue'
+    ]
+  },
+  'sqs': {
+    'sendmessage': [
+      'MessageAttributes.*.BinaryListValues.*',
+      'MessageAttributes.*.BinaryValue',
+      'MessageSystemAttributes.*.BinaryListValues.*',
+      'MessageSystemAttributes.*.BinaryValue'
+    ],
+    'sendmessagebatch': [
+      'Entries.*.MessageAttributes.*.BinaryListValues.*',
+      'Entries.*.MessageAttributes.*.BinaryValue',
+      'Entries.*.MessageSystemAttributes.*.BinaryListValues.*',
+      'Entries.*.MessageSystemAttributes.*.BinaryValue'
+    ]
+  },
   'ssm': {
     'registertaskwithmaintenancewindow': [
       'TaskInvocationParameters.Lambda.Payload'
@@ -514,6 +731,17 @@ export const UINT8ARRAY_PARAMETERS: TypeCoercionMap = {
     ],
     'detectdocumenttext': [
       'Document.Bytes'
+    ]
+  },
+  'transcribe': {
+    'startcallanalyticsstreamtranscription': [
+      'AudioStream.AudioEvent.AudioChunk'
+    ],
+    'startmedicalstreamtranscription': [
+      'AudioStream.AudioEvent.AudioChunk'
+    ],
+    'startstreamtranscription': [
+      'AudioStream.AudioEvent.AudioChunk'
     ]
   },
   'translate': {
@@ -556,7 +784,11 @@ export const UINT8ARRAY_PARAMETERS: TypeCoercionMap = {
       'DeviceTypeAndroid.Logo',
       'DeviceTypeIos.Logo',
       'DeviceTypeIos.Logo2x',
-      'DeviceTypeIos.Logo3x'
+      'DeviceTypeIos.Logo3x',
+      'DeviceTypeLinux.Logo',
+      'DeviceTypeOsx.Logo',
+      'DeviceTypeWeb.Logo',
+      'DeviceTypeWindows.Logo'
     ]
   }
 };
