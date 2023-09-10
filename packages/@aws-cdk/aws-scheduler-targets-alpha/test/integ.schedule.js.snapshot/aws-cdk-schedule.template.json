@@ -58,12 +58,6 @@
     "Code": {
      "ZipFile": "\n    const { LambdaClient, TagResourceCommand } = require('@aws-sdk/client-lambda');\n\n    const client = new LambdaClient();\n\n    let arn = process.env.FUNC_ARN;\n\n    exports.handler = async (event, context) => {\n        const value = btoa(JSON.stringify(event, null, 2));\n        const input = {\n            Resource: arn,\n            Tags: {\n                \"OutputValue\": value,\n            },\n        };\n        const command = new TagResourceCommand(input);\n        const response = await client.send(command);\n    };"
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "MyLambdaServiceRole4539ECB6",
-      "Arn"
-     ]
-    },
     "Environment": {
      "Variables": {
       "FUNC_ARN": {
@@ -90,6 +84,12 @@
     },
     "FunctionName": "MyTestFunc",
     "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "MyLambdaServiceRole4539ECB6",
+      "Arn"
+     ]
+    },
     "Runtime": "nodejs18.x"
    },
    "DependsOn": [
@@ -162,7 +162,8 @@
     "FlexibleTimeWindow": {
      "Mode": "OFF"
     },
-    "ScheduleExpression": "at(2023-07-06T17:54:31)",
+    "ScheduleExpression": "rate(1 minute)",
+    "ScheduleExpressionTimezone": "Etc/UTC",
     "Target": {
      "Arn": {
       "Fn::GetAtt": [
@@ -171,14 +172,30 @@
       ]
      },
      "Input": "\"test\"",
+     "RetryPolicy": {
+      "MaximumEventAgeInSeconds": 86400,
+      "MaximumRetryAttempts": 185
+     },
      "RoleArn": {
       "Fn::GetAtt": [
        "MyRoleF48FFE04",
        "Arn"
       ]
      }
-    },
-    "ScheduleExpressionTimezone": "Etc/UTC"
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttMyLambdaCCE802FBArn91287F74": {
+   "Value": {
+    "Fn::GetAtt": [
+     "MyLambdaCCE802FB",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "aws-cdk-schedule:ExportsOutputFnGetAttMyLambdaCCE802FBArn91287F74"
    }
   }
  },

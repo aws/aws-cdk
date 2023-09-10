@@ -1,9 +1,9 @@
+import * as scheduler from '@aws-cdk/aws-scheduler-alpha';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import * as scheduler from '../lib';
-import { Schedule, targets } from '../lib/private';
+import { LambdaInvoke } from '../lib';
 
 /*
  * Stack verification steps:
@@ -63,15 +63,12 @@ const role = new iam.Role(stack, 'MyRole', {
   assumedBy: new iam.ServicePrincipal('scheduler.amazonaws.com'),
 });
 
-const now_time = new Date(Date.now());
-const in_a_munite = new Date(now_time.getTime() + 5*60000);
-
-new Schedule(stack, 'Schedule', {
-  schedule: scheduler.ScheduleExpression.at(in_a_munite),
-  target: new targets.LambdaInvoke({
+new scheduler.Schedule(stack, 'Schedule', {
+  schedule: scheduler.ScheduleExpression.rate(cdk.Duration.minutes(1)),
+  target: new LambdaInvoke(func, {
     input: scheduler.ScheduleTargetInput.fromText(payload),
     role,
-  }, func),
+  }),
 });
 
 const integ = new IntegTest(app, 'integtest-endpoint', {
@@ -80,8 +77,9 @@ const integ = new IntegTest(app, 'integtest-endpoint', {
 });
 
 const invoke = integ.assertions.awsApiCall('Lambda', 'listTags', {
-  Resource: stack.resolve(functionArn),
+  Resource: func.functionArn,
 });
+
 invoke.expect(ExpectedResult.objectLike({
   Tags: {
     OutputValue: Buffer.from(JSON.stringify(payload)).toString('base64'),
