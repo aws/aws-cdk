@@ -2,7 +2,7 @@
 import { Route53ResolverClient, ListFirewallDomainListsCommand } from '@aws-sdk/client-route53resolver';
 import { mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest' ;
-import { onCreateAndUpdate } from '../../../lib/aws-route53resolver-alpha/managed-domain-list-handler';
+import { managedDomainListHandler } from '../../../lib/aws-route53resolver-alpha/managed-domain-list-handler';
 
 console.log = jest.fn();
 
@@ -18,8 +18,6 @@ test('found the domain list', async () => {
     RequestType: 'Create',
     ResourceProperties: {
       ServiceToken: 'Foo',
-      DefaultSecurityGroupId: 'sg-abc123',
-      Account: '12345678912',
       DomainListName: 'AWSManagedDomainsAggregateThreatList',
     },
   };
@@ -47,7 +45,7 @@ test('found the domain list', async () => {
   });
 
   // WHEN
-  const result = await onCreateAndUpdate('AWSManagedDomainsAggregateThreatList');
+  const result = await invokeHandler(event);
 
   // THEN
   expect(result?.Data.DomainListId).toBe('rslvr-33333');
@@ -60,8 +58,6 @@ test('could not find the domain list', async () => {
     RequestType: 'Create',
     ResourceProperties: {
       ServiceToken: 'Foo',
-      DefaultSecurityGroupId: 'sg-abc123',
-      Account: '12345678912',
       DomainListName: 'AWSManagedDomainsAggregateThreatList',
     },
   };
@@ -83,7 +79,7 @@ test('could not find the domain list', async () => {
   });
 
   // THEN
-  await expect(onCreateAndUpdate('AWSManagedDomainsAggregateThreatList')).rejects.toThrow();
+  await expect(invokeHandler(event)).rejects.toThrow();
   expect(route53resolverMock).toHaveReceivedCommandTimes(ListFirewallDomainListsCommand, 1);
 });
 
@@ -93,8 +89,6 @@ test('error are thrown by sdk', async () => {
     RequestType: 'Create',
     ResourceProperties: {
       ServiceToken: 'Foo',
-      DefaultSecurityGroupId: 'sg-abc123',
-      Account: '12345678912',
       DomainListName: 'AWSManagedDomainsAggregateThreatList',
     },
   };
@@ -102,6 +96,12 @@ test('error are thrown by sdk', async () => {
   route53resolverMock.on(ListFirewallDomainListsCommand).rejects();
 
   // THEN
-  await expect(onCreateAndUpdate('AWSManagedDomainsAggregateThreatList')).rejects.toThrow();
+  await expect(invokeHandler(event)).rejects.toThrow();
   expect(route53resolverMock).toHaveReceivedCommandTimes(ListFirewallDomainListsCommand, 1);
 });
+
+// helper function to get around TypeScript expecting a complete event object,
+// even though our tests only need some of the fields
+async function invokeHandler(event: Partial<AWSLambda.CloudFormationCustomResourceEvent>) {
+  return managedDomainListHandler(event as AWSLambda.CloudFormationCustomResourceEvent);
+}
