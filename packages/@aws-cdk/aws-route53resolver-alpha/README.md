@@ -51,7 +51,7 @@ const assetList = new route53resolver.FirewallDomainList(this, 'AssetList', {
 
 The file must be a text file and must contain a single domain per line.
 
-Use `FirewallDomainList.fromFirewallDomainListId()` to import an existing domain list.
+Use `FirewallDomainList.fromFirewallDomainListId()` to import an existing domain list:
 
 ```ts
 const malwareList = route53resolver.FirewallDomainList.fromFirewallDomainListId(

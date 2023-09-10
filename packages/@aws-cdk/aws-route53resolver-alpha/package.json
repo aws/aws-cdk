@@ -88,9 +88,7 @@
     "@aws-cdk/integ-tests-alpha": "0.0.0",
     "@types/jest": "^29.5.4",
     "aws-cdk-lib": "0.0.0",
-    "constructs": "^10.0.0",
-    "aws-sdk-client-mock": "^3.0.0",
-    "aws-sdk-client-mock-jest": "^3.0.0"
+    "constructs": "^10.0.0"
   },
   "dependencies": {},
   "peerDependencies": {

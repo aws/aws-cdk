@@ -34,7 +34,7 @@ export class FirewallManagedDomainList extends Resource implements IFirewallDoma
       }],
       description: 'Lambda function for getting route 53 resolver managed domain list ID',
     });
-    new CustomResource(this, 'GetDomainListCustomResource', {
+    const result = new CustomResource(this, 'GetDomainListCustomResource', {
       resourceType: customResourceType,
       serviceToken,
       properties: {
@@ -42,7 +42,7 @@ export class FirewallManagedDomainList extends Resource implements IFirewallDoma
       },
     });
 
-    this.firewallDomainListId = 'abcde';
+    this.firewallDomainListId = result.getAttString('DomainListId');
   }
 }
 
