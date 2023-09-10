@@ -9,8 +9,9 @@ export async function managedDomainListHandler(event: AWSLambda.CloudFormationCu
   switch (event.RequestType) {
     case 'Create':
     case 'Update':
-      const domainListName = event.ResourceProperties.DomainListName;
-      return onCreateAndUpdate(domainListName);
+      const domainListName = event.ResourceProperties?.DomainListName;
+      const result = await onCreateAndUpdate(domainListName);
+      return result;
     case 'Delete':
       return;
   }

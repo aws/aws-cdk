@@ -24,7 +24,8 @@ export class FirewallManagedDomainList extends Resource implements IFirewallDoma
 
     const customResourceType = 'Custom::Route53ResolverManagedDomainList';
     const serviceToken = CustomResourceProvider.getOrCreate(this, customResourceType, {
-      codeDirectory: path.join(__dirname, 'managed-domain-list-handler'),
+      codeDirectory: path.join(__dirname, '..', '..',
+        'custom-resource-handlers', 'dist', 'aws-route53resolver-alpha', 'managed-domain-list-handler'),
       runtime: CustomResourceProviderRuntime.NODEJS_18_X,
       policyStatements: [{
         Effect: 'Allow',
@@ -33,7 +34,7 @@ export class FirewallManagedDomainList extends Resource implements IFirewallDoma
       }],
       description: 'Lambda function for getting route 53 resolver managed domain list ID',
     });
-    const result = new CustomResource(this, 'GetDomainListCustomResource', {
+    new CustomResource(this, 'GetDomainListCustomResource', {
       resourceType: customResourceType,
       serviceToken,
       properties: {
@@ -41,7 +42,7 @@ export class FirewallManagedDomainList extends Resource implements IFirewallDoma
       },
     });
 
-    this.firewallDomainListId = result.getAttString('DomainListId');
+    this.firewallDomainListId = 'abcde';
   }
 }
 

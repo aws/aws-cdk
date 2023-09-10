@@ -50,7 +50,7 @@ test('found the domain list', async () => {
   const result = await onCreateAndUpdate('AWSManagedDomainsAggregateThreatList');
 
   // THEN
-  expect(result?.Data?.DomainListId).toBe('rslvr-33333');
+  expect(result?.Data.DomainListId).toBe('rslvr-33333');
   expect(route53resolverMock).toHaveReceivedCommandTimes(ListFirewallDomainListsCommand, 1);
 });
 
