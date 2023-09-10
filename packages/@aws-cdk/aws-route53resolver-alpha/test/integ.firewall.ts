@@ -14,9 +14,12 @@ const blockList = new route53resolver.FirewallDomainList(stack, 'BlockList', {
 const overrideList = new route53resolver.FirewallDomainList(stack, 'OverrideList', {
   domains: route53resolver.FirewallDomains.fromList(['override-domain.com']),
 });
-// const managedMalwareList = new route53resolver.FirewallManagedDomainList(stack, 'ManagedMalwareList', {
-//   managedDomainList: route53resolver.ManagedDomain.MALWARE_DOMAIN_LIST,
-// });
+const managedMalwareList = new route53resolver.FirewallManagedDomainList(stack, 'ManagedMalwareList', {
+  managedDomainList: route53resolver.ManagedDomain.MALWARE_DOMAIN_LIST,
+});
+const managedAggregateThreatList = new route53resolver.FirewallManagedDomainList(stack, 'ManagedAggregateThreatList', {
+  managedDomainList: route53resolver.ManagedDomain.AGGREGATE_THREAT_LIST,
+});
 
 new route53resolver.FirewallDomainList(stack, 'OtherList', {
   domains: route53resolver.FirewallDomains.fromAsset(path.join(__dirname, 'domains.txt')),
@@ -34,11 +37,16 @@ ruleGroup.addRule({
   firewallDomainList: overrideList,
   action: route53resolver.FirewallRuleAction.block(route53resolver.DnsBlockResponse.override('amazon.com')),
 });
-// ruleGroup.addRule({
-//   priority: 30,
-//   firewallDomainList: managedMalwareList,
-//   action: route53resolver.FirewallRuleAction.block(),
-// });
+ruleGroup.addRule({
+  priority: 30,
+  firewallDomainList: managedMalwareList,
+  action: route53resolver.FirewallRuleAction.block(),
+});
+ruleGroup.addRule({
+  priority: 40,
+  firewallDomainList: managedAggregateThreatList,
+  action: route53resolver.FirewallRuleAction.block(),
+});
 
 ruleGroup.associate('Association', {
   priority: 101,

@@ -1,14 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "34.0.0",
   "testCases": {
-    "integ.firewall": {
+    "Integ/DefaultTest": {
       "stacks": [
         "cdk-route53-resolver-firewall"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "Integ/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegDefaultTestDeployAssert4E6713E1"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }
