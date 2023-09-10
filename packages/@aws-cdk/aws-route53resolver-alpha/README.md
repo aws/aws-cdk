@@ -61,9 +61,7 @@ const malwareList = route53resolver.FirewallDomainList.fromFirewallDomainListId(
 );
 ```
 
-### AWS Managed Domain lists
-
-Use `FirewallManagedDomainList` to import an [AWS managed domain list](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-dns-firewall-managed-domain-lists.html):
+You can use `FirewallManagedDomainList` instead to import an [AWS managed domain list](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-dns-firewall-managed-domain-lists.html):
 
 ```ts
 // AWSManagedDomainsMalwareDomainList
