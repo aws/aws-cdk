@@ -12,10 +12,50 @@ beforeEach(() => {
   route53resolverMock.reset();
 });
 
-test('found the domain list', async () => {
+test('found the domain list on create event', async () => {
   // GIVEN
   const event: Partial<AWSLambda.CloudFormationCustomResourceCreateEvent> = {
     RequestType: 'Create',
+    ResourceProperties: {
+      ServiceToken: 'Foo',
+      DomainListName: 'AWSManagedDomainsAggregateThreatList',
+    },
+  };
+
+  route53resolverMock.on(ListFirewallDomainListsCommand).resolves({
+    FirewallDomainLists: [
+      {
+        Arn: 'arn:aws:route53resolver:11111',
+        Id: 'rslvr-11111',
+        ManagedOwnerName: 'Route 53 Resolver DNS Firewall',
+        Name: 'AWSManagedDomainsAmazonGuardDutyThreatList',
+      },
+      {
+        Arn: 'arn:aws:route53resolver:22222',
+        Id: 'rslvr-22222',
+        Name: 'AWSManagedDomainsAggregateThreatList',
+      },
+      {
+        Arn: 'arn:aws:route53resolver:33333',
+        Id: 'rslvr-33333',
+        ManagedOwnerName: 'Route 53 Resolver DNS Firewall',
+        Name: 'AWSManagedDomainsAggregateThreatList',
+      },
+    ],
+  });
+
+  // WHEN
+  const result = await invokeHandler(event);
+
+  // THEN
+  expect(result?.Data.DomainListId).toBe('rslvr-33333');
+  expect(route53resolverMock).toHaveReceivedCommandTimes(ListFirewallDomainListsCommand, 1);
+});
+
+test('found the domain list on update event', async () => {
+  // GIVEN
+  const event: Partial<AWSLambda.CloudFormationCustomResourceUpdateEvent> = {
+    RequestType: 'Update',
     ResourceProperties: {
       ServiceToken: 'Foo',
       DomainListName: 'AWSManagedDomainsAggregateThreatList',
