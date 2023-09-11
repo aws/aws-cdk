@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
+import { Annotations } from './annotations';
 import { Duration } from './duration';
 import { TimeZone } from './time-zone';
-import { Annotations } from './annotations';
 
 /**
  * Schedule
@@ -66,7 +66,9 @@ export abstract class Schedule {
    * Create a schedule from a set of cron fields
    */
   protected static protectedCron(options: CronOptions): Schedule {
-    if (options.weekDay !== undefined && options.day !== undefined) {
+    if (options.weekDay !== undefined && options.day !== undefined &&
+      !(options.weekDay === '*' && options.day === '*') // special case for aws-autoscaling
+    ) {
       throw new Error('Cannot supply both \'day\' and \'weekDay\', use at most one');
     }
 
@@ -83,7 +85,7 @@ export abstract class Schedule {
       public readonly expressionString = `cron(${minute} ${hour} ${day} ${month} ${weekDay} ${year})`;
       public _bind(scope: Construct) {
         if (!options.minute) {
-          Annotations.of(scope).addWarning('cron: If you don\'t pass \'minute\', by default the event runs every minute. Pass \'minute: \'*\'\' if that\'s what you intend, or \'minute: 0\' to run once per hour instead.');
+          Annotations.of(scope).addWarningV2('@aws-cdk/core:scheduleDefaultRunsEveryMinute', 'cron: If you don\'t pass \'minute\', by default the event runs every minute. Pass \'minute: \'*\'\' if that\'s what you intend, or \'minute: 0\' to run once per hour instead.');
         }
         return new LiteralSchedule(this.expressionString, options.timeZone);
       }

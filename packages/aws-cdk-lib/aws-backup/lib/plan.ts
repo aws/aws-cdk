@@ -188,6 +188,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
       },
       ruleName: rule.props.ruleName ?? `${this.node.id}Rule${this.rules.length}`,
       scheduleExpression: rule.props.schedule?.expressionString ?? rule.props.scheduleExpression?.expressionString,
+      scheduleExpressionTimezone: rule.props.schedule?.timeZone?.timezoneName,
       startWindowMinutes: rule.props.startWindow?.toMinutes(),
       enableContinuousBackup: rule.props.enableContinuousBackup,
       targetBackupVault: vault.backupVaultName,

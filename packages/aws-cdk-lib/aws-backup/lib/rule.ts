@@ -1,7 +1,7 @@
+import { Schedule } from './schedule';
 import { IBackupVault } from './vault';
 import * as events from '../../aws-events';
 import { Duration, Token } from '../../core';
-import { Schedule } from './schedule';
 
 /**
  * Properties for a BackupPlanRule
@@ -48,6 +48,8 @@ export interface BackupPlanRuleProps {
 
   /**
    * A CRON expression specifying when AWS Backup initiates a backup job.
+   *
+   * @default - no schedule
    */
   readonly schedule?: Schedule;
 

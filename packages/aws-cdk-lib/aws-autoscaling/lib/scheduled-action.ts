@@ -16,9 +16,11 @@ export interface BasicScheduledActionProps {
    * For more information, see https://en.wikipedia.org/wiki/List_of_tz_database_time_zones.
    *
    * @default - UTC
+   * @deprecated use time zones as part of the schedule prop
    *
    */
   readonly timeZone?: string;
+
   /**
    * When to perform this action.
    *
@@ -115,7 +117,7 @@ export class ScheduledAction extends Resource {
       maxSize: props.maxCapacity,
       desiredCapacity: props.desiredCapacity,
       recurrence: props.schedule.expressionString,
-      timeZone: props.timeZone,
+      timeZone: props.timeZone ?? props.schedule.timeZone?.timezoneName,
     });
 
     this.scheduledActionName = resource.attrScheduledActionName;

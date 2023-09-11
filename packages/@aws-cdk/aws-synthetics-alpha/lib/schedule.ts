@@ -37,9 +37,6 @@ export class Schedule extends ScheduleExpression {
     if (minutes === 0) {
       return Schedule.once();
     }
-    if (minutes === 1) {
-      return new Schedule('rate(1 minute)');
-    }
     return super.protectedRate(interval);
   }
 

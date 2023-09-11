@@ -1,6 +1,6 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../assertions';
 import * as events from '../../aws-events';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { App, Duration, Stack } from '../../core';
 import { BackupPlan, BackupPlanRule, BackupVault, Schedule } from '../lib';
 
