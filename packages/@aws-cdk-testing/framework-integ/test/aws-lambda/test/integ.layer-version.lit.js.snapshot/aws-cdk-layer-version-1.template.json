@@ -4,7 +4,7 @@
    "Type": "AWS::Lambda::LayerVersion",
    "Properties": {
     "CompatibleRuntimes": [
-     "nodejs16.x"
+     "nodejs18.x"
     ],
     "Content": {
      "S3Bucket": {
@@ -77,7 +77,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "MyLayeredLambdaServiceRole1A7DC118"
