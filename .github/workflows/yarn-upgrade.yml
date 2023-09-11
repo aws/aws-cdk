@@ -15,7 +15,7 @@ jobs:
     steps:
 
       - name: Check Out
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Node
         uses: actions/setup-node@v3
@@ -103,7 +103,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check Out
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Download patch
         uses: actions/download-artifact@v3
