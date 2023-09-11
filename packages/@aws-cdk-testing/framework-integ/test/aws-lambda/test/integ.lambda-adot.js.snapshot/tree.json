@@ -131,15 +131,12 @@
                     "handler": "index.handler",
                     "layers": [
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:lambda:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":901920570463:layer:aws-otel-nodejs-arm64-ver-1-15-0:2"
-                          ]
+                        "Fn::FindInMap": [
+                          "AdotlambdalayerMap",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          "JAVASCRIPTxSDKx1x15x0x1xarm64"
                         ]
                       }
                     ],
@@ -149,7 +146,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs14.x",
+                    "runtime": "nodejs16.x",
                     "tracingConfig": {
                       "mode": "Active"
                     }
@@ -171,6 +168,14 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "Adot-lambda-layerMap": {
+            "id": "Adot-lambda-layerMap",
+            "path": "Stack1/Adot-lambda-layerMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
               "version": "0.0.0"
             }
           },
@@ -294,15 +299,12 @@
                     "handler": "index.handler",
                     "layers": [
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:lambda:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":901920570463:layer:aws-otel-python-amd64-ver-1-19-0:2"
-                          ]
+                        "Fn::FindInMap": [
+                          "AdotlambdalayerMap",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          "PYTHONxSDKx1x19x0x1xx86x64"
                         ]
                       }
                     ],
@@ -457,15 +459,12 @@
                     "handler": "index.handler",
                     "layers": [
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:lambda:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-28-1:1"
-                          ]
+                        "Fn::FindInMap": [
+                          "AdotlambdalayerMap",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          "JAVAxSDKx1x28x1xx86x64"
                         ]
                       }
                     ],
@@ -620,15 +619,12 @@
                     "handler": "index.handler",
                     "layers": [
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:lambda:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":901920570463:layer:aws-otel-java-agent-amd64-ver-1-28-1:1"
-                          ]
+                        "Fn::FindInMap": [
+                          "AdotlambdalayerMap",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          "JAVAxAUTOxINSTRUMENTATIONx1x28x1xx86x64"
                         ]
                       }
                     ],
@@ -783,15 +779,12 @@
                     "handler": "index.handler",
                     "layers": [
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:lambda:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":901920570463:layer:aws-otel-collector-amd64-ver-0-82-0:1"
-                          ]
+                        "Fn::FindInMap": [
+                          "AdotlambdalayerMap",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          "GENERICx0x82x0xx86x64"
                         ]
                       }
                     ],
@@ -975,15 +968,12 @@
                     "handler": "index.handler",
                     "layers": [
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:lambda:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":901920570463:layer:aws-otel-nodejs-amd64-ver-1-15-0:2"
-                          ]
+                        "Fn::FindInMap": [
+                          "AdotlambdalayerMap",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          "JAVASCRIPTxSDKx1x15x0x1xx86x64"
                         ]
                       }
                     ],
@@ -993,7 +983,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs14.x",
+                    "runtime": "nodejs16.x",
                     "tracingConfig": {
                       "mode": "Active"
                     }
@@ -1015,6 +1005,14 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "Adot-lambda-layerMap": {
+            "id": "Adot-lambda-layerMap",
+            "path": "Stack2/Adot-lambda-layerMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
               "version": "0.0.0"
             }
           },
@@ -1138,15 +1136,12 @@
                     "handler": "index.handler",
                     "layers": [
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:lambda:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":901920570463:layer:aws-otel-python-amd64-ver-1-19-0:2"
-                          ]
+                        "Fn::FindInMap": [
+                          "AdotlambdalayerMap",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          "PYTHONxSDKx1x19x0x1xx86x64"
                         ]
                       }
                     ],
@@ -1301,15 +1296,12 @@
                     "handler": "index.handler",
                     "layers": [
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:lambda:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-28-1:1"
-                          ]
+                        "Fn::FindInMap": [
+                          "AdotlambdalayerMap",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          "JAVAxSDKx1x28x1xx86x64"
                         ]
                       }
                     ],
@@ -1464,15 +1456,12 @@
                     "handler": "index.handler",
                     "layers": [
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:lambda:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":901920570463:layer:aws-otel-java-agent-amd64-ver-1-28-1:1"
-                          ]
+                        "Fn::FindInMap": [
+                          "AdotlambdalayerMap",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          "JAVAxAUTOxINSTRUMENTATIONx1x28x1xx86x64"
                         ]
                       }
                     ],
@@ -1627,15 +1616,12 @@
                     "handler": "index.handler",
                     "layers": [
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:lambda:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":901920570463:layer:aws-otel-collector-amd64-ver-0-82-0:1"
-                          ]
+                        "Fn::FindInMap": [
+                          "AdotlambdalayerMap",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          "GENERICx0x82x0xx86x64"
                         ]
                       }
                     ],
@@ -1705,7 +1691,7 @@
                 "path": "IntegTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.69"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
@@ -1751,7 +1737,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.69"
+          "version": "10.2.70"
         }
       }
     },

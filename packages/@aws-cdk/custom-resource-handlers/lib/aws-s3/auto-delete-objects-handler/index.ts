@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { S3, S3ServiceException } from '@aws-sdk/client-s3';
+import { S3 } from '@aws-sdk/client-s3';
 import { makeHandler } from '../../nodejs-entrypoint';
 
 const AUTO_DELETE_OBJECTS_TAG = 'aws-cdk:auto-delete-objects';
@@ -87,7 +87,7 @@ async function onDelete(bucketName?: string) {
     await emptyBucket(bucketName);
   } catch (error: any) {
     // Bucket doesn't exist, all is well
-    if (error instanceof S3ServiceException && error.name === 'NoSuchBucket') {
+    if (error.name === 'NoSuchBucket') {
       console.log(`Bucket '${bucketName}' does not exist.`);
       return;
     }

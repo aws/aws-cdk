@@ -222,11 +222,11 @@ class LambdaStack extends cdk.Stack {
     // see the 'upgrade legacy bootstrap stack' test
     const synthesizer = parent.node.tryGetContext('legacySynth') === 'true' ?
       new LegacyStackSynthesizer({
-          fileAssetsBucketName: parent.node.tryGetContext('bootstrapBucket'),
+        fileAssetsBucketName: parent.node.tryGetContext('bootstrapBucket'),
       })
-    : new DefaultStackSynthesizer({
-          fileAssetsBucketName: parent.node.tryGetContext('bootstrapBucket'),
-        })
+      : new DefaultStackSynthesizer({
+        fileAssetsBucketName: parent.node.tryGetContext('bootstrapBucket'),
+      })
     super(parent, id, {
       ...props,
       synthesizer: synthesizer,
@@ -234,7 +234,7 @@ class LambdaStack extends cdk.Stack {
 
     const fn = new lambda.Function(this, 'my-function', {
       code: lambda.Code.asset(path.join(__dirname, 'lambda')),
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler'
     });
 
@@ -248,7 +248,7 @@ class LambdaHotswapStack extends cdk.Stack {
 
     const fn = new lambda.Function(this, 'my-function', {
       code: lambda.Code.asset(path.join(__dirname, 'lambda')),
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler',
       description: process.env.DYNAMIC_LAMBDA_PROPERTY_VALUE ?? "description",
       environment: {

@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "34.0.0",
   "artifacts": {
     "aws-cdk-firehose-delivery-stream-s3-all-properties.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9b3b9aa8a6b5cb4cc6528e455104eb9b1c5d35d85ccc036944f30835bb11d2c4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a3433596c2722440b4d61d5e77abdba8e304a02adbe509054bceb064468a85d2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -117,12 +117,6 @@
             "data": "BackupKey60B97760"
           }
         ],
-        "/aws-cdk-firehose-delivery-stream-s3-all-properties/Delivery Stream/Service Role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DeliveryStreamServiceRole964EEBCC"
-          }
-        ],
         "/aws-cdk-firehose-delivery-stream-s3-all-properties/Delivery Stream/S3 Destination Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -169,6 +163,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "DeliveryStreamServiceRole964EEBCC": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeliveryStreamServiceRole964EEBCC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

@@ -1,5 +1,5 @@
 // Copyright 2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-import { S3Client, ListObjectsOutput, ListObjectsCommand } from '@aws-sdk/client-s3';
+import { S3Client, ListObjectsOutput, ListObjectsCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import { DescribeInstancesCommand, EC2Client } from '@aws-sdk/client-ec2';
 import { mockClient } from 'aws-sdk-client-mock';
 import { AwsApiCallRequest, AwsApiCallResult } from '../../../../lib/assertions';
@@ -156,6 +156,31 @@ describe('SdkHandler', () => {
 
       // THEN
       expect(ec2Mock).toHaveReceivedCommandWith(DescribeInstancesCommand, { NextToken: 'To"ken' });
+    });
+
+    test('byte array coercion', async () => {
+      // GIVEN
+      s3Mock.on(PutObjectCommand).resolves({ });
+      const handler = sdkHandler() as any;
+      const request: AwsApiCallRequest = {
+        service: 'S3',
+        api: 'putObject',
+        parameters: {
+          Bucket: '"myBucket"',
+          Key: '"foo"',
+          Body: '"abc"',
+        },
+      };
+
+      // WHEN
+      await handler.processEvent(request);
+
+      // THEN
+      expect(s3Mock).toHaveReceivedCommandWith(PutObjectCommand, {
+        Bucket: 'myBucket',
+        Key: 'foo',
+        Body: Uint8Array.from([97, 98, 99]),
+      });
     });
   });
 

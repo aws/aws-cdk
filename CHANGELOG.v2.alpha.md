@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.95.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.95.0-alpha.0...v2.95.1-alpha.0) (2023-09-08)
+
+## [2.95.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.94.0-alpha.0...v2.95.0-alpha.0) (2023-09-07)
+
+
+### Bug Fixes
+
+* **integ-tests:** Uint8Arrays are not decoded properly  ([#27009](https://github.com/aws/aws-cdk/issues/27009)) ([47ab5c8](https://github.com/aws/aws-cdk/commit/47ab5c837c598e8d854f21e82602c21098676019))
+
+## [2.94.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.93.0-alpha.0...v2.94.0-alpha.0) (2023-09-01)
+
+
+### Features
+
+* **amplify:** enables apps hosted with server side rendering ([#26861](https://github.com/aws/aws-cdk/issues/26861)) ([c67da83](https://github.com/aws/aws-cdk/commit/c67da83d9c77eaca41ce0691dddad6da11ed397c)), closes [#24076](https://github.com/aws/aws-cdk/issues/24076) [#23325](https://github.com/aws/aws-cdk/issues/23325)
+* **scheduler:** base target methods and lambda invoke target ([#26575](https://github.com/aws/aws-cdk/issues/26575)) ([39cbd46](https://github.com/aws/aws-cdk/commit/39cbd46f5d25d2304415aa2f0b5034dca0f260d8))
+* **synthetics-alpha:** add latest two NodeJS runtimes ([#26967](https://github.com/aws/aws-cdk/issues/26967)) ([0a0b37c](https://github.com/aws/aws-cdk/commit/0a0b37c5ac5c38abe698f82f5e4f0e0f2cd051b7))
+
 ## [2.93.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.92.0-alpha.0...v2.93.0-alpha.0) (2023-08-23)
 
 

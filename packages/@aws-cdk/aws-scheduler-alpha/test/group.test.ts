@@ -1,23 +1,39 @@
-import { Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { App, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as cw from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { CfnScheduleGroup } from 'aws-cdk-lib/aws-scheduler';
-import { ScheduleExpression, ScheduleTargetInput } from '../lib';
+import { IScheduleTarget, ScheduleExpression, ScheduleTargetConfig } from '../lib';
 import { Group, GroupProps } from '../lib/group';
-import { Schedule, targets } from '../lib/private';
+import { Schedule } from '../lib/schedule';
+
+class SomeLambdaTarget implements IScheduleTarget {
+  public constructor(private readonly fn: lambda.IFunction, private readonly role: iam.IRole) {
+  }
+
+  public bind(): ScheduleTargetConfig {
+    return {
+      arn: this.fn.functionArn,
+      role: this.role,
+    };
+  }
+}
 
 describe('Schedule Group', () => {
   let stack: Stack;
   let func: lambda.IFunction;
-  let role: iam.IRole;
   const expr = ScheduleExpression.at(new Date(Date.UTC(1969, 10, 20, 0, 0, 0)));
 
   beforeEach(() => {
-    stack = new Stack();
-    role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/johndoe');
-    func = lambda.Function.fromFunctionArn(stack, 'Function', 'arn:aws:lambda:us-east-1:123456789012:function/somefunc');
+    const app = new App();
+    stack = new Stack(app, 'Stack', { env: { region: 'us-east-1', account: '123456789012' } });
+    func = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      tracing: lambda.Tracing.PASS_THROUGH,
+    });
   });
 
   test('creates a group with default properties', () => {
@@ -97,22 +113,17 @@ describe('Schedule Group', () => {
       groupName: 'MyGroup',
     };
     const group = new Group(stack, 'TestGroup', props);
+    const role = iam.Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/someRole');
 
     const schedule1 = new Schedule(stack, 'MyScheduleDummy1', {
       schedule: expr,
       group: group,
-      target: new targets.LambdaInvoke({
-        role,
-        input: ScheduleTargetInput.fromText('test'),
-      }, func),
+      target: new SomeLambdaTarget(func, role),
     });
     const schedule2 = new Schedule(stack, 'MyScheduleDummy2', {
       schedule: expr,
       group: group,
-      target: new targets.LambdaInvoke({
-        role,
-        input: ScheduleTargetInput.fromText('test'),
-      }, func),
+      target: new SomeLambdaTarget(func, role),
     });
 
     expect(schedule1.group).toEqual(group);
@@ -154,15 +165,7 @@ describe('Schedule Group', () => {
                   {
                     Ref: 'AWS::Partition',
                   },
-                  ':scheduler:',
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':schedule/MyGroup/*',
+                  ':scheduler:us-east-1:123456789012:schedule/MyGroup/*',
                 ],
               ],
             },
@@ -203,15 +206,7 @@ describe('Schedule Group', () => {
                   {
                     Ref: 'AWS::Partition',
                   },
-                  ':scheduler:',
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':schedule/MyGroup/*',
+                  ':scheduler:us-east-1:123456789012:schedule/MyGroup/*',
                 ],
               ],
             },
@@ -249,15 +244,7 @@ describe('Schedule Group', () => {
                   {
                     Ref: 'AWS::Partition',
                   },
-                  ':scheduler:',
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':schedule/MyGroup/*',
+                  ':scheduler:us-east-1:123456789012:schedule/MyGroup/*',
                 ],
               ],
             },

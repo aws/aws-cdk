@@ -16,6 +16,8 @@ export interface WorkNodeCommon {
   readonly id: string;
   readonly dependencies: Set<string>;
   deploymentState: DeploymentState;
+  /** Some readable information to attach to the id, which may be unreadable */
+  readonly note?: string;
 }
 
 export interface StackNode extends WorkNodeCommon {
