@@ -14,16 +14,6 @@ const bucket = new s3.Bucket(stack, 'DataBucket', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
-const connection = new glue.Connection(stack, 'MyConnection', {
-  connectionName: 'my_connection',
-  type: glue.ConnectionType.JDBC,
-  properties: {
-    JDBC_CONNECTION_URL: 'jdbc:mysql://mysql.example.com:3306',
-    USERNAME: 'username',
-    PASSWORD: 'password',
-  },
-});
-
 const database = new glue.Database(stack, 'MyDatabase', {
   databaseName: 'my_database',
 });
@@ -132,15 +122,6 @@ new glue.S3Table(stack, 'MyTableWithStorageDescriptorParameters', {
     glue.StorageParameter.custom('separatorChar', ','), // Will describe the separator char used in the data
     glue.StorageParameter.custom(glue.StorageParameters.WRITE_PARALLEL, 'off'),
   ],
-});
-
-new glue.ExternalTable(stack, 'MyTableWithCustomLocation', {
-  database,
-  connection,
-  tableName: 'custom_location_table',
-  columns,
-  dataFormat: glue.DataFormat.JSON,
-  externalDataLocation: 'default_db.public.test',
 });
 
 new glue.Table(stack, 'MyDeprecatedTable', {
