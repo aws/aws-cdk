@@ -31,9 +31,10 @@ export abstract class Schedule {
    * Construct a schedule from a literal schedule expression
    *
    * @param expression The expression to use. Must be in a format that EventBridge will recognize
+   * @param timeZone The time zone, if applicable. This is only valid for 'at' and 'cron' expressions
    */
-  protected static expression(expression: string): Schedule {
-    return new LiteralSchedule(expression);
+  protected static expression(expression: string, timeZone?: TimeZone): Schedule {
+    return new LiteralSchedule(expression, timeZone);
   }
 
   /**
