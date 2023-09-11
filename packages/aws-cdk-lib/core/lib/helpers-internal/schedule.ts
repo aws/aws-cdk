@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
-import { Duration } from './duration';
-import { TimeZone } from './time-zone';
-import { Annotations } from './annotations';
+import { Duration } from '../duration';
+import { TimeZone } from '../time-zone';
+import { Annotations } from '../annotations';
 
 /**
  * Schedule
