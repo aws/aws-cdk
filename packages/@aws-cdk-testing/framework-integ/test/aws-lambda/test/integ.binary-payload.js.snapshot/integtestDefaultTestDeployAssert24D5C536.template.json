@@ -32,7 +32,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1693996483504"
+    "salt": "1694426182342"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -80,6 +80,24 @@
          "Resource": [
           "*"
          ]
+        },
+        {
+         "Action": [
+          "lambda:Invoke"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "lambda:InvokeFunction"
+         ],
+         "Resource": [
+          "*"
+         ]
         }
        ]
       }
@@ -95,7 +113,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "020364985d409cf8bf611edf535aedca3c0d7c0dd7f21ba847b79a41d9bf0dce.zip"
+     "S3Key": "e6687baf1807038e7f7c1491f44379c5b84bec1eac25667aaa6b38ef78dff400.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -106,6 +124,40 @@
      ]
     }
    }
+  },
+  "AwsApiCallLambdainvokefadfa108bb2726119308f73d0e24d8d4": {
+   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "invoke",
+    "expected": "{\"$ObjectLike\":{\"Payload\":{\"name\":\"world\"}}}",
+    "parameters": {
+     "FunctionName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "IntegBinaryPayload:ExportsOutputReffn5FF616E3BE1A8BD6"
+        },
+        "\""
+       ]
+      ]
+     },
+     "InvocationType": "\"RequestResponse\"",
+     "Payload": "\"{\\\"name\\\":\\\"world\\\"}\""
+    },
+    "flattenResponse": "false",
+    "salt": "1694426182343"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
@@ -113,6 +165,14 @@
    "Value": {
     "Fn::GetAtt": [
      "AwsApiCallLambdainvokeae153edcd4e4725d3057e7502eef13d4",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallLambdainvokefadfa108bb2726119308f73d0e24d8d4": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallLambdainvokefadfa108bb2726119308f73d0e24d8d4",
      "assertion"
     ]
    }

@@ -82,7 +82,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d10734fe0522d2d30eb5916fd9a45d4ddf9ec42fd308c30e000cbd7ad11f7a39.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e89e8285f3bd8e37ab8fb821889173f1bf1426ff88fd9f62a60f7a40376618aa.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -121,6 +121,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/integ-test/DefaultTest/DeployAssert/AwsApiCallLambdainvokefadfa108bb2726119308f73d0e24d8d4/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallLambdainvokefadfa108bb2726119308f73d0e24d8d4"
+          }
+        ],
+        "/integ-test/DefaultTest/DeployAssert/AwsApiCallLambdainvokefadfa108bb2726119308f73d0e24d8d4/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallLambdainvokefadfa108bb2726119308f73d0e24d8d4"
           }
         ],
         "/integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
