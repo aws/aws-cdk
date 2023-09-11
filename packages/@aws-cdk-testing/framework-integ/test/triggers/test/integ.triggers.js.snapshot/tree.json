@@ -129,7 +129,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs16.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -332,7 +332,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs16.x",
+                    "runtime": "nodejs18.x",
                     "timeout": 900
                   }
                 },
@@ -546,7 +546,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "004b12857696fed3c10ad54c8e3cabd07cdf653ec469cbadab6c64ae6c9ce690.zip"
+                      "s3Key": "e065f6e8b88b1e7afda877f6ad3d9db8223795efe79196dee3a2a097c45169c8.zip"
                     },
                     "environment": {
                       "variables": {
@@ -562,7 +562,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs16.x",
+                    "runtime": "nodejs18.x",
                     "timeout": 900
                   }
                 },
@@ -708,7 +708,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs16.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {

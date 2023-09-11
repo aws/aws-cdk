@@ -89,7 +89,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "SnsSqsServiceRoleDefaultPolicy82E7B09F",
@@ -174,7 +174,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "OnSuccesServiceRole75E399CF"
@@ -290,7 +290,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "EventBusLambdaServiceRoleDefaultPolicy5BB7FEB6",

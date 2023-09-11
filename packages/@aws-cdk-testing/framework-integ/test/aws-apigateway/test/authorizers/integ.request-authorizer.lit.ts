@@ -2,6 +2,7 @@ import * as path from 'path';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { App, Stack } from 'aws-cdk-lib';
 import { MockIntegration, PassthroughBehavior, RestApi, RequestAuthorizer, IdentitySource } from 'aws-cdk-lib/aws-apigateway';
+import { STANDARD_NODEJS_RUNTIME } from '../../../config';
 
 // Against the RestApi endpoint from the stack output, run
 // `curl -s -o /dev/null -w "%{http_code}" <url>` should return 401
@@ -12,7 +13,7 @@ const app = new App();
 const stack = new Stack(app, 'RequestAuthorizerInteg');
 
 const authorizerFn = new lambda.Function(stack, 'MyAuthorizerFunction', {
-  runtime: lambda.Runtime.NODEJS_16_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   handler: 'index.handler',
   code: lambda.AssetCode.fromAsset(path.join(__dirname, 'integ.request-authorizer.handler')),
 });

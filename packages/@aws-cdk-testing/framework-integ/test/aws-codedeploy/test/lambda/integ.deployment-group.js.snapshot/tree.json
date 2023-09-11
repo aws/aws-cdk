@@ -114,7 +114,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs16.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -169,7 +169,7 @@
                     },
                     "functionVersion": {
                       "Fn::GetAtt": [
-                        "HandlerCurrentVersion93FB80BF0f5df27a50bce6b85c420e4972b73360",
+                        "HandlerCurrentVersion93FB80BF7274e06dc68914926264fc8b4f358f0a",
                         "Version"
                       ]
                     },
@@ -366,7 +366,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs16.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -551,7 +551,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs16.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -847,7 +847,7 @@
                     },
                     "functionVersion": {
                       "Fn::GetAtt": [
-                        "HandlerCurrentVersion93FB80BF0f5df27a50bce6b85c420e4972b73360",
+                        "HandlerCurrentVersion93FB80BF7274e06dc68914926264fc8b4f358f0a",
                         "Version"
                       ]
                     },
@@ -1027,7 +1027,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.69"
+          "version": "10.2.70"
         }
       }
     },

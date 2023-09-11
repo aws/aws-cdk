@@ -85,7 +85,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs16.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -592,7 +592,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs16.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -1019,7 +1019,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.69"
+              "version": "10.2.70"
             }
           },
           "BootstrapVersion": {
@@ -1057,7 +1057,7 @@
                 "path": "deploy-time-substitution-integ-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.69"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
@@ -1077,7 +1077,7 @@
                             "path": "deploy-time-substitution-integ-test/DefaultTest/DeployAssert/AwsApiCallS3getObjectd316deb61071d83221cf46c8ebac0d87/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.69"
+                              "version": "10.2.70"
                             }
                           }
                         },
@@ -1149,7 +1149,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.69"
+                      "version": "10.2.70"
                     }
                   },
                   "BootstrapVersion": {
@@ -1191,7 +1191,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.69"
+          "version": "10.2.70"
         }
       }
     },

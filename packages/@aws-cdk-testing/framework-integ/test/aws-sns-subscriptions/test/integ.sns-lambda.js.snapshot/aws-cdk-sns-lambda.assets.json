@@ -1,7 +1,7 @@
 {
   "version": "34.0.0",
   "files": {
-    "de418ab1add99c8f55a46fa546cf3a4ce6696e70803b91c5a1168f0fd45e7065": {
+    "84decb7b7b95d94a486822637e6a08fe80a790b29dabe379981a00db167cbb19": {
       "source": {
         "path": "aws-cdk-sns-lambda.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "de418ab1add99c8f55a46fa546cf3a4ce6696e70803b91c5a1168f0fd45e7065.json",
+          "objectKey": "84decb7b7b95d94a486822637e6a08fe80a790b29dabe379981a00db167cbb19.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

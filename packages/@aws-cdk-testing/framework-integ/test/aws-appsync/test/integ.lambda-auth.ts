@@ -4,6 +4,7 @@ import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 import * as appsync from 'aws-cdk-lib/aws-appsync';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 class GraphQLApiLambdaAuthStack extends cdk.Stack {
   constructor(scope: Construct) {
@@ -14,7 +15,7 @@ class GraphQLApiLambdaAuthStack extends cdk.Stack {
         path.join(__dirname, 'verify/lambda-tutorial'),
       ),
       handler: 'lambda-tutorial.handler',
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
     });
 
     new appsync.GraphqlApi(this, 'api1', {
