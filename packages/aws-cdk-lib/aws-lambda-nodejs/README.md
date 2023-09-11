@@ -162,7 +162,7 @@ This can be configured by specifying `bundling.externalModules`:
 new nodejs.NodejsFunction(this, 'my-handler', {
   bundling: {
     externalModules: [
-      'aws-sdk', // Use the 'aws-sdk' available in the Lambda runtime
+      '@aws-sdk/*', // Use the AWS SDK for JS v3 available in the Lambda runtime
       'cool-module', // 'cool-module' is already available in a Layer
     ],
   },

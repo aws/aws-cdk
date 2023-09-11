@@ -2,6 +2,7 @@ import * as appscaling from 'aws-cdk-lib/aws-applicationautoscaling';
 import * as cdk from 'aws-cdk-lib';
 import { LAMBDA_RECOGNIZE_LAYER_VERSION } from 'aws-cdk-lib/cx-api';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 /**
 * Stack verification steps:
@@ -15,7 +16,7 @@ class TestStack extends cdk.Stack {
     const fn = new lambda.Function(this, 'MyLambda', {
       code: new lambda.InlineCode('exports.handler = async () => { console.log(\'hello world\'); };'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
     });
 
     const version = fn.currentVersion;
