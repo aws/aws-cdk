@@ -14,7 +14,7 @@ export abstract class Schedule extends ScheduleExpression {
    * @param expression The expression to use. Must be in a format that EventBridge will recognize
    */
   public static expression(expression: string): Schedule {
-    return super.protectedExpression(expression) as Schedule;
+    return super.protectedExpression(expression);
   }
 
   /**
@@ -23,14 +23,14 @@ export abstract class Schedule extends ScheduleExpression {
    * Rates may be defined with any unit of time, but when converted into minutes, the duration must be a positive whole number of minutes.
    */
   public static rate(duration: Duration): Schedule {
-    return super.protectedRate(duration) as Schedule;
+    return super.protectedRate(duration);
   }
 
   /**
    * Create a schedule from a set of cron fields
    */
   public static cron(options: CronOptions): Schedule {
-    return super.protectedCron(options) as Schedule;
+    return super.protectedCron(options);
   }
 }
 

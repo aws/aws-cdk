@@ -9,8 +9,8 @@ export abstract class Schedule extends ScheduleExpression {
    *
    * @param expression The expression to use. Must be in a format that Application AutoScaling will recognize
    */
-  public static expression(expression: string): Schedule {
-    return super.protectedExpression(expression);
+  public static expression(expression: string, timeZone?: TimeZone): Schedule {
+    return super.protectedExpression(expression, timeZone);
   }
 
   /**
