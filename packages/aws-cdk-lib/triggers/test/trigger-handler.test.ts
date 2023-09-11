@@ -13,8 +13,6 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
-jest.mock('aws-sdk');
-
 const mockInvoke = jest.fn().mockResolvedValue({
   StatusCode: 200,
 });

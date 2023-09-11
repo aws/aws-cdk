@@ -12,6 +12,13 @@ new codedeploy.LambdaDeploymentConfig(stack, 'LinearConfig', {
   }),
 });
 
+new codedeploy.CustomLambdaDeploymentConfig(stack, 'CustomConfig', {
+  interval: cdk.Duration.minutes(1),
+  percentage: 5,
+  type: cdk.aws_codedeploy.CustomLambdaDeploymentConfigType.LINEAR,
+  deploymentConfigName: 'hello',
+});
+
 new integ.IntegTest(app, 'LambdaDeploymentConfigTest', {
   testCases: [stack],
 });

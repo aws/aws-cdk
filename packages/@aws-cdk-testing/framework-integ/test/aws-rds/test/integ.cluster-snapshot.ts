@@ -8,6 +8,7 @@ import { Construct } from 'constructs';
 import * as rds from 'aws-cdk-lib/aws-rds';
 import { ClusterInstance } from 'aws-cdk-lib/aws-rds';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -85,7 +86,7 @@ class Snapshoter extends Construct {
     const code = lambda.Code.fromAsset(path.join(__dirname, 'snapshot-handler'));
     const onEventHandler = new lambda.Function(this, 'OnEventHandler', {
       code,
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
       handler: 'index.onEventHandler',
     });
     onEventHandler.addToRolePolicy(new iam.PolicyStatement({
@@ -95,7 +96,7 @@ class Snapshoter extends Construct {
 
     const isCompleteHandler = new lambda.Function(this, 'IsCompleteHandler', {
       code,
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
       handler: 'index.isCompleteHandler',
     });
     isCompleteHandler.addToRolePolicy(new iam.PolicyStatement({

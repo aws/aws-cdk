@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.95.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.95.0-alpha.0...v2.95.1-alpha.0) (2023-09-08)
+
+## [2.95.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.94.0-alpha.0...v2.95.0-alpha.0) (2023-09-07)
+
+
+### Bug Fixes
+
+* **integ-tests:** Uint8Arrays are not decoded properly  ([#27009](https://github.com/aws/aws-cdk/issues/27009)) ([47ab5c8](https://github.com/aws/aws-cdk/commit/47ab5c837c598e8d854f21e82602c21098676019))
+
 ## [2.94.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.93.0-alpha.0...v2.94.0-alpha.0) (2023-09-01)
 
 

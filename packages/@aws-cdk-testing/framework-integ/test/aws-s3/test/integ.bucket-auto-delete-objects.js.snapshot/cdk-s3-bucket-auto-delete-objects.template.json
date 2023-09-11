@@ -112,7 +112,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "216218e507a977a1bb3592f29c1a62ab3e0a9eb25569109a395315638e154329.zip"
+     "S3Key": "120f2d9f06d56bd1038e8bb4bc7fa0b1758f62b6c772f4ac166b811e9ed71cf9.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -198,7 +198,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "5f27867cd3c94f1ff2edc275698533710939b2685d5a2991b452bcadf2cd814f.zip"
+     "S3Key": "1f744b353731d46f52cfbd3252054e4a0c7684db18117120d6e514872f26601f.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -209,7 +209,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "CustomS3PutObjectsCustomResourceProviderRole40D98C91"
@@ -342,7 +342,7 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [
     "DeleteBucketCustomResourcePolicy99AB6B27"
@@ -414,7 +414,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "d64690b87ee4eb4d8bbabafe26f88d8cc557bb629a158ed5fb182b8e48da1bbf.zip"
+     "S3Key": "03adb2514e02907e0458bec59283658ec529425bd5df38e1194455c65dedf6ff.zip"
     },
     "Handler": "index.handler",
     "Role": {

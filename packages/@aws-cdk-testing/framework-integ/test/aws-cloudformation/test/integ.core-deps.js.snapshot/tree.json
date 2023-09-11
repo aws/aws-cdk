@@ -85,7 +85,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs16.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -364,7 +364,7 @@
                             "Arn"
                           ]
                         },
-                        "runtime": "nodejs16.x"
+                        "runtime": "nodejs18.x"
                       }
                     },
                     "constructInfo": {
@@ -410,7 +410,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/732f221eda79e7d97176c0ca83a57847229ea8d925bed3a0f44519ad2716f909.json"
+                          "/a0a84b40ba60ba1e502f2d610a4a4f1887756b077982504bcc7227a7d3d81425.json"
                         ]
                       ]
                     }
@@ -508,7 +508,7 @@
                             "Arn"
                           ]
                         },
-                        "runtime": "nodejs16.x"
+                        "runtime": "nodejs18.x"
                       }
                     },
                     "constructInfo": {
@@ -554,7 +554,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/314afaf390f542bb88f9bcc00e45d67de57a09ae322b187be257be3b060f914e.json"
+                          "/a967bbe5c0391c1c335b765fd70a93c81565a73fdd887a2456aa54f001e52336.json"
                         ]
                       ]
                     }

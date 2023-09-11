@@ -85,7 +85,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs16.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -345,7 +345,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs16.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -462,7 +462,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs16.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
