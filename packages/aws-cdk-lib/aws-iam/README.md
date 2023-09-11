@@ -174,7 +174,7 @@ iam.Role.customizeRoles(stack);
 const fn = new lambda.Function(this, 'MyLambda', {
   code: new lambda.InlineCode('foo'),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
 });
 
 const bucket = new s3.Bucket(this, 'Bucket');

@@ -84,7 +84,7 @@ test('json-encoded string', () => {
 
 test('markers are returned in the source config', () => {
   const stack = new Stack();
-  const handler = new lambda.Function(stack, 'Handler', { runtime: lambda.Runtime.NODEJS_14_X, code: lambda.Code.fromInline('foo'), handler: 'index.handler' });
+  const handler = new lambda.Function(stack, 'Handler', { runtime: lambda.Runtime.NODEJS_LATEST, code: lambda.Code.fromInline('foo'), handler: 'index.handler' });
   const actual = Source.data('file1.txt', `boom-${stack.account}`).bind(stack, { handlerRole: handler.role! });
   expect(actual.markers).toStrictEqual({
     '<<marker:0xbaba:0>>': { Ref: 'AWS::AccountId' },

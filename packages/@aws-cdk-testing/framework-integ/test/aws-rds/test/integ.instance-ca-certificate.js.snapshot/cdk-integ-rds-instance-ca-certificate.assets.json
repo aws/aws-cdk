@@ -1,0 +1,19 @@
+{
+  "version": "33.0.0",
+  "files": {
+    "61808ca58c026d9643317e877071de364c62e20ab5d23ff2e501b45706986ca3": {
+      "source": {
+        "path": "cdk-integ-rds-instance-ca-certificate.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "61808ca58c026d9643317e877071de364c62e20ab5d23ff2e501b45706986ca3.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

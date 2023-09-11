@@ -12,7 +12,7 @@ beforeEach(() => {
   stack = new cdk.Stack();
   bucket = new s3.Bucket(stack, 'MyBucket');
   handler = new lambda.Function(stack, 'MyFunction', {
-    runtime: lambda.Runtime.NODEJS_14_X,
+    runtime: lambda.Runtime.NODEJS_LATEST,
     handler: 'index.hello',
     code: new lambda.InlineCode('def hello(): pass'),
   });

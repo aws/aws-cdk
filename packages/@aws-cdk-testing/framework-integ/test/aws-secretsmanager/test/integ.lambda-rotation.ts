@@ -16,7 +16,7 @@ class TestStack extends cdk.Stack {
 
     secret.addRotationSchedule('Schedule', {
       rotationLambda: new lambda.Function(this, 'Lambda', {
-        runtime: lambda.Runtime.NODEJS_14_X,
+        runtime: lambda.Runtime.NODEJS_16_X,
         handler: 'index.handler',
         code: lambda.Code.fromInline('NOOP'),
       }),
