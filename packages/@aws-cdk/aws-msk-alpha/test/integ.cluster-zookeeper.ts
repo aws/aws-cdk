@@ -35,7 +35,6 @@ class KafkaZookeeperTest extends Stack {
 const app = new App();
 const testCase = new KafkaZookeeperTest(app, 'KafkaZookeeperTestStack');
 new IntegTest(app, 'KafkaZookeeperIntegTest', {
-  enableLookups: true,
   testCases: [testCase],
 });
 
