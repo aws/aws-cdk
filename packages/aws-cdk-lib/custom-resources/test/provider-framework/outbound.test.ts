@@ -2,7 +2,7 @@ import { InvocationResponse, InvokeCommandInput } from '@aws-sdk/client-lambda';
 import { invokeFunction } from '../../lib/provider-framework/runtime/outbound';
 
 const mockInvoke = jest.fn();
-const mockWaitUntilFunctionActive = jest.fn();
+const mockWaitUntilFunctionActiveV2 = jest.fn();
 const mockLambda = {
   invoke: mockInvoke,
 };
@@ -12,7 +12,7 @@ jest.mock('@aws-sdk/client-lambda', () => {
     Lambda: jest.fn().mockImplementation(() => {
       return mockLambda;
     }),
-    waitUntilFunctionActive: (...args: any[]) => mockWaitUntilFunctionActive(...args),
+    waitUntilFunctionActiveV2: (...args: any[]) => mockWaitUntilFunctionActiveV2(...args),
   };
 });
 
@@ -28,7 +28,7 @@ let invokeCount: number = 0;
 let expectedFunctionStates: string[] = [];
 let receivedFunctionStates: string[] = [];
 
-mockWaitUntilFunctionActive.mockImplementation(async () => {
+mockWaitUntilFunctionActiveV2.mockImplementation(async () => {
   let state = expectedFunctionStates.pop();
   while (state !== 'Active') {
     receivedFunctionStates.push(state!);

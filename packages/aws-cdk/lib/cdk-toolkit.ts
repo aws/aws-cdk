@@ -493,9 +493,7 @@ export class CdkToolkit {
 
     highlight(stack.displayName);
 
-    const resourceImporter = new ResourceImporter(stack, this.props.deployments, {
-      toolkitStackName: options.toolkitStackName,
-    });
+    const resourceImporter = new ResourceImporter(stack, this.props.deployments);
     const { additions, hasNonAdditions } = await resourceImporter.discoverImportableResources(options.force);
     if (additions.length === 0) {
       warning('%s: no new resources compared to the currently deployed stack, skipping import.', chalk.bold(stack.displayName));
