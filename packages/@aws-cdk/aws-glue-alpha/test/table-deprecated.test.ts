@@ -1654,7 +1654,7 @@ test('storage descriptor parameters', () => {
   });
 });
 
-function createTable(props: Pick<glue.TableProps, Exclude<keyof glue.TableProps, 'database' | 'dataFormat'>>): void {
+function createTable(props: Pick<glue.S3TableProps, Exclude<keyof glue.S3TableProps, 'database' | 'dataFormat'>>): void {
   const stack = new cdk.Stack();
   new glue.Table(stack, 'table', {
     ...props,
