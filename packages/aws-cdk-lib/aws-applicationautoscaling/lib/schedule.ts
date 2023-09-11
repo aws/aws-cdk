@@ -1,87 +1,38 @@
-import { Construct } from 'constructs';
-import { Annotations, Duration } from '../../core';
+import { Duration, TimeZone, CronOptions as CoreCronOptions, Schedule as ScheduleExpression } from '../../core';
 
 /**
  * Schedule for scheduled scaling actions
  */
-export abstract class Schedule {
+export abstract class Schedule extends ScheduleExpression {
   /**
    * Construct a schedule from a literal schedule expression
    *
    * @param expression The expression to use. Must be in a format that Application AutoScaling will recognize
    */
   public static expression(expression: string): Schedule {
-    return new LiteralSchedule(expression);
+    return super.protectedExpression(expression);
   }
 
   /**
    * Construct a schedule from an interval and a time unit
    */
   public static rate(duration: Duration): Schedule {
-    if (duration.isUnresolved()) {
-      const validDurationUnit = ['minute', 'minutes', 'hour', 'hours', 'day', 'days'];
-      if (!validDurationUnit.includes(duration.unitLabel())) {
-        throw new Error("Allowed units for scheduling are: 'minute', 'minutes', 'hour', 'hours', 'day' or 'days'");
-      }
-      return new LiteralSchedule(`rate(${duration.formatTokenToNumber()})`);
-    }
-    if (duration.toSeconds() === 0) {
-      throw new Error('Duration cannot be 0');
-    }
-
-    let rate = maybeRate(duration.toDays({ integral: false }), 'day');
-    if (rate === undefined) { rate = maybeRate(duration.toHours({ integral: false }), 'hour'); }
-    if (rate === undefined) { rate = makeRate(duration.toMinutes({ integral: true }), 'minute'); }
-    return new LiteralSchedule(rate);
+    return super.protectedRate(duration);
   }
 
   /**
    * Construct a Schedule from a moment in time
    */
-  public static at(moment: Date): Schedule {
-    return new LiteralSchedule(`at(${formatISO(moment)})`);
+  public static at(moment: Date, timeZone?: TimeZone): Schedule {
+    return super.protectedAt(moment, timeZone);
   }
 
   /**
    * Create a schedule from a set of cron fields
    */
-  public static cron(options: CronOptions): Schedule {
-    if (options.weekDay !== undefined && options.day !== undefined) {
-      throw new Error('Cannot supply both \'day\' and \'weekDay\', use at most one');
-    }
-
-    const minute = fallback(options.minute, '*');
-    const hour = fallback(options.hour, '*');
-    const month = fallback(options.month, '*');
-    const year = fallback(options.year, '*');
-
-    // Weekday defaults to '?' if not supplied. If it is supplied, day must become '?'
-    const day = fallback(options.day, options.weekDay !== undefined ? '?' : '*');
-    const weekDay = fallback(options.weekDay, '?');
-
-    return new class extends Schedule {
-      public readonly expressionString: string = `cron(${minute} ${hour} ${day} ${month} ${weekDay} ${year})`;
-      public _bind(scope: Construct) {
-        if (!options.minute) {
-          Annotations.of(scope).addWarningV2('@aws-cdk/aws-applicationautoscaling:defaultRunEveryMinute', 'cron: If you don\'t pass \'minute\', by default the event runs every minute. Pass \'minute: \'*\'\' if that\'s what you intend, or \'minute: 0\' to run once per hour instead.');
-        }
-        return new LiteralSchedule(this.expressionString);
-      }
-    };
+  public static cron(options: CoreCronOptions): Schedule {
+    return super.protectedCron(options);
   }
-
-  /**
-   * Retrieve the expression for this schedule
-   */
-  public abstract readonly expressionString: string;
-
-  protected constructor() {}
-
-  /**
-   *
-   * @internal
-   */
-  public abstract _bind(scope: Construct): void;
 }
 
 /**
@@ -91,6 +42,7 @@ export abstract class Schedule {
  * a field implies '*' or '?', whichever one is appropriate.
  *
  * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html#CronExpressions
+ * @deprecated use core.CronOptions instead
  */
 export interface CronOptions {
   /**
@@ -134,49 +86,4 @@ export interface CronOptions {
    * @default - Any day of the week
    */
   readonly weekDay?: string;
-}
-
-class LiteralSchedule extends Schedule {
-  constructor(public readonly expressionString: string) {
-    super();
-  }
-
-  public _bind() {}
-}
-
-function fallback<T>(x: T | undefined, def: T): T {
-  return x === undefined ? def : x;
-}
-
-function formatISO(date?: Date) {
-  if (!date) { return undefined; }
-
-  return date.getUTCFullYear() +
-    '-' + pad(date.getUTCMonth() + 1) +
-    '-' + pad(date.getUTCDate()) +
-    'T' + pad(date.getUTCHours()) +
-    ':' + pad(date.getUTCMinutes()) +
-    ':' + pad(date.getUTCSeconds());
-
-  function pad(num: number) {
-    if (num < 10) {
-      return '0' + num;
-    }
-    return num;
-  }
-}
-
-/**
- * Return the rate if the rate is whole number
- */
-function maybeRate(interval: number, singular: string) {
-  if (interval === 0 || !Number.isInteger(interval)) { return undefined; }
-  return makeRate(interval, singular);
-}
-
-/**
- * Return 'rate(${interval} ${singular}(s))` for the interval
- */
-function makeRate(interval: number, singular: string) {
-  return interval === 1 ? `rate(1 ${singular})` : `rate(${interval} ${singular}s)`;
 }

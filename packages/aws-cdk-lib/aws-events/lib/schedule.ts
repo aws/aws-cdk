@@ -1,5 +1,4 @@
-import { Duration } from '../../core';
-import { Schedule as ScheduleExpression } from '../../core/lib/helpers-internal';
+import { Duration, Schedule as ScheduleExpression } from '../../core';
 
 /**
  * Schedule for scheduled event rules
