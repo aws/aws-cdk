@@ -55,6 +55,19 @@ test('can pnpm install with non root user', () => {
   expect(proc.status).toEqual(0);
 });
 
+test('can bun install with non root user', () => {
+  const proc = spawnSync(docker, [
+    'run', '-u', '500:500',
+    'esbuild',
+    'bash', '-c', [
+      'mkdir /tmp/test',
+      'cd /tmp/test',
+      'bun add constructs',
+    ].join(' && '),
+  ]);
+  expect(proc.status).toEqual(0);
+});
+
 test('cache folders have the right permissions', () => {
   const proc = spawnSync(docker, [
     'run', 'esbuild',
@@ -62,6 +75,7 @@ test('cache folders have the right permissions', () => {
       'stat -c \'%a\' /tmp/npm-cache',
       'stat -c \'%a\' /tmp/yarn-cache',
       'stat -c \'%a\' /tmp/pnpm-cache',
+      'stat -c \'%a\' /tmp/bun-cache',
     ].join(' &&  '),
   ]);
   expect(proc.stdout.toString()).toMatch('777\n777');

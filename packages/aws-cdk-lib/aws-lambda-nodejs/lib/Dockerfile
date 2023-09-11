@@ -9,6 +9,9 @@ RUN npm install --global yarn@1.22.5
 # Install pnpm
 RUN npm install --global pnpm@7.30.5
 
+# Install bun
+RUN npm install --global bun@1.0.0
+
 # Install typescript
 RUN npm install --global typescript
 
@@ -31,6 +34,11 @@ RUN mkdir /tmp/yarn-cache && \
 RUN mkdir /tmp/pnpm-cache && \
     chmod -R 777 /tmp/pnpm-cache && \
     pnpm config --global set store-dir /tmp/pnpm-cache
+
+# Ensure all users can write to bun cache
+RUN mkdir /tmp/bun-cache && \
+    chmod -R 777 /tmp/bun-cache && \
+    echo -e '[install.cache]\ndir = "/tmp/bun-cache"' > $XDG_CONFIG_HOME/.bunfig.toml
 
 # Disable npm update notifications
 RUN npm config --global set update-notifier false
