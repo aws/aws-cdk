@@ -1,5 +1,7 @@
+import { Construct } from 'constructs';
 import { Duration } from './duration';
 import { TimeZone } from './time-zone';
+import { Annotations } from './annotations';
 
 /**
  * Schedule
@@ -15,7 +17,7 @@ export abstract class Schedule {
    * @param date The date and time to use. The millisecond part will be ignored.
    * @param timeZone The time zone to use for interpreting the date. Default: - UTC
    */
-  protected static at(date: Date, timeZone?: TimeZone): Schedule {
+  protected static protectedAt(date: Date, timeZone?: TimeZone): Schedule {
     try {
       const literal = date.toISOString().split('.')[0];
       return new LiteralSchedule(`at(${literal})`, timeZone ?? TimeZone.ETC_UTC);
@@ -33,7 +35,7 @@ export abstract class Schedule {
    * @param expression The expression to use. Must be in a format that EventBridge will recognize
    * @param timeZone The time zone, if applicable. This is only valid for 'at' and 'cron' expressions
    */
-  protected static expression(expression: string, timeZone?: TimeZone): Schedule {
+  protected static protectedExpression(expression: string, timeZone?: TimeZone): Schedule {
     return new LiteralSchedule(expression, timeZone);
   }
 
@@ -42,7 +44,7 @@ export abstract class Schedule {
    *
    * Rates may be defined with any unit of time, but when converted into minutes, the duration must be a positive whole number of minutes.
    */
-  protected static rate(duration: Duration): Schedule {
+  protected static protectedRate(duration: Duration): Schedule {
     if (duration.isUnresolved()) {
       const validDurationUnit = ['minute', 'minutes', 'hour', 'hours', 'day', 'days'];
       if (validDurationUnit.indexOf(duration.unitLabel()) === -1) {
@@ -63,7 +65,7 @@ export abstract class Schedule {
   /**
    * Create a schedule from a set of cron fields
    */
-  protected static cron(options: CronOptions): Schedule {
+  protected static protectedCron(options: CronOptions): Schedule {
     if (options.weekDay !== undefined && options.day !== undefined) {
       throw new Error('Cannot supply both \'day\' and \'weekDay\', use at most one');
     }
@@ -77,8 +79,15 @@ export abstract class Schedule {
     const day = fallback(options.day, options.weekDay !== undefined ? '?' : '*');
     const weekDay = fallback(options.weekDay, '?');
 
-    const expressionString: string = `cron(${minute} ${hour} ${day} ${month} ${weekDay} ${year})`;
-    return new LiteralSchedule(expressionString);
+    return new class extends Schedule {
+      public readonly expressionString = `cron(${minute} ${hour} ${day} ${month} ${weekDay} ${year})`;
+      public _bind(scope: Construct) {
+        if (!options.minute) {
+          Annotations.of(scope).addWarning('cron: If you don\'t pass \'minute\', by default the event runs every minute. Pass \'minute: \'*\'\' if that\'s what you intend, or \'minute: 0\' to run once per hour instead.');
+        }
+        return new LiteralSchedule(this.expressionString, options.timeZone);
+      }
+    };
   }
 
   /**
@@ -89,9 +98,14 @@ export abstract class Schedule {
   /**
    * The timezone of the expression, if applicable.
    */
-  public abstract readonly timeZone?: TimeZone;
+  public readonly timeZone?: TimeZone = undefined;
 
   protected constructor() {}
+
+  /**
+   * @internal
+   */
+  public abstract _bind(scope: Construct): void;
 }
 
 /**
@@ -162,6 +176,8 @@ class LiteralSchedule extends Schedule {
   ) {
     super();
   }
+
+  public _bind() {}
 }
 
 function fallback<T>(x: T | undefined, def: T): T {
