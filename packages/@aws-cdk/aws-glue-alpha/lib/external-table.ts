@@ -3,9 +3,9 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import { IConnection } from './connection';
 import { Column } from './schema';
-import { PartitionIndex, TableBase, TableProps } from './table-base';
+import { PartitionIndex, TableBase, TableBaseProps } from './table-base';
 
-export interface ExternalTableProps extends TableProps {
+export interface ExternalTableProps extends TableBaseProps {
   /**
    * The connection the table will use when performing reads and writes.
    *

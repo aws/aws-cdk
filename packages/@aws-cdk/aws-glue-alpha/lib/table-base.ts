@@ -44,7 +44,7 @@ export interface TableAttributes {
   readonly tableName: string;
 }
 
-export interface TableProps {
+export interface TableBaseProps {
   /**
    * Name of the table.
    *
@@ -221,7 +221,7 @@ export abstract class TableBase extends Resource implements ITable {
    */
   private partitionIndexCustomResources: AwsCustomResource[] = [];
 
-  constructor(scope: Construct, id: string, props: TableProps) {
+  constructor(scope: Construct, id: string, props: TableBaseProps) {
     super(scope, id, {
       physicalName: props.tableName ??
         Lazy.string({

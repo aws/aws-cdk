@@ -4,7 +4,7 @@ import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 import { Column } from './schema';
-import { PartitionIndex, TableBase, TableProps } from './table-base';
+import { PartitionIndex, TableBase, TableBaseProps } from './table-base';
 
 /**
  * Encryption options for a Table.
@@ -39,7 +39,7 @@ export enum TableEncryption {
   CLIENT_SIDE_KMS = 'CSE-KMS'
 }
 
-export interface S3TableProps extends TableProps {
+export interface S3TableProps extends TableBaseProps {
   /**
  * S3 bucket in which to store data.
  *
@@ -103,7 +103,7 @@ export class S3Table extends TableBase {
   /**
    * The type of encryption enabled for the table.
    */
-  public readonly encryption?: TableEncryption;
+  public readonly encryption: TableEncryption;
 
   /**
    * The KMS key used to secure the data if `encryption` is set to `CSE-KMS` or `SSE-KMS`. Otherwise, `undefined`.
