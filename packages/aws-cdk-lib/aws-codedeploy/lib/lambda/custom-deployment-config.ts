@@ -86,8 +86,8 @@ export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDep
 
     // In this section we make the argument for the AWS API call
     const deploymentType = 'TimeBased' + props.type.toString();
-    const intervalMinutes = props.interval.toMinutes().toString();
-    const percentage = props.percentage.toString();
+    const intervalMinutes = props.interval.toMinutes();
+    const percentage = props.percentage;
     let routingConfig; // The argument to the AWS API call
     if (props.type == CustomLambdaDeploymentConfigType.CANARY) {
       routingConfig = {
