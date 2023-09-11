@@ -15,7 +15,7 @@ export abstract class Schedule {
    * @param date The date and time to use. The millisecond part will be ignored.
    * @param timeZone The time zone to use for interpreting the date. Default: - UTC
    */
-  public static at(date: Date, timeZone?: TimeZone): Schedule {
+  protected static at(date: Date, timeZone?: TimeZone): Schedule {
     try {
       const literal = date.toISOString().split('.')[0];
       return new LiteralSchedule(`at(${literal})`, timeZone ?? TimeZone.ETC_UTC);
@@ -32,7 +32,7 @@ export abstract class Schedule {
    *
    * @param expression The expression to use. Must be in a format that EventBridge will recognize
    */
-  public static expression(expression: string): Schedule {
+  protected static expression(expression: string): Schedule {
     return new LiteralSchedule(expression);
   }
 
@@ -41,7 +41,7 @@ export abstract class Schedule {
    *
    * Rates may be defined with any unit of time, but when converted into minutes, the duration must be a positive whole number of minutes.
    */
-  public static rate(duration: Duration): Schedule {
+  protected static rate(duration: Duration): Schedule {
     if (duration.isUnresolved()) {
       const validDurationUnit = ['minute', 'minutes', 'hour', 'hours', 'day', 'days'];
       if (validDurationUnit.indexOf(duration.unitLabel()) === -1) {
@@ -62,7 +62,7 @@ export abstract class Schedule {
   /**
    * Create a schedule from a set of cron fields
    */
-  public static cron(options: CronOptions): Schedule {
+  protected static cron(options: CronOptions): Schedule {
     if (options.weekDay !== undefined && options.day !== undefined) {
       throw new Error('Cannot supply both \'day\' and \'weekDay\', use at most one');
     }
@@ -81,9 +81,14 @@ export abstract class Schedule {
   }
 
   /**
-   * Retrieve the expression for this schedule
+   * Retrieve the expression for this schedule.
    */
   public abstract readonly expressionString: string;
+
+  /**
+   * The timezone of the expression, if applicable.
+   */
+  public abstract readonly timeZone?: TimeZone;
 
   protected constructor() {}
 }
@@ -141,6 +146,8 @@ export interface CronOptions {
 
   /**
    * Retrieve the expression for this schedule
+   *
+   * @default TimeZone.ETC_UTC
    */
   readonly timeZone?: TimeZone;
 }
