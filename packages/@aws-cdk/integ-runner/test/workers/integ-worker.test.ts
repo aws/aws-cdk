@@ -222,7 +222,7 @@ describe('parallel worker', () => {
     const results = await runIntegrationTestsInParallel({
       pool,
       tests,
-      regions: ['us-east-1'],
+      regions: ['us-west-2'],
     });
 
     expect(stderrMock.mock.calls[0][0]).toContain(
@@ -408,7 +408,7 @@ describe('parallel worker', () => {
     const results = await runIntegrationTestsInParallel({
       tests,
       pool,
-      regions: ['us-east-1'],
+      regions: ['us-west-2'],
     });
 
     expect(stderrMock.mock.calls[1][0]).toContain(
