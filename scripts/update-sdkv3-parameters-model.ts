@@ -16,6 +16,7 @@ async function main(argv: string[]) {
   const dir = argv[0];
 
   const blobMapping: TypeCoercionMap = {};
+  const numberMapping: TypeCoercionMap = {};
 
   for (const entry of await fs.readdir(dir, { withFileTypes: true, encoding: 'utf-8' })) {
     if (entry.isFile() && entry.name.endsWith('.json')) {
@@ -25,7 +26,7 @@ async function main(argv: string[]) {
         continue;
       }
       try {
-        await doFile(blobMapping, contents);
+        await doFile(blobMapping, numberMapping, contents);
       } catch (e) {
         throw new Error(`Error handling ${entry.name}: ${e}`);
       }
@@ -39,13 +40,13 @@ async function main(argv: string[]) {
   // Sort the map so we're independent of the order the OS gave us the files in, or what the filenames are
   const sortedMapping = Object.fromEntries(Object.entries(blobMapping).sort(sortByKey));
 
-  renderMappingToTypeScript(sortedMapping);
+  renderMappingToTypeScript(sortedMapping, numberMapping);
 }
 
 /**
  * Recurse through all the types of a singly Smithy model, and record the blobs
  */
-async function doFile(blobMap: TypeCoercionMap, model: SmithyFile) {
+async function doFile(blobMap: TypeCoercionMap, numberMap: TypeCoercionMap, model: SmithyFile) {
   const shapes = model.shapes;
 
   const service = Object.values(shapes).find(isShape('service'));
@@ -89,9 +90,16 @@ async function doFile(blobMap: TypeCoercionMap, model: SmithyFile) {
       addToBlobs(opName, memberPath);
       return;
     }
+
+    if (isNumber(shape)) {
+      addToNumbers(opName, memberPath);
+      return;
+    }
+
     if (isShape('structure')(shape) || isShape('union')(shape)) {
+      const allKeys = Object.keys(shape.members ?? {}).sort();
       for (const [field, member] of Object.entries(shape.members ?? {}).sort(sortByKey)) {
-        recurse(member.target, opName, [...memberPath, field], seen);
+        recurse(member.target, opName, [...memberPath, uniquePrefix(field, allKeys)], seen);
       }
       return;
     }
@@ -106,6 +114,19 @@ async function doFile(blobMap: TypeCoercionMap, model: SmithyFile) {
     }
   }
 
+  /**
+   * Return the shortest prefix of 'name' that is unique among 'names'
+   */
+  function uniquePrefix(name: string, names: string[]): string {
+    for (let i = 1; i < name.length; i++) {
+      const slice = name.substring(0, i);
+      if (names.filter((n) => n.startsWith(slice)).length === 1) {
+        return slice;
+      }
+    }
+    return name;
+  }
+
   function addToBlobs(opName: string, memberPath: string[]) {
     if (!blobMap[shortName]) {
       blobMap[shortName] = {};
@@ -114,6 +135,16 @@ async function doFile(blobMap: TypeCoercionMap, model: SmithyFile) {
       blobMap[shortName][opName] = [];
     }
     blobMap[shortName][opName].push(memberPath.join('.'));
+  }
+
+  function addToNumbers(opName: string, memberPath: string[]) {
+    if (!numberMap[shortName]) {
+      numberMap[shortName] = {};
+    }
+    if (!numberMap[shortName][opName]) {
+      numberMap[shortName][opName] = [];
+    }
+    numberMap[shortName][opName].push(memberPath.join('.'));
   }
 }
 
@@ -137,7 +168,9 @@ type SmithyShape =
   | { type: string }
   ;
 
-interface SmithyTarget { target: string };
+interface SmithyTarget {
+  target: string
+}
 
 interface SmithyTraits {
   'aws.api#service'?: {
@@ -155,6 +188,17 @@ function isShape<A extends string>(key: A) {
   return (x: SmithyShape): x is Extract<SmithyShape, { type: A }> => x.type === key;
 }
 
+function isNumber(shape: SmithyShape): boolean {
+  return isShape('integer')(shape) ||
+    isShape('float')(shape) ||
+    isShape('double')(shape) ||
+    isShape('long')(shape) ||
+    isShape('short')(shape) ||
+    isShape('bigInteger')(shape) ||
+    isShape('bigDecimal')(shape) ||
+    isShape('byte')(shape);
+}
+
 function sortByKey<A>(e1: [string, A], e2: [string, A]) {
   return e1[0].localeCompare(e2[0]);
 }
@@ -162,7 +206,7 @@ function sortByKey<A>(e1: [string, A], e2: [string, A]) {
 /**
  * Render the given mapping to a TypeScript source file
  */
-function renderMappingToTypeScript(blobMap: TypeCoercionMap) {
+function renderMappingToTypeScript(blobMap: TypeCoercionMap, numberMap: TypeCoercionMap) {
   const lines = new Array<string>();
 
   lines.push(
@@ -176,6 +220,7 @@ function renderMappingToTypeScript(blobMap: TypeCoercionMap) {
   );
 
   lines.push('export const UINT8ARRAY_PARAMETERS: TypeCoercionMap = ' + JSON.stringify(blobMap, undefined, 2).replace(/"/g, '\'') + ';');
+  lines.push('export const NUMBER_PARAMETERS: TypeCoercionMap = ' + JSON.stringify(numberMap, undefined, 2).replace(/"/g, '\'') + ';');
 
   console.log(lines.join('\n'));
 }
