@@ -40,7 +40,10 @@ async function main(argv: string[]) {
   // Sort the map so we're independent of the order the OS gave us the files in, or what the filenames are
   const sortedMapping = Object.fromEntries(Object.entries(blobMapping).sort(sortByKey));
 
-  renderMappingToTypeScript(sortedMapping, numberMapping);
+  console.log(JSON.stringify({
+    uint88ArrayParameters: blobMapping,
+    numberParameters: numberMapping,
+  }))
 }
 
 /**
@@ -201,28 +204,6 @@ function isNumber(shape: SmithyShape): boolean {
 
 function sortByKey<A>(e1: [string, A], e2: [string, A]) {
   return e1[0].localeCompare(e2[0]);
-}
-
-/**
- * Render the given mapping to a TypeScript source file
- */
-function renderMappingToTypeScript(blobMap: TypeCoercionMap, numberMap: TypeCoercionMap) {
-  const lines = new Array<string>();
-
-  lines.push(
-    `// This file was generated from the aws-sdk-js-v3 at ${new Date()}`,
-    '/* eslint-disable quote-props,comma-dangle */',
-    'export interface TypeCoercionMap {',
-    '  [service: string]: {',
-    '    [action: string]: string[]',
-    '  }',
-    '};'
-  );
-
-  lines.push('export const UINT8ARRAY_PARAMETERS: TypeCoercionMap = ' + JSON.stringify(blobMap, undefined, 2).replace(/"/g, '\'') + ';');
-  lines.push('export const NUMBER_PARAMETERS: TypeCoercionMap = ' + JSON.stringify(numberMap, undefined, 2).replace(/"/g, '\'') + ';');
-
-  console.log(lines.join('\n'));
 }
 
 main(process.argv.slice(2)).catch((e) => {
