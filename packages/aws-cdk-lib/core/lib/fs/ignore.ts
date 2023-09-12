@@ -1,7 +1,7 @@
 import * as path from 'path';
 import dockerIgnore, * as DockerIgnore from '@balena/dockerignore';
 import gitIgnore, * as GitIgnore from 'ignore';
-import * as minimatch from 'minimatch';
+import { minimatch } from 'minimatch';
 import { CopyOptions, IgnoreMode } from './options';
 
 /**
