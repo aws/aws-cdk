@@ -1,7 +1,7 @@
 import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { ClientAuthentication, Cluster, KafkaVersion } from '../lib';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
-import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 
 const app = new App();
 
@@ -26,7 +26,9 @@ const integTest = new IntegTest(app, 'ScramSecretIntegTest', {
 const scramSecrets = integTest.assertions.awsApiCall('Kafka', 'listScramSecrets', {
   ClusterArn: cluster.clusterArn,
 });
-scramSecrets.assertAtPath('SecretArnList', ExpectedResult.arrayWith([
-  `arn:aws:secretsmanager:${stack.region}:${stack.account}:secret/AmazonMSK_integ-test_integ-user-1`,
-  `arn:aws:secretsmanager:${stack.region}:${stack.account}:secret/AmazonMSK_integ-test_integ-user-2`,
-]));
+scramSecrets.expect(ExpectedResult.objectLike({
+  SecretArnList: [
+    Match.stringLikeRegexp(`arn:aws:secretsmanager:${stack.region}:${stack.account}:secret:AmazonMSK_integ-test_integ-user-1-.*`),
+    Match.stringLikeRegexp(`arn:aws:secretsmanager:${stack.region}:${stack.account}:secret:AmazonMSK_integ-test_integ-user-2-.*`),
+  ],
+}));
