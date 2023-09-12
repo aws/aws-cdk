@@ -9,9 +9,6 @@ class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    // Deploying this integ test would create an Amplify app with branch name 'main'
-    // Re-deploying the stack again after updating the asset file would update the Amplify app.
-    //
     const asset = new Asset(this, 'SampleAsset', {
       path: path.join(__dirname, './test-asset'),
     });
@@ -23,6 +20,10 @@ class TestStack extends Stack {
 
 const app = new App();
 const stack = new TestStack(app, 'cdk-amplify-app-asset-deployment');
+
+// Deploying the stack is sufficient to test the custom resources
+// On successful deployment we can check the Amplify app with the branch named as 'main' consisting of the asset file changes
+// On updating the asset file and re-deploying it updates the existing Amplify app with the new change.
 new IntegTest(app, 'cdk-amplify-app-integ-test', {
   testCases: [stack],
 });
