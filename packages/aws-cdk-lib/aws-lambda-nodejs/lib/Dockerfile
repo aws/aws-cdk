@@ -37,8 +37,8 @@ RUN mkdir /tmp/pnpm-cache && \
 
 # Ensure all users can write to bun cache
 RUN mkdir /tmp/bun-cache && \
-    chmod -R 777 /tmp/bun-cache && \
-    echo -e '[install.cache]\ndir = "/tmp/bun-cache"' > $XDG_CONFIG_HOME/.bunfig.toml
+    chmod -R 777 /tmp/bun-cache
+ENV BUN_INSTALL_CACHE_DIR=/tmp/bun-cache
 
 # Disable npm update notifications
 RUN npm config --global set update-notifier false
