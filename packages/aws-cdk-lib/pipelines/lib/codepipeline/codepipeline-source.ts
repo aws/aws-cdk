@@ -101,8 +101,7 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    * If you need access to symlinks or the repository history, be sure to set
    * `codeBuildCloneOutput`.
    *
-   * @param repoString A string that encodes owner and repository separated by a slash (e.g. 'owner/repo').
-   * Note: The provided string must be resolvable at runtime. Unresolved tokens will lead to runtime errors.
+   * @param repoString A string that encodes owner and repository separated by a slash (e.g. 'owner/repo'). The provided string must be resolvable at runtime.
    * @param branch The branch to use.
    * @param props The source properties, including the connection ARN.
    *
