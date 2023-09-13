@@ -941,4 +941,44 @@ describe('Graphs', () => {
       },
     }]);
   });
+
+  test('cannot specify an end without a start in GraphWidget', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // THEN
+    expect(() => {
+      new GraphWidget({
+        left: [new Metric({ namespace: 'CDK', metricName: 'Test' })],
+        view: GraphWidgetView.PIE,
+        end: '2018-12-17T06:00:00.000Z',
+      });
+    }).toThrow(/You must specify a start if you specify an end/);
+  });
+
+  test('cannot specify an end without a start in SingleValueWidget', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // THEN
+    expect(() => {
+      new SingleValueWidget({
+        metrics: [new Metric({ namespace: 'CDK', metricName: 'Test' })],
+        end: '2018-12-17T06:00:00.000Z',
+      });
+    }).toThrow(/You must specify a start if you specify an end/);
+  });
+
+  test('cannot specify an end without a start in GaugeWidget', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // THEN
+    expect(() => {
+      new GaugeWidget({
+        metrics: [new Metric({ namespace: 'CDK', metricName: 'Test' })],
+        end: '2018-12-17T06:00:00.000Z',
+      });
+    }).toThrow(/You must specify a start if you specify an end/);
+  });
 });
