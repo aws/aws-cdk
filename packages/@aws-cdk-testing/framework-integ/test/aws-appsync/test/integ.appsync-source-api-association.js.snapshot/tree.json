@@ -214,143 +214,53 @@
               "version": "0.0.0"
             }
           },
-          "MergedAPI": {
-            "id": "MergedAPI",
-            "path": "stack/MergedAPI",
+          "MergedApiExecutionRole": {
+            "id": "MergedApiExecutionRole",
+            "path": "stack/MergedApiExecutionRole",
             "children": {
-              "MergedApiExecutionRole": {
-                "id": "MergedApiExecutionRole",
-                "path": "stack/MergedAPI/MergedApiExecutionRole",
-                "children": {
-                  "ImportMergedApiExecutionRole": {
-                    "id": "ImportMergedApiExecutionRole",
-                    "path": "stack/MergedAPI/MergedApiExecutionRole/ImportMergedApiExecutionRole",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "stack/MergedAPI/MergedApiExecutionRole/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                      "aws:cdk:cloudformation:props": {
-                        "assumeRolePolicyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sts:AssumeRole",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "appsync.amazonaws.com"
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "DefaultPolicy": {
-                    "id": "DefaultPolicy",
-                    "path": "stack/MergedAPI/MergedApiExecutionRole/DefaultPolicy",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "stack/MergedAPI/MergedApiExecutionRole/DefaultPolicy/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                          "aws:cdk:cloudformation:props": {
-                            "policyDocument": {
-                              "Statement": [
-                                {
-                                  "Action": "appsync:SourceGraphQL",
-                                  "Effect": "Allow",
-                                  "Resource": [
-                                    {
-                                      "Fn::GetAtt": [
-                                        "MergedAPIFirstSourceAPIAssociationF3D7DF05",
-                                        "SourceApiArn"
-                                      ]
-                                    },
-                                    {
-                                      "Fn::GetAtt": [
-                                        "MergedAPISecondSourceAPIAssociationF7CB1297",
-                                        "SourceApiArn"
-                                      ]
-                                    },
-                                    {
-                                      "Fn::Join": [
-                                        "",
-                                        [
-                                          {
-                                            "Fn::GetAtt": [
-                                              "MergedAPIFirstSourceAPIAssociationF3D7DF05",
-                                              "SourceApiArn"
-                                            ]
-                                          },
-                                          "/*"
-                                        ]
-                                      ]
-                                    },
-                                    {
-                                      "Fn::Join": [
-                                        "",
-                                        [
-                                          {
-                                            "Fn::GetAtt": [
-                                              "MergedAPISecondSourceAPIAssociationF7CB1297",
-                                              "SourceApiArn"
-                                            ]
-                                          },
-                                          "/*"
-                                        ]
-                                      ]
-                                    }
-                                  ]
-                                },
-                                {
-                                  "Action": "appsync:StartSchemaMerge",
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::GetAtt": [
-                                      "MergedAPISecondSourceAPIAssociationF7CB1297",
-                                      "AssociationArn"
-                                    ]
-                                  }
-                                }
-                              ],
-                              "Version": "2012-10-17"
-                            },
-                            "policyName": "MergedAPIMergedApiExecutionRoleDefaultPolicy31A96DBC",
-                            "roles": [
-                              {
-                                "Ref": "MergedAPIMergedApiExecutionRole5F2BCCAD"
-                              }
-                            ]
+              "ImportMergedApiExecutionRole": {
+                "id": "ImportMergedApiExecutionRole",
+                "path": "stack/MergedApiExecutionRole/ImportMergedApiExecutionRole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "stack/MergedApiExecutionRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "appsync.amazonaws.com"
                           }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                          "version": "0.0.0"
                         }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
+                      ],
+                      "Version": "2012-10-17"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                   "version": "0.0.0"
                 }
-              },
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "0.0.0"
+            }
+          },
+          "MergedAPI": {
+            "id": "MergedAPI",
+            "path": "stack/MergedAPI",
+            "children": {
               "Resource": {
                 "id": "Resource",
                 "path": "stack/MergedAPI/Resource",
@@ -361,7 +271,7 @@
                     "authenticationType": "API_KEY",
                     "mergedApiExecutionRoleArn": {
                       "Fn::GetAtt": [
-                        "MergedAPIMergedApiExecutionRole5F2BCCAD",
+                        "MergedApiExecutionRoleA4AA677D",
                         "Arn"
                       ]
                     },
@@ -370,82 +280,6 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_appsync.CfnGraphQLApi",
-                  "version": "0.0.0"
-                }
-              },
-              "FirstSourceAPIAssociation": {
-                "id": "FirstSourceAPIAssociation",
-                "path": "stack/MergedAPI/FirstSourceAPIAssociation",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "stack/MergedAPI/FirstSourceAPIAssociation/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::AppSync::SourceApiAssociation",
-                      "aws:cdk:cloudformation:props": {
-                        "mergedApiIdentifier": {
-                          "Fn::GetAtt": [
-                            "MergedAPI08D3EAD1",
-                            "ApiId"
-                          ]
-                        },
-                        "sourceApiAssociationConfig": {
-                          "mergeType": "MANUAL_MERGE"
-                        },
-                        "sourceApiIdentifier": {
-                          "Fn::GetAtt": [
-                            "FirstSourceAPIB0DE8D5A",
-                            "ApiId"
-                          ]
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnSourceApiAssociation",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.SourceApiAssociation",
-                  "version": "0.0.0"
-                }
-              },
-              "SecondSourceAPIAssociation": {
-                "id": "SecondSourceAPIAssociation",
-                "path": "stack/MergedAPI/SecondSourceAPIAssociation",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "stack/MergedAPI/SecondSourceAPIAssociation/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::AppSync::SourceApiAssociation",
-                      "aws:cdk:cloudformation:props": {
-                        "mergedApiIdentifier": {
-                          "Fn::GetAtt": [
-                            "MergedAPI08D3EAD1",
-                            "ApiId"
-                          ]
-                        },
-                        "sourceApiAssociationConfig": {
-                          "mergeType": "AUTO_MERGE"
-                        },
-                        "sourceApiIdentifier": {
-                          "Fn::GetAtt": [
-                            "SecondSourceAPIE903371D",
-                            "ApiId"
-                          ]
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnSourceApiAssociation",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.SourceApiAssociation",
                   "version": "0.0.0"
                 }
               },
@@ -479,6 +313,82 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_appsync.GraphqlApi",
+              "version": "0.0.0"
+            }
+          },
+          "SourceApiAssociation1": {
+            "id": "SourceApiAssociation1",
+            "path": "stack/SourceApiAssociation1",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "stack/SourceApiAssociation1/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::SourceApiAssociation",
+                  "aws:cdk:cloudformation:props": {
+                    "mergedApiIdentifier": {
+                      "Fn::GetAtt": [
+                        "MergedAPI08D3EAD1",
+                        "Arn"
+                      ]
+                    },
+                    "sourceApiAssociationConfig": {
+                      "mergeType": "MANUAL_MERGE"
+                    },
+                    "sourceApiIdentifier": {
+                      "Fn::GetAtt": [
+                        "FirstSourceAPIB0DE8D5A",
+                        "ApiId"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnSourceApiAssociation",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.SourceApiAssociation",
+              "version": "0.0.0"
+            }
+          },
+          "SourceApiAssociation2": {
+            "id": "SourceApiAssociation2",
+            "path": "stack/SourceApiAssociation2",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "stack/SourceApiAssociation2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::SourceApiAssociation",
+                  "aws:cdk:cloudformation:props": {
+                    "mergedApiIdentifier": {
+                      "Fn::GetAtt": [
+                        "MergedAPI08D3EAD1",
+                        "ApiId"
+                      ]
+                    },
+                    "sourceApiAssociationConfig": {
+                      "mergeType": "AUTO_MERGE"
+                    },
+                    "sourceApiIdentifier": {
+                      "Fn::GetAtt": [
+                        "SecondSourceAPIE903371D",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnSourceApiAssociation",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.SourceApiAssociation",
               "version": "0.0.0"
             }
           },

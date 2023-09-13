@@ -92,7 +92,7 @@
     "Type": "NONE"
    }
   },
-  "MergedAPIMergedApiExecutionRole5F2BCCAD": {
+  "MergedApiExecutionRoleA4AA677D": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -109,78 +109,6 @@
     }
    }
   },
-  "MergedAPIMergedApiExecutionRoleDefaultPolicy31A96DBC": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "appsync:SourceGraphQL",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "MergedAPIFirstSourceAPIAssociationF3D7DF05",
-          "SourceApiArn"
-         ]
-        },
-        {
-         "Fn::GetAtt": [
-          "MergedAPISecondSourceAPIAssociationF7CB1297",
-          "SourceApiArn"
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "MergedAPIFirstSourceAPIAssociationF3D7DF05",
-             "SourceApiArn"
-            ]
-           },
-           "/*"
-          ]
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "MergedAPISecondSourceAPIAssociationF7CB1297",
-             "SourceApiArn"
-            ]
-           },
-           "/*"
-          ]
-         ]
-        }
-       ]
-      },
-      {
-       "Action": "appsync:StartSchemaMerge",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "MergedAPISecondSourceAPIAssociationF7CB1297",
-         "AssociationArn"
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "MergedAPIMergedApiExecutionRoleDefaultPolicy31A96DBC",
-    "Roles": [
-     {
-      "Ref": "MergedAPIMergedApiExecutionRole5F2BCCAD"
-     }
-    ]
-   }
-  },
   "MergedAPI08D3EAD1": {
    "Type": "AWS::AppSync::GraphQLApi",
    "Properties": {
@@ -188,20 +116,31 @@
     "AuthenticationType": "API_KEY",
     "MergedApiExecutionRoleArn": {
      "Fn::GetAtt": [
-      "MergedAPIMergedApiExecutionRole5F2BCCAD",
+      "MergedApiExecutionRoleA4AA677D",
       "Arn"
      ]
     },
     "Name": "MergedAPI"
    }
   },
-  "MergedAPIFirstSourceAPIAssociationF3D7DF05": {
+  "MergedAPIDefaultApiKeyAF5EA13C": {
+   "Type": "AWS::AppSync::ApiKey",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "MergedAPI08D3EAD1",
+      "ApiId"
+     ]
+    }
+   }
+  },
+  "SourceApiAssociation17B8F97C7": {
    "Type": "AWS::AppSync::SourceApiAssociation",
    "Properties": {
     "MergedApiIdentifier": {
      "Fn::GetAtt": [
       "MergedAPI08D3EAD1",
-      "ApiId"
+      "Arn"
      ]
     },
     "SourceApiAssociationConfig": {
@@ -215,7 +154,7 @@
     }
    }
   },
-  "MergedAPISecondSourceAPIAssociationF7CB1297": {
+  "SourceApiAssociation254340D38": {
    "Type": "AWS::AppSync::SourceApiAssociation",
    "Properties": {
     "MergedApiIdentifier": {
@@ -230,18 +169,7 @@
     "SourceApiIdentifier": {
      "Fn::GetAtt": [
       "SecondSourceAPIE903371D",
-      "ApiId"
-     ]
-    }
-   }
-  },
-  "MergedAPIDefaultApiKeyAF5EA13C": {
-   "Type": "AWS::AppSync::ApiKey",
-   "Properties": {
-    "ApiId": {
-     "Fn::GetAtt": [
-      "MergedAPI08D3EAD1",
-      "ApiId"
+      "Arn"
      ]
     }
    }
