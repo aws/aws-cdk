@@ -6,7 +6,7 @@ import {
   findV3ClientConstructor,
   coerceApiParametersToUint8Array,
 } from '@aws-cdk/sdk-v2-to-v3-adapter';
-import { decodeParameters, parseJsonPayload } from './utils';
+import { decodeParameters } from './utils';
 
 /**
  * Flattens a nested object
@@ -90,12 +90,14 @@ export class AwsApiCallHandler extends CustomResourceHandler<AwsApiCallRequest, 
     console.log(`SDK request to ${sdkPkg.service}.${request.api} with parameters ${JSON.stringify(commandInput)}`);
     let response = await client.send(new Command(commandInput));
 
-    // Lambda Invoke returns the payload as a buffer
-    // we need to serialize the buffer so we can assert on it
     if (response.Payload) {
-      response.Payload = parseJsonPayload(response.Payload);
+      // Lambda::Invoke returns the payload as a buffer
+      // we need to serialize the buffer so we can assert on it
+      response.Payload = JSON.parse(await response.Payload.transformToString('utf-8'));
     } else if (response.Body) {
-      response = await response.Body.transformToString('utf-8');
+      // S3::GetObject returns the body as a buffer
+      // we need to serialize the buffer so we can assert on it
+      response.Body = JSON.parse(await response.Body.transformToString('utf-8'));
     }
 
     console.log(`SDK response received ${JSON.stringify(response)}`);
