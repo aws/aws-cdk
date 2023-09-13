@@ -410,7 +410,6 @@ new appsync.SourceApiAssociation(this, 'SourceApiAssociation2', {
    sourceApi: secondApi,
    mergedApiIdentifier: mergedApi.arn,
    mergeType: appsync.MergeType.AUTO_MERGE,
-   mergedApiExecutionRole: 
 });
 ```
 
