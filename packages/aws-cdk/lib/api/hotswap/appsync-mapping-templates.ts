@@ -53,24 +53,31 @@ export async function isHotswappableAppSyncChange(
           Definition: change.newValue.Properties?.Definition,
           DefinitionS3Location: change.newValue.Properties?.DefinitionS3Location,
           requestMappingTemplate: change.newValue.Properties?.RequestMappingTemplate,
+          requestMappingTemplateS3Location: change.newValue.Properties?.RequestMappingTemplateS3Location,
           responseMappingTemplate: change.newValue.Properties?.ResponseMappingTemplate,
+          responseMappingTemplateS3Location: change.newValue.Properties?.ResponseMappingTemplateS3Location,
         };
         const evaluatedResourceProperties = await evaluateCfnTemplate.evaluateCfnExpression(sdkProperties);
         const sdkRequestObject = transformObjectKeys(evaluatedResourceProperties, lowerCaseFirstCharacter);
 
+        // resolve s3 location files as SDK doesn't take in s3 location but inline code
+        if (sdkRequestObject.requestMappingTemplateS3Location) {
+          sdkRequestObject.requestMappingTemplate = (await fetchFileFromS3(sdkRequestObject.requestMappingTemplateS3Location, sdk))?.toString('utf8');
+          delete sdkRequestObject.requestMappingTemplateS3Location;
+        }
+        if (sdkRequestObject.responseMappingTemplateS3Location) {
+          sdkRequestObject.responseMappingTemplate = (await fetchFileFromS3(sdkRequestObject.responseMappingTemplateS3Location, sdk))?.toString('utf8');
+          delete sdkRequestObject.responseMappingTemplateS3Location;
+        }
+        if (sdkRequestObject.definitionS3Location) {
+          sdkRequestObject.definition = await fetchFileFromS3(sdkRequestObject.definitionS3Location, sdk);
+          delete sdkRequestObject.definitionS3Location;
+        }
+
         if (isResolver) {
           await sdk.appsync().updateResolver(sdkRequestObject).promise();
         } else if (isFunction) {
-          if (sdkRequestObject.requestMappingTemplateS3Location) {
-            //code is in an S3 file but AppSync expects inline code
-            sdkRequestObject.requestMappingTemplate = (await fetchFileFromS3(sdkRequestObject.requestMappingTemplateS3Location, sdk))?.toString('utf8');
-            delete sdkRequestObject.requestMappingTemplateS3Location;
-          }
-          if (sdkRequestObject.responseMappingTemplateS3Location) {
-            //code is in an S3 file but AppSync expects inline code
-            sdkRequestObject.responseMappingTemplate = (await fetchFileFromS3(sdkRequestObject.responseMappingTemplateS3Location, sdk))?.toString('utf8');
-            delete sdkRequestObject.responseMappingTemplateS3Location;
-          }
+
           const { functions } = await sdk.appsync().listFunctions({ apiId: sdkRequestObject.apiId }).promise();
           const { functionId } = functions?.find(fn => fn.name === physicalName) ?? {};
           await simpleRetry(
@@ -78,11 +85,6 @@ export async function isHotswappableAppSyncChange(
             3,
             'ConcurrentModificationException');
         } else {
-          if (sdkRequestObject.definitionS3Location) {
-            // code is in an S3 file but AppSync expects inline code
-            sdkRequestObject.definition = await fetchFileFromS3(sdkRequestObject.definitionS3Location, sdk);
-            delete sdkRequestObject.definitionS3Location;
-          }
           let schemaCreationResponse: GetSchemaCreationStatusResponse = await sdk.appsync().startSchemaCreation(sdkRequestObject).promise();
           while (schemaCreationResponse.status && ['PROCESSING', 'DELETING'].some(status => status === schemaCreationResponse.status)) {
             await new Promise(resolve => setTimeout(resolve, 1000)); // poll every second
@@ -104,7 +106,7 @@ export async function isHotswappableAppSyncChange(
 
 async function fetchFileFromS3(s3Url: string, sdk: ISDK) {
   const s3PathParts = s3Url.split('/');
-  const s3Bucket = s3PathParts[2]; // first two are "s3:"" and "" due to two //
+  const s3Bucket = s3PathParts[2]; // first two are "s3:" and "" due to s3://
   const s3Key = s3PathParts.splice(3).join('/'); // after removing first three we reconstruct the key
   return (await sdk.s3().getObject({ Bucket: s3Bucket, Key: s3Key }).promise()).Body;
 }
