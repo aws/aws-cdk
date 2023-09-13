@@ -1,9 +1,9 @@
-import { Duration, TimeZone, CronOptions as CoreCronOptions, Schedule as ScheduleExpression } from '../../core';
+import { Duration, TimeZone, CronOptions as CoreCronOptions, Schedule as CoreSchedule } from '../../core';
 
 /**
  * Schedule for scheduled scaling actions
  */
-export abstract class Schedule extends ScheduleExpression {
+export abstract class Schedule extends CoreSchedule {
   /**
    * Construct a schedule from a literal schedule expression
    *

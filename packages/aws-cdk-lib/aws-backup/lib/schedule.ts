@@ -1,6 +1,6 @@
-import { CronOptions, Schedule as ScheduleExpression, TimeZone } from '../../core';
+import { CronOptions, Schedule as CoreSchedule, TimeZone } from '../../core';
 
-export abstract class Schedule extends ScheduleExpression {
+export abstract class Schedule extends CoreSchedule {
   /**
    * Construct a schedule from a literal schedule expression
    *

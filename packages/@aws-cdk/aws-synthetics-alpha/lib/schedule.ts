@@ -1,10 +1,10 @@
-import { Duration, Schedule as ScheduleExpression } from 'aws-cdk-lib/core';
+import { Duration, Schedule as CoreSchedule } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 
 /**
  * Schedule for canary runs
  */
-export class Schedule extends ScheduleExpression {
+export class Schedule extends CoreSchedule {
 
   /**
    * The canary will be executed once.

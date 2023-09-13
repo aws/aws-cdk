@@ -1,4 +1,4 @@
-import { Duration, Schedule as ScheduleExpression } from '../../core';
+import { Duration, Schedule as CoreSchedule } from '../../core';
 
 /**
  * Schedule for scheduled event rules
@@ -7,7 +7,7 @@ import { Duration, Schedule as ScheduleExpression } from '../../core';
  *
  * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/scheduled-events.html
  */
-export abstract class Schedule extends ScheduleExpression {
+export abstract class Schedule extends CoreSchedule {
   /**
    * Construct a schedule from a literal schedule expression
    *

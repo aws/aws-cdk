@@ -1,10 +1,10 @@
 import { Construct } from 'constructs';
-import { Annotations, CronOptions as CoreCronOptions, Schedule as ScheduleExpression, TimeZone } from '../../core';
+import { Annotations, CronOptions as CoreCronOptions, Schedule as CoreSchedule, TimeZone } from '../../core';
 
 /**
  * Schedule for scheduled scaling actions
  */
-export abstract class Schedule extends ScheduleExpression {
+export abstract class Schedule extends CoreSchedule {
   /**
    * Construct a schedule from a literal schedule expression
    *
