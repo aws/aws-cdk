@@ -6,7 +6,7 @@ import {
   findV3ClientConstructor,
   coerceApiParametersToUint8Array,
 } from '@aws-cdk/sdk-v2-to-v3-adapter';
-import { decodeParameters, parseJsonPayload } from './utils';
+import { decodeParameters } from './utils';
 
 /**
  * Flattens a nested object
@@ -89,16 +89,7 @@ export class AwsApiCallHandler extends CustomResourceHandler<AwsApiCallRequest, 
 
     console.log(`SDK request to ${sdkPkg.service}.${request.api} with parameters ${JSON.stringify(commandInput)}`);
     const response = await client.send(new Command(commandInput));
-
-    if (response.Payload) {
-      // Lambda::Invoke returns the payload as a buffer
-      // we need to serialize the buffer so we can assert on it
-      response.Payload = parseJsonPayload(response.Payload);
-    } else if (response.Body) {
-      // S3::GetObject returns the body as a buffer
-      // we need to serialize the buffer so we can assert on it
-      response.Body = await response.Body.transformToString('utf-8');
-    }
+    await coerceResponse(response);
 
     console.log(`SDK response received ${JSON.stringify(response)}`);
     delete response.$metadata;
@@ -118,6 +109,39 @@ export class AwsApiCallHandler extends CustomResourceHandler<AwsApiCallRequest, 
     console.log(`Returning result ${JSON.stringify(resp)}`);
     return resp;
   }
+}
+
+async function coerceValue(v: any) {
+
+  if (v && typeof(v) === 'object' && typeof((v as any).transformToString) === 'function') {
+    // in sdk v3 some return types are now adapters that we need to explicitly
+    // convert to strings. see example: https://github.com/aws/aws-sdk-js-v3/blob/main/UPGRADING.md?plain=1#L573-L576
+    // note we don't use 'instanceof Unit8Array' because observations show this won't always return true, even though
+    // the `transformToString` function will be available. (for example S3::GetObject)
+    const text = await (v as any).transformToString();
+    try {
+      return JSON.parse(text);
+    } catch {
+      return text;
+    }
+  }
+  return v;
+
+}
+
+async function coerceResponse(response: any) {
+
+  if (response == null) {
+    return;
+  }
+
+  for (const key of Object.keys(response)) {
+    response[key] = await coerceValue(response[key]);
+    if (typeof response[key] === 'object') {
+      await coerceResponse(response[key]);
+    }
+  }
+
 }
 
 function filterKeys(object: object, searchStrings: string[]): { [key: string]: string } {
