@@ -54,7 +54,7 @@ apiCall.provider.addToRolePolicy({
   Resource: ['*'],
 });
 
-apiCall.expect(ExpectedResult.stringLikeRegexp(`substitutionStatus: substitution-successful!\\nlambdaArn: ${testCase.lambdaArn}`));
+apiCall.assertAtPath('Body', ExpectedResult.stringLikeRegexp(`substitutionStatus: substitution-successful!\\nlambdaArn: ${testCase.lambdaArn}`));
 
 function helloCode(_event: any, _context: any, callback: any) {
   return callback(undefined, {
