@@ -52,7 +52,7 @@
     "build+test+package": "yarn build+test && yarn package",
     "bundle": "esbuild --bundle lib/index.ts --target=node14 --platform=node --external:fsevents --minify-whitespace --outfile=lib/main.js",
     "compat": "cdk-compat",
-    "gen": "./generate.sh",
+    "gen": "../../../packages/aws-cdk/generate.sh",
     "lint": "cdk-lint",
     "package": "cdk-package",
     "pkglint": "pkglint -f",
@@ -68,7 +68,6 @@
   "cdk-build": {
     "post": [
       "yarn attribute",
-      "cp ../../aws-cdk/lib/vendor/noctilucent/index_bg.wasm ./lib/",
       "mkdir -p ./lib/api/bootstrap/ && cp ../../aws-cdk/lib/api/bootstrap/bootstrap-template.yaml ./lib/api/bootstrap/",
       "yarn bundle",
       "node ./lib/main.js >/dev/null 2>/dev/null </dev/null"

@@ -33,16 +33,14 @@
           "fsevents"
         ]
       },
-      "resources": {
-        "lib/vendor/noctilucent/index_bg.wasm": "lib/index_bg.wasm"
-      },
       "allowedLicenses": [
         "Apache-2.0",
         "MIT",
         "BSD-3-Clause",
         "ISC",
         "BSD-2-Clause",
-        "0BSD"
+        "0BSD",
+        "MIT OR Apache-2.0"
       ],
       "dontAttribute": "^@aws-cdk/|^cdk-assets$|^cdk-cli-wrapper$",
       "test": "bin/cdk --version",
@@ -101,6 +99,7 @@
     "aws-sdk": "^2.1451.0",
     "camelcase": "^6.3.0",
     "cdk-assets": "0.0.0",
+    "cdk-from-cfn": "^0.11.0",
     "chalk": "^4",
     "chokidar": "^3.5.3",
     "decamelize": "^5.0.1",

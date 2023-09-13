@@ -5773,6 +5773,11 @@ case@1.6.3, case@^1.6.3:
   resolved "https://registry.npmjs.org/case/-/case-1.6.3.tgz#0a4386e3e9825351ca2e6216c60467ff5f1ea1c9"
   integrity sha512-mzDSXIPaFwVDvZAHqZ9VlbyF4yyXRuX6IvB06WvPYkqJVO24kX1PPhv9bfpKNFZyxYFmmgo03HUiD8iklmJYRQ==
 
+cdk-from-cfn@^0.11.0:
+  version "0.11.0"
+  resolved "https://registry.npmjs.org/cdk-from-cfn/-/cdk-from-cfn-0.11.0.tgz#b294dcc886323195b1b891161cda843170eba535"
+  integrity sha512-Pk0Sfp0LT0XXTqAf+QRLwvcY2x/2bvm6JGwV6ABLvdJAFAQa1XsGaELkSRZqz1C2iB5vp8dVw0EC0v1x3c5bHQ==
+
 cdk-generate-synthetic-examples@^0.1.291:
   version "0.1.291"
   resolved "https://registry.npmjs.org/cdk-generate-synthetic-examples/-/cdk-generate-synthetic-examples-0.1.291.tgz#67660f4c620ee4a994abb142e4d385086e248bc9"
