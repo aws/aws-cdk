@@ -46,7 +46,7 @@ export abstract class TableEncryptionV2 {
   /**
    * Configure server-side encryption using customer managed keys.
    *
-   * @param tableKey the KMS key for the replica table in the deployment region of the Global Table.
+   * @param tableKey the KMS key for the primary table.
    * @param replicaKeyArns an object containing the ARN of the KMS key to use for each replica table.
    */
   public static customerManagedKey(tableKey: IKey, replicaKeyArns: { [region: string]: string } = {}): TableEncryptionV2 {

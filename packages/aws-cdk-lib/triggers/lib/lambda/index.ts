@@ -1,7 +1,6 @@
 /* eslint-disable no-console */
 
 /* eslint-disable import/no-extraneous-dependencies */
-import { AccessDeniedException } from '@aws-sdk/client-account';
 import { Lambda, InvocationResponse } from '@aws-sdk/client-lambda';
 import { NodeHttpHandler } from '@aws-sdk/node-http-handler';
 
@@ -28,8 +27,8 @@ export const invoke: InvokeFunction = async (functionName, invocationType, timeo
     try {
       invokeResponse = await lambda.invoke(invokeRequest);
       break;
-    } catch (error) {
-      if (error instanceof AccessDeniedException && retryCount < 12) {
+    } catch (error: any) {
+      if (error.name === 'AccessDeniedException' && retryCount < 12) {
         retryCount++;
         await new Promise((resolve) => {
           setTimeout(resolve, delay);

@@ -806,7 +806,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "66db480cb40e7e6208f01c9d9e882f4c416110a2c66dd0c6d12844e8ca9129b6.zip"
+                      "s3Key": "03adb2514e02907e0458bec59283658ec529425bd5df38e1194455c65dedf6ff.zip"
                     },
                     "handler": "index.handler",
                     "role": {
@@ -865,7 +865,7 @@
                 "path": "cdk-integ-synthetics-canary-auto-delete/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.69"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
@@ -911,7 +911,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.69"
+          "version": "10.2.70"
         }
       }
     },
