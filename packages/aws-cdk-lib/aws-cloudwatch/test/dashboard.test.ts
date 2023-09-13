@@ -187,7 +187,7 @@ describe('Dashboard', () => {
     };
 
     // THEN
-    expect(() => toThrow()).toThrow(/You must specify a start if you specify an end/);
+    expect(() => toThrow()).toThrow(/You must also specify a start if you specify an end/);
   });
 
   test('DashboardName is set when provided', () => {

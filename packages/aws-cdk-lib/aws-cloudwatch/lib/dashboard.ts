@@ -137,7 +137,7 @@ export class Dashboard extends Resource {
     }
 
     if (props.end !== undefined && props.start === undefined) {
-      throw new Error('You must specify a start if you specify an end');
+      throw new Error('You must also specify a start if you specify an end');
     }
 
     const dashboard = new CfnDashboard(this, 'Resource', {
