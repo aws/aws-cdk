@@ -161,6 +161,7 @@
     "@aws-sdk/credential-providers": "^3.405.0",
     "@aws-sdk/node-http-handler": "^3.370.0",
     "@aws-sdk/types": "^3.398.0",
+    "@smithy/util-stream": "^2.0.10",
     "@types/aws-lambda": "^8.10.119",
     "@types/jest": "^29.5.4",
     "@types/lodash": "^4.14.198",
