@@ -579,7 +579,7 @@
         "Name": "Source",
         "OutputArtifacts": [
          {
-          "Name": "SourceArtifact"
+          "Name": "SourceArtifact-issue-27117"
          }
         ],
         "RoleArn": {
@@ -608,7 +608,7 @@
         },
         "InputArtifacts": [
          {
-          "Name": "SourceArtifact"
+          "Name": "SourceArtifact-issue-27117"
          }
         ],
         "Name": "Deploy",
