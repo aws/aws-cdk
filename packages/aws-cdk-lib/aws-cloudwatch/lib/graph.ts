@@ -242,7 +242,7 @@ export class GaugeWidget extends ConcreteWidget {
     this.metrics = props.metrics ?? [];
     this.copyMetricWarnings(...this.metrics);
 
-    if (props.end && !props.start) {
+    if (props.end !== undefined && props.start === undefined) {
       throw new Error('You must specify a start if you specify an end');
     }
   }
@@ -435,7 +435,7 @@ export class GraphWidget extends ConcreteWidget {
     this.rightMetrics = props.right ?? [];
     this.copyMetricWarnings(...this.leftMetrics, ...this.rightMetrics);
 
-    if (props.end && !props.start) {
+    if (props.end !== undefined && props.start === undefined) {
       throw new Error('You must specify a start if you specify an end');
     }
   }
@@ -573,7 +573,7 @@ export class SingleValueWidget extends ConcreteWidget {
       throw new Error('You cannot use setPeriodToTimeRange with sparkline');
     }
 
-    if (props.end && !props.start) {
+    if (props.end !== undefined && props.start === undefined) {
       throw new Error('You must specify a start if you specify an end');
     }
   }
