@@ -862,7 +862,7 @@
                             "name": "Source",
                             "outputArtifacts": [
                               {
-                                "name": "SourceArtifact"
+                                "name": "SourceArtifact-issue-27117"
                               }
                             ],
                             "actionTypeId": {
@@ -904,7 +904,7 @@
                             "name": "Deploy",
                             "inputArtifacts": [
                               {
-                                "name": "SourceArtifact"
+                                "name": "SourceArtifact-issue-27117"
                               }
                             ],
                             "actionTypeId": {
