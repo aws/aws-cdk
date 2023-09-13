@@ -106,6 +106,10 @@ export class ScheduledAction extends Resource {
       throw new Error('At least one of minCapacity, maxCapacity, or desiredCapacity is required');
     }
 
+    if (props.timeZone && props.schedule.timeZone) {
+      throw new Error('Cannot set `timeZone` property and `schedule` property with time zone defined. Please remove the deprecated `timeZone` property.');
+    }
+
     // add a warning on synth when minute is not defined in a cron schedule
     props.schedule._bind(this);
 
@@ -117,7 +121,7 @@ export class ScheduledAction extends Resource {
       maxSize: props.maxCapacity,
       desiredCapacity: props.desiredCapacity,
       recurrence: props.schedule.expressionString,
-      timeZone: props.timeZone ?? props.schedule.timeZone?.timezoneName,
+      timeZone: props.schedule.timeZone?.timezoneName ?? props.timeZone,
     });
 
     this.scheduledActionName = resource.attrScheduledActionName;
