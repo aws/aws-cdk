@@ -133,7 +133,11 @@ export class Dashboard extends Resource {
     }
 
     if (props.start !== undefined && props.defaultInterval !== undefined) {
-      throw ('both properties defaultInterval and start cannot be set at once');
+      throw new Error('both properties defaultInterval and start cannot be set at once');
+    }
+
+    if (props.end !== undefined && props.start === undefined) {
+      throw new Error('You must specify a start if you specify an end');
     }
 
     const dashboard = new CfnDashboard(this, 'Resource', {
