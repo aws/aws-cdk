@@ -111,7 +111,7 @@ const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
   artifactBucket: bucket,
 });
 
-const sourceOutput = new codepipeline.Artifact('SourceArtifact');
+const sourceOutput = new codepipeline.Artifact('SourceArtifact-issue-27117');
 const sourceAction = new cpactions.S3SourceAction({
   actionName: 'Source',
   output: sourceOutput,
