@@ -387,6 +387,13 @@ testDeprecated('throws when scheduleExpression is not of type cron', () => {
   })).toThrow(/`scheduleExpression` must be of type `cron`/);
 });
 
+testDeprecated('throws when schedule and scheduleExpression are both set', () => {
+  expect(() => new BackupPlanRule({
+    schedule: Schedule.cron({ day: '* ' }),
+    scheduleExpression: events.Schedule.cron({ day: '?' }),
+  })).toThrow(/Please use `schedule` only./);
+});
+
 test('synth fails when plan has no rules', () => {
   // GIVEN
   const app = new App();

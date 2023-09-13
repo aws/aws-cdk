@@ -222,6 +222,10 @@ export class BackupPlanRule {
       throw new Error('`scheduleExpression` must be of type `cron`');
     }
 
+    if (props.schedule && props.scheduleExpression) {
+      throw new Error('Cannot specify `schedule` and `scheduleExpression` together. Please use `schedule` only.');
+    }
+
     const deleteAfter = (props.enableContinuousBackup && !props.deleteAfter) ? Duration.days(35) : props.deleteAfter;
 
     if (props.enableContinuousBackup && props.moveToColdStorageAfter) {
