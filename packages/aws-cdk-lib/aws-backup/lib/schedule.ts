@@ -4,7 +4,7 @@ export abstract class Schedule extends ScheduleExpression {
   /**
    * Construct a schedule from a literal schedule expression
    *
-   * @param expression The expression to use. Must be in a format that Application AutoScaling will recognize
+   * @param expression The expression to use. Must be in a format that AWS Backup will recognize
    */
   public static expression(expression: string, timeZone?: TimeZone): Schedule {
     return super.protectedExpression(expression, timeZone);
