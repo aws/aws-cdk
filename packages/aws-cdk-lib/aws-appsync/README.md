@@ -391,20 +391,24 @@ secondApi.addNoneDataSource('SecondSourceDS', {
 });
 
 // Merged API
-new appsync.GraphqlApi(this, 'MergedAPI', {
+const mergedApi = new appsync.GraphqlApi(this, 'MergedAPI', {
   name: 'MergedAPI',
-  definition: appsync.Definition.fromSourceApis({
+  definition: appsync.Definition.fromMergedApiConfiguration({
     sourceApis: [
       {
         sourceApi: firstApi,
         mergeType: appsync.MergeType.MANUAL_MERGE,
       },
-      {
-        sourceApi: secondApi,
-        mergeType: appsync.MergeType.AUTO_MERGE,
-      },
     ],
   }),
+});
+
+
+// An additional way of declaring a source api association, useful when a source api is deployed in a different stack.
+new appsync.SourceApiAssociation(this, 'SourceApiAssociation2', {
+   sourceApi: secondApi,
+   mergedApiIdentifier: mergedApi.arn,
+   mergeType: appsync.MergeType.AUTO_MERGE,
 });
 ```
 
