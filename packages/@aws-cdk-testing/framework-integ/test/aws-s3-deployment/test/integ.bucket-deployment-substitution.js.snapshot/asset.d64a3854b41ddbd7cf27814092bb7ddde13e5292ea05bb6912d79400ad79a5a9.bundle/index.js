@@ -32605,12 +32605,32 @@ var HttpHandler = class extends CustomResourceHandler {
 var import_sdk_v2_to_v3_adapter = __toESM(require_lib5());
 
 // lib/assertions/providers/lambda-handler/utils.ts
-function parseJsonPayload(payload) {
+async function coerceValue(v) {
+  if (v && typeof v === "object" && typeof v.transformToString === "function") {
+    const text = await v.transformToString();
+    return tryJsonParse(text);
+  }
+  return tryJsonParse(v);
+}
+function tryJsonParse(v) {
+  if (typeof v !== "string") {
+    return v;
+  }
   try {
-    const buffer = Buffer.from(payload);
-    return JSON.parse(new TextDecoder().decode(buffer));
+    return JSON.parse(v);
   } catch {
-    return payload;
+    return v;
+  }
+}
+async function coerceResponse(response) {
+  if (response == null) {
+    return;
+  }
+  for (const key of Object.keys(response)) {
+    response[key] = await coerceValue(response[key]);
+    if (typeof response[key] === "object") {
+      await coerceResponse(response[key]);
+    }
   }
 }
 function decodeParameters(obj) {
@@ -32686,12 +32706,8 @@ var AwsApiCallHandler = class extends CustomResourceHandler {
     const parameters = (request2.parameters && decodeParameters(request2.parameters)) ?? {};
     const commandInput = (0, import_sdk_v2_to_v3_adapter.coerceApiParametersToUint8Array)(request2.service, request2.api, parameters);
     console.log(`SDK request to ${sdkPkg.service}.${request2.api} with parameters ${JSON.stringify(commandInput)}`);
-    let response = await client.send(new Command(commandInput));
-    if (response.Payload) {
-      response.Payload = parseJsonPayload(response.Payload);
-    } else if (response.Body) {
-      response = await response.Body.transformToString("utf-8");
-    }
+    const response = await client.send(new Command(commandInput));
+    await coerceResponse(response);
     console.log(`SDK response received ${JSON.stringify(response)}`);
     delete response.$metadata;
     const respond = {
