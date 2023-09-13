@@ -241,6 +241,10 @@ export class GaugeWidget extends ConcreteWidget {
     this.props = props;
     this.metrics = props.metrics ?? [];
     this.copyMetricWarnings(...this.metrics);
+
+    if (this.props.end && !this.props.start) {
+      throw new Error('You must also specify a start time if you specify an end time.');
+    }
   }
 
   /**
