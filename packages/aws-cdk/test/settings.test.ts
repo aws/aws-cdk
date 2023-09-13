@@ -88,8 +88,8 @@ test('can parse tag values from command line arguments', () => {
   const settings2 = Settings.fromCommandLineArguments({ tags: ['foo='], _: [Command.DEPLOY] });
 
   // THEN
-  expect(settings1.get(['tags']).find((tag: Tag) => tag.Key === 'foo').Value).toEqual( 'bar');
-  expect(settings2.get(['tags']).find((tag: Tag) => tag.Key === 'foo').Value).toEqual( '');
+  expect(settings1.get(['tags']).find((tag: Tag) => tag.Key === 'foo').Value).toEqual('bar');
+  expect(settings2.get(['tags']).find((tag: Tag) => tag.Key === 'foo').Value).toEqual('');
 });
 
 test('can parse tag values from command line arguments with equals sign in value', () => {
@@ -98,8 +98,8 @@ test('can parse tag values from command line arguments with equals sign in value
   const settings2 = Settings.fromCommandLineArguments({ tags: ['foo=bar='], _: [Command.DEPLOY] });
 
   // THEN
-  expect(settings1.get(['tags']).find((tag: Tag) => tag.Key === 'foo').Value).toEqual( '=bar=');
-  expect(settings2.get(['tags']).find((tag: Tag) => tag.Key === 'foo').Value).toEqual( 'bar=');
+  expect(settings1.get(['tags']).find((tag: Tag) => tag.Key === 'foo').Value).toEqual('=bar=');
+  expect(settings2.get(['tags']).find((tag: Tag) => tag.Key === 'foo').Value).toEqual('bar=');
 });
 
 test('bundling stacks defaults to an empty list', () => {
