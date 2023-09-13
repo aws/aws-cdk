@@ -29,8 +29,15 @@ export function coerceToUint8Array(obj: any, path: string[]): any {
     return coerceValueToUint8Array(obj);
   }
 
-  if (path[0] === '*' && Array.isArray(obj)) {
-    return obj.map((e) => coerceToUint8Array(e, path.slice(1)));
+  if (path[0] === '*') {
+    if (Array.isArray(obj)) {
+      return obj.map((e) => coerceToUint8Array(e, path.slice(1)));
+    }
+    if (obj && typeof obj === 'object') {
+      return Object.fromEntries(Object.entries(obj).map(([key, value]) => [key, coerceToUint8Array(value, path.slice(1))]));
+    }
+    // The value should have been an array or dict here, but let's be safe and return the original value anyway
+    return obj;
   }
 
   if (obj && typeof obj === 'object') {

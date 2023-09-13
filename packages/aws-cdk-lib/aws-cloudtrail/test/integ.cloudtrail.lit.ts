@@ -13,7 +13,7 @@ const bucket = new s3.Bucket(stack, 'Bucket', {
 });
 const topic = new sns.Topic(stack, 'Topic');
 const lambdaFunction = new lambda.Function(stack, 'LambdaFunction', {
-  runtime: lambda.Runtime.NODEJS_16_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
   handler: 'hello.handler',
   code: lambda.Code.fromInline('exports.handler = {}'),
 });

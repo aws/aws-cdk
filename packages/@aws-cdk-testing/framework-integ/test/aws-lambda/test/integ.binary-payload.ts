@@ -15,7 +15,8 @@ const fn = new Function(stack, 'fn', {
   `),
 });
 
-const buf = Buffer.from(JSON.stringify({ name: 'world' }));
+const inputString = JSON.stringify({ name: 'world' });
+const buf = Buffer.from(inputString);
 const data = new Uint8Array(
   buf.buffer,
   buf.byteOffset,
@@ -26,16 +27,31 @@ const testCase = new IntegTest(app, 'integ-test', {
   testCases: [stack],
 });
 
-const invoke = testCase.assertions.awsApiCall('Lambda', 'invoke', {
+const invokeWithByteArray = testCase.assertions.awsApiCall('Lambda', 'invoke', {
   FunctionName: fn.functionName,
   InvocationType: 'RequestResponse',
   Payload: data,
 });
 
-invoke.provider.addToRolePolicy({
+invokeWithByteArray.provider.addToRolePolicy({
   Effect: 'Allow',
   Action: ['lambda:InvokeFunction'],
   Resource: ['*'],
 });
 
-invoke.expect(ExpectedResult.objectLike({ Payload: { name: 'world' } }));
+const invokeWithString = testCase.assertions.awsApiCall('Lambda', 'invoke', {
+  FunctionName: fn.functionName,
+  InvocationType: 'RequestResponse',
+  Payload: inputString,
+});
+
+invokeWithString.provider.addToRolePolicy({
+  Effect: 'Allow',
+  Action: ['lambda:InvokeFunction'],
+  Resource: ['*'],
+});
+
+// Expect the same behaviour, regardless of whether the input is a string or a byte array
+invokeWithByteArray.expect(ExpectedResult.objectLike({ Payload: { name: 'world' } }));
+invokeWithString.expect(ExpectedResult.objectLike({ Payload: { name: 'world' } }));
+

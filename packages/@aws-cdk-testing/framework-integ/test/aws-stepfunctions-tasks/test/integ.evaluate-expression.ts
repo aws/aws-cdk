@@ -4,7 +4,7 @@ import { Construct } from 'constructs';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import * as cdk from 'aws-cdk-lib';
 import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 /*
  * Stack verification steps:
@@ -25,13 +25,13 @@ class TestStack extends Stack {
     const multiply = new tasks.EvaluateExpression(this, 'Multiply', {
       expression: '$.c * 2',
       resultPath: '$.d',
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
     });
 
     const now = new tasks.EvaluateExpression(this, 'Now', {
       expression: '(new Date()).toUTCString()',
       resultPath: '$.now',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
     });
 
     const statemachine = new sfn.StateMachine(this, 'StateMachine', {

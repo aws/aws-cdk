@@ -982,6 +982,17 @@ describe('cluster', () => {
 
   });
 
+  testDeprecated('allows returning the correct image for linux 2023 for EcsOptimizedAmi', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const ami = new ecs.EcsOptimizedAmi({
+      generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023,
+    });
+
+    expect(ami.getImage(stack).osType).toEqual(ec2.OperatingSystemType.LINUX);
+
+  });
+
   test('allows returning the correct image for linux for EcsOptimizedImage', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -1005,6 +1016,24 @@ describe('cluster', () => {
     const stack = new cdk.Stack();
 
     expect(ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.ARM).getImage(stack).osType).toEqual(
+      ec2.OperatingSystemType.LINUX);
+
+  });
+
+  test('allows returning the correct image for linux 2023 for EcsOptimizedImage', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    expect(ecs.EcsOptimizedImage.amazonLinux2023().getImage(stack).osType).toEqual(
+      ec2.OperatingSystemType.LINUX);
+
+  });
+
+  test('allows returning the correct image for linux 2023 for EcsOptimizedImage with ARM hardware', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    expect(ecs.EcsOptimizedImage.amazonLinux2023(ecs.AmiHardwareType.ARM).getImage(stack).osType).toEqual(
       ec2.OperatingSystemType.LINUX);
 
   });

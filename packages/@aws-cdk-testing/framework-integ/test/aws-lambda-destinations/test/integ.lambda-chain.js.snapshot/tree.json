@@ -143,7 +143,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs16.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -548,7 +548,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs16.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -785,7 +785,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs16.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -876,7 +876,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs16.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -937,7 +937,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.69"
+              "version": "10.2.70"
             }
           },
           "BootstrapVersion": {
@@ -975,7 +975,7 @@
                 "path": "LambdaDestChain3/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.69"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
@@ -995,7 +995,7 @@
                             "path": "LambdaDestChain3/DefaultTest/DeployAssert/LambdaInvoke56ff6291852e7537dce00fa6e862a00b/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.69"
+                              "version": "10.2.70"
                             }
                           }
                         },
@@ -1067,7 +1067,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.69"
+                      "version": "10.2.70"
                     }
                   },
                   "AwsApiCallCloudWatchLogsfilterLogEventsa2d12e172a64e6deb9411711ac10fa8d": {
@@ -1083,7 +1083,7 @@
                             "path": "LambdaDestChain3/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEventsa2d12e172a64e6deb9411711ac10fa8d/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.69"
+                              "version": "10.2.70"
                             }
                           }
                         },
@@ -1123,7 +1123,7 @@
                                 "path": "LambdaDestChain3/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEventsa2d12e172a64e6deb9411711ac10fa8d/WaitFor/IsCompleteProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.2.69"
+                                  "version": "10.2.70"
                                 }
                               },
                               "Invoke": {
@@ -1149,7 +1149,7 @@
                                 "path": "LambdaDestChain3/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEventsa2d12e172a64e6deb9411711ac10fa8d/WaitFor/TimeoutProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.2.69"
+                                  "version": "10.2.70"
                                 }
                               },
                               "Invoke": {
@@ -1233,7 +1233,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.69"
+                      "version": "10.2.70"
                     }
                   },
                   "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a": {
@@ -1267,7 +1267,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.69"
+                      "version": "10.2.70"
                     }
                   },
                   "BootstrapVersion": {
@@ -1309,7 +1309,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.69"
+          "version": "10.2.70"
         }
       }
     },

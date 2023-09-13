@@ -2,25 +2,26 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as apigw from 'aws-cdk-lib/aws-apigateway';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 class BookStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
     super(scope, id);
 
     const booksHandler = new apigw.LambdaIntegration(new lambda.Function(this, 'BooksHandler', {
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`exports.handler = ${echoHandlerCode}`),
     }));
 
     const bookHandler = new apigw.LambdaIntegration(new lambda.Function(this, 'BookHandler', {
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`exports.handler = ${echoHandlerCode}`),
     }));
 
     const hello = new apigw.LambdaIntegration(new lambda.Function(this, 'Hello', {
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`exports.handler = ${helloCode}`),
     }));

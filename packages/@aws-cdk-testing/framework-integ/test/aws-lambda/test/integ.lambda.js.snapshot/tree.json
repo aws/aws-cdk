@@ -124,7 +124,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs16.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -209,7 +209,7 @@
                     },
                     "functionVersion": {
                       "Fn::GetAtt": [
-                        "MyLambdaCurrentVersionE7A382CC1bbf26fffae216f511ef7223d3cba742",
+                        "MyLambdaCurrentVersionE7A382CC9ce8e408346691aecad19aa25bc70350",
                         "Version"
                       ]
                     },
@@ -453,7 +453,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.69"
+          "version": "10.2.70"
         }
       }
     },

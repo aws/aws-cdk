@@ -1,8 +1,11 @@
 import * as path from 'path';
 import dockerIgnore, * as DockerIgnore from '@balena/dockerignore';
 import gitIgnore, * as GitIgnore from 'ignore';
-import * as minimatch from 'minimatch';
 import { CopyOptions, IgnoreMode } from './options';
+
+// Must be a 'require' to not run afoul of ESM module import rules
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const minimatch = require('minimatch');
 
 /**
  * Represents file path ignoring behavior.

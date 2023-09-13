@@ -1,7 +1,7 @@
 {
   "version": "34.0.0",
   "files": {
-    "fbade89dd4ef7c8a333d35db33055e93cf9de29aa91c62f9deb0ed89694a6e2e": {
+    "209a4f17c5e4c8a0ffa92cb311261c77407a3a251824880418f7ed26d09f63be": {
       "source": {
         "path": "nestedstackstestNestedStack1C289F6D5.nested.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "fbade89dd4ef7c8a333d35db33055e93cf9de29aa91c62f9deb0ed89694a6e2e.json",
+          "objectKey": "209a4f17c5e4c8a0ffa92cb311261c77407a3a251824880418f7ed26d09f63be.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
@@ -27,7 +27,7 @@
         }
       }
     },
-    "2e79c61323d8bab942c7e8c3e519ea4afb664f78389f722aa8e8f304183bd6de": {
+    "c39642edf19283b5ca4d89998ef2df67b758724d3d42a3e72f29c07db3b87852": {
       "source": {
         "path": "nested-stacks-test.template.json",
         "packaging": "file"
@@ -35,7 +35,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "2e79c61323d8bab942c7e8c3e519ea4afb664f78389f722aa8e8f304183bd6de.json",
+          "objectKey": "c39642edf19283b5ca4d89998ef2df67b758724d3d42a3e72f29c07db3b87852.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

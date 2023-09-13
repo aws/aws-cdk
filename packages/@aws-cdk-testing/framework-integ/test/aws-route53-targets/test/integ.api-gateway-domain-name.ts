@@ -7,6 +7,7 @@ import { App, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 import * as targets from 'aws-cdk-lib/aws-route53-targets';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 /**********************************************************************************************************************
  *
@@ -33,7 +34,7 @@ class TestStack extends Stack {
           body: 'hello, world!'
         };
       };`),
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
       handler: 'index.handler',
     });
 

@@ -46,7 +46,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     },
   });
 
-  await waitUntilResourceRecordSetsChanged({ client: route53, maxWaitTime: 60 }, { Id: changeResourceRecordSets?.ChangeInfo?.Id });
+  await waitUntilResourceRecordSetsChanged({ client: route53, maxWaitTime: 890 }, { Id: changeResourceRecordSets?.ChangeInfo?.Id });
 
   return {
     PhysicalResourceId: `${existingRecord.Name}-${existingRecord.Type}`,

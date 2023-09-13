@@ -3037,9 +3037,9 @@ describe('function', () => {
       expect(() => new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'bar',
-        runtime: lambda.Runtime.NODEJS_14_X,
+        runtime: lambda.Runtime.NODEJS_18_X,
         snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
-      })).toThrowError('SnapStart currently not supported by runtime nodejs14.x');
+      })).toThrowError('SnapStart currently not supported by runtime nodejs18.x');
     });
 
     test('arm64 validation for snapStart', () => {

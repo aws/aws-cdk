@@ -3,6 +3,7 @@ import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as constructs from 'constructs';
 import * as apig from 'aws-cdk-lib/aws-apigateway';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 class FirstStack extends cdk.Stack {
   public readonly firstLambda: lambda.Function;
@@ -19,7 +20,7 @@ class FirstStack extends cdk.Stack {
           }
         }`),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
     });
   }
 }

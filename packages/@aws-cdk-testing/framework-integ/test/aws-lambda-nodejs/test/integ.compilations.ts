@@ -1,8 +1,8 @@
 import * as path from 'path';
-import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { App, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as lambda from 'aws-cdk-lib/aws-lambda-nodejs';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -16,7 +16,7 @@ class TestStack extends Stack {
         sourceMapMode: lambda.SourceMapMode.BOTH,
         preCompilation: true,
       },
-      runtime: Runtime.NODEJS_16_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
     });
 
     new lambda.NodejsFunction(this, 'ts-decorator-handler-tsconfig', {
@@ -28,7 +28,7 @@ class TestStack extends Stack {
         tsconfig: path.join(__dirname, '..', 'tsconfig-custom.json'),
         preCompilation: true,
       },
-      runtime: Runtime.NODEJS_16_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
     });
   }
 }

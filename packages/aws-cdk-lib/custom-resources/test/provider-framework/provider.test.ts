@@ -1,4 +1,3 @@
-import * as path from 'path';
 import { Template } from '../../../assertions';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
@@ -140,7 +139,7 @@ test('minimal setup', () => {
   // WHEN
   new cr.Provider(stack, 'MyProvider', {
     onEventHandler: new lambda.Function(stack, 'MyHandler', {
-      code: lambda.Code.fromAsset(path.join(__dirname, './integration-test-fixtures/s3-file-handler')),
+      code: new lambda.InlineCode('foo'),
       handler: 'index.onEvent',
       runtime: lambda.Runtime.NODEJS_LATEST,
     }),
@@ -172,7 +171,7 @@ test('if isComplete is specified, the isComplete framework handler is also inclu
   // GIVEN
   const stack = new Stack();
   const handler = new lambda.Function(stack, 'MyHandler', {
-    code: lambda.Code.fromAsset(path.join(__dirname, './integration-test-fixtures/s3-file-handler')),
+    code: new lambda.InlineCode('foo'),
     handler: 'index.onEvent',
     runtime: lambda.Runtime.NODEJS_LATEST,
   });
@@ -246,7 +245,7 @@ test('fails if "queryInterval" and/or "totalTimeout" are set without "isComplete
   // GIVEN
   const stack = new Stack();
   const handler = new lambda.Function(stack, 'MyHandler', {
-    code: lambda.Code.fromAsset(path.join(__dirname, './integration-test-fixtures/s3-file-handler')),
+    code: new lambda.InlineCode('foo'),
     handler: 'index.onEvent',
     runtime: lambda.Runtime.NODEJS_LATEST,
   });
@@ -302,7 +301,7 @@ describe('log retention', () => {
     // WHEN
     new cr.Provider(stack, 'MyProvider', {
       onEventHandler: new lambda.Function(stack, 'MyHandler', {
-        code: lambda.Code.fromAsset(path.join(__dirname, './integration-test-fixtures/s3-file-handler')),
+        code: new lambda.InlineCode('foo'),
         handler: 'index.onEvent',
         runtime: lambda.Runtime.NODEJS_LATEST,
       }),
@@ -333,7 +332,7 @@ describe('log retention', () => {
     // WHEN
     new cr.Provider(stack, 'MyProvider', {
       onEventHandler: new lambda.Function(stack, 'MyHandler', {
-        code: lambda.Code.fromAsset(path.join(__dirname, './integration-test-fixtures/s3-file-handler')),
+        code: new lambda.InlineCode('foo'),
         handler: 'index.onEvent',
         runtime: lambda.Runtime.NODEJS_LATEST,
       }),
@@ -352,7 +351,7 @@ describe('role', () => {
     // WHEN
     new cr.Provider(stack, 'MyProvider', {
       onEventHandler: new lambda.Function(stack, 'MyHandler', {
-        code: lambda.Code.fromAsset(path.join(__dirname, './integration-test-fixtures/s3-file-handler')),
+        code: new lambda.InlineCode('foo'),
         handler: 'index.onEvent',
         runtime: lambda.Runtime.NODEJS_LATEST,
       }),
@@ -380,7 +379,7 @@ describe('role', () => {
     // WHEN
     new cr.Provider(stack, 'MyProvider', {
       onEventHandler: new lambda.Function(stack, 'MyHandler', {
-        code: lambda.Code.fromAsset(path.join(__dirname, './integration-test-fixtures/s3-file-handler')),
+        code: new lambda.InlineCode('foo'),
         handler: 'index.onEvent',
         runtime: lambda.Runtime.NODEJS_LATEST,
       }),
@@ -407,7 +406,7 @@ describe('name', () => {
     // WHEN
     new cr.Provider(stack, 'MyProvider', {
       onEventHandler: new lambda.Function(stack, 'MyHandler', {
-        code: lambda.Code.fromAsset(path.join(__dirname, './integration-test-fixtures/s3-file-handler')),
+        code: new lambda.InlineCode('foo'),
         handler: 'index.onEvent',
         runtime: lambda.Runtime.NODEJS_LATEST,
       }),
@@ -432,7 +431,7 @@ describe('environment encryption', () => {
     // WHEN
     new cr.Provider(stack, 'MyProvider', {
       onEventHandler: new lambda.Function(stack, 'MyHandler', {
-        code: lambda.Code.fromAsset(path.join(__dirname, './integration-test-fixtures/s3-file-handler')),
+        code: new lambda.InlineCode('foo'),
         handler: 'index.onEvent',
         runtime: lambda.Runtime.NODEJS_LATEST,
       }),

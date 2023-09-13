@@ -1,0 +1,12 @@
+{
+  "version": "34.0.0",
+  "testCases": {
+    "GlobalAcceleratorEndpoints/DefaultTest": {
+      "stacks": [
+        "global-accelerator-endpoints2"
+      ],
+      "assertionStack": "GlobalAcceleratorEndpoints/DefaultTest/DeployAssert",
+      "assertionStackName": "GlobalAcceleratorEndpointsDefaultTestDeployAssert3F2DB71B"
+    }
+  }
+}

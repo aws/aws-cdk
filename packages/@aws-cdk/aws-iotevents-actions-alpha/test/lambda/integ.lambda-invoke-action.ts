@@ -18,7 +18,7 @@ class TestStack extends cdk.Stack {
       attributeJsonPaths: ['payload.deviceId'],
     });
     const func = new lambda.Function(this, 'MyFunction', {
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: lambda.Runtime.NODEJS_18_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`
         exports.handler = (event) => {

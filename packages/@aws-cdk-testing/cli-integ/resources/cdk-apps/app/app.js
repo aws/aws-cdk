@@ -351,7 +351,7 @@ class BundlingStage extends cdk.Stage {
     new lambda.Function(stack, 'Handler', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'lambda')),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
   }
 }

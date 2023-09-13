@@ -4,6 +4,7 @@ import * as sns_subscriptions from 'aws-cdk-lib/aws-sns-subscriptions';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import { App, CfnParameter, NestedStack, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 /* eslint-disable @aws-cdk/no-core-construct */
 
@@ -40,7 +41,7 @@ class MyNestedStack extends NestedStack {
 
     if (props.subscriber) {
       new lambda.Function(this, 'fn', {
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: STANDARD_NODEJS_RUNTIME,
         code: lambda.Code.fromInline('console.error("hi")'),
         handler: 'index.handler',
         environment: {

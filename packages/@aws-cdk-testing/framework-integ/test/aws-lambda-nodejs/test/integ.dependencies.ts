@@ -4,6 +4,7 @@ import { App, Stack, StackProps } from 'aws-cdk-lib';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 import * as lambda from 'aws-cdk-lib/aws-lambda-nodejs';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 class SdkV2TestStack extends Stack {
   public lambdaFunction: IFunction
@@ -14,7 +15,7 @@ class SdkV2TestStack extends Stack {
     // This function uses aws-sdk but it will not be included
     this.lambdaFunction = new lambda.NodejsFunction(this, 'external', {
       entry: path.join(__dirname, 'integ-handlers/dependencies.ts'),
-      runtime: Runtime.NODEJS_16_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
       bundling: {
         minify: true,
         // Will be installed, not bundled

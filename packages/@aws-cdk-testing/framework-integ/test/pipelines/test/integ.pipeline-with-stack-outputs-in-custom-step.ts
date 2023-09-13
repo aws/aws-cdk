@@ -8,6 +8,7 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 import * as pipelines from 'aws-cdk-lib/pipelines';
 import { ICodePipelineActionFactory, Step } from 'aws-cdk-lib/pipelines';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 class CustomStep extends Step implements ICodePipelineActionFactory {
   constructor(private readonly stackOutput: CfnOutput) {
@@ -18,7 +19,7 @@ class CustomStep extends Step implements ICodePipelineActionFactory {
     const [outputRef] = this.consumedStackOutputs;
 
     const handler = new lambda.Function(options.scope, 'CustomFunction', {
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
       code: lambda.Code.fromInline(`
         exports.handler = async (event) => {
           console.log('Hello world.')
