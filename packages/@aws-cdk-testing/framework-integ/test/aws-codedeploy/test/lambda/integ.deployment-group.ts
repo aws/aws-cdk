@@ -43,6 +43,7 @@ new codedeploy.LambdaDeploymentGroup(stack, 'BlueGreenDeployment', {
   ],
   preHook,
   postHook,
+  ignoreAlarmConfiguration: false,
 });
 
 const secondAlias = new lambda.Alias(stack, 'SecondAlias', {

@@ -40,6 +40,7 @@ new codedeploy.ServerDeploymentGroup(stack, 'CodeDeployGroup', {
     failedDeployment: false,
     deploymentInAlarm: false,
   },
+  ignoreAlarmConfiguration: false,
 });
 
 app.synth();

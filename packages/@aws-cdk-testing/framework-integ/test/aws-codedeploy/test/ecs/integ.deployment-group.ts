@@ -222,6 +222,7 @@ const dg = new codedeploy.EcsDeploymentGroup(stack, 'BlueGreenDG', {
   autoRollback: {
     stoppedDeployment: true,
   },
+  ignoreAlarmConfiguration: true,
 });
 
 // Outputs to use for manual testing
