@@ -953,7 +953,7 @@ describe('Graphs', () => {
         view: GraphWidgetView.PIE,
         end: '2018-12-17T06:00:00.000Z',
       });
-    }).toThrow(/You must specify a start if you specify an end/);
+    }).toThrow(/You must also specify a start if you specify an end/);
   });
 
   test('cannot specify an end without a start in SingleValueWidget', () => {
@@ -966,7 +966,7 @@ describe('Graphs', () => {
         metrics: [new Metric({ namespace: 'CDK', metricName: 'Test' })],
         end: '2018-12-17T06:00:00.000Z',
       });
-    }).toThrow(/You must specify a start if you specify an end/);
+    }).toThrow(/You must also specify a start if you specify an end/);
   });
 
   test('cannot specify an end without a start in GaugeWidget', () => {
@@ -979,6 +979,6 @@ describe('Graphs', () => {
         metrics: [new Metric({ namespace: 'CDK', metricName: 'Test' })],
         end: '2018-12-17T06:00:00.000Z',
       });
-    }).toThrow(/You must specify a start if you specify an end/);
+    }).toThrow(/You must also specify a start if you specify an end/);
   });
 });

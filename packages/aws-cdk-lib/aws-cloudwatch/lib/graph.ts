@@ -243,7 +243,7 @@ export class GaugeWidget extends ConcreteWidget {
     this.copyMetricWarnings(...this.metrics);
 
     if (props.end !== undefined && props.start === undefined) {
-      throw new Error('You must specify a start if you specify an end');
+      throw new Error('You must also specify a start if you specify an end');
     }
   }
 
@@ -436,7 +436,7 @@ export class GraphWidget extends ConcreteWidget {
     this.copyMetricWarnings(...this.leftMetrics, ...this.rightMetrics);
 
     if (props.end !== undefined && props.start === undefined) {
-      throw new Error('You must specify a start if you specify an end');
+      throw new Error('You must also specify a start if you specify an end');
     }
   }
 
@@ -574,7 +574,7 @@ export class SingleValueWidget extends ConcreteWidget {
     }
 
     if (props.end !== undefined && props.start === undefined) {
-      throw new Error('You must specify a start if you specify an end');
+      throw new Error('You must also specify a start if you specify an end');
     }
   }
 
