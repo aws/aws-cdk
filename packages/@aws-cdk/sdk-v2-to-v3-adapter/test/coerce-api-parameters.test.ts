@@ -225,4 +225,22 @@ describe('given an api call description', () => {
       ],
     });
   });
+
+  test('can convert string parameters to Uint8Array in map & union', async () => {
+    const params = coerceApiParametersToUint8Array('dynamodb', 'putItem', {
+      Item: {
+        Binary: {
+          B: 'abc',
+        },
+      },
+    });
+
+    expect(params).toMatchObject({
+      Item: {
+        Binary: {
+          B: new Uint8Array([97, 98, 99]),
+        },
+      },
+    });
+  });
 });

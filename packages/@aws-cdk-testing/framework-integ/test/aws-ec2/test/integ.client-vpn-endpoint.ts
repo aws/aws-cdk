@@ -1,9 +1,10 @@
 import * as path from 'path';
 import * as logs from 'aws-cdk-lib/aws-logs';
-import { App, CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
+import { App, CustomResource, CustomResourceProvider, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
+import { STANDARD_CUSTOM_RESOURCE_PROVIDER_RUNTIME } from '../../config';
 
 /**********************************************************************************************************************
  *
@@ -51,7 +52,7 @@ class ImportCertificates extends Construct {
 
     const serviceToken = CustomResourceProvider.getOrCreate(this, IMPORT_CERTIFICATES_RESOURCE_TYPE, {
       codeDirectory: path.join(__dirname, 'import-certificates-handler'),
-      runtime: CustomResourceProviderRuntime.NODEJS_16_X,
+      runtime: STANDARD_CUSTOM_RESOURCE_PROVIDER_RUNTIME,
       policyStatements: [{
         Effect: 'Allow',
         Action: ['acm:ImportCertificate', 'acm:DeleteCertificate'],

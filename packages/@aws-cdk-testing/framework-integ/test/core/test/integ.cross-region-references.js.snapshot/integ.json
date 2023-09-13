@@ -1,0 +1,15 @@
+{
+  "version": "34.0.0",
+  "testCases": {
+    "CrossRegionSSMReferenceTest/DefaultTest": {
+      "stacks": [
+        "CrossRegionRefConsumerInteg"
+      ],
+      "regions": [
+        "us-east-2"
+      ],
+      "assertionStack": "CrossRegionSSMReferenceTest/DefaultTest/DeployAssert",
+      "assertionStackName": "CrossRegionSSMReferenceTestDefaultTestDeployAssert2460BCA3"
+    }
+  }
+}
