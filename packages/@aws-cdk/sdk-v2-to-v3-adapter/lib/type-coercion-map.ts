@@ -1,5 +1,7 @@
 import * as zlib from 'zlib';
-import text from './parameter-types-base64.json';
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const text = require('./parameter-types-base64.json');
 
 export interface TypeCoercionMap {
   [service: string]: {
