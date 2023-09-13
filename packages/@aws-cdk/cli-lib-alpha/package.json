@@ -69,6 +69,7 @@
     "post": [
       "yarn attribute",
       "mkdir -p ./lib/api/bootstrap/ && cp ../../aws-cdk/lib/api/bootstrap/bootstrap-template.yaml ./lib/api/bootstrap/",
+      "cp ../../../node_modules/cdk-from-cfn/index_bg.wasm ./lib/",
       "yarn bundle",
       "node ./lib/main.js >/dev/null 2>/dev/null </dev/null"
     ],
