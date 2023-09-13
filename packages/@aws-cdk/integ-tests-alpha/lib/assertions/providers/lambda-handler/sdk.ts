@@ -88,7 +88,7 @@ export class AwsApiCallHandler extends CustomResourceHandler<AwsApiCallRequest, 
     const commandInput = coerceApiParametersToUint8Array(request.service, request.api, parameters);
 
     console.log(`SDK request to ${sdkPkg.service}.${request.api} with parameters ${JSON.stringify(commandInput)}`);
-    let response = await client.send(new Command(commandInput));
+    const response = await client.send(new Command(commandInput));
 
     if (response.Payload) {
       // Lambda::Invoke returns the payload as a buffer
