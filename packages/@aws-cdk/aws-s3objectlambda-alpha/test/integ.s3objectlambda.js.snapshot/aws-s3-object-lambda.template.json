@@ -70,7 +70,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "MyFunction1ServiceRoleDefaultPolicy39556460",
@@ -142,7 +142,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "MyFunction2ServiceRoleDefaultPolicyA79C693E",

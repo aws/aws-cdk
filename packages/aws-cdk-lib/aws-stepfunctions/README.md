@@ -57,7 +57,7 @@ const definition = submitJob
     .otherwise(waitX));
 
 new sfn.StateMachine(this, 'StateMachine', {
-  definition,
+  definitionBody: sfn.DefinitionBody.fromChainable(definition),
   timeout: Duration.minutes(5),
   comment: 'a super cool state machine',
 });
@@ -76,7 +76,7 @@ all states reachable from the start state:
 const startState = new sfn.Pass(this, 'StartState');
 
 new sfn.StateMachine(this, 'StateMachine', {
-  definition: startState,
+  definitionBody: sfn.DefinitionBody.fromChainable(startState),
 });
 ```
 
@@ -565,7 +565,7 @@ const chain = sfn.Chain.start(custom)
   .next(finalStatus);
 
 const sm = new sfn.StateMachine(this, 'StateMachine', {
-  definition: chain,
+  definitionBody: sfn.DefinitionBody.fromChainable(chain),
   timeout: Duration.seconds(30),
   comment: 'a super cool state machine',
 });
@@ -610,7 +610,7 @@ const definition = step1
   .next(finish);
 
 new sfn.StateMachine(this, 'StateMachine', {
-  definition,
+  definitionBody: sfn.DefinitionBody.fromChainable(definition),
 });
 ```
 
@@ -712,7 +712,7 @@ class MyStack extends Stack {
       .branch(new MyJob(this, 'Slow', { jobFlavor: 'slow' }).prefixStates());
 
     new sfn.StateMachine(this, 'MyStateMachine', {
-      definition: parallel,
+      definitionBody: sfn.DefinitionBody.fromChainable(parallel),
     });
   }
 }
@@ -818,8 +818,10 @@ import * as logs from 'aws-cdk-lib/aws-logs';
 
 const logGroup = new logs.LogGroup(this, 'MyLogGroup');
 
+const definition = sfn.Chain.start(new sfn.Pass(this, 'Pass'));
+
 new sfn.StateMachine(this, 'MyStateMachine', {
-  definition: sfn.Chain.start(new sfn.Pass(this, 'Pass')),
+  definitionBody: sfn.DefinitionBody.fromChainable(definition),
   logs: {
     destination: logGroup,
     level: sfn.LogLevel.ALL,
@@ -832,8 +834,10 @@ new sfn.StateMachine(this, 'MyStateMachine', {
 Enable X-Ray tracing for StateMachine:
 
 ```ts
+const definition = sfn.Chain.start(new sfn.Pass(this, 'Pass'));
+
 new sfn.StateMachine(this, 'MyStateMachine', {
-  definition: sfn.Chain.start(new sfn.Pass(this, 'Pass')),
+  definitionBody: sfn.DefinitionBody.fromChainable(definition),
   tracingEnabled: true,
 });
 ```
@@ -864,7 +868,7 @@ const role = new iam.Role(this, 'Role', {
 
 declare const definition: sfn.IChainable;
 const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
-  definition,
+  definitionBody: sfn.DefinitionBody.fromChainable(definition),
 });
 
 // Give role permission to start execution of state machine
@@ -886,7 +890,7 @@ const role = new iam.Role(this, 'Role', {
 
 declare const definition: sfn.IChainable;
 const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
-  definition,
+  definitionBody: sfn.DefinitionBody.fromChainable(definition),
 });
 
 // Give role read access to state machine
@@ -915,7 +919,7 @@ const role = new iam.Role(this, 'Role', {
 
 declare const definition: sfn.IChainable;
 const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
-  definition,
+  definitionBody: sfn.DefinitionBody.fromChainable(definition),
 });
 
 // Give role task response permissions to the state machine
@@ -939,7 +943,7 @@ const role = new iam.Role(this, 'Role', {
 
 declare const definition: sfn.IChainable;
 const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
-  definition,
+  definitionBody: sfn.DefinitionBody.fromChainable(definition),
 });
 
 // Give role permission to get execution history of ALL executions for the state machine
@@ -955,7 +959,7 @@ const user = new iam.User(this, 'MyUser');
 
 declare const definition: sfn.IChainable;
 const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
-  definition,
+  definitionBody: sfn.DefinitionBody.fromChainable(definition),
 });
 
 //give user permission to send task success to the state machine

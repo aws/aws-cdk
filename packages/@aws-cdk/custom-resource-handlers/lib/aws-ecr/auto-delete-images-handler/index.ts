@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { ECR, ImageIdentifier, ListImagesRequest, RepositoryNotFoundException } from '@aws-sdk/client-ecr';
+import { ECR, ImageIdentifier, ListImagesRequest } from '@aws-sdk/client-ecr';
 import { makeHandler } from '../../nodejs-entrypoint';
 
 const AUTO_DELETE_IMAGES_TAG = 'aws-cdk:auto-delete-images';
@@ -94,7 +94,7 @@ async function onDelete(repositoryName: string) {
   try {
     await emptyRepository({ repositoryName });
   } catch (e: any) {
-    if (!(e instanceof RepositoryNotFoundException)) {
+    if (e.name !== 'RepositoryNotFoundException') {
       throw e;
     }
     // Repository doesn't exist. Ignoring

@@ -44,7 +44,7 @@ const partitionKeys = [{
   type: glue.Schema.SMALL_INT,
 }];
 
-const avroTable = new glue.Table(stack, 'AVROTable', {
+const avroTable = new glue.S3Table(stack, 'AVROTable', {
   database,
   bucket,
   tableName: 'avro_table',
@@ -53,7 +53,7 @@ const avroTable = new glue.Table(stack, 'AVROTable', {
   dataFormat: glue.DataFormat.AVRO,
 });
 
-const csvTable = new glue.Table(stack, 'CSVTable', {
+const csvTable = new glue.S3Table(stack, 'CSVTable', {
   database,
   bucket,
   tableName: 'csv_table',
@@ -62,7 +62,7 @@ const csvTable = new glue.Table(stack, 'CSVTable', {
   dataFormat: glue.DataFormat.CSV,
 });
 
-const jsonTable = new glue.Table(stack, 'JSONTable', {
+const jsonTable = new glue.S3Table(stack, 'JSONTable', {
   database,
   bucket,
   tableName: 'json_table',
@@ -71,7 +71,7 @@ const jsonTable = new glue.Table(stack, 'JSONTable', {
   dataFormat: glue.DataFormat.JSON,
 });
 
-const parquetTable = new glue.Table(stack, 'ParquetTable', {
+const parquetTable = new glue.S3Table(stack, 'ParquetTable', {
   database,
   bucket,
   tableName: 'parquet_table',
@@ -80,7 +80,7 @@ const parquetTable = new glue.Table(stack, 'ParquetTable', {
   dataFormat: glue.DataFormat.PARQUET,
 });
 
-const encryptedTable = new glue.Table(stack, 'MyEncryptedTable', {
+const encryptedTable = new glue.S3Table(stack, 'MyEncryptedTable', {
   database,
   tableName: 'my_encrypted_table',
   columns,
@@ -92,7 +92,7 @@ const encryptedTable = new glue.Table(stack, 'MyEncryptedTable', {
   }),
 });
 
-new glue.Table(stack, 'MyPartitionFilteredTable', {
+new glue.S3Table(stack, 'MyPartitionFilteredTable', {
   database,
   bucket,
   tableName: 'partition_filtered_table',
@@ -101,7 +101,15 @@ new glue.Table(stack, 'MyPartitionFilteredTable', {
   enablePartitionFiltering: true,
 });
 
-new glue.Table(stack, 'MyTableWithStorageDescriptorParameters', {
+new glue.S3Table(stack, 'MyTableWithConnection', {
+  database,
+  bucket,
+  tableName: 'connection_table',
+  columns,
+  dataFormat: glue.DataFormat.JSON,
+});
+
+new glue.S3Table(stack, 'MyTableWithStorageDescriptorParameters', {
   database,
   bucket,
   tableName: 'table_with_storage_descriptor_parameters',
@@ -114,6 +122,14 @@ new glue.Table(stack, 'MyTableWithStorageDescriptorParameters', {
     glue.StorageParameter.custom('separatorChar', ','), // Will describe the separator char used in the data
     glue.StorageParameter.custom(glue.StorageParameters.WRITE_PARALLEL, 'off'),
   ],
+});
+
+new glue.Table(stack, 'MyDeprecatedTable', {
+  database,
+  bucket,
+  tableName: 'deprecated_table',
+  columns,
+  dataFormat: glue.DataFormat.JSON,
 });
 
 const user = new iam.User(stack, 'MyUser');

@@ -1,8 +1,12 @@
 /* eslint-disable no-console */
 import { CustomResourceHandler } from './base';
 import { AwsApiCallRequest, AwsApiCallResult } from './types';
-import { getV3ClientPackageName, findV3ClientConstructor } from '@aws-cdk/sdk-v2-to-v3-adapter';
-import { decodeParameters, parseJsonPayload } from './utils';
+import {
+  getV3ClientPackageName,
+  findV3ClientConstructor,
+  coerceApiParametersToUint8Array,
+} from '@aws-cdk/sdk-v2-to-v3-adapter';
+import { decodeParameters, coerceResponse } from './utils';
 
 /**
  * Flattens a nested object
@@ -80,16 +84,12 @@ export class AwsApiCallHandler extends CustomResourceHandler<AwsApiCallRequest, 
     const client = getServiceClient(sdkPkg);
 
     const Command = getSdkCommand(sdkPkg, request.api);
-    const commandInput = (request.parameters && decodeParameters(request.parameters)) ?? {};
+    const parameters = (request.parameters && decodeParameters(request.parameters)) ?? {};
+    const commandInput = coerceApiParametersToUint8Array(request.service, request.api, parameters);
 
     console.log(`SDK request to ${sdkPkg.service}.${request.api} with parameters ${JSON.stringify(commandInput)}`);
     const response = await client.send(new Command(commandInput));
-
-    // Lambda Invoke returns the payload as a buffer
-    // we need to serialize the buffer so we can assert on it
-    if (response.Payload) {
-      response.Payload = parseJsonPayload(response.Payload);
-    }
+    await coerceResponse(response);
 
     console.log(`SDK response received ${JSON.stringify(response)}`);
     delete response.$metadata;
