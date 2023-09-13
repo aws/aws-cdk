@@ -23,7 +23,6 @@
       ]
      ]
     },
-    "actualPath": "Body",
     "parameters": {
      "Bucket": {
       "Fn::Join": [
@@ -39,11 +38,8 @@
      },
      "Key": "\"56450500138e1b4809dbb5aa9bc51ccd1e0bc0044c6a453b40df7e5a17244740\""
     },
-    "flattenResponse": "true",
-    "outputPaths": [
-     "Body"
-    ],
-    "salt": "1694452807292"
+    "flattenResponse": "false",
+    "salt": "1694563383906"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -107,7 +103,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "77997674c0a10fbb65169124ad6c0d7a664b6162ad44f9abfa22fd006b33f754.zip"
+     "S3Key": "de2f469dcf93c9d8015f8e0365ebb3d728a2f1dc6be4fc8c7b5ef88ebca681fa.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",

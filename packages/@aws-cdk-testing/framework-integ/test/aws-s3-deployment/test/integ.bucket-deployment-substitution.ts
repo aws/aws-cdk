@@ -37,7 +37,6 @@ class Test extends cdk.Stack {
 }
 
 const app = new cdk.App();
-new Test(app, 'my-stack');
 
 const testCase = new Test(app, 'test-s3-deploy-substitution');
 const integ = new IntegTest(app, 'deploy-time-substitution-integ-test', {
@@ -55,7 +54,7 @@ apiCall.provider.addToRolePolicy({
   Resource: ['*'],
 });
 
-apiCall.assertAtPath('Body', ExpectedResult.stringLikeRegexp(`substitutionStatus: substitution-successful!\\nlambdaArn: ${testCase.lambdaArn}`));
+apiCall.expect(ExpectedResult.stringLikeRegexp(`substitutionStatus: substitution-successful!\\nlambdaArn: ${testCase.lambdaArn}`));
 
 function helloCode(_event: any, _context: any, callback: any) {
   return callback(undefined, {
