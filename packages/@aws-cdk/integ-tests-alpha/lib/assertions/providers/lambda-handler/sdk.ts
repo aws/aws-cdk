@@ -89,17 +89,18 @@ export class AwsApiCallHandler extends CustomResourceHandler<AwsApiCallRequest, 
 
     console.log(`SDK request to ${sdkPkg.service}.${request.api} with parameters ${JSON.stringify(commandInput)}`);
     const response = await client.send(new Command(commandInput));
+    const transformedResponse = await response.Body.transformToString('utf-8');
 
     // Lambda Invoke returns the payload as a buffer
     // we need to serialize the buffer so we can assert on it
-    if (response.Payload) {
-      response.Payload = parseJsonPayload(response.Payload);
+    if (transformedResponse.Payload) {
+      transformedResponse.Payload = parseJsonPayload(transformedResponse.Payload);
     }
 
-    console.log(`SDK response received ${JSON.stringify(response)}`);
-    delete response.$metadata;
+    console.log(`SDK response received ${JSON.stringify(transformedResponse)}`);
+    delete transformedResponse.$metadata;
     const respond = {
-      apiCallResponse: response,
+      apiCallResponse: transformedResponse,
     };
     const flatData: { [key: string]: string } = {
       ...flatten(respond),
