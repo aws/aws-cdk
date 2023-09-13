@@ -32686,15 +32686,16 @@ var AwsApiCallHandler = class extends CustomResourceHandler {
     const parameters = (request2.parameters && decodeParameters(request2.parameters)) ?? {};
     const commandInput = (0, import_sdk_v2_to_v3_adapter.coerceApiParametersToUint8Array)(request2.service, request2.api, parameters);
     console.log(`SDK request to ${sdkPkg.service}.${request2.api} with parameters ${JSON.stringify(commandInput)}`);
-    const response = await client.send(new Command(commandInput));
-    const transformedResponse = await response.Body.transformToString("utf-8");
-    if (transformedResponse.Payload) {
-      transformedResponse.Payload = parseJsonPayload(transformedResponse.Payload);
+    let response = await client.send(new Command(commandInput));
+    if (response.Payload) {
+      response.Payload = parseJsonPayload(response.Payload);
+    } else if (response.Body) {
+      response = await response.Body.transformToString("utf-8");
     }
-    console.log(`SDK response received ${JSON.stringify(transformedResponse)}`);
-    delete transformedResponse.$metadata;
+    console.log(`SDK response received ${JSON.stringify(response)}`);
+    delete response.$metadata;
     const respond = {
-      apiCallResponse: transformedResponse
+      apiCallResponse: response
     };
     const flatData = {
       ...flatten(respond)
