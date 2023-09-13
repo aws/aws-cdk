@@ -1,15 +1,27 @@
-import { UINT8ARRAY_PARAMETERS } from './parameter-types';
+import { TypeCoercionGroup, TypeCoercionMap, typeCoercionMap } from './type-coercion-map';
 
 type ApiParameters = { [param: string]: any };
+type TargetType = 'Uint8Array' | 'number';
+
+let coercionGroup: TypeCoercionGroup | undefined;
 
 /**
  * Given a minimal AWS SDKv3 call definition (service, action, parameters),
  * coerces nested parameter values into a Uint8Array if that's what the SDKv3 expects.
  */
-export function coerceApiParametersToUint8Array(service: string, action: string, parameters: ApiParameters = {}): ApiParameters {
-  const pathsToCoerce = UINT8ARRAY_PARAMETERS?.[service.toLowerCase()]?.[action.toLowerCase()] ?? [];
-  for (const path of pathsToCoerce) {
-    coerceToUint8Array(parameters, path.split('.'));
+export async function coerceApiParameters(service: string, action: string, parameters: ApiParameters = {}): Promise<ApiParameters> {
+  if (coercionGroup == null) {
+    coercionGroup = await typeCoercionMap();
+  }
+
+  apply(coercionGroup.numberParameters, 'number');
+  apply(coercionGroup.uint8ArrayParameters, 'Uint8Array');
+
+  function apply(coercionMap: TypeCoercionMap, targetType: TargetType) {
+    const pathsToCoerce = coercionMap?.[service.toLowerCase()]?.[action.toLowerCase()] ?? [];
+    for (const path of pathsToCoerce) {
+      coerce(parameters, path.split('.'), targetType);
+    }
   }
   return parameters;
 }
@@ -24,25 +36,28 @@ export function coerceApiParametersToUint8Array(service: string, action: string,
  *
  * @returns Parameters with coerced values
  */
-export function coerceToUint8Array(obj: any, path: string[]): any {
+export function coerce(obj: any, path: string[], targetType: TargetType): any {
   if (path.length === 0) {
-    return coerceValueToUint8Array(obj);
+    return targetType === 'Uint8Array'
+      ? coerceValueToUint8Array(obj)
+      : coerceValueToNumber(obj);
   }
 
   if (path[0] === '*') {
     if (Array.isArray(obj)) {
-      return obj.map((e) => coerceToUint8Array(e, path.slice(1)));
+      return obj.map((e) => coerce(e, path.slice(1), targetType));
     }
     if (obj && typeof obj === 'object') {
-      return Object.fromEntries(Object.entries(obj).map(([key, value]) => [key, coerceToUint8Array(value, path.slice(1))]));
+      return Object.fromEntries(Object.entries(obj).map(([key, value]) => [key, coerce(value, path.slice(1), targetType)]));
     }
     // The value should have been an array or dict here, but let's be safe and return the original value anyway
     return obj;
   }
 
   if (obj && typeof obj === 'object') {
-    if (path[0] in obj) {
-      obj[path[0]] = coerceToUint8Array(obj[path[0]], path.slice(1));
+    const memberName = Object.keys(obj).find(k => k.startsWith(path[0]));
+    if (memberName != null) {
+      obj[memberName] = coerce(obj[memberName], path.slice(1), targetType);
     }
     return obj;
   }
@@ -61,3 +76,15 @@ function coerceValueToUint8Array(x: unknown): Uint8Array | any {
   return x;
 }
 
+function coerceValueToNumber(x: unknown): number | any {
+  if (typeof x === 'number') {
+    return x;
+  }
+
+  if (typeof x === 'string') {
+    const n = Number(x);
+    return isNaN(n) ? x : n;
+  }
+
+  return x;
+}

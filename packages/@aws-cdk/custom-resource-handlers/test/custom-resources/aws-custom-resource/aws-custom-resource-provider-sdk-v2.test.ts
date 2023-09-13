@@ -2,7 +2,7 @@
 import * as SDK from 'aws-sdk';
 import * as AWS from 'aws-sdk-mock';
 import * as fs from 'fs-extra';
-import * as nock from 'nock';
+import nock from 'nock';
 import * as sinon from 'sinon';
 import { v2handler as handler } from '../../../lib/custom-resources/aws-custom-resource-handler';
 import { forceSdkInstallation } from '../../../lib/custom-resources/aws-custom-resource-handler/aws-sdk-v2-handler';

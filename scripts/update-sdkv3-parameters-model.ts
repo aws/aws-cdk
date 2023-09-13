@@ -41,7 +41,7 @@ async function main(argv: string[]) {
   const sortedMapping = Object.fromEntries(Object.entries(blobMapping).sort(sortByKey));
 
   console.log(JSON.stringify({
-    uint88ArrayParameters: blobMapping,
+    uint8ArrayParameters: blobMapping,
     numberParameters: numberMapping,
   }))
 }

@@ -2,9 +2,10 @@
 set -eu
 scriptdir=$(cd $(dirname $0) && pwd)
 tmpdir=$(mktemp -d)
+map_file="$tmpdir/map.json"
 zip=https://github.com/aws/aws-sdk-js-v3/archive/refs/heads/main.zip
 ziprootentry=aws-sdk-js-v3-main
-target_file=packages/@aws-cdk/sdk-v2-to-v3-adapter/lib/parameter-types.ts
+target_file=packages/@aws-cdk/sdk-v2-to-v3-adapter/lib/parameter-types-base64.json
 smithy_subdir=codegen/sdk-codegen/aws-models
 
 # Use the GitHub feature to download a zip archive of the current state of a branch
@@ -14,7 +15,9 @@ curl -SfL -o $tmpdir/main.zip "$zip"
 (cd $tmpdir && unzip -q main.zip)
 
 echo "🖨️ Generating..."
-npx ts-node $scriptdir/update-sdkv3-parameters-model.ts $tmpdir/$ziprootentry/$smithy_subdir > "$target_file"
+npx ts-node $scriptdir/update-sdkv3-parameters-model.ts $tmpdir/$ziprootentry/$smithy_subdir > "$map_file"
+gzip "$map_file"
+echo "\"$(base64 -i ${map_file}.gz)\"" > $target_file
 
 echo "🚮 Cleaning up..."
 rm -rf $tmpdir
