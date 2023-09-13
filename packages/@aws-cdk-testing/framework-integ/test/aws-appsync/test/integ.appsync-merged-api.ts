@@ -26,8 +26,8 @@ secondApi.addNoneDataSource('SecondSourceDS', {
 
 new appsync.GraphqlApi(stack, 'MergedAPI', {
   name: 'MergedAPI',
-  definition: appsync.Definition.fromMergedApiConfiguration({
-    sourceApiAssociationConfigs: [
+  definition: appsync.Definition.fromSourceApis({
+    sourceApis: [
       {
         sourceApi: firstApi,
         mergeType: appsync.MergeType.MANUAL_MERGE,

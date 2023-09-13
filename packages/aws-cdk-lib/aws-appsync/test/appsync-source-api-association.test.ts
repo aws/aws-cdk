@@ -32,8 +32,8 @@ beforeEach(() => {
 
   mergedApi = new appsync.GraphqlApi(stack, 'merged-api', {
     name: 'api',
-    definition: appsync.Definition.fromMergedApiConfiguration({
-      sourceApiAssociationConfigs: [],
+    definition: appsync.Definition.fromSourceApis({
+      sourceApis: [],
       mergedApiExecutionRole: mergedApiExecutionRole,
     }),
   });

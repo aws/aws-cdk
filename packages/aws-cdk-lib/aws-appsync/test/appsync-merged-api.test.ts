@@ -27,8 +27,8 @@ test('appsync supports merged API', () => {
   // WHEN
   const mergedApi = new appsync.GraphqlApi(stack, 'merged-api', {
     name: 'api',
-    definition: appsync.Definition.fromMergedApiConfiguration({
-      sourceApiAssociationConfigs: [
+    definition: appsync.Definition.fromSourceApis({
+      sourceApis: [
         {
           sourceApi: api1,
           mergeType: appsync.MergeType.MANUAL_MERGE,
@@ -200,8 +200,8 @@ test('appsync supports merged API with default merge type', () => {
   // WHEN
   new appsync.GraphqlApi(stack, 'merged-api', {
     name: 'api',
-    definition: appsync.Definition.fromMergedApiConfiguration({
-      sourceApiAssociationConfigs: [
+    definition: appsync.Definition.fromSourceApis({
+      sourceApis: [
         {
           sourceApi: api1,
         },
@@ -236,9 +236,9 @@ test('appsync merged API with custom merged API execution role', () => {
   });
   new appsync.GraphqlApi(stack, 'merged-api', {
     name: 'api',
-    definition: appsync.Definition.fromMergedApiConfiguration({
+    definition: appsync.Definition.fromSourceApis({
       mergedApiExecutionRole: role,
-      sourceApiAssociationConfigs: [
+      sourceApis: [
         {
           sourceApi: api1,
           mergeType: appsync.MergeType.MANUAL_MERGE,
@@ -267,8 +267,8 @@ test('Merged API throws when accessing schema property', () => {
   // WHEN
   const mergedApi = new appsync.GraphqlApi(stack, 'merged-api', {
     name: 'api',
-    definition: appsync.Definition.fromMergedApiConfiguration({
-      sourceApiAssociationConfigs: [
+    definition: appsync.Definition.fromSourceApis({
+      sourceApis: [
         {
           sourceApi: api1,
           mergeType: appsync.MergeType.MANUAL_MERGE,

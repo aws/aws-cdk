@@ -292,11 +292,11 @@ export interface DomainOptions {
 /**
  * Additional API configuration for creating a AppSync Merged API
  */
-export interface MergedApiConfiguration {
+export interface SourceApiOptions {
   /**
    * Definition of source APIs associated with this Merged API
    */
-  readonly sourceApiAssociationConfigs: SourceApiAssociationConfig[];
+  readonly sourceApis: SourceApi[];
 
   /**
    * IAM Role used to validate access to source APIs at runtime and to update the merged API endpoint with the source API changes
@@ -309,7 +309,7 @@ export interface MergedApiConfiguration {
 /**
  * Configuration of source API
 */
-export interface SourceApiAssociationConfig {
+export interface SourceApi {
   /**
    * Source API that is associated with the merged API
    */
@@ -354,12 +354,12 @@ export abstract class Definition {
 
   /**
    * Schema from existing AppSync APIs - used for creating a AppSync Merged API
-   * @param mergedApiConfiguration Configuration for AppSync Merged API
+   * @param sourceApiOptions Configuration for AppSync Merged API
    * @returns API Source with for AppSync Merged API
    */
-  public static fromMergedApiConfiguration(mergedApiConfiguration: MergedApiConfiguration): Definition {
+  public static fromSourceApis(sourceApiOptions: SourceApiOptions): Definition {
     return {
-      mergedApiConfiguration,
+      sourceApiOptions,
     };
   }
 
@@ -369,9 +369,9 @@ export abstract class Definition {
   readonly schema?: ISchema;
 
   /**
-   * Merged API configuration.
+   * Source APIs for Merged API
    */
-  readonly mergedApiConfiguration?: MergedApiConfiguration;
+  readonly sourceApiOptions?: SourceApiOptions;
 }
 
 /**
@@ -617,8 +617,8 @@ export class GraphqlApi extends GraphqlApiBase {
     }
     this.definition = props.schema ? Definition.fromSchema(props.schema) : props.definition!;
 
-    if (this.definition.mergedApiConfiguration) {
-      this.setupMergedApiExecutionRole(this.definition.mergedApiConfiguration);
+    if (this.definition.sourceApiOptions) {
+      this.setupMergedApiExecutionRole(this.definition.sourceApiOptions);
     }
 
     this.api = new CfnGraphQLApi(this, 'Resource', {
@@ -632,7 +632,7 @@ export class GraphqlApi extends GraphqlApiBase {
       xrayEnabled: props.xrayEnabled,
       visibility: props.visibility,
       mergedApiExecutionRoleArn: this.mergedApiExecutionRole?.roleArn,
-      apiType: this.definition.mergedApiConfiguration ? 'MERGED' : undefined,
+      apiType: this.definition.sourceApiOptions ? 'MERGED' : undefined,
     });
 
     this.apiId = this.api.attrApiId;
@@ -694,20 +694,20 @@ export class GraphqlApi extends GraphqlApiBase {
   }
 
   private setupSourceApiAssociations() {
-    this.definition.mergedApiConfiguration?.sourceApiAssociationConfigs.forEach(sourceApiAssociationConfig => {
-      new SourceApiAssociation(this, `${sourceApiAssociationConfig.sourceApi.node.id}Association`, {
-        sourceApi: sourceApiAssociationConfig.sourceApi,
+    this.definition.sourceApiOptions?.sourceApis.forEach(sourceApiConfig => {
+      new SourceApiAssociation(this, `${sourceApiConfig.sourceApi.node.id}Association`, {
+        sourceApi: sourceApiConfig.sourceApi,
         mergedApiIdentifier: this.api.attrApiId,
-        mergeType: sourceApiAssociationConfig.mergeType,
+        mergeType: sourceApiConfig.mergeType,
         mergedApiExecutionRole: this.mergedApiExecutionRole,
-        description: sourceApiAssociationConfig.description,
+        description: sourceApiConfig.description,
       });
     });
   }
 
-  private setupMergedApiExecutionRole(mergedApiConfiguration: MergedApiConfiguration) {
-    if (mergedApiConfiguration.mergedApiExecutionRole) {
-      this.mergedApiExecutionRole = mergedApiConfiguration.mergedApiExecutionRole;
+  private setupMergedApiExecutionRole(sourceApiOptions: SourceApiOptions) {
+    if (sourceApiOptions.mergedApiExecutionRole) {
+      this.mergedApiExecutionRole = sourceApiOptions.mergedApiExecutionRole;
     } else {
       this.mergedApiExecutionRole = new Role(this, 'MergedApiExecutionRole', {
         assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
