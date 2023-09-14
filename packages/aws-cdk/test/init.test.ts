@@ -1,4 +1,3 @@
-/* eslint-disable import/order */
 import * as os from 'os';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
