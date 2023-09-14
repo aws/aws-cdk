@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { coerceApiParametersToUint8Array, getV3Client, getV3Command, loadV3ClientPackage } from '@aws-cdk/sdk-v2-to-v3-adapter';
+import { coerceApiParameters, getV3Client, getV3Command, loadV3ClientPackage } from '@aws-cdk/sdk-v2-to-v3-adapter';
 
 interface AwsApiInput {
   readonly service: string;
@@ -20,7 +20,7 @@ export async function handler(event: AwsApiInput) {
 
   const client = getV3Client(awsSdk, { apiVersion: event.apiVersion });
   const Command = getV3Command(awsSdk, event.action);
-  const commandInput = coerceApiParametersToUint8Array(event.service, event.action, event.parameters);
+  const commandInput = coerceApiParameters(event.service, event.action, event.parameters);
 
   try {
     const response = await client.send(new Command(commandInput));
