@@ -30,11 +30,12 @@ export abstract class Schedule extends CoreSchedule {
 
     return new class extends Schedule {
       public readonly expressionString = autoscalingCron;
+      public readonly timeZone = options.timeZone;
       public _bind(scope: Construct) {
         if (!options.minute) {
           Annotations.of(scope).addWarningV2('@aws-cdk/aws-autoscaling:scheduleDefaultRunsEveryMinute', 'cron: If you don\'t pass \'minute\', by default the event runs every minute. Pass \'minute: \'*\'\' if that\'s what you intend, or \'minute: 0\' to run once per hour instead.');
         }
-        return Schedule.expression(this.expressionString, options.timeZone);
+        return Schedule.expression(this.expressionString, this.timeZone);
       }
     };
   }

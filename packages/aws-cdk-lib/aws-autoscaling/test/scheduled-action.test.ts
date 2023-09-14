@@ -69,7 +69,7 @@ describeDeprecated('scheduled action', () => {
 
     // WHEN
     asg.scaleOnSchedule('ScaleOutAtMiddaySeoul', {
-      schedule: autoscaling.Schedule.cron({ hour: '12', minute: '0', timeZone: cdk.TimeZone.ASIA_SEOUL }),
+      schedule: autoscaling.Schedule.expression('0 12 * * *', cdk.TimeZone.ASIA_SEOUL),
       minCapacity: 12,
     });
 
@@ -87,7 +87,7 @@ describeDeprecated('scheduled action', () => {
     const asg = makeAutoScalingGroup(stack);
 
     // THEN
-    expect(asg.scaleOnSchedule('ScaleOutAtMiddaySeoul', {
+    expect(() => asg.scaleOnSchedule('ScaleOutAtMiddaySeoul', {
       schedule: autoscaling.Schedule.cron({
         hour: '12',
         minute: '0',
