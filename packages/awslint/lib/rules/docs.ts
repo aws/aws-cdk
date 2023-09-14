@@ -53,7 +53,7 @@ docsLinter.add({
     if (e.ctx.kind !== 'interface-property') { return; }
     if (!e.ctx.containingType.isDataType()) { return; }
     // this rule does not apply to L1 constructs
-    if (CoreTypes.isCfnType(e.ctx.containingType)) {
+    if (CoreTypes.isCfnType(e.ctx.containingType) || CoreTypes.isCfnNestedType(e.ctx.containingType)) {
       return;
     }
 

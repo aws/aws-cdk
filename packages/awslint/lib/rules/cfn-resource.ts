@@ -54,10 +54,7 @@ export class CfnResourceReflection {
 
     this.basename = cls.name.slice('Cfn'.length);
 
-    // HACK: extract full CFN name from initializer docs
-    const initializerDoc = (cls.initializer && cls.initializer.docs.docs.summary) || '';
-    const out = /a new `([^`]+)`/.exec(initializerDoc);
-    const fullname = out && out[1];
+    const fullname = cls.docs.customTag('cloudformationResource');
     if (!fullname) {
       throw new Error(`Unable to extract CloudFormation resource name from initializer documentation of ${cls}`);
     }

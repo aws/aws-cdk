@@ -158,6 +158,11 @@ export interface ResourceProps extends ResourceOptions {
    * A path name for the resource.
    */
   readonly pathPart: string;
+
+  /**
+  * A name for the resource.
+  */
+  readonly resourceName?: string;
 }
 
 export abstract class ResourceBase extends ResourceConstruct implements IResource {
