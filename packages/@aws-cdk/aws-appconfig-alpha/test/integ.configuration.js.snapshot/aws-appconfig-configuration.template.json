@@ -1207,7 +1207,9 @@
      ],
      "Version": "2012-10-17"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "MyPipelineRoleC0D47CA4": {
    "Type": "AWS::IAM::Role",
