@@ -26,12 +26,9 @@ export interface ContainerImageConfig {
 export abstract class ContainerImage {
   /**
    * Reference an image in an ECR repository
-   *
-   * @param repository ECR repository
-   * @param tagOrDigest Optional image tag or digest (digests must start with `sha256:`)
    */
-  public static fromEcrRepository(repository: ecr.IRepository, tagOrDigest: string = 'latest'): ContainerImage {
-    return new EcrImage(repository, tagOrDigest);
+  public static fromEcrRepository(repository: ecr.IRepository, tag: string = 'latest'): ContainerImage {
+    return new EcrImage(repository, tag);
   }
 
   /**
