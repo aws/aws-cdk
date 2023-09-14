@@ -479,7 +479,9 @@
      ],
      "Version": "2012-10-17"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "VPCFlowLogsS3FlowLogB5256CFF": {
    "Type": "AWS::EC2::FlowLog",
@@ -631,7 +633,9 @@
      ],
      "Version": "2012-10-17"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "VPCFlowLogsS3WithDestinationOptionsFlowLog030C15B2": {
    "Type": "AWS::EC2::FlowLog",
