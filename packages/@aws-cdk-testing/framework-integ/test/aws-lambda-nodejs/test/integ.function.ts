@@ -1,18 +1,18 @@
 import * as os from 'os';
 import * as path from 'path';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
-import { LayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { LayerVersion } from 'aws-cdk-lib/aws-lambda';
 import { Aws, App, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as lambda from 'aws-cdk-lib/aws-lambda-nodejs';
-
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
     new lambda.NodejsFunction(this, 'ts-handler', {
       entry: path.join(__dirname, 'integ-handlers/ts-handler.ts'),
-      runtime: Runtime.NODEJS_16_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
       bundling: {
         minify: true,
         sourceMap: true,
@@ -22,18 +22,18 @@ class TestStack extends Stack {
 
     new lambda.NodejsFunction(this, 'js-handler', {
       entry: path.join(__dirname, 'integ-handlers/js-handler.js'),
-      runtime: Runtime.NODEJS_16_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
     });
 
     new lambda.NodejsFunction(this, 'ts-handler-vpc', {
       entry: path.join(__dirname, 'integ-handlers/ts-handler.ts'),
-      runtime: Runtime.NODEJS_16_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
       vpc: new Vpc(this, 'Vpc', { restrictDefaultSecurityGroup: false }),
     });
 
     new lambda.NodejsFunction(this, 'ts-handler-custom-handler-no-dots', {
       entry: path.join(__dirname, 'integ-handlers/ts-handler.ts'),
-      runtime: Runtime.NODEJS_16_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
       bundling: {
         minify: true,
         sourceMap: true,
@@ -44,7 +44,7 @@ class TestStack extends Stack {
 
     new lambda.NodejsFunction(this, 'ts-handler-custom-handler-dots', {
       entry: path.join(__dirname, 'integ-handlers/ts-web-handler.ts'),
-      runtime: Runtime.NODEJS_16_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
       bundling: {
         minify: true,
         sourceMap: true,

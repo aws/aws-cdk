@@ -44,7 +44,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "submitJobLambdaServiceRole4D897ABD"
@@ -94,7 +94,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "checkJobStateLambdaServiceRoleB8B57B65"

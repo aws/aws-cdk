@@ -31939,7 +31939,11 @@ var AwsApiCallHandler = class extends CustomResourceHandler {
     const client = getServiceClient(sdkPkg);
     const Command = getSdkCommand(sdkPkg, request2.api);
     const parameters = (request2.parameters && decodeParameters(request2.parameters)) ?? {};
+<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-elasticloadbalancingv2-actions/test/integ.cognito.js.snapshot/asset.15b826083d3ca07e86de329bd3da205c08a798b81eedf4ce1bbc45851f871f7b.bundle/index.js
     const commandInput = (0, import_sdk_v2_to_v3_adapter.coerceApiParameters)(request2.service, request2.api, parameters);
+========
+    const commandInput = (0, import_sdk_v2_to_v3_adapter.coerceApiParametersToUint8Array)(request2.service, request2.api, parameters);
+>>>>>>>> origin/main:packages/@aws-cdk/aws-msk-alpha/test/integ.add-cluster-user.js.snapshot/asset.f9eeaca5689691166106a01e96cb24972dd459c0e44c46f71d5a71a351954971.bundle/index.js
     console.log(`SDK request to ${sdkPkg.service}.${request2.api} with parameters ${JSON.stringify(commandInput)}`);
     const response = await client.send(new Command(commandInput));
     if (response.Payload) {
