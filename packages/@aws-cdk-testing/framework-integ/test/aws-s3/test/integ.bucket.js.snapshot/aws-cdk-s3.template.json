@@ -3,6 +3,7 @@
   "MyBucketKeyC17130CF": {
    "Type": "AWS::KMS::Key",
    "Properties": {
+    "Description": "Created by aws-cdk-s3/MyBucket",
     "KeyPolicy": {
      "Statement": [
       {
@@ -30,8 +31,7 @@
       }
      ],
      "Version": "2012-10-17"
-    },
-    "Description": "Created by aws-cdk-s3/MyBucket"
+    }
    },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
@@ -55,8 +55,57 @@
      ]
     }
    },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "MyBucketPolicyE7FBAC7B": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "MyBucketF68F3FF0"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:*",
+       "Condition": {
+        "Bool": {
+         "aws:SecureTransport": "false"
+        }
+       },
+       "Effect": "Deny",
+       "Principal": {
+        "AWS": "*"
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "MyBucketF68F3FF0",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "MyBucketF68F3FF0",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "MyOtherBucket543F3540": {
    "Type": "AWS::S3::Bucket",
