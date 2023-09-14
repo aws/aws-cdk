@@ -558,7 +558,7 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [
     "DeleteCanaryCustomResourcePolicy98D0C78F"
@@ -625,9 +625,10 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "03adb2514e02907e0458bec59283658ec529425bd5df38e1194455c65dedf6ff.zip"
+     "S3Key": "533054979b29e5cebd0aa42080176f83126f3c41c9b17e0bd0ce2b09692fc555.zip"
     },
     "Handler": "index.handler",
+    "MemorySize": 256,
     "Role": {
      "Fn::GetAtt": [
       "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
