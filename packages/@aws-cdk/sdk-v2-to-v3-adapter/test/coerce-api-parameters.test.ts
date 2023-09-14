@@ -473,3 +473,73 @@ describe('number', () => {
     });
   });
 });
+
+describe('circular coersions', () => {
+
+  test('simple circular reference', async () => {
+    const params = await coerceApiParameters('DynamoDB', 'getObject', {
+      Key: {
+        ColumnToSearch: {
+          L: [
+            { N: '1' },
+            { N: '2' },
+          ],
+        },
+      },
+      TableName: 'abc',
+    });
+
+    expect(params).toMatchObject({
+      Key: {
+        ColumnToSearch: {
+          L: [
+            { N: 1 },
+            { N: 2 },
+          ],
+        },
+      },
+      TableName: new Uint8Array([97, 98, 99]),
+    });
+  });
+
+  test('complex circular reference', async () => {
+    const params = await coerceApiParameters('DynamoDB', 'getObject', {
+      Key: {
+        ColumnToSearch: {
+          L: [
+            {
+              L: [
+                { N: '1' },
+                { N: '2' },
+              ],
+            },
+            {
+              M: { Name: { S: 'abd' }, Age: { N: '35' } },
+            },
+          ],
+        },
+      },
+      TableName: 'abc',
+    });
+
+    expect(params).toMatchObject({
+      Key: {
+        ColumnToSearch: {
+          L: [
+            {
+              L: [
+                { N: 1 },
+                { N: 2 },
+              ],
+            },
+            {
+              M: { Name: { S: new Uint8Array([97, 98, 100]) }, Age: { N: 35 } },
+            },
+          ],
+        },
+      },
+      TableName: new Uint8Array([97, 98, 99]),
+    });
+  });
+
+});
