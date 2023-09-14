@@ -6,7 +6,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 
 const app = new cdk.App({
   context: {
-    [cdk.cx_api.APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION]: false,
+    [cdk.cx_api.APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION]: true,
   },
 });
 const stack = new cdk.Stack(app, 'stack');

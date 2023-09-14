@@ -595,7 +595,7 @@ export class GraphqlApi extends GraphqlApiBase {
   private api: CfnGraphQLApi;
   private apiKeyResource?: CfnApiKey;
   private domainNameResource?: CfnDomainName;
-  private mergedApiExecutionRole?: Role;
+  private mergedApiExecutionRole?: IRole;
 
   constructor(scope: Construct, id: string, props: GraphqlApiProps) {
     super(scope, id);
@@ -700,7 +700,7 @@ export class GraphqlApi extends GraphqlApiBase {
         mergedApi: this,
         mergeType: sourceApiConfig.mergeType,
         description: sourceApiConfig.description,
-        mergedApiExecutionRole: this.mergedApiExecutionRole as Role,
+        mergedApiExecutionRole: this.mergedApiExecutionRole as IRole,
       });
     });
   }

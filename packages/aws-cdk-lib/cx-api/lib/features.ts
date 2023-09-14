@@ -908,6 +908,8 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.93.0' },
     recommendedValue: true,
   },
+
+  //////////////////////////////////////////////////////////////////////
   [APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION]: {
     type: FlagType.BugFix,
     summary: 'When enabled, will always use the arn for identifiers in the source api association construct rather than id.',
