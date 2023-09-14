@@ -16,5 +16,5 @@
     "composite": true,
     "incremental": true
   },
-  "include": ["**/*.ts", "**/*.d.ts", "lib/parameter-types-base64.json"]
+  "include": ["**/*.ts", "**/*.d.ts"]
 }

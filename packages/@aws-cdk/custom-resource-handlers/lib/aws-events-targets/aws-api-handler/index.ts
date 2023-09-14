@@ -20,7 +20,7 @@ export async function handler(event: AwsApiInput) {
 
   const client = getV3Client(awsSdk, { apiVersion: event.apiVersion });
   const Command = getV3Command(awsSdk, event.action);
-  const commandInput = await coerceApiParameters(event.service, event.action, event.parameters);
+  const commandInput = coerceApiParameters(event.service, event.action, event.parameters);
 
   try {
     const response = await client.send(new Command(commandInput));

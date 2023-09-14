@@ -1,67 +1,72 @@
-import { TypeCoercionGroup, TypeCoercionMap, typeCoercionMap } from './type-coercion-map';
+import { TypeCoercionStateMachine, typeCoercionStateMachine } from './parameter-types';
 
 type ApiParameters = { [param: string]: any };
-type TargetType = 'Uint8Array' | 'number';
 
-let coercionGroup: TypeCoercionGroup | undefined;
+type StateOrConversion = TypeCoercionStateMachine[number][string];
 
 /**
  * Given a minimal AWS SDKv3 call definition (service, action, parameters),
  * coerces nested parameter values into a Uint8Array if that's what the SDKv3 expects.
  */
-export async function coerceApiParameters(service: string, action: string, parameters: ApiParameters = {}): Promise<ApiParameters> {
-  if (coercionGroup == null) {
-    coercionGroup = await typeCoercionMap();
-  }
-
-  apply(coercionGroup.numberParameters, 'number');
-  apply(coercionGroup.uint8ArrayParameters, 'Uint8Array');
-
-  function apply(coercionMap: TypeCoercionMap, targetType: TargetType) {
-    const pathsToCoerce = coercionMap?.[service.toLowerCase()]?.[action.toLowerCase()] ?? [];
-    for (const path of pathsToCoerce) {
-      coerce(parameters, path.split('.'), targetType);
-    }
-  }
-  return parameters;
+export function coerceApiParameters(service: string, action: string, parameters: ApiParameters = {}): ApiParameters {
+  const typeMachine = typeCoercionStateMachine();
+  return new Coercer(typeMachine).coerceApiParameters(service, action, parameters);
 }
 
 /**
- * Given an object and a path, traverse to the leaf and coerce the value into a Uint8Array.
- *
- * @example
- *    const obj = { a: { b: { c: '1' } } }
- *    coerceToUint8Array(obj, ['a', 'b', 'c'])
- *    assert(obj == {a: {b: {c: new Uint8Array([49]} } })
- *
- * @returns Parameters with coerced values
+ * Make this a class in order to have multiple entry points for testing that can all share convenience functions
  */
-export function coerce(obj: any, path: string[], targetType: TargetType): any {
-  if (path.length === 0) {
-    return targetType === 'Uint8Array'
-      ? coerceValueToUint8Array(obj)
-      : coerceValueToNumber(obj);
+export class Coercer {
+  constructor(private readonly typeMachine: TypeCoercionStateMachine) { }
+
+  public coerceApiParameters(service: string, action: string, parameters: ApiParameters = {}): ApiParameters {
+    // Get the initial state corresponding to the current service+action, then recurse through the parameters
+    const actionState = this.progress(action.toLowerCase(), this.progress(service.toLowerCase(), 0));
+    return this.recurse(parameters, actionState) as any;
   }
 
-  if (path[0] === '*') {
-    if (Array.isArray(obj)) {
-      return obj.map((e) => coerce(e, path.slice(1), targetType));
-    }
-    if (obj && typeof obj === 'object') {
-      return Object.fromEntries(Object.entries(obj).map(([key, value]) => [key, coerce(value, path.slice(1), targetType)]));
-    }
-    // The value should have been an array or dict here, but let's be safe and return the original value anyway
-    return obj;
+  public testCoerce(value: unknown): any {
+    return this.recurse(value, 0);
   }
 
-  if (obj && typeof obj === 'object') {
-    const memberName = Object.keys(obj).find(k => k.startsWith(path[0]));
-    if (memberName != null) {
-      obj[memberName] = coerce(obj[memberName], path.slice(1), targetType);
+  private recurse(value: unknown, state: StateOrConversion | undefined): any {
+    switch (state) {
+      case undefined: return value;
+      case 'b': return coerceValueToUint8Array(value);
+      case 'n': return coerceValueToNumber(value);
     }
-    return obj;
+
+    if (Array.isArray(value)) {
+      const elState = this.progress('*', state);
+      return elState !== undefined
+        ? value.map((e) => this.recurse(e, elState))
+        : value;
+    }
+
+    if (value && typeof value === 'object') {
+      // Mutate the object in-place for efficiency
+      const mapState = this.progress('*', state);
+      for (const key of Object.keys(value)) {
+        const fieldState = this.progress(key, state) ?? mapState;
+        if (fieldState !== undefined) {
+          (value as any)[key] = this.recurse((value as any)[key], fieldState);
+        }
+      }
+      return value;
+    }
+
+    return value;
   }
-  return obj;
+
+  /**
+   * From a given state, return the state we would end up in if we followed this field
+   */
+  private progress(field: string, s: StateOrConversion | undefined): StateOrConversion | undefined {
+    if (s === undefined || typeof s !== 'number') {
+      return undefined;
+    }
+    return this.typeMachine[s][field];
+  }
 }
 
 function coerceValueToUint8Array(x: unknown): Uint8Array | any {

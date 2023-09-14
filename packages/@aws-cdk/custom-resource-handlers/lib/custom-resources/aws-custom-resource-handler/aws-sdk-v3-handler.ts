@@ -135,7 +135,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         // Command must pass input value https://github.com/aws/aws-sdk-js-v3/issues/424
         const response = await client.send(
           new Command(call.parameters
-            ? await coerceApiParameters(serviceShortName, shortCommandName, decodeSpecialValues(call.parameters, physicalResourceId))
+            ? coerceApiParameters(serviceShortName, shortCommandName, decodeSpecialValues(call.parameters, physicalResourceId))
             : {},
           ),
         );

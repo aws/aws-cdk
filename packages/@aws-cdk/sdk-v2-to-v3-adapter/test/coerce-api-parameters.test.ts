@@ -1,4 +1,5 @@
-import { coerceApiParameters, coerce } from '../lib/coerce-api-parameters';
+import { Coercer, coerceApiParameters } from '../lib/coerce-api-parameters';
+import { TypeCoercionStateMachine } from '../lib/parameter-types';
 
 const encode = (v: any) => new TextEncoder().encode(v);
 
@@ -9,8 +10,12 @@ describe('Uint8Array', () => {
       // GIVEN
       const obj = { a: { b: { c: 'dummy-value' } } };
 
-      // THEN
-      coerce(obj, ['a', 'b', 'c'], 'Uint8Array');
+      // WHEN
+      new Coercer([
+        { a: 1 },
+        { b: 2 },
+        { c: 'b' },
+      ]).testCoerce(obj);
 
       // EXPECT
       expect(obj).toMatchObject({ a: { b: { c: encode('dummy-value') } } });
@@ -28,8 +33,13 @@ describe('Uint8Array', () => {
         },
       };
 
-      // THEN
-      coerce(obj, ['a', 'b', '*', 'z'], 'Uint8Array');
+      // WHEN
+      new Coercer([
+        { a: 1 },
+        { b: 2 },
+        { '*': 3 },
+        { z: 'b' },
+      ]).testCoerce(obj);
 
       // EXPECT
       expect(obj).toMatchObject({
@@ -52,7 +62,11 @@ describe('Uint8Array', () => {
       };
 
       // THEN
-      coerce(obj, ['a', 'b', '*'], 'Uint8Array');
+      new Coercer([
+        { a: 1 },
+        { b: 2 },
+        { '*': 'b' },
+      ]).testCoerce(obj);
 
       // EXPECT
       expect(obj).toMatchObject({
@@ -184,8 +198,8 @@ describe('Uint8Array', () => {
 
   describe('given an api call description', () => {
 
-    test('can convert string parameters to Uint8Array when needed', async () => {
-      const params = await coerceApiParameters('KMS', 'encrypt', {
+    test('can convert string parameters to Uint8Array when needed', () => {
+      const params = coerceApiParameters('KMS', 'encrypt', {
         KeyId: 'key-id',
         Plaintext: 'dummy-data',
       });
@@ -200,8 +214,8 @@ describe('Uint8Array', () => {
       });
     });
 
-    test('can convert string parameters to Uint8Array in arrays', async () => {
-      const params = await coerceApiParameters('Kinesis', 'putRecords', {
+    test('can convert string parameters to Uint8Array in arrays', () => {
+      const params = coerceApiParameters('Kinesis', 'putRecords', {
         Records: [
           {
             Data: 'aaa',
@@ -228,8 +242,8 @@ describe('Uint8Array', () => {
       });
     });
 
-    test('can convert string parameters to Uint8Array in map & union', async () => {
-      const params = await coerceApiParameters('dynamodb', 'putItem', {
+    test('can convert string parameters to Uint8Array in map & union', () => {
+      const params = coerceApiParameters('dynamodb', 'putItem', {
         Item: {
           Binary: {
             B: 'abc',
@@ -243,6 +257,40 @@ describe('Uint8Array', () => {
             B: new Uint8Array([97, 98, 99]),
           },
         },
+      });
+    });
+
+    test('can coerce parameters in recursive types', () => {
+      const params = coerceApiParameters('connect', 'CreateEvaluationForm', {
+        Items: [
+          {
+            Section: {
+              Items: [ // <-- same type as 'Items' above
+                {
+                  Question: {
+                    Weight: '9000',
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      });
+
+      expect(params).toMatchObject({
+        Items: [
+          {
+            Section: {
+              Items: [
+                {
+                  Question: {
+                    Weight: 9000, // <-- converted
+                  },
+                },
+              ],
+            },
+          },
+        ],
       });
     });
   });
@@ -430,8 +478,8 @@ describe('number', () => {
 
   describe('given an api call description', () => {
 
-    test('can convert string parameters to number when needed', async () => {
-      const params = await coerceApiParameters('Amplify', 'listApps', {
+    test('can convert string parameters to number when needed', () => {
+      const params = coerceApiParameters('Amplify', 'listApps', {
         maxResults: '15',
       });
 
@@ -440,8 +488,8 @@ describe('number', () => {
       });
     });
 
-    test('can convert string parameters to number in arrays', async () => {
-      const params = await coerceApiParameters('ECS', 'createService', {
+    test('can convert string parameters to number in arrays', () => {
+      const params = coerceApiParameters('ECS', 'createService', {
         loadBalancers: [{
           containerPort: '8080',
         }, {
@@ -458,8 +506,8 @@ describe('number', () => {
       });
     });
 
-    test('can convert string parameters to number in map & union', async () => {
-      const params = await coerceApiParameters('ApiGateway', 'createApi', {
+    test('can convert string parameters to number in map & union', () => {
+      const params = coerceApiParameters('ApiGateway', 'createApi', {
         CorsConfiguration: {
           MaxAge: '300',
         },
@@ -473,3 +521,20 @@ describe('number', () => {
     });
   });
 });
+
+/**
+ * A function to convert code testing the old API into code testing the new API
+ *
+ * Having this function saves manually updating 25 call sites.
+ */
+function coerce(value: unknown, path: string[], type: 'Uint8Array' | 'number') {
+  const sm: TypeCoercionStateMachine = [{}];
+  let current = sm[0];
+  for (const p of path.slice(0, -1)) {
+    current[p] = sm.length;
+    sm.push({});
+    current = sm[sm.length - 1];
+  }
+  current[path[path.length - 1]] = type === 'Uint8Array' ? 'b' : 'n';
+  return new Coercer(sm).testCoerce(value);
+}

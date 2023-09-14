@@ -1,9 +1,31 @@
 /**
- * From the SDKv3 repository, build an index of all types that are are "Blob"s,
- * so we can properly convert input strings into `Uint8Arrays` in Custom Resources
- * that call the SDKv3 in an untyped way.
+ * From the SDKv3 repository, build an index of all types that are are "Blob"s or numbers,
+ * so we can properly convert input strings to the right type.
+ *
+ * This is necessary for backwards compatibiltiy with SDKv2 which used to accept string
+ * arguments liberally, but SDKv3 no longer does so we need to do the conversion ourselves.
+ *
+ * We are building a state machine for every shape. The state machine looks like this:
+ *
+ * ```
+ * [
+ *   { next: 1, other: 2 },
+ *   { field: 'b' },
+ *   { field2: 'n' },
+ * ]
+ * ```
+ *
+ * Where the ID of a state is the index in the array, and transitions are either:
+ *
+ *   'n' -> this field is a number type
+ *   'b' -> this field is a blob type
+ *   <number> -> move to another state
+ *
+ * We save a gzipped representation of this state machine to save bytes (the full decoded
+ * model is ~300kB and we don't want to ship that for every custom resource).
  */
 import * as path from 'path';
+import * as zlib from 'zlib';
 import { promises as fs } from 'fs';
 
 /**
@@ -15,8 +37,10 @@ async function main(argv: string[]) {
   }
   const dir = argv[0];
 
-  const blobMapping: TypeCoercionMap = {};
-  const numberMapping: TypeCoercionMap = {};
+  const builder: StateMachineBuilder = {
+    idToNumber: new Map(),
+    stateMachine: [{}],
+  };
 
   for (const entry of await fs.readdir(dir, { withFileTypes: true, encoding: 'utf-8' })) {
     if (entry.isFile() && entry.name.endsWith('.json')) {
@@ -26,30 +50,29 @@ async function main(argv: string[]) {
         continue;
       }
       try {
-        await doFile(blobMapping, numberMapping, contents);
+        await doFile(builder, contents);
       } catch (e) {
         throw new Error(`Error handling ${entry.name}: ${e}`);
       }
     }
   }
 
-  if (Object.entries(blobMapping).length === 0) {
+  if (Object.entries(builder.stateMachine[0]).length === 0) {
     throw new Error('No mappings found!');
   }
 
   // Sort the map so we're independent of the order the OS gave us the files in, or what the filenames are
-  const sortedMapping = Object.fromEntries(Object.entries(blobMapping).sort(sortByKey));
-
-  console.log(JSON.stringify({
-    uint8ArrayParameters: blobMapping,
-    numberParameters: numberMapping,
-  }))
+  const sortedStateMachine = builder.stateMachine.map(sortedObject);
+  if (process.env.DEBUG) {
+    console.error(JSON.stringify(sortedStateMachine, undefined, 2));
+  }
+  renderStateMachineToTypeScript(sortedStateMachine);
 }
 
 /**
  * Recurse through all the types of a singly Smithy model, and record the blobs
  */
-async function doFile(blobMap: TypeCoercionMap, numberMap: TypeCoercionMap, model: SmithyFile) {
+async function doFile(builder: StateMachineBuilder, model: SmithyFile) {
   const shapes = model.shapes;
 
   const service = Object.values(shapes).find(isShape('service'));
@@ -75,86 +98,122 @@ async function doFile(blobMap: TypeCoercionMap, numberMap: TypeCoercionMap, mode
     }
     if (operation.input) {
       const [, opName] = operationTarget.target.split('#');
-      recurse(operation.input.target, opName.toLowerCase(), [], []);
+      recurse([
+        { fieldName: shortName, id: `service#${shortName}` }, // Only needs to be unique
+        { fieldName: opName.toLowerCase(), id: operation.input.target }, // Operation
+      ]);
     }
   }
 
   /**
-   * Recurse through type shapes, finding the blobs
+   * Recurse through type shapes, finding the coercible types
    */
-  function recurse(id: string, opName: string, memberPath: string[], seen: string[]) {
-    if (id.startsWith('smithy.api#') || seen.includes(id)) {
+  function recurse(memberPath: PathElement[]) {
+    const id = memberPath[memberPath.length - 1].id;
+
+    // Short-circuit built-in types
+    if (id.startsWith('smithy.api#')) {
       return;
     }
-    seen = [...seen, id];
+    // Short-circuit on self-recursion
+    // We do want to see one path to self-recursion, so that we record the path
+    // in the state machine, so we only abort on the 2nd self-recursion.
+    const recursionLevel = memberPath.filter((e) => e.id === id).length - 1; // We will always be in there at least once
+    if (recursionLevel > 1) {
+      return;
+    }
     const shape = shapes[id];
 
     if (isShape('blob')(shape)) {
-      addToBlobs(opName, memberPath);
+      addCoercion(memberPath, 'b');
       return;
     }
 
     if (isNumber(shape)) {
-      addToNumbers(opName, memberPath);
+      addCoercion(memberPath, 'n');
       return;
     }
 
     if (isShape('structure')(shape) || isShape('union')(shape)) {
-      const allKeys = Object.keys(shape.members ?? {}).sort();
+      // const allKeys = Object.keys(shape.members ?? {}).sort();
       for (const [field, member] of Object.entries(shape.members ?? {}).sort(sortByKey)) {
-        recurse(member.target, opName, [...memberPath, uniquePrefix(field, allKeys)], seen);
+        recurse([...memberPath, { fieldName: field, id: member.target }]);
       }
       return;
     }
     if (isShape('list')(shape)) {
-      recurse(shape.member.target, opName, [...memberPath, '*'], seen);
+      recurse([...memberPath, { fieldName: '*' , id: shape.member.target }]);
       return;
     }
     if (isShape('map')(shape)) {
       // Keys can't be Uint8Arrays anyway in JS, so check only values
-      recurse(shape.value.target, opName, [...memberPath, '*'], seen);
+      recurse([...memberPath, { fieldName: '*', id: shape.value.target }]);
       return;
     }
   }
 
-  /**
-   * Return the shortest prefix of 'name' that is unique among 'names'
-   */
-  function uniquePrefix(name: string, names: string[]): string {
-    for (let i = 1; i < name.length; i++) {
-      const slice = name.substring(0, i);
-      if (names.filter((n) => n.startsWith(slice)).length === 1) {
-        return slice;
-      }
+  function addCoercion(memberPath: PathElement[], type: Exclude<TypeCoercionTarget, number>) {
+    if (memberPath.length === 0) {
+      throw new Error('Assertion error');
     }
-    return name;
+    memberPath = [...memberPath];
+    let stateIx = 0;
+    while (memberPath.length > 1) {
+      const transition = memberPath.shift()!;
+      const nextStateIx = ensureState(transition.id);
+      builder.stateMachine[stateIx][transition.fieldName] = nextStateIx;
+      stateIx = nextStateIx;
+    }
+    builder.stateMachine[stateIx][memberPath.pop()!.fieldName] = type;
   }
 
-  function addToBlobs(opName: string, memberPath: string[]) {
-    if (!blobMap[shortName]) {
-      blobMap[shortName] = {};
+  function ensureState(id: string): number {
+    const existing = builder.idToNumber.get(id);
+    if (existing) {
+      return existing;
     }
-    if (!blobMap[shortName][opName]) {
-      blobMap[shortName][opName] = [];
-    }
-    blobMap[shortName][opName].push(memberPath.join('.'));
-  }
-
-  function addToNumbers(opName: string, memberPath: string[]) {
-    if (!numberMap[shortName]) {
-      numberMap[shortName] = {};
-    }
-    if (!numberMap[shortName][opName]) {
-      numberMap[shortName][opName] = [];
-    }
-    numberMap[shortName][opName].push(memberPath.join('.'));
+    const i = builder.stateMachine.length;
+    builder.stateMachine.push({});
+    builder.idToNumber.set(id, i);
+    return i;
   }
 }
 
-interface TypeCoercionMap {
-  [service: string]: {
-    [action: string]: string[]
-  }
+function renderStateMachineToTypeScript(sm: TypeCoercionStateMachine) {
+  const stringified = JSON.stringify(sm);
+  const compressed = zlib.brotliCompressSync(Buffer.from(stringified));
+
+  const lines = new Array<string>();
+
+  lines.push(
+    `// This file was generated from the aws-sdk-js-v3 at ${new Date()}`,
+    '/* eslint-disable quote-props,comma-dangle,quotes */',
+    'import * as zlib from \'zlib\';',
+    'export type TypeCoercionStateMachine = Array<Record<string, number | \'b\' | \'n\'>>',
+    'export let typeCoercionStateMachine = (): TypeCoercionStateMachine => {',
+    `  const encoded = ${JSON.stringify(compressed.toString('base64'))};`,
+    '  const decoded = JSON.parse(zlib.brotliDecompressSync(Buffer.from(encoded, \'base64\')).toString());',
+    '  typeCoercionStateMachine = () => decoded;',
+    '  return decoded;',
+    '};',
+  );
+
+  console.log(lines.join('\n'));
+}
+
+interface PathElement {
+  fieldName: string;
+  id: string;
+}
+
+type TypeCoercionStateMachine = TypeCoercionState[];
+
+type TypeCoercionTarget = number | 'b' | 'n';
+type TypeCoercionState = Record<string, TypeCoercionTarget>;
+
+interface StateMachineBuilder {
+  idToNumber: Map<string, number>;
+  stateMachine: TypeCoercionStateMachine;
 };
 
 interface SmithyFile {
@@ -204,6 +263,10 @@ function isNumber(shape: SmithyShape): boolean {
 
 function sortByKey<A>(e1: [string, A], e2: [string, A]) {
   return e1[0].localeCompare(e2[0]);
+}
+
+function sortedObject<A extends object>(x: A): A {
+  return Object.fromEntries(Object.entries(x).sort(sortByKey)) as any;
 }
 
 main(process.argv.slice(2)).catch((e) => {
