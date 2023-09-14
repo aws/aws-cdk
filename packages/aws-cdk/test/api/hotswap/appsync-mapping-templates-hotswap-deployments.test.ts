@@ -6,13 +6,19 @@ import { HotswapMode } from '../../../lib/api/hotswap/common';
 let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
 let mockUpdateResolver: (params: AppSync.UpdateResolverRequest) => AppSync.UpdateResolverResponse;
 let mockUpdateFunction: (params: AppSync.UpdateFunctionRequest) => AppSync.UpdateFunctionResponse;
+let mockStartSchemaCreation: (params: AppSync.StartSchemaCreationRequest) => AppSync.StartSchemaCreationResponse;
 let mockS3GetObject: (params: S3.GetObjectRequest) => S3.GetObjectOutput;
 
 beforeEach(() => {
   hotswapMockSdkProvider = setup.setupHotswapTests();
   mockUpdateResolver = jest.fn();
   mockUpdateFunction = jest.fn();
-  hotswapMockSdkProvider.stubAppSync({ updateResolver: mockUpdateResolver, updateFunction: mockUpdateFunction });
+  mockStartSchemaCreation = jest.fn();
+  hotswapMockSdkProvider.stubAppSync({
+    updateResolver: mockUpdateResolver,
+    updateFunction: mockUpdateFunction,
+    startSchemaCreation: mockStartSchemaCreation,
+  });
 
 });
 
@@ -31,19 +37,15 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       },
     });
 
-    if (hotswapMode === HotswapMode.FALL_BACK) {
-      // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+    // WHEN
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
-      // THEN
+    // THEN
+    if (hotswapMode === HotswapMode.FALL_BACK) {
       expect(deployStackResult).toBeUndefined();
       expect(mockUpdateFunction).not.toHaveBeenCalled();
       expect(mockUpdateResolver).not.toHaveBeenCalled();
     } else if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
-      // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
-
-      // THEN
       expect(deployStackResult).not.toBeUndefined();
       expect(deployStackResult?.noOp).toEqual(true);
       expect(mockUpdateFunction).not.toHaveBeenCalled();
@@ -304,19 +306,15 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       },
     });
 
-    if (hotswapMode === HotswapMode.FALL_BACK) {
-      // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+    // WHEN
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
-      // THEN
+    // THEN
+    if (hotswapMode === HotswapMode.FALL_BACK) {
       expect(deployStackResult).toBeUndefined();
       expect(mockUpdateFunction).not.toHaveBeenCalled();
       expect(mockUpdateResolver).not.toHaveBeenCalled();
     } else if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
-      // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
-
-      // THEN
       expect(deployStackResult).not.toBeUndefined();
       expect(mockUpdateFunction).not.toHaveBeenCalled();
       expect(mockUpdateResolver).toHaveBeenCalledWith({
@@ -359,19 +357,15 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       },
     });
 
-    if (hotswapMode === HotswapMode.FALL_BACK) {
-      // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+    // WHEN
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
-      // THEN
+    // THEN
+    if (hotswapMode === HotswapMode.FALL_BACK) {
       expect(deployStackResult).toBeUndefined();
       expect(mockUpdateFunction).not.toHaveBeenCalled();
       expect(mockUpdateResolver).not.toHaveBeenCalled();
     } else if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
-      // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
-
-      // THEN
       expect(deployStackResult).not.toBeUndefined();
       expect(deployStackResult?.noOp).toEqual(true);
       expect(mockUpdateFunction).not.toHaveBeenCalled();
@@ -548,19 +542,15 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       },
     });
 
-    if (hotswapMode === HotswapMode.FALL_BACK) {
-      // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+    // WHEN
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
-      // THEN
+    // THEN
+    if (hotswapMode === HotswapMode.FALL_BACK) {
       expect(deployStackResult).toBeUndefined();
       expect(mockUpdateFunction).not.toHaveBeenCalled();
       expect(mockUpdateResolver).not.toHaveBeenCalled();
     } else if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
-      // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
-
-      // THEN
       expect(deployStackResult).not.toBeUndefined();
       expect(mockUpdateFunction).toHaveBeenCalledWith({
         apiId: 'apiId',
@@ -606,23 +596,305 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       },
     });
 
-    if (hotswapMode === HotswapMode.FALL_BACK) {
-      // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+    // WHEN
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
-      // THEN
+    // THEN
+    if (hotswapMode === HotswapMode.FALL_BACK) {
       expect(deployStackResult).toBeUndefined();
       expect(mockUpdateFunction).not.toHaveBeenCalled();
       expect(mockUpdateResolver).not.toHaveBeenCalled();
     } else if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
-      // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
-
-      // THEN
       expect(deployStackResult).not.toBeUndefined();
       expect(deployStackResult?.noOp).toEqual(true);
       expect(mockUpdateFunction).not.toHaveBeenCalled();
       expect(mockUpdateResolver).not.toHaveBeenCalled();
     }
+  });
+
+  test('calls the startSchemaCreation() API when it receives only a definition difference in a graphql schema', async () => {
+    // GIVEN
+    mockStartSchemaCreation = jest.fn().mockReturnValueOnce({ status: 'SUCCESS' });
+    hotswapMockSdkProvider.stubAppSync({ startSchemaCreation: mockStartSchemaCreation });
+
+    setup.setCurrentCfnStackTemplate({
+      Resources: {
+        AppSyncGraphQLSchema: {
+          Type: 'AWS::AppSync::GraphQLSchema',
+          Properties: {
+            ApiId: 'apiId',
+            Definition: 'original graphqlSchema',
+          },
+          Metadata: {
+            'aws:asset:path': 'old-path',
+          },
+        },
+      },
+    });
+    setup.pushStackResourceSummaries(
+      setup.stackSummaryOf(
+        'AppSyncGraphQLSchema',
+        'AWS::AppSync::GraphQLSchema',
+        'arn:aws:appsync:us-east-1:111111111111:apis/apiId/schema/my-schema',
+      ),
+    );
+    const cdkStackArtifact = setup.cdkStackArtifactOf({
+      template: {
+        Resources: {
+          AppSyncGraphQLSchema: {
+            Type: 'AWS::AppSync::GraphQLSchema',
+            Properties: {
+              ApiId: 'apiId',
+              Definition: 'new graphqlSchema',
+            },
+            Metadata: {
+              'aws:asset:path': 'new-path',
+            },
+          },
+        },
+      },
+    });
+
+    // WHEN
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+
+    // THEN
+    expect(deployStackResult).not.toBeUndefined();
+    expect(mockStartSchemaCreation).toHaveBeenCalledWith({
+      apiId: 'apiId',
+      definition: 'new graphqlSchema',
+    });
+  });
+
+  test('calls the startSchemaCreation() API when it receives only a definition s3 location difference in a graphql schema', async () => {
+    // GIVEN
+    mockS3GetObject = jest.fn().mockImplementation(async () => {
+      return { Body: 'schema defined in s3' };
+    });
+    hotswapMockSdkProvider.stubS3({ getObject: mockS3GetObject });
+    mockStartSchemaCreation = jest.fn().mockReturnValueOnce({ status: 'SUCCESS' });
+    hotswapMockSdkProvider.stubAppSync({ startSchemaCreation: mockStartSchemaCreation });
+
+    setup.setCurrentCfnStackTemplate({
+      Resources: {
+        AppSyncGraphQLSchema: {
+          Type: 'AWS::AppSync::GraphQLSchema',
+          Properties: {
+            ApiId: 'apiId',
+            DefinitionS3Location: 's3://test-bucket/old_location',
+          },
+          Metadata: {
+            'aws:asset:path': 'old-path',
+          },
+        },
+      },
+    });
+    setup.pushStackResourceSummaries(
+      setup.stackSummaryOf(
+        'AppSyncGraphQLSchema',
+        'AWS::AppSync::GraphQLSchema',
+        'arn:aws:appsync:us-east-1:111111111111:apis/apiId/schema/my-schema',
+      ),
+    );
+    const cdkStackArtifact = setup.cdkStackArtifactOf({
+      template: {
+        Resources: {
+          AppSyncGraphQLSchema: {
+            Type: 'AWS::AppSync::GraphQLSchema',
+            Properties: {
+              ApiId: 'apiId',
+              DefinitionS3Location: 's3://test-bucket/path/to/key',
+            },
+            Metadata: {
+              'aws:asset:path': 'new-path',
+            },
+          },
+        },
+      },
+    });
+
+    // WHEN
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+
+    // THEN
+    expect(deployStackResult).not.toBeUndefined();
+    expect(mockStartSchemaCreation).toHaveBeenCalledWith({
+      apiId: 'apiId',
+      definition: 'schema defined in s3',
+    });
+
+    expect(mockS3GetObject).toHaveBeenCalledWith({
+      Bucket: 'test-bucket',
+      Key: 'path/to/key',
+    });
+  });
+
+  test('does not call startSchemaCreation() API when a resource with type that is not AWS::AppSync::GraphQLSchema but has the same properties is change', async () => {
+    // GIVEN
+    setup.setCurrentCfnStackTemplate({
+      Resources: {
+        AppSyncGraphQLSchema: {
+          Type: 'AWS::AppSync::NotGraphQLSchema',
+          Properties: {
+            ApiId: 'apiId',
+            Definition: 'original graphqlSchema',
+          },
+          Metadata: {
+            'aws:asset:path': 'old-path',
+          },
+        },
+      },
+    });
+    setup.pushStackResourceSummaries(
+      setup.stackSummaryOf(
+        'AppSyncGraphQLSchema',
+        'AWS::AppSync::GraphQLSchema',
+        'arn:aws:appsync:us-east-1:111111111111:apis/apiId/schema/my-schema',
+      ),
+    );
+    const cdkStackArtifact = setup.cdkStackArtifactOf({
+      template: {
+        Resources: {
+          AppSyncGraphQLSchema: {
+            Type: 'AWS::AppSync::NotGraphQLSchema',
+            Properties: {
+              ApiId: 'apiId',
+              Definition: 'new graphqlSchema',
+            },
+            Metadata: {
+              'aws:asset:path': 'new-path',
+            },
+          },
+        },
+      },
+    });
+
+    // WHEN
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+
+    // THEN
+    if (hotswapMode === HotswapMode.FALL_BACK) {
+      expect(deployStackResult).toBeUndefined();
+      expect(mockStartSchemaCreation).not.toHaveBeenCalled();
+    } else if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
+      expect(deployStackResult).not.toBeUndefined();
+      expect(deployStackResult?.noOp).toEqual(true);
+      expect(mockStartSchemaCreation).not.toHaveBeenCalled();
+    }
+  });
+
+  test('calls the startSchemaCreation() and waits for schema creation to stabilize before finishing', async () => {
+    // GIVEN
+    mockStartSchemaCreation = jest.fn().mockReturnValueOnce({ status: 'PROCESSING' });
+    const mockGetSchemaCreation = jest.fn().mockReturnValueOnce({ status: 'SUCCESS' });
+    hotswapMockSdkProvider.stubAppSync({ startSchemaCreation: mockStartSchemaCreation, getSchemaCreationStatus: mockGetSchemaCreation });
+
+    setup.setCurrentCfnStackTemplate({
+      Resources: {
+        AppSyncGraphQLSchema: {
+          Type: 'AWS::AppSync::GraphQLSchema',
+          Properties: {
+            ApiId: 'apiId',
+            Definition: 'original graphqlSchema',
+          },
+          Metadata: {
+            'aws:asset:path': 'old-path',
+          },
+        },
+      },
+    });
+    setup.pushStackResourceSummaries(
+      setup.stackSummaryOf(
+        'AppSyncGraphQLSchema',
+        'AWS::AppSync::GraphQLSchema',
+        'arn:aws:appsync:us-east-1:111111111111:apis/apiId/schema/my-schema',
+      ),
+    );
+    const cdkStackArtifact = setup.cdkStackArtifactOf({
+      template: {
+        Resources: {
+          AppSyncGraphQLSchema: {
+            Type: 'AWS::AppSync::GraphQLSchema',
+            Properties: {
+              ApiId: 'apiId',
+              Definition: 'new graphqlSchema',
+            },
+            Metadata: {
+              'aws:asset:path': 'new-path',
+            },
+          },
+        },
+      },
+    });
+
+    // WHEN
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+
+    // THEN
+    expect(deployStackResult).not.toBeUndefined();
+    expect(mockStartSchemaCreation).toHaveBeenCalledWith({
+      apiId: 'apiId',
+      definition: 'new graphqlSchema',
+    });
+    expect(mockGetSchemaCreation).toHaveBeenCalledWith({
+      apiId: 'apiId',
+    });
+  });
+
+  test('calls the startSchemaCreation() and throws if schema creation fails', async () => {
+    // GIVEN
+    mockStartSchemaCreation = jest.fn().mockReturnValueOnce({ status: 'PROCESSING' });
+    const mockGetSchemaCreation = jest.fn().mockReturnValueOnce({ status: 'FAILED', details: 'invalid schema' });
+    hotswapMockSdkProvider.stubAppSync({ startSchemaCreation: mockStartSchemaCreation, getSchemaCreationStatus: mockGetSchemaCreation });
+
+    setup.setCurrentCfnStackTemplate({
+      Resources: {
+        AppSyncGraphQLSchema: {
+          Type: 'AWS::AppSync::GraphQLSchema',
+          Properties: {
+            ApiId: 'apiId',
+            Definition: 'original graphqlSchema',
+          },
+          Metadata: {
+            'aws:asset:path': 'old-path',
+          },
+        },
+      },
+    });
+    setup.pushStackResourceSummaries(
+      setup.stackSummaryOf(
+        'AppSyncGraphQLSchema',
+        'AWS::AppSync::GraphQLSchema',
+        'arn:aws:appsync:us-east-1:111111111111:apis/apiId/schema/my-schema',
+      ),
+    );
+    const cdkStackArtifact = setup.cdkStackArtifactOf({
+      template: {
+        Resources: {
+          AppSyncGraphQLSchema: {
+            Type: 'AWS::AppSync::GraphQLSchema',
+            Properties: {
+              ApiId: 'apiId',
+              Definition: 'new graphqlSchema',
+            },
+            Metadata: {
+              'aws:asset:path': 'new-path',
+            },
+          },
+        },
+      },
+    });
+
+    // WHEN
+    await expect(() => hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact)).rejects.toThrow('invalid schema');
+
+    // THEN
+    expect(mockStartSchemaCreation).toHaveBeenCalledWith({
+      apiId: 'apiId',
+      definition: 'new graphqlSchema',
+    });
+    expect(mockGetSchemaCreation).toHaveBeenCalledWith({
+      apiId: 'apiId',
+    });
   });
 });
