@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-### [2.96.1](https://github.com/aws/aws-cdk/compare/v2.96.0...v2.96.1) (2023-09-14)
+## [2.96.1](https://github.com/aws/aws-cdk/compare/v2.96.0...v2.96.1) (2023-09-14)
 
 
 ### Reverts
