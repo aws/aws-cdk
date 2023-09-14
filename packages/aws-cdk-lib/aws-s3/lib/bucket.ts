@@ -541,6 +541,8 @@ export abstract class BucketBase extends Resource implements IBucket {
 
   protected objectOwnership?: ObjectOwnership;
 
+  protected removalPolicy?: RemovalPolicy;
+
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id, props);
 
@@ -655,6 +657,9 @@ export abstract class BucketBase extends Resource implements IBucket {
 
     if (this.policy) {
       this.policy.document.addStatements(permission);
+      if (this.removalPolicy) {
+        this.policy.applyRemovalPolicy(this.removalPolicy);
+      }
       return { statementAdded: true, policyDependable: this.policy };
     }
 
@@ -1823,6 +1828,7 @@ export class Bucket extends BucketBase {
     });
 
     this.notificationsHandlerRole = props.notificationsHandlerRole;
+    this.removalPolicy = props.removalPolicy;
 
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
 
@@ -1854,7 +1860,7 @@ export class Bucket extends BucketBase {
     });
     this._resource = resource;
 
-    resource.applyRemovalPolicy(props.removalPolicy);
+    resource.applyRemovalPolicy(this.removalPolicy);
 
     this.encryptionKey = encryptionKey;
     this.eventBridgeEnabled = props.eventBridgeEnabled;
@@ -1915,7 +1921,7 @@ export class Bucket extends BucketBase {
     }
 
     if (props.autoDeleteObjects) {
-      if (props.removalPolicy !== RemovalPolicy.DESTROY) {
+      if (this.removalPolicy !== RemovalPolicy.DESTROY) {
         throw new Error('Cannot use \'autoDeleteObjects\' property on a bucket without setting removal policy to \'DESTROY\'.');
       }
 

@@ -1089,6 +1089,56 @@ describe('bucket', () => {
     });
   });
 
+  test('removal policy for buckets also applies to auto created bucket policy if enforceSSL is true', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket', {
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+      enforceSSL: true,
+    });
+
+    Template.fromStack(stack).templateMatches({
+      Resources: {
+        MyBucketF68F3FF0: {
+          Type: 'AWS::S3::Bucket',
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
+        },
+        MyBucketPolicyE7FBAC7B: {
+          Type: 'AWS::S3::BucketPolicy',
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
+        },
+      },
+    });
+  });
+
+  test('removal policy for buckets also applies to auto created bucket policy if addToResourcePolicy is called', () => {
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'MyBucket', {
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+    bucket.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['foo'],
+      actions: ['bar:baz'],
+      principals: [new iam.AnyPrincipal()],
+    }));
+
+    Template.fromStack(stack).templateMatches({
+      Resources: {
+        MyBucketF68F3FF0: {
+          Type: 'AWS::S3::Bucket',
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
+        },
+        MyBucketPolicyE7FBAC7B: {
+          Type: 'AWS::S3::BucketPolicy',
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
+        },
+      },
+    });
+  });
+
   describe('import/export', () => {
     test('static import(ref) allows importing an external/existing bucket', () => {
       const stack = new cdk.Stack();
