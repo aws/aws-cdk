@@ -4,7 +4,9 @@ import { Duration } from './duration';
 import { TimeZone } from './time-zone';
 
 /**
- * Schedule
+ * A Core Schedule. This construct is not meant to be used as is or exposed to consumers in other modules.
+ * It is meant to be extended by other modules that require some sort of schedule implementation. All
+ * methods in `core.Schedule` are protected, so that construct authors can decide which APIs to expose.
  *
  * Note that rates cannot be defined in fractions of minutes.
  *
