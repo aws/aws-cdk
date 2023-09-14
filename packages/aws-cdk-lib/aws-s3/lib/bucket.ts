@@ -653,13 +653,13 @@ export abstract class BucketBase extends Resource implements IBucket {
   public addToResourcePolicy(permission: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     if (!this.policy && this.autoCreatePolicy) {
       this.policy = new BucketPolicy(this, 'Policy', { bucket: this });
+      if (this.removalPolicy) {
+        this.policy.applyRemovalPolicy(this.removalPolicy);
+      }
     }
 
     if (this.policy) {
       this.policy.document.addStatements(permission);
-      if (this.removalPolicy) {
-        this.policy.applyRemovalPolicy(this.removalPolicy);
-      }
       return { statementAdded: true, policyDependable: this.policy };
     }
 
