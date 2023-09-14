@@ -7,6 +7,7 @@ console.log = jest.fn();
 
 jest.mock('aws-sdk', () => {
   return {
+    __esModule: true,
     ...jest.requireActual('aws-sdk'),
     SSM: jest.fn(() => {
       return {
