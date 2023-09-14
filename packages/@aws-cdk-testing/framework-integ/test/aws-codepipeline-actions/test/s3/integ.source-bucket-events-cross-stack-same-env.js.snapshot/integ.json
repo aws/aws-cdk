@@ -1,11 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "34.0.0",
   "testCases": {
     "CodePipelineS3SourceTest/DefaultTest": {
       "stacks": [
         "PipelineStack"
       ],
-      "assertionStack": "CodePipelineS3SourceTest/DefaultTest/DeployAssert"
+      "assertionStack": "CodePipelineS3SourceTest/DefaultTest/DeployAssert",
+      "assertionStackName": "CodePipelineS3SourceTestDefaultTestDeployAssertCC67F1E7"
     }
   }
 }
