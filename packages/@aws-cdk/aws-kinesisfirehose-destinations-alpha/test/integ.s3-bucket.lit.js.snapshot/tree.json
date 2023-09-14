@@ -556,49 +556,6 @@
             "id": "Delivery Stream",
             "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/Delivery Stream",
             "children": {
-              "Service Role": {
-                "id": "Service Role",
-                "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/Delivery Stream/Service Role",
-                "children": {
-                  "ImportService Role": {
-                    "id": "ImportService Role",
-                    "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/Delivery Stream/Service Role/ImportService Role",
-                    "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.70"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/Delivery Stream/Service Role/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                      "aws:cdk:cloudformation:props": {
-                        "assumeRolePolicyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sts:AssumeRole",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "firehose.amazonaws.com"
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.70"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.70"
-                }
-              },
               "S3 Destination Role": {
                 "id": "S3 Destination Role",
                 "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/Delivery Stream/S3 Destination Role",
@@ -990,8 +947,8 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-kinesisfirehose-alpha.DeliveryStream",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
             }
           },
           "@aws-cdk--aws-kinesisfirehose.CidrBlocks": {
