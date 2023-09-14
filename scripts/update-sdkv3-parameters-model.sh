@@ -2,7 +2,6 @@
 set -eu
 scriptdir=$(cd $(dirname $0) && pwd)
 tmpdir=$(mktemp -d)
-map_file="$tmpdir/map.json"
 zip=https://github.com/aws/aws-sdk-js-v3/archive/refs/heads/main.zip
 ziprootentry=aws-sdk-js-v3-main
 target_file=packages/@aws-cdk/sdk-v2-to-v3-adapter/lib/parameter-types.ts
