@@ -313,7 +313,7 @@ export interface SourceApi {
   /**
    * Source API that is associated with the merged API
    */
-  readonly sourceApi: GraphqlApi;
+  readonly sourceApi: IGraphqlApi;
 
   /**
    * Merging option used to associate the source API to the Merged API
@@ -697,10 +697,10 @@ export class GraphqlApi extends GraphqlApiBase {
     this.definition.sourceApiOptions?.sourceApis.forEach(sourceApiConfig => {
       new SourceApiAssociation(this, `${sourceApiConfig.sourceApi.node.id}Association`, {
         sourceApi: sourceApiConfig.sourceApi,
-        mergedApiIdentifier: this.api.attrApiId,
+        mergedApi: this,
         mergeType: sourceApiConfig.mergeType,
-        mergedApiExecutionRole: this.mergedApiExecutionRole,
         description: sourceApiConfig.description,
+        mergedApiExecutionRole: this.mergedApiExecutionRole as Role,
       });
     });
   }

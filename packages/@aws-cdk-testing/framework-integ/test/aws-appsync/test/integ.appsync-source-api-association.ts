@@ -25,6 +25,11 @@ secondApi.addNoneDataSource('SecondSourceDS', {
   name: cdk.Lazy.string({ produce(): string { return 'SecondSourceDS'; } }),
 });
 
+const thirdApi = new appsync.GraphqlApi(stack, 'ThirdSourceAPI', {
+  name: 'ThirdourceAPI',
+  definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.merged-api-3.graphql')),
+});
+
 const mergedApiExecutionRole = new iam.Role(stack, 'MergedApiExecutionRole', {
   assumedBy: new iam.ServicePrincipal('appsync.amazonaws.com'),
 });
@@ -39,14 +44,28 @@ const mergedApi = new appsync.GraphqlApi(stack, 'MergedAPI', {
 
 new appsync.SourceApiAssociation(stack, 'SourceApiAssociation1', {
   sourceApi: firstApi,
-  mergedApiIdentifier: mergedApi.arn,
+  mergedApi: mergedApi,
   mergeType: appsync.MergeType.MANUAL_MERGE,
+  mergedApiExecutionRole: mergedApiExecutionRole,
 });
 
 new appsync.SourceApiAssociation(stack, 'SourceApiAssociation2', {
-  sourceApiIdentifier: secondApi.arn,
+  sourceApi: secondApi,
   mergedApi: mergedApi,
   mergeType: appsync.MergeType.AUTO_MERGE,
+  mergedApiExecutionRole: mergedApiExecutionRole,
+});
+
+const iThirdApi = appsync.GraphqlApi.fromGraphqlApiAttributes(stack, 'ImportedThirdApi', {
+  graphqlApiId: thirdApi.apiId,
+  graphqlApiArn: thirdApi.arn,
+});
+
+new appsync.SourceApiAssociation(stack, 'SourceApiAssociation3', {
+  sourceApi: iThirdApi,
+  mergedApi: mergedApi,
+  mergeType: appsync.MergeType.MANUAL_MERGE,
+  mergedApiExecutionRole: mergedApiExecutionRole,
 });
 
 new IntegTest(app, 'api', {

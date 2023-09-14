@@ -2,16 +2,23 @@ import * as path from 'path';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
+import * as cxapi from '../../cx-api';
 import * as appsync from '../lib';
 
 let stack: cdk.Stack;
-let api1: appsync.GraphqlApi;
-let api2: appsync.GraphqlApi;
-let mergedApi: appsync.GraphqlApi;
-let mergedApiExecutionRole: iam.Role;
-
+let api1: appsync.IGraphqlApi;
+let api2: appsync.IGraphqlApi;
+let api3: appsync.IGraphqlApi;
+let api4: appsync.IGraphqlApi;
+let appWithFlag: cdk.App;
+let stackWithFlag: cdk.Stack;
+let mergedApiExecutionRole1: iam.Role;
+let mergedApiExecutionRole2: iam.Role;
+let mergedApi1: appsync.IGraphqlApi;
+let mergedApi2: appsync.IGraphqlApi;
 beforeEach(() => {
   stack = new cdk.Stack();
+
   api1 = new appsync.GraphqlApi(stack, 'api1', {
     authorizationConfig: {},
     name: 'api',
@@ -26,92 +33,95 @@ beforeEach(() => {
     logConfig: {},
   });
 
-  mergedApiExecutionRole = new iam.Role(stack, 'MergedApiExecutionRole', {
+  appWithFlag = new cdk.App({
+    context: {
+      [cxapi.APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION]: true,
+    },
+  });
+  stackWithFlag = new cdk.Stack(appWithFlag);
+
+  api3 = new appsync.GraphqlApi(stackWithFlag, 'api1', {
+    authorizationConfig: {},
+    name: 'api',
+    definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.test.graphql')),
+    logConfig: {},
+  });
+
+  api4 = new appsync.GraphqlApi(stackWithFlag, 'api2', {
+    authorizationConfig: {},
+    name: 'api',
+    definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.test.graphql')),
+    logConfig: {},
+  });
+
+  mergedApiExecutionRole1 = new iam.Role(stack, 'MergedApiExecutionRole', {
     assumedBy: new iam.ServicePrincipal('appsync.amazonaws.com'),
   });
 
-  mergedApi = new appsync.GraphqlApi(stack, 'merged-api', {
+  mergedApi1 = new appsync.GraphqlApi(stack, 'merged-api', {
     name: 'api',
     definition: appsync.Definition.fromSourceApis({
       sourceApis: [],
-      mergedApiExecutionRole: mergedApiExecutionRole,
+      mergedApiExecutionRole: mergedApiExecutionRole1,
+    }),
+  });
+
+  mergedApiExecutionRole2 = new iam.Role(stackWithFlag, 'MergedApiExecutionRole', {
+    assumedBy: new iam.ServicePrincipal('appsync.amazonaws.com'),
+  });
+
+  mergedApi2 = new appsync.GraphqlApi(stackWithFlag, 'merged-api', {
+    name: 'api',
+    definition: appsync.Definition.fromSourceApis({
+      sourceApis: [],
+      mergedApiExecutionRole: mergedApiExecutionRole2,
     }),
   });
 });
 
-test('source api association requires source api', () => {
-  // WHEN
-  expect(() => new appsync.SourceApiAssociation(stack, 'SourceApi', {
-    mergedApi: mergedApi,
-    description: 'This is a source api association where I do not specify a source api :)',
-  })).toThrow('Cannot determine the source AppSync API to associate. Must specify the sourceApi or sourceApiIdentifier');
-});
-
-test('source api association requires merged api', () => {
-  // WHEN
-  expect(() => new appsync.SourceApiAssociation(stack, 'SourceApi', {
+test('Associate with source apis', () => {
+  new appsync.SourceApiAssociation(stack, 'SourceApi1', {
     sourceApi: api1,
-    description: 'This is a source api association where I do not specify a merged api :)',
-  })).toThrow('Cannot determine the AppSync Merged API to associate. Must specify the mergedApi or mergedApiIdentifier');
-});
-
-test('Associate with source api identifier', () => {
-  new appsync.SourceApiAssociation(stack, 'SourceApi1', {
-    sourceApiIdentifier: api1.apiId,
-    mergedApi: mergedApi,
+    mergedApi: mergedApi1,
     mergeType: appsync.MergeType.MANUAL_MERGE,
-  });
-
-  new appsync.SourceApiAssociation(stack, 'SourceApi2', {
-    sourceApiIdentifier: api2.apiId,
-    mergedApi: mergedApi,
-    mergeType: appsync.MergeType.AUTO_MERGE,
-  });
-
-  // THEN
-  verifyBasicSourceAssociations();
-});
-
-test('Associate with merged api identifier', () => {
-  new appsync.SourceApiAssociation(stack, 'SourceApi1', {
-    sourceApiIdentifier: api1.apiId,
-    mergedApiIdentifier: mergedApi.apiId,
-    mergeType: appsync.MergeType.MANUAL_MERGE,
+    mergedApiExecutionRole: mergedApiExecutionRole1,
   });
 
   new appsync.SourceApiAssociation(stack, 'SourceApi2', {
     sourceApi: api2,
-    mergedApiIdentifier: mergedApi.apiId,
+    mergedApi: mergedApi1,
     mergeType: appsync.MergeType.AUTO_MERGE,
+    mergedApiExecutionRole: mergedApiExecutionRole1,
   });
 
   // THEN
-  verifyBasicSourceAssociations();
+  verifyBasicSourceAssociations(stack, 'ApiId');
+  verifyMergedApiExecutionRole(stack);
 });
 
-test('Associate with merged api execution role', () => {
-  new appsync.SourceApiAssociation(stack, 'SourceApi1', {
-    sourceApi: api1,
-    mergedApi: mergedApi,
+test('Associate with source apis - use ARN identifier flag enabled', () => {
+  new appsync.SourceApiAssociation(stackWithFlag, 'SourceApi1', {
+    sourceApi: api3,
+    mergedApi: mergedApi2,
     mergeType: appsync.MergeType.MANUAL_MERGE,
-    mergedApiExecutionRole: mergedApiExecutionRole,
+    mergedApiExecutionRole: mergedApiExecutionRole2,
   });
 
-  new appsync.SourceApiAssociation(stack, 'SourceApi2', {
-    sourceApiIdentifier: api2.apiId,
-    mergedApiIdentifier: mergedApi.apiId,
+  new appsync.SourceApiAssociation(stackWithFlag, 'SourceApi2', {
+    sourceApi: api4,
+    mergedApi: mergedApi2,
     mergeType: appsync.MergeType.AUTO_MERGE,
-    mergedApiExecutionRole: mergedApiExecutionRole,
+    mergedApiExecutionRole: mergedApiExecutionRole2,
   });
 
   // THEN
-  verifyBasicSourceAssociations();
-  verifyMergedApiExecutionRole();
+  verifyBasicSourceAssociations(stackWithFlag, 'Arn');
+  verifyMergedApiExecutionRole(stackWithFlag);
 });
 
-function verifyBasicSourceAssociations() {
+function verifyBasicSourceAssociations(stackToValidate: cdk.Stack, expectedIdentifier: string) {
   // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
+  Template.fromStack(stackToValidate).hasResourceProperties('AWS::AppSync::GraphQLApi', {
     ApiType: 'MERGED',
     MergedApiExecutionRoleArn: {
       'Fn::GetAtt': [
@@ -121,11 +131,11 @@ function verifyBasicSourceAssociations() {
     },
   });
 
-  Template.fromStack(stack).hasResourceProperties('AWS::AppSync::SourceApiAssociation', {
+  Template.fromStack(stackToValidate).hasResourceProperties('AWS::AppSync::SourceApiAssociation', {
     MergedApiIdentifier: {
       'Fn::GetAtt': [
         'mergedapiCE4CAF34',
-        'ApiId',
+        expectedIdentifier,
       ],
     },
     SourceApiAssociationConfig: {
@@ -134,15 +144,15 @@ function verifyBasicSourceAssociations() {
     SourceApiIdentifier: {
       'Fn::GetAtt': [
         'api1A91238E2',
-        'ApiId',
+        expectedIdentifier,
       ],
     },
   });
-  Template.fromStack(stack).hasResourceProperties('AWS::AppSync::SourceApiAssociation', {
+  Template.fromStack(stackToValidate).hasResourceProperties('AWS::AppSync::SourceApiAssociation', {
     MergedApiIdentifier: {
       'Fn::GetAtt': [
         'mergedapiCE4CAF34',
-        'ApiId',
+        expectedIdentifier,
       ],
     },
     SourceApiAssociationConfig: {
@@ -151,12 +161,12 @@ function verifyBasicSourceAssociations() {
     SourceApiIdentifier: {
       'Fn::GetAtt': [
         'api2C4850CEA',
-        'ApiId',
+        expectedIdentifier,
       ],
     },
   });
 
-  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+  Template.fromStack(stackToValidate).hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Statement: [
         {
@@ -172,8 +182,8 @@ function verifyBasicSourceAssociations() {
   });
 }
 
-function verifyMergedApiExecutionRole() {
-  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+function verifyMergedApiExecutionRole(stackToValidate: cdk.Stack) {
+  Template.fromStack(stackToValidate).hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Statement: [
         {
@@ -188,7 +198,7 @@ function verifyMergedApiExecutionRole() {
     },
   });
 
-  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+  Template.fromStack(stackToValidate).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
