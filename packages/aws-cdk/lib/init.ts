@@ -17,7 +17,14 @@ const decamelize = require('decamelize');
 /**
  * Initialize a CDK package in the current directory
  */
-export async function cliInit(type?: string, language?: string, canUseNetwork = true, generateOnly = false, workDir = process.cwd()) {
+export async function cliInit(
+  type?: string,
+  language?: string,
+  canUseNetwork = true,
+  generateOnly = false,
+  workDir = process.cwd(),
+  stackName?: string,
+) {
   if (!type && !language) {
     await printAvailableTemplates();
     return;
@@ -39,7 +46,7 @@ export async function cliInit(type?: string, language?: string, canUseNetwork = 
     throw new Error('No language was selected');
   }
 
-  await initializeProject(template, language, canUseNetwork, generateOnly, workDir);
+  await initializeProject(template, language, canUseNetwork, generateOnly, workDir, stackName);
 }
 
 /**
@@ -90,7 +97,7 @@ export class InitTemplate {
    * @param language    the language to instantiate this template with
    * @param targetDirectory the directory where the template is to be instantiated into
    */
-  public async install(language: string, targetDirectory: string) {
+  public async install(language: string, targetDirectory: string, stackName?: string) {
     if (this.languages.indexOf(language) === -1) {
       error(`The ${chalk.blue(language)} language is not supported for ${chalk.green(this.name)} `
           + `(it supports: ${this.languages.map(l => chalk.blue(l)).join(', ')})`);
@@ -99,6 +106,7 @@ export class InitTemplate {
 
     const projectInfo: ProjectInfo = {
       name: decamelize(path.basename(path.resolve(targetDirectory))),
+      stackName,
     };
 
     const sourceDirectory = path.join(this.basePath, language);
@@ -117,7 +125,7 @@ export class InitTemplate {
     });
   }
 
-  private async installFiles(sourceDirectory: string, targetDirectory: string, language:string, project: ProjectInfo) {
+  private async installFiles(sourceDirectory: string, targetDirectory: string, language: string, project: ProjectInfo) {
     for (const file of await fs.readdir(sourceDirectory)) {
       const fromFile = path.join(sourceDirectory, file);
       const toFile = path.join(targetDirectory, this.expand(file, language, project));
@@ -159,6 +167,7 @@ export class InitTemplate {
         break;
     }
     return template.replace(/%name%/g, project.name)
+      .replace(/%stackname%/, project.stackName ?? '%name.PascalCased%Stack')
       .replace(/%name\.camelCased%/g, camelCase(project.name))
       .replace(/%name\.PascalCased%/g, camelCase(project.name, { pascalCase: true }))
       .replace(/%cdk-version%/g, cdkVersion)
@@ -192,6 +201,7 @@ export class InitTemplate {
 interface ProjectInfo {
   /** The value used for %name% */
   readonly name: string;
+  readonly stackName?: string;
 }
 
 export async function availableInitTemplates(): Promise<InitTemplate[]> {
@@ -247,10 +257,17 @@ export async function printAvailableTemplates(language?: string) {
   }
 }
 
-export async function initializeProject(template: InitTemplate, language: string, canUseNetwork: boolean, generateOnly: boolean, workDir: string) {
+async function initializeProject(
+  template: InitTemplate,
+  language: string,
+  canUseNetwork: boolean,
+  generateOnly: boolean,
+  workDir: string,
+  stackName?: string,
+) {
   await assertIsEmptyDirectory(workDir);
   print(`Applying project template ${chalk.green(template.name)} for ${chalk.blue(language)}`);
-  await template.install(language, workDir);
+  await template.install(language, workDir, stackName);
   if (await fs.pathExists('README.md')) {
     print(chalk.green(await fs.readFile('README.md', { encoding: 'utf-8' })));
   }
