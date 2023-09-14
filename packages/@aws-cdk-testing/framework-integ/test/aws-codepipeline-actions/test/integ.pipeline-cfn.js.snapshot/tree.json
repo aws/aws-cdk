@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "aws-cdk-codepipeline-cloudformation": {
         "id": "aws-cdk-codepipeline-cloudformation",
         "path": "aws-cdk-codepipeline-cloudformation",
@@ -61,14 +53,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-kms.CfnKey",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-kms.Key",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
                 }
               },
               "ArtifactsBucketEncryptionKeyAlias": {
@@ -91,14 +83,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-kms.CfnAlias",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-kms.Alias",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
                 }
               },
               "ArtifactsBucket": {
@@ -135,8 +127,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-s3.CfnBucket",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   },
                   "Policy": {
@@ -194,26 +186,34 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-s3.CfnBucketPolicy",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.70"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-s3.BucketPolicy",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-s3.Bucket",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
                 }
               },
               "Role": {
                 "id": "Role",
                 "path": "aws-cdk-codepipeline-cloudformation/Pipeline/Role",
                 "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "aws-cdk-codepipeline-cloudformation/Pipeline/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-cdk-codepipeline-cloudformation/Pipeline/Role/Resource",
@@ -235,8 +235,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   },
                   "DefaultPolicy": {
@@ -340,20 +340,20 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.70"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
                 }
               },
               "Resource": {
@@ -362,6 +362,21 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::CodePipeline::Pipeline",
                   "aws:cdk:cloudformation:props": {
+                    "artifactStore": {
+                      "type": "S3",
+                      "location": {
+                        "Ref": "PipelineArtifactsBucket22248F97"
+                      },
+                      "encryptionKey": {
+                        "type": "KMS",
+                        "id": {
+                          "Fn::GetAtt": [
+                            "PipelineArtifactsBucketEncryptionKey01D58D69",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    },
                     "roleArn": {
                       "Fn::GetAtt": [
                         "PipelineRoleD68726F7",
@@ -470,27 +485,12 @@
                           }
                         ]
                       }
-                    ],
-                    "artifactStore": {
-                      "type": "S3",
-                      "location": {
-                        "Ref": "PipelineArtifactsBucket22248F97"
-                      },
-                      "encryptionKey": {
-                        "type": "KMS",
-                        "id": {
-                          "Fn::GetAtt": [
-                            "PipelineArtifactsBucketEncryptionKey01D58D69",
-                            "Arn"
-                          ]
-                        }
-                      }
-                    }
+                    ]
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-codepipeline.CfnPipeline",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
                 }
               },
               "Source": {
@@ -505,6 +505,14 @@
                         "id": "CodePipelineActionRole",
                         "path": "aws-cdk-codepipeline-cloudformation/Pipeline/Source/Source/CodePipelineActionRole",
                         "children": {
+                          "ImportCodePipelineActionRole": {
+                            "id": "ImportCodePipelineActionRole",
+                            "path": "aws-cdk-codepipeline-cloudformation/Pipeline/Source/Source/CodePipelineActionRole/ImportCodePipelineActionRole",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.2.70"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "aws-cdk-codepipeline-cloudformation/Pipeline/Source/Source/CodePipelineActionRole/Resource",
@@ -541,8 +549,8 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-iam.CfnRole",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.2.70"
                             }
                           },
                           "DefaultPolicy": {
@@ -648,26 +656,26 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "@aws-cdk/aws-iam.CfnPolicy",
-                                  "version": "0.0.0"
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.2.70"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-iam.Policy",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.2.70"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.Role",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.70"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "version": "10.2.70"
                     }
                   },
                   "AdditionalSource": {
@@ -678,6 +686,14 @@
                         "id": "CodePipelineActionRole",
                         "path": "aws-cdk-codepipeline-cloudformation/Pipeline/Source/AdditionalSource/CodePipelineActionRole",
                         "children": {
+                          "ImportCodePipelineActionRole": {
+                            "id": "ImportCodePipelineActionRole",
+                            "path": "aws-cdk-codepipeline-cloudformation/Pipeline/Source/AdditionalSource/CodePipelineActionRole/ImportCodePipelineActionRole",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.2.70"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "aws-cdk-codepipeline-cloudformation/Pipeline/Source/AdditionalSource/CodePipelineActionRole/Resource",
@@ -714,8 +730,8 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-iam.CfnRole",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.2.70"
                             }
                           },
                           "DefaultPolicy": {
@@ -821,32 +837,32 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "@aws-cdk/aws-iam.CfnPolicy",
-                                  "version": "0.0.0"
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.2.70"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-iam.Policy",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.2.70"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.Role",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.70"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "version": "10.2.70"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "version": "10.2.70"
                 }
               },
               "CFN": {
@@ -861,6 +877,14 @@
                         "id": "CodePipelineActionRole",
                         "path": "aws-cdk-codepipeline-cloudformation/Pipeline/CFN/DeployCFN/CodePipelineActionRole",
                         "children": {
+                          "ImportCodePipelineActionRole": {
+                            "id": "ImportCodePipelineActionRole",
+                            "path": "aws-cdk-codepipeline-cloudformation/Pipeline/CFN/DeployCFN/CodePipelineActionRole/ImportCodePipelineActionRole",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.2.70"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "aws-cdk-codepipeline-cloudformation/Pipeline/CFN/DeployCFN/CodePipelineActionRole/Resource",
@@ -897,8 +921,8 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-iam.CfnRole",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.2.70"
                             }
                           },
                           "8389e75f-0810-4838-bf64-d6f85a95cf83": {
@@ -906,7 +930,7 @@
                             "path": "aws-cdk-codepipeline-cloudformation/Pipeline/CFN/DeployCFN/CodePipelineActionRole/8389e75f-0810-4838-bf64-d6f85a95cf83",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.85"
+                              "version": "10.2.70"
                             }
                           },
                           "DefaultPolicy": {
@@ -1020,38 +1044,38 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "@aws-cdk/aws-iam.CfnPolicy",
-                                  "version": "0.0.0"
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.2.70"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-iam.Policy",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.2.70"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.Role",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.70"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "version": "10.2.70"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "version": "10.2.70"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-codepipeline.Pipeline",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
             }
           },
           "PipelineBucket": {
@@ -1070,20 +1094,28 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-s3.CfnBucket",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-s3.Bucket",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
             }
           },
           "CfnChangeSetRole": {
             "id": "CfnChangeSetRole",
             "path": "aws-cdk-codepipeline-cloudformation/CfnChangeSetRole",
             "children": {
+              "ImportCfnChangeSetRole": {
+                "id": "ImportCfnChangeSetRole",
+                "path": "aws-cdk-codepipeline-cloudformation/CfnChangeSetRole/ImportCfnChangeSetRole",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              },
               "Resource": {
                 "id": "Resource",
                 "path": "aws-cdk-codepipeline-cloudformation/CfnChangeSetRole/Resource",
@@ -1105,26 +1137,50 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.CfnRole",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-iam.Role",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-codepipeline-cloudformation/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-codepipeline-cloudformation/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
             }
           }
         },
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.2.70"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.2.70"
         }
       }
     },
     "constructInfo": {
       "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "version": "10.2.70"
     }
   }
 }
