@@ -371,6 +371,7 @@ AppSync supports [Merged APIs](https://docs.aws.amazon.com/appsync/latest/devgui
 
 ```ts
 import * as cdk from 'aws-cdk-lib';
+import * as iam from 'monocdk/aws-iam';
 
 // first source API
 const firstApi = new appsync.GraphqlApi(this, 'FirstSourceAPI', {
@@ -406,10 +407,12 @@ const mergedApi = new appsync.GraphqlApi(this, 'MergedAPI', {
 
 // An additional way of declaring a source api association, useful when a source api is deployed in a different stack from the Merged API.
 // The source api owner can associate it to the Merged API with the SourceApiAssociation construct.
+const mergedApiExecutionRole = iam.Role.fromRoleArn(this, 'MergedApiExecutionRole', 'arn:aws:iam::123456789012:role/MyExistingMergedApiExecutionRole');
 new appsync.SourceApiAssociation(this, 'SourceApiAssociation2', {
    sourceApi: secondApi,
-   mergedApiIdentifier: mergedApi.arn,
+   mergedApi: mergedApi,
    mergeType: appsync.MergeType.AUTO_MERGE,
+   mergedApiExecutionRole: mergedApiExecutionRole,
 });
 ```
 
