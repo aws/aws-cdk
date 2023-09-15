@@ -700,6 +700,9 @@ export class GraphqlApi extends GraphqlApiBase {
       var sourceApiIdentifier = sourceApiConfig.sourceApi.apiId;
       var mergedApiIdentifier = this.apiId;
 
+      // This is protected by a feature flag because if there is an existing source api association that used the api id,
+      // updating it to use ARN as identifier leads to a resource replacement. ARN is recommended going forward because it allows support
+      // for both same account and cross account use cases.
       if (FeatureFlags.of(this).isEnabled(cxapi.APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION)) {
         sourceApiIdentifier = sourceApiConfig.sourceApi.arn;
         mergedApiIdentifier = this.arn;

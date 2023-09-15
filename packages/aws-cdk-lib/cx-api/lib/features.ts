@@ -914,8 +914,9 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.BugFix,
     summary: 'When enabled, will always use the arn for identifiers for CfnSourceApiAssociation in the GraphqlApi construct rather than id.',
     detailsMd: `
-      When this feature flag is enabled, we use the IGraphqlApi ARN rather than ID when creating or updating CfnSourceApiAssociation in the GraphqlApi construct.
-      Using the ARN allows the association to support an association with a source api or merged api in another account. 
+      When this feature flag is enabled, we use the IGraphqlApi ARN rather than ID when creating or updating CfnSourceApiAssociation in 
+      the GraphqlApi construct. Using the ARN allows the association to support an association with a source api or merged api in another account.
+      Note that for existing source api associations created with this flag disabled, enabling the flag will lead to a resource replacement. 
     `,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,

@@ -1119,8 +1119,9 @@ shipped as part of the runtime environment.
 
 *When enabled, will always use the arn for identifiers for CfnSourceApiAssociation in the GraphqlApi construct rather than id.* (fix)
 
-When this feature flag is enabled, we use the IGraphqlApi ARN rather than ID when creating or updating CfnSourceApiAssociation in the GraphqlApi construct.
-Using the ARN allows the association to support an association with a source api or merged api in another account.
+When this feature flag is enabled, we use the IGraphqlApi ARN rather than ID when creating or updating CfnSourceApiAssociation in 
+the GraphqlApi construct. Using the ARN allows the association to support an association with a source api or merged api in another account.
+Note that for existing source api associations created with this flag disabled, enabling the flag will lead to a resource replacement.
 
 
 | Since | Default | Recommended |
