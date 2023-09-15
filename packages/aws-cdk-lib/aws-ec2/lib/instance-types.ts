@@ -932,7 +932,7 @@ export enum InstanceClass {
    * Flexible instances with high memory and compute capacity based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation
    * The M7i-Flex instances deliver a baseline of 40% CPU performance, and can scale up to full CPU performance 95% of the time
    */
-  STANDARD7_INTEL_FLEX = 'standard7-intel-flex',  
+  STANDARD7_INTEL_FLEX = 'standard7-intel-flex',
 
   /**
    * Flexible instances with high memory and compute capacity based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation
