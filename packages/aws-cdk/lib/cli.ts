@@ -22,7 +22,7 @@ import { CdkToolkit, AssetBuildTime } from '../lib/cdk-toolkit';
 import { realHandler as context } from '../lib/commands/context';
 import { realHandler as docs } from '../lib/commands/docs';
 import { realHandler as doctor } from '../lib/commands/doctor';
-import { MIGRATE_SUPPORTED_LANGUAGES, cliMigrate } from '../lib/commands/migrate';
+import { MIGRATE_SUPPORTED_LANGUAGES } from '../lib/commands/migrate';
 import { RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
 import { data, debug, error, print, setLogLevel, setCI } from '../lib/logging';
@@ -274,7 +274,10 @@ async function parseCommandLineArguments(args: string[]) {
     .command('migrate', false /* hidden from "cdk --help" */, (yargs: Argv) => yargs
       .option('stack-name', { type: 'string', alias: 'n', desc: 'The name assigned to the stack created in the new project. The name of the app will be based off this name as well.', requiresArg: true })
       .option('language', { type: 'string', default: 'typescript', alias: 'l', desc: 'The language to be used for the new project', choices: MIGRATE_SUPPORTED_LANGUAGES })
+      .option('account', { type: 'string', alias: 'a' })
+      .option('region', { type: 'string' })
       .option('from-path', { type: 'string', alias: 'p', desc: 'The path to the CloudFormation template to migrate. Use this for locally stored templates' })
+      .option('from-stack', { type: 'boolean', alias: 's', desc: 'USe this flag to retrieve the template for an existing CloudFormation stack' })
       .option('output-path', { type: 'string', alias: 'o', desc: 'The output path for the migrated cdk app' }),
     )
     .command('context', 'Manage cached context values', (yargs: Argv) => yargs
@@ -659,11 +662,14 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           return cliInit(args.TEMPLATE, language, undefined, args.generateOnly);
         }
       case 'migrate':
-        return cliMigrate({
+        return cli.migrate({
           stackName: args['stack-name'],
           fromPath: args['from-path'],
+          fromStack: args['from-stack'],
           language: args.language,
           outputPath: args['output-path'],
+          account: args.account,
+          region: args.region,
         });
       case 'version':
         return data(version.DISPLAY_VERSION);
