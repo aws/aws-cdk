@@ -921,24 +921,24 @@ export enum InstanceClass {
   /**
    * Standard instances with high memory and compute capacity based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation
    */
+  STANDARD7_INTEL = 'standard7-intel',
+
+  /**
+   * Standard instances with high memory and compute capacity based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation
+   */
   M7I = 'm7i',
 
   /**
    * Flexible instances with high memory and compute capacity based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation
    * The M7i-Flex instances deliver a baseline of 40% CPU performance, and can scale up to full CPU performance 95% of the time
    */
-  M7I_FLEX = 'm7i-flex',
-
-  /**
-   * Standard instances with high memory and compute capacity based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation
-   */
-  STANDARD7_INTEL = 'standard7-intel',
+  STANDARD7_INTEL_FLEX = 'standard7-intel-flex',  
 
   /**
    * Flexible instances with high memory and compute capacity based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation
    * The M7i-Flex instances deliver a baseline of 40% CPU performance, and can scale up to full CPU performance 95% of the time
    */
-  STANDARD7_INTEL_FLEX = 'standard7-intel-flex',  
+  M7I_FLEX = 'm7i-flex',
 
   /**
    * High memory and compute capacity instances, 1st generation
