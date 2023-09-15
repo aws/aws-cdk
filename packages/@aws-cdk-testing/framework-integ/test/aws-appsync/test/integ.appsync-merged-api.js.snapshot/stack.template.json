@@ -120,13 +120,13 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "MergedAPIFirstSourceAPIAssociationF3D7DF05",
+          "MergedAPIFirstSourceAPIAssociationEC781BA9",
           "SourceApiArn"
          ]
         },
         {
          "Fn::GetAtt": [
-          "MergedAPISecondSourceAPIAssociationF7CB1297",
+          "MergedAPISecondSourceAPIAssociationBD1A08F4",
           "SourceApiArn"
          ]
         },
@@ -136,7 +136,7 @@
           [
            {
             "Fn::GetAtt": [
-             "MergedAPIFirstSourceAPIAssociationF3D7DF05",
+             "MergedAPIFirstSourceAPIAssociationEC781BA9",
              "SourceApiArn"
             ]
            },
@@ -150,7 +150,7 @@
           [
            {
             "Fn::GetAtt": [
-             "MergedAPISecondSourceAPIAssociationF7CB1297",
+             "MergedAPISecondSourceAPIAssociationBD1A08F4",
              "SourceApiArn"
             ]
            },
@@ -165,7 +165,7 @@
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [
-         "MergedAPISecondSourceAPIAssociationF7CB1297",
+         "MergedAPISecondSourceAPIAssociationBD1A08F4",
          "AssociationArn"
         ]
        }
@@ -195,13 +195,13 @@
     "Name": "MergedAPI"
    }
   },
-  "MergedAPIFirstSourceAPIAssociationF3D7DF05": {
+  "MergedAPIFirstSourceAPIAssociationEC781BA9": {
    "Type": "AWS::AppSync::SourceApiAssociation",
    "Properties": {
     "MergedApiIdentifier": {
      "Fn::GetAtt": [
       "MergedAPI08D3EAD1",
-      "ApiId"
+      "Arn"
      ]
     },
     "SourceApiAssociationConfig": {
@@ -210,18 +210,18 @@
     "SourceApiIdentifier": {
      "Fn::GetAtt": [
       "FirstSourceAPIB0DE8D5A",
-      "ApiId"
+      "Arn"
      ]
     }
    }
   },
-  "MergedAPISecondSourceAPIAssociationF7CB1297": {
+  "MergedAPISecondSourceAPIAssociationBD1A08F4": {
    "Type": "AWS::AppSync::SourceApiAssociation",
    "Properties": {
     "MergedApiIdentifier": {
      "Fn::GetAtt": [
       "MergedAPI08D3EAD1",
-      "ApiId"
+      "Arn"
      ]
     },
     "SourceApiAssociationConfig": {
@@ -230,7 +230,7 @@
     "SourceApiIdentifier": {
      "Fn::GetAtt": [
       "SecondSourceAPIE903371D",
-      "ApiId"
+      "Arn"
      ]
     }
    }

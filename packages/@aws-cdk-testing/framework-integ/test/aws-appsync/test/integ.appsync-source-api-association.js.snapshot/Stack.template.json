@@ -96,7 +96,7 @@
    "Type": "AWS::AppSync::GraphQLApi",
    "Properties": {
     "AuthenticationType": "API_KEY",
-    "Name": "ThirdourceAPI"
+    "Name": "ThirdSourceAPI"
    }
   },
   "ThirdSourceAPISchema5999A853": {
@@ -265,7 +265,7 @@
     "MergedApiIdentifier": {
      "Fn::GetAtt": [
       "MergedAPI08D3EAD1",
-      "ApiId"
+      "Arn"
      ]
     },
     "SourceApiAssociationConfig": {
@@ -274,7 +274,7 @@
     "SourceApiIdentifier": {
      "Fn::GetAtt": [
       "FirstSourceAPIB0DE8D5A",
-      "ApiId"
+      "Arn"
      ]
     }
    }
@@ -285,7 +285,7 @@
     "MergedApiIdentifier": {
      "Fn::GetAtt": [
       "MergedAPI08D3EAD1",
-      "ApiId"
+      "Arn"
      ]
     },
     "SourceApiAssociationConfig": {
@@ -294,7 +294,7 @@
     "SourceApiIdentifier": {
      "Fn::GetAtt": [
       "SecondSourceAPIE903371D",
-      "ApiId"
+      "Arn"
      ]
     }
    }
@@ -305,7 +305,7 @@
     "MergedApiIdentifier": {
      "Fn::GetAtt": [
       "MergedAPI08D3EAD1",
-      "ApiId"
+      "Arn"
      ]
     },
     "SourceApiAssociationConfig": {
@@ -314,7 +314,7 @@
     "SourceApiIdentifier": {
      "Fn::GetAtt": [
       "ThirdSourceAPIA5DA856C",
-      "ApiId"
+      "Arn"
      ]
     }
    }

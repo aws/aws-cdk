@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4c9570e13d961682fd0dea40946b55715f6a66f04b79fc7d8f9023583f3f4846.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/56930136ed109a6e2bbab108d97daf7201ee4fd652cff93f20eb31cd855e4e47.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -99,16 +99,16 @@
             "data": "MergedAPI08D3EAD1"
           }
         ],
-        "/stack/MergedAPI/FirstSourceAPIAssociation/Resource": [
+        "/stack/MergedAPI/FirstSourceAPIAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MergedAPIFirstSourceAPIAssociationF3D7DF05"
+            "data": "MergedAPIFirstSourceAPIAssociationEC781BA9"
           }
         ],
-        "/stack/MergedAPI/SecondSourceAPIAssociation/Resource": [
+        "/stack/MergedAPI/SecondSourceAPIAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MergedAPISecondSourceAPIAssociationF7CB1297"
+            "data": "MergedAPISecondSourceAPIAssociationBD1A08F4"
           }
         ],
         "/stack/MergedAPI/DefaultApiKey": [

@@ -2,8 +2,6 @@ import { Construct } from 'constructs';
 import { CfnSourceApiAssociation } from './appsync.generated';
 import { IGraphqlApi } from './graphqlapi-base';
 import { Effect, IRole, PolicyStatement } from '../../aws-iam';
-import { FeatureFlags } from '../../core';
-import * as cxapi from '../../cx-api';
 
 /**
  * Merge type used to associate the source API
@@ -38,7 +36,7 @@ export interface SourceApiAssociationProps {
   /**
    * The merged api execution role for adding the access policy for the source api.
    */
-  readonly mergedApiExecutionRole: IRole;
+  readonly mergedApiExecutionRole?: IRole;
 
   /**
    * The merge type for the source
@@ -67,6 +65,16 @@ export class SourceApiAssociation extends Construct {
   public readonly association: CfnSourceApiAssociation;
 
   /**
+   * The merged api in the association.
+   */
+  public readonly mergedApi: IGraphqlApi;
+
+  /**
+   * The source api in the association.
+   */
+  public readonly sourceApi: IGraphqlApi;
+
+  /**
   * The merge type for the source api association.
   */
   private readonly mergeType: MergeType;
@@ -74,25 +82,19 @@ export class SourceApiAssociation extends Construct {
   /**
   * The merged api execution role for attaching the access policy.
   */
-  private readonly mergedApiExecutionRole: IRole;
+  private readonly mergedApiExecutionRole?: IRole;
 
   constructor(scope: Construct, id: string, props: SourceApiAssociationProps) {
     super(scope, id);
 
     this.mergeType = props.mergeType ?? MergeType.AUTO_MERGE;
     this.mergedApiExecutionRole = props.mergedApiExecutionRole;
-
-    var sourceApiIdentifier = props.sourceApi.apiId;
-    var mergedApiIdentifier = props.mergedApi.apiId;
-
-    if (FeatureFlags.of(scope).isEnabled(cxapi.APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION)) {
-      sourceApiIdentifier = props.sourceApi.arn;
-      mergedApiIdentifier = props.mergedApi.arn;
-    }
+    this.sourceApi = props.sourceApi;
+    this.mergedApi = props.mergedApi;
 
     this.association = new CfnSourceApiAssociation(this, 'Resource', {
-      sourceApiIdentifier: sourceApiIdentifier,
-      mergedApiIdentifier: mergedApiIdentifier,
+      sourceApiIdentifier: this.sourceApi.arn,
+      mergedApiIdentifier: this.mergedApi.arn,
       sourceApiAssociationConfig: {
         mergeType: this.mergeType,
 
@@ -100,35 +102,40 @@ export class SourceApiAssociation extends Construct {
       description: props.description,
     });
 
-    this.addSourceGraphQLAccessPolicy();
-    this.addSourceApiMergeAccessPolicy();
-  }
-
-  private isAutoMerge() {
-    return this.mergeType == MergeType.AUTO_MERGE;
-  }
-
-  /**
-  * Adds an IAM permission for SourceGraphQL access on the source AppSync api to the mergedApiExecutionRole if present.
-  */
-  private addSourceGraphQLAccessPolicy() {
-    this.mergedApiExecutionRole.addToPrincipalPolicy(new PolicyStatement({
-      effect: Effect.ALLOW,
-      actions: ['appsync:SourceGraphQL'],
-      resources: [this.association.attrSourceApiArn, this.association.attrSourceApiArn.concat('/*')],
-    }));
-  }
-
-  /**
-  * Adds an IAM permission for automatically merging the source API metadata whenever the source API is updated to the mergedApiExecutionRole if present.
-  */
-  private addSourceApiMergeAccessPolicy() {
-    if (this.isAutoMerge()) {
-      this.mergedApiExecutionRole.addToPrincipalPolicy(new PolicyStatement({
-        effect: Effect.ALLOW,
-        actions: ['appsync:StartSchemaMerge'],
-        resources: [this.association.attrAssociationArn],
-      }));
+    // Add permissions to the merged api execution role if it was passed in.
+    if (this.mergedApiExecutionRole) {
+      addSourceGraphQLPermission(this.association, this.mergedApiExecutionRole);
+      if (this.mergeType === MergeType.AUTO_MERGE) {
+        addSourceApiAutoMergePermission(this.association, this.mergedApiExecutionRole);
+      }
     }
   }
+}
+
+/**
+* Adds an IAM permission to the Merged API execution role for GraphQL access on the source AppSync api.
+*
+* @param sourceApiAssociation The CfnSourceApiAssociation resource which to add a permission to access at runtime.
+* @param mergedApiExecutionRole The merged api execution role on which to add the permission.
+*/
+export function addSourceGraphQLPermission(sourceApiAssociation: CfnSourceApiAssociation, mergedApiExecutionRole: IRole) {
+  return mergedApiExecutionRole.addToPrincipalPolicy(new PolicyStatement({
+    effect: Effect.ALLOW,
+    actions: ['appsync:SourceGraphQL'],
+    resources: [sourceApiAssociation.attrSourceApiArn, sourceApiAssociation.attrSourceApiArn.concat('/*')],
+  }));
+}
+
+/**
+* Adds an IAM permission to the Merged API execution role for automatically merging the source API metadata whenever
+* the source API is updated.
+* @param sourceApiAssociation The CfnSourceApiAssociation resource which to add permission to perform merge operations on.
+* @param mergedApiExecutionRole The merged api execution role on which to add the permission.
+*/
+export function addSourceApiAutoMergePermission(sourceApiAssociation: CfnSourceApiAssociation, mergedApiExecutionRole: IRole) {
+  return mergedApiExecutionRole.addToPrincipalPolicy(new PolicyStatement({
+    effect: Effect.ALLOW,
+    actions: ['appsync:StartSchemaMerge'],
+    resources: [sourceApiAssociation.attrAssociationArn],
+  }));
 }

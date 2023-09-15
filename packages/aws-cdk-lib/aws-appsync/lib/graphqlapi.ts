@@ -1,8 +1,8 @@
 import { Construct } from 'constructs';
-import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema, CfnDomainName, CfnDomainNameApiAssociation } from './appsync.generated';
+import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema, CfnDomainName, CfnDomainNameApiAssociation, CfnSourceApiAssociation } from './appsync.generated';
 import { IGraphqlApi, GraphqlApiBase } from './graphqlapi-base';
 import { ISchema, SchemaFile } from './schema';
-import { MergeType, SourceApiAssociation } from './source-api-association';
+import { MergeType, addSourceApiAutoMergePermission, addSourceGraphQLPermission } from './source-api-association';
 import { ICertificate } from '../../aws-certificatemanager';
 import { IUserPool } from '../../aws-cognito';
 import { ManagedPolicy, Role, IRole, ServicePrincipal, Grant, IGrantable } from '../../aws-iam';
@@ -496,7 +496,7 @@ export class IamResource {
 }
 
 /**
- * Attributes for GraphQL imports
+ * Attributes for GraphQL importsx
  */
 export interface GraphqlApiAttributes {
   /**
@@ -695,13 +695,25 @@ export class GraphqlApi extends GraphqlApiBase {
 
   private setupSourceApiAssociations() {
     this.definition.sourceApiOptions?.sourceApis.forEach(sourceApiConfig => {
-      new SourceApiAssociation(this, `${sourceApiConfig.sourceApi.node.id}Association`, {
-        sourceApi: sourceApiConfig.sourceApi,
-        mergedApi: this,
-        mergeType: sourceApiConfig.mergeType,
+      const mergeType = sourceApiConfig.mergeType ?? MergeType.AUTO_MERGE;
+      const association = new CfnSourceApiAssociation(this, `${sourceApiConfig.sourceApi.node.id}Association`, {
+        sourceApiIdentifier: sourceApiConfig.sourceApi.arn,
+        mergedApiIdentifier: this.arn,
+        sourceApiAssociationConfig: {
+          mergeType: mergeType,
+        },
         description: sourceApiConfig.description,
-        mergedApiExecutionRole: this.mergedApiExecutionRole as IRole,
       });
+
+      // Add permissions to merged api execution role, only if it was not passed in.
+      if (!this.definition.sourceApiOptions?.mergedApiExecutionRole) {
+        const executionRole = this.mergedApiExecutionRole as IRole;
+        addSourceGraphQLPermission(association, executionRole);
+
+        if (mergeType === MergeType.AUTO_MERGE) {
+          addSourceApiAutoMergePermission(association, executionRole);
+        }
+      }
     });
   }
 

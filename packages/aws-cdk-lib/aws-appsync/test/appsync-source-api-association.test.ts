@@ -8,14 +8,8 @@ import * as appsync from '../lib';
 let stack: cdk.Stack;
 let api1: appsync.IGraphqlApi;
 let api2: appsync.IGraphqlApi;
-let api3: appsync.IGraphqlApi;
-let api4: appsync.IGraphqlApi;
-let appWithFlag: cdk.App;
-let stackWithFlag: cdk.Stack;
-let mergedApiExecutionRole1: iam.Role;
-let mergedApiExecutionRole2: iam.Role;
-let mergedApi1: appsync.IGraphqlApi;
-let mergedApi2: appsync.IGraphqlApi;
+let mergedApiExecutionRole: iam.Role;
+let mergedApi: appsync.IGraphqlApi;
 beforeEach(() => {
   stack = new cdk.Stack();
 
@@ -33,48 +27,15 @@ beforeEach(() => {
     logConfig: {},
   });
 
-  appWithFlag = new cdk.App({
-    context: {
-      [cxapi.APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION]: true,
-    },
-  });
-  stackWithFlag = new cdk.Stack(appWithFlag);
-
-  api3 = new appsync.GraphqlApi(stackWithFlag, 'api1', {
-    authorizationConfig: {},
-    name: 'api',
-    definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.test.graphql')),
-    logConfig: {},
-  });
-
-  api4 = new appsync.GraphqlApi(stackWithFlag, 'api2', {
-    authorizationConfig: {},
-    name: 'api',
-    definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.test.graphql')),
-    logConfig: {},
-  });
-
-  mergedApiExecutionRole1 = new iam.Role(stack, 'MergedApiExecutionRole', {
+  mergedApiExecutionRole = new iam.Role(stack, 'MergedApiExecutionRole', {
     assumedBy: new iam.ServicePrincipal('appsync.amazonaws.com'),
   });
 
-  mergedApi1 = new appsync.GraphqlApi(stack, 'merged-api', {
+  mergedApi = new appsync.GraphqlApi(stack, 'merged-api', {
     name: 'api',
     definition: appsync.Definition.fromSourceApis({
       sourceApis: [],
-      mergedApiExecutionRole: mergedApiExecutionRole1,
-    }),
-  });
-
-  mergedApiExecutionRole2 = new iam.Role(stackWithFlag, 'MergedApiExecutionRole', {
-    assumedBy: new iam.ServicePrincipal('appsync.amazonaws.com'),
-  });
-
-  mergedApi2 = new appsync.GraphqlApi(stackWithFlag, 'merged-api', {
-    name: 'api',
-    definition: appsync.Definition.fromSourceApis({
-      sourceApis: [],
-      mergedApiExecutionRole: mergedApiExecutionRole2,
+      mergedApiExecutionRole: mergedApiExecutionRole,
     }),
   });
 });
@@ -82,44 +43,24 @@ beforeEach(() => {
 test('Associate with source apis', () => {
   new appsync.SourceApiAssociation(stack, 'SourceApi1', {
     sourceApi: api1,
-    mergedApi: mergedApi1,
+    mergedApi: mergedApi,
     mergeType: appsync.MergeType.MANUAL_MERGE,
-    mergedApiExecutionRole: mergedApiExecutionRole1,
+    mergedApiExecutionRole: mergedApiExecutionRole,
   });
 
   new appsync.SourceApiAssociation(stack, 'SourceApi2', {
     sourceApi: api2,
-    mergedApi: mergedApi1,
+    mergedApi: mergedApi,
     mergeType: appsync.MergeType.AUTO_MERGE,
-    mergedApiExecutionRole: mergedApiExecutionRole1,
+    mergedApiExecutionRole: mergedApiExecutionRole,
   });
 
   // THEN
-  verifyBasicSourceAssociations(stack, 'ApiId');
+  verifySourceAssociations(stack, 'Arn');
   verifyMergedApiExecutionRole(stack);
 });
 
-test('Associate with source apis - use ARN identifier flag enabled', () => {
-  new appsync.SourceApiAssociation(stackWithFlag, 'SourceApi1', {
-    sourceApi: api3,
-    mergedApi: mergedApi2,
-    mergeType: appsync.MergeType.MANUAL_MERGE,
-    mergedApiExecutionRole: mergedApiExecutionRole2,
-  });
-
-  new appsync.SourceApiAssociation(stackWithFlag, 'SourceApi2', {
-    sourceApi: api4,
-    mergedApi: mergedApi2,
-    mergeType: appsync.MergeType.AUTO_MERGE,
-    mergedApiExecutionRole: mergedApiExecutionRole2,
-  });
-
-  // THEN
-  verifyBasicSourceAssociations(stackWithFlag, 'Arn');
-  verifyMergedApiExecutionRole(stackWithFlag);
-});
-
-function verifyBasicSourceAssociations(stackToValidate: cdk.Stack, expectedIdentifier: string) {
+function verifySourceAssociations(stackToValidate: cdk.Stack, expectedIdentifier: string) {
   // THEN
   Template.fromStack(stackToValidate).hasResourceProperties('AWS::AppSync::GraphQLApi', {
     ApiType: 'MERGED',

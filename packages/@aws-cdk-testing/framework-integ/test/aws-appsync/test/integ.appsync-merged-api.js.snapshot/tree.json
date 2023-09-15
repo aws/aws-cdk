@@ -273,13 +273,13 @@
                                   "Resource": [
                                     {
                                       "Fn::GetAtt": [
-                                        "MergedAPIFirstSourceAPIAssociationF3D7DF05",
+                                        "MergedAPIFirstSourceAPIAssociationEC781BA9",
                                         "SourceApiArn"
                                       ]
                                     },
                                     {
                                       "Fn::GetAtt": [
-                                        "MergedAPISecondSourceAPIAssociationF7CB1297",
+                                        "MergedAPISecondSourceAPIAssociationBD1A08F4",
                                         "SourceApiArn"
                                       ]
                                     },
@@ -289,7 +289,7 @@
                                         [
                                           {
                                             "Fn::GetAtt": [
-                                              "MergedAPIFirstSourceAPIAssociationF3D7DF05",
+                                              "MergedAPIFirstSourceAPIAssociationEC781BA9",
                                               "SourceApiArn"
                                             ]
                                           },
@@ -303,7 +303,7 @@
                                         [
                                           {
                                             "Fn::GetAtt": [
-                                              "MergedAPISecondSourceAPIAssociationF7CB1297",
+                                              "MergedAPISecondSourceAPIAssociationBD1A08F4",
                                               "SourceApiArn"
                                             ]
                                           },
@@ -318,7 +318,7 @@
                                   "Effect": "Allow",
                                   "Resource": {
                                     "Fn::GetAtt": [
-                                      "MergedAPISecondSourceAPIAssociationF7CB1297",
+                                      "MergedAPISecondSourceAPIAssociationBD1A08F4",
                                       "AssociationArn"
                                     ]
                                   }
@@ -376,76 +376,56 @@
               "FirstSourceAPIAssociation": {
                 "id": "FirstSourceAPIAssociation",
                 "path": "stack/MergedAPI/FirstSourceAPIAssociation",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "stack/MergedAPI/FirstSourceAPIAssociation/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::AppSync::SourceApiAssociation",
-                      "aws:cdk:cloudformation:props": {
-                        "mergedApiIdentifier": {
-                          "Fn::GetAtt": [
-                            "MergedAPI08D3EAD1",
-                            "ApiId"
-                          ]
-                        },
-                        "sourceApiAssociationConfig": {
-                          "mergeType": "MANUAL_MERGE"
-                        },
-                        "sourceApiIdentifier": {
-                          "Fn::GetAtt": [
-                            "FirstSourceAPIB0DE8D5A",
-                            "ApiId"
-                          ]
-                        }
-                      }
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::SourceApiAssociation",
+                  "aws:cdk:cloudformation:props": {
+                    "mergedApiIdentifier": {
+                      "Fn::GetAtt": [
+                        "MergedAPI08D3EAD1",
+                        "Arn"
+                      ]
                     },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnSourceApiAssociation",
-                      "version": "0.0.0"
+                    "sourceApiAssociationConfig": {
+                      "mergeType": "MANUAL_MERGE"
+                    },
+                    "sourceApiIdentifier": {
+                      "Fn::GetAtt": [
+                        "FirstSourceAPIB0DE8D5A",
+                        "Arn"
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.SourceApiAssociation",
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnSourceApiAssociation",
                   "version": "0.0.0"
                 }
               },
               "SecondSourceAPIAssociation": {
                 "id": "SecondSourceAPIAssociation",
                 "path": "stack/MergedAPI/SecondSourceAPIAssociation",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "stack/MergedAPI/SecondSourceAPIAssociation/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::AppSync::SourceApiAssociation",
-                      "aws:cdk:cloudformation:props": {
-                        "mergedApiIdentifier": {
-                          "Fn::GetAtt": [
-                            "MergedAPI08D3EAD1",
-                            "ApiId"
-                          ]
-                        },
-                        "sourceApiAssociationConfig": {
-                          "mergeType": "AUTO_MERGE"
-                        },
-                        "sourceApiIdentifier": {
-                          "Fn::GetAtt": [
-                            "SecondSourceAPIE903371D",
-                            "ApiId"
-                          ]
-                        }
-                      }
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::SourceApiAssociation",
+                  "aws:cdk:cloudformation:props": {
+                    "mergedApiIdentifier": {
+                      "Fn::GetAtt": [
+                        "MergedAPI08D3EAD1",
+                        "Arn"
+                      ]
                     },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnSourceApiAssociation",
-                      "version": "0.0.0"
+                    "sourceApiAssociationConfig": {
+                      "mergeType": "AUTO_MERGE"
+                    },
+                    "sourceApiIdentifier": {
+                      "Fn::GetAtt": [
+                        "SecondSourceAPIE903371D",
+                        "Arn"
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.SourceApiAssociation",
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnSourceApiAssociation",
                   "version": "0.0.0"
                 }
               },

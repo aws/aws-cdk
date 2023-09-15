@@ -4,12 +4,8 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as appsync from 'aws-cdk-lib/aws-appsync';
 import * as iam from 'aws-cdk-lib/aws-iam';
 
-const app = new cdk.App({
-  context: {
-    [cdk.cx_api.APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION]: false,
-  },
-});
-const stack = new cdk.Stack(app, 'stack');
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'Stack');
 
 const firstApi = new appsync.GraphqlApi(stack, 'FirstSourceAPI', {
   name: 'FirstSourceAPI',
@@ -30,7 +26,7 @@ secondApi.addNoneDataSource('SecondSourceDS', {
 });
 
 const thirdApi = new appsync.GraphqlApi(stack, 'ThirdSourceAPI', {
-  name: 'ThirdourceAPI',
+  name: 'ThirdSourceAPI',
   definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.merged-api-3.graphql')),
 });
 
