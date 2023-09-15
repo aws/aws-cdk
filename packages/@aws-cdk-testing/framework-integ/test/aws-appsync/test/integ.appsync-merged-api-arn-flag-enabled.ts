@@ -4,7 +4,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as appsync from 'aws-cdk-lib/aws-appsync';
 
 const app = new cdk.App({
-  context: {
+  postCliContext: {
     [cdk.cx_api.APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION]: true,
   },
 });
