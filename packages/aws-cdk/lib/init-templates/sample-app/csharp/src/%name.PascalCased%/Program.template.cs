@@ -7,7 +7,7 @@ namespace %name.PascalCased%
         public static void Main(string[] args)
         {
             var app = new App();
-            new %name.PascalCased%Stack(app, "%name.PascalCased%Stack");
+            new %name.PascalCased%Stack(app, "%stackname%");
 
             app.Synth();
         }
