@@ -371,7 +371,6 @@ AppSync supports [Merged APIs](https://docs.aws.amazon.com/appsync/latest/devgui
 
 ```ts
 import * as cdk from 'aws-cdk-lib';
-import * as iam from 'monocdk/aws-iam';
 
 // first source API
 const firstApi = new appsync.GraphqlApi(this, 'FirstSourceAPI', {
@@ -405,14 +404,19 @@ const mergedApi = new appsync.GraphqlApi(this, 'MergedAPI', {
 });
 
 
-// An additional way of declaring a source api association, useful when a source api is deployed in a different stack from the Merged API.
-// The source api owner can associate it to the Merged API with the SourceApiAssociation construct.
-const mergedApiExecutionRole = iam.Role.fromRoleArn(this, 'MergedApiExecutionRole', 'arn:aws:iam::123456789012:role/MyExistingMergedApiExecutionRole');
+// An additional way of declaring a source api association using the SourceApiAssociation construct. This is useful when a source api is deployed in a different stack from the Merged API.
+// The source api owner can associate it to the Merged API with this construct.
+const importedMergedApi = appsync.GraphqlApi.fromGraphqlAttributes(this, 'ImportedMergedApi', {
+  graphqlApiId: 'MyApiId',
+  graphqlApiArn: 'MyApiArn',ƒ
+});
+
+const importedExecutionRole = iam.Role.fromRoleArn(this, 'ExecutionRole', 'arn:aws:iam::ACCOUNT:role/MyExistingRole');
 new appsync.SourceApiAssociation(this, 'SourceApiAssociation2', {
-   sourceApi: secondApi,
-   mergedApi: mergedApi,
+   sourceApi: firstApi,
+   mergedApi: importedMergedApi,
    mergeType: appsync.MergeType.AUTO_MERGE,
-   mergedApiExecutionRole: mergedApiExecutionRole,
+   mergedApiExecutionRole: importedExecutionRole,
 });
 ```
 

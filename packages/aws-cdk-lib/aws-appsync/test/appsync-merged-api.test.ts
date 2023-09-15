@@ -2,13 +2,22 @@ import * as path from 'path';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
+import * as cxapi from '../../cx-api';
 import * as appsync from '../lib';
 
 let stack: cdk.Stack;
+let stackWithFlag: cdk.Stack;
 let api1: appsync.GraphqlApi;
 let api2: appsync.GraphqlApi;
+let api3: appsync.GraphqlApi;
+let api4: appsync.GraphqlApi;
 beforeEach(() => {
   stack = new cdk.Stack();
+  stackWithFlag = new cdk.Stack(new cdk.App({
+    context: {
+      [cxapi.APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION]: true,
+    },
+  }));
 
   api1 = new appsync.GraphqlApi(stack, 'api1', {
     authorizationConfig: {},
@@ -18,6 +27,20 @@ beforeEach(() => {
   });
 
   api2 = new appsync.GraphqlApi(stack, 'api2', {
+    authorizationConfig: {},
+    name: 'api',
+    definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.test.graphql')),
+    logConfig: {},
+  });
+
+  api3 = new appsync.GraphqlApi(stackWithFlag, 'api1', {
+    authorizationConfig: {},
+    name: 'api',
+    definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.test.graphql')),
+    logConfig: {},
+  });
+
+  api4 = new appsync.GraphqlApi(stackWithFlag, 'api2', {
     authorizationConfig: {},
     name: 'api',
     definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.test.graphql')),
@@ -43,7 +66,28 @@ test('appsync supports merged API', () => {
     }),
   });
 
-  validateSourceApiAssociations(stack, 'Arn');
+  validateSourceApiAssociations(stack, 'ApiId');
+});
+
+test('appsync supports merged API - ARN identifier flag enabled', () => {
+  // WHEN
+  const mergedApi = new appsync.GraphqlApi(stackWithFlag, 'merged-api', {
+    name: 'api',
+    definition: appsync.Definition.fromSourceApis({
+      sourceApis: [
+        {
+          sourceApi: api3,
+          mergeType: appsync.MergeType.MANUAL_MERGE,
+        },
+        {
+          sourceApi: api4,
+          mergeType: appsync.MergeType.AUTO_MERGE,
+        },
+      ],
+    }),
+  });
+
+  validateSourceApiAssociations(stackWithFlag, 'Arn');
 });
 
 test('appsync supports merged API with default merge type', () => {
@@ -64,7 +108,7 @@ test('appsync supports merged API with default merge type', () => {
     MergedApiIdentifier: {
       'Fn::GetAtt': [
         'mergedapiCE4CAF34',
-        'Arn',
+        'ApiId',
       ],
     },
     SourceApiAssociationConfig: {
@@ -73,7 +117,7 @@ test('appsync supports merged API with default merge type', () => {
     SourceApiIdentifier: {
       'Fn::GetAtt': [
         'api1A91238E2',
-        'Arn',
+        'ApiId',
       ],
     },
   });

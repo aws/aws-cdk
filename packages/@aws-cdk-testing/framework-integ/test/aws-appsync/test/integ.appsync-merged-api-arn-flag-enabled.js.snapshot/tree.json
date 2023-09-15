@@ -382,7 +382,7 @@
                     "mergedApiIdentifier": {
                       "Fn::GetAtt": [
                         "MergedAPI08D3EAD1",
-                        "ApiId"
+                        "Arn"
                       ]
                     },
                     "sourceApiAssociationConfig": {
@@ -391,7 +391,7 @@
                     "sourceApiIdentifier": {
                       "Fn::GetAtt": [
                         "FirstSourceAPIB0DE8D5A",
-                        "ApiId"
+                        "Arn"
                       ]
                     }
                   }
@@ -410,7 +410,7 @@
                     "mergedApiIdentifier": {
                       "Fn::GetAtt": [
                         "MergedAPI08D3EAD1",
-                        "ApiId"
+                        "Arn"
                       ]
                     },
                     "sourceApiAssociationConfig": {
@@ -419,7 +419,7 @@
                     "sourceApiIdentifier": {
                       "Fn::GetAtt": [
                         "SecondSourceAPIE903371D",
-                        "ApiId"
+                        "Arn"
                       ]
                     }
                   }

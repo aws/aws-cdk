@@ -2,7 +2,6 @@ import * as path from 'path';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
-import * as cxapi from '../../cx-api';
 import * as appsync from '../lib';
 
 let stack: cdk.Stack;

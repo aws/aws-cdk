@@ -8,7 +8,8 @@ import { IUserPool } from '../../aws-cognito';
 import { ManagedPolicy, Role, IRole, ServicePrincipal, Grant, IGrantable } from '../../aws-iam';
 import { IFunction } from '../../aws-lambda';
 import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
-import { ArnFormat, CfnResource, Duration, Expiration, IResolvable, Stack } from '../../core';
+import { ArnFormat, CfnResource, Duration, Expiration, FeatureFlags, IResolvable, Stack } from '../../core';
+import * as cxapi from '../../cx-api';
 
 /**
  * enum with all possible values for AppSync authorization type
@@ -696,9 +697,17 @@ export class GraphqlApi extends GraphqlApiBase {
   private setupSourceApiAssociations() {
     this.definition.sourceApiOptions?.sourceApis.forEach(sourceApiConfig => {
       const mergeType = sourceApiConfig.mergeType ?? MergeType.AUTO_MERGE;
+      var sourceApiIdentifier = sourceApiConfig.sourceApi.apiId;
+      var mergedApiIdentifier = this.apiId;
+
+      if (FeatureFlags.of(this).isEnabled(cxapi.APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION)) {
+        sourceApiIdentifier = sourceApiConfig.sourceApi.arn;
+        mergedApiIdentifier = this.arn;
+      }
+
       const association = new CfnSourceApiAssociation(this, `${sourceApiConfig.sourceApi.node.id}Association`, {
-        sourceApiIdentifier: sourceApiConfig.sourceApi.arn,
-        mergedApiIdentifier: this.arn,
+        sourceApiIdentifier: sourceApiIdentifier,
+        mergedApiIdentifier: mergedApiIdentifier,
         sourceApiAssociationConfig: {
           mergeType: mergeType,
         },
