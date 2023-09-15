@@ -406,9 +406,9 @@ const mergedApi = new appsync.GraphqlApi(this, 'MergedAPI', {
 
 // An additional way of declaring a source api association using the SourceApiAssociation construct. This is useful when a source api is deployed in a different stack from the Merged API.
 // The source api owner can associate it to the Merged API with this construct.
-const importedMergedApi = appsync.GraphqlApi.fromGraphqlAttributes(this, 'ImportedMergedApi', {
+const importedMergedApi = appsync.GraphqlApi.fromGraphqlApiAttributes(this, 'ImportedMergedApi', {
   graphqlApiId: 'MyApiId',
-  graphqlApiArn: 'MyApiArn',ƒ
+  graphqlApiArn: 'MyApiArn',
 });
 
 const importedExecutionRole = iam.Role.fromRoleArn(this, 'ExecutionRole', 'arn:aws:iam::ACCOUNT:role/MyExistingRole');

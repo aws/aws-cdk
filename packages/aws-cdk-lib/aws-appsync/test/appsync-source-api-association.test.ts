@@ -40,7 +40,7 @@ beforeEach(() => {
 });
 
 test('Associate with source apis', () => {
-  new appsync.SourceApiAssociation(stack, 'SourceApi1', {
+  const sourceApiAssociation1 = new appsync.SourceApiAssociation(stack, 'SourceApi1', {
     sourceApi: api1,
     mergedApi: mergedApi,
     mergeType: appsync.MergeType.MANUAL_MERGE,

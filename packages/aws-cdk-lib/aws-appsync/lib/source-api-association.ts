@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { CfnSourceApiAssociation } from './appsync.generated';
 import { IGraphqlApi } from './graphqlapi-base';
 import { Effect, IRole, PolicyStatement } from '../../aws-iam';
+import { Fn, IResource, Lazy, Resource } from '../../core';
 
 /**
  * Merge type used to associate the source API
@@ -16,6 +17,52 @@ export enum MergeType {
   * Auto merge. The merge is triggered automatically when the source API has changed.
   */
   AUTO_MERGE = 'AUTO_MERGE',
+}
+
+/**
+ * Interface for AppSync Source Api Association
+ */
+export interface ISourceApiAssociation extends IResource {
+
+  /**
+   * The association id.
+   */
+  readonly associationId: string;
+
+  /**
+   * The association arn.
+   */
+  readonly associationArn: string;
+
+  /**
+   * The source api in the association.
+   */
+  readonly sourceApi: IGraphqlApi;
+
+  /**
+   * The merged api in the association.
+   */
+  readonly mergedApi: IGraphqlApi;
+}
+
+/**
+ * The attributes for imported AppSync Source Api Association.
+ */
+export interface SourceApiAssociationAttributes {
+  /**
+   * The association arn.
+   */
+  readonly associationArn: string;
+
+  /**
+   * The source api in the association.
+   */
+  readonly sourceApi: IGraphqlApi;
+
+  /**
+   * The merged api in the association.
+   */
+  readonly mergedApi: IGraphqlApi;
 }
 
 /**
@@ -57,7 +104,36 @@ export interface SourceApiAssociationProps {
  * AppSync SourceApiAssociation which associates an AppSync source API to an AppSync Merged API.
  * The initial creation of the SourceApiAssociation merges the source API into the Merged API schema.
  */
-export class SourceApiAssociation extends Construct {
+export class SourceApiAssociation extends Resource implements ISourceApiAssociation {
+
+  /**
+   * Import Appsync Source Api Association from source API, merged api, and merge type.
+   */
+  public static fromSourceApiAssociationAttributes(scope: Construct, id: string, attrs: SourceApiAssociationAttributes): ISourceApiAssociation {
+    class Import extends Resource {
+      public readonly associationId = Lazy.stringValue({
+        produce: () => Fn.select(3, Fn.split('/', attrs.associationArn)),
+      });
+
+      public readonly associationArn = attrs.associationArn;
+      public readonly sourceApi = attrs.sourceApi;
+      public readonly mergedApi = attrs.mergedApi;
+      constructor(s: Construct, i: string) {
+        super(s, i);
+      }
+    }
+    return new Import(scope, id);
+  }
+
+  /**
+   * The association id.
+   */
+  readonly associationId: string;
+
+  /**
+   * The association arn.
+   */
+  readonly associationArn: string;
 
   /**
   * The underlying CFN source api association resource.
@@ -77,7 +153,7 @@ export class SourceApiAssociation extends Construct {
   /**
   * The merge type for the source api association.
   */
-  private readonly mergeType: MergeType;
+  public readonly mergeType: MergeType;
 
   /**
   * The merged api execution role for attaching the access policy.
@@ -101,6 +177,9 @@ export class SourceApiAssociation extends Construct {
       },
       description: props.description,
     });
+
+    this.associationId = this.association.attrAssociationId;
+    this.associationArn = this.association.attrAssociationArn;
 
     // Add permissions to the merged api execution role if it was passed in.
     if (this.mergedApiExecutionRole) {
