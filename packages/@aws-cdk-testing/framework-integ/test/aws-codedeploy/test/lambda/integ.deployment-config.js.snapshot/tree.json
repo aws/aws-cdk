@@ -224,9 +224,10 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "51fc32183f8be2ed4acc5164067a61d6763acbd372aeba432deb95b9ac5b5038.zip"
+                      "s3Key": "e5178afc49b7c6a85127a67856ce958e4f0879ce6aad5e974cac2a088bf939db.zip"
                     },
                     "handler": "index.handler",
+                    "memorySize": 256,
                     "role": {
                       "Fn::GetAtt": [
                         "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
