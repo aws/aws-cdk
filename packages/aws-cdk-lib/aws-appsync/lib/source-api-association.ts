@@ -41,7 +41,7 @@ export interface SourceApiAssociationProps {
   /**
    * The merge type for the source
    *
-   * @default - MANUAL_MERGE
+   * @default - AUTO_MERGE
    */
   readonly mergeType?: MergeType;
 

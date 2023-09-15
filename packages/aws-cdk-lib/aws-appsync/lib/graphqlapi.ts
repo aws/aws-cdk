@@ -496,7 +496,7 @@ export class IamResource {
 }
 
 /**
- * Attributes for GraphQL importsx
+ * Attributes for GraphQL imports
  */
 export interface GraphqlApiAttributes {
   /**
