@@ -3,7 +3,11 @@ import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as appsync from 'aws-cdk-lib/aws-appsync';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  context: {
+    [cdk.cx_api.APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION]: false,
+  },
+});
 
 const stack = new cdk.Stack(app, 'stack');
 
