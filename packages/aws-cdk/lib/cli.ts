@@ -272,10 +272,10 @@ async function parseCommandLineArguments(args: string[]) {
       .option('generate-only', { type: 'boolean', default: false, desc: 'If true, only generates project files, without executing additional operations such as setting up a git repo, installing dependencies or compiling the project' }),
     )
     .command('migrate', false /* hidden from "cdk --help" */, (yargs: Argv) => yargs
-      .option('language', { type: 'string', alias: 'l', desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)', choices: MIGRATE_SUPPORTED_LANGUAGES })
-      .option('input-path', { type: 'string', alias: 'inputpath', desc: 'The path to the CloudFormation template to migrate' })
-      .option('output-path', { type: 'string', alias: 'outputpath', desc: 'The output path for the migrated cdk code' })
-      .option('generate-only', { type: 'boolean', default: false, desc: 'If true, only generates project files, without executing additional operations such as setting up a git repo, installing dependencies or compiling the project' }),
+      .option('stack-name', { type: 'string', alias: 'n', desc: 'The name assigned to the stack created in the new project. The name of the app will be based off this name as well.', requiresArg: true })
+      .option('language', { type: 'string', default: 'typescript', alias: 'l', desc: 'The language to be used for the new project', choices: MIGRATE_SUPPORTED_LANGUAGES })
+      .option('from-path', { type: 'string', alias: 'p', desc: 'The path to the CloudFormation template to migrate. Use this for locally stored templates' })
+      .option('output-path', { type: 'string', alias: 'o', desc: 'The output path for the migrated cdk app' }),
     )
     .command('context', 'Manage cached context values', (yargs: Argv) => yargs
       .option('reset', { alias: 'e', desc: 'The context key (or its index) to reset', type: 'string', requiresArg: true })
@@ -659,8 +659,12 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           return cliInit(args.TEMPLATE, language, undefined, args.generateOnly);
         }
       case 'migrate':
-        const migrateLanguage = configuration.settings.get(['language']);
-        return cliMigrate(args.inputpath, migrateLanguage, args.generateOnly, args.outputpath);
+        return cliMigrate({
+          stackName: args['stack-name'],
+          fromPath: args['from-path'],
+          language: args.language,
+          outputPath: args['output-path'],
+        });
       case 'version':
         return data(version.DISPLAY_VERSION);
 
