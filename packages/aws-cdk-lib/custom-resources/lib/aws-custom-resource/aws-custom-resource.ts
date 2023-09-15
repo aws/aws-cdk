@@ -445,7 +445,6 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
       functionName: props.functionName,
       vpc: props.vpc,
       vpcSubnets: props.vpcSubnets,
-      memorySize: 256, // Because we need to keep the type coercion map in memory
     });
     this.grantPrincipal = provider.grantPrincipal;
 
