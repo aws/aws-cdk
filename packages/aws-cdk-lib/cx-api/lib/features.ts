@@ -93,6 +93,7 @@ export const EFS_MOUNTTARGET_ORDERINSENSITIVE_LOGICAL_ID = '@aws-cdk/aws-efs:mou
 export const AUTOSCALING_GENERATE_LAUNCH_TEMPLATE = '@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig';
 export const ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY = '@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby';
 export const LAMBDA_NODEJS_USE_LATEST_RUNTIME = '@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion';
+export const RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS = '@aws-cdk/aws-rds:preventRenderingDeprecatedCredentials';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -892,6 +893,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Pass `runtime: lambda.Runtime.NODEJS_16_X` to `Function` construct to restore the previous behavior.',
   },
+
   //////////////////////////////////////////////////////////////////////
   [EFS_MOUNTTARGET_ORDERINSENSITIVE_LOGICAL_ID]: {
     type: FlagType.BugFix,
@@ -908,6 +910,27 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
   },
 
+  //////////////////////////////////////////////////////////////////////
+  [RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, creating an RDS database cluster from a snapshot will only render credentials for snapshot credentials.',
+    detailsMd: `
+      The \`credentials\` property on the \`DatabaseClusterFromSnapshotProps\`
+      interface was deprecated with the new \`snapshotCredentials\` property being
+      recommended. Before deprecating \`credentials\`, a secret would be generated
+      while rendering credentials if the \`credentials\` property was undefined or
+      if a secret wasn't provided via the \`credentials\` property. This behavior
+      is replicated with the new \`snapshotCredentials\` property, but the original
+      \`credentials\` secret can still be created resulting in an extra database
+      secret.
+      
+      Set this flag to prevent rendering deprecated \`credentials\` and creating an
+      extra database secret when only using \`snapshotCredentials\` to create an RDS
+      database cluster from a snapshot.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+  },
 };
 
 const CURRENT_MV = 'v2';
