@@ -59,6 +59,7 @@ Flags come in three types:
 | [@aws-cdk/aws-efs:denyAnonymousAccess](#aws-cdkaws-efsdenyanonymousaccess) | EFS denies anonymous clients accesses | 2.93.0 | (default) |
 | [@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId](#aws-cdkaws-efsmounttargetorderinsensitivelogicalid) | When enabled, mount targets will have a stable logicalId that is linked to the associated subnet. | 2.93.0 | (fix) |
 | [@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion](#aws-cdkaws-lambda-nodejsuselatestruntimeversion) | Enables aws-lambda-nodejs.Function to use the latest available NodeJs runtime as the default | 2.93.0 | (default) |
+| [@aws-cdk/aws-rds:preventRenderingDeprecatedCredentials](#aws-cdkaws-rdspreventrenderingdeprecatedcredentials) | When enabled, creating an RDS database cluster from a snapshot will only render credentials for snapshot credentials. | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -108,7 +109,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-efs:denyAnonymousAccess": true,
     "@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby": true,
     "@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion": true,
-    "@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId": true
+    "@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId": true,
+    "@aws-cdk/aws-rds:preventRenderingDeprecatedCredentials": true
   }
 }
 ```
@@ -1111,6 +1113,30 @@ shipped as part of the runtime environment.
 | 2.93.0 | `false` | `true` |
 
 **Compatibility with old behavior:** Pass `runtime: lambda.Runtime.NODEJS_16_X` to `Function` construct to restore the previous behavior.
+
+
+### @aws-cdk/aws-rds:preventRenderingDeprecatedCredentials
+
+*When enabled, creating an RDS database cluster from a snapshot will only render credentials for snapshot credentials.* (fix)
+
+The `credentials` property on the `DatabaseClusterFromSnapshotProps`
+interface was deprecated with the new `snapshotCredentials` property being
+recommended. Before deprecating `credentials`, a secret would be generated
+while rendering credentials if the `credentials` property was undefined or
+if a secret wasn't provided via the `credentials` property. This behavior
+is replicated with the new `snapshotCredentials` property, but the original
+`credentials` secret can still be created resulting in an extra database
+secret.
+
+Set this flag to prevent rendering deprecated `credentials` and creating an
+extra database secret when only using `snapshotCredentials` to create an RDS
+database cluster from a snapshot.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->
