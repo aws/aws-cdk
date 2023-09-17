@@ -122,7 +122,9 @@
      ],
      "Version": "2012-10-17"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "PipelineRoleB27FAA37": {
    "Type": "AWS::IAM::Role",
