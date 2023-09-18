@@ -176,7 +176,7 @@ test('Merged API throws when accessing schema property', () => {
   }).toThrowError('Schema does not exist for AppSync merged APIs.');
 });
 
-function validateSourceApiAssociations(stackToValidate: cdk.Stack, 
+function validateSourceApiAssociations(stackToValidate: cdk.Stack,
   expectedMergedApiExecutionRole: string,
   expectedPolicyName: string,
   expectedIdentifier: string) {

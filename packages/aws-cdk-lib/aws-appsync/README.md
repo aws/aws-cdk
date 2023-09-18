@@ -406,7 +406,7 @@ const mergedApi = new appsync.GraphqlApi(this, 'MergedAPI', {
 
 ## Merged APIs Across Different Stacks
 
-The SourceApiAssociation construct allows you to define a SourceApiAssociation to a Merged API in a different stack or account. This allows a SourceAPI owner the ability to associate it to an existing Merged API itself.
+The SourceApiAssociation construct allows you to define a SourceApiAssociation to a Merged API in a different stack or account. This allows a source API owner the ability to associate it to an existing Merged API itself.
 
 ```ts
 const sourceApi = new appsync.GraphqlApi(this, 'FirstSourceAPI', {
