@@ -21,9 +21,13 @@ tsconfig.json
 
 .eslintrc.js
 jest.config.js
+
 # exclude cdk artifacts
 **/cdk.out
 junit.xml
 test/
 !*.lit.ts
 **/*.snapshot
+
+# include custom-resource-handlers
+!custom-resource-handlers/*

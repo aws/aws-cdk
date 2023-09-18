@@ -1,12 +1,6 @@
 {
-  "version": "21.0.0",
+  "version": "34.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "aws-cdk-codedeploy-lambda-config.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/681328df6a987c681a4d5cafad61efbf97e5934c41842c8fc92c113ee39a6b28.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c7a41d14787864f2399d1a263c7b6b666dab08823b91be89c000dd978cc752dc.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -43,6 +37,30 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LinearConfig531CF4AA"
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda-config/CustomConfig/DeploymentConfig/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomConfigDeploymentConfigE9E1F384"
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda-config/CustomConfig/DeploymentConfig/CustomResourcePolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomConfigDeploymentConfigCustomResourcePolicy0426B684"
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda-config/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda-config/AWS679f53fac002430cb0da5b7982bd2287/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
           }
         ],
         "/aws-cdk-codedeploy-lambda-config/BootstrapVersion": [
@@ -106,6 +124,12 @@
         ]
       },
       "displayName": "LambdaDeploymentConfigTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }
