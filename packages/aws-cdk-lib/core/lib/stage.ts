@@ -197,7 +197,6 @@ export class Stage extends Construct {
    * will return an empty string.
    *
    * Derived from the construct path.
-   *
    */
   public get artifactId() {
     if (!this.node.path) { return ''; }
