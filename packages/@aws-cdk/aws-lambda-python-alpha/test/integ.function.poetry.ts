@@ -30,6 +30,15 @@ class TestStack extends Stack {
     });
     this.functionNames.push(pythonFunction39WithHashes.functionName);
 
+    const pythonFunction39WithoutUrls = new lambda.PythonFunction(this, 'my_handler_inline_without_urls', {
+      entry: path.join(__dirname, 'lambda-handler-poetry'),
+      runtime: Runtime.PYTHON_3_9,
+      bundling: {
+        poetryWithoutUrls: true,
+      },
+    });
+    this.functionNames.push(pythonFunction39WithoutUrls.functionName);
+
     const pythonFunction38 = new lambda.PythonFunction(this, 'my_handler_python_38', {
       entry: path.join(__dirname, 'lambda-handler-poetry'),
       runtime: Runtime.PYTHON_3_8,
@@ -45,6 +54,15 @@ class TestStack extends Stack {
     });
     this.functionNames.push(pythonFunction38WithHashes.functionName);
 
+    const pythonFunction38WithoutUrls = new lambda.PythonFunction(this, 'my_handler_python_38_without_urls', {
+      entry: path.join(__dirname, 'lambda-handler-poetry'),
+      runtime: Runtime.PYTHON_3_8,
+      bundling: {
+        poetryWithoutUrls: true,
+      },
+    });
+    this.functionNames.push(pythonFunction38WithoutUrls.functionName);
+
     const pythonFunction37 = new lambda.PythonFunction(this, 'my_handler_python_37', {
       entry: path.join(__dirname, 'lambda-handler-poetry'),
       runtime: Runtime.PYTHON_3_7,
@@ -59,6 +77,15 @@ class TestStack extends Stack {
       },
     });
     this.functionNames.push(pythonFunction37WithHashes.functionName);
+
+    const pythonFunction37WithoutUrls = new lambda.PythonFunction(this, 'my_handler_python_37_without_urls', {
+      entry: path.join(__dirname, 'lambda-handler-poetry'),
+      runtime: Runtime.PYTHON_3_7,
+      bundling: {
+        poetryWithoutUrls: true,
+      },
+    });
+    this.functionNames.push(pythonFunction37WithoutUrls.functionName);
 
     const pythonFunction39Excludes = new lambda.PythonFunction(this, 'my_handler_inline_excludes', {
       entry: path.join(__dirname, 'lambda-handler-poetry'),
