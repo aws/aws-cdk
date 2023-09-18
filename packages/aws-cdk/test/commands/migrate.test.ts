@@ -1,8 +1,12 @@
+import { exec as _exec } from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
+import { promisify } from 'util';
 import * as fs from 'fs-extra';
 import { generateCdkApp, generateStack, readFromPath, readFromStack, setEnvironment, validateSourceOptions } from '../../lib/commands/migrate';
 import { MockSdkProvider, MockedObject, SyncHandlerSubsetOf } from '../util/mock-sdk';
+
+const exec = promisify(_exec);
 
 describe('Migrate Function Tests', () => {
   let sdkProvider: MockSdkProvider;
@@ -172,6 +176,27 @@ describe('Migrate Function Tests', () => {
     // Replaced stack file is correctly generated
     const replacedStack = fs.readFileSync(path.join(workDir, 'GoodCSharp', 'src', 'GoodCSharp', 'GoodCSharpStack.cs'));
     expect(replacedStack).toEqual(fs.readFileSync(path.join(...stackPath, 'S3Stack.cs')));
+  });
+
+  cliTest('generatedCdkApp generates a zip file when --compress is used', async (workDir) => {
+    const stack = generateStack(validTemplate, 'GoodTypeScript', 'typescript');
+    await generateCdkApp('GoodTypeScript', stack, 'typescript', workDir, true);
+
+    // Packages not in outDir
+    expect(fs.pathExistsSync(path.join(workDir, 'GoodTypeScript', 'package.json'))).toBeFalsy();
+    expect(fs.pathExistsSync(path.join(workDir, 'GoodTypeScript', 'bin', 'good_type_script.ts'))).toBeFalsy();
+    expect(fs.pathExistsSync(path.join(workDir, 'GoodTypeScript', 'lib', 'good_type_script-stack.ts'))).toBeFalsy();
+
+    // Zip file exists
+    expect(fs.pathExistsSync(path.join(workDir, 'GoodTypeScript.zip'))).toBeTruthy();
+
+    // Unzip it
+    await exec(`unzip ${path.join(workDir, 'GoodTypeScript.zip')}`, { cwd: workDir });
+
+    // Now the files should be there
+    expect(fs.pathExistsSync(path.join(workDir, 'package.json'))).toBeTruthy();
+    expect(fs.pathExistsSync(path.join(workDir, 'bin', 'good_type_script.ts'))).toBeTruthy();
+    expect(fs.pathExistsSync(path.join(workDir, 'lib', 'good_type_script-stack.ts'))).toBeTruthy();
   });
 });
 
