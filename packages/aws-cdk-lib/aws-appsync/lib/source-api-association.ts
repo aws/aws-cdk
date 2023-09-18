@@ -83,7 +83,7 @@ export interface SourceApiAssociationProps {
   /**
    * The merged api execution role for adding the access policy for the source api.
    */
-  readonly mergedApiExecutionRole?: IRole;
+  readonly mergedApiExecutionRole: IRole;
 
   /**
    * The merge type for the source
@@ -181,12 +181,10 @@ export class SourceApiAssociation extends Resource implements ISourceApiAssociat
     this.associationId = this.association.attrAssociationId;
     this.associationArn = this.association.attrAssociationArn;
 
-    // Add permissions to the merged api execution role if it was passed in.
-    if (this.mergedApiExecutionRole) {
-      addSourceGraphQLPermission(this.association, this.mergedApiExecutionRole);
-      if (this.mergeType === MergeType.AUTO_MERGE) {
-        addSourceApiAutoMergePermission(this.association, this.mergedApiExecutionRole);
-      }
+    // Add permissions to the merged api execution role.
+    addSourceGraphQLPermission(this.association, this.mergedApiExecutionRole);
+    if (this.mergeType === MergeType.AUTO_MERGE) {
+      addSourceApiAutoMergePermission(this.association, this.mergedApiExecutionRole);
     }
   }
 }

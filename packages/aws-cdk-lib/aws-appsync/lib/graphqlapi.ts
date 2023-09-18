@@ -717,14 +717,12 @@ export class GraphqlApi extends GraphqlApiBase {
         description: sourceApiConfig.description,
       });
 
-      // Add permissions to merged api execution role, only if it was not passed in.
-      if (!this.definition.sourceApiOptions?.mergedApiExecutionRole) {
-        const executionRole = this.mergedApiExecutionRole as IRole;
-        addSourceGraphQLPermission(association, executionRole);
+      // Add permissions to merged api execution role
+      const executionRole = this.mergedApiExecutionRole as IRole;
+      addSourceGraphQLPermission(association, executionRole);
 
-        if (mergeType === MergeType.AUTO_MERGE) {
-          addSourceApiAutoMergePermission(association, executionRole);
-        }
+      if (mergeType === MergeType.AUTO_MERGE) {
+        addSourceApiAutoMergePermission(association, executionRole);
       }
     });
   }

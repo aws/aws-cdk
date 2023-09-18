@@ -66,7 +66,7 @@ test('appsync supports merged API', () => {
     }),
   });
 
-  validateSourceApiAssociations(stack, 'ApiId');
+  validateSourceApiAssociations(stack, 'mergedapiMergedApiExecutionRole2053D32E', 'ApiId');
 });
 
 test('appsync supports merged API - ARN identifier flag enabled', () => {
@@ -87,7 +87,7 @@ test('appsync supports merged API - ARN identifier flag enabled', () => {
     }),
   });
 
-  validateSourceApiAssociations(stackWithFlag, 'Arn');
+  validateSourceApiAssociations(stackWithFlag, 'mergedapiMergedApiExecutionRole2053D32E', 'Arn');
 });
 
 test('appsync supports merged API with default merge type', () => {
@@ -146,17 +146,7 @@ test('appsync merged API with custom merged API execution role', () => {
   });
 
   // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
-    ApiType: 'MERGED',
-    MergedApiExecutionRoleArn: {
-      'Fn::GetAtt': [
-        'CustomMergedApiExecutionRoleB795A9C4',
-        'Arn',
-      ],
-    },
-  });
-
-  Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
+  validateSourceApiAssociations(stack, 'CustomMergedApiExecutionRoleB795A9C4', 'Arn');
 });
 
 test('Merged API throws when accessing schema property', () => {
@@ -183,7 +173,7 @@ test('Merged API throws when accessing schema property', () => {
   }).toThrowError('Schema does not exist for AppSync merged APIs.');
 });
 
-function validateSourceApiAssociations(stackToValidate: cdk.Stack, expectedIdentifier: string) {
+function validateSourceApiAssociations(stackToValidate: cdk.Stack, expectedMergedApiExecutionRole: string, expectedIdentifier: string) {
   // THEN
   Template.fromStack(stackToValidate).hasResourceProperties('AWS::AppSync::GraphQLApi', {
     ApiType: 'MERGED',
