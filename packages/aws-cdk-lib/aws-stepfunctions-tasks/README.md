@@ -18,11 +18,12 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 
 - [Tasks for AWS Step Functions](#tasks-for-aws-step-functions)
   - [Table Of Contents](#table-of-contents)
+  - [Paths](#paths)
   - [Evaluate Expression](#evaluate-expression)
   - [API Gateway](#api-gateway)
     - [Call REST API Endpoint](#call-rest-api-endpoint)
     - [Call HTTP API Endpoint](#call-http-api-endpoint)
-  - [AWS SDK](#aws-sdk)
+    - [AWS SDK](#aws-sdk)
   - [Athena](#athena)
     - [StartQueryExecution](#startqueryexecution)
     - [GetQueryExecution](#getqueryexecution)
@@ -94,7 +95,7 @@ const convertToSeconds = new tasks.EvaluateExpression(this, 'Convert to seconds'
 const createMessage = new tasks.EvaluateExpression(this, 'Create message', {
   // Note: this is a string inside a string.
   expression: '`Now waiting ${$.waitSeconds} seconds...`',
-  runtime: lambda.Runtime.NODEJS_16_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
   resultPath: '$.message',
 });
 
@@ -298,7 +299,7 @@ Step Functions supports [Batch](https://docs.aws.amazon.com/step-functions/lates
 The [SubmitJob](https://docs.aws.amazon.com/batch/latest/APIReference/API_SubmitJob.html) API submits an AWS Batch job from a job definition.
 
 ```ts
-import * as batch from '@aws-cdk/aws-batch-alpha';
+import * as batch from 'aws-cdk-lib/aws-batch';
 declare const batchJobDefinition: batch.EcsJobDefinition;
 declare const batchQueue: batch.JobQueue;
 
@@ -1059,6 +1060,12 @@ new tasks.SageMakerCreateTrainingJob(this, 'TrainSagemaker', {
   }, // optional: default is 1 hour
 });
 ```
+
+You can specify [TrainingInputMode](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_AlgorithmSpecification.html#API_AlgorithmSpecification_Contents) via the trainingInputMode property.
+
+- To download the data from Amazon Simple Storage Service (Amazon S3) to the provisioned ML storage volume, and mount the directory to a Docker volume, choose `InputMode.FILE` if an algorithm supports it.
+- To stream data directly from Amazon S3 to the container, choose `InputMode.PIPE` if an algorithm supports it.
+- To stream data directly from Amazon S3 to the container with no code changes and to provide file system access to the data, choose `InputMode.FAST_FILE` if an algorithm supports it.
 
 ### Create Transform Job
 

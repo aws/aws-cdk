@@ -57,7 +57,7 @@ const definition = submitJob
     .otherwise(waitX));
 
 new sfn.StateMachine(this, 'StateMachine', {
-  definition,
+  definitionBody: sfn.DefinitionBody.fromChainable(definition),
   timeout: Duration.minutes(5),
   comment: 'a super cool state machine',
 });
@@ -76,7 +76,7 @@ all states reachable from the start state:
 const startState = new sfn.Pass(this, 'StartState');
 
 new sfn.StateMachine(this, 'StateMachine', {
-  definition: startState,
+  definitionBody: sfn.DefinitionBody.fromChainable(startState),
 });
 ```
 
@@ -128,6 +128,8 @@ These properties impact how each individual step interacts with the state machin
 * `resultSelector`: the part of the step result that should be added to the state machine data
 * `resultPath`: where in the state machine data the step result should be inserted
 * `outputPath`: what part of the state machine data should be retained
+* `errorPath`: the part of the data object that gets returned as the step error
+* `causePath`: the part of the data object that gets returned as the step cause
 
 Their values should be a string indicating a [JSON path](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-paths.html) into the State Machine Data object (like `"$.MyKey"`). If absent, the values are treated as if they were `"$"`, which means the entire object.
 
@@ -421,8 +423,12 @@ parallel.branch(shipItem);
 parallel.branch(sendInvoice);
 parallel.branch(restock);
 
-// Retry the whole workflow if something goes wrong
-parallel.addRetry({ maxAttempts: 1 });
+// Retry the whole workflow if something goes wrong with exponential backoff
+parallel.addRetry({
+  maxAttempts: 1,
+  maxDelay: Duration.seconds(5),
+  jitterStrategy: sfn.JitterType.FULL,
+});
 
 // How to recover from errors
 const sendFailureNotification = new sfn.Pass(this, 'SendFailureNotification');
@@ -449,9 +455,18 @@ failure status. The fail state should report the reason for the failure.
 Failures can be caught by encompassing `Parallel` states.
 
 ```ts
-const success = new sfn.Fail(this, 'Fail', {
+const fail = new sfn.Fail(this, 'Fail', {
   error: 'WorkflowFailure',
   cause: "Something went wrong",
+});
+```
+
+The `Fail` state also supports returning dynamic values as the error and cause that are selected from the input with a path.
+
+```ts
+const fail = new sfn.Fail(this, 'Fail', {
+  errorPath: sfn.JsonPath.stringAt('$.someError'),
+  causePath: sfn.JsonPath.stringAt('$.someCause'),
 });
 ```
 
@@ -467,8 +482,27 @@ execute the same steps for multiple entries of an array in the state input.
 const map = new sfn.Map(this, 'Map State', {
   maxConcurrency: 1,
   itemsPath: sfn.JsonPath.stringAt('$.inputForMap'),
+  parameters: {
+    item: sfn.JsonPath.stringAt('$$.Map.Item.Value'),
+  },
+  resultPath: '$.mapOutput',
 });
-map.iterator(new sfn.Pass(this, 'Pass State'));
+
+// The Map iterator can contain a IChainable, which can be an individual or multiple steps chained together.
+// Below example is with a Choice and Pass step
+const choice = new sfn.Choice(this, 'Choice');
+const condition1 = sfn.Condition.stringEquals('$.item.status', 'SUCCESS');
+const step1 = new sfn.Pass(this, 'Step1');
+const step2 = new sfn.Pass(this, 'Step2');
+const finish = new sfn.Pass(this, 'Finish');
+
+const definition = choice
+    .when(condition1, step1)
+    .otherwise(step2)
+    .afterwards()
+    .next(finish);
+
+map.iterator(definition);
 ```
 
 ### Custom State
@@ -531,7 +565,7 @@ const chain = sfn.Chain.start(custom)
   .next(finalStatus);
 
 const sm = new sfn.StateMachine(this, 'StateMachine', {
-  definition: chain,
+  definitionBody: sfn.DefinitionBody.fromChainable(chain),
   timeout: Duration.seconds(30),
   comment: 'a super cool state machine',
 });
@@ -576,7 +610,7 @@ const definition = step1
   .next(finish);
 
 new sfn.StateMachine(this, 'StateMachine', {
-  definition,
+  definitionBody: sfn.DefinitionBody.fromChainable(definition),
 });
 ```
 
@@ -678,7 +712,7 @@ class MyStack extends Stack {
       .branch(new MyJob(this, 'Slow', { jobFlavor: 'slow' }).prefixStates());
 
     new sfn.StateMachine(this, 'MyStateMachine', {
-      definition: parallel,
+      definitionBody: sfn.DefinitionBody.fromChainable(parallel),
     });
   }
 }
@@ -784,8 +818,10 @@ import * as logs from 'aws-cdk-lib/aws-logs';
 
 const logGroup = new logs.LogGroup(this, 'MyLogGroup');
 
+const definition = sfn.Chain.start(new sfn.Pass(this, 'Pass'));
+
 new sfn.StateMachine(this, 'MyStateMachine', {
-  definition: sfn.Chain.start(new sfn.Pass(this, 'Pass')),
+  definitionBody: sfn.DefinitionBody.fromChainable(definition),
   logs: {
     destination: logGroup,
     level: sfn.LogLevel.ALL,
@@ -798,8 +834,10 @@ new sfn.StateMachine(this, 'MyStateMachine', {
 Enable X-Ray tracing for StateMachine:
 
 ```ts
+const definition = sfn.Chain.start(new sfn.Pass(this, 'Pass'));
+
 new sfn.StateMachine(this, 'MyStateMachine', {
-  definition: sfn.Chain.start(new sfn.Pass(this, 'Pass')),
+  definitionBody: sfn.DefinitionBody.fromChainable(definition),
   tracingEnabled: true,
 });
 ```
@@ -830,7 +868,7 @@ const role = new iam.Role(this, 'Role', {
 
 declare const definition: sfn.IChainable;
 const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
-  definition,
+  definitionBody: sfn.DefinitionBody.fromChainable(definition),
 });
 
 // Give role permission to start execution of state machine
@@ -852,7 +890,7 @@ const role = new iam.Role(this, 'Role', {
 
 declare const definition: sfn.IChainable;
 const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
-  definition,
+  definitionBody: sfn.DefinitionBody.fromChainable(definition),
 });
 
 // Give role read access to state machine
@@ -881,7 +919,7 @@ const role = new iam.Role(this, 'Role', {
 
 declare const definition: sfn.IChainable;
 const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
-  definition,
+  definitionBody: sfn.DefinitionBody.fromChainable(definition),
 });
 
 // Give role task response permissions to the state machine
@@ -905,7 +943,7 @@ const role = new iam.Role(this, 'Role', {
 
 declare const definition: sfn.IChainable;
 const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
-  definition,
+  definitionBody: sfn.DefinitionBody.fromChainable(definition),
 });
 
 // Give role permission to get execution history of ALL executions for the state machine
@@ -921,7 +959,7 @@ const user = new iam.User(this, 'MyUser');
 
 declare const definition: sfn.IChainable;
 const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
-  definition,
+  definitionBody: sfn.DefinitionBody.fromChainable(definition),
 });
 
 //give user permission to send task success to the state machine
@@ -942,12 +980,12 @@ const stack = new Stack(app, 'MyStack');
 sfn.StateMachine.fromStateMachineArn(
   this,
   "ViaArnImportedStateMachine",
-  "arn:aws:states:us-east-1:123456789012:stateMachine:StateMachine2E01A3A5-N5TJppzoevKQ"
+  "arn:aws:states:us-east-1:123456789012:stateMachine:StateMachine2E01A3A5-N5TJppzoevKQ",
 );
 
 sfn.StateMachine.fromStateMachineName(
   this,
   "ViaResourceNameImportedStateMachine",
-  "StateMachine2E01A3A5-N5TJppzoevKQ"
+  "StateMachine2E01A3A5-N5TJppzoevKQ",
 );
 ```

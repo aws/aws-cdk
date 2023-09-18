@@ -495,6 +495,18 @@ export enum InstanceClass {
   C6GN = 'c6gn',
 
   /**
+   * Compute optimized instances for high performance computing, 7th generation with Graviton3 processors
+   * and high network bandwidth capabilities
+   */
+  COMPUTE7_GRAVITON3_HIGH_NETWORK_BANDWIDTH = 'compute7-graviton3-high-network-bandwidth',
+
+  /**
+   * Compute optimized instances for high performance computing, 7th generation with Graviton3 processors
+   * and high network bandwidth capabilities
+   */
+  C7GN = 'c7gn',
+
+  /**
    * Storage-optimized instances, 2nd generation
    */
   STORAGE2 = 'storage2',
@@ -907,6 +919,28 @@ export enum InstanceClass {
   M7GD = 'm7gd',
 
   /**
+   * Standard instances with high memory and compute capacity based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation
+   */
+  STANDARD7_INTEL = 'standard7-intel',
+
+  /**
+   * Standard instances with high memory and compute capacity based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation
+   */
+  M7I = 'm7i',
+
+  /**
+   * Flexible instances with high memory and compute capacity based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation
+   * The M7i-Flex instances deliver a baseline of 40% CPU performance, and can scale up to full CPU performance 95% of the time
+   */
+  STANDARD7_INTEL_FLEX = 'standard7-intel-flex',
+
+  /**
+   * Flexible instances with high memory and compute capacity based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation
+   * The M7i-Flex instances deliver a baseline of 40% CPU performance, and can scale up to full CPU performance 95% of the time
+   */
+  M7I_FLEX = 'm7i-flex',
+
+  /**
    * High memory and compute capacity instances, 1st generation
    */
   HIGH_COMPUTE_MEMORY1 = 'high-compute-memory1',
@@ -1219,6 +1253,8 @@ export class InstanceType {
       [InstanceClass.C7G]: 'c7g',
       [InstanceClass.COMPUTE7_GRAVITON3_NVME_DRIVE]: 'c7gd',
       [InstanceClass.C7GD]: 'c7gd',
+      [InstanceClass.COMPUTE7_GRAVITON3_HIGH_NETWORK_BANDWIDTH]: 'c7gn',
+      [InstanceClass.C7GN]: 'c7gn',
       [InstanceClass.STORAGE2]: 'd2',
       [InstanceClass.D2]: 'd2',
       [InstanceClass.STORAGE3]: 'd3',
@@ -1291,6 +1327,10 @@ export class InstanceType {
       [InstanceClass.M7G]: 'm7g',
       [InstanceClass.STANDARD7_GRAVITON3_NVME_DRIVE]: 'm7gd',
       [InstanceClass.M7GD]: 'm7gd',
+      [InstanceClass.STANDARD7_INTEL]: 'm7i',
+      [InstanceClass.M7I]: 'm7i',
+      [InstanceClass.STANDARD7_INTEL_FLEX]: 'm7i-flex',
+      [InstanceClass.M7I_FLEX]: 'm7i-flex',
       [InstanceClass.HIGH_COMPUTE_MEMORY1]: 'z1d',
       [InstanceClass.Z1D]: 'z1d',
       [InstanceClass.INFERENCE1]: 'inf1',

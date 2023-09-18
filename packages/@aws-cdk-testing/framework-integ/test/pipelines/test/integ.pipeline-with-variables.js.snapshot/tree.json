@@ -725,13 +725,13 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.2.55"
+                          "version": "10.2.70"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "version": "10.2.70"
                     }
                   },
                   "Build": {
@@ -967,7 +967,7 @@
                                     "encryptionKey": "alias/aws/s3",
                                     "environment": {
                                       "type": "LINUX_CONTAINER",
-                                      "image": "aws/codebuild/standard:6.0",
+                                      "image": "aws/codebuild/standard:7.0",
                                       "imagePullCredentialsType": "CODEBUILD",
                                       "privilegedMode": false,
                                       "computeType": "BUILD_GENERAL1_SMALL"
@@ -998,13 +998,13 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.2.55"
+                          "version": "10.2.70"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "version": "10.2.70"
                     }
                   },
                   "MyWave": {
@@ -1283,7 +1283,7 @@
                                     "encryptionKey": "alias/aws/s3",
                                     "environment": {
                                       "type": "LINUX_CONTAINER",
-                                      "image": "aws/codebuild/standard:6.0",
+                                      "image": "aws/codebuild/standard:7.0",
                                       "imagePullCredentialsType": "CODEBUILD",
                                       "privilegedMode": false,
                                       "computeType": "BUILD_GENERAL1_SMALL"
@@ -1314,7 +1314,7 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.2.55"
+                          "version": "10.2.70"
                         }
                       },
                       "Consume": {
@@ -1589,7 +1589,7 @@
                                     "encryptionKey": "alias/aws/s3",
                                     "environment": {
                                       "type": "LINUX_CONTAINER",
-                                      "image": "aws/codebuild/standard:6.0",
+                                      "image": "aws/codebuild/standard:7.0",
                                       "imagePullCredentialsType": "CODEBUILD",
                                       "privilegedMode": false,
                                       "computeType": "BUILD_GENERAL1_SMALL"
@@ -1620,13 +1620,13 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.2.55"
+                          "version": "10.2.70"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "version": "10.2.70"
                     }
                   }
                 },
@@ -1808,7 +1808,7 @@
                 "path": "VariablePipelineTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
@@ -1854,7 +1854,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.55"
+          "version": "10.2.70"
         }
       }
     },

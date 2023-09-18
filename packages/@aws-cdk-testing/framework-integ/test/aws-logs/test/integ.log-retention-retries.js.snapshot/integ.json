@@ -1,0 +1,21 @@
+{
+  "version": "34.0.0",
+  "testCases": {
+    "LogRetentionIntegRetries/DefaultTest": {
+      "stacks": [
+        "aws-cdk-log-retention-integ-retries0",
+        "aws-cdk-log-retention-integ-retries1",
+        "aws-cdk-log-retention-integ-retries2"
+      ],
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "concurrency": 3
+          }
+        }
+      },
+      "assertionStack": "LogRetentionIntegRetries/DefaultTest/DeployAssert",
+      "assertionStackName": "LogRetentionIntegRetriesDefaultTestDeployAssert6D1A1A1C"
+    }
+  }
+}

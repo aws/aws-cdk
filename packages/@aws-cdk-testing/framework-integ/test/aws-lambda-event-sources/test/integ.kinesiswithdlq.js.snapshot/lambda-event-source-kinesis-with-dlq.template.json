@@ -86,14 +86,14 @@
     "Code": {
      "ZipFile": "exports.handler = async function handler(event) {\n    // eslint-disable-next-line no-console\n    console.log('event:', JSON.stringify(event, undefined, 2));\n    throw new Error();\n}"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "FServiceRole3AC82EE1",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "FServiceRoleDefaultPolicy17A19BFA",
@@ -103,9 +103,6 @@
   "FKinesisEventSourcelambdaeventsourcekinesiswithdlqSD357FCB87EEA8CB4": {
    "Type": "AWS::Lambda::EventSourceMapping",
    "Properties": {
-    "FunctionName": {
-     "Ref": "FC4345940"
-    },
     "BatchSize": 100,
     "DestinationConfig": {
      "OnFailure": {
@@ -122,6 +119,9 @@
       "S509448A1",
       "Arn"
      ]
+    },
+    "FunctionName": {
+     "Ref": "FC4345940"
     },
     "MaximumRetryAttempts": 0,
     "StartingPosition": "TRIM_HORIZON"

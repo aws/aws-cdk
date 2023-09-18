@@ -716,7 +716,7 @@
                                   "ProjectName": {
                                     "Ref": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
                                   },
-                                  "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"51983b0b2e2ab480fd5d90c068e63373d8f0ab1a3a1da93ac53a82b8a296d34f\"}]"
+                                  "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"7f66814704b7757367a6ec706823d271fb9c6fceda866eee4260d1e76b73967b\"}]"
                                 },
                                 "runOrder": 1,
                                 "roleArn": {
@@ -1087,13 +1087,13 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.2.55"
+                          "version": "10.2.70"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "version": "10.2.70"
                     }
                   },
                   "Build": {
@@ -1455,7 +1455,7 @@
                                     },
                                     "environment": {
                                       "type": "LINUX_CONTAINER",
-                                      "image": "aws/codebuild/standard:6.0",
+                                      "image": "aws/codebuild/standard:7.0",
                                       "imagePullCredentialsType": "CODEBUILD",
                                       "privilegedMode": false,
                                       "computeType": "BUILD_GENERAL1_SMALL",
@@ -1494,13 +1494,13 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.2.55"
+                          "version": "10.2.70"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "version": "10.2.70"
                     }
                   },
                   "UpdatePipeline": {
@@ -1620,13 +1620,13 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.2.55"
+                          "version": "10.2.70"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "version": "10.2.70"
                     }
                   },
                   "PreProd": {
@@ -1981,7 +1981,7 @@
                                     },
                                     "environment": {
                                       "type": "LINUX_CONTAINER",
-                                      "image": "aws/codebuild/standard:6.0",
+                                      "image": "aws/codebuild/standard:7.0",
                                       "imagePullCredentialsType": "CODEBUILD",
                                       "privilegedMode": false,
                                       "computeType": "BUILD_GENERAL1_SMALL"
@@ -2012,7 +2012,7 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.2.55"
+                          "version": "10.2.70"
                         }
                       },
                       "Stack.Deploy": {
@@ -2020,7 +2020,7 @@
                         "path": "PipelineStack/Pipeline/Pipeline/PreProd/Stack.Deploy",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.2.55"
+                          "version": "10.2.70"
                         }
                       },
                       "Stack.Prepare": {
@@ -2028,13 +2028,13 @@
                         "path": "PipelineStack/Pipeline/Pipeline/PreProd/Stack.Prepare",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.2.55"
+                          "version": "10.2.70"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "version": "10.2.70"
                     }
                   }
                 },
@@ -2318,7 +2318,7 @@
                             },
                             "environment": {
                               "type": "LINUX_CONTAINER",
-                              "image": "aws/codebuild/standard:6.0",
+                              "image": "aws/codebuild/standard:7.0",
                               "imagePullCredentialsType": "CODEBUILD",
                               "privilegedMode": false,
                               "computeType": "BUILD_GENERAL1_SMALL"
@@ -2357,7 +2357,7 @@
                 "path": "PipelineStack/Pipeline/Assets",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "version": "10.2.70"
                 }
               },
               "PreProd": {
@@ -2381,7 +2381,7 @@
                         "path": "PipelineStack/Pipeline/PreProd/arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}/8389e75f-0810-4838-bf64-d6f85a95cf83",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.2.55"
+                          "version": "10.2.70"
                         }
                       }
                     },
@@ -2497,7 +2497,7 @@
                 "path": "PipelineStackTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
@@ -2543,7 +2543,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.55"
+          "version": "10.2.70"
         }
       }
     },

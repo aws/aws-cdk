@@ -145,14 +145,14 @@
                     "code": {
                       "zipFile": "exports.handler = async function handler(event) {\n    // eslint-disable-next-line no-console\n    console.log('event:', JSON.stringify(event, undefined, 2));\n    throw new Error();\n}"
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "FServiceRole3AC82EE1",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
-                    "runtime": "nodejs14.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -170,9 +170,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Lambda::EventSourceMapping",
                       "aws:cdk:cloudformation:props": {
-                        "functionName": {
-                          "Ref": "FC4345940"
-                        },
                         "batchSize": 100,
                         "destinationConfig": {
                           "onFailure": {
@@ -189,6 +186,9 @@
                             "S509448A1",
                             "Arn"
                           ]
+                        },
+                        "functionName": {
+                          "Ref": "FC4345940"
                         },
                         "maximumRetryAttempts": 0,
                         "startingPosition": "TRIM_HORIZON"
@@ -329,7 +329,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.2.70"
         }
       }
     },

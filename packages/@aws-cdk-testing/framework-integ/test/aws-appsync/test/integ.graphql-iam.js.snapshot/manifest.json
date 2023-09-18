@@ -1,5 +1,5 @@
 {
-  "version": "22.0.0",
+  "version": "34.0.0",
   "artifacts": {
     "aws-appsync-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/828c009f2f1e2d21ce3627f5921a761c1c9b77228bbd5d9723b9a0a92952b49f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ac1cd45551354e19396e523e6ff39a7b2db14882046e0a2f4f8540cebf4f244b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -133,33 +133,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "ApidsQuerygetTestResolverCCED7EC2": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ApidsQuerygetTestResolverCCED7EC2",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ApidsQuerygetTestsResolver952F49EE": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ApidsQuerygetTestsResolver952F49EE",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ApidsMutationaddTestResolverBCF0400B": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ApidsMutationaddTestResolverBCF0400B",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },

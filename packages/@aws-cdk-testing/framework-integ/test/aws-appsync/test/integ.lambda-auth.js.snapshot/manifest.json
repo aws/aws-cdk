@@ -1,5 +1,5 @@
 {
-  "version": "29.0.0",
+  "version": "34.0.0",
   "artifacts": {
     "appsync-lambda-auth.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6318a3460f2277a0215d1d3dec988f54f73d1ebd0221c7a7cc4d2bcb6324b50f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2a49dc15a0c4a34b59e6ebe72dd3ea67ded69bd76fdf544c63fab4f22c41102e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -91,24 +91,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "funcfuncapi1appsync58E50481": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "funcfuncapi1appsync58E50481",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "funcfuncapi2appsync8B273744": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "funcfuncapi2appsync8B273744",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },

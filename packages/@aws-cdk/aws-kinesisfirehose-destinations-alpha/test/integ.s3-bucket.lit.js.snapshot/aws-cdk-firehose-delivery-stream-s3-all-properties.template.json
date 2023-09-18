@@ -112,7 +112,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "3e6ea85c994cf2198f02e67a9e98e8f23456efa8bd72dd55b3a86454c4db9d5f.zip"
+     "S3Key": "216218e507a977a1bb3592f29c1a62ab3e0a9eb25569109a395315638e154329.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -282,18 +282,18 @@
      },
      "S3Key": "f634c102f4aa6cdd9b6c00b836e98f2d5c03e65b02bd9efa16f83a2f348f149f.zip"
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "DataProcessorFunctionServiceRole12E05500",
-      "Arn"
-     ]
-    },
     "Environment": {
      "Variables": {
       "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
      }
     },
     "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "DataProcessorFunctionServiceRole12E05500",
+      "Arn"
+     ]
+    },
     "Runtime": "nodejs18.x",
     "Timeout": 60
    },
@@ -370,23 +370,6 @@
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
-  },
-  "DeliveryStreamServiceRole964EEBCC": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "firehose.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   }
   },
   "DeliveryStreamS3DestinationRole500FC089": {
    "Type": "AWS::IAM::Role",
@@ -717,9 +700,6 @@
    "ap-south-1": {
     "FirehoseCidrBlock": "13.232.67.32/27"
    },
-   "ap-south-2": {
-    "FirehoseCidrBlock": "18.60.192.128/27"
-   },
    "ap-southeast-1": {
     "FirehoseCidrBlock": "13.228.64.192/27"
    },
@@ -728,6 +708,9 @@
    },
    "ap-southeast-3": {
     "FirehoseCidrBlock": "108.136.221.64/27"
+   },
+   "ap-southeast-4": {
+    "FirehoseCidrBlock": "16.50.161.128/27"
    },
    "ca-central-1": {
     "FirehoseCidrBlock": "35.183.92.128/27"
@@ -741,17 +724,11 @@
    "eu-central-1": {
     "FirehoseCidrBlock": "35.158.127.160/27"
    },
-   "eu-central-2": {
-    "FirehoseCidrBlock": "16.62.183.32/27"
-   },
    "eu-north-1": {
     "FirehoseCidrBlock": "13.53.63.224/27"
    },
    "eu-south-1": {
     "FirehoseCidrBlock": "15.161.135.128/27"
-   },
-   "eu-south-2": {
-    "FirehoseCidrBlock": "18.100.71.96/27"
    },
    "eu-west-1": {
     "FirehoseCidrBlock": "52.19.239.192/27"
@@ -761,6 +738,9 @@
    },
    "eu-west-3": {
     "FirehoseCidrBlock": "35.180.1.96/27"
+   },
+   "il-central-1": {
+    "FirehoseCidrBlock": "51.16.102.0/27"
    },
    "me-central-1": {
     "FirehoseCidrBlock": "3.28.159.32/27"

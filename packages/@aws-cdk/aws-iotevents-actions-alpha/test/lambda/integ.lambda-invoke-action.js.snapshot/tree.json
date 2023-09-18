@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "lambda-invoke-action-test-stack": {
         "id": "lambda-invoke-action-test-stack",
         "path": "lambda-invoke-action-test-stack",
@@ -37,13 +29,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iotevents.CfnInput",
+                  "fqn": "aws-cdk-lib.aws_iotevents.CfnInput",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-iotevents.Input",
+              "fqn": "@aws-cdk/aws-iotevents-alpha.Input",
               "version": "0.0.0"
             }
           },
@@ -55,6 +47,14 @@
                 "id": "ServiceRole",
                 "path": "lambda-invoke-action-test-stack/MyFunction/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "lambda-invoke-action-test-stack/MyFunction/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "lambda-invoke-action-test-stack/MyFunction/ServiceRole/Resource",
@@ -90,13 +90,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -109,24 +109,24 @@
                     "code": {
                       "zipFile": "\n        exports.handler = (event) => {\n          console.log(\"It is test for lambda action of AWS IoT Rule.\", event);\n        };"
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "MyFunctionServiceRole3C357FF2",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
-                    "runtime": "nodejs14.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-lambda.Function",
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
               "version": "0.0.0"
             }
           },
@@ -138,6 +138,14 @@
                 "id": "DetectorModelRole",
                 "path": "lambda-invoke-action-test-stack/MyDetectorModel/DetectorModelRole",
                 "children": {
+                  "ImportDetectorModelRole": {
+                    "id": "ImportDetectorModelRole",
+                    "path": "lambda-invoke-action-test-stack/MyDetectorModel/DetectorModelRole/ImportDetectorModelRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "lambda-invoke-action-test-stack/MyDetectorModel/DetectorModelRole/Resource",
@@ -159,7 +167,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   },
@@ -213,19 +221,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -274,36 +282,60 @@
                         }
                       ]
                     },
+                    "key": "payload.deviceId",
                     "roleArn": {
                       "Fn::GetAtt": [
                         "MyDetectorModelDetectorModelRoleF2FB4D88",
                         "Arn"
                       ]
-                    },
-                    "key": "payload.deviceId"
+                    }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iotevents.CfnDetectorModel",
+                  "fqn": "aws-cdk-lib.aws_iotevents.CfnDetectorModel",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-iotevents.DetectorModel",
+              "fqn": "@aws-cdk/aws-iotevents-alpha.DetectorModel",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "lambda-invoke-action-test-stack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "lambda-invoke-action-test-stack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.2.70"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
     }
   }
 }

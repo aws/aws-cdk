@@ -8,11 +8,11 @@ import { Token } from '../../../core';
 import { IntegrationConfig, IntegrationOptions, PassthroughBehavior } from '../integration';
 import { Method } from '../method';
 import { Model } from '../model';
+
 /**
  * Options when configuring Step Functions synchronous integration with Rest API
  */
 export interface StepFunctionsExecutionIntegrationOptions extends IntegrationOptions {
-
   /**
    * Which details of the incoming request must be passed onto the underlying state machine,
    * such as, account id, user identity, request id, etc. The execution input will include a new key `requestContext`:

@@ -4,6 +4,7 @@ import { App, Stack, StackProps } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 import * as apigw from 'aws-cdk-lib/aws-apigateway';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -14,7 +15,7 @@ class TestStack extends Stack {
     });
 
     const handler = new lambda.Function(this, 'handler', {
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
       handler: 'index.handler',
       code: lambda.Code.fromAsset(path.join(__dirname, 'integ.cors.handler')),
     });

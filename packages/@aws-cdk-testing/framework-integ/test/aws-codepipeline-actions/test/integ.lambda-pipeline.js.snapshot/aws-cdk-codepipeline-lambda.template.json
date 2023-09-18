@@ -231,6 +231,21 @@
   "PipelineC660917D": {
    "Type": "AWS::CodePipeline::Pipeline",
    "Properties": {
+    "ArtifactStore": {
+     "EncryptionKey": {
+      "Id": {
+       "Fn::GetAtt": [
+        "PipelineArtifactsBucketEncryptionKey01D58D69",
+        "Arn"
+       ]
+      },
+      "Type": "KMS"
+     },
+     "Location": {
+      "Ref": "PipelineArtifactsBucket22248F97"
+     },
+     "Type": "S3"
+    },
     "RoleArn": {
      "Fn::GetAtt": [
       "PipelineRoleD68726F7",
@@ -297,22 +312,7 @@
       ],
       "Name": "Lambda"
      }
-    ],
-    "ArtifactStore": {
-     "EncryptionKey": {
-      "Id": {
-       "Fn::GetAtt": [
-        "PipelineArtifactsBucketEncryptionKey01D58D69",
-        "Arn"
-       ]
-      },
-      "Type": "KMS"
-     },
-     "Location": {
-      "Ref": "PipelineArtifactsBucket22248F97"
-     },
-     "Type": "S3"
-    }
+    ]
    },
    "DependsOn": [
     "PipelineRoleDefaultPolicyC7A05455",
@@ -776,10 +776,6 @@
   "CloudTrailA62D711D": {
    "Type": "AWS::CloudTrail::Trail",
    "Properties": {
-    "IsLogging": true,
-    "S3BucketName": {
-     "Ref": "CloudTrailS310CD22F2"
-    },
     "EnableLogFileValidation": true,
     "EventSelectors": [
      {
@@ -809,7 +805,11 @@
      }
     ],
     "IncludeGlobalServiceEvents": true,
-    "IsMultiRegionTrail": true
+    "IsLogging": true,
+    "IsMultiRegionTrail": true,
+    "S3BucketName": {
+     "Ref": "CloudTrailS310CD22F2"
+    }
    },
    "DependsOn": [
     "CloudTrailS3PolicyEA49A03E"
@@ -876,14 +876,14 @@
     "Code": {
      "ZipFile": "\n    exports.handler = function () {\n      console.log(\"Hello, world!\");\n    };\n  "
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "LambdaFunServiceRoleF0979767",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "LambdaFunServiceRoleDefaultPolicy217FED83",

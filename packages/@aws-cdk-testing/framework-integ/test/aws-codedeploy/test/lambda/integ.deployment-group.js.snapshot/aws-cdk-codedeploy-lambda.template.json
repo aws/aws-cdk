@@ -40,20 +40,20 @@
      },
      "S3Key": "edb7466707eb899fbaee22c1e67f9443e9edcc2eeda0b58d8448f7c4157746b3.zip"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "HandlerServiceRoleFCDC14AE",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "HandlerServiceRoleFCDC14AE"
    ]
   },
-  "HandlerCurrentVersion93FB80BF4a6a6623436a0664df4549c4c809c243": {
+  "HandlerCurrentVersion93FB80BF7274e06dc68914926264fc8b4f358f0a": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -69,7 +69,7 @@
     },
     "FunctionVersion": {
      "Fn::GetAtt": [
-      "HandlerCurrentVersion93FB80BF4a6a6623436a0664df4549c4c809c243",
+      "HandlerCurrentVersion93FB80BF7274e06dc68914926264fc8b4f358f0a",
       "Version"
      ]
     },
@@ -179,14 +179,14 @@
      },
      "S3Key": "87da351d4c9de5eead78cb80dde66bcbb6c42c418c3368747f32a4e9c013a2e1.zip"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "PreHookServiceRoleC724B9BA",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "PreHookServiceRoleDefaultPolicy65358F76",
@@ -280,14 +280,14 @@
      },
      "S3Key": "93dbd8c02dbfca9077c9d83cb6d3a94659988c7d143988da4a554033a58f963c.zip"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "PostHookServiceRoleE8A6AAC2",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "PostHookServiceRoleDefaultPolicy82AEE758",
@@ -298,7 +298,6 @@
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
     "ComparisonOperator": "GreaterThanThreshold",
-    "EvaluationPeriods": 1,
     "Dimensions": [
      {
       "Name": "FunctionName",
@@ -321,6 +320,7 @@
       }
      }
     ],
+    "EvaluationPeriods": 1,
     "MetricName": "Errors",
     "Namespace": "AWS/Lambda",
     "Period": 300,
@@ -430,15 +430,6 @@
   "BlueGreenDeployment5C188134": {
    "Type": "AWS::CodeDeploy::DeploymentGroup",
    "Properties": {
-    "ApplicationName": {
-     "Ref": "BlueGreenDeploymentApplication36C892C0"
-    },
-    "ServiceRoleArn": {
-     "Fn::GetAtt": [
-      "BlueGreenDeploymentServiceRole225851FB",
-      "Arn"
-     ]
-    },
     "AlarmConfiguration": {
      "Alarms": [
       {
@@ -448,6 +439,9 @@
       }
      ],
      "Enabled": true
+    },
+    "ApplicationName": {
+     "Ref": "BlueGreenDeploymentApplication36C892C0"
     },
     "AutoRollbackConfiguration": {
      "Enabled": true,
@@ -460,6 +454,12 @@
     "DeploymentStyle": {
      "DeploymentOption": "WITH_TRAFFIC_CONTROL",
      "DeploymentType": "BLUE_GREEN"
+    },
+    "ServiceRoleArn": {
+     "Fn::GetAtt": [
+      "BlueGreenDeploymentServiceRole225851FB",
+      "Arn"
+     ]
     }
    }
   },
@@ -471,7 +471,7 @@
     },
     "FunctionVersion": {
      "Fn::GetAtt": [
-      "HandlerCurrentVersion93FB80BF4a6a6623436a0664df4549c4c809c243",
+      "HandlerCurrentVersion93FB80BF7274e06dc68914926264fc8b4f358f0a",
       "Version"
      ]
     },
@@ -528,17 +528,11 @@
   "SecondDeploymentC270A23D": {
    "Type": "AWS::CodeDeploy::DeploymentGroup",
    "Properties": {
-    "ApplicationName": {
-     "Ref": "SecondDeploymentApplication1F8C51FE"
-    },
-    "ServiceRoleArn": {
-     "Fn::GetAtt": [
-      "SecondDeploymentServiceRoleAFF1ECD5",
-      "Arn"
-     ]
-    },
     "AlarmConfiguration": {
      "Enabled": false
+    },
+    "ApplicationName": {
+     "Ref": "SecondDeploymentApplication1F8C51FE"
     },
     "AutoRollbackConfiguration": {
      "Enabled": true,
@@ -550,6 +544,12 @@
     "DeploymentStyle": {
      "DeploymentOption": "WITH_TRAFFIC_CONTROL",
      "DeploymentType": "BLUE_GREEN"
+    },
+    "ServiceRoleArn": {
+     "Fn::GetAtt": [
+      "SecondDeploymentServiceRoleAFF1ECD5",
+      "Arn"
+     ]
     }
    }
   }

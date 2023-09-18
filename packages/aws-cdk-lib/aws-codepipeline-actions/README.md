@@ -754,7 +754,7 @@ const lambdaCode = lambda.Code.fromCfnParameters();
 const func = new lambda.Function(this, 'Lambda', {
   code: lambdaCode,
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
 });
 // used to make sure each CDK synthesis produces a different Version
 const version = func.currentVersion;
@@ -1145,10 +1145,10 @@ Example:
 const lambdaInvokeAction = new codepipeline_actions.LambdaInvokeAction({
   actionName: 'Lambda',
   lambda: new lambda.Function(this, 'Func', {
-    runtime: lambda.Runtime.NODEJS_14_X,
+    runtime: lambda.Runtime.NODEJS_LATEST,
     handler: 'index.handler',
     code: lambda.Code.fromInline(`
-        const AWS = require('aws-sdk');
+        const { CodePipeline } = require('@aws-sdk/client-codepipeline');
 
         exports.handler = async function(event, context) {
             const codepipeline = new AWS.CodePipeline();
@@ -1157,7 +1157,7 @@ const lambdaInvokeAction = new codepipeline_actions.LambdaInvokeAction({
                 outputVariables: {
                     MY_VAR: "some value",
                 },
-            }).promise();
+            });
         }
     `),
   }),

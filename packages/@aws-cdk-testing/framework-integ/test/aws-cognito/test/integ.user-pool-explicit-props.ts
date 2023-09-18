@@ -1,6 +1,7 @@
-import { Code, Function, IFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Code, Function, IFunction } from 'aws-cdk-lib/aws-lambda';
 import { App, CfnOutput, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { AdvancedSecurityMode, BooleanAttribute, DateTimeAttribute, Mfa, NumberAttribute, StringAttribute, UserPool } from 'aws-cdk-lib/aws-cognito';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 const app = new App();
 const stack = new Stack(app, 'integ-user-pool');
@@ -95,7 +96,7 @@ function dummyTrigger(name: string): IFunction {
   return new Function(stack, name, {
     functionName: name,
     handler: 'index.handler',
-    runtime: Runtime.NODEJS_14_X,
+    runtime: STANDARD_NODEJS_RUNTIME,
     code: Code.fromInline('foo'),
   });
 }

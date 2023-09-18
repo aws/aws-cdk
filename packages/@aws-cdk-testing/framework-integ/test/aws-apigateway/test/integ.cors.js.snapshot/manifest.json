@@ -1,5 +1,5 @@
 {
-  "version": "33.0.0",
+  "version": "34.0.0",
   "artifacts": {
     "cors-twitch-test.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d6fea47c1f0462158dff41f11b88b1cc5a13df20fda1d39aa230bae47a50ae63.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2f8b518aaca6753a8d9097bb7f4c058c8e83ebed2d2446f593695bb69f478fc3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -157,15 +157,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "corsapitestDeployment2BF1633Aec735238f184cf252b8c47cd8212eacb": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "corsapitestDeployment2BF1633Aec735238f184cf252b8c47cd8212eacb",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },

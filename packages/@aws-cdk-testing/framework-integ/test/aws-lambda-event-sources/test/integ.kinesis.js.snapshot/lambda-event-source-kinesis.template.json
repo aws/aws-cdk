@@ -72,14 +72,14 @@
     "Code": {
      "ZipFile": "exports.handler = async function handler(event) {\n    console.log('event:', JSON.stringify(event, undefined, 2));\n    return { event };\n}"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "FServiceRole3AC82EE1",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "FServiceRoleDefaultPolicy17A19BFA",
@@ -89,15 +89,15 @@
   "FKinesisEventSourcelambdaeventsourcekinesisQ645CE7DB2D6BCCF5": {
    "Type": "AWS::Lambda::EventSourceMapping",
    "Properties": {
-    "FunctionName": {
-     "Ref": "FC4345940"
-    },
     "BatchSize": 100,
     "EventSourceArn": {
      "Fn::GetAtt": [
       "Q63C6E3AB",
       "Arn"
      ]
+    },
+    "FunctionName": {
+     "Ref": "FC4345940"
     },
     "StartingPosition": "TRIM_HORIZON",
     "TumblingWindowInSeconds": 60

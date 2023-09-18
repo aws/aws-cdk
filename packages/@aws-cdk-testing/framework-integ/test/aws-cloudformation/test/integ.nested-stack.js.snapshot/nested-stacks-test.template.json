@@ -91,64 +91,76 @@
   },
   "SubscriberQueuenestedstackstestNestedStack1topic089C5EB1396F65087": {
    "Type": "AWS::SNS::Subscription",
-   "DependsOn": "SubscriberQueuePolicy25A0799E",
    "Properties": {
+    "Endpoint": {
+     "Fn::GetAtt": [
+      "SubscriberQueueC193DC66",
+      "Arn"
+     ]
+    },
     "Protocol": "sqs",
     "TopicArn": {
      "Fn::GetAtt": [
       "NestedStack1NestedStackNestedStack1NestedStackResource7E64AD52",
       "Outputs.nestedstackstestNestedStack1topic02C2D1254Ref"
      ]
-    },
+    }
+   },
+   "DependsOn": [
+    "SubscriberQueuePolicy25A0799E"
+   ]
+  },
+  "SubscriberQueuenestedstackstestNestedStack1topic1150E1A929A2C267E": {
+   "Type": "AWS::SNS::Subscription",
+   "Properties": {
     "Endpoint": {
      "Fn::GetAtt": [
       "SubscriberQueueC193DC66",
       "Arn"
      ]
-    }
-   }
-  },
-  "SubscriberQueuenestedstackstestNestedStack1topic1150E1A929A2C267E": {
-   "Type": "AWS::SNS::Subscription",
-   "DependsOn": "SubscriberQueuePolicy25A0799E",
-   "Properties": {
+    },
     "Protocol": "sqs",
     "TopicArn": {
      "Fn::GetAtt": [
       "NestedStack1NestedStackNestedStack1NestedStackResource7E64AD52",
       "Outputs.nestedstackstestNestedStack1topic1474E5389Ref"
      ]
-    },
+    }
+   },
+   "DependsOn": [
+    "SubscriberQueuePolicy25A0799E"
+   ]
+  },
+  "SubscriberQueuenestedstackstestNestedStack1topic209B8719858511914": {
+   "Type": "AWS::SNS::Subscription",
+   "Properties": {
     "Endpoint": {
      "Fn::GetAtt": [
       "SubscriberQueueC193DC66",
       "Arn"
      ]
-    }
-   }
-  },
-  "SubscriberQueuenestedstackstestNestedStack1topic209B8719858511914": {
-   "Type": "AWS::SNS::Subscription",
-   "DependsOn": "SubscriberQueuePolicy25A0799E",
-   "Properties": {
+    },
     "Protocol": "sqs",
     "TopicArn": {
      "Fn::GetAtt": [
       "NestedStack1NestedStackNestedStack1NestedStackResource7E64AD52",
       "Outputs.nestedstackstestNestedStack1topic22C710DC4Ref"
      ]
-    },
-    "Endpoint": {
-     "Fn::GetAtt": [
-      "SubscriberQueueC193DC66",
-      "Arn"
-     ]
     }
-   }
+   },
+   "DependsOn": [
+    "SubscriberQueuePolicy25A0799E"
+   ]
   },
   "NestedStack1NestedStackNestedStack1NestedStackResource7E64AD52": {
    "Type": "AWS::CloudFormation::Stack",
    "Properties": {
+    "Parameters": {
+     "TopicNamePrefix": "Prefix1",
+     "referencetonestedstackstestSubscriberQueue39409787Ref": {
+      "Ref": "SubscriberQueueC193DC66"
+     }
+    },
     "TemplateURL": {
      "Fn::Join": [
       "",
@@ -165,15 +177,9 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/f5d931a1052f5b2b67e5e0a1fbde6756f92078c301af91c343f27533a7acdfbc.json"
+       "/209a4f17c5e4c8a0ffa92cb311261c77407a3a251824880418f7ed26d09f63be.json"
       ]
      ]
-    },
-    "Parameters": {
-     "TopicNamePrefix": "Prefix1",
-     "referencetonestedstackstestSubscriberQueue39409787Ref": {
-      "Ref": "SubscriberQueueC193DC66"
-     }
     }
    },
    "UpdateReplacePolicy": "Delete",
@@ -182,6 +188,9 @@
   "NestedStack2NestedStackNestedStack2NestedStackResourceFDF82E43": {
    "Type": "AWS::CloudFormation::Stack",
    "Properties": {
+    "Parameters": {
+     "TopicNamePrefix": "Prefix2"
+    },
     "TemplateURL": {
      "Fn::Join": [
       "",
@@ -201,9 +210,6 @@
        "/9f9659202ccc2bb279918da510b11586ae01bee77af0729c8a1f313489d7cc29.json"
       ]
      ]
-    },
-    "Parameters": {
-     "TopicNamePrefix": "Prefix2"
     }
    },
    "UpdateReplacePolicy": "Delete",

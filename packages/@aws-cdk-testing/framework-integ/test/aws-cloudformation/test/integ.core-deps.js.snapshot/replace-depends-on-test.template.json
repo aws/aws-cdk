@@ -44,7 +44,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "MyLambdaServiceRole4539ECB6"
@@ -109,11 +109,12 @@
    "Properties": {
     "Handler": "index.handler",
     "Runtime": "nodejs18.x",
+    "Timeout": 900,
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "2634e41ffbfed260b1049b081f0f568b46f60f03bf59422220562d71c9eb720e.zip"
+     "S3Key": "06e556630dea1544fb71a394cf744fc6471c533769911adb44a84d795729c1f5.zip"
     },
     "Role": {
      "Fn::GetAtt": [

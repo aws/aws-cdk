@@ -3,15 +3,15 @@
   "MyLayer38944FA5": {
    "Type": "AWS::Lambda::LayerVersion",
    "Properties": {
+    "CompatibleRuntimes": [
+     "nodejs18.x"
+    ],
     "Content": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
      "S3Key": "8811a2632ac5564a08fd269e159298f7e497f259578b0dc5e927a1f48ab24d34.zip"
     },
-    "CompatibleRuntimes": [
-     "nodejs14.x"
-    ],
     "Description": "A layer to test the L2 construct",
     "LicenseInfo": "Apache-2.0"
    }
@@ -65,19 +65,19 @@
     "Code": {
      "ZipFile": "foo"
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "MyLayeredLambdaServiceRole1A7DC118",
-      "Arn"
-     ]
-    },
     "Handler": "index.handler",
     "Layers": [
      {
       "Ref": "MyLayer38944FA5"
      }
     ],
-    "Runtime": "nodejs14.x"
+    "Role": {
+     "Fn::GetAtt": [
+      "MyLayeredLambdaServiceRole1A7DC118",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "MyLayeredLambdaServiceRole1A7DC118"

@@ -3,6 +3,7 @@ import { Bucket } from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-lambda-customize-roles');
@@ -15,7 +16,7 @@ iam.Role.customizeRoles(stack, {
 const fn = new lambda.Function(stack, 'MyLambda', {
   code: new lambda.InlineCode('foo'),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
 });
 
 const bucket = new Bucket(stack, 'Bucket');

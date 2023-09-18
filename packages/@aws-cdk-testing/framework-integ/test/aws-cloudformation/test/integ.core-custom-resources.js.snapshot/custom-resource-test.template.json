@@ -29,7 +29,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "94be4e33263da312b2e3d038a855c4b46686a35cc3188e9736010642b8a9078a.zip"
+     "S3Key": "5a80abfca3e7d70957e8c0a553225876c69fb6038b810fe65b581b6b58453bf7.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -40,7 +40,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs18.x",
     "Description": "veni vidi vici"
    },
    "DependsOn": [

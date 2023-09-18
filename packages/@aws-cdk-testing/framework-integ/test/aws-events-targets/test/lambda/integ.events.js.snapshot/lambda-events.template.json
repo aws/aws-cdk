@@ -37,14 +37,14 @@
     "Code": {
      "ZipFile": "exports.handler = function handler(event, _context, callback) {\n    console.log(JSON.stringify(event, undefined, 2));\n    return callback();\n}"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "MyFuncServiceRole54065130",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "MyFuncServiceRole54065130"

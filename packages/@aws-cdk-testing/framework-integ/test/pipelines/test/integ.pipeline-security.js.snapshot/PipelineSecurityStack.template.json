@@ -112,7 +112,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "216218e507a977a1bb3592f29c1a62ab3e0a9eb25569109a395315638e154329.zip"
+     "S3Key": "120f2d9f06d56bd1038e8bb4bc7fa0b1758f62b6c772f4ac166b811e9ed71cf9.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -600,7 +600,7 @@
          "ProjectName": {
           "Ref": "TestPipelineBuildSynthCdkBuildProject755D4B01"
          },
-         "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"55237dcb0df011e1efdb5ff9053063140a7b6d053626aea9bbb4ea1f6ea0a07e\"}]"
+         "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"8c69c5d954446d78352846c8ddc8ff911cec11c1f93f8aab1fac67556cf1a058\"}]"
         },
         "InputArtifacts": [
          {
@@ -1903,7 +1903,7 @@
        "Value": "true"
       }
      ],
-     "Image": "aws/codebuild/standard:6.0",
+     "Image": "aws/codebuild/standard:7.0",
      "ImagePullCredentialsType": "CODEBUILD",
      "PrivilegedMode": false,
      "Type": "LINUX_CONTAINER"
@@ -2363,7 +2363,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "271a1a7bb81a361380921b21e8273a6acfe4867eba05fe530c4d05c065c17a65.zip"
+     "S3Key": "8aa652c34c594d3c7ff1fe10240de14208e0d856f77eb4d56bd01bd9fc1f1273.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -2612,7 +2612,7 @@
     },
     "Environment": {
      "ComputeType": "BUILD_GENERAL1_SMALL",
-     "Image": "aws/codebuild/standard:6.0",
+     "Image": "aws/codebuild/standard:7.0",
      "ImagePullCredentialsType": "CODEBUILD",
      "PrivilegedMode": false,
      "Type": "LINUX_CONTAINER"
@@ -2707,7 +2707,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "271a1a7bb81a361380921b21e8273a6acfe4867eba05fe530c4d05c065c17a65.zip"
+     "S3Key": "8aa652c34c594d3c7ff1fe10240de14208e0d856f77eb4d56bd01bd9fc1f1273.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -2956,7 +2956,7 @@
     },
     "Environment": {
      "ComputeType": "BUILD_GENERAL1_SMALL",
-     "Image": "aws/codebuild/standard:6.0",
+     "Image": "aws/codebuild/standard:7.0",
      "ImagePullCredentialsType": "CODEBUILD",
      "PrivilegedMode": false,
      "Type": "LINUX_CONTAINER"

@@ -133,7 +133,7 @@ describeDeprecated('scheduled action', () => {
     });
 
     // THEN
-    Annotations.fromStack(stack).hasWarning('/Default/ASG/ScheduledActionScaleOutInTheMorning', "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead.");
+    Annotations.fromStack(stack).hasWarning('/Default/ASG/ScheduledActionScaleOutInTheMorning', "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead. [ack: @aws-cdk/aws-autoscaling:scheduleDefaultRunsEveryMinute]");
   });
 
   test('scheduled scaling shows no warning when minute is * in cron', () => {

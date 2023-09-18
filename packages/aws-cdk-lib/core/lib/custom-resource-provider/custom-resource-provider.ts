@@ -2,7 +2,6 @@ import * as path from 'path';
 import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
 import * as cxapi from '../../../cx-api';
-import { FactName } from '../../../region-info';
 import { AssetStaging } from '../asset-staging';
 import { FileAssetPackaging } from '../assets';
 import { CfnResource } from '../cfn-resource';
@@ -17,15 +16,6 @@ import { Token } from '../token';
 const ENTRYPOINT_FILENAME = '__entrypoint__';
 const ENTRYPOINT_NODEJS_SOURCE = path.join(__dirname, 'nodejs-entrypoint.js');
 export const INLINE_CUSTOM_RESOURCE_CONTEXT = '@aws-cdk/core:inlineCustomResourceIfPossible';
-
-/**
- * The lambda runtime used by default for aws-cdk vended custom resources. Can change
- * based on region.
- */
-export function builtInCustomResourceProviderNodeRuntime(scope: Construct): CustomResourceProviderRuntime {
-  const runtimeName = Stack.of(scope).regionalFact(FactName.DEFAULT_CR_NODE_VERSION, 'nodejs18.x');
-  return Object.values(CustomResourceProviderRuntime).find(value => value === runtimeName) ?? CustomResourceProviderRuntime.NODEJS_18_X;
-}
 
 /**
  * Initialization properties for `CustomResourceProvider`.
@@ -65,7 +55,7 @@ export interface CustomResourceProviderProps {
    * @example
    * const provider = CustomResourceProvider.getOrCreateProvider(this, 'Custom::MyCustomResourceType', {
    *   codeDirectory: `${__dirname}/my-handler`,
-   *   runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+   *   runtime: CustomResourceProviderRuntime.NODEJS_18_X,
    *   policyStatements: [
    *     {
    *       Effect: 'Allow',
@@ -114,18 +104,19 @@ export interface CustomResourceProviderProps {
 export enum CustomResourceProviderRuntime {
   /**
    * Node.js 12.x
+   * @deprecated Use latest version
    */
   NODEJS_12_X = 'nodejs12.x',
 
   /**
    * Node.js 12.x
-   *
-   * @deprecated Use `NODEJS_14_X`
+   * @deprecated Use latest version
    */
   NODEJS_12 = 'deprecated_nodejs12.x',
 
   /**
    * Node.js 14.x
+   * @deprecated Use latest version
    */
   NODEJS_14_X = 'nodejs14.x',
 

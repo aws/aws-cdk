@@ -13,13 +13,22 @@
     "api": "invoke",
     "parameters": {
      "FunctionName": {
-      "Fn::ImportValue": "aws-cdk-lambda-chain:ExportsOutputRefFirst8D4707F1B3E37FDF"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-lambda-chain:ExportsOutputRefFirst8D4707F1B3E37FDF"
+        },
+        "\""
+       ]
+      ]
      },
-     "InvocationType": "Event",
-     "Payload": "{\"status\":\"success\"}"
+     "InvocationType": "\"Event\"",
+     "Payload": "\"{\\\"status\\\":\\\"success\\\"}\""
     },
     "flattenResponse": "false",
-    "salt": "1664821652422"
+    "salt": "1694442901858"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -132,12 +141,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs18.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b54b99043c35bd080b9d9d1afce31e3541cf15b679799ba980ed40c837dcb03b.zip"
+     "S3Key": "77997674c0a10fbb65169124ad6c0d7a664b6162ad44f9abfa22fd006b33f754.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -149,7 +158,7 @@
     }
    }
   },
-  "AwsApiCallCloudWatchLogsfilterLogEvents": {
+  "AwsApiCallCloudWatchLogsfilterLogEventsa2d12e172a64e6deb9411711ac10fa8d": {
    "Type": "Custom::DeployAssert@SdkCallCloudWatchLogsfilterLogEvents",
    "Properties": {
     "ServiceToken": {
@@ -162,28 +171,29 @@
     "api": "filterLogEvents",
     "expected": "{\"$ObjectLike\":{\"events\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"message\":{\"$StringLike\":\"success\"}}}]}}}",
     "stateMachineArn": {
-     "Ref": "AwsApiCallCloudWatchLogsfilterLogEventsWaitFor64019274"
+     "Ref": "AwsApiCallCloudWatchLogsfilterLogEventsa2d12e172a64e6deb9411711ac10fa8dWaitFor715D1918"
     },
     "parameters": {
      "logGroupName": {
       "Fn::Join": [
        "",
        [
-        "/aws/lambda/",
+        "\"/aws/lambda/",
         {
          "Fn::ImportValue": "aws-cdk-lambda-chain:ExportsOutputRefThird1125870FF05390B4"
-        }
+        },
+        "\""
        ]
       ]
      }
     },
     "flattenResponse": "false",
-    "salt": "1664821652422"
+    "salt": "1694442901871"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AwsApiCallCloudWatchLogsfilterLogEventsWaitForIsCompleteProviderInvoke00D72D57": {
+  "AwsApiCallCloudWatchLogsfilterLogEventsa2d12e172a64e6deb9411711ac10fa8dWaitForIsCompleteProviderInvoke1A4CE2D4": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -195,13 +205,13 @@
     },
     "Principal": {
      "Fn::GetAtt": [
-      "AwsApiCallCloudWatchLogsfilterLogEventsWaitForRole9F1B78BD",
+      "AwsApiCallCloudWatchLogsfilterLogEventsa2d12e172a64e6deb9411711ac10fa8dWaitForRole40FE504C",
       "Arn"
      ]
     }
    }
   },
-  "AwsApiCallCloudWatchLogsfilterLogEventsWaitForTimeoutProviderInvoke3950C224": {
+  "AwsApiCallCloudWatchLogsfilterLogEventsa2d12e172a64e6deb9411711ac10fa8dWaitForTimeoutProviderInvoke290AB02B": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -213,13 +223,13 @@
     },
     "Principal": {
      "Fn::GetAtt": [
-      "AwsApiCallCloudWatchLogsfilterLogEventsWaitForRole9F1B78BD",
+      "AwsApiCallCloudWatchLogsfilterLogEventsa2d12e172a64e6deb9411711ac10fa8dWaitForRole40FE504C",
       "Arn"
      ]
     }
    }
   },
-  "AwsApiCallCloudWatchLogsfilterLogEventsWaitForRole9F1B78BD": {
+  "AwsApiCallCloudWatchLogsfilterLogEventsa2d12e172a64e6deb9411711ac10fa8dWaitForRole40FE504C": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -264,7 +274,7 @@
     ]
    }
   },
-  "AwsApiCallCloudWatchLogsfilterLogEventsWaitFor64019274": {
+  "AwsApiCallCloudWatchLogsfilterLogEventsa2d12e172a64e6deb9411711ac10fa8dWaitFor715D1918": {
    "Type": "AWS::StepFunctions::StateMachine",
    "Properties": {
     "DefinitionString": {
@@ -291,13 +301,13 @@
     },
     "RoleArn": {
      "Fn::GetAtt": [
-      "AwsApiCallCloudWatchLogsfilterLogEventsWaitForRole9F1B78BD",
+      "AwsApiCallCloudWatchLogsfilterLogEventsa2d12e172a64e6deb9411711ac10fa8dWaitForRole40FE504C",
       "Arn"
      ]
     }
    },
    "DependsOn": [
-    "AwsApiCallCloudWatchLogsfilterLogEventsWaitForRole9F1B78BD"
+    "AwsApiCallCloudWatchLogsfilterLogEventsa2d12e172a64e6deb9411711ac10fa8dWaitForRole40FE504C"
    ]
   },
   "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB": {
@@ -344,12 +354,12 @@
   "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs18.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b54b99043c35bd080b9d9d1afce31e3541cf15b679799ba980ed40c837dcb03b.zip"
+     "S3Key": "77997674c0a10fbb65169124ad6c0d7a664b6162ad44f9abfa22fd006b33f754.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -386,12 +396,12 @@
   "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs18.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b54b99043c35bd080b9d9d1afce31e3541cf15b679799ba980ed40c837dcb03b.zip"
+     "S3Key": "77997674c0a10fbb65169124ad6c0d7a664b6162ad44f9abfa22fd006b33f754.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",
@@ -405,10 +415,10 @@
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallCloudWatchLogsfilterLogEvents": {
+  "AssertionResultsAwsApiCallCloudWatchLogsfilterLogEventsa2d12e172a64e6deb9411711ac10fa8d": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallCloudWatchLogsfilterLogEvents",
+     "AwsApiCallCloudWatchLogsfilterLogEventsa2d12e172a64e6deb9411711ac10fa8d",
      "assertion"
     ]
    }

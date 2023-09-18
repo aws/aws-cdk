@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "aws-cdk-layer-version-1": {
         "id": "aws-cdk-layer-version-1",
         "path": "aws-cdk-layer-version-1",
@@ -28,7 +20,7 @@
                     "id": "Stage",
                     "path": "aws-cdk-layer-version-1/MyLayer/Code/Stage",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
                     }
                   },
@@ -36,13 +28,13 @@
                     "id": "AssetBucket",
                     "path": "aws-cdk-layer-version-1/MyLayer/Code/AssetBucket",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-s3.BucketBase",
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
                   "version": "0.0.0"
                 }
               },
@@ -52,21 +44,21 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::LayerVersion",
                   "aws:cdk:cloudformation:props": {
+                    "compatibleRuntimes": [
+                      "nodejs18.x"
+                    ],
                     "content": {
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
                       "s3Key": "8811a2632ac5564a08fd269e159298f7e497f259578b0dc5e927a1f48ab24d34.zip"
                     },
-                    "compatibleRuntimes": [
-                      "nodejs14.x"
-                    ],
                     "description": "A layer to test the L2 construct",
                     "licenseInfo": "Apache-2.0"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnLayerVersion",
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnLayerVersion",
                   "version": "0.0.0"
                 }
               },
@@ -86,13 +78,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnLayerVersionPermission",
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnLayerVersionPermission",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-lambda.LayerVersion",
+              "fqn": "aws-cdk-lib.aws_lambda.LayerVersion",
               "version": "0.0.0"
             }
           },
@@ -104,6 +96,14 @@
                 "id": "ServiceRole",
                 "path": "aws-cdk-layer-version-1/MyLayeredLambda/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-cdk-layer-version-1/MyLayeredLambda/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-cdk-layer-version-1/MyLayeredLambda/ServiceRole/Resource",
@@ -139,13 +139,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -158,41 +158,65 @@
                     "code": {
                       "zipFile": "foo"
                     },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "MyLayeredLambdaServiceRole1A7DC118",
-                        "Arn"
-                      ]
-                    },
                     "handler": "index.handler",
                     "layers": [
                       {
                         "Ref": "MyLayer38944FA5"
                       }
                     ],
-                    "runtime": "nodejs14.x"
+                    "role": {
+                      "Fn::GetAtt": [
+                        "MyLayeredLambdaServiceRole1A7DC118",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-lambda.Function",
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-layer-version-1/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-layer-version-1/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.2.70"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
+      "fqn": "aws-cdk-lib.App",
       "version": "0.0.0"
     }
   }

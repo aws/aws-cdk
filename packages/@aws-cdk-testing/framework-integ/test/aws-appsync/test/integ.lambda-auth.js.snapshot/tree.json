@@ -20,7 +20,7 @@
                     "id": "ImportServiceRole",
                     "path": "appsync-lambda-auth/func/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -59,13 +59,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -77,7 +77,7 @@
                     "id": "Stage",
                     "path": "appsync-lambda-auth/func/Code/Stage",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
                     }
                   },
@@ -85,13 +85,13 @@
                     "id": "AssetBucket",
                     "path": "appsync-lambda-auth/func/Code/AssetBucket",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-s3.BucketBase",
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
                   "version": "0.0.0"
                 }
               },
@@ -107,18 +107,18 @@
                       },
                       "s3Key": "df9f207d681056c35badb6bc0d60a945b44c887b227b759715fd6a6443486443.zip"
                     },
+                    "handler": "lambda-tutorial.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "funcServiceRoleA96CCB44",
                         "Arn"
                       ]
                     },
-                    "handler": "lambda-tutorial.handler",
-                    "runtime": "nodejs14.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                   "version": "0.0.0"
                 }
               },
@@ -139,7 +139,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
                   "version": "0.0.0"
                 }
               },
@@ -160,13 +160,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-lambda.Function",
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
               "version": "0.0.0"
             }
           },
@@ -181,7 +181,6 @@
                   "aws:cdk:cloudformation:type": "AWS::AppSync::GraphQLApi",
                   "aws:cdk:cloudformation:props": {
                     "authenticationType": "AWS_LAMBDA",
-                    "name": "api1",
                     "lambdaAuthorizerConfig": {
                       "authorizerUri": {
                         "Fn::GetAtt": [
@@ -189,11 +188,12 @@
                           "Arn"
                         ]
                       }
-                    }
+                    },
+                    "name": "api1"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-appsync.CfnGraphQLApi",
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnGraphQLApi",
                   "version": "0.0.0"
                 }
               },
@@ -213,7 +213,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-appsync.CfnGraphQLSchema",
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnGraphQLSchema",
                   "version": "0.0.0"
                 }
               },
@@ -221,13 +221,13 @@
                 "id": "LogGroup",
                 "path": "appsync-lambda-auth/api1/LogGroup",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-appsync.GraphqlApi",
+              "fqn": "aws-cdk-lib.aws_appsync.GraphqlApi",
               "version": "0.0.0"
             }
           },
@@ -242,7 +242,6 @@
                   "aws:cdk:cloudformation:type": "AWS::AppSync::GraphQLApi",
                   "aws:cdk:cloudformation:props": {
                     "authenticationType": "AWS_LAMBDA",
-                    "name": "api2",
                     "lambdaAuthorizerConfig": {
                       "authorizerUri": {
                         "Fn::GetAtt": [
@@ -250,11 +249,12 @@
                           "Arn"
                         ]
                       }
-                    }
+                    },
+                    "name": "api2"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-appsync.CfnGraphQLApi",
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnGraphQLApi",
                   "version": "0.0.0"
                 }
               },
@@ -274,7 +274,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-appsync.CfnGraphQLSchema",
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnGraphQLSchema",
                   "version": "0.0.0"
                 }
               },
@@ -282,13 +282,13 @@
                 "id": "LogGroup",
                 "path": "appsync-lambda-auth/api2/LogGroup",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-appsync.GraphqlApi",
+              "fqn": "aws-cdk-lib.aws_appsync.GraphqlApi",
               "version": "0.0.0"
             }
           },
@@ -296,7 +296,7 @@
             "id": "BootstrapVersion",
             "path": "appsync-lambda-auth/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
+              "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
             }
           },
@@ -304,13 +304,13 @@
             "id": "CheckBootstrapVersion",
             "path": "appsync-lambda-auth/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
         }
       },
@@ -327,7 +327,7 @@
                 "path": "GraphQlApiLambdaAuth/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.216"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
@@ -338,7 +338,7 @@
                     "id": "BootstrapVersion",
                     "path": "GraphQlApiLambdaAuth/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
                     }
                   },
@@ -346,25 +346,25 @@
                     "id": "CheckBootstrapVersion",
                     "path": "GraphQlApiLambdaAuth/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnRule",
+                      "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
+                  "fqn": "aws-cdk-lib.Stack",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
           "version": "0.0.0"
         }
       },
@@ -373,12 +373,12 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.216"
+          "version": "10.2.70"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
+      "fqn": "aws-cdk-lib.App",
       "version": "0.0.0"
     }
   }

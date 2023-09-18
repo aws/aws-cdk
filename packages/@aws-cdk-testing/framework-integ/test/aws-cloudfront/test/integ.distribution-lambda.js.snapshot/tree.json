@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "integ-distribution-lambda": {
         "id": "integ-distribution-lambda",
         "path": "integ-distribution-lambda",
@@ -24,6 +16,14 @@
                 "id": "ServiceRole",
                 "path": "integ-distribution-lambda/Lambda/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "integ-distribution-lambda/Lambda/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "integ-distribution-lambda/Lambda/ServiceRole/Resource",
@@ -62,13 +62,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -81,18 +81,18 @@
                     "code": {
                       "zipFile": "foo"
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "LambdaServiceRoleA8ED4D3B",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
-                    "runtime": "nodejs14.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                   "version": "0.0.0"
                 }
               },
@@ -112,19 +112,19 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-lambda.CfnVersion",
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnVersion",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.Version",
+                  "fqn": "aws-cdk-lib.aws_lambda.Version",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-lambda.Function",
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
               "version": "0.0.0"
             }
           },
@@ -137,7 +137,7 @@
                 "path": "integ-distribution-lambda/Dist/Origin1",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "version": "10.2.70"
                 }
               },
               "Resource": {
@@ -166,7 +166,7 @@
                         "lambdaFunctionAssociations": [
                           {
                             "lambdaFunctionArn": {
-                              "Ref": "LambdaCurrentVersionDF706F6A1ee13d0fa54e9f5621e8c7b616fc53fc"
+                              "Ref": "LambdaCurrentVersionDF706F6Aceabca74f785ac2be6cd5e57eeaf3b05"
                             },
                             "eventType": "origin-request"
                           }
@@ -178,26 +178,50 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-cloudfront.CfnDistribution",
+                  "fqn": "aws-cdk-lib.aws_cloudfront.CfnDistribution",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-cloudfront.Distribution",
+              "fqn": "aws-cdk-lib.aws_cloudfront.Distribution",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-distribution-lambda/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-distribution-lambda/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.2.70"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
     }
   }
 }

@@ -1390,6 +1390,26 @@
                   "aws:cdk:cloudformation:type": "AWS::EFS::FileSystem",
                   "aws:cdk:cloudformation:props": {
                     "encrypted": true,
+                    "fileSystemPolicy": {
+                      "Statement": [
+                        {
+                          "Action": [
+                            "elasticfilesystem:ClientRootAccess",
+                            "elasticfilesystem:ClientWrite"
+                          ],
+                          "Condition": {
+                            "Bool": {
+                              "elasticfilesystem:AccessedViaMountTarget": "true"
+                            }
+                          },
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": "*"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
                     "fileSystemTags": [
                       {
                         "key": "Name",
@@ -1472,9 +1492,9 @@
                   "version": "0.0.0"
                 }
               },
-              "EfsMountTarget1": {
-                "id": "EfsMountTarget1",
-                "path": "test-bucket-deployments-2/BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/EfsMountTarget1",
+              "EfsMountTarget-PrivateSubnet1": {
+                "id": "EfsMountTarget-PrivateSubnet1",
+                "path": "test-bucket-deployments-2/BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/EfsMountTarget-PrivateSubnet1",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EFS::MountTarget",
                   "aws:cdk:cloudformation:props": {
@@ -1499,9 +1519,9 @@
                   "version": "0.0.0"
                 }
               },
-              "EfsMountTarget2": {
-                "id": "EfsMountTarget2",
-                "path": "test-bucket-deployments-2/BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/EfsMountTarget2",
+              "EfsMountTarget-PrivateSubnet2": {
+                "id": "EfsMountTarget-PrivateSubnet2",
+                "path": "test-bucket-deployments-2/BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/EfsMountTarget-PrivateSubnet2",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EFS::MountTarget",
                   "aws:cdk:cloudformation:props": {
@@ -3200,7 +3220,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.55"
+              "version": "10.2.70"
             }
           },
           "BootstrapVersion": {
@@ -3238,7 +3258,7 @@
                 "path": "integ-test-bucket-deployments/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
@@ -3258,7 +3278,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3listObjectsda40203e2d2431b9ecea6a43ee9ce159/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.55"
+                              "version": "10.2.70"
                             }
                           }
                         },
@@ -3330,7 +3350,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "version": "10.2.70"
                     }
                   },
                   "BootstrapVersion": {
@@ -3372,7 +3392,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.55"
+          "version": "10.2.70"
         }
       }
     },

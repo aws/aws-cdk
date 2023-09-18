@@ -13,13 +13,22 @@
     "api": "invoke",
     "parameters": {
      "FunctionName": {
-      "Fn::ImportValue": "aws-cdk-lambda-destinations:ExportsOutputRefSnsSqsC4810B27404A5AFF"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-lambda-destinations:ExportsOutputRefSnsSqsC4810B27404A5AFF"
+        },
+        "\""
+       ]
+      ]
      },
-     "InvocationType": "Event",
-     "Payload": "{\"status\":\"OK\"}"
+     "InvocationType": "\"Event\"",
+     "Payload": "\"{\\\"status\\\":\\\"OK\\\"}\""
     },
     "flattenResponse": "false",
-    "salt": "1661947533306"
+    "salt": "1694442848989"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -123,12 +132,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs18.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7.zip"
+     "S3Key": "77997674c0a10fbb65169124ad6c0d7a664b6162ad44f9abfa22fd006b33f754.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -140,7 +149,7 @@
     }
    }
   },
-  "AwsApiCallSQSreceiveMessage": {
+  "AwsApiCallSQSreceiveMessage3913742af0f68967ecd340999fcff4d0": {
    "Type": "Custom::DeployAssert@SdkCallSQSreceiveMessage",
    "Properties": {
     "ServiceToken": {
@@ -151,46 +160,42 @@
     },
     "service": "SQS",
     "api": "receiveMessage",
+    "expected": "{\"$StringLike\":\"success\"}",
+    "actualPath": "Messages.0.Body.responsePayload",
     "parameters": {
      "QueueUrl": {
-      "Fn::ImportValue": "aws-cdk-lambda-destinations:ExportsOutputRefQueue4A7E3555425E8BD3"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-lambda-destinations:ExportsOutputRefQueue4A7E3555425E8BD3"
+        },
+        "\""
+       ]
+      ]
      },
-     "WaitTimeSeconds": 20
+     "WaitTimeSeconds": "20"
     },
     "flattenResponse": "true",
-    "salt": "1661947533306"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AwsApiCallSQSreceiveMessageAssertEqualsSQSreceiveMessage56120636": {
-   "Type": "Custom::DeployAssert@AssertEquals",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "actual": {
-     "Fn::GetAtt": [
-      "AwsApiCallSQSreceiveMessage",
-      "apiCallResponse.Messages.0.Body"
-     ]
-    },
-    "expected": "{\"$ObjectLike\":{\"requestContext\":{\"condition\":\"Success\"},\"requestPayload\":{\"status\":\"OK\"},\"responseContext\":{\"statusCode\":200},\"responsePayload\":\"success\"}}",
-    "salt": "1661947533306"
+    "outputPaths": [
+     "Messages.0.Body.requestContext.condition",
+     "Messages.0.Body.requestPayload.status",
+     "Messages.0.Body.responseContext.statusCode",
+     "Messages.0.Body.responsePayload"
+    ],
+    "salt": "1694442848990"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
-  "AssertionResultsAssertEqualsSQSreceiveMessage": {
+  "AssertionResultsAwsApiCallSQSreceiveMessage3913742af0f68967ecd340999fcff4d0": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallSQSreceiveMessageAssertEqualsSQSreceiveMessage56120636",
-     "data"
+     "AwsApiCallSQSreceiveMessage3913742af0f68967ecd340999fcff4d0",
+     "assertion"
     ]
    }
   }

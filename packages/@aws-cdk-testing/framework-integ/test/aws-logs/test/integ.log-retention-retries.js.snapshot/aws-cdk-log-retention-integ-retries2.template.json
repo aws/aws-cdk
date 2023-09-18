@@ -1,0 +1,973 @@
+{
+ "Resources": {
+  "LogRetention0486EBFA5": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries2/group0",
+    "RetentionInDays": 7,
+    "RemovalPolicy": "destroy"
+   }
+  },
+  "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:DeleteRetentionPolicy",
+        "logs:PutRetentionPolicy"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": "logs:DeleteLogGroup",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:/aws-cdk-log-retention-integ-retries2/group0:*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:/aws-cdk-log-retention-integ-retries2/group10:*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:/aws-cdk-log-retention-integ-retries2/group11:*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:/aws-cdk-log-retention-integ-retries2/group12:*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:/aws-cdk-log-retention-integ-retries2/group13:*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:/aws-cdk-log-retention-integ-retries2/group14:*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:/aws-cdk-log-retention-integ-retries2/group15:*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:/aws-cdk-log-retention-integ-retries2/group16:*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:/aws-cdk-log-retention-integ-retries2/group17:*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:/aws-cdk-log-retention-integ-retries2/group18:*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:/aws-cdk-log-retention-integ-retries2/group19:*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:/aws-cdk-log-retention-integ-retries2/group1:*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:/aws-cdk-log-retention-integ-retries2/group20:*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:/aws-cdk-log-retention-integ-retries2/group21:*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:/aws-cdk-log-retention-integ-retries2/group22:*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:/aws-cdk-log-retention-integ-retries2/group23:*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:/aws-cdk-log-retention-integ-retries2/group24:*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:/aws-cdk-log-retention-integ-retries2/group2:*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:/aws-cdk-log-retention-integ-retries2/group3:*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:/aws-cdk-log-retention-integ-retries2/group4:*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:/aws-cdk-log-retention-integ-retries2/group5:*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:/aws-cdk-log-retention-integ-retries2/group6:*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:/aws-cdk-log-retention-integ-retries2/group7:*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:/aws-cdk-log-retention-integ-retries2/group8:*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:/aws-cdk-log-retention-integ-retries2/group9:*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+    "Roles": [
+     {
+      "Ref": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+     }
+    ]
+   }
+  },
+  "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Handler": "index.handler",
+    "Runtime": "nodejs18.x",
+    "Timeout": 900,
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "a8515c042d9c942705087943220417be929ac44f968d8fcef2681681b400c0c0.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+   ]
+  },
+  "LogRetention1EE2E6696": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries2/group1",
+    "RetentionInDays": 7,
+    "RemovalPolicy": "destroy"
+   }
+  },
+  "LogRetention21F957075": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries2/group2",
+    "RetentionInDays": 7,
+    "RemovalPolicy": "destroy"
+   }
+  },
+  "LogRetention3148A75BA": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries2/group3",
+    "RetentionInDays": 7,
+    "RemovalPolicy": "destroy"
+   }
+  },
+  "LogRetention494231F51": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries2/group4",
+    "RetentionInDays": 7,
+    "RemovalPolicy": "destroy"
+   }
+  },
+  "LogRetention591D77AE3": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries2/group5",
+    "RetentionInDays": 7,
+    "RemovalPolicy": "destroy"
+   }
+  },
+  "LogRetention6DF401EB9": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries2/group6",
+    "RetentionInDays": 7,
+    "RemovalPolicy": "destroy"
+   }
+  },
+  "LogRetention72657EF61": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries2/group7",
+    "RetentionInDays": 7,
+    "RemovalPolicy": "destroy"
+   }
+  },
+  "LogRetention880A4B8CA": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries2/group8",
+    "RetentionInDays": 7,
+    "RemovalPolicy": "destroy"
+   }
+  },
+  "LogRetention90199550D": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries2/group9",
+    "RetentionInDays": 7,
+    "RemovalPolicy": "destroy"
+   }
+  },
+  "LogRetention10F7ED9810": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries2/group10",
+    "RetentionInDays": 7,
+    "RemovalPolicy": "destroy"
+   }
+  },
+  "LogRetention1122CC85FD": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries2/group11",
+    "RetentionInDays": 7,
+    "RemovalPolicy": "destroy"
+   }
+  },
+  "LogRetention12FBA31490": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries2/group12",
+    "RetentionInDays": 7,
+    "RemovalPolicy": "destroy"
+   }
+  },
+  "LogRetention136977A520": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries2/group13",
+    "RetentionInDays": 7,
+    "RemovalPolicy": "destroy"
+   }
+  },
+  "LogRetention14731EBD69": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries2/group14",
+    "RetentionInDays": 7,
+    "RemovalPolicy": "destroy"
+   }
+  },
+  "LogRetention153278A425": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries2/group15",
+    "RetentionInDays": 7,
+    "RemovalPolicy": "destroy"
+   }
+  },
+  "LogRetention161FF830E5": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries2/group16",
+    "RetentionInDays": 7,
+    "RemovalPolicy": "destroy"
+   }
+  },
+  "LogRetention176155FBE0": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries2/group17",
+    "RetentionInDays": 7,
+    "RemovalPolicy": "destroy"
+   }
+  },
+  "LogRetention1831457E29": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries2/group18",
+    "RetentionInDays": 7,
+    "RemovalPolicy": "destroy"
+   }
+  },
+  "LogRetention193D6F7E14": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries2/group19",
+    "RetentionInDays": 7,
+    "RemovalPolicy": "destroy"
+   }
+  },
+  "LogRetention2029711E62": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries2/group20",
+    "RetentionInDays": 7,
+    "RemovalPolicy": "destroy"
+   }
+  },
+  "LogRetention21F0A3EBF1": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries2/group21",
+    "RetentionInDays": 7,
+    "RemovalPolicy": "destroy"
+   }
+  },
+  "LogRetention2233E364BF": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries2/group22",
+    "RetentionInDays": 7,
+    "RemovalPolicy": "destroy"
+   }
+  },
+  "LogRetention2397FB44A4": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries2/group23",
+    "RetentionInDays": 7,
+    "RemovalPolicy": "destroy"
+   }
+  },
+  "LogRetention24A64A1B58": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": "/aws-cdk-log-retention-integ-retries2/group24",
+    "RetentionInDays": 7,
+    "RemovalPolicy": "destroy"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

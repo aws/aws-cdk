@@ -1,7 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { IConstruct, Construct, Node } from 'constructs';
-import * as minimatch from 'minimatch';
 import { Annotations } from './annotations';
 import { App } from './app';
 import { Arn, ArnComponents, ArnFormat } from './arn';
@@ -22,6 +21,10 @@ import { makeUniqueId } from './private/uniqueid';
 import * as cxschema from '../../cloud-assembly-schema';
 import { INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION } from '../../cx-api';
 import * as cxapi from '../../cx-api';
+
+// Must be a 'require' to not run afoul of ESM module import rules
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const minimatch = require('minimatch');
 
 const STACK_SYMBOL = Symbol.for('@aws-cdk/core.Stack');
 const MY_STACK_CACHE = Symbol.for('@aws-cdk/core.Stack.myStack');
@@ -1087,7 +1090,7 @@ export class Stack extends Construct implements ITaggable {
 
       const message = `Template size ${verb} limit: ${templateData.length}/${TEMPLATE_BODY_MAXIMUM_SIZE}. ${advice}.`;
 
-      Annotations.of(this).addWarning(message);
+      Annotations.of(this).addWarningV2('@aws-cdk/core:Stack.templateSize', message);
     }
 
     fs.writeFileSync(outPath, templateData);
@@ -1342,7 +1345,7 @@ export class Stack extends Construct implements ITaggable {
 
     if (this.templateOptions.transform) {
       // eslint-disable-next-line max-len
-      Annotations.of(this).addWarning('This stack is using the deprecated `templateOptions.transform` property. Consider switching to `addTransform()`.');
+      Annotations.of(this).addWarningV2('@aws-cdk/core:stackDeprecatedTransform', 'This stack is using the deprecated `templateOptions.transform` property. Consider switching to `addTransform()`.');
       this.addTransform(this.templateOptions.transform);
     }
 

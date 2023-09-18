@@ -1,0 +1,32 @@
+
+name: Update CONTRIBUTORS file
+on:
+  schedule:
+    - cron: "0 0 1 * *"
+  workflow_dispatch:
+jobs:
+  main:
+    # this workflow will always fail in forks; bail if this isn't running in the upstream
+    if: github.repository == 'aws/aws-cdk'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: minicli/action-contributors@v3.3
+        name: "Update a projects CONTRIBUTORS file"
+        env:
+          CONTRIB_REPOSITORY: 'aws/aws-cdk'
+          CONTRIB_OUTPUT_FILE: 'CONTRIBUTORS.md'
+          CONTRIB_IGNORE: 'github-actions[bot],mergify[bot],dependabot[bot],dependabot-preview[bot],aws-cdk-automation'
+      - name: Create a PR
+        uses: peter-evans/create-pull-request@v5
+        with:
+          # Git commit details
+          branch: automation/update-contributors
+          author: aws-cdk-automation <aws-cdk-automation@users.noreply.github.com>
+          commit-message: 'chore: update Contributors File'
+          # Pull Request details
+          title: 'chore: update Contributors File'
+          labels: auto-approve
+          # Github prevents further Github actions to be run if the default Github token is used.
+          # Instead use a privileged token here, so further GH actions can be triggered on this PR.
+          token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
