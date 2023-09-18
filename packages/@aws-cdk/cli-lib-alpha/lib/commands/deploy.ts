@@ -1,5 +1,22 @@
 import { SharedOptions, RequireApproval } from './common';
 
+export enum HotswapMode {
+  /**
+   * Will fall back to CloudFormation when a non-hotswappable change is detected
+   */
+  FALL_BACK = 'fall-back',
+
+  /**
+   * Will not fall back to CloudFormation when a non-hotswappable change is detected
+   */
+  HOTSWAP_ONLY = 'hotswap-only',
+
+  /**
+   * Will not attempt to hotswap anything and instead go straight to CloudFormation
+   */
+  FULL_DEPLOYMENT = 'full-deployment',
+}
+
 /**
  * Options to use with cdk deploy
  */
@@ -67,6 +84,15 @@ export interface DeployOptions extends SharedOptions {
    * @default true
    */
   readonly execute?: boolean;
+
+  /*
+   * Whether to perform a 'hotswap' deployment.
+   * A 'hotswap' deployment will attempt to short-circuit CloudFormation
+   * and update the affected resources like Lambda functions directly. Do not use this in production environments
+   *
+   * @default - `HotswapMode.FULL_DEPLOYMENT` for regular deployments, `HotswapMode.HOTSWAP_ONLY` for 'watch' deployments
+   */
+  readonly hotswap?: HotswapMode;
 
   /**
    * Additional parameters for CloudFormation at deploy time

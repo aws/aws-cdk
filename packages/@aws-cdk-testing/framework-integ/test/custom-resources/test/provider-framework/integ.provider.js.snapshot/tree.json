@@ -205,7 +205,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "0aad228bf32d2d8751bf3c64468fd63177e1d0088a9b7114239e668c667d9674.zip"
+                          "s3Key": "8fa9d83f2bd4f331f203edd87812df96f2179d4be5b245a891f504596b0517b1.zip"
                         },
                         "handler": "index.onEvent",
                         "role": {
@@ -214,7 +214,7 @@
                             "Arn"
                           ]
                         },
-                        "runtime": "nodejs16.x"
+                        "runtime": "nodejs18.x"
                       }
                     },
                     "constructInfo": {

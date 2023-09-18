@@ -1,7 +1,7 @@
 import * as core from 'aws-cdk-lib/core';
 import * as cli from 'aws-cdk/lib';
 import { AwsCdkCli } from '../lib';
-import { RequireApproval, StackActivityProgress } from '../lib/commands';
+import { HotswapMode, RequireApproval, StackActivityProgress } from '../lib/commands';
 
 jest.mock('aws-cdk/lib');
 jest.mocked(cli.exec).mockResolvedValue(0);
@@ -23,7 +23,7 @@ const cdk = AwsCdkCli.fromCloudAssemblyDirectoryProducer({
 describe('deploy', () => {
   test('default deploy', async () => {
     // WHEN
-    await await cdk.deploy();
+    await cdk.deploy();
 
     // THEN
     expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(
@@ -34,7 +34,7 @@ describe('deploy', () => {
 
   test('deploy with all arguments', async () => {
     // WHEN
-    await await cdk.deploy({
+    await cdk.deploy({
       stacks: ['Stack1'],
       ci: false,
       json: true,
@@ -45,6 +45,7 @@ describe('deploy', () => {
       trace: false,
       strict: false,
       execute: true,
+      hotswap: HotswapMode.HOTSWAP_ONLY,
       lookups: false,
       notices: true,
       profile: 'my-profile',
@@ -98,6 +99,7 @@ describe('deploy', () => {
         '--no-strict',
         '--no-trace',
         '--no-lookups',
+        '--hotswap',
         '--no-ignore-errors',
         '--json',
         '--verbose',
@@ -118,9 +120,46 @@ describe('deploy', () => {
     );
   });
 
+  test('can parse hotswap-fallback argument', async () => {
+    // WHEN
+    await cdk.deploy({
+      stacks: ['Stack1'],
+      hotswap: HotswapMode.FALL_BACK,
+    });
+
+    // THEN
+    expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(
+      [
+        'deploy',
+        '--hotswap-fallback',
+        '--progress', 'events',
+        'Stack1',
+      ],
+      expect.anything(),
+    );
+  });
+
+  test('skip hotswap full-deployment argument', async () => {
+    // WHEN
+    await cdk.deploy({
+      stacks: ['Stack1'],
+      hotswap: HotswapMode.FULL_DEPLOYMENT,
+    });
+
+    // THEN
+    expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(
+      [
+        'deploy',
+        '--progress', 'events',
+        'Stack1',
+      ],
+      expect.anything(),
+    );
+  });
+
   test('can parse boolean arguments', async () => {
     // WHEN
-    await await cdk.deploy({
+    await cdk.deploy({
       stacks: ['Stack1'],
       json: true,
       color: false,
@@ -141,7 +180,7 @@ describe('deploy', () => {
 
   test('can parse parameters', async() => {
     // WHEN
-    await await cdk.deploy({
+    await cdk.deploy({
       stacks: ['Stack1'],
       parameters: {
         'myparam': 'test',

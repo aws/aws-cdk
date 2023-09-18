@@ -198,7 +198,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "5f27867cd3c94f1ff2edc275698533710939b2685d5a2991b452bcadf2cd814f.zip"
+     "S3Key": "1f744b353731d46f52cfbd3252054e4a0c7684db18117120d6e514872f26601f.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -209,7 +209,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "CustomS3PutObjectsCustomResourceProviderRole40D98C91"
@@ -414,7 +414,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "03adb2514e02907e0458bec59283658ec529425bd5df38e1194455c65dedf6ff.zip"
+     "S3Key": "e5178afc49b7c6a85127a67856ce958e4f0879ce6aad5e974cac2a088bf939db.zip"
     },
     "Handler": "index.handler",
     "Role": {
