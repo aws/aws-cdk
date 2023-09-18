@@ -66,7 +66,8 @@ test('appsync supports merged API', () => {
     }),
   });
 
-  validateSourceApiAssociations(stack, 'mergedapiMergedApiExecutionRole2053D32E', 'ApiId');
+  validateSourceApiAssociations(stack, 'mergedapiMergedApiExecutionRole2053D32E',
+    'mergedapiMergedApiExecutionRoleDefaultPolicy6F79FCAF', 'ApiId');
 });
 
 test('appsync supports merged API - ARN identifier flag enabled', () => {
@@ -87,7 +88,8 @@ test('appsync supports merged API - ARN identifier flag enabled', () => {
     }),
   });
 
-  validateSourceApiAssociations(stackWithFlag, 'mergedapiMergedApiExecutionRole2053D32E', 'Arn');
+  validateSourceApiAssociations(stackWithFlag, 'mergedapiMergedApiExecutionRole2053D32E',
+    'mergedapiMergedApiExecutionRoleDefaultPolicy6F79FCAF', 'Arn');
 });
 
 test('appsync supports merged API with default merge type', () => {
@@ -146,7 +148,8 @@ test('appsync merged API with custom merged API execution role', () => {
   });
 
   // THEN
-  validateSourceApiAssociations(stack, 'CustomMergedApiExecutionRoleB795A9C4', 'Arn');
+  validateSourceApiAssociations(stack, 'CustomMergedApiExecutionRoleB795A9C4',
+    'CustomMergedApiExecutionRoleDefaultPolicy012408A1', 'ApiId');
 });
 
 test('Merged API throws when accessing schema property', () => {
@@ -173,13 +176,16 @@ test('Merged API throws when accessing schema property', () => {
   }).toThrowError('Schema does not exist for AppSync merged APIs.');
 });
 
-function validateSourceApiAssociations(stackToValidate: cdk.Stack, expectedMergedApiExecutionRole: string, expectedIdentifier: string) {
+function validateSourceApiAssociations(stackToValidate: cdk.Stack, 
+  expectedMergedApiExecutionRole: string,
+  expectedPolicyName: string,
+  expectedIdentifier: string) {
   // THEN
   Template.fromStack(stackToValidate).hasResourceProperties('AWS::AppSync::GraphQLApi', {
     ApiType: 'MERGED',
     MergedApiExecutionRoleArn: {
       'Fn::GetAtt': [
-        'mergedapiMergedApiExecutionRole2053D32E',
+        expectedMergedApiExecutionRole,
         'Arn',
       ],
     },
@@ -320,10 +326,10 @@ function validateSourceApiAssociations(stackToValidate: cdk.Stack, expectedMerge
       ],
       Version: '2012-10-17',
     },
-    PolicyName: 'mergedapiMergedApiExecutionRoleDefaultPolicy6F79FCAF',
+    PolicyName: expectedPolicyName,
     Roles: [
       {
-        Ref: 'mergedapiMergedApiExecutionRole2053D32E',
+        Ref: expectedMergedApiExecutionRole,
       },
     ],
   });

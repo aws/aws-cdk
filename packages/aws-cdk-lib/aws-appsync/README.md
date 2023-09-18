@@ -409,15 +409,9 @@ const mergedApi = new appsync.GraphqlApi(this, 'MergedAPI', {
 The SourceApiAssociation construct allows you to define a SourceApiAssociation to a Merged API in a different stack or account. This allows a SourceAPI owner the ability to associate it to an existing Merged API itself.
 
 ```ts
-import * as cdk from 'aws-cdk-lib';
-
-// first source API
-const firstApi = new appsync.GraphqlApi(this, 'FirstSourceAPI', {
+const sourceApi = new appsync.GraphqlApi(this, 'FirstSourceAPI', {
   name: 'FirstSourceAPI',
   definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.merged-api-1.graphql')),
-});
-firstApi.addNoneDataSource('FirstSourceDS', {
-  name: cdk.Lazy.string({ produce(): string { return 'FirstSourceDS'; } }),
 });
 
 const importedMergedApi = appsync.GraphqlApi.fromGraphqlApiAttributes(this, 'ImportedMergedApi', {
@@ -427,7 +421,7 @@ const importedMergedApi = appsync.GraphqlApi.fromGraphqlApiAttributes(this, 'Imp
 
 const importedExecutionRole = iam.Role.fromRoleArn(this, 'ExecutionRole', 'arn:aws:iam::ACCOUNT:role/MyExistingRole');
 new appsync.SourceApiAssociation(this, 'SourceApiAssociation2', {
-   sourceApi: firstApi,
+   sourceApi: sourceApi,
    mergedApi: importedMergedApi,
    mergeType: appsync.MergeType.MANUAL,
    mergedApiExecutionRole: importedExecutionRole,
