@@ -2,7 +2,7 @@
 import { exec as runCli } from 'aws-cdk/lib';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { createAssembly, prepareContext, prepareDefaultEnvironment } from 'aws-cdk/lib/api/cxapp/exec';
-import { SharedOptions, DeployOptions, DestroyOptions, BootstrapOptions, SynthOptions, ListOptions, StackActivityProgress } from './commands';
+import { SharedOptions, DeployOptions, DestroyOptions, BootstrapOptions, SynthOptions, ListOptions, StackActivityProgress, HotswapMode } from './commands';
 
 /**
  * AWS CDK CLI operations
@@ -211,6 +211,7 @@ export class AwsCdkCli implements IAwsCdkCli {
       ...renderBooleanArg('asset-parallelism', options.assetParallelism),
       ...renderBooleanArg('asset-prebuild', options.assetPrebuild),
       ...renderNumberArg('concurrency', options.concurrency),
+      ...renderHotswapArg(options.hotswap),
       ...options.reuseAssets ? renderArrayArg('--reuse-assets', options.reuseAssets) : [],
       ...options.notificationArns ? renderArrayArg('--notification-arns', options.notificationArns) : [],
       ...options.parameters ? renderMapArrayArg('--parameters', options.parameters) : [],
@@ -264,6 +265,17 @@ export class AwsCdkCli implements IAwsCdkCli {
       ...options.roleArn ? ['--role-arn', options.roleArn] : [],
       ...stacks,
     ];
+  }
+}
+
+function renderHotswapArg(hotswapMode: HotswapMode | undefined): string[] {
+  switch (hotswapMode) {
+    case HotswapMode.FALL_BACK:
+      return ['--hotswap-fallback'];
+    case HotswapMode.HOTSWAP_ONLY:
+      return ['--hotswap'];
+    default:
+      return [];
   }
 }
 
