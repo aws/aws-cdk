@@ -1,7 +1,7 @@
 import { promises as fs, existsSync } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { integTest, cloneDirectory, shell, withDefaultFixture, retry, sleep, randomInteger, withSamIntegrationFixture, RESOURCES_DIR } from '../../lib';
+import { integTest, cloneDirectory, shell, withDefaultFixture, retry, sleep, randomInteger, withSamIntegrationFixture, RESOURCES_DIR, withTemporaryDirectory, ShellHelper, withPackages } from '../../lib';
 
 jest.setTimeout(2 * 60 * 60_000); // Includes the time to acquire locks, worst-case single-threaded runtime
 
@@ -49,6 +49,31 @@ integTest('VPC Lookup', withDefaultFixture(async (fixture) => {
   fixture.log('Verifying we can now import that VPC');
   await fixture.cdkDeploy('import-vpc', { modEnv: { ENABLE_VPC_TESTING: 'IMPORT' } });
 }));
+
+integTest(
+  'cdk migrate typescript',
+  withTemporaryDirectory(
+    withPackages(async (context) => {
+
+      const tempShell = ShellHelper.fromContext(context);
+      await context.packages.makeCliAvailable();
+
+      const tempPath = path.resolve(context.integTestDir);
+      const inputFile = path.join(__dirname, 'template.txt');
+
+      await tempShell.shell([
+        'cdk',
+        'migrate',
+        '-l',
+        'typescript',
+        '--from-path',
+        inputFile,
+        '--output-path',
+        tempPath,
+      ]);
+    }),
+  ),
+);
 
 // testing a construct with a builtin Nodejs Lambda Function.
 // In this case we are testing the s3.Bucket construct with the
