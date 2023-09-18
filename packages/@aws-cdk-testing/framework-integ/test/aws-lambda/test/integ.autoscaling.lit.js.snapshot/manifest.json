@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/47ec429246be536155704f6df0ae34a2caef825a440c20b7b6af6bec661c7ba8.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4e491c14be2b36af5be729715edfad23d2db6e3050125cdd632fce51b0900fb5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -48,7 +48,7 @@
         "/aws-lambda-autoscaling/MyLambda/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaCurrentVersionE7A382CC9ef7d0f7e3b3b55a2ac4da5225352f4d"
+            "data": "MyLambdaCurrentVersionE7A382CCe371c9697d7882d1bd7bf42e0dece697"
           }
         ],
         "/aws-lambda-autoscaling/Alias/Resource": [
@@ -87,10 +87,10 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "MyLambdaCurrentVersionE7A382CC0be4c7f7b82230afaf72d130ee920da9": [
+        "MyLambdaCurrentVersionE7A382CC9ef7d0f7e3b3b55a2ac4da5225352f4d": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaCurrentVersionE7A382CC0be4c7f7b82230afaf72d130ee920da9",
+            "data": "MyLambdaCurrentVersionE7A382CC9ef7d0f7e3b3b55a2ac4da5225352f4d",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
