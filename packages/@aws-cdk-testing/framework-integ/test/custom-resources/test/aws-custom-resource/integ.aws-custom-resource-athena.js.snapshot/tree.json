@@ -276,7 +276,6 @@
                       "s3Key": "e5178afc49b7c6a85127a67856ce958e4f0879ce6aad5e974cac2a088bf939db.zip"
                     },
                     "handler": "index.handler",
-                    "memorySize": 256,
                     "role": {
                       "Fn::GetAtt": [
                         "CustomResourceRoleAB1EF463",

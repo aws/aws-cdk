@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import { App, Stack, DockerImage } from 'aws-cdk-lib';
+import { App, Stage, Stack, DockerImage } from 'aws-cdk-lib';
 import * as cxapi from 'aws-cdk-lib/cx-api';
 import * as synthetics from '../lib';
 import { RuntimeFamily } from '../lib';
@@ -121,6 +121,24 @@ describe(synthetics.Code.fromAsset, () => {
     const synthesized = assembly.stacks[0];
 
     expect(synthesized.assets.length).toEqual(1);
+  });
+
+  test('works when stack is a part of a stage', () => {
+    // GIVEN
+    const app = new App();
+    const stage1 = new Stage(app, 'Stage1');
+    const stage2 = new Stage(stage1, 'Stage2');
+    const stack = new Stack(stage2);
+
+    // WHEN
+    const directoryAsset = synthetics.Code.fromAsset(path.join(__dirname, 'canaries'));
+    new synthetics.Canary(stack, 'Canary1', {
+      test: synthetics.Test.custom({
+        handler: 'canary.handler',
+        code: directoryAsset,
+      }),
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+    });
   });
 
   test('fails if path does not exist', () => {
