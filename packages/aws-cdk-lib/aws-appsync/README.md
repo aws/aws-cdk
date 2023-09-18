@@ -423,7 +423,7 @@ const importedExecutionRole = iam.Role.fromRoleArn(this, 'ExecutionRole', 'arn:a
 new appsync.SourceApiAssociation(this, 'SourceApiAssociation2', {
    sourceApi: sourceApi,
    mergedApi: importedMergedApi,
-   mergeType: appsync.MergeType.MANUAL,
+   mergeType: appsync.MergeType.MANUAL_MERGE,
    mergedApiExecutionRole: importedExecutionRole,
 });
 ```
