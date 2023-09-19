@@ -1,14 +1,14 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
+/* eslint-disable @typescript-eslint/no-var-requires */
 import * as fs from 'fs';
 import * as path from 'path';
 import { Environment, UNKNOWN_ACCOUNT, UNKNOWN_REGION } from '@aws-cdk/cx-api';
 import * as cdk_from_cfn from 'cdk-from-cfn';
 import { cliInit } from '../../lib/init';
 import { Mode, SdkProvider } from '../api';
+import { zipDirectory } from '../util/archive';
 
-/* eslint-disable @typescript-eslint/no-var-requires */ // Packages don't have @types module
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const camelCase = require('camelcase');
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const decamelize = require('decamelize');
 
 /** The list of languages supported by the built-in noctilucent binary. */
@@ -22,14 +22,22 @@ export const MIGRATE_SUPPORTED_LANGUAGES: readonly string[] = cdk_from_cfn.suppo
  * @param language The language to generate the CDK app in
  * @param outputPath The path at which to generate the CDK app
  */
-export async function generateCdkApp(stackName: string, stack: string, language: string, outputPath?: string) {
+export async function generateCdkApp(stackName: string, stack: string, language: string, outputPath?: string, compress?: boolean) {
   const resolvedOutputPath = path.join(outputPath ?? process.cwd(), stackName);
   const formattedStackName = decamelize(stackName);
 
   try {
     fs.rmSync(resolvedOutputPath, { recursive: true, force: true });
     fs.mkdirSync(resolvedOutputPath, { recursive: true });
-    await cliInit('app', language, true, false, resolvedOutputPath, stackName);
+    const generateOnly = compress;
+    await cliInit({
+      type: 'app',
+      language,
+      canUseNetwork: true,
+      generateOnly,
+      workDir: resolvedOutputPath,
+      stackName,
+    });
 
     let stackFileName: string;
     switch (language) {
@@ -50,6 +58,10 @@ export async function generateCdkApp(stackName: string, stack: string, language:
         throw new Error(`${language} is not supported by CDK Migrate. Please choose from: ${MIGRATE_SUPPORTED_LANGUAGES.join(', ')}`);
     }
     fs.writeFileSync(stackFileName, stack);
+    if (compress) {
+      await zipDirectory(resolvedOutputPath, `${resolvedOutputPath}.zip`);
+      fs.rmSync(resolvedOutputPath, { recursive: true, force: true });
+    }
   } catch (error) {
     fs.rmSync(resolvedOutputPath, { recursive: true, force: true });
     throw error;
