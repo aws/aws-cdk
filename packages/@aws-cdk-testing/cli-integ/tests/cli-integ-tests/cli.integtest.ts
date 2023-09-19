@@ -591,8 +591,8 @@ integTest(
     ]);
     const stackArn = await fixture.cdk([
       'deploy',
-      'migrate-stack'
-    ])
+      'migrate-stack',
+    ]);
     const response = await fixture.aws.cloudFormation('describeStacks', {
       StackName: stackArn,
     });
