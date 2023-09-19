@@ -1119,7 +1119,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "version": "10.2.70"
                 }
               },
               "KubectlReadyBarrier": {
@@ -1421,7 +1421,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "25f7dc8c7a6d65604d70050f2d9d19d6bfc5060a3d74662fc86589f4385e3a1b.zip"
+                          "s3Key": "9202bb21d52e07810fc1da0f6acf2dcb75a40a43a9a2efbcfc9ae39535c6260c.zip"
                         },
                         "description": "/opt/nodejs/node_modules/proxy-agent"
                       }
@@ -1534,7 +1534,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "bb544555825b6abfdf2cf0c13f9410a77d62ad0fe0bf5c38cef55631cf427f31.zip"
+                          "s3Key": "b8426d60bacb99593213adedd37997b7d83efb99683ef98c85e692a82056e829.zip"
                         },
                         "description": "onEvent handler for EKS cluster resource provider",
                         "environment": {
@@ -1666,7 +1666,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "bb544555825b6abfdf2cf0c13f9410a77d62ad0fe0bf5c38cef55631cf427f31.zip"
+                          "s3Key": "b8426d60bacb99593213adedd37997b7d83efb99683ef98c85e692a82056e829.zip"
                         },
                         "description": "isComplete handler for EKS cluster resource provider",
                         "environment": {
@@ -1889,7 +1889,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
+                              "s3Key": "d002370061965c69bc4caf15dddb5eccc9df318933ade6e4fa57cddb81c5abef.zip"
                             },
                             "description": "AWS CDK resource provider framework - onEvent (aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
@@ -2110,7 +2110,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
+                              "s3Key": "d002370061965c69bc4caf15dddb5eccc9df318933ade6e4fa57cddb81c5abef.zip"
                             },
                             "description": "AWS CDK resource provider framework - isComplete (aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
@@ -2328,7 +2328,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
+                              "s3Key": "d002370061965c69bc4caf15dddb5eccc9df318933ade6e4fa57cddb81c5abef.zip"
                             },
                             "description": "AWS CDK resource provider framework - onTimeout (aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
@@ -2507,7 +2507,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "version": "10.2.70"
                     }
                   }
                 },
@@ -2572,7 +2572,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/8f60868c53c7dd0ee86dcebd8ef75ed04c182356828bd3acb9febf74a4da7b03.json"
+                          "/7d1e2e580648ff755add781dfd09bd2cf5920187ff1649a882fc2d97019de612.json"
                         ]
                       ]
                     }
@@ -2586,7 +2586,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.55"
+              "version": "10.2.70"
             }
           },
           "@aws-cdk--aws-eks.KubectlProvider": {
@@ -2633,7 +2633,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "9017774b84ae2457b1b2ad6fcbb4860d8ce2537062c77010b24d9b156ced5a1b.zip"
+                          "s3Key": "7ee709fdaf72d4a95dabe6f431ed4176b1dbcb78127986bf956f0ed8cad04779.zip"
                         },
                         "description": "onEvent handler for EKS kubectl resource provider",
                         "handler": "index.handler",
@@ -2980,7 +2980,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
+                              "s3Key": "d002370061965c69bc4caf15dddb5eccc9df318933ade6e4fa57cddb81c5abef.zip"
                             },
                             "description": "AWS CDK resource provider framework - onEvent (aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/Provider)",
                             "environment": {
@@ -3128,7 +3128,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/13a2ab958d83a0d701093b97d1a0bf06fc58c3ba829284db8471f584349aa667.json"
+                          "/f6c0b12449066be96fb6e4305b8351134a96c950f4d5107dde4397c5935cd6b8.json"
                         ]
                       ]
                     }
@@ -3142,7 +3142,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.55"
+              "version": "10.2.70"
             }
           },
           "Virtual Cluster": {
@@ -3569,7 +3569,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
+                              "s3Key": "d002370061965c69bc4caf15dddb5eccc9df318933ade6e4fa57cddb81c5abef.zip"
                             },
                             "description": "AWS CDK resource provider framework - onEvent (aws-stepfunctions-tasks-emr-containers-start-job-run-test/Start a Job Run/CustomResourceProvider)",
                             "environment": {
@@ -3731,7 +3731,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "f5703cf7b56c39c576b7f8c03378239080baf3b390d0afe381f81bde5688e6eb.zip"
+                      "s3Key": "e5178afc49b7c6a85127a67856ce958e4f0879ce6aad5e974cac2a088bf939db.zip"
                     },
                     "handler": "index.handler",
                     "role": {
@@ -4208,7 +4208,7 @@
                 "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
@@ -4254,7 +4254,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.55"
+          "version": "10.2.70"
         }
       }
     },

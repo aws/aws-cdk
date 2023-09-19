@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "34.0.0",
   "artifacts": {
     "integ-user-pool-client-secret.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/de97bf62dbc28293449029003a9f9b0adfc0a7c706b08d56b2e54b7eaafee1db.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/361c01e90165ab5a65b22b352d8cd87e3af7ee4411fb11e492c6ba2b456a2acb.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
