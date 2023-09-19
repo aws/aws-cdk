@@ -118,7 +118,7 @@
         }
       }
     },
-    "f6c0b12449066be96fb6e4305b8351134a96c950f4d5107dde4397c5935cd6b8": {
+    "9cb3146bb658283e5521b158afa91dff80b19807fe44cb63a1ab71d876960233": {
       "source": {
         "path": "awsstepfunctionstasksemrcontainersstartjobruntestawscdkawseksKubectlProviderEB85BF5A.nested.template.json",
         "packaging": "file"
@@ -126,12 +126,12 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "f6c0b12449066be96fb6e4305b8351134a96c950f4d5107dde4397c5935cd6b8.json",
+          "objectKey": "9cb3146bb658283e5521b158afa91dff80b19807fe44cb63a1ab71d876960233.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "1a6790194fa471684bacfdbf90bb79fc9f4e03fe1a7ee53763b981f17f2870a9": {
+    "1dc42505c61c1964ae83257e48f0ca1a7b7006537bb8bc87e3913fd1701944ae": {
       "source": {
         "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test.template.json",
         "packaging": "file"
@@ -139,7 +139,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "1a6790194fa471684bacfdbf90bb79fc9f4e03fe1a7ee53763b981f17f2870a9.json",
+          "objectKey": "1dc42505c61c1964ae83257e48f0ca1a7b7006537bb8bc87e3913fd1701944ae.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
