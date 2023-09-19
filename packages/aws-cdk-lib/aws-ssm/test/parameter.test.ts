@@ -658,18 +658,18 @@ test('fromLookup will use the SSM context provider to read value during synthesi
   const stack = new cdk.Stack(app, 'my-staq', { env: { region: 'us-east-1', account: '12344' } });
 
   // WHEN
-  const value = ssm.StringParameter.valueFromLookup(stack, 'my-param-name', true);
+  const value = ssm.StringParameter.valueFromLookup(stack, 'my-param-name', 'extraKey');
 
   // THEN
-  expect(value).toEqual('dummy-value-for-my-staq-my-param-name');
+  expect(value).toEqual('dummy-value-for-my-param-name');
   expect(app.synth().manifest.missing).toEqual([
     {
-      key: 'ssm:account=12344:parameterName=my-param-name:region=us-east-1:scope=my-staq',
+      key: 'ssm:account=12344:additionalCacheKey=extraKey:parameterName=my-param-name:region=us-east-1',
       props: {
         account: '12344',
         region: 'us-east-1',
         parameterName: 'my-param-name',
-        scope: 'my-staq',
+        additionalCacheKey: 'extraKey',
       },
       provider: 'ssm',
     },
