@@ -204,6 +204,27 @@ export interface GaugeWidgetProps extends MetricWidgetProps {
    * @default - The statistic for each metric is used
    */
   readonly statistic?: string;
+
+  /**
+   * The start of the time range to use for each widget independently from those of the dashboard.
+   * You can specify start without specifying end to specify a relative time range that ends with the current time.
+   * In this case, the value of start must begin with -P, and you can use M, H, D, W and M as abbreviations for
+   * minutes, hours, days, weeks and months. For example, -PT8H shows the last 8 hours and -P3M shows the last three months.
+   * You can also use start along with an end field, to specify an absolute time range.
+   * When specifying an absolute time range, use the ISO 8601 format. For example, 2018-12-17T06:00:00.000Z.
+   *
+   * @default When the dashboard loads, the start time will be the default time range.
+   */
+  readonly start?: string;
+
+  /**
+   * The end of the time range to use for each widget independently from those of the dashboard.
+   * If you specify a value for end, you must also specify a value for start.
+   * Specify an absolute time in the ISO 8601 format. For example, 2018-12-17T06:00:00.000Z.
+   *
+   * @default When the dashboard loads, the end date will be the current time.
+   */
+  readonly end?: string;
 }
 
 /**
@@ -220,6 +241,10 @@ export class GaugeWidget extends ConcreteWidget {
     this.props = props;
     this.metrics = props.metrics ?? [];
     this.copyMetricWarnings(...this.metrics);
+
+    if (props.end !== undefined && props.start === undefined) {
+      throw new Error('If you specify a value for end, you must also specify a value for start.');
+    }
   }
 
   /**
@@ -263,6 +288,8 @@ export class GaugeWidget extends ConcreteWidget {
         setPeriodToTimeRange: this.props.setPeriodToTimeRange,
         period: this.props.period?.toSeconds(),
         stat: this.props.statistic,
+        start: this.props.start,
+        end: this.props.end,
       },
     }];
   }
@@ -375,6 +402,27 @@ export interface GraphWidgetProps extends MetricWidgetProps {
    * @default - The statistic for each metric is used
    */
   readonly statistic?: string;
+
+  /**
+   * The start of the time range to use for each widget independently from those of the dashboard.
+   * You can specify start without specifying end to specify a relative time range that ends with the current time.
+   * In this case, the value of start must begin with -P, and you can use M, H, D, W and M as abbreviations for
+   * minutes, hours, days, weeks and months. For example, -PT8H shows the last 8 hours and -P3M shows the last three months.
+   * You can also use start along with an end field, to specify an absolute time range.
+   * When specifying an absolute time range, use the ISO 8601 format. For example, 2018-12-17T06:00:00.000Z.
+   *
+   * @default When the dashboard loads, the start time will be the default time range.
+   */
+  readonly start?: string;
+
+  /**
+   * The end of the time range to use for each widget independently from those of the dashboard.
+   * If you specify a value for end, you must also specify a value for start.
+   * Specify an absolute time in the ISO 8601 format. For example, 2018-12-17T06:00:00.000Z.
+   *
+   * @default When the dashboard loads, the end date will be the current time.
+   */
+  readonly end?: string;
 }
 
 /**
@@ -405,6 +453,10 @@ export class GraphWidget extends ConcreteWidget {
     this.leftMetrics = props.left ?? [];
     this.rightMetrics = props.right ?? [];
     this.copyMetricWarnings(...this.leftMetrics, ...this.rightMetrics);
+
+    if (props.end !== undefined && props.start === undefined) {
+      throw new Error('If you specify a value for end, you must also specify a value for start.');
+    }
   }
 
   /**
@@ -463,6 +515,8 @@ export class GraphWidget extends ConcreteWidget {
         setPeriodToTimeRange: this.props.setPeriodToTimeRange,
         period: this.props.period?.toSeconds(),
         stat: this.props.statistic,
+        start: this.props.start,
+        end: this.props.end,
       },
     }];
   }
@@ -507,6 +561,27 @@ export interface SingleValueWidgetProps extends MetricWidgetProps {
    * @default false
    */
   readonly sparkline?: boolean;
+
+  /**
+   * The start of the time range to use for each widget independently from those of the dashboard.
+   * You can specify start without specifying end to specify a relative time range that ends with the current time.
+   * In this case, the value of start must begin with -P, and you can use M, H, D, W and M as abbreviations for
+   * minutes, hours, days, weeks and months. For example, -PT8H shows the last 8 hours and -P3M shows the last three months.
+   * You can also use start along with an end field, to specify an absolute time range.
+   * When specifying an absolute time range, use the ISO 8601 format. For example, 2018-12-17T06:00:00.000Z.
+   *
+   * @default When the dashboard loads, the start time will be the default time range.
+   */
+  readonly start?: string;
+
+  /**
+   * The end of the time range to use for each widget independently from those of the dashboard.
+   * If you specify a value for end, you must also specify a value for start.
+   * Specify an absolute time in the ISO 8601 format. For example, 2018-12-17T06:00:00.000Z.
+   *
+   * @default When the dashboard loads, the end date will be the current time.
+   */
+  readonly end?: string;
 }
 
 /**
@@ -522,6 +597,10 @@ export class SingleValueWidget extends ConcreteWidget {
 
     if (props.setPeriodToTimeRange && props.sparkline) {
       throw new Error('You cannot use setPeriodToTimeRange with sparkline');
+    }
+
+    if (props.end !== undefined && props.start === undefined) {
+      throw new Error('If you specify a value for end, you must also specify a value for start.');
     }
   }
 
@@ -541,6 +620,8 @@ export class SingleValueWidget extends ConcreteWidget {
         setPeriodToTimeRange: this.props.setPeriodToTimeRange,
         singleValueFullPrecision: this.props.fullPrecision,
         period: this.props.period?.toSeconds(),
+        start: this.props.start,
+        end: this.props.end,
       },
     }];
   }
