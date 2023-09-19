@@ -240,6 +240,50 @@ test('deletes all objects on delete event', async () => {
   });
 });
 
+test('deletes all objects on delete event even when deny policy assignment fails', async () => {
+  // GIVEN
+  mockS3Client.putBucketPolicy.mockImplementation(async () => {
+    const { S3ServiceException } = jest.requireActual('@aws-sdk/client-s3');
+    return new S3ServiceException({
+      name: 'InvalidObjectState',
+      $fault: 'client',
+      $metadata: {},
+    });
+  });
+
+  mockS3Client.listObjectVersions.mockReturnValue({
+    Versions: [
+      { Key: 'Key1', VersionId: 'VersionId1' },
+      { Key: 'Key2', VersionId: 'VersionId2' },
+    ],
+  });
+
+  // WHEN
+  const event: Partial<AWSLambda.CloudFormationCustomResourceDeleteEvent> = {
+    RequestType: 'Delete',
+    ResourceProperties: {
+      ServiceToken: 'Foo',
+      BucketName: 'MyBucket',
+    },
+  };
+  await invokeHandler(event);
+
+  // THEN
+  expect(mockS3Client.putBucketPolicy).toThrow();
+  expect(mockS3Client.listObjectVersions).toHaveBeenCalledTimes(1);
+  expect(mockS3Client.listObjectVersions).toHaveBeenCalledWith({ Bucket: 'MyBucket' });
+  expect(mockS3Client.deleteObjects).toHaveBeenCalledTimes(1);
+  expect(mockS3Client.deleteObjects).toHaveBeenCalledWith({
+    Bucket: 'MyBucket',
+    Delete: {
+      Objects: [
+        { Key: 'Key1', VersionId: 'VersionId1' },
+        { Key: 'Key2', VersionId: 'VersionId2' },
+      ],
+    },
+  });
+});
+
 test('does not empty bucket if it is not tagged', async () => {
   // GIVEN
   givenNotTaggedForDeletion();

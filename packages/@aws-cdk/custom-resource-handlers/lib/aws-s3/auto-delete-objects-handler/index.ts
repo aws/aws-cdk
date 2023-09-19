@@ -43,15 +43,40 @@ async function denyWrites(bucketName: string) {
   const policy = {
     "Version": "2012-10-17",
     "Statement": [
+      // Prevent any more objects from being created in the bucket
       {
         "Principal": "*",
         "Effect": "Deny",
         "Action": ["s3:PutObject"],
         "Resource": [`arn:aws:s3:::${bucketName}/*`]
+      },
+      // Allow any role to help in the deletion effort of this doomed bucket
+      // once the stack deletion process has begun
+      {
+        "Principal": "*",
+        "Effect": "Allow",
+        "Action": [
+          "s3:DeleteObject*",
+          "s3:DeleteBucket"
+        ],
+        "Resource": [`arn:aws:s3:::${bucketName}/*`]
       }
     ]
   };
-  await s3.putBucketPolicy({ Bucket: bucketName, Policy: JSON.stringify(policy) });
+
+  try {
+    await s3.putBucketPolicy({ Bucket: bucketName, Policy: JSON.stringify(policy) });
+  } catch (error: any) {
+    if (error.name === 'NoSuchBucket') {
+      throw error; // Rethrow for further logging/handling up the stack
+    }
+
+    // The putBucketPolicy call may fail, but the bucket deletion should still proceed
+    // (and likely will succeed). The object and bucket deletion are most important,
+    // not this policy assignment, which only acts as extra insurance against object
+    // writing race conditions. This error is non-fatal, but should be logged.
+    console.warn(`Could not set new object deny policy on bucket '${bucketName}' prior to deletion.`);
+  }
 }
 
 /**
