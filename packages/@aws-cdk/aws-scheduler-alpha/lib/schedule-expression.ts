@@ -41,7 +41,7 @@ export abstract class ScheduleExpression extends Schedule {
    * Create a recurring schedule from a set of cron fields and time zone.
    */
   public static cron(options: CronOptions): ScheduleExpression {
-    return super.protectedCron(options);
+    return super.protectedCron(options, 'aws-scheduler');
   }
 }
 
