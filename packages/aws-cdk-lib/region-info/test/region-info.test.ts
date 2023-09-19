@@ -1,4 +1,4 @@
-import { CLOUDWATCH_LAMBDA_INSIGHTS_ARNS } from '../build-tools/fact-tables';
+import { APPCONFIG_LAMBDA_LAYER_ARNS, CLOUDWATCH_LAMBDA_INSIGHTS_ARNS } from '../build-tools/fact-tables';
 import { FactName, RegionInfo } from '../lib';
 import { AWS_REGIONS, AWS_SERVICES } from '../lib/aws-entities';
 
@@ -10,6 +10,8 @@ test('built-in data is correct', () => {
     const servicePrincipals: { [service: string]: string | undefined } = {};
     const lambdaInsightsVersions: { [service: string]: string | undefined } = {};
     const lambdaInsightsArmVersions: { [service: string]: string | undefined } = {};
+    const appConfigLayerVersions: { [service: string]: string | undefined } = {};
+    const appConfigLayerArmVersions: { [service: string]: string | undefined } = {};
 
     AWS_SERVICES.forEach(service => servicePrincipals[service] = region.servicePrincipal(service));
 
@@ -19,7 +21,15 @@ test('built-in data is correct', () => {
       if ('arm64' in CLOUDWATCH_LAMBDA_INSIGHTS_ARNS[version]) {
         lambdaInsightsArmVersions[version] = region.cloudwatchLambdaInsightsArn(version, 'arm64');
       }
-    };
+    }
+
+    for (const version in APPCONFIG_LAMBDA_LAYER_ARNS) {
+      appConfigLayerVersions[version] = region.appConfigLambdaArn(version);
+
+      if ('arm64' in APPCONFIG_LAMBDA_LAYER_ARNS[version]) {
+        appConfigLayerArmVersions[version] = region.appConfigLambdaArn(version, 'arm64');
+      }
+    }
 
     snapshot[name] = {
       cdkMetadataResourceAvailable: region.cdkMetadataResourceAvailable,
@@ -30,6 +40,8 @@ test('built-in data is correct', () => {
       servicePrincipals,
       lambdaInsightsVersions,
       lambdaInsightsArmVersions,
+      appConfigLayerVersions,
+      appConfigLayerArmVersions,
     };
   }
   expect(snapshot).toMatchSnapshot();

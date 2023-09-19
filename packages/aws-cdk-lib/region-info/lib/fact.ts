@@ -182,6 +182,16 @@ export class FactName {
   }
 
   /**
+   * The ARN of AppConfig Lambda Layer for a given version (e.g. 2.0.181)
+   * @param version The layer version.
+   * @param arch The architecture (optional), defaults to x86_64.
+   */
+  public static appConfigLambdaLayerVersion(version: string, arch?: string) {
+    const suffix = version.split('.').join('_') + `_${arch ?? 'x86_64'}`;
+    return `appconfig-lambda-layer:${suffix}`;
+  }
+
+  /**
    * The name of the regional service principal for a given service.
    *
    * @param service the service name, either simple (e.g: `s3`, `codedeploy`) or qualified (e.g: `s3.amazonaws.com`).
