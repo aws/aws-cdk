@@ -4,6 +4,7 @@ import { S3 } from '@aws-sdk/client-s3';
 import { makeHandler } from '../../nodejs-entrypoint';
 
 const AUTO_DELETE_OBJECTS_TAG = 'aws-cdk:auto-delete-objects';
+const S3_POLICY_STUB = JSON.stringify({ Version: '2012-10-17', Statement: [] });
 
 const s3 = new S3({});
 
@@ -40,31 +41,19 @@ async function onUpdate(event: AWSLambda.CloudFormationCustomResourceEvent) {
  * @param bucketName the bucket name
  */
 async function denyWrites(bucketName: string) {
-  const policy = {
-    "Version": "2012-10-17",
-    "Statement": [
+  try {
+    const prevPolicyJson = (await s3.getBucketPolicy({ Bucket: bucketName }))?.Policy ?? S3_POLICY_STUB;
+    const policy = JSON.parse(prevPolicyJson);
+    policy.Statement.push(
       // Prevent any more objects from being created in the bucket
       {
-        "Principal": "*",
-        "Effect": "Deny",
-        "Action": ["s3:PutObject"],
-        "Resource": [`arn:aws:s3:::${bucketName}/*`]
-      },
-      // Allow any role to help in the deletion effort of this doomed bucket
-      // once the stack deletion process has begun
-      {
-        "Principal": "*",
-        "Effect": "Allow",
-        "Action": [
-          "s3:DeleteObject*",
-          "s3:DeleteBucket"
-        ],
-        "Resource": [`arn:aws:s3:::${bucketName}/*`]
+        Principal: '*',
+        Effect: 'Deny',
+        Action: ['s3:PutObject'],
+        Resource: [`arn:aws:s3:::${bucketName}/*`]
       }
-    ]
-  };
+    );
 
-  try {
     await s3.putBucketPolicy({ Bucket: bucketName, Policy: JSON.stringify(policy) });
   } catch (error: any) {
     if (error.name === 'NoSuchBucket') {
