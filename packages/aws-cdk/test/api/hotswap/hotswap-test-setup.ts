@@ -172,10 +172,6 @@ export class HotswapMockSdkProvider {
     this.mockSdkProvider.stubGetEndpointSuffix(stub);
   }
 
-  public stubS3(stubs: SyncHandlerSubsetOf<AWS.S3>) {
-    this.mockSdkProvider.stubS3(stubs);
-  }
-
   public tryHotswapDeployment(
     hotswapMode: HotswapMode,
     stackArtifact: cxapi.CloudFormationStackArtifact,
