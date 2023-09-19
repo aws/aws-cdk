@@ -1,0 +1,12 @@
+{
+  "version": "34.0.0",
+  "testCases": {
+    "instanceIdentifiersTest/DefaultTest": {
+      "stacks": [
+        "Default"
+      ],
+      "assertionStack": "instanceIdentifiersTest/DefaultTest/DeployAssert",
+      "assertionStackName": "instanceIdentifiersTestDefaultTestDeployAssertC062AEBE"
+    }
+  }
+}
