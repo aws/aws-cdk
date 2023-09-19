@@ -124,14 +124,16 @@
        "MinCapacity": 20
       },
       "Schedule": "cron(0 8 * * ? *)",
-      "ScheduledActionName": "ScaleUpInTheMorning"
+      "ScheduledActionName": "ScaleUpInTheMorning",
+      "Timezone": "Etc/UTC"
      },
      {
       "ScalableTargetAction": {
        "MaxCapacity": 20
       },
       "Schedule": "cron(0 20 * * ? *)",
-      "ScheduledActionName": "ScaleDownAtNight"
+      "ScheduledActionName": "ScaleDownAtNight",
+      "Timezone": "Etc/UTC"
      }
     ],
     "ServiceNamespace": "lambda"
