@@ -24,13 +24,6 @@ export interface GetContextKeyOptions {
    * @default true
    */
   readonly includeEnvironment?: boolean;
-
-  /**
-   * Whether to include the scope automatically
-   *
-   * @default false
-   */
-  readonly includeScope?: boolean;
 }
 
 /**
@@ -76,7 +69,6 @@ export class ContextProvider {
 
     const props = {
       ...((options.includeEnvironment ?? true) ? { account: stack.account, region: stack.region } : {}),
-      ...(options.includeScope ? { scope: scope.node.path } : {}),
       ...options.props,
     };
 

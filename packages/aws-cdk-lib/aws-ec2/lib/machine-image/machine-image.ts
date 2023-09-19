@@ -303,11 +303,10 @@ export interface SsmParameterImageOptions {
   readonly cachedInContext?: boolean;
 
   /**
-   * If true and cachedInContext is true, the context key will be tied to the passed scope rather than global
-   *
-   * @default false
+   * When the image is cached in cdk.context.json, adds an additional discriminator to the
+   * cache key so that separate lookups with the same parameters can have separate cache lifecycles
    */
-  readonly linkContextToScope?: boolean
+  readonly additionalCacheKey?: string;
 
   /**
    * The version of the SSM parameter.
@@ -335,7 +334,7 @@ class GenericSsmParameterImage implements IMachineImage {
    * Return the image to use in the given context
    */
   public getImage(scope: Construct): MachineImageConfig {
-    const imageId = lookupImage(scope, this.props.cachedInContext && this.props.linkContextToScope ? 'scope' : this.props.cachedInContext, this.parameterName);
+    const imageId = lookupImage(scope, this.props.cachedInContext ?? false, this.parameterName, this.props.additionalCacheKey);
 
     const osType = this.props.os ?? OperatingSystemType.LINUX;
     return {
@@ -468,11 +467,10 @@ export interface AmazonLinuxImageProps {
   readonly cachedInContext?: boolean;
 
   /**
-   * If true and cachedInContext is true, the context key will be tied to the passed scope rather than global
-   *
-   * @default false
+   * When the image is cached in cdk.context.json, adds an additional discriminator to the
+   * cache key so that separate lookups with the same parameters can have separate cache lifecycles
    */
-  readonly linkContextToScope?: boolean
+  readonly additionalCacheKey?: string;
 }
 
 /**
@@ -525,20 +523,20 @@ export class AmazonLinuxImage extends GenericSSMParameterImage {
 
   private readonly cachedInContext: boolean;
 
-  private readonly linkContextToScope: boolean;
+  private readonly additionalCacheKey?: string;
 
   constructor(private readonly props: AmazonLinuxImageProps = {}) {
     super(AmazonLinuxImage.ssmParameterName(props), OperatingSystemType.LINUX, props.userData);
 
     this.cachedInContext = props.cachedInContext ?? false;
-    this.linkContextToScope = props.linkContextToScope ?? false;
+    if (props.additionalCacheKey) this.additionalCacheKey = props.additionalCacheKey;
   }
 
   /**
    * Return the image to use in the given context
    */
   public getImage(scope: Construct): MachineImageConfig {
-    const imageId = lookupImage(scope, this.cachedInContext && this.linkContextToScope ? 'scope' : this.cachedInContext, this.parameterName);
+    const imageId = lookupImage(scope, this.cachedInContext, this.parameterName, this.additionalCacheKey);
 
     const osType = OperatingSystemType.LINUX;
     return {
@@ -669,7 +667,8 @@ export class GenericWindowsImage implements IMachineImage {
  * will be used on future runs. To refresh the AMI lookup, you will have to
  * evict the value from the cache using the `cdk context` command. See
  * https://docs.aws.amazon.com/cdk/latest/guide/context.html for more information.
- * If `props.linkContextToScope` is true, the context key will be tied to the passed scope rather than global
+ * If `props.additionalCacheKey` is true, the context key use that value as a discriminator
+ * rather than the cached value being global across all lookups
  */
 export class LookupMachineImage implements IMachineImage {
   constructor(private readonly props: LookupMachineImageProps) {
@@ -694,9 +693,9 @@ export class LookupMachineImage implements IMachineImage {
       props: {
         owners: this.props.owners,
         filters,
+        ...(this.props.additionalCacheKey ? { additionalCacheKey: this.props.additionalCacheKey } : {}),
       } as cxschema.AmiContextQuery,
       dummyValue: 'ami-1234',
-      includeScope: this.props.linkContextToScope,
     }).value as cxapi.AmiContextResponse;
 
     if (typeof value !== 'string') {
@@ -752,10 +751,9 @@ export interface LookupMachineImageProps {
   readonly userData?: UserData;
 
   /**
-   * If true, the context key will be tied to the passed scope rather than global
-   *
-   * @default false
+   * When the image is cached in cdk.context.json, adds an additional discriminator to the
+   * cache key so that separate lookups with the same parameters can have separate cache lifecycles
    */
-  readonly linkContextToScope?: boolean
+  readonly additionalCacheKey?: string;
 }
 

@@ -1260,10 +1260,8 @@ export class Vpc extends VpcBase {
    * will be used on future runs. To refresh the lookup, you will have to
    * evict the value from the cache using the `cdk context` command. See
    * https://docs.aws.amazon.com/cdk/latest/guide/context.html for more information.
-   *
-   * If linkContextToScope is true, the context key will be tied to the passed scope rather than global
    */
-  public static fromLookup(scope: Construct, id: string, options: VpcLookupOptions, linkContextToScope?: boolean): IVpc {
+  public static fromLookup(scope: Construct, id: string, options: VpcLookupOptions): IVpc {
     if (Token.isUnresolved(options.vpcId)
       || Token.isUnresolved(options.vpcName)
       || Object.values(options.tags || {}).some(Token.isUnresolved)
@@ -1294,9 +1292,9 @@ export class Vpc extends VpcBase {
         returnAsymmetricSubnets: true,
         returnVpnGateways: options.returnVpnGateways,
         subnetGroupNameTag: options.subnetGroupNameTag,
+        ...(options.additionalCacheKey ? { additionalCacheKey: options.additionalCacheKey } : {}),
       } as cxschema.VpcContextQuery,
       dummyValue: undefined,
-      includeScope: linkContextToScope,
     }).value;
 
     return new LookedUpVpc(scope, id, attributes ?? DUMMY_VPC_PROPS, attributes === undefined);

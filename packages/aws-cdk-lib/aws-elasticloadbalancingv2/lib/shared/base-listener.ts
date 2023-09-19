@@ -27,6 +27,12 @@ export interface BaseListenerLookupOptions {
    * @default - does not filter by listener port
    */
   readonly listenerPort?: number;
+
+  /**
+   * When the listener is cached in cdk.context.json, adds an additional discriminator to the
+   * cache key so that separate lookups with the same parameters can have separate cache lifecycles
+   */
+  readonly additionalCacheKey?: string;
 }
 
 /**
@@ -76,7 +82,7 @@ export abstract class BaseListener extends Resource implements IListener {
    * listener info.
    * @internal
    */
-  protected static _queryContextProvider(scope: Construct, options: ListenerQueryContextProviderOptions, linkContextToScope?: boolean) {
+  protected static _queryContextProvider(scope: Construct, options: ListenerQueryContextProviderOptions) {
     if (Token.isUnresolved(options.userOptions.loadBalancerArn)
       || Object.values(options.userOptions.loadBalancerTags ?? {}).some(Token.isUnresolved)
       || Token.isUnresolved(options.userOptions.listenerPort)) {
@@ -97,6 +103,7 @@ export abstract class BaseListener extends Resource implements IListener {
         loadBalancerArn: options.userOptions.loadBalancerArn,
         loadBalancerTags: cxschemaTags,
         loadBalancerType: options.loadBalancerType,
+        ...(options.userOptions.additionalCacheKey ? { additionalCacheKey: options.userOptions.additionalCacheKey } : {}),
       } as cxschema.LoadBalancerListenerContextQuery,
       dummyValue: {
         // eslint-disable-next-line @aws-cdk/no-literal-partition
@@ -104,7 +111,6 @@ export abstract class BaseListener extends Resource implements IListener {
         listenerPort: 80,
         securityGroupIds: ['sg-123456789012'],
       } as cxapi.LoadBalancerListenerContextResponse,
-      includeScope: linkContextToScope,
     }).value;
 
     return props;

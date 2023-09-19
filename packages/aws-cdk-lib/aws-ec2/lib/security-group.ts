@@ -367,30 +367,24 @@ export class SecurityGroup extends SecurityGroupBase {
   /**
    * Look up a security group by id.
    *
-   * If linkContextToScope is true, the context key will be tied to the passed scope rather than global
-   *
    * @deprecated Use `fromLookupById()` instead
    */
-  public static fromLookup(scope: Construct, id: string, securityGroupId: string, linkContextToScope?: boolean) {
-    return this.fromLookupAttributes(scope, id, { securityGroupId }, linkContextToScope);
+  public static fromLookup(scope: Construct, id: string, securityGroupId: string, additionalCacheKey?: string) {
+    return this.fromLookupAttributes(scope, id, { securityGroupId, additionalCacheKey });
   }
 
   /**
    * Look up a security group by id.
-   *
-   * If linkContextToScope is true, the context key will be tied to the passed scope rather than global
    */
-  public static fromLookupById(scope: Construct, id: string, securityGroupId: string, linkContextToScope?: boolean) {
-    return this.fromLookupAttributes(scope, id, { securityGroupId }, linkContextToScope);
+  public static fromLookupById(scope: Construct, id: string, securityGroupId: string, additionalCacheKey?: string) {
+    return this.fromLookupAttributes(scope, id, { securityGroupId, additionalCacheKey });
   }
 
   /**
    * Look up a security group by name.
-   *
-   * If linkContextToScope is true, the context key will be tied to the passed scope rather than global
    */
-  public static fromLookupByName(scope: Construct, id: string, securityGroupName: string, vpc: IVpc, linkContextToScope?: boolean) {
-    return this.fromLookupAttributes(scope, id, { securityGroupName, vpc }, linkContextToScope);
+  public static fromLookupByName(scope: Construct, id: string, securityGroupName: string, vpc: IVpc, additionalCacheKey?: string) {
+    return this.fromLookupAttributes(scope, id, { securityGroupName, vpc, additionalCacheKey });
   }
 
   /**
@@ -438,10 +432,8 @@ export class SecurityGroup extends SecurityGroupBase {
 
   /**
    * Look up a security group.
-   *
-   * If linkContextToScope is true, the context key will be tied to the passed scope rather than global
    */
-  private static fromLookupAttributes(scope: Construct, id: string, options: SecurityGroupLookupOptions, linkContextToScope?: boolean) {
+  private static fromLookupAttributes(scope: Construct, id: string, options: SecurityGroupLookupOptions) {
     if (Token.isUnresolved(options.securityGroupId) || Token.isUnresolved(options.securityGroupName) || Token.isUnresolved(options.vpc?.vpcId)) {
       throw new Error('All arguments to look up a security group must be concrete (no Tokens)');
     }
@@ -452,12 +444,12 @@ export class SecurityGroup extends SecurityGroupBase {
         securityGroupId: options.securityGroupId,
         securityGroupName: options.securityGroupName,
         vpcId: options.vpc?.vpcId,
+        ...(options.additionalCacheKey ? { additionalCacheKey: options.additionalCacheKey } : {}),
       },
       dummyValue: {
         securityGroupId: 'sg-12345678',
         allowAllOutbound: true,
       } as cxapi.SecurityGroupContextResponse,
-      includeScope: linkContextToScope,
     }).value;
 
     return SecurityGroup.fromSecurityGroupId(scope, id, attributes.securityGroupId, {
@@ -852,4 +844,10 @@ interface SecurityGroupLookupOptions {
    * @default Don't filter on VPC
    */
   readonly vpc?: IVpc,
+
+  /**
+   * When the security group is cached in cdk.context.json, adds an additional discriminator to the
+   * cache key so that separate lookups with the same parameters can have separate cache lifecycles
+   */
+  readonly additionalCacheKey?: string;
 }

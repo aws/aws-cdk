@@ -39,7 +39,7 @@ export class TestCase extends Stack {
       instanceType,
       machineImage: ec2.MachineImage.latestAmazonLinux2023({
         cachedInContext: true,
-        linkContextToScope: true,
+        additionalCacheKey: 'extraKey',
       }),
       vpc,
     });

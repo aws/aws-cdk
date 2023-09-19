@@ -531,17 +531,15 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    *
    * Requires that the stack this scope is defined in will have explicit
    * account/region information. Otherwise, it will fail during synthesis.
-   *
-   * If linkContextToScope is true, the context key will be tied to the passed scope rather than global
    */
-  public static valueFromLookup(scope: Construct, parameterName: string, linkContextToScope?: boolean): string {
+  public static valueFromLookup(scope: Construct, parameterName: string, additionalCacheKey?: string): string {
     const value = ContextProvider.getValue(scope, {
       provider: cxschema.ContextProvider.SSM_PARAMETER_PROVIDER,
       props: {
         parameterName,
+        additionalCacheKey,
       },
-      dummyValue: linkContextToScope ? `dummy-value-for-${scope.node.path}-${parameterName}` : `dummy-value-for-${parameterName}`,
-      includeScope: linkContextToScope,
+      dummyValue: `dummy-value-for-${parameterName}`,
     }).value;
 
     return value;

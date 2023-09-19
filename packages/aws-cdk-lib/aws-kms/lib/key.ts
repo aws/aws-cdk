@@ -622,10 +622,8 @@ export class Key extends KeyBase {
    * will be used on future runs. To refresh the lookup, you will have to
    * evict the value from the cache using the `cdk context` command. See
    * https://docs.aws.amazon.com/cdk/latest/guide/context.html for more information.
-   *
-   * If linkContextToScope is true, the context key will be tied to the passed scope rather than global
    */
-  public static fromLookup(scope: Construct, id: string, options: KeyLookupOptions, linkContextToScope?: boolean): IKey {
+  public static fromLookup(scope: Construct, id: string, options: KeyLookupOptions): IKey {
     class Import extends KeyBase {
       public readonly keyArn: string;
       public readonly keyId: string;
@@ -650,11 +648,11 @@ export class Key extends KeyBase {
       provider: cxschema.ContextProvider.KEY_PROVIDER,
       props: {
         aliasName: options.aliasName,
+        ...(options.additionalCacheKey ? { additionalCacheKey: options.additionalCacheKey } : {}),
       } as cxschema.KeyContextQuery,
       dummyValue: {
         keyId: '1234abcd-12ab-34cd-56ef-1234567890ab',
       },
-      includeScope: linkContextToScope,
     }).value;
 
     return new Import(attributes.keyId,

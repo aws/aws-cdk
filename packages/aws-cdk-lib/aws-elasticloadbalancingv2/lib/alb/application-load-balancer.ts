@@ -76,19 +76,16 @@ export interface ApplicationLoadBalancerLookupOptions extends BaseLoadBalancerLo
 export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplicationLoadBalancer {
   /**
    * Look up an application load balancer.
-   *
-   * If linkContextToScope is true, the context key will be tied to the passed scope rather than global
    */
   public static fromLookup(
     scope: Construct,
     id: string,
     options: ApplicationLoadBalancerLookupOptions,
-    linkContextToScope?: boolean,
   ): IApplicationLoadBalancer {
     const props = BaseLoadBalancer._queryContextProvider(scope, {
       userOptions: options,
       loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
-    }, linkContextToScope);
+    });
 
     return new LookedUpApplicationLoadBalancer(scope, id, props);
   }

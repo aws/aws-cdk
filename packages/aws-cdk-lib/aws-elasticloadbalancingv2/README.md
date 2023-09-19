@@ -523,10 +523,10 @@ The result of a `fromLookup()` operation will be written to a file
 called `cdk.context.json`. You must commit this file to source control so
 that the lookup values are available in non-privileged environments such
 as CI build steps, and to ensure your template builds are repeatable.
-If you want the key of the context variable to be tied to the scope
-passed to `fromLookup` instead of being global (usinwhich would use the same
-value any time you call `fromLookup` across your entire app),
-you can set the `linkContextToScope` argument to `true`
+If you do not want the value of the context variable to be global (ie, having the same
+value returned any time you call `fromLookup` across your entire app),
+you can set the `additionalCacheKey` argument (eg, to `this.node.path` to tie it
+to the scope of the current construct)
 
 ### Load Balancer lookup options
 

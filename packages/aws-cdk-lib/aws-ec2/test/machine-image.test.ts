@@ -209,7 +209,7 @@ test('cached lookups of Amazon Linux', () => {
 
 test('cached lookups of Amazon Linux linked to scope', () => {
   // WHEN
-  const ami = ec2.MachineImage.latestAmazonLinux({ cachedInContext: true, linkContextToScope: true }).getImage(stack).imageId;
+  const ami = ec2.MachineImage.latestAmazonLinux({ cachedInContext: true, additionalCacheKey: 'extraKey' }).getImage(stack).imageId;
 
   // THEN
   expect(ami).toEqual('dummy-value-for-Stack-/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2');
@@ -221,7 +221,7 @@ test('cached lookups of Amazon Linux linked to scope', () => {
         lookupRoleArn: 'arn:${AWS::Partition}:iam::1234:role/cdk-hnb659fds-lookup-role-1234-testregion',
         region: 'testregion',
         parameterName: '/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2',
-        scope: 'Stack',
+        additionalCacheKey: 'extraKey',
       },
       provider: 'ssm',
     },

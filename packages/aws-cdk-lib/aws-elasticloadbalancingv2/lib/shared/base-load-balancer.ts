@@ -84,6 +84,12 @@ export interface BaseLoadBalancerLookupOptions {
    * @default - does not match load balancers by tags
    */
   readonly loadBalancerTags?: Record<string, string>;
+
+  /**
+   * When the load balancer is cached in cdk.context.json, adds an additional discriminator to the
+   * cache key so that separate lookups with the same parameters can have separate cache lifecycles
+   */
+  readonly additionalCacheKey?: string;
 }
 
 /**
@@ -113,7 +119,6 @@ export abstract class BaseLoadBalancer extends Resource {
   protected static _queryContextProvider(
     scope: Construct,
     options: LoadBalancerQueryContextProviderOptions,
-    contextCachelinkContextToScope?: boolean,
   ) {
     if (Token.isUnresolved(options.userOptions.loadBalancerArn)
       || Object.values(options.userOptions.loadBalancerTags ?? {}).some(Token.isUnresolved)) {
@@ -131,6 +136,7 @@ export abstract class BaseLoadBalancer extends Resource {
         loadBalancerArn: options.userOptions.loadBalancerArn,
         loadBalancerTags: cxschemaTags,
         loadBalancerType: options.loadBalancerType,
+        ...(options.userOptions.additionalCacheKey ? { additionalCacheKey: options.userOptions.additionalCacheKey } : {}),
       } as cxschema.LoadBalancerContextQuery,
       dummyValue: {
         ipAddressType: cxapi.LoadBalancerIpAddressType.DUAL_STACK,
@@ -141,7 +147,6 @@ export abstract class BaseLoadBalancer extends Resource {
         securityGroupIds: ['sg-1234'],
         vpcId: 'vpc-12345',
       } as cxapi.LoadBalancerContextResponse,
-      includeScope: contextCachelinkContextToScope,
     }).value;
 
     return props;

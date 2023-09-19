@@ -128,19 +128,16 @@ class NetworkLoadBalancerMetrics implements INetworkLoadBalancerMetrics {
 export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoadBalancer {
   /**
    * Looks up the network load balancer.
-   *
-   * If linkContextToScope is true, the cached context key will be tied to the passed scope rather than global
    */
   public static fromLookup(
     scope: Construct,
     id: string,
     options: NetworkLoadBalancerLookupOptions,
-    linkContextToScope?: boolean,
   ): INetworkLoadBalancer {
     const props = BaseLoadBalancer._queryContextProvider(scope, {
       userOptions: options,
       loadBalancerType: cxschema.LoadBalancerType.NETWORK,
-    }, linkContextToScope);
+    });
 
     return new LookedUpNetworkLoadBalancer(scope, id, props);
   }

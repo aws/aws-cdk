@@ -47,11 +47,10 @@ export interface AmazonLinuxImageSsmParameterBaseOptions {
   readonly cachedInContext?: boolean;
 
   /**
-   * If true and cachedInContext is true, the context key will be tied to the passed scope rather than global
-   *
-   * @default false
+   * When the image is cached in cdk.context.json, adds an additional discriminator to the
+   * cache key so that separate lookups with the same parameters can have separate cache lifecycles
    */
-  readonly linkContextToScope?: boolean
+  readonly additionalCacheKey?: string;
 
   /**
    * Initial user data
@@ -73,14 +72,14 @@ export interface AmazonLinuxImageSsmParameterBaseProps extends AmazonLinuxImageS
 
 export abstract class AmazonLinuxImageSsmParameterBase implements IMachineImage {
   private readonly cachedInContext: boolean;
-  private readonly linkContextToScope: boolean;
+  private readonly additionalCacheKey?: string;
   constructor(private readonly props: AmazonLinuxImageSsmParameterBaseProps) {
     this.cachedInContext = this.props.cachedInContext ?? true;
-    this.linkContextToScope = this.props.linkContextToScope ?? false;
+    if (props.additionalCacheKey) this.additionalCacheKey = this.props.additionalCacheKey;
   }
 
   getImage(scope: Construct): MachineImageConfig {
-    const imageId = lookupImage(scope, this.cachedInContext && this.linkContextToScope ? 'scope' : this.cachedInContext, this.props.parameterName);
+    const imageId = lookupImage(scope, this.cachedInContext, this.props.parameterName, this.additionalCacheKey);
 
     const osType = OperatingSystemType.LINUX;
     return {

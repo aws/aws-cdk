@@ -75,4 +75,10 @@ export interface VpcLookupOptions {
    * @default the account id of the parent stack
    */
   readonly ownerAccountId?: string;
+
+  /**
+   * When the vpc is cached in cdk.context.json, adds an additional discriminator to the
+   * cache key so that separate lookups with the same parameters can have separate cache lifecycles
+   */
+  readonly additionalCacheKey?: string;
 }

@@ -156,14 +156,15 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
-If you want to create a distinct context variable for the AutoScalingGroup instead of
-using a global variable that will resolve to the same variable across your entire app,
-you can pass `linkContextToScope: true`:
+If you do not want the value of the context variable to be global (ie, having the same
+value returned any time you call `EcsOptimizedImage.amazonLinux` across your entire app),
+you can set the `additionalCacheKey` argument (eg, to `this.node.path` to tie it
+to the scope of the current construct)
 
 ```ts
 declare const vpc: ec2.Vpc;
 const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
-  machineImage: ecs.EcsOptimizedImage.amazonLinux({ cachedInContext: true, linkContextToScope: true }),
+  machineImage: ecs.EcsOptimizedImage.amazonLinux({ cachedInContext: true, additionalCacheKey: this.node.path }),
   vpc,
   instanceType: new ec2.InstanceType('t2.micro'),
 });

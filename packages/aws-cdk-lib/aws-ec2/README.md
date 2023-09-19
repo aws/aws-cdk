@@ -504,10 +504,10 @@ The result of the `Vpc.fromLookup()` operation will be written to a file
 called `cdk.context.json`. You must commit this file to source control so
 that the lookup values are available in non-privileged environments such
 as CI build steps, and to ensure your template builds are repeatable.
-If you want the key of the context variable to be tied to the scope
-passed to `fromLookup` instead of being global (usinwhich would use the same
-value any time you call `fromLookup` across your entire app),
-you can set the `linkContextToScope` argument to `true`
+If you do not want the value of the context variable to be global (ie, having the same
+value returned any time you call `fromLookup` across your entire app),
+you can set the `additionalCacheKey` argument (eg, to `this.node.path` to tie it
+to the scope of the current construct)
 
 Here's how `Vpc.fromLookup()` can be used:
 
@@ -748,7 +748,7 @@ If the security group ID is known and configuration details are unknown, use met
 const sg = ec2.SecurityGroup.fromLookupById(this, 'SecurityGroupLookup', 'sg-1234');
 ```
 
-The result of `SecurityGroup.fromLookupByName` and `SecurityGroup.fromLookupById` operations will be written to a file called `cdk.context.json`. You must commit this file to source control so that the lookup values are available in non-privileged environments such as CI build steps, and to ensure your template builds are repeatable. If you want the key of the context variable to be tied to the scope passed to `fromLookupByName`/`fromLookupById` instead of being global (which would use the same value any time you call `fromLookup` across your entire app), you can set the `linkContextToScope` argument to `true`
+The result of `SecurityGroup.fromLookupByName` and `SecurityGroup.fromLookupById` operations will be written to a file called `cdk.context.json`. You must commit this file to source control so that the lookup values are available in non-privileged environments such as CI build steps, and to ensure your template builds are repeatable. If you do not want the value of the context variable to be global (ie, having the same value returned any time you call `fromLookup` across your entire app), you can set the `additionalCacheKey` argument (eg, to `this.node.path` to tie it to the scope of the current construct)
 
 ### Cross Stack Connections
 
@@ -836,9 +836,10 @@ examples of images you might want to use:
 > [Runtime Context](https://docs.aws.amazon.com/cdk/latest/guide/context.html) in the CDK
 > developer guide.
 > 
-> If you want the key of the context variable to be tied to the scope
-> passed to `lookup` instead of being global (which would use the same value any
-> time you call `lookup` across your entire app), you can set the `linkContextToScope` argument to `true`
+> If you do not want the value of the context variable to be to be global
+> (ie, having the same value returned any time you call `lookup` across your entire app),
+> you can set the `additionalCacheKey` argument (eg, to `this.node.path` to tie it
+> to the scope of the current construct)
 >
 > `MachineImage.genericLinux()`, `MachineImage.genericWindows()` will use `CfnMapping` in
 > an agnostic stack.
@@ -1168,7 +1169,7 @@ new ec2.Instance(this, 'LatestAl2023', {
     cachedInContext: true,
     // creates a distinct context variable for this image, instead of resolving to the same
     // value anywhere this lookup is done in your app
-    linkContextToScope: true,
+    additionalCacheKey: this.node.path,
   }),
 });
 
@@ -1180,7 +1181,7 @@ new ec2.Instance(this, 'LatestAl2023', {
   machineImage: new ec2.AmazonLinux2023ImageSsmParameter({
     // creates a distinct context variable for this image, instead of resolving to the same
     // value anywhere this lookup is done in your app
-    linkContextToScope: true,
+    additionalCacheKey: this.node.path,
   }),
 });
 
