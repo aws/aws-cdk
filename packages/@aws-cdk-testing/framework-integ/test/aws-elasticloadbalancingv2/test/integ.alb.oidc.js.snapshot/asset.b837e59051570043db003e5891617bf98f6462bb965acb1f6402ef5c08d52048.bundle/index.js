@@ -1,4 +1,3 @@
-"use strict";
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -2275,20 +2274,25 @@ var require_chain = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.chain = void 0;
     var ProviderError_1 = require_ProviderError();
-    function chain(...providers) {
-      return () => {
-        let promise = Promise.reject(new ProviderError_1.ProviderError("No providers in chain"));
-        for (const provider of providers) {
-          promise = promise.catch((err) => {
-            if (err === null || err === void 0 ? void 0 : err.tryNextLink) {
-              return provider();
-            }
-            throw err;
-          });
+    var chain = (...providers) => async () => {
+      if (providers.length === 0) {
+        throw new ProviderError_1.ProviderError("No providers in chain");
+      }
+      let lastProviderError;
+      for (const provider of providers) {
+        try {
+          const credentials = await provider();
+          return credentials;
+        } catch (err) {
+          lastProviderError = err;
+          if (err === null || err === void 0 ? void 0 : err.tryNextLink) {
+            continue;
+          }
+          throw err;
         }
-        return promise;
-      };
-    }
+      }
+      throw lastProviderError;
+    };
     exports.chain = chain;
   }
 });
@@ -10574,7 +10578,7 @@ var require_package = __commonJS({
     module2.exports = {
       name: "@aws-sdk/client-sfn",
       description: "AWS SDK for JavaScript Sfn Client for Node.js, Browser and React Native",
-      version: "3.398.0",
+      version: "3.405.0",
       scripts: {
         build: "concurrently 'yarn:build:cjs' 'yarn:build:es' 'yarn:build:types'",
         "build:cjs": "tsc -p tsconfig.cjs.json",
@@ -10594,8 +10598,8 @@ var require_package = __commonJS({
       dependencies: {
         "@aws-crypto/sha256-browser": "3.0.0",
         "@aws-crypto/sha256-js": "3.0.0",
-        "@aws-sdk/client-sts": "3.398.0",
-        "@aws-sdk/credential-provider-node": "3.398.0",
+        "@aws-sdk/client-sts": "3.405.0",
+        "@aws-sdk/credential-provider-node": "3.405.0",
         "@aws-sdk/middleware-host-header": "3.398.0",
         "@aws-sdk/middleware-logger": "3.398.0",
         "@aws-sdk/middleware-recursion-detection": "3.398.0",
@@ -10604,7 +10608,7 @@ var require_package = __commonJS({
         "@aws-sdk/types": "3.398.0",
         "@aws-sdk/util-endpoints": "3.398.0",
         "@aws-sdk/util-user-agent-browser": "3.398.0",
-        "@aws-sdk/util-user-agent-node": "3.398.0",
+        "@aws-sdk/util-user-agent-node": "3.405.0",
         "@smithy/config-resolver": "^2.0.5",
         "@smithy/fetch-http-handler": "^2.0.5",
         "@smithy/hash-node": "^2.0.5",
@@ -10614,7 +10618,7 @@ var require_package = __commonJS({
         "@smithy/middleware-retry": "^2.0.5",
         "@smithy/middleware-serde": "^2.0.5",
         "@smithy/middleware-stack": "^2.0.0",
-        "@smithy/node-config-provider": "^2.0.5",
+        "@smithy/node-config-provider": "^2.0.6",
         "@smithy/node-http-handler": "^2.0.5",
         "@smithy/protocol-http": "^2.0.5",
         "@smithy/smithy-client": "^2.0.5",
@@ -10623,8 +10627,8 @@ var require_package = __commonJS({
         "@smithy/util-base64": "^2.0.0",
         "@smithy/util-body-length-browser": "^2.0.0",
         "@smithy/util-body-length-node": "^2.1.0",
-        "@smithy/util-defaults-mode-browser": "^2.0.5",
-        "@smithy/util-defaults-mode-node": "^2.0.5",
+        "@smithy/util-defaults-mode-browser": "^2.0.6",
+        "@smithy/util-defaults-mode-node": "^2.0.6",
         "@smithy/util-retry": "^2.0.0",
         "@smithy/util-utf8": "^2.0.0",
         tslib: "^2.5.0"
@@ -10713,7 +10717,7 @@ var require_package2 = __commonJS({
     module2.exports = {
       name: "@aws-sdk/client-sts",
       description: "AWS SDK for JavaScript Sts Client for Node.js, Browser and React Native",
-      version: "3.398.0",
+      version: "3.405.0",
       scripts: {
         build: "concurrently 'yarn:build:cjs' 'yarn:build:es' 'yarn:build:types'",
         "build:cjs": "tsc -p tsconfig.cjs.json",
@@ -10735,7 +10739,7 @@ var require_package2 = __commonJS({
       dependencies: {
         "@aws-crypto/sha256-browser": "3.0.0",
         "@aws-crypto/sha256-js": "3.0.0",
-        "@aws-sdk/credential-provider-node": "3.398.0",
+        "@aws-sdk/credential-provider-node": "3.405.0",
         "@aws-sdk/middleware-host-header": "3.398.0",
         "@aws-sdk/middleware-logger": "3.398.0",
         "@aws-sdk/middleware-recursion-detection": "3.398.0",
@@ -10745,7 +10749,7 @@ var require_package2 = __commonJS({
         "@aws-sdk/types": "3.398.0",
         "@aws-sdk/util-endpoints": "3.398.0",
         "@aws-sdk/util-user-agent-browser": "3.398.0",
-        "@aws-sdk/util-user-agent-node": "3.398.0",
+        "@aws-sdk/util-user-agent-node": "3.405.0",
         "@smithy/config-resolver": "^2.0.5",
         "@smithy/fetch-http-handler": "^2.0.5",
         "@smithy/hash-node": "^2.0.5",
@@ -10755,7 +10759,7 @@ var require_package2 = __commonJS({
         "@smithy/middleware-retry": "^2.0.5",
         "@smithy/middleware-serde": "^2.0.5",
         "@smithy/middleware-stack": "^2.0.0",
-        "@smithy/node-config-provider": "^2.0.5",
+        "@smithy/node-config-provider": "^2.0.6",
         "@smithy/node-http-handler": "^2.0.5",
         "@smithy/protocol-http": "^2.0.5",
         "@smithy/smithy-client": "^2.0.5",
@@ -10764,8 +10768,8 @@ var require_package2 = __commonJS({
         "@smithy/util-base64": "^2.0.0",
         "@smithy/util-body-length-browser": "^2.0.0",
         "@smithy/util-body-length-node": "^2.1.0",
-        "@smithy/util-defaults-mode-browser": "^2.0.5",
-        "@smithy/util-defaults-mode-node": "^2.0.5",
+        "@smithy/util-defaults-mode-browser": "^2.0.6",
+        "@smithy/util-defaults-mode-node": "^2.0.6",
         "@smithy/util-retry": "^2.0.0",
         "@smithy/util-utf8": "^2.0.0",
         "fast-xml-parser": "4.2.5",
@@ -13944,6 +13948,14 @@ var require_getHomeDir = __commonJS({
     exports.getHomeDir = void 0;
     var os_1 = require("os");
     var path_1 = require("path");
+    var process_1 = require("process");
+    var homeDirCache = {};
+    var getHomeDirCacheKey = () => {
+      if (process_1.geteuid) {
+        return `${(0, process_1.geteuid)()}`;
+      }
+      return "DEFAULT";
+    };
     var getHomeDir = () => {
       const { HOME, USERPROFILE, HOMEPATH, HOMEDRIVE = `C:${path_1.sep}` } = process.env;
       if (HOME)
@@ -13952,7 +13964,10 @@ var require_getHomeDir = __commonJS({
         return USERPROFILE;
       if (HOMEPATH)
         return `${HOMEDRIVE}${HOMEPATH}`;
-      return (0, os_1.homedir)();
+      const homeDirCacheKey = getHomeDirCacheKey();
+      if (!homeDirCache[homeDirCacheKey])
+        homeDirCache[homeDirCacheKey] = (0, os_1.homedir)();
+      return homeDirCache[homeDirCacheKey];
     };
     exports.getHomeDir = getHomeDir;
   }
@@ -14984,7 +14999,7 @@ var require_package3 = __commonJS({
     module2.exports = {
       name: "@aws-sdk/client-sso",
       description: "AWS SDK for JavaScript Sso Client for Node.js, Browser and React Native",
-      version: "3.398.0",
+      version: "3.405.0",
       scripts: {
         build: "concurrently 'yarn:build:cjs' 'yarn:build:es' 'yarn:build:types'",
         "build:cjs": "tsc -p tsconfig.cjs.json",
@@ -15011,7 +15026,7 @@ var require_package3 = __commonJS({
         "@aws-sdk/types": "3.398.0",
         "@aws-sdk/util-endpoints": "3.398.0",
         "@aws-sdk/util-user-agent-browser": "3.398.0",
-        "@aws-sdk/util-user-agent-node": "3.398.0",
+        "@aws-sdk/util-user-agent-node": "3.405.0",
         "@smithy/config-resolver": "^2.0.5",
         "@smithy/fetch-http-handler": "^2.0.5",
         "@smithy/hash-node": "^2.0.5",
@@ -15021,7 +15036,7 @@ var require_package3 = __commonJS({
         "@smithy/middleware-retry": "^2.0.5",
         "@smithy/middleware-serde": "^2.0.5",
         "@smithy/middleware-stack": "^2.0.0",
-        "@smithy/node-config-provider": "^2.0.5",
+        "@smithy/node-config-provider": "^2.0.6",
         "@smithy/node-http-handler": "^2.0.5",
         "@smithy/protocol-http": "^2.0.5",
         "@smithy/smithy-client": "^2.0.5",
@@ -15030,8 +15045,8 @@ var require_package3 = __commonJS({
         "@smithy/util-base64": "^2.0.0",
         "@smithy/util-body-length-browser": "^2.0.0",
         "@smithy/util-body-length-node": "^2.1.0",
-        "@smithy/util-defaults-mode-browser": "^2.0.5",
-        "@smithy/util-defaults-mode-node": "^2.0.5",
+        "@smithy/util-defaults-mode-browser": "^2.0.6",
+        "@smithy/util-defaults-mode-node": "^2.0.6",
         "@smithy/util-retry": "^2.0.0",
         "@smithy/util-utf8": "^2.0.0",
         tslib: "^2.5.0"
@@ -31465,7 +31480,6 @@ var CustomResourceHandler = class {
   constructor(event, context) {
     this.event = event;
     this.context = context;
-    this.timedOut = false;
     this.timeout = setTimeout(async () => {
       await this.respond({
         status: "FAILED",
@@ -31477,6 +31491,9 @@ var CustomResourceHandler = class {
     this.event = event;
     this.physicalResourceId = extractPhysicalResourceId(event);
   }
+  physicalResourceId;
+  timeout;
+  timedOut = false;
   /**
    * Handles executing the custom resource event. If `stateMachineArn` is present
    * in the props then trigger the waiter statemachine
@@ -31610,6 +31627,7 @@ var AssertionHandler = class extends CustomResourceHandler {
   }
 };
 var MatchCreator = class {
+  parsedObj;
   constructor(obj) {
     this.parsedObj = {
       matcher: obj
@@ -31751,11 +31769,19 @@ function parseJsonPayload(payload) {
 function decodeParameters(obj) {
   return Object.fromEntries(Object.entries(obj).map(([key, value]) => {
     try {
-      return [key, JSON.parse(value)];
+      return [key, decodeValue(value)];
     } catch {
       return [key, value];
     }
   }));
+}
+function decodeValue(value) {
+  if (value != null && !Array.isArray(value) && typeof value === "object") {
+    if (value.$type === "ArrayBufferView") {
+      return new TextEncoder().encode(value.string);
+    }
+  }
+  return JSON.parse(value);
 }
 
 // lib/assertions/providers/lambda-handler/sdk.ts
