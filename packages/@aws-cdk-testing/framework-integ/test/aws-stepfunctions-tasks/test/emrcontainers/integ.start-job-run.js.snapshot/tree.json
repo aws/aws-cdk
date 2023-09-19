@@ -2649,7 +2649,7 @@
                         "role": {
                           "Ref": "referencetoawsstepfunctionstasksemrcontainersstartjobruntestintegrationtesteksclusterKubectlHandlerRole9370F2F5Arn"
                         },
-                        "runtime": "python3.7",
+                        "runtime": "python3.10",
                         "timeout": 900,
                         "vpcConfig": {
                           "subnetIds": [
@@ -3128,7 +3128,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/f6c0b12449066be96fb6e4305b8351134a96c950f4d5107dde4397c5935cd6b8.json"
+                          "/9cb3146bb658283e5521b158afa91dff80b19807fe44cb63a1ab71d876960233.json"
                         ]
                       ]
                     }
