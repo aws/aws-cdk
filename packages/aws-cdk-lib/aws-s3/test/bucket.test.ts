@@ -3149,6 +3149,7 @@ describe('bucket', () => {
         'Statement': [
           {
             'Action': [
+              's3:PutBucketPolicy',
               's3:GetBucket*',
               's3:List*',
               's3:DeleteObject*',
