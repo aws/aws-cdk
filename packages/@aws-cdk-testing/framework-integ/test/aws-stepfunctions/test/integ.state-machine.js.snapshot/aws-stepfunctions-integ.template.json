@@ -115,13 +115,13 @@
   "StateMachine2E01A3A5": {
    "Type": "AWS::StepFunctions::StateMachine",
    "Properties": {
+    "DefinitionString": "{\"StartAt\":\"wait time\",\"States\":{\"wait time\":{\"Type\":\"Wait\",\"SecondsPath\":\"$.waitSeconds\",\"Next\":\"choice\"},\"choice\":{\"Type\":\"Choice\",\"Comment\":\"this is a comment for the choice state\",\"Choices\":[{\"Variable\":\"$.success\",\"IsPresent\":true,\"Next\":\"success\",\"Comment\":\"this is a comment for the when condition\"},{\"Variable\":\"$.noComment\",\"IsPresent\":true,\"Next\":\"short wait time\"}],\"Default\":\"success\"},\"success\":{\"Type\":\"Succeed\"},\"short wait time\":{\"Type\":\"Wait\",\"Seconds\":1,\"Next\":\"success\"}},\"Comment\":\"a super cool state machine\"}",
     "RoleArn": {
      "Fn::GetAtt": [
       "StateMachineRoleB840431D",
       "Arn"
      ]
-    },
-    "DefinitionString": "{\"StartAt\":\"wait time\",\"States\":{\"wait time\":{\"Type\":\"Wait\",\"SecondsPath\":\"$.waitSeconds\",\"End\":true}},\"Comment\":\"a super cool state machine\"}"
+    }
    },
    "DependsOn": [
     "StateMachineRoleB840431D"
