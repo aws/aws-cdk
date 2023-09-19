@@ -23,7 +23,7 @@
     "Role": {
      "Ref": "referencetoawsstepfunctionstasksemrcontainersstartjobruntestintegrationtesteksclusterKubectlHandlerRole9370F2F5Arn"
     },
-    "Runtime": "python3.7",
+    "Runtime": "python3.10",
     "Timeout": 900,
     "VpcConfig": {
      "SecurityGroupIds": [
