@@ -538,6 +538,8 @@ function renderRetry(retry: RetryProps) {
     IntervalSeconds: retry.interval && retry.interval.toSeconds(),
     MaxAttempts: retry.maxAttempts,
     BackoffRate: retry.backoffRate,
+    MaxDelaySeconds: retry.maxDelay && retry.maxDelay.toSeconds(),
+    JitterStrategy: retry.jitterStrategy,
   };
 }
 
