@@ -18,6 +18,10 @@ export interface IWebSocketIntegration extends IIntegration {
  */
 export enum WebSocketIntegrationType {
   /**
+   * AWS Integration Type, used to directly integrate WebSockets to AWS services
+   */
+  AWS = 'AWS',
+  /**
    * AWS Proxy Integration Type
    */
   AWS_PROXY = 'AWS_PROXY',
@@ -45,6 +49,27 @@ export interface WebSocketIntegrationProps {
    * Integration URI.
    */
   readonly integrationUri: string;
+
+  /**
+   * Integration Method
+   */
+  readonly integrationMethod?: string;
+
+  /**
+   * Credentials Arn
+   */
+  readonly credentialsArn?: string;
+
+  /**
+   * Template Selection Expression
+   */
+  readonly templateSelectionExpression?: string;
+
+  /**
+   * Request Templates
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigatewayv2-integration.html#cfn-apigatewayv2-integration-requesttemplates
+   */
+  readonly requestTemplates?: { [key: string]: string };
 }
 
 /**
@@ -61,6 +86,10 @@ export class WebSocketIntegration extends Resource implements IWebSocketIntegrat
       apiId: props.webSocketApi.apiId,
       integrationType: props.integrationType,
       integrationUri: props.integrationUri,
+      integrationMethod: props.integrationMethod,
+      requestTemplates: props.requestTemplates,
+      credentialsArn: props.credentialsArn,
+      templateSelectionExpression: props.templateSelectionExpression,
     });
     this.integrationId = integ.ref;
     this.webSocketApi = props.webSocketApi;
@@ -112,6 +141,10 @@ export abstract class WebSocketRouteIntegration {
         webSocketApi: options.route.webSocketApi,
         integrationType: config.type,
         integrationUri: config.uri,
+        integrationMethod: config.method,
+        requestTemplates: config.requestTemplates,
+        credentialsArn: config.credentialsArn,
+        templateSelectionExpression: config.templateSelectionExpression,
       });
     }
 
@@ -137,4 +170,25 @@ export interface WebSocketRouteIntegrationConfig {
    * Integration URI
    */
   readonly uri: string;
+
+  /**
+   * Integration Method
+   */
+  readonly method?: string;
+
+  /**
+   * Credentials Arn
+   */
+  readonly credentialsArn?: string;
+
+  /**
+   * Template Selection Expression
+   */
+  readonly templateSelectionExpression?: string;
+
+  /**
+   * Request Templates
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigatewayv2-integration.html#cfn-apigatewayv2-integration-requesttemplates
+   */
+  readonly requestTemplates?: { [key: string]: string };
 }
