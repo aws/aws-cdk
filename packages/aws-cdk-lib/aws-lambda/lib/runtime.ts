@@ -304,7 +304,7 @@ export class Runtime {
   /**
    * Enabled for runtime enums that always target the latest available.
    */
-  public readonly isVariable: Boolean;
+  public readonly isVariable: boolean;
 
   constructor(name: string, family?: RuntimeFamily, props: LambdaRuntimeProps = {}) {
     this.name = name;

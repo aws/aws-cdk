@@ -9,7 +9,7 @@ import { RemovalPolicy, Stack, Annotations as CoreAnnotations } from '../../core
 import {
   AuroraEngineVersion, AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, CfnDBCluster, Credentials, DatabaseCluster,
   DatabaseClusterEngine, DatabaseClusterFromSnapshot, ParameterGroup, PerformanceInsightRetention, SubnetGroup, DatabaseSecret,
-  DatabaseInstanceEngine, SqlServerEngineVersion, SnapshotCredentials, InstanceUpdateBehaviour, NetworkType, ClusterInstance,
+  DatabaseInstanceEngine, SqlServerEngineVersion, SnapshotCredentials, InstanceUpdateBehaviour, NetworkType, ClusterInstance, CaCertificate,
 } from '../lib';
 
 describe('cluster new api', () => {
@@ -924,6 +924,54 @@ describe('cluster new api', () => {
         'Writer InstanceSize: m5.24xlarge\n'+
         'Reader InstanceSizes: m5.xlarge [ack: @aws-cdk/aws-rds:provisionedReadersDontMatchWriter]',
       );
+    });
+
+    test('support CA certificate identifier on writer and readers', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc,
+        writer: ClusterInstance.provisioned('writer', {
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE24 ),
+          caCertificate: CaCertificate.RDS_CA_RDS4096_G1,
+        }),
+        readers: [
+          ClusterInstance.serverlessV2('reader', {
+            caCertificate: CaCertificate.RDS_CA_RDS2048_G1,
+          }),
+          ClusterInstance.provisioned('reader2', {
+            promotionTier: 1,
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE24 ),
+            caCertificate: CaCertificate.of('custom-ca-id'),
+          }),
+        ],
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.resourceCountIs('AWS::RDS::DBInstance', 3);
+      template.hasResourceProperties('AWS::RDS::DBInstance', {
+        DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
+        DBInstanceClass: 'db.m5.24xlarge',
+        PromotionTier: 0,
+        CACertificateIdentifier: 'rds-ca-rsa4096-g1',
+      });
+      template.hasResourceProperties('AWS::RDS::DBInstance', {
+        DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
+        DBInstanceClass: 'db.serverless',
+        PromotionTier: 2,
+        CACertificateIdentifier: 'rds-ca-rsa2048-g1',
+      });
+      template.hasResourceProperties('AWS::RDS::DBInstance', {
+        DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
+        DBInstanceClass: 'db.m5.24xlarge',
+        PromotionTier: 1,
+        CACertificateIdentifier: 'custom-ca-id',
+      });
     });
   });
 });
