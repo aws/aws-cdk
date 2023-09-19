@@ -2,6 +2,7 @@
 import { Lambda } from 'aws-sdk';
 import * as setup from './hotswap-test-setup';
 import { HotswapMode } from '../../../lib/api/hotswap/common';
+import { Runtime } from 'aws-cdk-lib/aws-lambda';
 
 let mockUpdateLambdaCode: (params: Lambda.Types.UpdateFunctionCodeRequest) => Lambda.Types.FunctionConfiguration;
 let mockTagResource: (params: Lambda.Types.TagResourceRequest) => {};
@@ -31,7 +32,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('these tests do
             Code: {
               ZipFile: 'exports.handler = () => {return true}',
             },
-            Runtime: 'nodejs16.x',
+            Runtime: Runtime.NODEJS_LATEST.name,
             FunctionName: 'my-function',
           },
         },
@@ -47,7 +48,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('these tests do
               Code: {
                 ZipFile: newCode,
               },
-              Runtime: 'nodejs16.x',
+              Runtime: Runtime.NODEJS_LATEST.name,
               FunctionName: 'my-function',
             },
           },
