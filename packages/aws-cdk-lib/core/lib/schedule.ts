@@ -8,8 +8,6 @@ import { TimeZone } from './time-zone';
  * It is meant to be extended by other modules that require some sort of schedule implementation. All
  * methods in `core.Schedule` are protected, so that construct authors can decide which APIs to expose.
  *
- * Note that rates cannot be defined in fractions of minutes.
- *
  * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/scheduled-events.html
  */
 export abstract class Schedule {
@@ -22,7 +20,7 @@ export abstract class Schedule {
   protected static protectedAt(date: Date, timeZone?: TimeZone): Schedule {
     try {
       const literal = date.toISOString().split('.')[0];
-      return new LiteralSchedule(`at(${literal})`, timeZone ?? TimeZone.ETC_UTC);
+      return new LiteralSchedule(`at(${literal})`, timeZone);
     } catch (e) {
       if (e instanceof RangeError) {
         throw new Error('Invalid date');
@@ -65,9 +63,11 @@ export abstract class Schedule {
   }
 
   /**
-   * Create a schedule from a set of cron fields
+   * Create a schedule from a set of cron fields.
+   *
+   * @param module the module calling protectedCron, if you want module-specific warnings (i.e. aws-applicationautoscaling)
    */
-  protected static protectedCron(options: CronOptions): Schedule {
+  protected static protectedCron(options: CronOptions, module?: string): Schedule {
     if (options.weekDay !== undefined && options.day !== undefined &&
       !(options.weekDay === '*' && options.day === '*') // special case for aws-autoscaling
     ) {
@@ -85,11 +85,12 @@ export abstract class Schedule {
 
     return new class extends Schedule {
       public readonly expressionString = `cron(${minute} ${hour} ${day} ${month} ${weekDay} ${year})`;
+      public readonly timeZone = options.timeZone ?? DEFAULT_TIMEZONE;
       public _bind(scope: Construct) {
         if (!options.minute) {
-          Annotations.of(scope).addWarningV2('@aws-cdk/core:scheduleDefaultRunsEveryMinute', 'cron: If you don\'t pass \'minute\', by default the event runs every minute. Pass \'minute: \'*\'\' if that\'s what you intend, or \'minute: 0\' to run once per hour instead.');
+          Annotations.of(scope).addWarningV2(`@aws-cdk/${module ?? 'core'}:scheduleDefaultRunsEveryMinute`, 'cron: If you don\'t pass \'minute\', by default the event runs every minute. Pass \'minute: \'*\'\' if that\'s what you intend, or \'minute: 0\' to run once per hour instead.');
         }
-        return new LiteralSchedule(this.expressionString, options.timeZone);
+        return new LiteralSchedule(this.expressionString, this.timeZone);
       }
     };
   }
