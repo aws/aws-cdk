@@ -413,9 +413,6 @@ const RESOURCE_TYPE_ATTRIBUTES_FORMATS: { [type: string]: { [attribute: string]:
   },
   'AWS::DynamoDB::Table': { Arn: stdSlashResourceArnFmt },
   'AWS::AppSync::GraphQLApi': { ApiId: appsyncGraphQlApiApiIdFmt },
-  'AWS::AppSync::FunctionConfiguration': { FunctionId: appsyncGraphQlFunctionIDFmt },
-  'AWS::AppSync::DataSource': { Name: appsyncGraphQlDataSourceNameFmt },
-
 };
 
 function iamArnFmt(parts: ArnParts): string {
@@ -441,16 +438,6 @@ function stdSlashResourceArnFmt(parts: ArnParts): string {
 function appsyncGraphQlApiApiIdFmt(parts: ArnParts): string {
   // arn:aws:appsync:us-east-1:111111111111:apis/<apiId>
   return parts.resourceName.split('/')[1];
-}
-
-function appsyncGraphQlFunctionIDFmt(parts: ArnParts): string {
-  // arn:aws:appsync:us-east-1:111111111111:apis/<apiId>/functions/<functionId>
-  return parts.resourceName.split('/')[3];
-}
-
-function appsyncGraphQlDataSourceNameFmt(parts: ArnParts): string {
-  // arn:aws:appsync:us-east-1:111111111111:apis/<apiId>/datasources/<name>
-  return parts.resourceName.split('/')[3];
 }
 
 interface Intrinsic {
