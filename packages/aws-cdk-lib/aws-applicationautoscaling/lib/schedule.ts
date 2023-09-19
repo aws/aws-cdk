@@ -14,7 +14,7 @@ export abstract class Schedule extends CoreSchedule {
   }
 
   /**
-   * Construct a schedule from an interval and a time unit
+   * Construct a schedule from an interval and a time unit. Must be a whole number of seconds.
    */
   public static rate(duration: Duration): Schedule {
     return super.protectedRate(duration);
@@ -31,7 +31,7 @@ export abstract class Schedule extends CoreSchedule {
    * Create a schedule from a set of cron fields
    */
   public static cron(options: CoreCronOptions): Schedule {
-    return super.protectedCron(options);
+    return super.protectedCron(options, 'aws-applicationautoscaling');
   }
 }
 

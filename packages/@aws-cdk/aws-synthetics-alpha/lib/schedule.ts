@@ -47,7 +47,7 @@ export class Schedule extends CoreSchedule {
     return super.protectedCron({
       ...options,
       year: '*', // '*' is the only allowed value in the year field
-    });
+    }, 'aws-synthetics');
   }
 
   private constructor(public readonly expressionString: string) {

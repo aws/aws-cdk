@@ -30,7 +30,7 @@ export abstract class Schedule extends CoreSchedule {
    * Create a schedule from a set of cron fields
    */
   public static cron(options: CronOptions): Schedule {
-    return super.protectedCron(options);
+    return super.protectedCron(options, 'aws-events');
   }
 }
 

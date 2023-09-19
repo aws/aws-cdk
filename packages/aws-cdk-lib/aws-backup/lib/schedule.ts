@@ -14,6 +14,6 @@ export abstract class Schedule extends CoreSchedule {
    * Construct a schedule from cron options
    */
   public static cron(options: CronOptions): Schedule {
-    return super.protectedCron(options);
+    return super.protectedCron(options, 'aws-backup');
   }
 }
