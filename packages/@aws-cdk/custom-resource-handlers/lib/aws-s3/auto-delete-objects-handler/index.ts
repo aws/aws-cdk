@@ -64,7 +64,7 @@ async function denyWrites(bucketName: string) {
     // (and likely will succeed). The object and bucket deletion are most important,
     // not this policy assignment, which only acts as extra insurance against object
     // writing race conditions. This error is non-fatal, but should be logged.
-    console.warn(`Could not set new object deny policy on bucket '${bucketName}' prior to deletion.`);
+    console.log(`Could not set new object deny policy on bucket '${bucketName}' prior to deletion.`);
   }
 }
 
