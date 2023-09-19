@@ -20,7 +20,7 @@ export abstract class Schedule {
   protected static protectedAt(date: Date, timeZone?: TimeZone): Schedule {
     try {
       const literal = date.toISOString().split('.')[0];
-      return new LiteralSchedule(`at(${literal})`, timeZone);
+      return new LiteralSchedule(`at(${literal})`, timeZone ?? DEFAULT_TIMEZONE);
     } catch (e) {
       if (e instanceof RangeError) {
         throw new Error('Invalid date');
@@ -36,7 +36,7 @@ export abstract class Schedule {
    * @param timeZone The time zone, if applicable. This is only valid for 'at' and 'cron' expressions
    */
   protected static protectedExpression(expression: string, timeZone?: TimeZone): Schedule {
-    return new LiteralSchedule(expression, timeZone);
+    return new LiteralSchedule(expression, timeZone ?? DEFAULT_TIMEZONE);
   }
 
   /**
@@ -177,7 +177,7 @@ const DEFAULT_TIMEZONE = TimeZone.ETC_UTC;
 class LiteralSchedule extends Schedule {
   constructor(
     public readonly expressionString: string,
-    public readonly timeZone: TimeZone = DEFAULT_TIMEZONE,
+    public readonly timeZone?: TimeZone,
   ) {
     super();
   }
