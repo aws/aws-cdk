@@ -22,7 +22,7 @@ import { CdkToolkit, AssetBuildTime } from '../lib/cdk-toolkit';
 import { realHandler as context } from '../lib/commands/context';
 import { realHandler as docs } from '../lib/commands/docs';
 import { realHandler as doctor } from '../lib/commands/doctor';
-import { MIGRATE_SUPPORTED_LANGUAGES, cliMigrate } from '../lib/commands/migrate';
+import { MIGRATE_SUPPORTED_LANGUAGES } from '../lib/commands/migrate';
 import { RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
 import { data, debug, error, print, setLogLevel, setCI } from '../lib/logging';
@@ -272,10 +272,14 @@ async function parseCommandLineArguments(args: string[]) {
       .option('generate-only', { type: 'boolean', default: false, desc: 'If true, only generates project files, without executing additional operations such as setting up a git repo, installing dependencies or compiling the project' }),
     )
     .command('migrate', false /* hidden from "cdk --help" */, (yargs: Argv) => yargs
-      .option('language', { type: 'string', alias: 'l', desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)', choices: MIGRATE_SUPPORTED_LANGUAGES })
-      .option('input-path', { type: 'string', alias: 'inputpath', desc: 'The path to the CloudFormation template to migrate' })
-      .option('output-path', { type: 'string', alias: 'outputpath', desc: 'The output path for the migrated cdk code' })
-      .option('generate-only', { type: 'boolean', default: false, desc: 'If true, only generates project files, without executing additional operations such as setting up a git repo, installing dependencies or compiling the project' }),
+      .option('stack-name', { type: 'string', alias: 'n', desc: 'The name assigned to the stack created in the new project. The name of the app will be based off this name as well.', requiresArg: true })
+      .option('language', { type: 'string', default: 'typescript', alias: 'l', desc: 'The language to be used for the new project', choices: MIGRATE_SUPPORTED_LANGUAGES })
+      .option('account', { type: 'string', desc: 'The account to retrieve the CloudFormation stack template from' })
+      .option('region', { type: 'string', desc: 'The region to retrieve the CloudFormation stack template from' })
+      .option('from-path', { type: 'string', desc: 'The path to the CloudFormation template to migrate. Use this for locally stored templates' })
+      .option('from-stack', { type: 'boolean', desc: 'Use this flag to retrieve the template for an existing CloudFormation stack' })
+      .option('output-path', { type: 'string', desc: 'The output path for the migrated CDK app' })
+      .option('compress', { type: 'boolean', desc: 'Use this flag to zip the generated CDK app' }),
     )
     .command('context', 'Manage cached context values', (yargs: Argv) => yargs
       .option('reset', { alias: 'e', desc: 'The context key (or its index) to reset', type: 'string', requiresArg: true })
@@ -355,8 +359,6 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
       caBundlePath: argv['ca-bundle-path'],
     },
   });
-
-  const cloudFormation = new Deployments({ sdkProvider });
 
   let outDirLock: ILock | undefined;
   const cloudExecutable = new CloudExecutable({
@@ -441,6 +443,8 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
   async function main(command: string, args: any): Promise<number | void> {
     const toolkitStackName: string = ToolkitInfo.determineName(configuration.settings.get(['toolkitStackName']));
     debug(`Toolkit stack: ${chalk.bold(toolkitStackName)}`);
+
+    const cloudFormation = new Deployments({ sdkProvider, toolkitStackName });
 
     if (args.all && args.STACKS) {
       throw new Error('You must either specify a list of Stacks or the `--all` argument');
@@ -656,11 +660,24 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         if (args.list) {
           return printAvailableTemplates(language);
         } else {
-          return cliInit(args.TEMPLATE, language, undefined, args.generateOnly);
+          return cliInit({
+            type: args.TEMPLATE,
+            language,
+            canUseNetwork: undefined,
+            generateOnly: args.generateOnly,
+          });
         }
       case 'migrate':
-        const migrateLanguage = configuration.settings.get(['language']);
-        return cliMigrate(args.inputpath, migrateLanguage, args.generateOnly, args.outputpath);
+        return cli.migrate({
+          stackName: args['stack-name'],
+          fromPath: args['from-path'],
+          fromStack: args['from-stack'],
+          language: args.language,
+          outputPath: args['output-path'],
+          account: args.account,
+          region: args.region,
+          compress: args.compress,
+        });
       case 'version':
         return data(version.DISPLAY_VERSION);
 

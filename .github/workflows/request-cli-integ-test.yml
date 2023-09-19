@@ -11,7 +11,7 @@ jobs:
       any-changed-files: ${{ steps.changed-cli-files.outputs.cli_any_changed }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
@@ -19,7 +19,7 @@ jobs:
           persist-credentials: false
       - name: Find changed cli files
         id: changed-cli-files
-        uses: tj-actions/changed-files@c860b5c47fa71f461da850094ef2f6e3d6514e44
+        uses: tj-actions/changed-files@76c4d81a6acd339b55bd7407a016981c853eb702
         with:
           base_sha: ${{ github.event.pull_request.base.sha }}
           files_yaml: |
@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           # Needs to run with PROJEN_GITHUB_TOKEN because we need permissions to force push the branch
           token: ${{ secrets.PROJEN_GITHUB_TOKEN }}

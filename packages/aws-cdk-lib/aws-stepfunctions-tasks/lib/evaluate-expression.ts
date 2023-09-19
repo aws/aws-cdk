@@ -19,7 +19,7 @@ export interface EvaluateExpressionProps extends sfn.TaskStateBaseProps {
   /**
    * The runtime language to use to evaluate the expression.
    *
-   * @default lambda.Runtime.NODEJS_16_X
+   * @default lambda.Runtime.NODEJS_18_X
    */
   readonly runtime?: lambda.Runtime;
 }

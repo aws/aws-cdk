@@ -171,6 +171,7 @@ class LogRetentionFunction extends Construct implements cdk.ITaggable {
       properties: {
         Handler: 'index.handler',
         Runtime: 'nodejs18.x',
+        Timeout: cdk.Duration.minutes(15).toSeconds(),
         Code: {
           S3Bucket: asset.s3BucketName,
           S3Key: asset.s3ObjectKey,

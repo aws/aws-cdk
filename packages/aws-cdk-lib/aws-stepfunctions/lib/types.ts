@@ -35,6 +35,21 @@ export interface IChainable {
 }
 
 /**
+ * Values allowed in the retrier JitterStrategy field
+ */
+export enum JitterType {
+  /**
+   * Calculates the delay to be a random number between 0 and the computed backoff for the given retry attempt count
+   */
+  FULL = 'FULL',
+
+  /**
+   * Calculates the delay to be the computed backoff for the given retry attempt count (equivalent to if Jitter was not declared - i.e. the default value)
+   */
+  NONE = 'NONE',
+}
+
+/**
  * Predefined error strings
  * Error names in Amazon States Language - https://states-language.net/spec.html#appendix-a
  * Error handling in Step Functions - https://docs.aws.amazon.com/step-functions/latest/dg/concepts-error-handling.html
@@ -120,6 +135,20 @@ export interface RetryProps {
    * @default 3
    */
   readonly maxAttempts?: number;
+
+  /**
+   * Maximum limit on retry interval growth during exponential backoff.
+   *
+   * @default - No max delay
+   */
+  readonly maxDelay?: Duration;
+
+  /**
+   * Introduces a randomization over the retry interval.
+   *
+   * @default - No jitter strategy
+   */
+  readonly jitterStrategy?: JitterType;
 
   /**
    * Multiplication for how much longer the wait interval gets on every retry

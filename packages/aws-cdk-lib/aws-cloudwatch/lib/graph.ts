@@ -328,6 +328,13 @@ export interface GraphWidgetProps extends MetricWidgetProps {
   readonly rightAnnotations?: HorizontalAnnotation[];
 
   /**
+   * Annotations for the X axis
+   *
+   * @default - No annotations
+   */
+  readonly verticalAnnotations?: VerticalAnnotation[];
+
+  /**
    * Whether the graph should be shown as stacked lines
    *
    * @default false
@@ -423,6 +430,12 @@ export interface GraphWidgetProps extends MetricWidgetProps {
  */
 export class GraphWidget extends ConcreteWidget {
 
+  private static readonly ISO8601_REGEX = /^(-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])T(2[0-3]|[01][0-9]):([0-5][0-9]):([0-5][0-9])(.[0-9]+)?(Z)?$/;
+
+  private static isIso8601(date: string): boolean {
+    return this.ISO8601_REGEX.test(date);
+  }
+
   private readonly props: GraphWidgetProps;
 
   private readonly leftMetrics: IMetric[];
@@ -430,6 +443,12 @@ export class GraphWidget extends ConcreteWidget {
 
   constructor(props: GraphWidgetProps) {
     super(props.width || 6, props.height || 6);
+    props.verticalAnnotations?.forEach(annotation => {
+      const date = annotation.date;
+      if (!GraphWidget.isIso8601(date)) {
+        throw new Error(`Given date ${date} is not in ISO 8601 format`);
+      }
+    });
     this.props = props;
     this.leftMetrics = props.left ?? [];
     this.rightMetrics = props.right ?? [];
@@ -465,7 +484,14 @@ export class GraphWidget extends ConcreteWidget {
       ...(this.props.leftAnnotations || []).map(mapAnnotation('left')),
       ...(this.props.rightAnnotations || []).map(mapAnnotation('right')),
     ];
-
+    const verticalAnnotations = (this.props.verticalAnnotations || []).map(({ date, ...rest }) => ({
+      value: date,
+      ...rest,
+    }));
+    const annotations = horizontalAnnotations.length > 0 || verticalAnnotations.length > 0 ? ({
+      horizontal: horizontalAnnotations.length > 0 ? horizontalAnnotations : undefined,
+      vertical: verticalAnnotations.length > 0 ? verticalAnnotations : undefined,
+    }) : undefined;
     const metrics = allMetricsGraphJson(this.leftMetrics, this.rightMetrics);
     return [{
       type: 'metric',
@@ -479,7 +505,7 @@ export class GraphWidget extends ConcreteWidget {
         region: this.props.region || cdk.Aws.REGION,
         stacked: this.props.stacked,
         metrics: metrics.length > 0 ? metrics : undefined,
-        annotations: horizontalAnnotations.length > 0 ? { horizontal: horizontalAnnotations } : undefined,
+        annotations,
         yAxis: {
           left: this.props.leftYAxis ?? undefined,
           right: this.props.rightYAxis ?? undefined,
@@ -732,7 +758,46 @@ export interface HorizontalAnnotation {
 }
 
 /**
- * Fill shading options that will be used with an annotation
+ * Vertical annotation to be added to a graph
+ */
+export interface VerticalAnnotation {
+  /**
+   * The date and time (in ISO 8601 format) in the graph where the vertical annotation line is to appear
+   */
+  readonly date: string;
+
+  /**
+   * Label for the annotation
+   *
+   * @default - No label
+   */
+  readonly label?: string;
+
+  /**
+   * The hex color code, prefixed with '#' (e.g. '#00ff00'), to be used for the annotation.
+   * The `Color` class has a set of standard colors that can be used here.
+   *
+   * @default - Automatic color
+   */
+  readonly color?: string;
+
+  /**
+   * Add shading before or after the annotation
+   *
+   * @default No shading
+   */
+  readonly fill?: VerticalShading;
+
+  /**
+   * Whether the annotation is visible
+   *
+   * @default true
+   */
+  readonly visible?: boolean;
+}
+
+/**
+ * Fill shading options that will be used with a horizontal annotation
  */
 export enum Shading {
   /**
@@ -749,6 +814,26 @@ export enum Shading {
    * Add shading below the annotation
    */
   BELOW = 'below'
+}
+
+/**
+ * Fill shading options that will be used with a vertical annotation
+ */
+export enum VerticalShading {
+  /**
+   * Don't add shading
+   */
+  NONE = 'none',
+
+  /**
+   * Add shading before the annotation
+   */
+  BEFORE = 'before',
+
+  /**
+   * Add shading after the annotation
+   */
+  AFTER = 'after'
 }
 
 /**
