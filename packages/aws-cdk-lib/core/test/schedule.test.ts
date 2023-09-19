@@ -1,7 +1,7 @@
 import { Annotations } from '../../assertions';
-import { Stack } from '../lib/stack';
 import { Duration } from '../lib/duration';
 import { CronOptions, Schedule } from '../lib/schedule';
+import { Stack } from '../lib/stack';
 import { TimeZone } from '../lib/time-zone';
 
 /**

@@ -54,6 +54,9 @@ export class Schedule extends CoreSchedule {
     super();
   }
 
+  /**
+   * @internal
+   */
   public _bind(_scope: Construct) {}
 }
 
