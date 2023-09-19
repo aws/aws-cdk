@@ -274,11 +274,12 @@ async function parseCommandLineArguments(args: string[]) {
     .command('migrate', false /* hidden from "cdk --help" */, (yargs: Argv) => yargs
       .option('stack-name', { type: 'string', alias: 'n', desc: 'The name assigned to the stack created in the new project. The name of the app will be based off this name as well.', requiresArg: true })
       .option('language', { type: 'string', default: 'typescript', alias: 'l', desc: 'The language to be used for the new project', choices: MIGRATE_SUPPORTED_LANGUAGES })
-      .option('account', { type: 'string', alias: 'a' })
-      .option('region', { type: 'string' })
-      .option('from-path', { type: 'string', alias: 'p', desc: 'The path to the CloudFormation template to migrate. Use this for locally stored templates' })
-      .option('from-stack', { type: 'boolean', alias: 's', desc: 'USe this flag to retrieve the template for an existing CloudFormation stack' })
-      .option('output-path', { type: 'string', alias: 'o', desc: 'The output path for the migrated cdk app' }),
+      .option('account', { type: 'string', desc: 'The account to retrieve the CloudFormation stack template from' })
+      .option('region', { type: 'string', desc: 'The region to retrieve the CloudFormation stack template from' })
+      .option('from-path', { type: 'string', desc: 'The path to the CloudFormation template to migrate. Use this for locally stored templates' })
+      .option('from-stack', { type: 'boolean', desc: 'Use this flag to retrieve the template for an existing CloudFormation stack' })
+      .option('output-path', { type: 'string', desc: 'The output path for the migrated CDK app' })
+      .option('compress', { type: 'boolean', desc: 'Use this flag to zip the generated CDK app' }),
     )
     .command('context', 'Manage cached context values', (yargs: Argv) => yargs
       .option('reset', { alias: 'e', desc: 'The context key (or its index) to reset', type: 'string', requiresArg: true })
@@ -659,7 +660,12 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         if (args.list) {
           return printAvailableTemplates(language);
         } else {
-          return cliInit(args.TEMPLATE, language, undefined, args.generateOnly);
+          return cliInit({
+            type: args.TEMPLATE,
+            language,
+            canUseNetwork: undefined,
+            generateOnly: args.generateOnly,
+          });
         }
       case 'migrate':
         return cli.migrate({
@@ -670,6 +676,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           outputPath: args['output-path'],
           account: args.account,
           region: args.region,
+          compress: args.compress,
         });
       case 'version':
         return data(version.DISPLAY_VERSION);
