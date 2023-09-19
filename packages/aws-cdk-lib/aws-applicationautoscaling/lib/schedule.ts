@@ -44,46 +44,4 @@ export abstract class Schedule extends CoreSchedule {
  * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html#CronExpressions
  * @deprecated use core.CronOptions instead
  */
-export interface CronOptions {
-  /**
-   * The minute to run this rule at
-   *
-   * @default - Every minute
-   */
-  readonly minute?: string;
-
-  /**
-   * The hour to run this rule at
-   *
-   * @default - Every hour
-   */
-  readonly hour?: string;
-
-  /**
-   * The day of the month to run this rule at
-   *
-   * @default - Every day of the month
-   */
-  readonly day?: string;
-
-  /**
-   * The month to run this rule at
-   *
-   * @default - Every month
-   */
-  readonly month?: string;
-
-  /**
-   * The year to run this rule at
-   *
-   * @default - Every year
-   */
-  readonly year?: string;
-
-  /**
-   * The day of the week to run this rule at
-   *
-   * @default - Any day of the week
-   */
-  readonly weekDay?: string;
-}
+export interface CronOptions extends CoreCronOptions {}
