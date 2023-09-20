@@ -161,6 +161,35 @@ describe('Dashboard', () => {
 
   });
 
+  test('throws if both defaultInterval and start are specified', () => {
+    // GIVEN
+    const stack = new Stack();
+    // WHEN
+    const toThrow = () => {
+      new Dashboard(stack, 'Dash', {
+        start: '-P7D',
+        defaultInterval: Duration.days(7),
+      });
+    };
+
+    // THEN
+    expect(() => toThrow()).toThrow(/both properties defaultInterval and start cannot be set at once/);
+  });
+
+  test('throws if end is specified but start is not', () => {
+    // GIVEN
+    const stack = new Stack();
+    // WHEN
+    const toThrow = () => {
+      new Dashboard(stack, 'Dash', {
+        end: '2018-12-17T06:00:00.000Z',
+      });
+    };
+
+    // THEN
+    expect(() => toThrow()).toThrow(/If you specify a value for end, you must also specify a value for start./);
+  });
+
   test('DashboardName is set when provided', () => {
     // GIVEN
     const app = new App();
