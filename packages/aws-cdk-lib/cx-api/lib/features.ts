@@ -93,6 +93,7 @@ export const EFS_MOUNTTARGET_ORDERINSENSITIVE_LOGICAL_ID = '@aws-cdk/aws-efs:mou
 export const AUTOSCALING_GENERATE_LAUNCH_TEMPLATE = '@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig';
 export const ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY = '@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby';
 export const LAMBDA_NODEJS_USE_LATEST_RUNTIME = '@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion';
+export const AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS = '@aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -905,6 +906,21 @@ export const FLAGS: Record<string, FlagInfo> = {
       Set this flag to false for existing mount targets.
     `,
     introducedIn: { v2: '2.93.0' },
+    recommendedValue: true,
+  },
+  //////////////////////////////////////////////////////////////////////
+  [AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, a scope of InstanceParameterGroup for AuroraClusterInstance with each parameters will change.',
+    detailsMd: `
+      When this feature flag is enabled, a scope of \`InstanceParameterGroup\` for
+      \`AuroraClusterInstance\` with each parameters will change to AuroraClusterInstance
+      from AuroraCluster.
+
+      If the flag is set to false then it can only make one \`AuroraClusterInstance\`
+      with each \`InstanceParameterGroup\` in the AuroraCluster.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
   },
 

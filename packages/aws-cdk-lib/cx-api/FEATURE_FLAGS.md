@@ -59,6 +59,7 @@ Flags come in three types:
 | [@aws-cdk/aws-efs:denyAnonymousAccess](#aws-cdkaws-efsdenyanonymousaccess) | EFS denies anonymous clients accesses | 2.93.0 | (default) |
 | [@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId](#aws-cdkaws-efsmounttargetorderinsensitivelogicalid) | When enabled, mount targets will have a stable logicalId that is linked to the associated subnet. | 2.93.0 | (fix) |
 | [@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion](#aws-cdkaws-lambda-nodejsuselatestruntimeversion) | Enables aws-lambda-nodejs.Function to use the latest available NodeJs runtime as the default | 2.93.0 | (default) |
+| [@aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters](#aws-cdkaws-rdsauroraclusterchangescopeofinstanceparametergroupwitheachparameters) | When enabled, a scope of InstanceParameterGroup for AuroraClusterInstance with each parameters will change. | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -108,7 +109,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-efs:denyAnonymousAccess": true,
     "@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby": true,
     "@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion": true,
-    "@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId": true
+    "@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId": true,
+    "@aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters": true
   }
 }
 ```
@@ -1111,6 +1113,23 @@ shipped as part of the runtime environment.
 | 2.93.0 | `false` | `true` |
 
 **Compatibility with old behavior:** Pass `runtime: lambda.Runtime.NODEJS_16_X` to `Function` construct to restore the previous behavior.
+
+
+### @aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters
+
+*When enabled, a scope of InstanceParameterGroup for AuroraClusterInstance with each parameters will change.* (fix)
+
+When this feature flag is enabled, a scope of `InstanceParameterGroup` for
+`AuroraClusterInstance` with each parameters will change to AuroraClusterInstance
+from AuroraCluster.
+If the flag is set to false then it can only make one `AuroraClusterInstance`
+with each `InstanceParameterGroup` in the AuroraCluster.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->
