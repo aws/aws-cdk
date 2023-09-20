@@ -191,7 +191,7 @@ capacity.scaleOnSchedule('PrescaleInTheMorning', {
 
 capacity.scaleOnSchedule('AllowDownscalingAtNight', {
   schedule: appscaling.Schedule.cron({ hour: '20', minute: '0' }),
-  minCapacity: 1
+  minCapacity: 1,
 });
 ```
 
@@ -220,12 +220,12 @@ const target = new appscaling.ScalableTarget(this, 'ScalableTarget', {
   minCapacity: 10,
   resourceId: `function:${handler.functionName}:${fnVer.version}`,
   scalableDimension: 'lambda:function:ProvisionedConcurrency',
-})
+});
 
 target.scaleToTrackMetric('PceTracking', {
   targetValue: 0.9,
   predefinedMetric: appscaling.PredefinedMetric.LAMBDA_PROVISIONED_CONCURRENCY_UTILIZATION,
-})
+});
 ```
 
 ### ElastiCache Redis shards scaling with target value

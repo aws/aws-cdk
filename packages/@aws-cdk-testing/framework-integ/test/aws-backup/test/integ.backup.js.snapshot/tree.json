@@ -37,22 +37,22 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.69"
+                  "fqn": "aws-cdk-lib.aws_dynamodb.CfnTable",
+                  "version": "0.0.0"
                 }
               },
               "ScalingRole": {
                 "id": "ScalingRole",
                 "path": "cdk-backup/Table/ScalingRole",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.69"
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.69"
+              "fqn": "aws-cdk-lib.aws_dynamodb.Table",
+              "version": "0.0.0"
             }
           },
           "FileSystem": {
@@ -63,8 +63,8 @@
               "aws:cdk:cloudformation:props": {}
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.69"
+              "fqn": "aws-cdk-lib.aws_efs.CfnFileSystem",
+              "version": "0.0.0"
             }
           },
           "Vault": {
@@ -84,14 +84,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.69"
+                  "fqn": "aws-cdk-lib.aws_backup.CfnBackupVault",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.69"
+              "fqn": "aws-cdk-lib.aws_backup.BackupVault",
+              "version": "0.0.0"
             }
           },
           "SecondaryVault": {
@@ -111,22 +111,22 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.69"
+                  "fqn": "aws-cdk-lib.aws_backup.CfnBackupVault",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.69"
+              "fqn": "aws-cdk-lib.aws_backup.BackupVault",
+              "version": "0.0.0"
             }
           },
           "Env": {
             "id": "Env",
             "path": "cdk-backup/Env",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.69"
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
             }
           },
           "ThirdVault": {
@@ -156,14 +156,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.69"
+                  "fqn": "aws-cdk-lib.aws_backup.CfnBackupVault",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.69"
+              "fqn": "aws-cdk-lib.aws_backup.BackupVault",
+              "version": "0.0.0"
             }
           },
           "Plan": {
@@ -185,6 +185,7 @@
                           },
                           "ruleName": "Daily",
                           "scheduleExpression": "cron(0 5 * * ? *)",
+                          "scheduleExpressionTimezone": "Etc/UTC",
                           "targetBackupVault": {
                             "Fn::GetAtt": [
                               "Vault23237E5B",
@@ -198,6 +199,7 @@
                           },
                           "ruleName": "Weekly",
                           "scheduleExpression": "cron(0 5 ? * SAT *)",
+                          "scheduleExpressionTimezone": "Etc/UTC",
                           "targetBackupVault": {
                             "Fn::GetAtt": [
                               "Vault23237E5B",
@@ -212,6 +214,7 @@
                           },
                           "ruleName": "Monthly5Year",
                           "scheduleExpression": "cron(0 5 1 * ? *)",
+                          "scheduleExpressionTimezone": "Etc/UTC",
                           "targetBackupVault": {
                             "Fn::GetAtt": [
                               "Vault23237E5B",
@@ -250,8 +253,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.69"
+                  "fqn": "aws-cdk-lib.aws_backup.CfnBackupPlan",
+                  "version": "0.0.0"
                 }
               },
               "Selection": {
@@ -266,8 +269,8 @@
                         "id": "ImportRole",
                         "path": "cdk-backup/Plan/Selection/Role/ImportRole",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.2.69"
+                          "fqn": "aws-cdk-lib.Resource",
+                          "version": "0.0.0"
                         }
                       },
                       "Resource": {
@@ -305,14 +308,14 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.2.69"
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.69"
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -394,42 +397,42 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.69"
+                      "fqn": "aws-cdk-lib.aws_backup.CfnBackupSelection",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.69"
+                  "fqn": "aws-cdk-lib.aws_backup.BackupSelection",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.69"
+              "fqn": "aws-cdk-lib.aws_backup.BackupPlan",
+              "version": "0.0.0"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "cdk-backup/BootstrapVersion",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.69"
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "cdk-backup/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.69"
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.2.69"
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
         }
       },
       "Tree": {
@@ -437,13 +440,13 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.69"
+          "version": "10.2.70"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.2.69"
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
     }
   }
 }
