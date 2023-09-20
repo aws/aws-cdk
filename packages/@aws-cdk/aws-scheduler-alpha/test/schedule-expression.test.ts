@@ -36,9 +36,6 @@ describe('schedule expression', () => {
     });
     cron._bind(new Stack());
 
-    // eslint-disable-next-line no-console
-    console.log(cron.expressionString, cron.timeZone);
-
     // THEN
     expect(cron.timeZone).toEqual(TimeZone.EUROPE_LONDON);
   });
