@@ -1,27 +1,27 @@
 {
   "version": "34.0.0",
   "artifacts": {
-    "stack.assets": {
+    "Stack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "stack.assets.json",
+        "file": "Stack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "stack": {
+    "Stack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "stack.template.json",
+        "templateFile": "Stack.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c7f75afe322325fc4ced34825c95ad7229c5bd2157dba5f20c58aac8b6cd9c89.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0d28049698de9f166ab2500a6a65a1e012fb46df87be49853f2b631a3573c599.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "stack.assets"
+          "Stack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -30,107 +30,131 @@
         }
       },
       "dependencies": [
-        "stack.assets"
+        "Stack.assets"
       ],
       "metadata": {
-        "/stack/FirstSourceAPI/Resource": [
+        "/Stack/FirstSourceAPI/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FirstSourceAPIB0DE8D5A"
           }
         ],
-        "/stack/FirstSourceAPI/Schema": [
+        "/Stack/FirstSourceAPI/Schema": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FirstSourceAPISchemaF2FDB692"
           }
         ],
-        "/stack/FirstSourceAPI/DefaultApiKey": [
+        "/Stack/FirstSourceAPI/DefaultApiKey": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FirstSourceAPIDefaultApiKey9D9AE06D"
           }
         ],
-        "/stack/FirstSourceAPI/FirstSourceDS/Resource": [
+        "/Stack/FirstSourceAPI/FirstSourceDS/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FirstSourceAPIFirstSourceDS6AD299B7"
           }
         ],
-        "/stack/SecondSourceAPI/Resource": [
+        "/Stack/SecondSourceAPI/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SecondSourceAPIE903371D"
           }
         ],
-        "/stack/SecondSourceAPI/Schema": [
+        "/Stack/SecondSourceAPI/Schema": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SecondSourceAPISchema65B7401E"
           }
         ],
-        "/stack/SecondSourceAPI/DefaultApiKey": [
+        "/Stack/SecondSourceAPI/DefaultApiKey": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SecondSourceAPIDefaultApiKeyCE5A0A64"
           }
         ],
-        "/stack/SecondSourceAPI/SecondSourceDS/Resource": [
+        "/Stack/SecondSourceAPI/SecondSourceDS/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SecondSourceAPISecondSourceDSEA46EBA7"
           }
         ],
-        "/stack/MergedAPI/MergedApiExecutionRole/Resource": [
+        "/Stack/ThirdSourceAPI/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MergedAPIMergedApiExecutionRole5F2BCCAD"
+            "data": "ThirdSourceAPIA5DA856C"
           }
         ],
-        "/stack/MergedAPI/MergedApiExecutionRole/DefaultPolicy/Resource": [
+        "/Stack/ThirdSourceAPI/Schema": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MergedAPIMergedApiExecutionRoleDefaultPolicy31A96DBC"
+            "data": "ThirdSourceAPISchema5999A853"
           }
         ],
-        "/stack/MergedAPI/Resource": [
+        "/Stack/ThirdSourceAPI/DefaultApiKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ThirdSourceAPIDefaultApiKey3D5568A7"
+          }
+        ],
+        "/Stack/MergedApiExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MergedApiExecutionRoleA4AA677D"
+          }
+        ],
+        "/Stack/MergedApiExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MergedApiExecutionRoleDefaultPolicy249A5507"
+          }
+        ],
+        "/Stack/MergedAPI/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MergedAPI08D3EAD1"
           }
         ],
-        "/stack/MergedAPI/FirstSourceAPIAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MergedAPIFirstSourceAPIAssociationEC781BA9"
-          }
-        ],
-        "/stack/MergedAPI/SecondSourceAPIAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MergedAPISecondSourceAPIAssociationBD1A08F4"
-          }
-        ],
-        "/stack/MergedAPI/DefaultApiKey": [
+        "/Stack/MergedAPI/DefaultApiKey": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MergedAPIDefaultApiKeyAF5EA13C"
           }
         ],
-        "/stack/BootstrapVersion": [
+        "/Stack/SourceApiAssociation1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SourceApiAssociation17B8F97C7"
+          }
+        ],
+        "/Stack/SourceApiAssociation2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SourceApiAssociation254340D38"
+          }
+        ],
+        "/Stack/SourceApiAssociation3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SourceApiAssociation3F6A7C1BA"
+          }
+        ],
+        "/Stack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/stack/CheckBootstrapVersion": [
+        "/Stack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "stack"
+      "displayName": "Stack"
     },
     "apiDefaultTestDeployAssert018781F2.assets": {
       "type": "cdk:asset-manifest",
