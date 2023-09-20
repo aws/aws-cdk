@@ -571,13 +571,13 @@ integTest('deploy with role', withDefaultFixture(async (fixture) => {
   }
 }));
 
-['typescript', 'python'].forEach(langChoice => {
+['typescript', 'python', 'csharp', 'java', 'go'].forEach(langChoice => {
   integTest(
     `cdk migrate ${langChoice}`,
     withDefaultFixture(async (fixture) => {
       const tempPath = path.join(fixture.integTestDir);
 
-      const inputFile = path.join(__dirname, '../../resources/templates/', 'simpleDDB.yaml');
+      const inputFile = path.join(__dirname, '../../resources/templates/', 'sqs-template.json');
       const stackName = fixture.stackNamePrefix + `-${langChoice}-migrate-stack`;
 
       await fixture.cdk([
