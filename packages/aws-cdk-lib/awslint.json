@@ -2756,6 +2756,7 @@
     "docs-public-apis:aws-cdk-lib.cx_api.SynthesisMessageLevel",
     "docs-public-apis:aws-cdk-lib.cx_api.SynthesisMessageLevel.INFO",
     "docs-public-apis:aws-cdk-lib.cx_api.SynthesisMessageLevel.WARNING",
-    "docs-public-apis:aws-cdk-lib.cx_api.SynthesisMessageLevel.ERROR"
+    "docs-public-apis:aws-cdk-lib.cx_api.SynthesisMessageLevel.ERROR",
+    "props-physical-name:aws-cdk-lib.aws_apigateway.ResourceProps"
   ]
 }

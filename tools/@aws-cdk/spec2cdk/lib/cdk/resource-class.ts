@@ -61,7 +61,7 @@ export class ResourceClass extends ClassType {
       docs: {
         ...splitDocumentation(resource.documentation),
         stability: Stability.External,
-        docTags: new Map<string, string>([['cloudformationResource', resource.cloudFormationType]]),
+        docTags: { cloudformationResource: resource.cloudFormationType },
         see: cloudFormationDocLink({
           resourceType: resource.cloudFormationType,
         }),
