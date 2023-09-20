@@ -92,6 +92,7 @@ Object.defineProperty(exports, 'aws_elasticsearch', { get: function () { return 
 Object.defineProperty(exports, 'aws_emr', { get: function () { return require('./aws-emr'); } });
 Object.defineProperty(exports, 'aws_emrcontainers', { get: function () { return require('./aws-emrcontainers'); } });
 Object.defineProperty(exports, 'aws_emrserverless', { get: function () { return require('./aws-emrserverless'); } });
+Object.defineProperty(exports, 'aws_entityresolution', { get: function () { return require('./aws-entityresolution'); } });
 Object.defineProperty(exports, 'aws_events_targets', { get: function () { return require('./aws-events-targets'); } });
 Object.defineProperty(exports, 'aws_events', { get: function () { return require('./aws-events'); } });
 Object.defineProperty(exports, 'aws_eventschemas', { get: function () { return require('./aws-eventschemas'); } });
@@ -161,6 +162,7 @@ Object.defineProperty(exports, 'aws_mediaconnect', { get: function () { return r
 Object.defineProperty(exports, 'aws_mediaconvert', { get: function () { return require('./aws-mediaconvert'); } });
 Object.defineProperty(exports, 'aws_medialive', { get: function () { return require('./aws-medialive'); } });
 Object.defineProperty(exports, 'aws_mediapackage', { get: function () { return require('./aws-mediapackage'); } });
+Object.defineProperty(exports, 'aws_mediapackagev2', { get: function () { return require('./aws-mediapackagev2'); } });
 Object.defineProperty(exports, 'aws_mediastore', { get: function () { return require('./aws-mediastore'); } });
 Object.defineProperty(exports, 'aws_mediatailor', { get: function () { return require('./aws-mediatailor'); } });
 Object.defineProperty(exports, 'aws_memorydb', { get: function () { return require('./aws-memorydb'); } });
@@ -179,6 +181,7 @@ Object.defineProperty(exports, 'aws_opsworkscm', { get: function () { return req
 Object.defineProperty(exports, 'aws_organizations', { get: function () { return require('./aws-organizations'); } });
 Object.defineProperty(exports, 'aws_osis', { get: function () { return require('./aws-osis'); } });
 Object.defineProperty(exports, 'aws_panorama', { get: function () { return require('./aws-panorama'); } });
+Object.defineProperty(exports, 'aws_pcaconnectorad', { get: function () { return require('./aws-pcaconnectorad'); } });
 Object.defineProperty(exports, 'aws_personalize', { get: function () { return require('./aws-personalize'); } });
 Object.defineProperty(exports, 'aws_pinpoint', { get: function () { return require('./aws-pinpoint'); } });
 Object.defineProperty(exports, 'aws_pinpointemail', { get: function () { return require('./aws-pinpointemail'); } });
@@ -246,6 +249,7 @@ Object.defineProperty(exports, 'aws_wafregional', { get: function () { return re
 Object.defineProperty(exports, 'aws_wafv2', { get: function () { return require('./aws-wafv2'); } });
 Object.defineProperty(exports, 'aws_wisdom', { get: function () { return require('./aws-wisdom'); } });
 Object.defineProperty(exports, 'aws_workspaces', { get: function () { return require('./aws-workspaces'); } });
+Object.defineProperty(exports, 'aws_workspacesweb', { get: function () { return require('./aws-workspacesweb'); } });
 Object.defineProperty(exports, 'aws_xray', { get: function () { return require('./aws-xray'); } });
 Object.defineProperty(exports, 'cloud_assembly_schema', { get: function () { return require('./cloud-assembly-schema'); } });
 Object.defineProperty(exports, 'cloudformation_include', { get: function () { return require('./cloudformation-include'); } });

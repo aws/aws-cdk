@@ -1,8 +1,12 @@
+import { exec as _exec } from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
+import { promisify } from 'util';
 import * as fs from 'fs-extra';
 import { generateCdkApp, generateStack, readFromPath, readFromStack, setEnvironment, validateSourceOptions } from '../../lib/commands/migrate';
 import { MockSdkProvider, MockedObject, SyncHandlerSubsetOf } from '../util/mock-sdk';
+
+const exec = promisify(_exec);
 
 describe('Migrate Function Tests', () => {
   let sdkProvider: MockSdkProvider;
@@ -94,6 +98,12 @@ describe('Migrate Function Tests', () => {
     expect(stack).toEqual(fs.readFileSync(path.join(...stackPath, 'S3Stack.cs'), 'utf8'));
   });
 
+  // TODO: fix with actual go template
+  test('generateStack generates the expected stack string when called for go', () => {
+    const stack = generateStack(validTemplate, 'GoodGo', 'go');
+    expect(stack).toEqual(fs.readFileSync(path.join(...stackPath, 's3.go'), 'utf8'));
+  });
+
   test('generateStack throws error when called for other language', () => {
     expect(() => generateStack(validTemplate, 'BadBadBad', 'php')).toThrowError('stack generation failed due to error \'unreachable\'');
   });
@@ -172,6 +182,37 @@ describe('Migrate Function Tests', () => {
     // Replaced stack file is correctly generated
     const replacedStack = fs.readFileSync(path.join(workDir, 'GoodCSharp', 'src', 'GoodCSharp', 'GoodCSharpStack.cs'));
     expect(replacedStack).toEqual(fs.readFileSync(path.join(...stackPath, 'S3Stack.cs')));
+  });
+
+  cliTest('generatedCdkApp generates the expected cdk app when called for go', async (workDir) => {
+    const stack = generateStack(validTemplate, 'GoodGo', 'go');
+    await generateCdkApp('GoodGo', stack, 'go', workDir);
+
+    expect(fs.pathExists(path.join(workDir, 's3.go'))).toBeTruthy();
+    const app = fs.readFileSync(path.join(workDir, 'GoodGo', 'good_go.go'), 'utf8').split('\n');
+    expect(app.map(line => line.match(/func NewGoodGoStack\(scope constructs.Construct, id string, props GoodGoStackProps\) \*GoodGoStack \{/)).filter(line => line).length).toEqual(1);
+    expect(app.map(line => line.match(/    NewGoodGoStack\(app, "GoodGo", &GoodGoStackProps\{/)));
+  });
+
+  cliTest('generatedCdkApp generates a zip file when --compress is used', async (workDir) => {
+    const stack = generateStack(validTemplate, 'GoodTypeScript', 'typescript');
+    await generateCdkApp('GoodTypeScript', stack, 'typescript', workDir, true);
+
+    // Packages not in outDir
+    expect(fs.pathExistsSync(path.join(workDir, 'GoodTypeScript', 'package.json'))).toBeFalsy();
+    expect(fs.pathExistsSync(path.join(workDir, 'GoodTypeScript', 'bin', 'good_type_script.ts'))).toBeFalsy();
+    expect(fs.pathExistsSync(path.join(workDir, 'GoodTypeScript', 'lib', 'good_type_script-stack.ts'))).toBeFalsy();
+
+    // Zip file exists
+    expect(fs.pathExistsSync(path.join(workDir, 'GoodTypeScript.zip'))).toBeTruthy();
+
+    // Unzip it
+    await exec(`unzip ${path.join(workDir, 'GoodTypeScript.zip')}`, { cwd: workDir });
+
+    // Now the files should be there
+    expect(fs.pathExistsSync(path.join(workDir, 'package.json'))).toBeTruthy();
+    expect(fs.pathExistsSync(path.join(workDir, 'bin', 'good_type_script.ts'))).toBeTruthy();
+    expect(fs.pathExistsSync(path.join(workDir, 'lib', 'good_type_script-stack.ts'))).toBeTruthy();
   });
 });
 
