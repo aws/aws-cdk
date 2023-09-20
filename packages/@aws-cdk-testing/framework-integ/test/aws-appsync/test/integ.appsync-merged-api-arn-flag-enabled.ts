@@ -5,7 +5,7 @@ import * as appsync from 'aws-cdk-lib/aws-appsync';
 
 const app = new cdk.App({
   postCliContext: {
-    [cdk.cx_api.APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION]: false,
+    [cdk.cx_api.APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION]: true,
   },
 });
 

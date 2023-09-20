@@ -93,6 +93,7 @@ export const EFS_MOUNTTARGET_ORDERINSENSITIVE_LOGICAL_ID = '@aws-cdk/aws-efs:mou
 export const AUTOSCALING_GENERATE_LAUNCH_TEMPLATE = '@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig';
 export const ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY = '@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby';
 export const LAMBDA_NODEJS_USE_LATEST_RUNTIME = '@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion';
+export const APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION = '@aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -908,6 +909,18 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
   },
 
+  //////////////////////////////////////////////////////////////////////
+  [APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, will always use the arn for identifiers for CfnSourceApiAssociation in the GraphqlApi construct rather than id.',
+    detailsMd: `
+      When this feature flag is enabled, we use the IGraphqlApi ARN rather than ID when creating or updating CfnSourceApiAssociation in 
+      the GraphqlApi construct. Using the ARN allows the association to support an association with a source api or merged api in another account.
+      Note that for existing source api associations created with this flag disabled, enabling the flag will lead to a resource replacement. 
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+  },
 };
 
 const CURRENT_MV = 'v2';

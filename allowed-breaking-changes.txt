@@ -188,3 +188,6 @@ removed:aws-cdk-lib.aws_cloudwatch.CfnAlarm.attrId
 removed:aws-cdk-lib.aws_ec2.CfnNetworkInterface.enablePrimaryIpv6
 removed:aws-cdk-lib.aws_ec2.CfnNetworkInterfaceAttachment.attrId
 removed:aws-cdk-lib.aws_ec2.CfnNetworkInterfaceProps.enablePrimaryIpv6
+
+# Changed type from GraphqlApi to IGraphqlApi to support import from a different stack, should not matter. 
+weakened:aws-cdk-lib.aws_appsync.SourceApi

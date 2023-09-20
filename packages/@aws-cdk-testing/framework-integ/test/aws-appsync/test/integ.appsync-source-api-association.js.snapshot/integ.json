@@ -3,7 +3,7 @@
   "testCases": {
     "api/DefaultTest": {
       "stacks": [
-        "stack"
+        "Stack"
       ],
       "assertionStack": "api/DefaultTest/DeployAssert",
       "assertionStackName": "apiDefaultTestDeployAssert018781F2"

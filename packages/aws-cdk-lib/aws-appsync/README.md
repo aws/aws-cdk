@@ -391,7 +391,7 @@ secondApi.addNoneDataSource('SecondSourceDS', {
 });
 
 // Merged API
-new appsync.GraphqlApi(this, 'MergedAPI', {
+const mergedApi = new appsync.GraphqlApi(this, 'MergedAPI', {
   name: 'MergedAPI',
   definition: appsync.Definition.fromSourceApis({
     sourceApis: [
@@ -399,12 +399,32 @@ new appsync.GraphqlApi(this, 'MergedAPI', {
         sourceApi: firstApi,
         mergeType: appsync.MergeType.MANUAL_MERGE,
       },
-      {
-        sourceApi: secondApi,
-        mergeType: appsync.MergeType.AUTO_MERGE,
-      },
     ],
   }),
+});
+```
+
+## Merged APIs Across Different Stacks
+
+The SourceApiAssociation construct allows you to define a SourceApiAssociation to a Merged API in a different stack or account. This allows a source API owner the ability to associate it to an existing Merged API itself.
+
+```ts
+const sourceApi = new appsync.GraphqlApi(this, 'FirstSourceAPI', {
+  name: 'FirstSourceAPI',
+  definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.merged-api-1.graphql')),
+});
+
+const importedMergedApi = appsync.GraphqlApi.fromGraphqlApiAttributes(this, 'ImportedMergedApi', {
+  graphqlApiId: 'MyApiId',
+  graphqlApiArn: 'MyApiArn',
+});
+
+const importedExecutionRole = iam.Role.fromRoleArn(this, 'ExecutionRole', 'arn:aws:iam::ACCOUNT:role/MyExistingRole');
+new appsync.SourceApiAssociation(this, 'SourceApiAssociation2', {
+   sourceApi: sourceApi,
+   mergedApi: importedMergedApi,
+   mergeType: appsync.MergeType.MANUAL_MERGE,
+   mergedApiExecutionRole: importedExecutionRole,
 });
 ```
 
