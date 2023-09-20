@@ -713,7 +713,7 @@ export class CdkToolkit {
         await readFromStack(options.stackName, this.props.sdkProvider, setEnvironment(options.account, options.region));
       const stack = generateStack(template!, options.stackName, language);
       success(' ⏳  Generating CDK app for %s...', chalk.blue(options.stackName));
-      await generateCdkApp(options.stackName, stack!, language, options.outputPath);
+      await generateCdkApp(options.stackName, stack!, language, options.outputPath, options.compress);
     } catch (e) {
       error(' ❌  Migrate failed for `%s`: %s', chalk.blue(options.stackName), (e as Error).message);
       throw e;
@@ -1244,6 +1244,12 @@ export interface MigrateOptions {
    */
   readonly region?: string;
 
+  /**
+   * Whether to zip the generated cdk app folder.
+   *
+   * @default false
+   */
+  readonly compress?: boolean;
 }
 
 /**
