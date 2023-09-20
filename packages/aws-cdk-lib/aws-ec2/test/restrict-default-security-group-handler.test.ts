@@ -177,6 +177,76 @@ test('update event with security group change', async () => {
   });
 });
 
+test('invoking when rules are not found should not throw error', async () => {
+  // GIVEN
+  const event: Partial<AWSLambda.CloudFormationCustomResourceCreateEvent> = {
+    RequestType: 'Create',
+    ResourceProperties: {
+      ServiceToken: 'Foo',
+      DefaultSecurityGroupId: 'sg-abc123',
+      Account: '12345678912',
+    },
+  };
+  mockEc2Client.on(RevokeSecurityGroupEgressCommand).rejects({ name: 'InvalidPermission.NotFound' });
+  mockEc2Client.on(RevokeSecurityGroupIngressCommand).rejects({ name: 'InvalidPermission.NotFound' });
+
+  // THEN
+  await expect(invokeHandler(event)).resolves.not.toThrow();
+  expect(mockEc2Client).toHaveReceivedCommandTimes(RevokeSecurityGroupEgressCommand, 1);
+  expect(mockEc2Client).toHaveReceivedCommandTimes(RevokeSecurityGroupIngressCommand, 1);
+  expect(mockEc2Client).toHaveReceivedCommandWith(RevokeSecurityGroupEgressCommand, {
+    GroupId: 'sg-abc123',
+    IpPermissions: [{
+      IpRanges: [{
+        CidrIp: '0.0.0.0/0',
+      }],
+      IpProtocol: '-1',
+    }],
+  });
+  expect(mockEc2Client).toHaveReceivedCommandWith(RevokeSecurityGroupIngressCommand, {
+    GroupId: 'sg-abc123',
+    IpPermissions: [{
+      UserIdGroupPairs: [{
+        UserId: '12345678912',
+        GroupId: 'sg-abc123',
+      }],
+      IpProtocol: '-1',
+    }],
+  });
+});
+
+test('other errors in RevokeSecurityGroupEgressCommand should be thrown', async () => {
+  // GIVEN
+  const event: Partial<AWSLambda.CloudFormationCustomResourceCreateEvent> = {
+    RequestType: 'Create',
+    ResourceProperties: {
+      ServiceToken: 'Foo',
+      DefaultSecurityGroupId: 'sg-abc123',
+      Account: '12345678912',
+    },
+  };
+  mockEc2Client.on(RevokeSecurityGroupEgressCommand).rejects({ name: 'Some.Other.Errors' });
+
+  // THEN
+  await expect(invokeHandler(event)).rejects.toThrow();
+});
+
+test('other errors in RevokeSecurityGroupIngressCommand should be thrown', async () => {
+  // GIVEN
+  const event: Partial<AWSLambda.CloudFormationCustomResourceCreateEvent> = {
+    RequestType: 'Create',
+    ResourceProperties: {
+      ServiceToken: 'Foo',
+      DefaultSecurityGroupId: 'sg-abc123',
+      Account: '12345678912',
+    },
+  };
+  mockEc2Client.on(RevokeSecurityGroupIngressCommand).rejects({ name: 'Some.Other.Errors' });
+
+  // THEN
+  await expect(invokeHandler(event)).rejects.toThrow();
+});
+
 // helper function to get around TypeScript expecting a complete event object,
 // even though our tests only need some of the fields
 async function invokeHandler(event: Partial<AWSLambda.CloudFormationCustomResourceEvent>) {
