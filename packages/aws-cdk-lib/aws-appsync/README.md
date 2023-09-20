@@ -428,6 +428,63 @@ new appsync.SourceApiAssociation(this, 'SourceApiAssociation2', {
 });
 ```
 
+## Merge Source API to Merged API in a Different Stack Using A Custom Resource
+
+The SourceApiAssociationMergeOperation construct provides the ability to merge a source api to a Merged Api and invoke a merge within a Cloudformation 
+resource. If the merge operation fails with a conflict, the Cloudformation update will fail and rollback the changes to the source API in the stack.
+
+```ts
+const sourceApi1ToMerge = new appsync.GraphqlApi(this, 'FirstSourceAPI', {
+  name: 'FirstSourceAPI',
+  definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.merged-api-1.graphql')),
+});
+
+const sourceApi2ToMerge = new appsync.GraphqlApi(this, 'SecondSourceAPI', {
+  name: 'SecondSourceAPI',
+  definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.merged-api-2.graphql')),
+});
+
+const remoteMergedApi = appsync.GraphqlApi.fromGraphqlApiAttributes(this, 'ImportedMergedApi', {
+  graphqlApiId: 'MyApiId',
+  graphqlApiArn: 'MyApiArn',
+});
+
+const remoteExecutionRole = iam.Role.fromRoleArn(this, 'ExecutionRole', 'arn:aws:iam::ACCOUNT:role/MyExistingRole');
+const association1 = new appsync.SourceApiAssociation(this, 'SourceApiAssociation2', {
+   sourceApi: sourceApi1ToMerge,
+   mergedApi: remoteMergedApi,
+   mergeType: appsync.MergeType.MANUAL_MERGE,
+   mergedApiExecutionRole: importedExecutionRole,
+});
+
+const association2 = new appsync.SourceApiAssociation(this, 'SourceApiAssociation2', {
+   sourceApi: sourceApi2ToMerge,
+   mergedApi: remoteMergedApi,
+   mergeType: appsync.MergeType.MANUAL_MERGE,
+   mergedApiExecutionRole: importedExecutionRole,
+});
+
+// The SourceApiAssociationMergeOperationProvider construct creates the Lambda handlers for submitting the merge operation and 
+// ensuring that it succeeded or failed.
+const provider = new appsync.SourceApiAssociationMergeOperationProvider(stack, 'SchemaMergeProvider');
+
+// The version id can be any identifier defined by the developer. Changing the version identifier allows you to control whether a merge operation 
+// will take place during deployment.
+new appsync.SourceApiAssociationMergeOperation(stack, 'MergeOperation1', {
+  sourceApiAssociation: association1,
+  mergeOperationProvider: provider,
+  versionIdentifier: '1',
+});
+
+// Optionally, you can add the autoUpdate flag instead which will ensure that the merge operation occurs during every stack update, regardless of if
+// there was a change or not. Note that this may lead to merge operations that do not actually change the MergedAPI.
+new appsync.SourceApiAssociationMergeOperation(stack, 'MergeOperation1', {
+  sourceApiAssociation: association2,
+  mergeOperationProvider: provider,
+  alwaysUpdate: true,
+});
+```
+
 ## Custom Domain Names
 
 For many use cases you may want to associate a custom domain name with your

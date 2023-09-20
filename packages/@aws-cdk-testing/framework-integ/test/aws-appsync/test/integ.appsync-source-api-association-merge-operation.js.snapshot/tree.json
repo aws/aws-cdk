@@ -1,0 +1,1802 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "stack": {
+        "id": "stack",
+        "path": "stack",
+        "children": {
+          "FirstSourceAPI": {
+            "id": "FirstSourceAPI",
+            "path": "stack/FirstSourceAPI",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "stack/FirstSourceAPI/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::GraphQLApi",
+                  "aws:cdk:cloudformation:props": {
+                    "authenticationType": "API_KEY",
+                    "name": "FirstSourceAPI"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnGraphQLApi",
+                  "version": "0.0.0"
+                }
+              },
+              "Schema": {
+                "id": "Schema",
+                "path": "stack/FirstSourceAPI/Schema",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::GraphQLSchema",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Fn::GetAtt": [
+                        "FirstSourceAPIB0DE8D5A",
+                        "ApiId"
+                      ]
+                    },
+                    "definition": "type firstTest {\n  version: String!\n}\ntype Query {\n  getFirstTests: [firstTest]!\n}\ntype Mutation {\n  addFirstTest(version: String!): firstTest\n}\n"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnGraphQLSchema",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultApiKey": {
+                "id": "DefaultApiKey",
+                "path": "stack/FirstSourceAPI/DefaultApiKey",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::ApiKey",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Fn::GetAtt": [
+                        "FirstSourceAPIB0DE8D5A",
+                        "ApiId"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnApiKey",
+                  "version": "0.0.0"
+                }
+              },
+              "LogGroup": {
+                "id": "LogGroup",
+                "path": "stack/FirstSourceAPI/LogGroup",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "FirstSourceDS": {
+                "id": "FirstSourceDS",
+                "path": "stack/FirstSourceAPI/FirstSourceDS",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "stack/FirstSourceAPI/FirstSourceDS/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppSync::DataSource",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Fn::GetAtt": [
+                            "FirstSourceAPIB0DE8D5A",
+                            "ApiId"
+                          ]
+                        },
+                        "name": "FirstSourceDS",
+                        "type": "NONE"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_appsync.CfnDataSource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.NoneDataSource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.GraphqlApi",
+              "version": "0.0.0"
+            }
+          },
+          "SecondSourceAPI": {
+            "id": "SecondSourceAPI",
+            "path": "stack/SecondSourceAPI",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "stack/SecondSourceAPI/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::GraphQLApi",
+                  "aws:cdk:cloudformation:props": {
+                    "authenticationType": "API_KEY",
+                    "name": "SecondSourceAPI"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnGraphQLApi",
+                  "version": "0.0.0"
+                }
+              },
+              "Schema": {
+                "id": "Schema",
+                "path": "stack/SecondSourceAPI/Schema",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::GraphQLSchema",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Fn::GetAtt": [
+                        "SecondSourceAPIE903371D",
+                        "ApiId"
+                      ]
+                    },
+                    "definition": "type secondTest {\n  version: String!\n}\ntype Query {\n  getSecondTests: [secondTest]!\n}\ntype Mutation {\n  addSecondTest(version: String!): secondTest\n}\n"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnGraphQLSchema",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultApiKey": {
+                "id": "DefaultApiKey",
+                "path": "stack/SecondSourceAPI/DefaultApiKey",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::ApiKey",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Fn::GetAtt": [
+                        "SecondSourceAPIE903371D",
+                        "ApiId"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnApiKey",
+                  "version": "0.0.0"
+                }
+              },
+              "LogGroup": {
+                "id": "LogGroup",
+                "path": "stack/SecondSourceAPI/LogGroup",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "SecondSourceDS": {
+                "id": "SecondSourceDS",
+                "path": "stack/SecondSourceAPI/SecondSourceDS",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "stack/SecondSourceAPI/SecondSourceDS/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppSync::DataSource",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Fn::GetAtt": [
+                            "SecondSourceAPIE903371D",
+                            "ApiId"
+                          ]
+                        },
+                        "name": "SecondSourceDS",
+                        "type": "NONE"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_appsync.CfnDataSource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.NoneDataSource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.GraphqlApi",
+              "version": "0.0.0"
+            }
+          },
+          "MergedApiExecutionRole": {
+            "id": "MergedApiExecutionRole",
+            "path": "stack/MergedApiExecutionRole",
+            "children": {
+              "ImportMergedApiExecutionRole": {
+                "id": "ImportMergedApiExecutionRole",
+                "path": "stack/MergedApiExecutionRole/ImportMergedApiExecutionRole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "stack/MergedApiExecutionRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "appsync.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "stack/MergedApiExecutionRole/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "stack/MergedApiExecutionRole/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "appsync:SourceGraphQL",
+                              "Effect": "Allow",
+                              "Resource": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "SourceApiAssociation17B8F97C7",
+                                    "SourceApiArn"
+                                  ]
+                                },
+                                {
+                                  "Fn::GetAtt": [
+                                    "SourceApiAssociation254340D38",
+                                    "SourceApiArn"
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "SourceApiAssociation17B8F97C7",
+                                          "SourceApiArn"
+                                        ]
+                                      },
+                                      "/*"
+                                    ]
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "SourceApiAssociation254340D38",
+                                          "SourceApiArn"
+                                        ]
+                                      },
+                                      "/*"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "MergedApiExecutionRoleDefaultPolicy249A5507",
+                        "roles": [
+                          {
+                            "Ref": "MergedApiExecutionRoleA4AA677D"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "0.0.0"
+            }
+          },
+          "MergedAPI": {
+            "id": "MergedAPI",
+            "path": "stack/MergedAPI",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "stack/MergedAPI/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::GraphQLApi",
+                  "aws:cdk:cloudformation:props": {
+                    "apiType": "MERGED",
+                    "authenticationType": "API_KEY",
+                    "mergedApiExecutionRoleArn": {
+                      "Fn::GetAtt": [
+                        "MergedApiExecutionRoleA4AA677D",
+                        "Arn"
+                      ]
+                    },
+                    "name": "MergedAPI"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnGraphQLApi",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultApiKey": {
+                "id": "DefaultApiKey",
+                "path": "stack/MergedAPI/DefaultApiKey",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::ApiKey",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Fn::GetAtt": [
+                        "MergedAPI08D3EAD1",
+                        "ApiId"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnApiKey",
+                  "version": "0.0.0"
+                }
+              },
+              "LogGroup": {
+                "id": "LogGroup",
+                "path": "stack/MergedAPI/LogGroup",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.GraphqlApi",
+              "version": "0.0.0"
+            }
+          },
+          "SourceApiAssociation1": {
+            "id": "SourceApiAssociation1",
+            "path": "stack/SourceApiAssociation1",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "stack/SourceApiAssociation1/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::SourceApiAssociation",
+                  "aws:cdk:cloudformation:props": {
+                    "mergedApiIdentifier": {
+                      "Fn::GetAtt": [
+                        "MergedAPI08D3EAD1",
+                        "Arn"
+                      ]
+                    },
+                    "sourceApiAssociationConfig": {
+                      "mergeType": "MANUAL_MERGE"
+                    },
+                    "sourceApiIdentifier": {
+                      "Fn::GetAtt": [
+                        "FirstSourceAPIB0DE8D5A",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnSourceApiAssociation",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.SourceApiAssociation",
+              "version": "0.0.0"
+            }
+          },
+          "SourceApiAssociation2": {
+            "id": "SourceApiAssociation2",
+            "path": "stack/SourceApiAssociation2",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "stack/SourceApiAssociation2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::SourceApiAssociation",
+                  "aws:cdk:cloudformation:props": {
+                    "mergedApiIdentifier": {
+                      "Fn::GetAtt": [
+                        "MergedAPI08D3EAD1",
+                        "Arn"
+                      ]
+                    },
+                    "sourceApiAssociationConfig": {
+                      "mergeType": "MANUAL_MERGE"
+                    },
+                    "sourceApiIdentifier": {
+                      "Fn::GetAtt": [
+                        "SecondSourceAPIE903371D",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnSourceApiAssociation",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.SourceApiAssociation",
+              "version": "0.0.0"
+            }
+          },
+          "SchemaMergeProvider": {
+            "id": "SchemaMergeProvider",
+            "path": "stack/SchemaMergeProvider",
+            "children": {
+              "MergeSourceApiSchemaLambda": {
+                "id": "MergeSourceApiSchemaLambda",
+                "path": "stack/SchemaMergeProvider/MergeSourceApiSchemaLambda",
+                "children": {
+                  "ServiceRole": {
+                    "id": "ServiceRole",
+                    "path": "stack/SchemaMergeProvider/MergeSourceApiSchemaLambda/ServiceRole",
+                    "children": {
+                      "ImportServiceRole": {
+                        "id": "ImportServiceRole",
+                        "path": "stack/SchemaMergeProvider/MergeSourceApiSchemaLambda/ServiceRole/ImportServiceRole",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "stack/SchemaMergeProvider/MergeSourceApiSchemaLambda/ServiceRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "lambda.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "managedPolicyArns": [
+                              {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                                  ]
+                                ]
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "DefaultPolicy": {
+                        "id": "DefaultPolicy",
+                        "path": "stack/SchemaMergeProvider/MergeSourceApiSchemaLambda/ServiceRole/DefaultPolicy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "stack/SchemaMergeProvider/MergeSourceApiSchemaLambda/ServiceRole/DefaultPolicy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "appsync:StartSchemaMerge",
+                                      "Effect": "Allow",
+                                      "Resource": [
+                                        {
+                                          "Fn::GetAtt": [
+                                            "SourceApiAssociation17B8F97C7",
+                                            "AssociationArn"
+                                          ]
+                                        },
+                                        {
+                                          "Fn::GetAtt": [
+                                            "SourceApiAssociation254340D38",
+                                            "AssociationArn"
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "SchemaMergeProviderMergeSourceApiSchemaLambdaServiceRoleDefaultPolicy0290F46A",
+                                "roles": [
+                                  {
+                                    "Ref": "SchemaMergeProviderMergeSourceApiSchemaLambdaServiceRole81CD71F1"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Code": {
+                    "id": "Code",
+                    "path": "stack/SchemaMergeProvider/MergeSourceApiSchemaLambda/Code",
+                    "children": {
+                      "Stage": {
+                        "id": "Stage",
+                        "path": "stack/SchemaMergeProvider/MergeSourceApiSchemaLambda/Code/Stage",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssetBucket": {
+                        "id": "AssetBucket",
+                        "path": "stack/SchemaMergeProvider/MergeSourceApiSchemaLambda/Code/AssetBucket",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "stack/SchemaMergeProvider/MergeSourceApiSchemaLambda/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                      "aws:cdk:cloudformation:props": {
+                        "code": {
+                          "s3Bucket": {
+                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                          },
+                          "s3Key": "6368fdfec5f79fa1d0cea965d895d01b71b6805c7b26eb89f8d0d01421fb4839.zip"
+                        },
+                        "environment": {
+                          "variables": {
+                            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+                          }
+                        },
+                        "handler": "index.onEvent",
+                        "role": {
+                          "Fn::GetAtt": [
+                            "SchemaMergeProviderMergeSourceApiSchemaLambdaServiceRole81CD71F1",
+                            "Arn"
+                          ]
+                        },
+                        "runtime": "nodejs18.x",
+                        "timeout": 120
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda_nodejs.NodejsFunction",
+                  "version": "0.0.0"
+                }
+              },
+              "PollSourceApiMergeLambda": {
+                "id": "PollSourceApiMergeLambda",
+                "path": "stack/SchemaMergeProvider/PollSourceApiMergeLambda",
+                "children": {
+                  "ServiceRole": {
+                    "id": "ServiceRole",
+                    "path": "stack/SchemaMergeProvider/PollSourceApiMergeLambda/ServiceRole",
+                    "children": {
+                      "ImportServiceRole": {
+                        "id": "ImportServiceRole",
+                        "path": "stack/SchemaMergeProvider/PollSourceApiMergeLambda/ServiceRole/ImportServiceRole",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "stack/SchemaMergeProvider/PollSourceApiMergeLambda/ServiceRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "lambda.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "managedPolicyArns": [
+                              {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                                  ]
+                                ]
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "DefaultPolicy": {
+                        "id": "DefaultPolicy",
+                        "path": "stack/SchemaMergeProvider/PollSourceApiMergeLambda/ServiceRole/DefaultPolicy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "stack/SchemaMergeProvider/PollSourceApiMergeLambda/ServiceRole/DefaultPolicy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "appsync:GetSourceApiAssociation",
+                                      "Effect": "Allow",
+                                      "Resource": [
+                                        {
+                                          "Fn::GetAtt": [
+                                            "SourceApiAssociation17B8F97C7",
+                                            "AssociationArn"
+                                          ]
+                                        },
+                                        {
+                                          "Fn::GetAtt": [
+                                            "SourceApiAssociation254340D38",
+                                            "AssociationArn"
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "SchemaMergeProviderPollSourceApiMergeLambdaServiceRoleDefaultPolicy73AE6B3D",
+                                "roles": [
+                                  {
+                                    "Ref": "SchemaMergeProviderPollSourceApiMergeLambdaServiceRole6D3B457F"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Code": {
+                    "id": "Code",
+                    "path": "stack/SchemaMergeProvider/PollSourceApiMergeLambda/Code",
+                    "children": {
+                      "Stage": {
+                        "id": "Stage",
+                        "path": "stack/SchemaMergeProvider/PollSourceApiMergeLambda/Code/Stage",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssetBucket": {
+                        "id": "AssetBucket",
+                        "path": "stack/SchemaMergeProvider/PollSourceApiMergeLambda/Code/AssetBucket",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "stack/SchemaMergeProvider/PollSourceApiMergeLambda/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                      "aws:cdk:cloudformation:props": {
+                        "code": {
+                          "s3Bucket": {
+                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                          },
+                          "s3Key": "6368fdfec5f79fa1d0cea965d895d01b71b6805c7b26eb89f8d0d01421fb4839.zip"
+                        },
+                        "environment": {
+                          "variables": {
+                            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+                          }
+                        },
+                        "handler": "index.isComplete",
+                        "role": {
+                          "Fn::GetAtt": [
+                            "SchemaMergeProviderPollSourceApiMergeLambdaServiceRole6D3B457F",
+                            "Arn"
+                          ]
+                        },
+                        "runtime": "nodejs18.x",
+                        "timeout": 120
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda_nodejs.NodejsFunction",
+                  "version": "0.0.0"
+                }
+              },
+              "SchemaMergeOperationProvider": {
+                "id": "SchemaMergeOperationProvider",
+                "path": "stack/SchemaMergeProvider/SchemaMergeOperationProvider",
+                "children": {
+                  "framework-onEvent": {
+                    "id": "framework-onEvent",
+                    "path": "stack/SchemaMergeProvider/SchemaMergeOperationProvider/framework-onEvent",
+                    "children": {
+                      "ServiceRole": {
+                        "id": "ServiceRole",
+                        "path": "stack/SchemaMergeProvider/SchemaMergeOperationProvider/framework-onEvent/ServiceRole",
+                        "children": {
+                          "ImportServiceRole": {
+                            "id": "ImportServiceRole",
+                            "path": "stack/SchemaMergeProvider/SchemaMergeOperationProvider/framework-onEvent/ServiceRole/ImportServiceRole",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "stack/SchemaMergeProvider/SchemaMergeOperationProvider/framework-onEvent/ServiceRole/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                              "aws:cdk:cloudformation:props": {
+                                "assumeRolePolicyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "sts:AssumeRole",
+                                      "Effect": "Allow",
+                                      "Principal": {
+                                        "Service": "lambda.amazonaws.com"
+                                      }
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "managedPolicyArns": [
+                                  {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                                      ]
+                                    ]
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "DefaultPolicy": {
+                            "id": "DefaultPolicy",
+                            "path": "stack/SchemaMergeProvider/SchemaMergeOperationProvider/framework-onEvent/ServiceRole/DefaultPolicy",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "stack/SchemaMergeProvider/SchemaMergeOperationProvider/framework-onEvent/ServiceRole/DefaultPolicy/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                                  "aws:cdk:cloudformation:props": {
+                                    "policyDocument": {
+                                      "Statement": [
+                                        {
+                                          "Action": "lambda:InvokeFunction",
+                                          "Effect": "Allow",
+                                          "Resource": [
+                                            {
+                                              "Fn::GetAtt": [
+                                                "SchemaMergeProviderMergeSourceApiSchemaLambda543A744A",
+                                                "Arn"
+                                              ]
+                                            },
+                                            {
+                                              "Fn::GetAtt": [
+                                                "SchemaMergeProviderPollSourceApiMergeLambda1580B930",
+                                                "Arn"
+                                              ]
+                                            },
+                                            {
+                                              "Fn::Join": [
+                                                "",
+                                                [
+                                                  {
+                                                    "Fn::GetAtt": [
+                                                      "SchemaMergeProviderMergeSourceApiSchemaLambda543A744A",
+                                                      "Arn"
+                                                    ]
+                                                  },
+                                                  ":*"
+                                                ]
+                                              ]
+                                            },
+                                            {
+                                              "Fn::Join": [
+                                                "",
+                                                [
+                                                  {
+                                                    "Fn::GetAtt": [
+                                                      "SchemaMergeProviderPollSourceApiMergeLambda1580B930",
+                                                      "Arn"
+                                                    ]
+                                                  },
+                                                  ":*"
+                                                ]
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "Action": "states:StartExecution",
+                                          "Effect": "Allow",
+                                          "Resource": {
+                                            "Ref": "SchemaMergeProviderSchemaMergeOperationProviderwaiterstatemachine96F012AD"
+                                          }
+                                        }
+                                      ],
+                                      "Version": "2012-10-17"
+                                    },
+                                    "policyName": "SchemaMergeProviderSchemaMergeOperationProviderframeworkonEventServiceRoleDefaultPolicy97594CC2",
+                                    "roles": [
+                                      {
+                                        "Ref": "SchemaMergeProviderSchemaMergeOperationProviderframeworkonEventServiceRoleE2D5067B"
+                                      }
+                                    ]
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.Policy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Role",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Code": {
+                        "id": "Code",
+                        "path": "stack/SchemaMergeProvider/SchemaMergeOperationProvider/framework-onEvent/Code",
+                        "children": {
+                          "Stage": {
+                            "id": "Stage",
+                            "path": "stack/SchemaMergeProvider/SchemaMergeOperationProvider/framework-onEvent/Code/Stage",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.AssetStaging",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "AssetBucket": {
+                            "id": "AssetBucket",
+                            "path": "stack/SchemaMergeProvider/SchemaMergeOperationProvider/framework-onEvent/Code/AssetBucket",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "stack/SchemaMergeProvider/SchemaMergeOperationProvider/framework-onEvent/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                          "aws:cdk:cloudformation:props": {
+                            "code": {
+                              "s3Bucket": {
+                                "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                              },
+                              "s3Key": "d002370061965c69bc4caf15dddb5eccc9df318933ade6e4fa57cddb81c5abef.zip"
+                            },
+                            "description": "AWS CDK resource provider framework - onEvent (stack/SchemaMergeProvider/SchemaMergeOperationProvider)",
+                            "environment": {
+                              "variables": {
+                                "USER_ON_EVENT_FUNCTION_ARN": {
+                                  "Fn::GetAtt": [
+                                    "SchemaMergeProviderMergeSourceApiSchemaLambda543A744A",
+                                    "Arn"
+                                  ]
+                                },
+                                "USER_IS_COMPLETE_FUNCTION_ARN": {
+                                  "Fn::GetAtt": [
+                                    "SchemaMergeProviderPollSourceApiMergeLambda1580B930",
+                                    "Arn"
+                                  ]
+                                },
+                                "WAITER_STATE_MACHINE_ARN": {
+                                  "Ref": "SchemaMergeProviderSchemaMergeOperationProviderwaiterstatemachine96F012AD"
+                                }
+                              }
+                            },
+                            "handler": "framework.onEvent",
+                            "role": {
+                              "Fn::GetAtt": [
+                                "SchemaMergeProviderSchemaMergeOperationProviderframeworkonEventServiceRoleE2D5067B",
+                                "Arn"
+                              ]
+                            },
+                            "runtime": "nodejs18.x",
+                            "timeout": 900
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_lambda.Function",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "framework-isComplete": {
+                    "id": "framework-isComplete",
+                    "path": "stack/SchemaMergeProvider/SchemaMergeOperationProvider/framework-isComplete",
+                    "children": {
+                      "ServiceRole": {
+                        "id": "ServiceRole",
+                        "path": "stack/SchemaMergeProvider/SchemaMergeOperationProvider/framework-isComplete/ServiceRole",
+                        "children": {
+                          "ImportServiceRole": {
+                            "id": "ImportServiceRole",
+                            "path": "stack/SchemaMergeProvider/SchemaMergeOperationProvider/framework-isComplete/ServiceRole/ImportServiceRole",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "stack/SchemaMergeProvider/SchemaMergeOperationProvider/framework-isComplete/ServiceRole/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                              "aws:cdk:cloudformation:props": {
+                                "assumeRolePolicyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "sts:AssumeRole",
+                                      "Effect": "Allow",
+                                      "Principal": {
+                                        "Service": "lambda.amazonaws.com"
+                                      }
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "managedPolicyArns": [
+                                  {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                                      ]
+                                    ]
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "DefaultPolicy": {
+                            "id": "DefaultPolicy",
+                            "path": "stack/SchemaMergeProvider/SchemaMergeOperationProvider/framework-isComplete/ServiceRole/DefaultPolicy",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "stack/SchemaMergeProvider/SchemaMergeOperationProvider/framework-isComplete/ServiceRole/DefaultPolicy/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                                  "aws:cdk:cloudformation:props": {
+                                    "policyDocument": {
+                                      "Statement": [
+                                        {
+                                          "Action": "lambda:InvokeFunction",
+                                          "Effect": "Allow",
+                                          "Resource": [
+                                            {
+                                              "Fn::GetAtt": [
+                                                "SchemaMergeProviderMergeSourceApiSchemaLambda543A744A",
+                                                "Arn"
+                                              ]
+                                            },
+                                            {
+                                              "Fn::GetAtt": [
+                                                "SchemaMergeProviderPollSourceApiMergeLambda1580B930",
+                                                "Arn"
+                                              ]
+                                            },
+                                            {
+                                              "Fn::Join": [
+                                                "",
+                                                [
+                                                  {
+                                                    "Fn::GetAtt": [
+                                                      "SchemaMergeProviderMergeSourceApiSchemaLambda543A744A",
+                                                      "Arn"
+                                                    ]
+                                                  },
+                                                  ":*"
+                                                ]
+                                              ]
+                                            },
+                                            {
+                                              "Fn::Join": [
+                                                "",
+                                                [
+                                                  {
+                                                    "Fn::GetAtt": [
+                                                      "SchemaMergeProviderPollSourceApiMergeLambda1580B930",
+                                                      "Arn"
+                                                    ]
+                                                  },
+                                                  ":*"
+                                                ]
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ],
+                                      "Version": "2012-10-17"
+                                    },
+                                    "policyName": "SchemaMergeProviderSchemaMergeOperationProviderframeworkisCompleteServiceRoleDefaultPolicy6CF7E75E",
+                                    "roles": [
+                                      {
+                                        "Ref": "SchemaMergeProviderSchemaMergeOperationProviderframeworkisCompleteServiceRoleE8BF458E"
+                                      }
+                                    ]
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.Policy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Role",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Code": {
+                        "id": "Code",
+                        "path": "stack/SchemaMergeProvider/SchemaMergeOperationProvider/framework-isComplete/Code",
+                        "children": {
+                          "Stage": {
+                            "id": "Stage",
+                            "path": "stack/SchemaMergeProvider/SchemaMergeOperationProvider/framework-isComplete/Code/Stage",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.AssetStaging",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "AssetBucket": {
+                            "id": "AssetBucket",
+                            "path": "stack/SchemaMergeProvider/SchemaMergeOperationProvider/framework-isComplete/Code/AssetBucket",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "stack/SchemaMergeProvider/SchemaMergeOperationProvider/framework-isComplete/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                          "aws:cdk:cloudformation:props": {
+                            "code": {
+                              "s3Bucket": {
+                                "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                              },
+                              "s3Key": "d002370061965c69bc4caf15dddb5eccc9df318933ade6e4fa57cddb81c5abef.zip"
+                            },
+                            "description": "AWS CDK resource provider framework - isComplete (stack/SchemaMergeProvider/SchemaMergeOperationProvider)",
+                            "environment": {
+                              "variables": {
+                                "USER_ON_EVENT_FUNCTION_ARN": {
+                                  "Fn::GetAtt": [
+                                    "SchemaMergeProviderMergeSourceApiSchemaLambda543A744A",
+                                    "Arn"
+                                  ]
+                                },
+                                "USER_IS_COMPLETE_FUNCTION_ARN": {
+                                  "Fn::GetAtt": [
+                                    "SchemaMergeProviderPollSourceApiMergeLambda1580B930",
+                                    "Arn"
+                                  ]
+                                }
+                              }
+                            },
+                            "handler": "framework.isComplete",
+                            "role": {
+                              "Fn::GetAtt": [
+                                "SchemaMergeProviderSchemaMergeOperationProviderframeworkisCompleteServiceRoleE8BF458E",
+                                "Arn"
+                              ]
+                            },
+                            "runtime": "nodejs18.x",
+                            "timeout": 900
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_lambda.Function",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "framework-onTimeout": {
+                    "id": "framework-onTimeout",
+                    "path": "stack/SchemaMergeProvider/SchemaMergeOperationProvider/framework-onTimeout",
+                    "children": {
+                      "ServiceRole": {
+                        "id": "ServiceRole",
+                        "path": "stack/SchemaMergeProvider/SchemaMergeOperationProvider/framework-onTimeout/ServiceRole",
+                        "children": {
+                          "ImportServiceRole": {
+                            "id": "ImportServiceRole",
+                            "path": "stack/SchemaMergeProvider/SchemaMergeOperationProvider/framework-onTimeout/ServiceRole/ImportServiceRole",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "stack/SchemaMergeProvider/SchemaMergeOperationProvider/framework-onTimeout/ServiceRole/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                              "aws:cdk:cloudformation:props": {
+                                "assumeRolePolicyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "sts:AssumeRole",
+                                      "Effect": "Allow",
+                                      "Principal": {
+                                        "Service": "lambda.amazonaws.com"
+                                      }
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "managedPolicyArns": [
+                                  {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                                      ]
+                                    ]
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "DefaultPolicy": {
+                            "id": "DefaultPolicy",
+                            "path": "stack/SchemaMergeProvider/SchemaMergeOperationProvider/framework-onTimeout/ServiceRole/DefaultPolicy",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "stack/SchemaMergeProvider/SchemaMergeOperationProvider/framework-onTimeout/ServiceRole/DefaultPolicy/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                                  "aws:cdk:cloudformation:props": {
+                                    "policyDocument": {
+                                      "Statement": [
+                                        {
+                                          "Action": "lambda:InvokeFunction",
+                                          "Effect": "Allow",
+                                          "Resource": [
+                                            {
+                                              "Fn::GetAtt": [
+                                                "SchemaMergeProviderMergeSourceApiSchemaLambda543A744A",
+                                                "Arn"
+                                              ]
+                                            },
+                                            {
+                                              "Fn::GetAtt": [
+                                                "SchemaMergeProviderPollSourceApiMergeLambda1580B930",
+                                                "Arn"
+                                              ]
+                                            },
+                                            {
+                                              "Fn::Join": [
+                                                "",
+                                                [
+                                                  {
+                                                    "Fn::GetAtt": [
+                                                      "SchemaMergeProviderMergeSourceApiSchemaLambda543A744A",
+                                                      "Arn"
+                                                    ]
+                                                  },
+                                                  ":*"
+                                                ]
+                                              ]
+                                            },
+                                            {
+                                              "Fn::Join": [
+                                                "",
+                                                [
+                                                  {
+                                                    "Fn::GetAtt": [
+                                                      "SchemaMergeProviderPollSourceApiMergeLambda1580B930",
+                                                      "Arn"
+                                                    ]
+                                                  },
+                                                  ":*"
+                                                ]
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ],
+                                      "Version": "2012-10-17"
+                                    },
+                                    "policyName": "SchemaMergeProviderSchemaMergeOperationProviderframeworkonTimeoutServiceRoleDefaultPolicy267D92B2",
+                                    "roles": [
+                                      {
+                                        "Ref": "SchemaMergeProviderSchemaMergeOperationProviderframeworkonTimeoutServiceRole79C4B854"
+                                      }
+                                    ]
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.Policy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Role",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Code": {
+                        "id": "Code",
+                        "path": "stack/SchemaMergeProvider/SchemaMergeOperationProvider/framework-onTimeout/Code",
+                        "children": {
+                          "Stage": {
+                            "id": "Stage",
+                            "path": "stack/SchemaMergeProvider/SchemaMergeOperationProvider/framework-onTimeout/Code/Stage",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.AssetStaging",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "AssetBucket": {
+                            "id": "AssetBucket",
+                            "path": "stack/SchemaMergeProvider/SchemaMergeOperationProvider/framework-onTimeout/Code/AssetBucket",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "stack/SchemaMergeProvider/SchemaMergeOperationProvider/framework-onTimeout/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                          "aws:cdk:cloudformation:props": {
+                            "code": {
+                              "s3Bucket": {
+                                "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                              },
+                              "s3Key": "d002370061965c69bc4caf15dddb5eccc9df318933ade6e4fa57cddb81c5abef.zip"
+                            },
+                            "description": "AWS CDK resource provider framework - onTimeout (stack/SchemaMergeProvider/SchemaMergeOperationProvider)",
+                            "environment": {
+                              "variables": {
+                                "USER_ON_EVENT_FUNCTION_ARN": {
+                                  "Fn::GetAtt": [
+                                    "SchemaMergeProviderMergeSourceApiSchemaLambda543A744A",
+                                    "Arn"
+                                  ]
+                                },
+                                "USER_IS_COMPLETE_FUNCTION_ARN": {
+                                  "Fn::GetAtt": [
+                                    "SchemaMergeProviderPollSourceApiMergeLambda1580B930",
+                                    "Arn"
+                                  ]
+                                }
+                              }
+                            },
+                            "handler": "framework.onTimeout",
+                            "role": {
+                              "Fn::GetAtt": [
+                                "SchemaMergeProviderSchemaMergeOperationProviderframeworkonTimeoutServiceRole79C4B854",
+                                "Arn"
+                              ]
+                            },
+                            "runtime": "nodejs18.x",
+                            "timeout": 900
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_lambda.Function",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "waiter-state-machine": {
+                    "id": "waiter-state-machine",
+                    "path": "stack/SchemaMergeProvider/SchemaMergeOperationProvider/waiter-state-machine",
+                    "children": {
+                      "Role": {
+                        "id": "Role",
+                        "path": "stack/SchemaMergeProvider/SchemaMergeOperationProvider/waiter-state-machine/Role",
+                        "children": {
+                          "ImportRole": {
+                            "id": "ImportRole",
+                            "path": "stack/SchemaMergeProvider/SchemaMergeOperationProvider/waiter-state-machine/Role/ImportRole",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "stack/SchemaMergeProvider/SchemaMergeOperationProvider/waiter-state-machine/Role/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                              "aws:cdk:cloudformation:props": {
+                                "assumeRolePolicyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "sts:AssumeRole",
+                                      "Effect": "Allow",
+                                      "Principal": {
+                                        "Service": "states.amazonaws.com"
+                                      }
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "DefaultPolicy": {
+                            "id": "DefaultPolicy",
+                            "path": "stack/SchemaMergeProvider/SchemaMergeOperationProvider/waiter-state-machine/Role/DefaultPolicy",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "stack/SchemaMergeProvider/SchemaMergeOperationProvider/waiter-state-machine/Role/DefaultPolicy/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                                  "aws:cdk:cloudformation:props": {
+                                    "policyDocument": {
+                                      "Statement": [
+                                        {
+                                          "Action": "lambda:InvokeFunction",
+                                          "Effect": "Allow",
+                                          "Resource": [
+                                            {
+                                              "Fn::GetAtt": [
+                                                "SchemaMergeProviderSchemaMergeOperationProviderframeworkisComplete14D47EC2",
+                                                "Arn"
+                                              ]
+                                            },
+                                            {
+                                              "Fn::GetAtt": [
+                                                "SchemaMergeProviderSchemaMergeOperationProviderframeworkonTimeout3F0EBB58",
+                                                "Arn"
+                                              ]
+                                            },
+                                            {
+                                              "Fn::Join": [
+                                                "",
+                                                [
+                                                  {
+                                                    "Fn::GetAtt": [
+                                                      "SchemaMergeProviderSchemaMergeOperationProviderframeworkisComplete14D47EC2",
+                                                      "Arn"
+                                                    ]
+                                                  },
+                                                  ":*"
+                                                ]
+                                              ]
+                                            },
+                                            {
+                                              "Fn::Join": [
+                                                "",
+                                                [
+                                                  {
+                                                    "Fn::GetAtt": [
+                                                      "SchemaMergeProviderSchemaMergeOperationProviderframeworkonTimeout3F0EBB58",
+                                                      "Arn"
+                                                    ]
+                                                  },
+                                                  ":*"
+                                                ]
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ],
+                                      "Version": "2012-10-17"
+                                    },
+                                    "policyName": "SchemaMergeProviderSchemaMergeOperationProviderwaiterstatemachineRoleDefaultPolicyF0F8C916",
+                                    "roles": [
+                                      {
+                                        "Ref": "SchemaMergeProviderSchemaMergeOperationProviderwaiterstatemachineRole5EEBE5E9"
+                                      }
+                                    ]
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.Policy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Role",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "stack/SchemaMergeProvider/SchemaMergeOperationProvider/waiter-state-machine/Resource",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.custom_resources.Provider",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.SourceApiAssociationMergeOperationProvider",
+              "version": "0.0.0"
+            }
+          },
+          "MergeOperation1": {
+            "id": "MergeOperation1",
+            "path": "stack/MergeOperation1",
+            "children": {
+              "SourceApiSchemaMergeOperation": {
+                "id": "SourceApiSchemaMergeOperation",
+                "path": "stack/MergeOperation1/SourceApiSchemaMergeOperation",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "stack/MergeOperation1/SourceApiSchemaMergeOperation/Default",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CustomResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.SourceApiAssociationMergeOperation",
+              "version": "0.0.0"
+            }
+          },
+          "MergeOperation2": {
+            "id": "MergeOperation2",
+            "path": "stack/MergeOperation2",
+            "children": {
+              "SourceApiSchemaMergeOperation": {
+                "id": "SourceApiSchemaMergeOperation",
+                "path": "stack/MergeOperation2/SourceApiSchemaMergeOperation",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "stack/MergeOperation2/SourceApiSchemaMergeOperation/Default",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CustomResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.SourceApiAssociationMergeOperation",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "stack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "stack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "api": {
+        "id": "api",
+        "path": "api",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "api/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "api/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "api/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "api/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "api/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.2.70"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

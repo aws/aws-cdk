@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { CfnSourceApiAssociation } from './appsync.generated';
 import { IGraphqlApi } from './graphqlapi-base';
 import { Effect, IRole, PolicyStatement } from '../../aws-iam';
-import { Fn, IResource, Lazy, Resource } from '../../core';
+import { Fn, Lazy, Resource, IResource } from '../../core';
 
 /**
  * Merge type used to associate the source API
@@ -164,10 +164,10 @@ export class SourceApiAssociation extends Resource implements ISourceApiAssociat
     super(scope, id);
 
     this.mergeType = props.mergeType ?? MergeType.AUTO_MERGE;
+    this.sourceApi = props.sourceApi;
     this.mergedApiExecutionRole = props.mergedApiExecutionRole;
     this.sourceApi = props.sourceApi;
     this.mergedApi = props.mergedApi;
-
     this.association = new CfnSourceApiAssociation(this, 'Resource', {
       sourceApiIdentifier: this.sourceApi.arn,
       mergedApiIdentifier: this.mergedApi.arn,

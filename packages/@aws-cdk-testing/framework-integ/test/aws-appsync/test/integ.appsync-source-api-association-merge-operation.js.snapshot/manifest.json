@@ -1,0 +1,309 @@
+{
+  "version": "34.0.0",
+  "artifacts": {
+    "stack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "stack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "stack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "stack.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/510321bc7386d638097491bceef4f0a9d2717704977077bf2ef1741f252d63a3.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "stack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "stack.assets"
+      ],
+      "metadata": {
+        "/stack/FirstSourceAPI/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FirstSourceAPIB0DE8D5A"
+          }
+        ],
+        "/stack/FirstSourceAPI/Schema": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FirstSourceAPISchemaF2FDB692"
+          }
+        ],
+        "/stack/FirstSourceAPI/DefaultApiKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FirstSourceAPIDefaultApiKey9D9AE06D"
+          }
+        ],
+        "/stack/FirstSourceAPI/FirstSourceDS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FirstSourceAPIFirstSourceDS6AD299B7"
+          }
+        ],
+        "/stack/SecondSourceAPI/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecondSourceAPIE903371D"
+          }
+        ],
+        "/stack/SecondSourceAPI/Schema": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecondSourceAPISchema65B7401E"
+          }
+        ],
+        "/stack/SecondSourceAPI/DefaultApiKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecondSourceAPIDefaultApiKeyCE5A0A64"
+          }
+        ],
+        "/stack/SecondSourceAPI/SecondSourceDS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecondSourceAPISecondSourceDSEA46EBA7"
+          }
+        ],
+        "/stack/MergedApiExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MergedApiExecutionRoleA4AA677D"
+          }
+        ],
+        "/stack/MergedApiExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MergedApiExecutionRoleDefaultPolicy249A5507"
+          }
+        ],
+        "/stack/MergedAPI/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MergedAPI08D3EAD1"
+          }
+        ],
+        "/stack/MergedAPI/DefaultApiKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MergedAPIDefaultApiKeyAF5EA13C"
+          }
+        ],
+        "/stack/SourceApiAssociation1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SourceApiAssociation17B8F97C7"
+          }
+        ],
+        "/stack/SourceApiAssociation2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SourceApiAssociation254340D38"
+          }
+        ],
+        "/stack/SchemaMergeProvider/MergeSourceApiSchemaLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SchemaMergeProviderMergeSourceApiSchemaLambdaServiceRole81CD71F1"
+          }
+        ],
+        "/stack/SchemaMergeProvider/MergeSourceApiSchemaLambda/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SchemaMergeProviderMergeSourceApiSchemaLambdaServiceRoleDefaultPolicy0290F46A"
+          }
+        ],
+        "/stack/SchemaMergeProvider/MergeSourceApiSchemaLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SchemaMergeProviderMergeSourceApiSchemaLambda543A744A"
+          }
+        ],
+        "/stack/SchemaMergeProvider/PollSourceApiMergeLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SchemaMergeProviderPollSourceApiMergeLambdaServiceRole6D3B457F"
+          }
+        ],
+        "/stack/SchemaMergeProvider/PollSourceApiMergeLambda/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SchemaMergeProviderPollSourceApiMergeLambdaServiceRoleDefaultPolicy73AE6B3D"
+          }
+        ],
+        "/stack/SchemaMergeProvider/PollSourceApiMergeLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SchemaMergeProviderPollSourceApiMergeLambda1580B930"
+          }
+        ],
+        "/stack/SchemaMergeProvider/SchemaMergeOperationProvider/framework-onEvent/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SchemaMergeProviderSchemaMergeOperationProviderframeworkonEventServiceRoleE2D5067B"
+          }
+        ],
+        "/stack/SchemaMergeProvider/SchemaMergeOperationProvider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SchemaMergeProviderSchemaMergeOperationProviderframeworkonEventServiceRoleDefaultPolicy97594CC2"
+          }
+        ],
+        "/stack/SchemaMergeProvider/SchemaMergeOperationProvider/framework-onEvent/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SchemaMergeProviderSchemaMergeOperationProviderframeworkonEvent9D29F6F0"
+          }
+        ],
+        "/stack/SchemaMergeProvider/SchemaMergeOperationProvider/framework-isComplete/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SchemaMergeProviderSchemaMergeOperationProviderframeworkisCompleteServiceRoleE8BF458E"
+          }
+        ],
+        "/stack/SchemaMergeProvider/SchemaMergeOperationProvider/framework-isComplete/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SchemaMergeProviderSchemaMergeOperationProviderframeworkisCompleteServiceRoleDefaultPolicy6CF7E75E"
+          }
+        ],
+        "/stack/SchemaMergeProvider/SchemaMergeOperationProvider/framework-isComplete/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SchemaMergeProviderSchemaMergeOperationProviderframeworkisComplete14D47EC2"
+          }
+        ],
+        "/stack/SchemaMergeProvider/SchemaMergeOperationProvider/framework-onTimeout/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SchemaMergeProviderSchemaMergeOperationProviderframeworkonTimeoutServiceRole79C4B854"
+          }
+        ],
+        "/stack/SchemaMergeProvider/SchemaMergeOperationProvider/framework-onTimeout/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SchemaMergeProviderSchemaMergeOperationProviderframeworkonTimeoutServiceRoleDefaultPolicy267D92B2"
+          }
+        ],
+        "/stack/SchemaMergeProvider/SchemaMergeOperationProvider/framework-onTimeout/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SchemaMergeProviderSchemaMergeOperationProviderframeworkonTimeout3F0EBB58"
+          }
+        ],
+        "/stack/SchemaMergeProvider/SchemaMergeOperationProvider/waiter-state-machine/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SchemaMergeProviderSchemaMergeOperationProviderwaiterstatemachineRole5EEBE5E9"
+          }
+        ],
+        "/stack/SchemaMergeProvider/SchemaMergeOperationProvider/waiter-state-machine/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SchemaMergeProviderSchemaMergeOperationProviderwaiterstatemachineRoleDefaultPolicyF0F8C916"
+          }
+        ],
+        "/stack/SchemaMergeProvider/SchemaMergeOperationProvider/waiter-state-machine/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SchemaMergeProviderSchemaMergeOperationProviderwaiterstatemachine96F012AD"
+          }
+        ],
+        "/stack/MergeOperation1/SourceApiSchemaMergeOperation/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MergeOperation1SourceApiSchemaMergeOperationC6A79583"
+          }
+        ],
+        "/stack/MergeOperation2/SourceApiSchemaMergeOperation/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MergeOperation2SourceApiSchemaMergeOperation8BB9FB65"
+          }
+        ],
+        "/stack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/stack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "stack"
+    },
+    "apiDefaultTestDeployAssert018781F2.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "apiDefaultTestDeployAssert018781F2.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "apiDefaultTestDeployAssert018781F2": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "apiDefaultTestDeployAssert018781F2.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "apiDefaultTestDeployAssert018781F2.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "apiDefaultTestDeployAssert018781F2.assets"
+      ],
+      "metadata": {
+        "/api/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/api/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "api/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
