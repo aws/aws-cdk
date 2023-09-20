@@ -22,7 +22,7 @@ export const invoke: InvokeFunction = async (functionName, invocationType, timeo
   const lambda = new Lambda({
     requestHandler: new NodeHttpHandler({
       socketTimeout: timeout,
-    }),
+    }) as any,
   });
 
   const invokeRequest = { FunctionName: functionName, InvocationType: invocationType };
