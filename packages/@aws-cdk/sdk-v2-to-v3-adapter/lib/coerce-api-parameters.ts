@@ -1,45 +1,72 @@
-import { UINT8ARRAY_PARAMETERS } from './parameter-types';
+import { TypeCoercionStateMachine, typeCoercionStateMachine } from './parameter-types';
 
 type ApiParameters = { [param: string]: any };
+
+type StateOrConversion = TypeCoercionStateMachine[number][string];
 
 /**
  * Given a minimal AWS SDKv3 call definition (service, action, parameters),
  * coerces nested parameter values into a Uint8Array if that's what the SDKv3 expects.
  */
-export function coerceApiParametersToUint8Array(service: string, action: string, parameters: ApiParameters = {}): ApiParameters {
-  const pathsToCoerce = UINT8ARRAY_PARAMETERS?.[service.toLowerCase()]?.[action.toLowerCase()] ?? [];
-  for (const path of pathsToCoerce) {
-    coerceToUint8Array(parameters, path.split('.'));
-  }
-  return parameters;
+export function coerceApiParameters(service: string, action: string, parameters: ApiParameters = {}): ApiParameters {
+  const typeMachine = typeCoercionStateMachine();
+  return new Coercer(typeMachine).coerceApiParameters(service, action, parameters);
 }
 
 /**
- * Given an object and a path, traverse to the leaf and coerce the value into a Uint8Array.
- *
- * @example
- *    const obj = { a: { b: { c: '1' } } }
- *    coerceToUint8Array(obj, ['a', 'b', 'c'])
- *    assert(obj == {a: {b: {c: new Uint8Array([49]} } })
- *
- * @returns Parameters with coerced values
+ * Make this a class in order to have multiple entry points for testing that can all share convenience functions
  */
-export function coerceToUint8Array(obj: any, path: string[]): any {
-  if (path.length === 0) {
-    return coerceValueToUint8Array(obj);
+export class Coercer {
+  constructor(private readonly typeMachine: TypeCoercionStateMachine) { }
+
+  public coerceApiParameters(service: string, action: string, parameters: ApiParameters = {}): ApiParameters {
+    // Get the initial state corresponding to the current service+action, then recurse through the parameters
+    const actionState = this.progress(action.toLowerCase(), this.progress(service.toLowerCase(), 0));
+    return this.recurse(parameters, actionState) as any;
   }
 
-  if (path[0] === '*' && Array.isArray(obj)) {
-    return obj.map((e) => coerceToUint8Array(e, path.slice(1)));
+  public testCoerce(value: unknown): any {
+    return this.recurse(value, 0);
   }
 
-  if (obj && typeof obj === 'object') {
-    if (path[0] in obj) {
-      obj[path[0]] = coerceToUint8Array(obj[path[0]], path.slice(1));
+  private recurse(value: unknown, state: StateOrConversion | undefined): any {
+    switch (state) {
+      case undefined: return value;
+      case 'b': return coerceValueToUint8Array(value);
+      case 'n': return coerceValueToNumber(value);
     }
-    return obj;
+
+    if (Array.isArray(value)) {
+      const elState = this.progress('*', state);
+      return elState !== undefined
+        ? value.map((e) => this.recurse(e, elState))
+        : value;
+    }
+
+    if (value && typeof value === 'object') {
+      // Mutate the object in-place for efficiency
+      const mapState = this.progress('*', state);
+      for (const key of Object.keys(value)) {
+        const fieldState = this.progress(key, state) ?? mapState;
+        if (fieldState !== undefined) {
+          (value as any)[key] = this.recurse((value as any)[key], fieldState);
+        }
+      }
+      return value;
+    }
+
+    return value;
   }
-  return obj;
+
+  /**
+   * From a given state, return the state we would end up in if we followed this field
+   */
+  private progress(field: string, s: StateOrConversion | undefined): StateOrConversion | undefined {
+    if (s === undefined || typeof s !== 'number') {
+      return undefined;
+    }
+    return this.typeMachine[s][field];
+  }
 }
 
 function coerceValueToUint8Array(x: unknown): Uint8Array | any {
@@ -54,3 +81,15 @@ function coerceValueToUint8Array(x: unknown): Uint8Array | any {
   return x;
 }
 
+function coerceValueToNumber(x: unknown): number | any {
+  if (typeof x === 'number') {
+    return x;
+  }
+
+  if (typeof x === 'string') {
+    const n = Number(x);
+    return isNaN(n) ? x : n;
+  }
+
+  return x;
+}

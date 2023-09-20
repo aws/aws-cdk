@@ -38,7 +38,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "50a8879346510e33e69a511e29d588e7b2d2b477b6989a4db677027bb8605b9f.zip"
+     "S3Key": "c7937690d1d588b8d91f5f71328142498813c7e04ad7f0da1bb807f0e7ee29a1.zip"
     },
     "Environment": {
      "Variables": {
@@ -52,7 +52,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "externalServiceRole85A00A90"

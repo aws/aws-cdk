@@ -22,6 +22,7 @@
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.2.70"
+
                     }
                   },
                   "Resource": {

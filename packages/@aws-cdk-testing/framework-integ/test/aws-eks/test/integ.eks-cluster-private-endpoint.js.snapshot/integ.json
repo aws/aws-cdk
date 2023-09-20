@@ -1,11 +1,11 @@
 {
-  "version": "32.0.0",
+  "version": "34.0.0",
   "testCases": {
     "aws-cdk-eks-cluster-private-endpoint/DefaultTest": {
       "stacks": [
         "aws-cdk-eks-cluster-private-endpoint-test"
       ],
-      "diffAssets": true,
+      "diffAssets": false,
       "assertionStack": "aws-cdk-eks-cluster-private-endpoint/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkeksclusterprivateendpointDefaultTestDeployAssert3C16DBEA"
     }
