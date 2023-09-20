@@ -6,6 +6,7 @@ import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import { RemovalPolicy, Stack, Annotations as CoreAnnotations } from '../../core';
+import { AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS } from '../../cx-api';
 import {
   AuroraEngineVersion, AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, CfnDBCluster, Credentials, DatabaseCluster,
   DatabaseClusterEngine, DatabaseClusterFromSnapshot, ParameterGroup, PerformanceInsightRetention, SubnetGroup, DatabaseSecret,
@@ -807,6 +808,7 @@ describe('cluster new api', () => {
     test('can create with multiple readers with each parameters', () => {
       // GIVEN
       const stack = testStack();
+      stack.node.setContext(AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS, true);
       const vpc = new ec2.Vpc(stack, 'VPC');
 
       // WHEN
@@ -833,11 +835,11 @@ describe('cluster new api', () => {
       });
       template.hasResourceProperties('AWS::RDS::DBInstance', {
         DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
-        DBParameterGroupName: { Ref: 'DatabasereaderInstanceParameterGroupA91C7170' },
+        DBParameterGroupName: { Ref: 'DatabasereaderInstanceParameterGroupA66BCEF9' },
       });
       template.hasResourceProperties('AWS::RDS::DBInstance', {
         DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
-        DBParameterGroupName: { Ref: 'Databasereader2InstanceParameterGroup71B7B67A' },
+        DBParameterGroupName: { Ref: 'Databasereader2InstanceParameterGroupD35BEBC4' },
       });
 
       Annotations.fromStack(stack).hasNoWarning('*', '*');
