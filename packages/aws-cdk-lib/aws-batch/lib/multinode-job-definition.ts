@@ -16,8 +16,10 @@ interface IMultiNodeJobDefinition extends IJobDefinition {
 
   /**
    * The instance type that this job definition will run
+   *
+   * @default - optimal instance, selected by Batch
    */
-  readonly instanceType: ec2.InstanceType;
+  readonly instanceType?: ec2.InstanceType;
 
   /**
    * The index of the main node in this job.
@@ -72,8 +74,10 @@ export interface MultiNodeJobDefinitionProps extends JobDefinitionProps {
   /**
    * The instance type that this job definition
    * will run.
+   *
+   * @default - optimal instance, selected by Batch
    */
-  readonly instanceType: ec2.InstanceType;
+  readonly instanceType?: ec2.InstanceType;
 
   /**
    * The containers that this multinode job will run.
@@ -124,25 +128,25 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
   }
 
   public readonly containers: MultiNodeContainer[];
-  public readonly instanceType: ec2.InstanceType;
+  public readonly instanceType?: ec2.InstanceType;
   public readonly mainNode?: number;
   public readonly propagateTags?: boolean;
 
   public readonly jobDefinitionArn: string;
   public readonly jobDefinitionName: string;
 
-  constructor(scope: Construct, id: string, props: MultiNodeJobDefinitionProps) {
+  constructor(scope: Construct, id: string, props?: MultiNodeJobDefinitionProps) {
     super(scope, id, props);
 
-    this.containers = props.containers ?? [];
-    this.mainNode = props.mainNode;
-    this.instanceType = props.instanceType;
+    this.containers = props?.containers ?? [];
+    this.mainNode = props?.mainNode;
+    this.instanceType = props?.instanceType;
     this.propagateTags = props?.propagateTags;
 
     const resource = new CfnJobDefinition(this, 'Resource', {
       ...baseJobDefinitionProperties(this),
       type: 'multinode',
-      jobDefinitionName: props.jobDefinitionName,
+      jobDefinitionName: props?.jobDefinitionName,
       propagateTags: this.propagateTags,
       nodeProperties: {
         mainNode: this.mainNode ?? 0,
@@ -151,7 +155,7 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
             targetNodes: container.startNode + ':' + container.endNode,
             container: {
               ...container.container._renderContainerDefinition(),
-              instanceType: this.instanceType.toString(),
+              instanceType: this.instanceType?.toString(),
             },
           })),
         }),
