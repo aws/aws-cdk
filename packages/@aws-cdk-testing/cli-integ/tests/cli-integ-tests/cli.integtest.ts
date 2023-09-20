@@ -1,7 +1,7 @@
 import { promises as fs, existsSync } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { integTest, cloneDirectory, shell, withDefaultFixture, retry, sleep, randomInteger, withSamIntegrationFixture, RESOURCES_DIR } from '../../lib';
+import { integTest, cloneDirectory, shell, withDefaultFixture, retry, sleep, randomInteger, withSamIntegrationFixture, RESOURCES_DIR, TestFixture } from '../../lib';
 
 jest.setTimeout(2 * 60 * 60_000); // Includes the time to acquire locks, worst-case single-threaded runtime
 
@@ -576,27 +576,32 @@ integTest(
   withDefaultFixture(async (fixture) => {
     const tempPath = path.join(fixture.integTestDir);
 
-    const inputFile = path.join(__dirname, '../../resources/templates/', 'ddbStack.json');
+    const inputFile = path.join(__dirname, '../../resources/templates/', 'simpleDDB.yaml');
+    const stackName = fixture.stackNamePrefix + '-migrate-stack';
 
     await fixture.cdk([
       'migrate',
       '--language',
       'typescript',
       '--stack-name',
-      'migrate-stack',
+      stackName,
       '--from-path',
       inputFile.toString(),
       '--output-path',
       tempPath.toString(),
     ]);
-    const stackArn = await fixture.cdk([
-      'deploy',
-      'migrate-stack',
-    ]);
+    const tempFixture = new TestFixture(
+      path.join(tempPath.toString(), stackName),
+      fixture.stackNamePrefix,
+      fixture.output,
+      fixture.aws,
+      fixture.randomString);
+    const stackArn = await tempFixture.cdkDeploy('migrate-stack');
     const response = await fixture.aws.cloudFormation('describeStacks', {
       StackName: stackArn,
     });
     expect(response.Stacks?.[0].StackStatus).toEqual('CREATE_COMPLETE');
+    await tempFixture.cdkDestroy('migrate-stack');
   }),
 );
 
