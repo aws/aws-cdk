@@ -571,39 +571,42 @@ integTest('deploy with role', withDefaultFixture(async (fixture) => {
   }
 }));
 
-integTest(
-  'cdk migrate typescript',
-  withDefaultFixture(async (fixture) => {
-    const tempPath = path.join(fixture.integTestDir);
+['typescript', 'python'].forEach(langChoice => {
+  integTest(
+    `cdk migrate ${langChoice}`,
+    withDefaultFixture(async (fixture) => {
+      const tempPath = path.join(fixture.integTestDir);
 
-    const inputFile = path.join(__dirname, '../../resources/templates/', 'simpleDDB.yaml');
-    const stackName = fixture.stackNamePrefix + '-migrate-stack';
+      const inputFile = path.join(__dirname, '../../resources/templates/', 'simpleDDB.yaml');
+      const stackName = fixture.stackNamePrefix + `-${langChoice}-migrate-stack`;
 
-    await fixture.cdk([
-      'migrate',
-      '--language',
-      'typescript',
-      '--stack-name',
-      stackName,
-      '--from-path',
-      inputFile.toString(),
-      '--output-path',
-      tempPath.toString(),
-    ]);
-    const tempFixture = new TestFixture(
-      path.join(tempPath.toString(), stackName),
-      fixture.stackNamePrefix,
-      fixture.output,
-      fixture.aws,
-      fixture.randomString);
-    const stackArn = await tempFixture.cdkDeploy('migrate-stack');
-    const response = await fixture.aws.cloudFormation('describeStacks', {
-      StackName: stackArn,
-    });
-    expect(response.Stacks?.[0].StackStatus).toEqual('CREATE_COMPLETE');
-    await tempFixture.cdkDestroy('migrate-stack');
-  }),
-);
+      await fixture.cdk([
+        'migrate',
+        '--language',
+        `${langChoice}`,
+        '--stack-name',
+        stackName,
+        '--from-path',
+        inputFile.toString(),
+        '--output-path',
+        tempPath.toString(),
+      ]);
+      // Create a new fixture for the migrated app directory
+      const tempFixture = new TestFixture(
+        path.join(tempPath.toString(), stackName),
+        fixture.stackNamePrefix,
+        fixture.output,
+        fixture.aws,
+        fixture.randomString);
+      const stackArn = await tempFixture.cdkDeploy(`${langChoice}-migrate-stack`, { captureStderr: false });
+      const response = await tempFixture.aws.cloudFormation('describeStacks', {
+        StackName: stackArn,
+      });
+      expect(response.Stacks?.[0].StackStatus).toEqual('CREATE_COMPLETE');
+      await tempFixture.cdkDestroy(`${langChoice}-migrate-stack`);
+    }),
+  );
+});
 
 integTest('cdk diff', withDefaultFixture(async (fixture) => {
   const diff1 = await fixture.cdk(['diff', fixture.fullStackName('test-1')]);
