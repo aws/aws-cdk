@@ -697,8 +697,8 @@ export class GraphqlApi extends GraphqlApiBase {
   private setupSourceApiAssociations() {
     this.definition.sourceApiOptions?.sourceApis.forEach(sourceApiConfig => {
       const mergeType = sourceApiConfig.mergeType ?? MergeType.AUTO_MERGE;
-      var sourceApiIdentifier = sourceApiConfig.sourceApi.apiId;
-      var mergedApiIdentifier = this.apiId;
+      let sourceApiIdentifier = sourceApiConfig.sourceApi.apiId;
+      let mergedApiIdentifier = this.apiId;
 
       // This is protected by a feature flag because if there is an existing source api association that used the api id,
       // updating it to use ARN as identifier leads to a resource replacement. ARN is recommended going forward because it allows support
