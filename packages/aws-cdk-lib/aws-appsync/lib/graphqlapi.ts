@@ -409,7 +409,7 @@ export interface GraphqlApiProps {
    * SchemaFile.fromAsset(filePath: string) allows schema definition through schema.graphql file
    *
    * @default - schema will be generated code-first (i.e. addType, addObjectType, etc.)
-   * @deprecated use apiSoure.schema instead
+   * @deprecated use apiSource.schema instead
    */
   readonly schema?: ISchema;
   /**

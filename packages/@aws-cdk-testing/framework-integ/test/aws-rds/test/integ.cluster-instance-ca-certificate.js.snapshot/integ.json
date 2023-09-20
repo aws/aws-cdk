@@ -1,0 +1,12 @@
+{
+  "version": "33.0.0",
+  "testCases": {
+    "cdk-rds-cluster-instance-ca-certificate-test/DefaultTest": {
+      "stacks": [
+        "cdk-rds-cluster-instance-ca-certificate-integ"
+      ],
+      "assertionStack": "cdk-rds-cluster-instance-ca-certificate-test/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkrdsclusterinstancecacertificatetestDefaultTestDeployAssertBEAA84EE"
+    }
+  }
+}

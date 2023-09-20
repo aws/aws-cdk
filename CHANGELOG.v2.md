@@ -2,6 +2,41 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.96.2](https://github.com/aws/aws-cdk/compare/v2.96.1...v2.96.2) (2023-09-14)
+
+
+### Bug Fixes
+
+* **custom-resources:** does not accept strings where numbers are expected, skips recursive types ([#27112](https://github.com/aws/aws-cdk/issues/27112)) ([d8dcd75](https://github.com/aws/aws-cdk/commit/d8dcd758d30e4d7e85c4d389a21718726e779644))
+
+## [2.96.1](https://github.com/aws/aws-cdk/compare/v2.96.0...v2.96.1) (2023-09-14)
+
+
+### Reverts
+
+* "chore(ecs): clarify it's possible to use image digest on fromEcrRepository" ([#27143](https://github.com/aws/aws-cdk/issues/27143)) ([049153e](https://github.com/aws/aws-cdk/commit/049153e7cfec6fc22524158c8e28f783644e9989)), closes [aws/aws-cdk#27115](https://github.com/aws/aws-cdk/issues/27115)
+
+## [2.96.0](https://github.com/aws/aws-cdk/compare/v2.95.1...v2.96.0) (2023-09-13)
+
+
+### Features
+
+* update AWS Service Spec ([#27095](https://github.com/aws/aws-cdk/issues/27095)) ([4942658](https://github.com/aws/aws-cdk/commit/49426587f0074f51fd092a97efe4709d0678afa2))
+* **batch:** Stabilize Batch ([#27059](https://github.com/aws/aws-cdk/issues/27059)) ([5fc707a](https://github.com/aws/aws-cdk/commit/5fc707a76884f85df783ec674a0ca408fb8c468a)), closes [#27054](https://github.com/aws/aws-cdk/issues/27054)
+* **ecs:** add Amazon Linux 2023 to EcsOptimizedImage ([#26989](https://github.com/aws/aws-cdk/issues/26989)) ([0bac8a5](https://github.com/aws/aws-cdk/commit/0bac8a5319b9bb4df5303ed3af17d33866fd30b4)), closes [#26988](https://github.com/aws/aws-cdk/issues/26988)
+
+
+### Bug Fixes
+
+* **codedeploy:** CustomLambdaDeploymentConfig is broken ([#27087](https://github.com/aws/aws-cdk/issues/27087)) ([c53831d](https://github.com/aws/aws-cdk/commit/c53831d9c263b09315e352f7d5b4066703f179e7))
+* **codepipeline-actions:** update zip to noncorrupted one ([#27120](https://github.com/aws/aws-cdk/issues/27120)) ([eb1d363](https://github.com/aws/aws-cdk/commit/eb1d363494633f92ea79132b077bcd293d024629)), closes [#27117](https://github.com/aws/aws-cdk/issues/27117)
+* **custom-resources:** AwsCustomResource fails when SDKv3 expects Uint8Array ([#27065](https://github.com/aws/aws-cdk/issues/27065)) ([70d9bf7](https://github.com/aws/aws-cdk/commit/70d9bf750408e085e0f5ccf68adfa2dd583ed85d)), closes [#27034](https://github.com/aws/aws-cdk/issues/27034)
+* **custom-resources:** maxwaittime reduced to 60 seconds from 300 seconds ([#27076](https://github.com/aws/aws-cdk/issues/27076)) ([c3a4b7b](https://github.com/aws/aws-cdk/commit/c3a4b7b899289b04fffb6d65b3289cc5526d5397))
+* **dynamodb:** update CfnGlobalTable in TableV2 constructor to use this instead of scope ([#27075](https://github.com/aws/aws-cdk/issues/27075)) ([889ad8c](https://github.com/aws/aws-cdk/commit/889ad8ca85c493419e7791137779a673abebca0d)), closes [#27062](https://github.com/aws/aws-cdk/issues/27062)
+* **lambda:** update default runtimes and tests to node 18 ([#27066](https://github.com/aws/aws-cdk/issues/27066)) ([04b30f3](https://github.com/aws/aws-cdk/commit/04b30f30b043e042852f3880f49fb061751b74c5))
+* **route53:** timeouts due to delete-existing-record-set-handler's wait time ([#27068](https://github.com/aws/aws-cdk/issues/27068)) ([d730f7f](https://github.com/aws/aws-cdk/commit/d730f7f1954c3d54c9e9c21c0eb7f9393a21acb4)), closes [#27060](https://github.com/aws/aws-cdk/issues/27060)
+* **triggers:** errors are shown as list of bytes ([#27119](https://github.com/aws/aws-cdk/issues/27119)) ([07c6775](https://github.com/aws/aws-cdk/commit/07c6775fa5d0d9d2d07bd29cce465f3581b96197)), closes [#27113](https://github.com/aws/aws-cdk/issues/27113)
+
 ## [2.95.1](https://github.com/aws/aws-cdk/compare/v2.95.0...v2.95.1) (2023-09-08)
 
 

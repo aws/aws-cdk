@@ -56,6 +56,28 @@ To run a specific test, add `-t` and a substring of the test name. For example:
 bin/run-suite -a cli-integ-tests -t 'load old assemblies'
 ```
 
+### Running a test suite against binaries
+
+Some test suites require package binaries stages in CodeArtifact repositories to run. This requires you to do a full build, then create a CodeArtifact repository in your own account, uploading the packages there, and then running the tests in a shell configured to have NPM, Pip, Maven etc look for those packages in CodeArtifact.
+
+```shell
+# Build and pack all of CDK (will take ~an hour)
+$ ./build.sh
+$ ./pack.sh
+
+# Use publib to upload to CodeArtifact
+$ npm install -g publib-ca
+$ publib-ca create
+$ publib-ca publish /path/to/dist
+
+# Run the tests against those repositories (may need to substitute 0.0.0 w/ local number)
+$ source ~/.publib-ca/usage/activate.bash
+$ bin/run-suite --use-cli-release=0.0.0 <SUITE_NAME>
+
+# Clean up
+$ publib-ca delete
+```
+
 ## Tools
 
 There are a number of tools in the `bin/` directory. They are:

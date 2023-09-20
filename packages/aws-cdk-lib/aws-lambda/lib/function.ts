@@ -1236,6 +1236,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       throw new Error('Only one of the function props, securityGroup or securityGroups, is allowed');
     }
 
+    const hasSecurityGroups = props.securityGroups && props.securityGroups.length > 0;
     if (!props.vpc) {
       if (props.allowAllOutbound !== undefined) {
         throw new Error('Cannot configure \'allowAllOutbound\' without configuring a VPC');
@@ -1243,7 +1244,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       if (props.securityGroup) {
         throw new Error('Cannot configure \'securityGroup\' without configuring a VPC');
       }
-      if (props.securityGroups) {
+      if (hasSecurityGroups) {
         throw new Error('Cannot configure \'securityGroups\' without configuring a VPC');
       }
       if (props.vpcSubnets) {
@@ -1252,17 +1253,18 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       return undefined;
     }
 
-    if (props.securityGroup && props.allowAllOutbound !== undefined) {
-      throw new Error('Configure \'allowAllOutbound\' directly on the supplied SecurityGroup.');
-    }
-
-    if (props.securityGroups && props.allowAllOutbound !== undefined) {
-      throw new Error('Configure \'allowAllOutbound\' directly on the supplied SecurityGroups.');
+    if (props.allowAllOutbound !== undefined) {
+      if (props.securityGroup) {
+        throw new Error('Configure \'allowAllOutbound\' directly on the supplied SecurityGroup.');
+      }
+      if (hasSecurityGroups) {
+        throw new Error('Configure \'allowAllOutbound\' directly on the supplied SecurityGroups.');
+      }
     }
 
     let securityGroups: ec2.ISecurityGroup[];
 
-    if (props.securityGroups) {
+    if (hasSecurityGroups) {
       securityGroups = props.securityGroups;
     } else {
       const securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
