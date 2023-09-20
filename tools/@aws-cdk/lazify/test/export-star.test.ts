@@ -20,3 +20,13 @@ Object.defineProperty(exports, "bar", { configurable: true, get: () => require("
 "
 `);
 });
+
+test('replace re-export with getter', () => {
+  const fakeFile = path.join(__dirname, 'index.ts');
+  expect(transformFileContents(fakeFile, [
+    'exports.some_module = require("./some-module");',
+  ].join('\n'))).toMatchInlineSnapshot(`
+"Object.defineProperty(exports, "some_module", { configurable: true, get: () => require("./some-module") });
+"
+`);
+});

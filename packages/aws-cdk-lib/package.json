@@ -211,11 +211,7 @@
     "libRoot": "/root/remodel/packages/aws-cdk-lib"
   },
   "exports": {
-    ".": {
-      "types": "./index.d.ts",
-      "import": "./index.js",
-      "require": "./lazy-index.js"
-    },
+    ".": "./index.js",
     "./.jsii": "./.jsii",
     "./.warnings.jsii.js": "./.warnings.jsii.js",
     "./alexa-ask": "./alexa-ask/index.js",

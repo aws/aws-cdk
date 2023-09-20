@@ -142,22 +142,27 @@ export function transformFileContents(filename: string, contents: string, progre
         const entries = Object.keys(module);
 
         return entries.map((entry) =>
-          factory.createExpressionStatement(factory.createCallExpression(
-            factory.createPropertyAccessExpression(factory.createIdentifier('Object'), factory.createIdentifier('defineProperty')),
-            undefined,
-            [
-              factory.createIdentifier('exports'),
-              factory.createStringLiteral(entry),
-              factory.createObjectLiteralExpression([
-                factory.createPropertyAssignment('configurable', factory.createTrue()),
-                factory.createPropertyAssignment('get',
-                  factory.createArrowFunction(undefined, undefined, [], undefined, undefined,
-                    factory.createPropertyAccessExpression(
-                      factory.createCallExpression(factory.createIdentifier('require'), undefined, [factory.createStringLiteral(requiredModule)]),
-                      entry)))
-              ]),
-            ]
-          )));
+          createModuleGetter(factory, entry, requiredModule, (mod) =>
+            factory.createPropertyAccessExpression(mod, entry))
+          );
+      }
+
+      if (node.parent && ts.isSourceFile(node.parent)
+        && ts.isExpressionStatement(node)
+        && ts.isBinaryExpression(node.expression)
+        && node.expression.operatorToken.kind === ts.SyntaxKind.EqualsToken
+        && ts.isPropertyAccessExpression(node.expression.left)
+        && ts.isIdentifier(node.expression.left.expression)
+        && node.expression.left.expression.text === 'exports'
+        && ts.isCallExpression(node.expression.right)
+        && ts.isIdentifier(node.expression.right.expression)
+        && node.expression.right.expression.text === 'require'
+        && ts.isStringLiteral(node.expression.right.arguments[0])) {
+        // exports.module = require('./module');
+
+        const exportName = node.expression.left.name.text;
+        const moduleName = node.expression.right.arguments[0].text;
+        return createModuleGetter(factory, exportName, moduleName, (x) => x);
       }
 
       return ts.visitEachChild(node, child => visit(child), ctx);
@@ -187,4 +192,27 @@ function createAssignment(factory: ts.NodeFactory, name: string, expression: ts.
       factory.createIdentifier(name),
       ts.SyntaxKind.EqualsToken,
       expression));
+}
+
+function createModuleGetter(
+  factory: ts.NodeFactory,
+  exportName: string,
+  moduleName: string,
+  moduleFormatter: (x: ts.Expression) => ts.Expression,
+) {
+  return factory.createExpressionStatement(factory.createCallExpression(
+    factory.createPropertyAccessExpression(factory.createIdentifier('Object'), factory.createIdentifier('defineProperty')),
+    undefined,
+    [
+      factory.createIdentifier('exports'),
+      factory.createStringLiteral(exportName),
+      factory.createObjectLiteralExpression([
+        factory.createPropertyAssignment('configurable', factory.createTrue()),
+        factory.createPropertyAssignment('get',
+          factory.createArrowFunction(undefined, undefined, [], undefined, undefined,
+            moduleFormatter(
+              factory.createCallExpression(factory.createIdentifier('require'), undefined, [factory.createStringLiteral(moduleName)])))),
+      ]),
+    ]
+  ));
 }
