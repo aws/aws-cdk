@@ -1,11 +1,11 @@
 {
-  "version": "32.0.0",
+  "version": "34.0.0",
   "testCases": {
     "aws-cdk-eks-helm/DefaultTest": {
       "stacks": [
         "aws-cdk-eks-helm-test"
       ],
-      "diffAssets": true,
+      "diffAssets": false,
       "assertionStack": "aws-cdk-eks-helm/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkekshelmDefaultTestDeployAssert044A589A"
     }
