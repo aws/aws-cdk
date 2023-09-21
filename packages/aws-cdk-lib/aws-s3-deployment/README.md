@@ -336,7 +336,6 @@ are supported however, namely: Ref, Fn::GetAtt, Fn::Join, and Fn::Select (Fn::Sp
 For example:
 
 ```ts
-import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 
