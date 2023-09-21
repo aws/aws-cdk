@@ -6,7 +6,7 @@
     "Name": "cors-api-test"
    }
   },
-  "corsapitestDeployment2BF1633Ad72428c37c88b8c23ef39eebb5b7e9fd": {
+  "corsapitestDeployment2BF1633A506e17bacbb92c0f9e65d8c89b158b9c": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "Description": "Automatically created by the RestApi construct",
@@ -25,7 +25,7 @@
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
     "DeploymentId": {
-     "Ref": "corsapitestDeployment2BF1633Ad72428c37c88b8c23ef39eebb5b7e9fd"
+     "Ref": "corsapitestDeployment2BF1633A506e17bacbb92c0f9e65d8c89b158b9c"
     },
     "RestApiId": {
      "Ref": "corsapitest8682546E"
@@ -49,7 +49,7 @@
         "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
        },
        "ResponseTemplates": {
-        "application/json": "#set($origin = $input.params().header.get(\"Origin\"))\n#if($origin == \"\") #set($origin = $input.params().header.get(\"origin\")) #end\n#if($origin == \"https://twitch.tv\" || $origin == \"https://aws.amazon.com\")\n  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)\n#end"
+        "application/json": "#set($origin = $input.params().header.get(\"Origin\"))\n#if($origin == \"\")\n  #set($origin = $input.params().header.get(\"origin\"))\n#end\n#if($origin == \"https://twitch.tv\" || $origin == \"https://aws.amazon.com\")\n  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)\n#end"
        },
        "StatusCode": "204"
       }
@@ -112,7 +112,7 @@
         "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
        },
        "ResponseTemplates": {
-        "application/json": "#set($origin = $input.params().header.get(\"Origin\"))\n#if($origin == \"\") #set($origin = $input.params().header.get(\"origin\")) #end\n#if($origin == \"https://twitch.tv\" || $origin == \"https://aws.amazon.com\")\n  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)\n#end"
+        "application/json": "#set($origin = $input.params().header.get(\"Origin\"))\n#if($origin == \"\")\n  #set($origin = $input.params().header.get(\"origin\"))\n#end\n#if($origin == \"https://twitch.tv\" || $origin == \"https://aws.amazon.com\")\n  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)\n#end"
        },
        "StatusCode": "204"
       }
