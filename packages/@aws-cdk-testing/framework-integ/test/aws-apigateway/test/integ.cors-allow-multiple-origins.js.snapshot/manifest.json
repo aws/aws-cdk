@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "stack-cors-allow-multiple-origins.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0cc1681b59d7456fa47ee61cb91884542f825e1d36afb4b442a57bf959e4d742.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/10b38de28f6f291a0a2fe437096ce3ea526ffeb14c593b034d0df5e8452cde82.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -42,7 +43,7 @@
         "/stack-cors-allow-multiple-origins/cors-api-test/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "corsapitestDeployment2BF1633Ad72428c37c88b8c23ef39eebb5b7e9fd"
+            "data": "corsapitestDeployment2BF1633A506e17bacbb92c0f9e65d8c89b158b9c"
           }
         ],
         "/stack-cors-allow-multiple-origins/cors-api-test/DeploymentStage.prod/Resource": [
@@ -116,6 +117,15 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "corsapitestDeployment2BF1633Ad72428c37c88b8c23ef39eebb5b7e9fd": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "corsapitestDeployment2BF1633Ad72428c37c88b8c23ef39eebb5b7e9fd",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "stack-cors-allow-multiple-origins"
@@ -133,6 +143,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "integcorsallowmultipleoriginsDefaultTestDeployAssertEBF0A1B1.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",

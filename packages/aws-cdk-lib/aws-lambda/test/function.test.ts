@@ -3518,6 +3518,50 @@ describe('VPC configuration', () => {
       allowAllOutbound: false,
     })).toThrow(/Configure 'allowAllOutbound' directly on the supplied SecurityGroups./);
   });
+
+  test('with VPC and empty securityGroups creates a default security group', () => {
+    const stack = new cdk.Stack();
+
+    const vpc = new ec2.Vpc(stack, 'Vpc', {
+      maxAzs: 3,
+      natGateways: 1,
+    });
+    new lambda.Function(stack, 'MyLambda', {
+      vpc,
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      securityGroups: [],
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::EC2::SecurityGroup', 1);
+  });
+
+  test('with no VPC and empty securityGroups', () => {
+    const stack = new cdk.Stack();
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      securityGroups: [],
+    })).not.toThrow();
+  });
+
+  test('with empty securityGroups and allowAllOutbound', () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', {
+      maxAzs: 3,
+      natGateways: 1,
+    });
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      vpc,
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      securityGroups: [],
+      allowAllOutbound: false,
+    })).not.toThrow();
+  });
 });
 
 function newTestLambda(scope: constructs.Construct) {

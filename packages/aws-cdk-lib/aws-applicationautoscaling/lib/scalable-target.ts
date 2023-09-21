@@ -155,6 +155,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
     this.actions.push({
       scheduledActionName: id,
       schedule: action.schedule.expressionString,
+      timezone: action.schedule.timeZone?.timezoneName,
       startTime: action.startTime,
       endTime: action.endTime,
       scalableTargetAction: {
