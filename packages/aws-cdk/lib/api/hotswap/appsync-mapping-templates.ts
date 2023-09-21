@@ -87,7 +87,7 @@ export async function isHotswappableAppSyncChange(
         } else {
           let schemaCreationResponse: GetSchemaCreationStatusResponse = await sdk.appsync().startSchemaCreation(sdkRequestObject).promise();
           while (schemaCreationResponse.status && ['PROCESSING', 'DELETING'].some(status => status === schemaCreationResponse.status)) {
-            await new Promise(resolve => setTimeout(resolve, 1000)); // poll every second
+            await sleep(1000); // poll every second
             const getSchemaCreationStatusRequest: GetSchemaCreationStatusRequest = {
               apiId: sdkRequestObject.apiId,
             };
@@ -116,10 +116,14 @@ async function simpleRetry(fn: () => Promise<any>, numOfRetries: number, errorCo
     await fn();
   } catch (error: any) {
     if (error && error.code === errorCodeToRetry && numOfRetries > 0) {
-      await new Promise((resolve) => setTimeout(resolve, 500)); // wait half a second
+      await sleep(500); // wait half a second
       await simpleRetry(fn, numOfRetries - 1, errorCodeToRetry);
     } else {
       throw error;
     }
   }
+}
+
+async function sleep(ms: number) {
+  return new Promise(ok => setTimeout(ok, ms));
 }
