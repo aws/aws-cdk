@@ -36,7 +36,7 @@ describe('Schedule', () => {
 
   test('schedule is enabled by default', () => {
     // WHEN
-    const schedule = new Schedule(stack, 'TestSchedule', {
+    new Schedule(stack, 'TestSchedule', {
       schedule: expr,
       target: new SomeLambdaTarget(func, iam.Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/someRole')),
     });
@@ -49,7 +49,7 @@ describe('Schedule', () => {
 
   test('schedule can be disabled', () => {
     // WHEN
-    const schedule = new Schedule(stack, 'TestSchedule', {
+    new Schedule(stack, 'TestSchedule', {
       schedule: expr,
       target: new SomeLambdaTarget(func, iam.Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/someRole')),
       enabled: false,
