@@ -4,13 +4,14 @@ import { transformFile } from '../lib';
 
 async function main() {
   const args = process.argv.slice(2);
+  const verbose = !process.env.QUIET;
 
   for (const arg of args) {
     await recurseJs(arg, async (f) => {
       // Only if there's an accompanying .ts file
       const tsFile = f.replace(/\.js$/, '.ts');
       if (await fs.pathExists(tsFile)) {
-        await transformFile(f);
+        await transformFile(f, verbose);
       }
     });
   }

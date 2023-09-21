@@ -16,7 +16,7 @@ import * as ts from 'typescript';
 
 type LogFn = (...x: string[]) => void;
 
-export async function transformFile(filename: string) {
+export async function transformFile(filename: string, verbose: boolean) {
   progress(filename, '... ');
   const contents = await fs.readFile(filename, { encoding: 'utf-8' });
   const transformed = transformFileContents(filename, contents, progress);
@@ -24,7 +24,9 @@ export async function transformFile(filename: string) {
   progress(' Done!\n');
 
   function progress(...x: string[]) {
-    process.stderr.write(x.join(' '));
+    if (verbose) {
+      process.stderr.write(x.join(' '));
+    }
   }
 }
 

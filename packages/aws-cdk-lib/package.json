@@ -42,7 +42,7 @@
       "ts-node ./scripts/verify-imports-resolve-same.ts",
       "ts-node ./scripts/verify-imports-shielded.ts",
       "ts-node ./cx-api/build-tools/flag-report.ts",
-      "lazify ."
+      "env QUIET=1 lazify ."
     ]
   },
   "cdk-package": {
