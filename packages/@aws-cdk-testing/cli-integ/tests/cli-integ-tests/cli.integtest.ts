@@ -598,7 +598,16 @@ integTest('deploy with role', withDefaultFixture(async (fixture) => {
         fixture.output,
         fixture.aws,
         fixture.randomString);
-      const stackArn = await tempFixture.cdkDeploy(`${langChoice}-migrate-stack`, { captureStderr: false });
+      if (langChoice == 'go') {
+        await tempFixture.shell(['go', 'get']);
+      }
+      // go stack doesn't follow the same naming scheme as other languages.
+      let stackArn;
+      if (langChoice == 'go') {
+        stackArn = await tempFixture.cdk(['deploy', '--require-approval', 'never'], { captureStderr: false });
+      } else {
+        stackArn = await tempFixture.cdkDeploy(`${langChoice}-migrate-stack`, { captureStderr: false });
+      }
       const response = await tempFixture.aws.cloudFormation('describeStacks', {
         StackName: stackArn,
       });
