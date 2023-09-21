@@ -284,7 +284,15 @@ function guessResourceName(fqn: string) {
   const [, versionless] = match;
 
   match = /aws-cdk-lib\.([a-z]+)_([a-z0-9]+)\.([A-Z][a-zA-Z0-9]+)/.exec(versionless);
-  if (!match) { return undefined; }
+
+  if (!match) {
+    // Alpha name
+    match = /@aws-cdk\/([a-z]+)-([a-z0-9]+)-alpha\.([A-Z][a-zA-Z0-9]+)/.exec(fqn);
+  }
+
+  if (!match) {
+    return undefined;
+  }
 
   const [, org, ns, rs] = match;
   if (!org || !ns || !rs) { return undefined; }
