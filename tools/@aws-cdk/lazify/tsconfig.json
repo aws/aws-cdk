@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "rootDir": "lib",
     "alwaysStrict": true,
     "declaration": true,
     "esModuleInterop": true,
