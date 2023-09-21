@@ -284,7 +284,7 @@ autoScalingGroup.scaleOnSchedule('PrescaleInTheMorning', {
 
 autoScalingGroup.scaleOnSchedule('AllowDownscalingAtNight', {
   schedule: autoscaling.Schedule.cron({ hour: '20', minute: '0' }),
-  minCapacity: 1
+  minCapacity: 1,
 });
 ```
 
