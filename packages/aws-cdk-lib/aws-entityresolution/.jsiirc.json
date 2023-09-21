@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "services.entityresolution"
+    },
+    "dotnet": {
+      "package": "Amazon.CDK.AWS.EntityResolution"
+    },
+    "python": {
+      "module": "aws_cdk.aws_entityresolution"
+    }
+  }
+}
