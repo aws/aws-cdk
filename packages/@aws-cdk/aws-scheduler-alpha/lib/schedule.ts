@@ -57,9 +57,15 @@ export interface ScheduleProps {
   /**
    * The schedule's group.
    *
-   * @deafult - By default a schedule will be associated with the `default` group.
+   * @default - By default a schedule will be associated with the `default` group.
    */
   readonly group?: IGroup;
+
+  /**
+   * Indicates whether the schedule is enabled.
+   * @default true
+   */
+  readonly enabled?: boolean;
 }
 
 /**
@@ -95,6 +101,7 @@ export class Schedule extends Resource implements ISchedule {
       scheduleExpression: props.schedule.expressionString,
       scheduleExpressionTimezone: props.schedule.timeZone?.timezoneName,
       groupName: this.group?.groupName,
+      state: props.enabled == null ? 'ENABLED' : (props.enabled ? 'ENABLED' : 'DISABLED'),
       target: {
         arn: targetConfig.arn,
         roleArn: targetConfig.role.roleArn,
