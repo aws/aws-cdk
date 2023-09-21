@@ -454,34 +454,34 @@ const association1 = new appsync.SourceApiAssociation(this, 'SourceApiAssociatio
    sourceApi: sourceApi1ToMerge,
    mergedApi: remoteMergedApi,
    mergeType: appsync.MergeType.MANUAL_MERGE,
-   mergedApiExecutionRole: importedExecutionRole,
+   mergedApiExecutionRole: remoteExecutionRole,
 });
 
 const association2 = new appsync.SourceApiAssociation(this, 'SourceApiAssociation2', {
    sourceApi: sourceApi2ToMerge,
    mergedApi: remoteMergedApi,
    mergeType: appsync.MergeType.MANUAL_MERGE,
-   mergedApiExecutionRole: importedExecutionRole,
+   mergedApiExecutionRole: remoteExecutionRole,
 });
 
 // The SourceApiAssociationMergeOperationProvider construct creates the Lambda handlers for submitting the merge operation and 
 // ensuring that it succeeded or failed.
-const provider = new appsync.SourceApiAssociationMergeOperationProvider(stack, 'SchemaMergeProvider');
+const provider = new appsync.SourceApiAssociationMergeOperationProvider(this, 'SchemaMergeProvider');
 
 // The version id can be any identifier defined by the developer. Changing the version identifier allows you to control whether a merge operation 
 // will take place during deployment.
-new appsync.SourceApiAssociationMergeOperation(stack, 'MergeOperation1', {
+new appsync.SourceApiAssociationMergeOperation(this, 'MergeOperation1', {
   sourceApiAssociation: association1,
   mergeOperationProvider: provider,
   versionIdentifier: '1',
 });
 
-// Optionally, you can add the autoUpdate flag instead which will ensure that the merge operation occurs during every stack update, regardless of if
+// Optionally, you can add the alwaysMergeOnStackUpdate flag instead which will ensure that the merge operation occurs during every stack update, regardless if
 // there was a change or not. Note that this may lead to merge operations that do not actually change the MergedAPI.
-new appsync.SourceApiAssociationMergeOperation(stack, 'MergeOperation1', {
+new appsync.SourceApiAssociationMergeOperation(this, 'MergeOperation2', {
   sourceApiAssociation: association2,
   mergeOperationProvider: provider,
-  alwaysUpdate: true,
+  alwaysMergeOnStackUpdate: true,
 });
 ```
 
