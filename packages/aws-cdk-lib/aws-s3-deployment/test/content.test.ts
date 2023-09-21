@@ -2,7 +2,7 @@ import { Vpc } from '../../aws-ec2';
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
-import { Fn, Lazy, Stack } from '../../core';
+import { Lazy, Stack } from '../../core';
 import { Source } from '../lib';
 import { renderData } from '../lib/render-data';
 
@@ -56,21 +56,21 @@ test('string with a "Fn::GetAtt" token', () => {
 
 test('string is a single "Fn::Select" token', () => {
   const stack = new Stack();
-  const tg = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup');
+  const bucket = new s3.Bucket(stack, 'Bucket');
 
-  expect(renderData(stack, Fn.select(0, tg.targetGroupLoadBalancerArns))).toStrictEqual({
+  expect(renderData(stack, bucket.bucketWebsiteDomainName)).toStrictEqual({
     text: '<<marker:0xbaba:0>>',
-    markers: { '<<marker:0xbaba:0>>': { 'Fn::Select': [0, { 'Fn::GetAtt': ['TargetGroup3D7CD9B8', 'LoadBalancerArns'] }] } },
+    markers: { '<<marker:0xbaba:0>>': { 'Fn::Select': [2, { 'Fn::Split': ['/', { 'Fn::GetAtt': ['Bucket83908E77', 'WebsiteURL'] }] }] } },
   });
 });
 
 test('string with a "Fn::Select" token', () => {
   const stack = new Stack();
-  const tg = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup');
+  const bucket = new s3.Bucket(stack, 'Bucket');
 
-  expect(renderData(stack, `test/${Fn.select(0, tg.targetGroupLoadBalancerArns)}`)).toStrictEqual({
-    text: 'test/<<marker:0xbaba:0>>',
-    markers: { '<<marker:0xbaba:0>>': { 'Fn::Select': [0, { 'Fn::GetAtt': ['TargetGroup3D7CD9B8', 'LoadBalancerArns'] }] } },
+  expect(renderData(stack, `test.${bucket.bucketWebsiteDomainName}`)).toStrictEqual({
+    text: 'test.<<marker:0xbaba:0>>',
+    markers: { '<<marker:0xbaba:0>>': { 'Fn::Select': [2, { 'Fn::Split': ['/', { 'Fn::GetAtt': ['Bucket83908E77', 'WebsiteURL'] }] }] } },
   });
 });
 
@@ -96,13 +96,13 @@ test('json-encoded string', () => {
   const json = {
     BucketArn: bucket.bucketArn,
     BucketName: bucket.bucketName,
-    ContainsFnSelect: tg.firstLoadBalancerFullName + '/' + tg.targetGroupFullName,
+    ComplexFnSelect: tg.firstLoadBalancerFullName + '/' + tg.targetGroupFullName,
   };
 
   const expectedTextResult = {
     BucketArn: '<<marker:0xbaba:0>>',
     BucketName: '<<marker:0xbaba:1>>',
-    ContainsFnSelect: '<<marker:0xbaba:2>>/<<marker:0xbaba:3>>/<<marker:0xbaba:4>>/<<marker:0xbaba:5>>',
+    ComplexFnSelect: '<<marker:0xbaba:2>>/<<marker:0xbaba:3>>/<<marker:0xbaba:4>>/<<marker:0xbaba:5>>',
   };
   expect(renderData(stack, JSON.stringify(json))).toStrictEqual({
     text: JSON.stringify(expectedTextResult),
