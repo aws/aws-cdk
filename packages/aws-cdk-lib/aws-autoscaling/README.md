@@ -16,10 +16,8 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
   vpc,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
 
-  // The latest Amazon Linux image of a particular generation
-  machineImage: ec2.MachineImage.latestAmazonLinux({
-    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
-  }),
+  // The latest Amazon Linux 2 image
+  machineImage: ec2.MachineImage.latestAmazonLinux2(),
 });
 ```
 
@@ -53,9 +51,7 @@ const mySecurityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });
 new autoscaling.AutoScalingGroup(this, 'ASG', {
   vpc,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
-  machineImage: ec2.MachineImage.latestAmazonLinux({
-    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
-  }),
+  machineImage: ec2.MachineImage.latestAmazonLinux2(),
   securityGroup: mySecurityGroup,
 });
 ```
@@ -577,9 +573,7 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
 
   // Amazon Linux 2 comes with SSM Agent by default
-  machineImage: ec2.MachineImage.latestAmazonLinux({
-    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
-  }),
+  machineImage: ec2.MachineImage.latestAmazonLinux2(),
 
   // Turn on SSM
   ssmSessionPermissions: true,
