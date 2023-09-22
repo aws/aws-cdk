@@ -34,10 +34,6 @@ All notable changes to this project will be documented in this file. See [standa
 * **sample-app:** exclude all __pycache__  in cdk.json ([#27191](https://github.com/aws/aws-cdk/issues/27191)) ([d9f1f09](https://github.com/aws/aws-cdk/commit/d9f1f0908a1f7ec0bfcb0df4f9dd1b45c86b0144))
 
 
-### Reverts
-
-* "chore(ecs): clarify it's possible to use image digest on fromEcrRepository" ([#27143](https://github.com/aws/aws-cdk/issues/27143)) ([f0d416e](https://github.com/aws/aws-cdk/commit/f0d416e192d02e9c88d87969e7bb7f8942a7c677)), closes [aws/aws-cdk#27115](https://github.com/aws/aws-cdk/issues/27115)
-
 ## [2.96.2](https://github.com/aws/aws-cdk/compare/v2.96.1...v2.96.2) (2023-09-14)
 
 
