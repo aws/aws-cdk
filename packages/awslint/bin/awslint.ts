@@ -190,11 +190,11 @@ async function main() {
       if (excludes.length > 0) {
         if (standloneOptions) {
           // If awslint.json exists, write the excludes there instead of the old package.json (legacy format).
-          await fs.writeJSON(awslintConfig, standloneOptions, { spaces: 2 });
-        } else {
           if (pkg.awslint) {
             console.warn('Excludes will be written to awslint.json.');
           }
+          await fs.writeJSON(awslintConfig, standloneOptions, { spaces: 2 });
+        } else {
           await fs.writeJSON(pkgConfig, pkg, { spaces: 2 });
         }
       }
