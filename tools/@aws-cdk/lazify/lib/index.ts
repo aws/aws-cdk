@@ -62,6 +62,18 @@ export function transformFileContents(filename: string, contents: string, progre
       const factory = ctx.factory;
       const visit: ts.Visitor = node => {
         // If this is the statement, replace it with a function definition
+
+        // We replace it with a function that will replace itself after the first invocation.
+        // This is memoizing on steroids. Instead of:
+        //
+        //   function mod() { return require('mod'); }
+        //
+        // We do:
+        //
+        //   let mod = () => { const tmp = require('mod'); mod = () => tmp; return tmp; }
+        //
+        // This is about 100x faster at call time (~20ns per call instead of ~2us).
+
         if (node === stmt) {
           return createVariable(factory, binding,
             factory.createArrowFunction(undefined, undefined, [], undefined, undefined,
@@ -101,7 +113,11 @@ export function transformFileContents(filename: string, contents: string, progre
             || ts.isSetAccessor(node.parent) // class X { set ident() { ... } }
             || ts.isSetAccessorDeclaration(node.parent) // interface X { set ident: string }
           );
-          // We should also ignore this identifier if it is shadowed
+          // Another concern is shadowing: we're not checking for that right now because
+          // I don't know how to and in our code base it won't pose a problem, as we have
+          // linter rules that forbid identifier shadowing (this is an
+          // assumption that makes this tool non-portable for now).
+
           // More places are also not RHS but if we leave those, it'll blow up syntactically and that's good
 
           if (!ignore) {
