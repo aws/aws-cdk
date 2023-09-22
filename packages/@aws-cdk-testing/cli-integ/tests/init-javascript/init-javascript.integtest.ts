@@ -49,7 +49,7 @@ new TestjsStack(app, 'TestjsStack');
 
   // Rewrite 'cdk.json' to use new entrypoint
   const cdkJson = await fs.readJson(path.join(context.integTestDir, 'cdk.json'));
-  cdkJson.app = 'node new-entrypoing.mjs';
+  cdkJson.app = 'node new-entrypoint.mjs';
   await fs.writeJson(path.join(context.integTestDir, 'cdk.json'), cdkJson);
 
   await shell.shell(['cdk', 'synth']);
