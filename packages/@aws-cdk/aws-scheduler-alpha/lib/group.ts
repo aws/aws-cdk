@@ -287,7 +287,9 @@ abstract class GroupBase extends Resource implements IGroup {
     });
   }
 }
-
+/**
+ * @resource AWS::Scheduler::ScheduleGroup
+ */
 export class Group extends GroupBase {
   /**
    * Import an external group by ARN.
