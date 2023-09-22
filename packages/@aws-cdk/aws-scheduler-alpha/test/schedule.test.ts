@@ -21,8 +21,8 @@ class SomeLambdaTarget implements IScheduleTarget {
 describe('Schedule', () => {
   let stack: Stack;
   let func: lambda.IFunction;
-  const expr = ScheduleExpression.at(new Date(Date.UTC(1969, 10, 20, 0, 0, 0)));
   let role: iam.IRole;
+  const expr = ScheduleExpression.at(new Date(Date.UTC(1969, 10, 20, 0, 0, 0)));
 
   beforeEach(() => {
     const app = new App();
