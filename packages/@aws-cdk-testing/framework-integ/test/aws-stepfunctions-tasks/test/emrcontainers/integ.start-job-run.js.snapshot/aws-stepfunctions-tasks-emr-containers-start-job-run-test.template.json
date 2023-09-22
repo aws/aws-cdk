@@ -1099,7 +1099,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/f6c0b12449066be96fb6e4305b8351134a96c950f4d5107dde4397c5935cd6b8.json"
+       "/9cb3146bb658283e5521b158afa91dff80b19807fe44cb63a1ab71d876960233.json"
       ]
      ]
     }
@@ -1438,7 +1438,6 @@
      "S3Key": "e5178afc49b7c6a85127a67856ce958e4f0879ce6aad5e974cac2a088bf939db.zip"
     },
     "Handler": "index.handler",
-    "MemorySize": 256,
     "Role": {
      "Fn::GetAtt": [
       "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",

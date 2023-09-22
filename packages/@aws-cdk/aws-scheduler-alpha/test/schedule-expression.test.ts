@@ -28,20 +28,23 @@ describe('schedule expression', () => {
   });
 
   test('cron expressions saves timezone', () => {
-    expect(TimeZone.EUROPE_LONDON).toEqual(ScheduleExpression.cron(
-      {
-        minute: '0',
-        hour: '10',
-        timeZone: TimeZone.EUROPE_LONDON,
-      }).timeZone);
+    // GIVEN
+    const cron = ScheduleExpression.cron({
+      minute: '0',
+      hour: '10',
+      timeZone: TimeZone.EUROPE_LONDON,
+    });
+    cron._bind(new Stack());
+
+    // THEN
+    expect(cron.timeZone).toEqual(TimeZone.EUROPE_LONDON);
   });
 
   test('cron expressions timezone is UTC if not specified', () => {
-    expect(TimeZone.ETC_UTC).toEqual(ScheduleExpression.cron(
-      {
-        minute: '0',
-        hour: '10',
-      }).timeZone);
+    expect(ScheduleExpression.cron({
+      minute: '0',
+      hour: '10',
+    }).timeZone).toEqual(TimeZone.ETC_UTC);
   });
 
   test('rate cannot be 0', () => {

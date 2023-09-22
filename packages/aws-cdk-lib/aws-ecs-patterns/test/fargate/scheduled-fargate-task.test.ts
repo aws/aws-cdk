@@ -451,7 +451,7 @@ test('Scheduled Fargate Task shows warning when minute is not defined in cron', 
   });
 
   // THEN
-  Annotations.fromStack(stack).hasWarning('/Default', "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead. [ack: @aws-cdk/aws-events:scheduleWillRunEveryMinute]");
+  Annotations.fromStack(stack).hasWarning('/Default', "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead. [ack: @aws-cdk/aws-events:scheduleDefaultRunsEveryMinute]");
 });
 
 test('Scheduled Fargate Task shows no warning when minute is * in cron', () => {

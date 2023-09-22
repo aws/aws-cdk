@@ -1,0 +1,357 @@
+{
+ "Resources": {
+  "FirstSourceAPIB0DE8D5A": {
+   "Type": "AWS::AppSync::GraphQLApi",
+   "Properties": {
+    "AuthenticationType": "API_KEY",
+    "Name": "FirstSourceAPI"
+   }
+  },
+  "FirstSourceAPISchemaF2FDB692": {
+   "Type": "AWS::AppSync::GraphQLSchema",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "FirstSourceAPIB0DE8D5A",
+      "ApiId"
+     ]
+    },
+    "Definition": "type firstTest {\n  version: String!\n}\ntype Query {\n  getFirstTests: [firstTest]!\n}\ntype Mutation {\n  addFirstTest(version: String!): firstTest\n}\n"
+   }
+  },
+  "FirstSourceAPIDefaultApiKey9D9AE06D": {
+   "Type": "AWS::AppSync::ApiKey",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "FirstSourceAPIB0DE8D5A",
+      "ApiId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "FirstSourceAPISchemaF2FDB692"
+   ]
+  },
+  "FirstSourceAPIFirstSourceDS6AD299B7": {
+   "Type": "AWS::AppSync::DataSource",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "FirstSourceAPIB0DE8D5A",
+      "ApiId"
+     ]
+    },
+    "Name": "FirstSourceDS",
+    "Type": "NONE"
+   }
+  },
+  "SecondSourceAPIE903371D": {
+   "Type": "AWS::AppSync::GraphQLApi",
+   "Properties": {
+    "AuthenticationType": "API_KEY",
+    "Name": "SecondSourceAPI"
+   }
+  },
+  "SecondSourceAPISchema65B7401E": {
+   "Type": "AWS::AppSync::GraphQLSchema",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "SecondSourceAPIE903371D",
+      "ApiId"
+     ]
+    },
+    "Definition": "type secondTest {\n  version: String!\n}\ntype Query {\n  getSecondTests: [secondTest]!\n}\ntype Mutation {\n  addSecondTest(version: String!): secondTest\n}\n"
+   }
+  },
+  "SecondSourceAPIDefaultApiKeyCE5A0A64": {
+   "Type": "AWS::AppSync::ApiKey",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "SecondSourceAPIE903371D",
+      "ApiId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "SecondSourceAPISchema65B7401E"
+   ]
+  },
+  "SecondSourceAPISecondSourceDSEA46EBA7": {
+   "Type": "AWS::AppSync::DataSource",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "SecondSourceAPIE903371D",
+      "ApiId"
+     ]
+    },
+    "Name": "SecondSourceDS",
+    "Type": "NONE"
+   }
+  },
+  "ThirdSourceAPIA5DA856C": {
+   "Type": "AWS::AppSync::GraphQLApi",
+   "Properties": {
+    "AuthenticationType": "API_KEY",
+    "Name": "ThirdSourceAPI"
+   }
+  },
+  "ThirdSourceAPISchema5999A853": {
+   "Type": "AWS::AppSync::GraphQLSchema",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "ThirdSourceAPIA5DA856C",
+      "ApiId"
+     ]
+    },
+    "Definition": "type thirdTest {\n  version: String!\n}\ntype Query {\n  getThirdTests: [thirdTest]!\n}\ntype Mutation {\n  addThirdTest(version: String!): thirdTest\n}\n"
+   }
+  },
+  "ThirdSourceAPIDefaultApiKey3D5568A7": {
+   "Type": "AWS::AppSync::ApiKey",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "ThirdSourceAPIA5DA856C",
+      "ApiId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "ThirdSourceAPISchema5999A853"
+   ]
+  },
+  "MergedApiExecutionRoleA4AA677D": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "appsync.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MergedApiExecutionRoleDefaultPolicy249A5507": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "appsync:SourceGraphQL",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "SourceApiAssociation17B8F97C7",
+          "SourceApiArn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "SourceApiAssociation254340D38",
+          "SourceApiArn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "SourceApiAssociation3F6A7C1BA",
+          "SourceApiArn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "SourceApiAssociation17B8F97C7",
+             "SourceApiArn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "SourceApiAssociation254340D38",
+             "SourceApiArn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "SourceApiAssociation3F6A7C1BA",
+             "SourceApiArn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "appsync:StartSchemaMerge",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "SourceApiAssociation254340D38",
+         "AssociationArn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MergedApiExecutionRoleDefaultPolicy249A5507",
+    "Roles": [
+     {
+      "Ref": "MergedApiExecutionRoleA4AA677D"
+     }
+    ]
+   }
+  },
+  "MergedAPI08D3EAD1": {
+   "Type": "AWS::AppSync::GraphQLApi",
+   "Properties": {
+    "ApiType": "MERGED",
+    "AuthenticationType": "API_KEY",
+    "MergedApiExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "MergedApiExecutionRoleA4AA677D",
+      "Arn"
+     ]
+    },
+    "Name": "MergedAPI"
+   }
+  },
+  "MergedAPIDefaultApiKeyAF5EA13C": {
+   "Type": "AWS::AppSync::ApiKey",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "MergedAPI08D3EAD1",
+      "ApiId"
+     ]
+    }
+   }
+  },
+  "SourceApiAssociation17B8F97C7": {
+   "Type": "AWS::AppSync::SourceApiAssociation",
+   "Properties": {
+    "MergedApiIdentifier": {
+     "Fn::GetAtt": [
+      "MergedAPI08D3EAD1",
+      "Arn"
+     ]
+    },
+    "SourceApiAssociationConfig": {
+     "MergeType": "MANUAL_MERGE"
+    },
+    "SourceApiIdentifier": {
+     "Fn::GetAtt": [
+      "FirstSourceAPIB0DE8D5A",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "SourceApiAssociation254340D38": {
+   "Type": "AWS::AppSync::SourceApiAssociation",
+   "Properties": {
+    "MergedApiIdentifier": {
+     "Fn::GetAtt": [
+      "MergedAPI08D3EAD1",
+      "Arn"
+     ]
+    },
+    "SourceApiAssociationConfig": {
+     "MergeType": "AUTO_MERGE"
+    },
+    "SourceApiIdentifier": {
+     "Fn::GetAtt": [
+      "SecondSourceAPIE903371D",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "SourceApiAssociation3F6A7C1BA": {
+   "Type": "AWS::AppSync::SourceApiAssociation",
+   "Properties": {
+    "MergedApiIdentifier": {
+     "Fn::GetAtt": [
+      "MergedAPI08D3EAD1",
+      "Arn"
+     ]
+    },
+    "SourceApiAssociationConfig": {
+     "MergeType": "MANUAL_MERGE"
+    },
+    "SourceApiIdentifier": {
+     "Fn::GetAtt": [
+      "ThirdSourceAPIA5DA856C",
+      "Arn"
+     ]
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

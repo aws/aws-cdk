@@ -64,7 +64,7 @@
                       "aws:cdk:cloudformation:type": "AWS::ApiGateway::Stage",
                       "aws:cdk:cloudformation:props": {
                         "deploymentId": {
-                          "Ref": "corsapitestDeployment2BF1633Ad72428c37c88b8c23ef39eebb5b7e9fd"
+                          "Ref": "corsapitestDeployment2BF1633A506e17bacbb92c0f9e65d8c89b158b9c"
                         },
                         "restApiId": {
                           "Ref": "corsapitest8682546E"
@@ -123,7 +123,7 @@
                                     "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
                                   },
                                   "responseTemplates": {
-                                    "application/json": "#set($origin = $input.params().header.get(\"Origin\"))\n#if($origin == \"\") #set($origin = $input.params().header.get(\"origin\")) #end\n#if($origin == \"https://twitch.tv\" || $origin == \"https://aws.amazon.com\")\n  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)\n#end"
+                                    "application/json": "#set($origin = $input.params().header.get(\"Origin\"))\n#if($origin == \"\")\n  #set($origin = $input.params().header.get(\"origin\"))\n#end\n#if($origin == \"https://twitch.tv\" || $origin == \"https://aws.amazon.com\")\n  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)\n#end"
                                   }
                                 }
                               ]
@@ -216,7 +216,7 @@
                                         "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
                                       },
                                       "responseTemplates": {
-                                        "application/json": "#set($origin = $input.params().header.get(\"Origin\"))\n#if($origin == \"\") #set($origin = $input.params().header.get(\"origin\")) #end\n#if($origin == \"https://twitch.tv\" || $origin == \"https://aws.amazon.com\")\n  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)\n#end"
+                                        "application/json": "#set($origin = $input.params().header.get(\"Origin\"))\n#if($origin == \"\")\n  #set($origin = $input.params().header.get(\"origin\"))\n#end\n#if($origin == \"https://twitch.tv\" || $origin == \"https://aws.amazon.com\")\n  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)\n#end"
                                       }
                                     }
                                   ]
@@ -576,7 +576,7 @@
                 "path": "integ-cors-allow-multiple-origins/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.69"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
@@ -622,7 +622,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.69"
+          "version": "10.2.70"
         }
       }
     },

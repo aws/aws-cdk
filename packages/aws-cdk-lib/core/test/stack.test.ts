@@ -2009,6 +2009,32 @@ describe('stack', () => {
     expect(artifact.terminationProtection).toEqual(true);
   });
 
+  test('Set termination protection to true with setter', () => {
+    // if the root is an app, invoke "synth" to avoid double synthesis
+    const app = new App();
+    const stack = new Stack(app, 'Stack', {});
+
+    stack.terminationProtection = true;
+
+    const assembly = app.synth();
+    const artifact = assembly.getStackArtifact(stack.artifactId);
+
+    expect(artifact.terminationProtection).toEqual(true);
+  });
+
+  test('Set termination protection to false with setter', () => {
+    // if the root is an app, invoke "synth" to avoid double synthesis
+    const app = new App();
+    const stack = new Stack(app, 'Stack', { terminationProtection: true });
+
+    stack.terminationProtection = false;
+
+    const assembly = app.synth();
+    const artifact = assembly.getStackArtifact(stack.artifactId);
+
+    expect(artifact.terminationProtection).toEqual(false);
+  });
+
   test('context can be set on a stack using a LegacySynthesizer', () => {
     // WHEN
     const stack = new Stack(undefined, undefined, {

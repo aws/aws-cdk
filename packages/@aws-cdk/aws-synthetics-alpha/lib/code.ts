@@ -132,8 +132,9 @@ export class AssetCode extends Code {
     }
 
     // Get the staged (or copied) asset path.
-    const assetOutDir = Stage.of(scope)?.assetOutdir;
-    const assetPath = assetOutDir ? path.join(assetOutDir, this.asset.assetPath): this.assetPath;
+    // `this.asset.assetPath` is relative to the `outdir`, not the `assetOutDir`.
+    const asmManifestDir = Stage.of(scope)?.outdir;
+    const assetPath = asmManifestDir ? path.join(asmManifestDir, this.asset.assetPath): this.assetPath;
 
     if (path.extname(assetPath) !== '.zip') {
       if (!fs.lstatSync(assetPath).isDirectory()) {

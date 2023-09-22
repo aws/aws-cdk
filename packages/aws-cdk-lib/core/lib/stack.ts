@@ -314,7 +314,13 @@ export class Stack extends Construct implements ITaggable {
   /**
    * Whether termination protection is enabled for this stack.
    */
-  public readonly terminationProtection?: boolean;
+  public get terminationProtection(): boolean {
+    return this._terminationProtection;
+  }
+
+  public set terminationProtection(value: boolean) {
+    this._terminationProtection = value;
+  }
 
   /**
    * If this is a nested stack, this represents its `AWS::CloudFormation::Stack`
@@ -389,6 +395,8 @@ export class Stack extends Construct implements ITaggable {
    */
   private readonly _suppressTemplateIndentation: boolean;
 
+  private _terminationProtection: boolean;
+
   /**
    * Creates a new stack.
    *
@@ -426,7 +434,7 @@ export class Stack extends Construct implements ITaggable {
     this.account = account;
     this.region = region;
     this.environment = environment;
-    this.terminationProtection = props.terminationProtection;
+    this._terminationProtection = props.terminationProtection ?? false;
 
     if (props.description !== undefined) {
       // Max length 1024 bytes

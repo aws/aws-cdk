@@ -120,17 +120,55 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "FirstSourceAPIB0DE8D5A",
-          "Arn"
+          "MergedAPIFirstSourceAPIAssociationEC781BA9",
+          "SourceApiArn"
          ]
         },
         {
          "Fn::GetAtt": [
-          "SecondSourceAPIE903371D",
-          "Arn"
+          "MergedAPISecondSourceAPIAssociationBD1A08F4",
+          "SourceApiArn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "MergedAPIFirstSourceAPIAssociationEC781BA9",
+             "SourceApiArn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "MergedAPISecondSourceAPIAssociationBD1A08F4",
+             "SourceApiArn"
+            ]
+           },
+           "/*"
+          ]
          ]
         }
        ]
+      },
+      {
+       "Action": "appsync:StartSchemaMerge",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "MergedAPISecondSourceAPIAssociationBD1A08F4",
+         "AssociationArn"
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"

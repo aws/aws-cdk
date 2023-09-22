@@ -428,7 +428,7 @@ dashboard.addWidgets(new cloudwatch.GraphWidget({
 
 Using the methods `addLeftMetric()` and `addRightMetric()` you can add metrics to a graph widget later on.
 
-Graph widgets can also display annotations attached to the left or the right y-axis.
+Graph widgets can also display annotations attached to the left or right y-axis or the x-axis.
 
 ```ts
 declare const dashboard: cloudwatch.Dashboard;
@@ -440,6 +440,9 @@ dashboard.addWidgets(new cloudwatch.GraphWidget({
     { value: 1800, label: Duration.minutes(30).toHumanString(), color: cloudwatch.Color.RED, },
     { value: 3600, label: '1 hour', color: '#2ca02c', }
   ],
+  verticalAnnotations: [
+    { date: '2022-10-19T00:00:00Z', label: 'Deployment', color: cloudwatch.Color.RED, }
+  ]
 }));
 ```
 
@@ -476,6 +479,20 @@ dashboard.addWidgets(new cloudwatch.GraphWidget({
   // ...
 
   view: cloudwatch.GraphWidgetView.BAR,
+}));
+```
+
+The `start` and `end` properties can be used to specify the time range for each graph widget independently from those of the dashboard.
+The parameters can be specified at `GraphWidget`, `GaugeWidget`, and `SingleValueWidget`.
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+
+dashboard.addWidgets(new cloudwatch.GraphWidget({
+  // ...
+
+  start: '-P7D',
+  end: '2018-12-17T06:00:00.000Z',
 }));
 ```
 
