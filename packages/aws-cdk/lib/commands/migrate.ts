@@ -79,7 +79,7 @@ export async function generateCdkApp(stackName: string, stack: string, language:
  */
 export function generateStack(template: string, stackName: string, language: string) {
   try {
-    const formattedStackName = `${camelCase(decamelize(stackName), { pascalCase: true })}` + language == 'csharp' ? '' : 'Stack';
+    const formattedStackName = `${camelCase(decamelize(stackName), { pascalCase: true })}` + (language == 'csharp' ? '' : 'Stack');
     return cdk_from_cfn.transmute(template, language, formattedStackName);
   } catch (e) {
     throw new Error(`stack generation failed due to error '${(e as Error).message}'`);
