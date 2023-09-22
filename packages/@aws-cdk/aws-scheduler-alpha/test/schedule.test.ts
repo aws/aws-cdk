@@ -22,6 +22,7 @@ describe('Schedule', () => {
   let stack: Stack;
   let func: lambda.IFunction;
   const expr = ScheduleExpression.at(new Date(Date.UTC(1969, 10, 20, 0, 0, 0)));
+  let role: iam.IRole;
 
   beforeEach(() => {
     const app = new App();
@@ -32,13 +33,14 @@ describe('Schedule', () => {
       runtime: lambda.Runtime.NODEJS_LATEST,
       tracing: lambda.Tracing.PASS_THROUGH,
     });
+    role = iam.Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/someRole');
   });
 
   test('schedule is enabled by default', () => {
     // WHEN
     new Schedule(stack, 'TestSchedule', {
       schedule: expr,
-      target: new SomeLambdaTarget(func, iam.Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/someRole')),
+      target: new SomeLambdaTarget(func, role),
     });
 
     // THEN
@@ -51,7 +53,7 @@ describe('Schedule', () => {
     // WHEN
     new Schedule(stack, 'TestSchedule', {
       schedule: expr,
-      target: new SomeLambdaTarget(func, iam.Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/someRole')),
+      target: new SomeLambdaTarget(func, role),
       enabled: false,
     });
 

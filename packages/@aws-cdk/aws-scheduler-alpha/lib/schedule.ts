@@ -101,7 +101,7 @@ export class Schedule extends Resource implements ISchedule {
       scheduleExpression: props.schedule.expressionString,
       scheduleExpressionTimezone: props.schedule.timeZone?.timezoneName,
       groupName: this.group?.groupName,
-      state: props.enabled == null ? 'ENABLED' : (props.enabled ? 'ENABLED' : 'DISABLED'),
+      state: (props.enabled ?? true) ? 'ENABLED' : 'DISABLED',
       target: {
         arn: targetConfig.arn,
         roleArn: targetConfig.role.roleArn,
