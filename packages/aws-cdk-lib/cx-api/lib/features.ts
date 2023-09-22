@@ -921,7 +921,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       If the flag is set to false then it can only make one \`AuroraClusterInstance\`
       with each \`InstanceParameterGroup\` in the AuroraCluster.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.97.0' },
     recommendedValue: true,
   },
 
@@ -934,7 +934,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       the GraphqlApi construct. Using the ARN allows the association to support an association with a source api or merged api in another account.
       Note that for existing source api associations created with this flag disabled, enabling the flag will lead to a resource replacement. 
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.97.0' },
     recommendedValue: true,
   },
 };
