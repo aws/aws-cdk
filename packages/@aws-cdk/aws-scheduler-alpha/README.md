@@ -131,7 +131,7 @@ By default, a schedule will be enabled. You can disable a schedule by setting th
 ```ts
 declare const target: targets.LambdaInvoke;
 
-new Schedule(stack, 'Schedule', {
+new Schedule(this, 'Schedule', {
     schedule: ScheduleExpression.rate(Duration.minutes(10)),
     target: target,
     enabled: false,
