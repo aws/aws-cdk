@@ -125,6 +125,7 @@ new Schedule(this, 'Schedule', {
 ```
 
 ### Disabling Schedules
+
 By default, a schedule will be enabled. You can disable a schedule by setting the `enabled` property to false:
 
 ```ts
