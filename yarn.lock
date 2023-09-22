@@ -4108,7 +4108,7 @@
     expect "^28.0.0"
     pretty-format "^28.0.0"
 
-"@types/jest@^29.5.5":
+"@types/jest@^29.5.4", "@types/jest@^29.5.5":
   version "29.5.5"
   resolved "https://registry.npmjs.org/@types/jest/-/jest-29.5.5.tgz#727204e06228fe24373df9bae76b90f3e8236a2a"
   integrity sha512-ebylz2hnsWR9mYvmBFbXJXr+33UPc4+ZdxyDXh5w0FlPBTfCVN3wPL+kuOiQt3xvrK419v7XWeAs+AeOksafXg==
@@ -6766,7 +6766,7 @@ es6-weak-map@^2.0.3:
     es6-iterator "^2.0.3"
     es6-symbol "^3.1.1"
 
-esbuild@^0.19.3:
+esbuild@^0.19.2, esbuild@^0.19.3:
   version "0.19.3"
   resolved "https://registry.npmjs.org/esbuild/-/esbuild-0.19.3.tgz#d9268cd23358eef9d76146f184e0c55ff8da7bb6"
   integrity sha512-UlJ1qUUA2jL2nNib1JTSkifQTcYTroFqRjwCFW4QYEKEsixXD5Tik9xML7zh2gTxkYTBKGHNH9y7txMwVyPbjw==
