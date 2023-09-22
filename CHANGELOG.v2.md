@@ -33,7 +33,6 @@ All notable changes to this project will be documented in this file. See [standa
 * **rds:** unable to create cluster with per-instance parameters (under feature flag) ([#27040](https://github.com/aws/aws-cdk/issues/27040)) ([1be9894](https://github.com/aws/aws-cdk/commit/1be9894682c13bbed46f725f4ee349b86fbc25fa)), closes [#27035](https://github.com/aws/aws-cdk/issues/27035)
 * **sample-app:** exclude all __pycache__  in cdk.json ([#27191](https://github.com/aws/aws-cdk/issues/27191)) ([d9f1f09](https://github.com/aws/aws-cdk/commit/d9f1f0908a1f7ec0bfcb0df4f9dd1b45c86b0144))
 
-
 ## [2.96.2](https://github.com/aws/aws-cdk/compare/v2.96.1...v2.96.2) (2023-09-14)
 
 
