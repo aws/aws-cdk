@@ -10,7 +10,8 @@ import { ISubnetGroup } from './subnet-group';
 import * as ec2 from '../../aws-ec2';
 import { IRole } from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { IResource, Resource, Duration, RemovalPolicy, ArnFormat } from '../../core';
+import { IResource, Resource, Duration, RemovalPolicy, ArnFormat, FeatureFlags } from '../../core';
+import { AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS } from '../../cx-api';
 
 /**
  * Options for binding the instance to the cluster
@@ -471,10 +472,15 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
 
     const instanceParameterGroup = props.parameterGroup ?? (
       props.parameters
-        ? new ParameterGroup(props.cluster, 'InstanceParameterGroup', {
-          engine: engine,
-          parameters: props.parameters,
-        })
+        ? FeatureFlags.of(this).isEnabled(AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS)
+          ? new ParameterGroup(this, 'InstanceParameterGroup', {
+            engine: engine,
+            parameters: props.parameters,
+          })
+          : new ParameterGroup(props.cluster, 'InstanceParameterGroup', {
+            engine: engine,
+            parameters: props.parameters,
+          })
         : undefined
     );
     const instanceParameterGroupConfig = instanceParameterGroup?.bindToInstance({});

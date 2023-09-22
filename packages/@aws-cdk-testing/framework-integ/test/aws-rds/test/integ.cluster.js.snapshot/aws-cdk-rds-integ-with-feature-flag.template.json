@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-integ/VPC"
+      "Value": "aws-cdk-rds-integ-with-feature-flag/VPC"
      }
     ]
    }
@@ -39,7 +39,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-integ/VPC/PublicSubnet1"
+      "Value": "aws-cdk-rds-integ-with-feature-flag/VPC/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -53,7 +53,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-integ/VPC/PublicSubnet1"
+      "Value": "aws-cdk-rds-integ-with-feature-flag/VPC/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -94,7 +94,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-integ/VPC/PublicSubnet1"
+      "Value": "aws-cdk-rds-integ-with-feature-flag/VPC/PublicSubnet1"
      }
     ]
    }
@@ -114,7 +114,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-integ/VPC/PublicSubnet1"
+      "Value": "aws-cdk-rds-integ-with-feature-flag/VPC/PublicSubnet1"
      }
     ]
    },
@@ -147,7 +147,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-integ/VPC/PublicSubnet2"
+      "Value": "aws-cdk-rds-integ-with-feature-flag/VPC/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -161,7 +161,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-integ/VPC/PublicSubnet2"
+      "Value": "aws-cdk-rds-integ-with-feature-flag/VPC/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -202,7 +202,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-integ/VPC/PublicSubnet2"
+      "Value": "aws-cdk-rds-integ-with-feature-flag/VPC/PublicSubnet2"
      }
     ]
    }
@@ -222,7 +222,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-integ/VPC/PublicSubnet2"
+      "Value": "aws-cdk-rds-integ-with-feature-flag/VPC/PublicSubnet2"
      }
     ]
    },
@@ -255,7 +255,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-integ/VPC/PrivateSubnet1"
+      "Value": "aws-cdk-rds-integ-with-feature-flag/VPC/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -269,7 +269,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-integ/VPC/PrivateSubnet1"
+      "Value": "aws-cdk-rds-integ-with-feature-flag/VPC/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -324,7 +324,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-integ/VPC/PrivateSubnet2"
+      "Value": "aws-cdk-rds-integ-with-feature-flag/VPC/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -338,7 +338,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-integ/VPC/PrivateSubnet2"
+      "Value": "aws-cdk-rds-integ-with-feature-flag/VPC/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -375,7 +375,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-integ/VPC"
+      "Value": "aws-cdk-rds-integ-with-feature-flag/VPC"
      }
     ]
    }
@@ -547,7 +547,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "DatabaseInstanceParameterGroup6968C5BF": {
+  "DatabaseInstance2WrapperInstanceParameterGroup61FBD67B": {
    "Type": "AWS::RDS::DBParameterGroup",
    "Properties": {
     "Description": "Parameter group for aurora-mysql8.0",
@@ -563,7 +563,40 @@
     },
     "DBInstanceClass": "db.t3.medium",
     "DBParameterGroupName": {
-     "Ref": "DatabaseInstanceParameterGroup6968C5BF"
+     "Ref": "DatabaseInstance2WrapperInstanceParameterGroup61FBD67B"
+    },
+    "DBSubnetGroupName": {
+     "Ref": "DatabaseSubnets56F17B9A"
+    },
+    "Engine": "aurora-mysql",
+    "PubliclyAccessible": true
+   },
+   "DependsOn": [
+    "VPCPublicSubnet1DefaultRoute91CEF279",
+    "VPCPublicSubnet1RouteTableAssociation0B0896DC",
+    "VPCPublicSubnet2DefaultRouteB7481BBA",
+    "VPCPublicSubnet2RouteTableAssociation5A808732"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "DatabaseInstance3WrapperInstanceParameterGroup00CB9DB5": {
+   "Type": "AWS::RDS::DBParameterGroup",
+   "Properties": {
+    "Description": "Parameter group for aurora-mysql8.0",
+    "Family": "aurora-mysql8.0",
+    "Parameters": {}
+   }
+  },
+  "DatabaseInstance32FCBA185": {
+   "Type": "AWS::RDS::DBInstance",
+   "Properties": {
+    "DBClusterIdentifier": {
+     "Ref": "DatabaseB269D8BB"
+    },
+    "DBInstanceClass": "db.t3.medium",
+    "DBParameterGroupName": {
+     "Ref": "DatabaseInstance3WrapperInstanceParameterGroup00CB9DB5"
     },
     "DBSubnetGroupName": {
      "Ref": "DatabaseSubnets56F17B9A"
