@@ -62,6 +62,42 @@ describeDeprecated('scheduled action', () => {
     });
   });
 
+  test('set timezone as part of schedule', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const asg = makeAutoScalingGroup(stack);
+
+    // WHEN
+    asg.scaleOnSchedule('ScaleOutAtMiddaySeoul', {
+      schedule: autoscaling.Schedule.expression('0 12 * * *', cdk.TimeZone.ASIA_SEOUL),
+      minCapacity: 12,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScheduledAction', {
+      MinSize: 12,
+      Recurrence: '0 12 * * *',
+      TimeZone: 'Asia/Seoul',
+    });
+  });
+
+  test('throws when timezone and scheduled timezone set together', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const asg = makeAutoScalingGroup(stack);
+
+    // THEN
+    expect(() => asg.scaleOnSchedule('ScaleOutAtMiddaySeoul', {
+      schedule: autoscaling.Schedule.cron({
+        hour: '12',
+        minute: '0',
+        timeZone: cdk.TimeZone.ASIA_SEOUL,
+      }),
+      minCapacity: 12,
+      timeZone: 'Asia/Seoul',
+    })).toThrowError(/Please remove the deprecated `timeZone` property./);
+  });
+
   test('autoscaling group has recommended updatepolicy for scheduled actions', () => {
     // GIVEN
     const stack = new cdk.Stack();

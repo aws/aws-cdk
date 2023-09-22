@@ -1,5 +1,5 @@
 {
-  "version": "33.0.0",
+  "version": "34.0.0",
   "artifacts": {
     "aws-cdk-eks-cluster-ipv6-test.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/845329d290a647ecfe9ab838a3e9f8c4d0196061bedf9bc0336041dcdb0ae4d9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/a24a59c9e16237a3a6cf9603a3cf7a954dbe98e65f7e7c24934b8083c05aa55e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -408,7 +408,7 @@
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/Nodes/InstanceSecurityGroup": [
           {
             "type": "aws:cdk:warning",
-            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]"
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/Nodes/InstanceSecurityGroup/Resource": [
@@ -480,7 +480,7 @@
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/NodesArm/InstanceSecurityGroup": [
           {
             "type": "aws:cdk:warning",
-            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]"
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/NodesArm/InstanceSecurityGroup/Resource": [
@@ -552,7 +552,7 @@
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/BottlerocketNodes/InstanceSecurityGroup": [
           {
             "type": "aws:cdk:warning",
-            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]"
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/BottlerocketNodes/InstanceSecurityGroup/Resource": [
@@ -624,7 +624,7 @@
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/spot/InstanceSecurityGroup": [
           {
             "type": "aws:cdk:warning",
-            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]"
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/spot/InstanceSecurityGroup/Resource": [
