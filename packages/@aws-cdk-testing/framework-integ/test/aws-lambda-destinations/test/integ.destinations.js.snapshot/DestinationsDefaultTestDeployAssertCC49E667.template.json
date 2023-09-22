@@ -28,7 +28,7 @@
      "Payload": "\"{\\\"status\\\":\\\"OK\\\"}\""
     },
     "flattenResponse": "false",
-    "salt": "1693389511315"
+    "salt": "1694442848989"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -137,7 +137,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c7f4a8ca56d10961cf5e40d181faddf14f2ea8b39c5d65c7b61a366b17c7a2ce.zip"
+     "S3Key": "77997674c0a10fbb65169124ad6c0d7a664b6162ad44f9abfa22fd006b33f754.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -184,7 +184,7 @@
      "Messages.0.Body.responseContext.statusCode",
      "Messages.0.Body.responsePayload"
     ],
-    "salt": "1693389511316"
+    "salt": "1694442848990"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

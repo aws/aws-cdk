@@ -318,8 +318,8 @@ export abstract class State extends Construct implements IChainable {
   /**
    * Add a choice branch to this state
    */
-  protected addChoice(condition: Condition, next: State) {
-    this.choices.push({ condition, next });
+  protected addChoice(condition: Condition, next: State, options?: ChoiceTransitionOptions) {
+    this.choices.push({ condition, next, ...options });
     next.startState.addIncoming(this);
     if (this.containingGraph) {
       next.startState.bindToGraph(this.containingGraph);
@@ -327,7 +327,7 @@ export abstract class State extends Construct implements IChainable {
   }
 
   /**
-   * Add a paralle branch to this state
+   * Add a parallel branch to this state
    */
   protected addBranch(branch: StateGraph) {
     this.branches.push(branch);
@@ -479,7 +479,7 @@ export interface FindStateOptions {
 /**
  * A Choice Transition
  */
-interface ChoiceTransition {
+interface ChoiceTransition extends ChoiceTransitionOptions {
   /**
    * State to transition to
    */
@@ -492,12 +492,25 @@ interface ChoiceTransition {
 }
 
 /**
+ * Options for Choice Transition
+ */
+export interface ChoiceTransitionOptions {
+  /**
+   * An optional description for the choice transition
+   *
+   * @default No comment
+   */
+  readonly comment?: string;
+}
+
+/**
  * Render a choice transition
  */
 function renderChoice(c: ChoiceTransition) {
   return {
     ...c.condition.renderCondition(),
     Next: c.next.stateId,
+    Comment: c.comment,
   };
 }
 
@@ -525,6 +538,8 @@ function renderRetry(retry: RetryProps) {
     IntervalSeconds: retry.interval && retry.interval.toSeconds(),
     MaxAttempts: retry.maxAttempts,
     BackoffRate: retry.backoffRate,
+    MaxDelaySeconds: retry.maxDelay && retry.maxDelay.toSeconds(),
+    JitterStrategy: retry.jitterStrategy,
   };
 }
 

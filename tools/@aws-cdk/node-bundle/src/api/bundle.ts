@@ -13,6 +13,7 @@ const DEFAULT_ALLOWED_LICENSES = [
   'ISC',
   'BSD-2-Clause',
   '0BSD',
+  'MIT OR Apache-2.0'
 ];
 
 /**
