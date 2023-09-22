@@ -115,11 +115,6 @@
       "node lib/assertions/providers/lambda-handler.bundle/index.js"
     ]
   },
-  "awslint": {
-    "exclude": [
-      "*:*"
-    ]
-  },
   "nozem": {
     "ostools": [
       "unzip",

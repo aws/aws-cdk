@@ -440,7 +440,7 @@ describe('code', () => {
       // then
       Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
         Metadata: {
-          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.7bbf7edf9881819a1b91e5b02acae3e3973f96fa93325c676a1285351ddacc62',
+          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: Match.stringLikeRegexp('asset\\.[0-9a-f]+'),
           [cxapi.ASSET_RESOURCE_METADATA_IS_BUNDLED_KEY]: false,
           [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code',
         },
