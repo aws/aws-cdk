@@ -216,9 +216,11 @@ const service = new apprunner.Service(stack, 'Service', {
 service.addSecret('LATER_SECRET', apprunner.Secret.fromSecretsManager(secret, 'field'));
 ```
 
-## HealthCheck Configuration
+## HealthCheck
 
-To configure the health check for the service, use the `healthCheckConfiguration` attribute.
+To configure the health check for the service, use the `healthCheck` attribute.
+
+You can specify it by static methods `HealthCheck.http` or `HealthCheck.tcp`.
 
 ```ts
 new apprunner.Service(this, 'Service', {
@@ -226,13 +228,12 @@ new apprunner.Service(this, 'Service', {
     imageConfiguration: { port: 8000 },
     imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
   }),
-  healthCheckConfiguration: {
+  healthCheck: apprunner.HealthCheck.http({
     healthyThreshold: 5,
     interval: Duration.seconds(10),
     path: '/',
-    protocol: apprunner.HealthCheckProtocolType.HTTP,
     timeout: Duration.seconds(10),
     unhealthyThreshold: 10,
-  },
+  }),
 });
 ```

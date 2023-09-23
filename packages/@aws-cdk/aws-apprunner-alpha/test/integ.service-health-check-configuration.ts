@@ -1,5 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
-import { HealthCheckProtocolType, Service, Source } from '../lib';
+import { HealthCheck, Service, Source } from '../lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
@@ -13,14 +13,13 @@ new Service(stack, 'Service', {
     },
     imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
   }),
-  healthCheckConfiguration: {
+  healthCheck: HealthCheck.http({
     healthyThreshold: 5,
     interval: cdk.Duration.seconds(10),
     path: '/',
-    protocol: HealthCheckProtocolType.HTTP,
     timeout: cdk.Duration.seconds(10),
     unhealthyThreshold: 10,
-  },
+  }),
 });
 
 new IntegTest(app, 'cdk-integ-dashboard-and-widget-with-start-and-end', {
