@@ -10,7 +10,7 @@ jobs:
     if: github.repository == 'aws/aws-cdk'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: minicli/action-contributors@v3.3
         name: "Update a projects CONTRIBUTORS file"
         env:

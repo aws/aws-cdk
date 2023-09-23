@@ -4,6 +4,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { App, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { AuthorizationType, MockIntegration, PassthroughBehavior, RestApi, TokenAuthorizer } from 'aws-cdk-lib/aws-apigateway';
+import { STANDARD_NODEJS_RUNTIME } from '../../../config';
 
 /*
  * Stack verification steps:
@@ -16,7 +17,7 @@ const app = new App();
 const stack = new Stack(app, 'TokenAuthorizerIAMRoleInteg');
 
 const authorizerFn = new lambda.Function(stack, 'MyAuthorizerFunction', {
-  runtime: lambda.Runtime.NODEJS_16_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   handler: 'index.handler',
   code: lambda.AssetCode.fromAsset(path.join(__dirname, 'integ.token-authorizer.handler')),
 });

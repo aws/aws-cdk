@@ -4,6 +4,7 @@ import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { AuthType, HttpMethod, CallApiGatewayRestApiEndpoint } from 'aws-cdk-lib/aws-stepfunctions-tasks';
+import { STANDARD_NODEJS_RUNTIME } from '../../../config';
 
 /*
  * Stack verification steps:
@@ -18,7 +19,7 @@ const stack = new cdk.Stack(app, 'CallRestApiInteg');
 const restApi = new apigateway.RestApi(stack, 'MyRestApi', { cloudWatchRole: true });
 
 const hello = new apigateway.LambdaIntegration(new lambda.Function(stack, 'Hello', {
-  runtime: lambda.Runtime.NODEJS_16_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   handler: 'index.handler',
   code: new lambda.InlineCode('exports.handler = async function(event, context) { return { statusCode: 200, body: "hello, world!" }; };'),
 }));

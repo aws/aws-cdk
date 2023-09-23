@@ -2,7 +2,7 @@
 /* eslint-disable no-console */
 import { execSync } from 'child_process';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { coerceApiParametersToUint8Array, findV3ClientConstructor, getV3ClientPackageName } from '@aws-cdk/sdk-v2-to-v3-adapter';
+import { coerceApiParameters, findV3ClientConstructor, getV3ClientPackageName } from '@aws-cdk/sdk-v2-to-v3-adapter';
 // import the AWSLambda package explicitly,
 // which is globally available in the Lambda runtime,
 // as otherwise linking this repository with link-all.sh
@@ -135,7 +135,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         // Command must pass input value https://github.com/aws/aws-sdk-js-v3/issues/424
         const response = await client.send(
           new Command(call.parameters
-            ? coerceApiParametersToUint8Array(serviceShortName, shortCommandName, decodeSpecialValues(call.parameters, physicalResourceId))
+            ? coerceApiParameters(serviceShortName, shortCommandName, decodeSpecialValues(call.parameters, physicalResourceId))
             : {},
           ),
         );

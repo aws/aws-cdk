@@ -80,11 +80,11 @@
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/integ-tests-alpha": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^29.5.4",
+    "@types/jest": "^29.5.5",
     "@types/mime-types": "^2.1.1",
     "aws-cdk-lib": "0.0.0",
     "constructs": "^10.0.0",
-    "jest": "^29.6.4"
+    "jest": "^29.7.0"
   },
   "dependencies": {
     "aws-cdk-lib": "0.0.0",
@@ -102,11 +102,6 @@
   },
   "stability": "experimental",
   "maturity": "experimental",
-  "awslint": {
-    "exclude": [
-      "*:*"
-    ]
-  },
   "awscdkio": {
     "announce": false
   },
