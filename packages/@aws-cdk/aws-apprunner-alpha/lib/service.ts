@@ -912,8 +912,6 @@ export interface HttpHealthCheckOptions extends HealthCheckCommonOptions {
   /**
    * The URL that health check requests are sent to.
    *
-   * `path` is only applicable when you set `protocol` to `HTTP`.
-   *
    * @default /
    */
   readonly path?: string;
