@@ -1,3 +1,4 @@
+import * as path from 'path';
 import * as scheduler from '@aws-cdk/aws-scheduler-alpha';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
@@ -7,16 +8,16 @@ import { LambdaInvoke } from '../lib';
 
 /*
  * Stack verification steps:
- * The lambda MyLambda is triggered after 5 minutes which adds a Tag:
+ * The lambda function is implemented to add a tag:
  *   Key: OutputValue
  *   Value: base64 JSON string of the input event
- * The assertion checks if it is the correct value
+ * The lambda function is invoked by the scheduler every minute
+ * The assertion checks that the expected tag is created by calling listTags on the lambda function
  */
-
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-schedule');
 
-const functionName = 'MyTestFunc';
+const functionName = 'TestSchedulerLambdaInvokeTarget';
 const functionArn = stack.formatArn({
   service: 'lambda',
   resource: 'function',
@@ -26,27 +27,10 @@ const functionArn = stack.formatArn({
 const payload = 'test';
 
 const func = new lambda.Function(stack, 'MyLambda', {
-  code: new lambda.InlineCode(`
-    const { LambdaClient, TagResourceCommand } = require('@aws-sdk/client-lambda');
-
-    const client = new LambdaClient();
-
-    let arn = process.env.FUNC_ARN;
-
-    exports.handler = async (event, context) => {
-        const value = btoa(JSON.stringify(event, null, 2));
-        const input = {
-            Resource: arn,
-            Tags: {
-                "OutputValue": value,
-            },
-        };
-        const command = new TagResourceCommand(input);
-        const response = await client.send(command);
-    };`,
-  ),
+  code: lambda.AssetCode.fromAsset(path.join(__dirname, 'integ.schedule-lambda-target.handler')),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_18_X,
+  timeout: cdk.Duration.seconds(30),
+  runtime: lambda.Runtime.NODEJS_LATEST,
   functionName: functionName,
 });
 func.addEnvironment('FUNC_ARN', stack.resolve(functionArn));
@@ -58,29 +42,24 @@ func.addToRolePolicy(new iam.PolicyStatement(
   }),
 ));
 
-// currently no autocreated role, this will be fixed in future
-const role = new iam.Role(stack, 'MyRole', {
-  assumedBy: new iam.ServicePrincipal('scheduler.amazonaws.com'),
-});
-
 new scheduler.Schedule(stack, 'Schedule', {
   schedule: scheduler.ScheduleExpression.rate(cdk.Duration.minutes(1)),
   target: new LambdaInvoke(func, {
     input: scheduler.ScheduleTargetInput.fromText(payload),
-    role,
   }),
 });
 
-const integ = new IntegTest(app, 'integtest-endpoint', {
+const integ = new IntegTest(app, 'integtest-lambda-invoke', {
   testCases: [stack],
   stackUpdateWorkflow: false, // this would cause the schedule to trigger with the old code
 });
 
-const invoke = integ.assertions.awsApiCall('Lambda', 'listTags', {
+const invokeListTags = integ.assertions.awsApiCall('Lambda', 'listTags', {
   Resource: func.functionArn,
 });
 
-invoke.expect(ExpectedResult.objectLike({
+// Verifies that expected tag is created for the lambda function
+invokeListTags.expect(ExpectedResult.objectLike({
   Tags: {
     OutputValue: Buffer.from(JSON.stringify(payload)).toString('base64'),
   },
