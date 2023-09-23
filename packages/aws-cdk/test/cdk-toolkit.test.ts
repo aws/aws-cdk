@@ -602,19 +602,6 @@ describe('destroy', () => {
       });
     }).resolves;
   });
-
-  test('fail on non-existent stack', async () => {
-    const toolkit = defaultToolkitSetup();
-
-    await expect(() => {
-      return toolkit.destroy({
-        selector: { patterns: ['Test-Stack-X'] },
-        exclusively: true,
-        force: true,
-        fromDeploy: true,
-      });
-    }).rejects.toThrowError('Stack does not exist');
-  });
 });
 
 describe('watch', () => {

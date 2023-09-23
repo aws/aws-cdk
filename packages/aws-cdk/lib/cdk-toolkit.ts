@@ -558,22 +558,16 @@ export class CdkToolkit {
     // The stacks will have been ordered for deployment, so reverse them for deletion.
     stacks = stacks.reversed();
 
-    const artifacts = stacks.stackArtifacts;
-
     if (!options.force) {
       // eslint-disable-next-line max-len
-      const confirmed = await promptly.confirm(`Are you sure you want to delete: ${chalk.blue(artifacts.map(s => s.hierarchicalId).join(', '))} (y/n)?`);
+      const confirmed = await promptly.confirm(`Are you sure you want to delete: ${chalk.blue(stacks.stackArtifacts.map(s => s.hierarchicalId).join(', '))} (y/n)?`);
       if (!confirmed) {
         return;
       }
     }
 
-    if (artifacts.length === 0) {
-      throw new Error('Stack does not exist');
-    }
-
     const action = options.fromDeploy ? 'deploy' : 'destroy';
-    for (const [index, stack] of artifacts.entries()) {
+    for (const [index, stack] of stacks.stackArtifacts.entries()) {
       success('%s: destroying... [%s/%s]', chalk.blue(stack.displayName), index+1, stacks.stackCount);
       try {
         await this.props.deployments.destroyStack({
