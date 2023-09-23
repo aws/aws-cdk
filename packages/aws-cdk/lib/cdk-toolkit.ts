@@ -5,6 +5,7 @@ import * as chalk from 'chalk';
 import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
+import * as semver from 'semver';
 import { DeploymentMethod } from './api';
 import { SdkProvider } from './api/aws-auth';
 import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
@@ -27,6 +28,8 @@ import { Concurrency, WorkGraph } from './util/work-graph';
 import { WorkGraphBuilder } from './util/work-graph-builder';
 import { AssetBuildNode, AssetPublishNode, StackNode } from './util/work-graph-types';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../lib/api/cxapp/environments';
+import { minimatch } from 'minimatch';
+import { versionNumber } from './version';
 
 export interface CdkToolkitProps {
 
@@ -769,7 +772,23 @@ export class CdkToolkit {
       defaultBehavior: DefaultSelection.OnlySingle,
     });
 
-    // No validation
+    // cli tests use this to ensure tests do not depend on legacy behavior
+    // (otherwise they will fail in v2)
+    const disableLegacy = process.env.CXAPI_DISABLE_SELECT_BY_ID === '1';
+
+    const matchingPattern = (pattern: string, stack: cxapi.CloudFormationStackArtifact) => {
+      if (minimatch(stack.hierarchicalId, pattern)) {
+        return true;
+      } else if (!disableLegacy && stack.id === pattern && semver.major(versionNumber()) < 2) {
+        return true;
+      }
+      return false;
+    };
+
+    const notExistPatterns = selector.patterns.filter(p => !stacks.stackArtifacts.find(s => matchingPattern(p, s)));
+    if (notExistPatterns.length > 0) {
+      throw new Error(`Stacks not exist: ${notExistPatterns.join(', ')}`);
+    }
 
     return stacks;
   }

@@ -608,12 +608,12 @@ describe('destroy', () => {
 
     await expect(() => {
       return toolkit.destroy({
-        selector: { patterns: ['Test-Stack-X'] },
+        selector: { patterns: ['Test-Stack-A/Test-Stack-C', 'Test-Stack-X', 'Test-Stack-Y'] },
         exclusively: true,
         force: true,
         fromDeploy: true,
       });
-    }).rejects.toThrowError('Stack does not exist');
+    }).rejects.toThrowError('Stacks not exist: Test-Stack-X, Test-Stack-Y');
   });
 });
 
