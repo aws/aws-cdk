@@ -207,7 +207,7 @@
                       "mode": "OFF"
                     },
                     "scheduleExpression": "rate(1 minute)",
-                    "scheduleExpressionTimezone": "Etc/UTC",
+                    "state": "ENABLED",
                     "target": {
                       "arn": {
                         "Fn::GetAtt": [
