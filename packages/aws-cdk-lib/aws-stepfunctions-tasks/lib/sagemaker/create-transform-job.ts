@@ -283,6 +283,18 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
           ],
         }),
       );
+      policyStatements.push(
+        new iam.PolicyStatement({
+          actions: ['sagemaker:AddTags'],
+          resources: [
+            stack.formatArn({
+              service: 'sagemaker',
+              resource: 'transform-job',
+              resourceName: '*',
+            }),
+          ],
+        }),
+      );
     }
 
     return policyStatements;
