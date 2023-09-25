@@ -8,10 +8,10 @@ configure backup policies and monitor backup activity for your AWS resources in 
 ## Backup plan and selection
 
 In AWS Backup, a *backup plan* is a policy expression that defines when and how you want to back up
-your AWS resources, such as Amazon DynamoDB tables or Amazon Elastic File System (Amazon EFS) file
-systems. You can assign resources to backup plans, and AWS Backup automatically backs up and retains
-backups for those resources according to the backup plan. You can create multiple backup plans if you
-have workloads with different backup requirements.
+ your AWS resources, such as Amazon DynamoDB tables or Amazon Elastic File System (Amazon EFS) file
+ systems. You can assign resources to backup plans, and AWS Backup automatically backs up and retains
+ backups for those resources according to the backup plan. You can create multiple backup plans if you
+ have workloads with different backup requirements.
 
 This module provides ready-made backup plans (similar to the console experience):
 
@@ -52,8 +52,8 @@ plan.addSelection('Selection', {
     backup.BackupResource.fromRdsServerlessCluster(myServerlessCluster), // An Aurora Serverless cluster
     backup.BackupResource.fromTag('stage', 'prod'), // All resources that are tagged stage=prod in the region/account
     backup.BackupResource.fromConstruct(myCoolConstruct), // All backupable resources in `myCoolConstruct`
-  ],
-});
+  ]
+})
 ```
 
 If not specified, a new IAM role with a managed policy for backup will be
@@ -66,7 +66,7 @@ declare const plan: backup.BackupPlan;
 plan.addRule(new backup.BackupPlanRule({
   completionWindow: Duration.hours(2),
   startWindow: Duration.hours(1),
-  schedule: backup.Schedule.cron({ // Only cron expressions are supported
+  scheduleExpression: events.Schedule.cron({ // Only cron expressions are supported
     day: '15',
     hour: '3',
     minute: '30',
@@ -100,7 +100,7 @@ plan.addRule(new backup.BackupPlanRule({
     destinationBackupVault: secondaryVault,
     moveToColdStorageAfter: Duration.days(30),
     deleteAfter: Duration.days(120),
-  }],
+  }]
 }));
 ```
 
@@ -193,7 +193,7 @@ const vault = new backup.BackupVault(this, 'Vault', {
       }),
     ],
   }),
-});
+})
 ```
 
 Alternativately statements can be added to the vault policy using `addToAccessPolicy()`.

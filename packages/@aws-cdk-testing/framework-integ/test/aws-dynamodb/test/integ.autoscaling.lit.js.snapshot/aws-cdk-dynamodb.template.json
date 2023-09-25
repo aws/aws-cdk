@@ -3,16 +3,16 @@
   "TableCD117FA1": {
    "Type": "AWS::DynamoDB::Table",
    "Properties": {
-    "AttributeDefinitions": [
-     {
-      "AttributeName": "hashKey",
-      "AttributeType": "S"
-     }
-    ],
     "KeySchema": [
      {
       "AttributeName": "hashKey",
       "KeyType": "HASH"
+     }
+    ],
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "hashKey",
+      "AttributeType": "S"
      }
     ],
     "ProvisionedThroughput": {
@@ -56,25 +56,23 @@
      ]
     },
     "ScalableDimension": "dynamodb:table:ReadCapacityUnits",
+    "ServiceNamespace": "dynamodb",
     "ScheduledActions": [
      {
       "ScalableTargetAction": {
        "MinCapacity": 20
       },
       "Schedule": "cron(0 8 * * ? *)",
-      "ScheduledActionName": "ScaleUpInTheMorning",
-      "Timezone": "Etc/UTC"
+      "ScheduledActionName": "ScaleUpInTheMorning"
      },
      {
       "ScalableTargetAction": {
        "MaxCapacity": 20
       },
       "Schedule": "cron(0 20 * * ? *)",
-      "ScheduledActionName": "ScaleDownAtNight",
-      "Timezone": "Etc/UTC"
+      "ScheduledActionName": "ScaleDownAtNight"
      }
-    ],
-    "ServiceNamespace": "dynamodb"
+    ]
    }
   },
   "TableReadScalingTargetTracking67DF0596": {

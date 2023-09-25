@@ -1,15 +1,15 @@
 {
-  "version": "32.0.0",
+  "version": "34.0.0",
   "files": {
-    "0c52c355c71ac95690274d7987110017ff9cd1a1bc79fa4206fda2f55d6b62d5": {
+    "8e518d2f0d7b4fcf41623a37d5a30fa0a49f5185d9301205cad6e72cc59b84a8": {
       "source": {
-        "path": "cdk-backup.template.json",
+        "path": "aws-cdk-scheduler-schedule.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "0c52c355c71ac95690274d7987110017ff9cd1a1bc79fa4206fda2f55d6b62d5.json",
+          "objectKey": "8e518d2f0d7b4fcf41623a37d5a30fa0a49f5185d9301205cad6e72cc59b84a8.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
