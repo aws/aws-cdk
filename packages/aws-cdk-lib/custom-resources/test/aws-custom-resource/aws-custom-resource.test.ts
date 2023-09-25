@@ -677,7 +677,7 @@ test('can use existing role', () => {
   Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 0);
 });
 
-test('AWS SDK V3 patterns included in API metadata can use fromSdkCalls', () => {
+test('AWS SDK V3 format included in API metadata can use fromSdkCalls', () => {
   // GIVEN
   const stack = new cdk.Stack();
 
@@ -706,7 +706,7 @@ test('AWS SDK V3 patterns included in API metadata can use fromSdkCalls', () => 
   });
 });
 
-test('AWS SDK V3 patterns not included in API metadata can use fromSdkCalls', () => {
+test('AWS SDK V3 format not included in API metadata can use fromSdkCalls', () => {
   // GIVEN
   const stack = new cdk.Stack();
 
