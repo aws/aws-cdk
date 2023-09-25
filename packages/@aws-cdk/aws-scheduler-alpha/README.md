@@ -141,10 +141,10 @@ new Schedule(this, 'Schedule', {
 
 ## Scheduler Targets
 
-The `@aws-cdk/aws-schedule-targets-alpha` module includes classes that implement the `IScheduleTarget` interface for
+The `@aws-cdk/aws-scheduler-targets-alpha` module includes classes that implement the `IScheduleTarget` interface for
 various AWS services. EventBridge Scheduler supports two types of targets: templated targets invoke common API
 operations across a core groups of services, and customizeable universal targets that you can use to call more
-than 6,000 operations across over 270 services. A list of supported targets can be found at `@aws-cdk/aws-schedule-targets-alpha`. 
+than 6,000 operations across over 270 services. A list of supported targets can be found at `@aws-cdk/aws-scheduler-targets-alpha`. 
 
 ### Input 
 
