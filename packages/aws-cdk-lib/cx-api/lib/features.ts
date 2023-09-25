@@ -911,7 +911,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.93.0' },
     recommendedValue: true,
   },
-  
+
   //////////////////////////////////////////////////////////////////////
   [AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS]: {
     type: FlagType.BugFix,
