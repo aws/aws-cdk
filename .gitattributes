@@ -13,4 +13,4 @@
 *.tar.gz binary
 
 # Hide snapshots from GitHub UI, except for the actual templates
-*.snapshot/** linguist-generated
+**/*.snapshot/** linguist-generated
