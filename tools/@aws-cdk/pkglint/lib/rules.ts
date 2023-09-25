@@ -1857,7 +1857,7 @@ function isIncludedInMonolith(pkg: PackageJson): boolean {
 }
 
 function beginEndRegex(label: string) {
-  return new RegExp(`(<\!--BEGIN ${label}-->)([\s\S]+)(<\!--END ${label}-->)`, 'm');
+  return new RegExp(`(<\!--BEGIN ${label}-->)([\\s\\S]+)(<\!--END ${label}-->)`, 'm');
 }
 
 function readIfExists(filename: string): string | undefined {

@@ -651,6 +651,10 @@ function deepMerge(target: any, ...sources: any[]) {
     }
 
     for (const key of Object.keys(source)) {
+      if (key === '__proto__' || key === 'constructor') {
+        continue;
+      }
+
       const value = source[key];
       if (typeof(value) === 'object' && value != null && !Array.isArray(value)) {
         // if the value at the target is not an object, override it with an

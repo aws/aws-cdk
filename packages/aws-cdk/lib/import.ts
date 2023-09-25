@@ -293,7 +293,7 @@ export class ResourceImporter {
         const defaultValue = typeof resourceProps[idProp] ?? '';
 
         const prompt = [
-          promptPattern.replace(/%/, chalk.blue(idProp)),
+          promptPattern.replace(/%/g, chalk.blue(idProp)),
           defaultValue
             ? `[${defaultValue}]`
             : '(empty to skip)',

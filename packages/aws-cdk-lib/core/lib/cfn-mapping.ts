@@ -53,6 +53,10 @@ export class CfnMapping extends CfnRefElement {
    * Sets a value in the map based on the two keys.
    */
   public setValue(key1: string, key2: string, value: any) {
+    if ([key1, key2].some(k => ['__proto__', 'constructor'].includes(k))) {
+      throw new Error('Cannot use \'__proto__\' or \'constructor\' as keys');
+    }
+
     this.validateAlphanumeric(key2);
 
     if (!(key1 in this.mapping)) {

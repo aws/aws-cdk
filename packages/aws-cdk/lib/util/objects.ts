@@ -115,6 +115,10 @@ export function deepSet(x: any, path: string[], value: any) {
 export function deepMerge(...objects: Array<Obj<any> | undefined>) {
   function mergeOne(target: Obj<any>, source: Obj<any>) {
     for (const key of Object.keys(source)) {
+      if (key === '__proto__' || key === 'constructor') {
+        continue;
+      }
+
       const value = source[key];
 
       if (isObject(value)) {
