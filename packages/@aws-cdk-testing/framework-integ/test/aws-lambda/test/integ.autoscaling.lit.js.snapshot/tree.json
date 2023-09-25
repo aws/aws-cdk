@@ -219,7 +219,6 @@
                               {
                                 "scheduledActionName": "ScaleUpInTheMorning",
                                 "schedule": "cron(0 8 * * ? *)",
-                                "timezone": "Etc/UTC",
                                 "scalableTargetAction": {
                                   "minCapacity": 20
                                 }
@@ -227,7 +226,6 @@
                               {
                                 "scheduledActionName": "ScaleDownAtNight",
                                 "schedule": "cron(0 20 * * ? *)",
-                                "timezone": "Etc/UTC",
                                 "scalableTargetAction": {
                                   "maxCapacity": 20
                                 }
