@@ -121,11 +121,6 @@
     "tag": "latest"
   },
   "private": false,
-  "awslint": {
-    "exclude": [
-      "*:*"
-    ]
-  },
   "pkglint": {
     "exclude": [
       "naming/package-matches-directory",

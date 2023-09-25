@@ -2081,10 +2081,10 @@
   resolved "https://registry.npmjs.org/@cdklabs/tskb/-/tskb-0.0.1.tgz#dc2732703d8ef080369db5e7ad150223f60cc519"
   integrity sha512-UWJLIaMsu2a9cE40Gtopz2i7afkx6oEjWVT/rBLWlCT4QYvUEq1+Uqw1fBK4Q96fgPCwJNU7zeWlSz0PcjFx7A==
 
-"@cdklabs/typewriter@^0.0.1":
-  version "0.0.1"
-  resolved "https://registry.npmjs.org/@cdklabs/typewriter/-/typewriter-0.0.1.tgz#35ac7ce4483c8f0d2711b8a9c79a17781b21f19a"
-  integrity sha512-Hl9BmIwwVMRYUAFyfiie4IXJQ8h0qXVzL76bjcph6uH6suyjB2QvaF01Lw29zEEA0X4ncwsexN7++kabCWR6/A==
+"@cdklabs/typewriter@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.npmjs.org/@cdklabs/typewriter/-/typewriter-0.0.2.tgz#c4711ec8fb6aa15f61fc4ab77cdfe8eb6100d085"
+  integrity sha512-DR1WBFRxgxS4QyvI7xuTPybneBkbA2Ig+/kmFwFd/jZYyL1cMAGC0tg/+zNxMscR77nsPcoynIBywL7DDn0S2g==
 
 "@colors/colors@1.5.0":
   version "1.5.0"

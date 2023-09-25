@@ -1,13 +1,13 @@
 import * as reflect from 'jsii-reflect';
 import { getDocTag } from './util';
 
-const CORE_MODULE = '@aws-cdk/core';
+const CORE_MODULE = 'aws-cdk-lib';
 enum CoreTypesFqn {
-  CfnResource = '@aws-cdk/core.CfnResource',
-  Resource = '@aws-cdk/core.Resource',
-  ResourceInterface = '@aws-cdk/core.IResource',
-  ResolvableInterface = '@aws-cdk/core.IResolvable',
-  PhysicalName = '@aws-cdk/core.PhysicalName',
+  CfnResource = 'aws-cdk-lib.CfnResource',
+  Resource = 'aws-cdk-lib.Resource',
+  ResourceInterface = 'aws-cdk-lib.IResource',
+  ResolvableInterface = 'aws-cdk-lib.IResolvable',
+  PhysicalName = 'aws-cdk-lib.PhysicalName',
 
   Construct = 'constructs.Construct',
   ConstructInterface = 'constructs.IConstruct',
@@ -76,6 +76,13 @@ export class CoreTypes {
   public static isResourceClass(classType: reflect.ClassType) {
     const baseResource = classType.system.findClass(CoreTypesFqn.Resource);
     return classType.extends(baseResource) || getDocTag(classType, 'resource');
+  }
+
+  /**
+   * Return true if the nesting parent of the given interface is a CFN class
+   */
+  public static isCfnNestedType(interfaceType: reflect.Type) {
+    return interfaceType.nestingParent && CoreTypes.isCfnType(interfaceType.nestingParent);
   }
 
   /**
