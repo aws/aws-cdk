@@ -42,6 +42,13 @@ export interface AthenaStartQueryExecutionProps extends sfn.TaskStateBaseProps {
    * @default - No work group
    */
   readonly workGroup?: string;
+
+  /**
+   * A list of values for the parameters in a query.
+   *
+   * @default - No parameters
+   */
+  readonly executionParameters?: string[];
 }
 
 /**
@@ -209,6 +216,7 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
           OutputLocation: this.props.resultConfiguration?.outputLocation ? `s3://${this.props.resultConfiguration.outputLocation.bucketName}/${this.props.resultConfiguration.outputLocation.objectKey}/` : undefined,
         },
         WorkGroup: this.props?.workGroup,
+        ExecutionParameters: this.props.executionParameters,
       }),
     };
   }
