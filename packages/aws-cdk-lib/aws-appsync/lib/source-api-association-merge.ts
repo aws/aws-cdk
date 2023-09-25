@@ -1,14 +1,17 @@
 import { randomUUID } from 'crypto';
 import * as path from 'path';
-import { Construct } from 'constructs';
+import { Construct, IConstruct } from 'constructs';
 import { ISourceApiAssociation } from './source-api-association';
 import { PolicyStatement, Effect } from '../../aws-iam';
 import { Runtime, Function } from '../../aws-lambda/lib';
 import { NodejsFunction } from '../../aws-lambda-nodejs';
-import { CfnResource, CustomResource, Duration, Resource } from '../../core';
+import { CfnResource, CustomResource, Duration } from '../../core';
 import { Provider } from '../../custom-resources/lib/provider-framework';
 
-export interface ISourceApiAssociationMergeOperationProvider {
+/**
+ * This interface for the provider of the custom resource that will be used to initiate a merge operation during Cloudformation update.
+ */
+export interface ISourceApiAssociationMergeOperationProvider extends IConstruct {
 
   /**
   * Service token which is used for identifying the handler used for the merge operation custom resource.
@@ -23,7 +26,11 @@ export interface ISourceApiAssociationMergeOperationProvider {
   associateSourceApiAssociation(sourceApiAssociation: ISourceApiAssociation): void;
 }
 
-export class SourceApiAssociationMergeOperationProvider extends Resource implements ISourceApiAssociationMergeOperationProvider {
+/**
+ * SourceApiAssociationMergeProvider class is responsible for constructing the custom resource that will be used for initiating the
+ * source API merge during a Cloudformation update.
+ */
+export class SourceApiAssociationMergeOperationProvider extends Construct implements ISourceApiAssociationMergeOperationProvider {
 
   /**
    * Service token for the resource provider.
@@ -92,13 +99,16 @@ export interface SourceApiAssociationMergeOperationProps {
   readonly sourceApiAssociation: ISourceApiAssociation;
 
   /**
-   *
+   * The merge operation provider construct which is responsible for configuring the Lambda resource that will be invoked during
+   * Cloudformation update.
    */
   readonly mergeOperationProvider: ISourceApiAssociationMergeOperationProvider;
 
   /**
    * The version identifier for the schema merge operation. Any change to the version identifier will trigger a merge on the next
    * update. Use the version identifier property to control when the source API metadata is merged.
+   *
+   * @default null
    */
   readonly versionIdentifier?: string;
 
@@ -106,7 +116,7 @@ export interface SourceApiAssociationMergeOperationProps {
    * Flag indicating whether the source api should be merged on every CFN update or not.
    * If set to true and there are no changes to the source API, this will result in a no-op merge operation.
    *
-   * @default - False
+   * @default False
    */
   readonly alwaysMergeOnStackUpdate?: boolean;
 }
@@ -148,7 +158,7 @@ type MergeResourceProperties = {
  * This can be used to propagate changes from the source API to the Merged API when the association is using type MANUAL_MERGE.
  * If the merge operation fails, it will fail the Cloudformation update and rollback the stack.
  */
-export class SourceApiAssociationMergeOperation extends Resource {
+export class SourceApiAssociationMergeOperation extends Construct {
 
   constructor(scope: Construct, id: string, props: SourceApiAssociationMergeOperationProps) {
     super(scope, id);

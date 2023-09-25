@@ -146,7 +146,7 @@
     "@aws-cdk/spec2cdk": "0.0.0",
     "@aws-sdk/client-acm": "^3.414.0",
     "@aws-sdk/client-account": "^3.414.0",
-    "@aws-sdk/client-appsync": "^3.405.0",
+    "@aws-sdk/client-appsync": "^3.414.0",
     "@aws-sdk/client-codepipeline": "^3.414.0",
     "@aws-sdk/client-cloudwatch-logs": "^3.414.0",
     "@aws-sdk/client-dynamodb": "^3.415.0",
