@@ -1,10 +1,9 @@
-import { Duration, Schedule as CoreSchedule } from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
+import { Duration } from 'aws-cdk-lib/core';
 
 /**
  * Schedule for canary runs
  */
-export class Schedule extends CoreSchedule {
+export class Schedule {
 
   /**
    * The canary will be executed once.
@@ -37,27 +36,39 @@ export class Schedule extends CoreSchedule {
     if (minutes === 0) {
       return Schedule.once();
     }
-    return super.protectedRate(interval);
+    if (minutes === 1) {
+      return new Schedule('rate(1 minute)');
+    }
+    return new Schedule(`rate(${minutes} minutes)`);
   }
 
   /**
    * Create a schedule from a set of cron fields
    */
   public static cron(options: CronOptions): Schedule {
-    return super.protectedCron({
-      ...options,
-      year: '*', // '*' is the only allowed value in the year field
-    }, 'aws-synthetics');
+    if (options.weekDay !== undefined && options.day !== undefined) {
+      throw new Error('Cannot supply both \'day\' and \'weekDay\', use at most one');
+    }
+
+    const minute = fallback(options.minute, '*');
+    const hour = fallback(options.hour, '*');
+    const month = fallback(options.month, '*');
+
+    // Weekday defaults to '?' if not supplied. If it is supplied, day must become '?'
+    const day = fallback(options.day, options.weekDay !== undefined ? '?' : '*');
+    const weekDay = fallback(options.weekDay, '?');
+
+    // '*' is only allowed in the year field
+    const year = '*';
+
+    return new Schedule(`cron(${minute} ${hour} ${day} ${month} ${weekDay} ${year})`);
   }
 
-  private constructor(public readonly expressionString: string) {
-    super();
-  }
-
-  /**
-   * @internal
-   */
-  public _bind(_scope: Construct) {}
+  private constructor(
+    /**
+     * The Schedule expression
+     */
+    public readonly expressionString: string) {}
 }
 
 /**
@@ -103,4 +114,8 @@ export interface CronOptions {
    * @default - Any day of the week
    */
   readonly weekDay?: string;
+}
+
+function fallback(x: string | undefined, def: string): string {
+  return x ?? def;
 }

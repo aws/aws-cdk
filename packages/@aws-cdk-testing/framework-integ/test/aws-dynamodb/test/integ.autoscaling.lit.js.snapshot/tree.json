@@ -4,6 +4,14 @@
     "id": "App",
     "path": "",
     "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
       "aws-cdk-dynamodb": {
         "id": "aws-cdk-dynamodb",
         "path": "aws-cdk-dynamodb",
@@ -18,16 +26,16 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
                   "aws:cdk:cloudformation:props": {
-                    "attributeDefinitions": [
-                      {
-                        "attributeName": "hashKey",
-                        "attributeType": "S"
-                      }
-                    ],
                     "keySchema": [
                       {
                         "attributeName": "hashKey",
                         "keyType": "HASH"
+                      }
+                    ],
+                    "attributeDefinitions": [
+                      {
+                        "attributeName": "hashKey",
+                        "attributeType": "S"
                       }
                     ],
                     "provisionedThroughput": {
@@ -37,7 +45,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_dynamodb.CfnTable",
+                  "fqn": "@aws-cdk/aws-dynamodb.CfnTable",
                   "version": "0.0.0"
                 }
               },
@@ -45,8 +53,8 @@
                 "id": "ScalingRole",
                 "path": "aws-cdk-dynamodb/Table/ScalingRole",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               },
               "ReadScaling": {
@@ -93,11 +101,11 @@
                               ]
                             },
                             "scalableDimension": "dynamodb:table:ReadCapacityUnits",
+                            "serviceNamespace": "dynamodb",
                             "scheduledActions": [
                               {
                                 "scheduledActionName": "ScaleUpInTheMorning",
                                 "schedule": "cron(0 8 * * ? *)",
-                                "timezone": "Etc/UTC",
                                 "scalableTargetAction": {
                                   "minCapacity": 20
                                 }
@@ -105,17 +113,15 @@
                               {
                                 "scheduledActionName": "ScaleDownAtNight",
                                 "schedule": "cron(0 20 * * ? *)",
-                                "timezone": "Etc/UTC",
                                 "scalableTargetAction": {
                                   "maxCapacity": 20
                                 }
                               }
-                            ],
-                            "serviceNamespace": "dynamodb"
+                            ]
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_applicationautoscaling.CfnScalableTarget",
+                          "fqn": "@aws-cdk/aws-applicationautoscaling.CfnScalableTarget",
                           "version": "0.0.0"
                         }
                       },
@@ -143,68 +149,44 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_applicationautoscaling.CfnScalingPolicy",
+                              "fqn": "@aws-cdk/aws-applicationautoscaling.CfnScalingPolicy",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_applicationautoscaling.TargetTrackingScalingPolicy",
+                          "fqn": "@aws-cdk/aws-applicationautoscaling.TargetTrackingScalingPolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_applicationautoscaling.ScalableTarget",
+                      "fqn": "@aws-cdk/aws-applicationautoscaling.ScalableTarget",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_applicationautoscaling.BaseScalableAttribute",
+                  "fqn": "@aws-cdk/aws-applicationautoscaling.BaseScalableAttribute",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_dynamodb.Table",
-              "version": "0.0.0"
-            }
-          },
-          "BootstrapVersion": {
-            "id": "BootstrapVersion",
-            "path": "aws-cdk-dynamodb/BootstrapVersion",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnParameter",
-              "version": "0.0.0"
-            }
-          },
-          "CheckBootstrapVersion": {
-            "id": "CheckBootstrapVersion",
-            "path": "aws-cdk-dynamodb/CheckBootstrapVersion",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnRule",
+              "fqn": "@aws-cdk/aws-dynamodb.Table",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "aws-cdk-lib.Stack",
-          "version": "0.0.0"
-        }
-      },
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.1.85"
         }
       }
     },
     "constructInfo": {
-      "fqn": "aws-cdk-lib.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }
