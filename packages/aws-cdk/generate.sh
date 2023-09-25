@@ -14,19 +14,3 @@ cat > build-info.json <<HERE
   "commit": "${commit:0:7}"
 }
 HERE
-
-# Download noctilucent wasm-pack build
-NOCTILUCENT_VERSION=0.1.2
-PACK_URL=https://github.com/iph/noctilucent/releases/download/v${NOCTILUCENT_VERSION}/wasm-pack.zip
-zipfile=$PWD/tmp/noctilucent-wasm-${NOCTILUCENT_VERSION}.zip
-outdir=lib/vendor/noctilucent
-
-mkdir -p tmp
-if [[ ! -f "$zipfile" ]]; then
-    curl -sSfLo "$zipfile" "$PACK_URL"
-fi
-
-(cd $outdir && unzip -qo $zipfile)
-
-# Don't need these files
-rm -f $outdir/{.gitignore,README.md,package.json}
