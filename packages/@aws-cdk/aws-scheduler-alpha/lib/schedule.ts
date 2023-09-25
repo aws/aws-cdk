@@ -93,7 +93,6 @@ export class Schedule extends Resource implements ISchedule {
     this.group = props.group;
 
     const targetConfig = props.target.bind(this);
-    props.schedule._bind(this);
 
     const resource = new CfnSchedule(this, 'Resource', {
       name: this.physicalName,

@@ -30,7 +30,7 @@ export interface ScheduleTargetConfig {
   readonly role: iam.IRole;
 
   /**
-   *  What input to pass to the target
+   *  What input to pass to the tatget
    */
   readonly input?: ScheduleTargetInput;
 
