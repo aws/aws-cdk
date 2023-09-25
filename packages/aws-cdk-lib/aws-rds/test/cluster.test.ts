@@ -6,7 +6,10 @@ import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import { RemovalPolicy, Stack, Annotations as CoreAnnotations } from '../../core';
-import { AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS } from '../../cx-api';
+import {
+  RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS,
+  AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS,
+} from '../../cx-api';
 import {
   AuroraEngineVersion, AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, CfnDBCluster, Credentials, DatabaseCluster,
   DatabaseClusterEngine, DatabaseClusterFromSnapshot, ParameterGroup, PerformanceInsightRetention, SubnetGroup, DatabaseSecret,
@@ -3344,6 +3347,56 @@ describe('cluster', () => {
         'Fn::Join': ['', ['{{resolve:secretsmanager:', { Ref: 'DBSecretD58955BC' }, ':SecretString:password::}}']],
       },
     });
+  });
+
+  test('secret from deprecated credentials is created with feature flag unset', () => {
+    // GIVEN
+    const stack = testStack();
+    stack.node.setContext(RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS, false);
+
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const secret = new DatabaseSecret(stack, 'DBSecret', {
+      username: 'admin',
+      encryptionKey: new kms.Key(stack, 'PasswordKey'),
+    });
+
+    // WHEN
+    new DatabaseClusterFromSnapshot(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      snapshotIdentifier: 'mySnapshot',
+      snapshotCredentials: SnapshotCredentials.fromSecret(secret),
+      writer: ClusterInstance.serverlessV2('writer'),
+      vpc,
+    });
+
+    // THEN
+    Template.fromStack(stack).resourceCountIs('AWS::SecretsManager::Secret', 2);
+  });
+
+  test('secret from deprecated credentials is not created with feature flag set', () => {
+    // GIVEN
+    const stack = testStack();
+    stack.node.setContext(RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS, true);
+
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const secret = new DatabaseSecret(stack, 'DBSecret', {
+      username: 'admin',
+      encryptionKey: new kms.Key(stack, 'PasswordKey'),
+    });
+
+    // WHEN
+    new DatabaseClusterFromSnapshot(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      snapshotIdentifier: 'mySnapshot',
+      snapshotCredentials: SnapshotCredentials.fromSecret(secret),
+      writer: ClusterInstance.serverlessV2('writer'),
+      vpc,
+    });
+
+    // THEN
+    Template.fromStack(stack).resourceCountIs('AWS::SecretsManager::Secret', 1);
   });
 
   test('create a cluster from a snapshot with encrypted storage', () => {
