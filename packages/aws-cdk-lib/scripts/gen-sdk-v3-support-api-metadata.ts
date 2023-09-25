@@ -19,4 +19,4 @@ const awsSdkV3SupportMetadata = Object.entries(sdkMetadata).reduce((acc, [v2Name
     };
   };
 }, {});
-fs.writeFileSync(path.join(__dirname, '../', outputPath), JSON.stringify(awsSdkV3SupportMetadata, null, 2));
+fs.writeFileSync(path.resolve(__dirname, '../', outputPath), JSON.stringify(awsSdkV3SupportMetadata, null, 2));
