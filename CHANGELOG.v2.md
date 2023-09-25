@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.97.1](https://github.com/aws/aws-cdk/compare/v2.97.0...v2.97.1) (2023-09-25)
+
+
+### Reverts
+
+* "feat(core): `Schedule` class" ([#27284](https://github.com/aws/aws-cdk/issues/27284)) ([e2fc724](https://github.com/aws/aws-cdk/commit/e2fc7240672b5c26394b2fe420531d62fe74189b)), closes [aws/aws-cdk#27105](https://github.com/aws/aws-cdk/issues/27105) [#27259](https://github.com/aws/aws-cdk/issues/27259)
+
 ## [2.97.0](https://github.com/aws/aws-cdk/compare/v2.96.2...v2.97.0) (2023-09-22)
 
 
