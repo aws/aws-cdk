@@ -1,4 +1,3 @@
-import { Schedule } from './schedule';
 import { IBackupVault } from './vault';
 import * as events from '../../aws-events';
 import { Duration, Token } from '../../core';
@@ -42,16 +41,8 @@ export interface BackupPlanRuleProps {
    * A CRON expression specifying when AWS Backup initiates a backup job.
    *
    * @default - no schedule
-   * @deprecated use schedule prop instead
    */
   readonly scheduleExpression?: events.Schedule;
-
-  /**
-   * A CRON expression specifying when AWS Backup initiates a backup job.
-   *
-   * @default - no schedule
-   */
-  readonly schedule?: Schedule;
 
   /**
    * The duration after a backup is scheduled before a job is canceled if it doesn't start successfully.
@@ -131,7 +122,7 @@ export class BackupPlanRule {
     return new BackupPlanRule({
       backupVault,
       ruleName: 'Daily',
-      schedule: Schedule.cron({
+      scheduleExpression: events.Schedule.cron({
         hour: '5',
         minute: '0',
       }),
@@ -146,7 +137,7 @@ export class BackupPlanRule {
     return new BackupPlanRule({
       backupVault,
       ruleName: 'Weekly',
-      schedule: Schedule.cron({
+      scheduleExpression: events.Schedule.cron({
         hour: '5',
         minute: '0',
         weekDay: 'SAT',
@@ -162,7 +153,7 @@ export class BackupPlanRule {
     return new BackupPlanRule({
       backupVault,
       ruleName: 'Monthly1Year',
-      schedule: Schedule.cron({
+      scheduleExpression: events.Schedule.cron({
         day: '1',
         hour: '5',
         minute: '0',
@@ -179,7 +170,7 @@ export class BackupPlanRule {
     return new BackupPlanRule({
       backupVault,
       ruleName: 'Monthly5Year',
-      schedule: Schedule.cron({
+      scheduleExpression: events.Schedule.cron({
         day: '1',
         hour: '5',
         minute: '0',
@@ -196,7 +187,7 @@ export class BackupPlanRule {
     return new BackupPlanRule({
       backupVault,
       ruleName: 'Monthly7Year',
-      schedule: Schedule.cron({
+      scheduleExpression: events.Schedule.cron({
         day: '1',
         hour: '5',
         minute: '0',
@@ -209,7 +200,7 @@ export class BackupPlanRule {
   /**
    * Properties of BackupPlanRule
    */
-  public readonly props: BackupPlanRuleProps;
+  public readonly props: BackupPlanRuleProps
 
   /** @param props Rule properties */
   constructor(props: BackupPlanRuleProps) {
@@ -220,10 +211,6 @@ export class BackupPlanRule {
 
     if (props.scheduleExpression && !/^cron/.test(props.scheduleExpression.expressionString)) {
       throw new Error('`scheduleExpression` must be of type `cron`');
-    }
-
-    if (props.schedule && props.scheduleExpression) {
-      throw new Error('Cannot specify `schedule` and `scheduleExpression` together. Please use `schedule` only.');
     }
 
     const deleteAfter = (props.enableContinuousBackup && !props.deleteAfter) ? Duration.days(35) : props.deleteAfter;
