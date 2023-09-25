@@ -59,7 +59,8 @@ Flags come in three types:
 | [@aws-cdk/aws-efs:denyAnonymousAccess](#aws-cdkaws-efsdenyanonymousaccess) | EFS denies anonymous clients accesses | 2.93.0 | (default) |
 | [@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId](#aws-cdkaws-efsmounttargetorderinsensitivelogicalid) | When enabled, mount targets will have a stable logicalId that is linked to the associated subnet. | 2.93.0 | (fix) |
 | [@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion](#aws-cdkaws-lambda-nodejsuselatestruntimeversion) | Enables aws-lambda-nodejs.Function to use the latest available NodeJs runtime as the default | 2.93.0 | (default) |
-| [@aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier](#aws-cdkaws-appsyncusearnforsourceapiassociationidentifier) | When enabled, will always use the arn for identifiers for CfnSourceApiAssociation in the GraphqlApi construct rather than id. | V2NEXT | (fix) |
+| [@aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier](#aws-cdkaws-appsyncusearnforsourceapiassociationidentifier) | When enabled, will always use the arn for identifiers for CfnSourceApiAssociation in the GraphqlApi construct rather than id. | 2.97.0 | (fix) |
+| [@aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters](#aws-cdkaws-rdsauroraclusterchangescopeofinstanceparametergroupwitheachparameters) | When enabled, a scope of InstanceParameterGroup for AuroraClusterInstance with each parameters will change. | 2.97.0 | (fix) |
 
 <!-- END table -->
 
@@ -110,6 +111,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby": true,
     "@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion": true,
     "@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId": true,
+    "@aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters": true,
     "@aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier": true
   }
 }
@@ -1127,7 +1129,25 @@ Note that for existing source api associations created with this flag disabled, 
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
+| 2.97.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters
+
+*When enabled, a scope of InstanceParameterGroup for AuroraClusterInstance with each parameters will change.* (fix)
+
+When this feature flag is enabled, a scope of `InstanceParameterGroup` for
+`AuroraClusterInstance` with each parameters will change to AuroraClusterInstance
+from AuroraCluster.
+
+If the flag is set to false then it can only make one `AuroraClusterInstance`
+with each `InstanceParameterGroup` in the AuroraCluster.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.97.0 | `false` | `true` |
 
 
 <!-- END details -->
