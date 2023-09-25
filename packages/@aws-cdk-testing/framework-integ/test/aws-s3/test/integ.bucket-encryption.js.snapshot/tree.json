@@ -75,7 +75,7 @@
                 "path": "IntegTestDSSEBucket/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.26"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
@@ -121,7 +121,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.26"
+          "version": "10.2.70"
         }
       }
     },
