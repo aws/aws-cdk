@@ -116,7 +116,7 @@ describe('notification', () => {
           ],
         },
       },
-      DependsOn: ['BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36',
+      DependsOn: ['BucketNotificationsHandler050a0587b7544547bf325f094a3db834DefaultPolicy8DF38B44',
         'BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC'],
     });
   });
@@ -183,6 +183,124 @@ describe('notification', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       Runtime: 'python3.9',
+    });
+  });
+  test('Check notifications handler permissions for single imported bucket', () => {
+    const stack = new cdk.Stack();
+
+    const bucket = s3.Bucket.fromBucketAttributes(stack, 'MyBucket', {
+      bucketName: 'foo-bar',
+    });
+
+    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, {
+      bind: () => ({
+        arn: 'ARN',
+        type: s3.BucketNotificationDestinationType.TOPIC,
+      }),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              's3:GetBucketNotification',
+              's3:PutBucketNotification',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join':
+                    ['', [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':s3:::foo-bar',
+                    ]],
+            },
+          },
+        ],
+      },
+    });
+  });
+  test('Check notifications handler permissions for two imported bucket', () => {
+    const stack = new cdk.Stack();
+
+    const bucket = s3.Bucket.fromBucketAttributes(stack, 'MyBucket', {
+      bucketName: 'foo-bar',
+    });
+
+    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, {
+      bind: () => ({
+        arn: 'ARN',
+        type: s3.BucketNotificationDestinationType.TOPIC,
+      }),
+    });
+
+    const bucket2 = s3.Bucket.fromBucketAttributes(stack, 'MyBucket2', {
+      bucketName: 'foo-bar2',
+    });
+
+    bucket2.addEventNotification(s3.EventType.OBJECT_CREATED, {
+      bind: () => ({
+        arn: 'ARN',
+        type: s3.BucketNotificationDestinationType.TOPIC,
+      }),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              's3:GetBucketNotification',
+              's3:PutBucketNotification',
+            ],
+            Effect: 'Allow',
+            Resource: [{
+              'Fn::Join':
+                  ['', [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':s3:::foo-bar',
+                  ]],
+            }, {
+              'Fn::Join':
+                  ['', [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':s3:::foo-bar2',
+                  ]],
+            }],
+          },
+        ],
+      },
+    });
+  });
+  test('Check notifications handler permissions for single bucket', () => {
+    const stack = new cdk.Stack();
+
+    const bucket = new s3.Bucket(stack, 'MyBucket', {
+      bucketName: 'foo-bar',
+    });
+
+    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, {
+      bind: () => ({
+        arn: 'ARN',
+        type: s3.BucketNotificationDestinationType.TOPIC,
+      }),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 's3:PutBucketNotification',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'],
+            },
+          },
+        ],
+      },
     });
   });
 });

@@ -116,13 +116,17 @@ export class BucketNotifications extends Construct {
       const handler = NotificationsResourceHandler.singleton(this, {
         role: this.handlerRole,
       });
+      handler.addToRolePolicy(new iam.PolicyStatement({
+        actions: ['s3:PutBucketNotification'],
+        resources: [this.bucket.bucketArn],
+      }));
 
       const managed = this.bucket instanceof Bucket;
 
       if (!managed) {
         handler.addToRolePolicy(new iam.PolicyStatement({
           actions: ['s3:GetBucketNotification'],
-          resources: ['*'],
+          resources: [this.bucket.bucketArn],
         }));
       }
 

@@ -52,24 +52,28 @@ export class NotificationsResourceHandler extends Construct {
   public readonly functionArn: string;
 
   /**
-   * The role of the handler's lambda function.
+   * The default policy of role of the handler's lambda function.
    */
-  public readonly role: iam.IRole;
+  private readonly policy: iam.Policy;
 
   constructor(scope: Construct, id: string, props: NotificationsResourceHandlerProps = {}) {
     super(scope, id);
 
-    this.role = props.role ?? new iam.Role(this, 'Role', {
+    const role = props.role ?? new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
     });
 
-    this.role.addManagedPolicy(
+    role.addManagedPolicy(
       iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
     );
-    this.role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['s3:PutBucketNotification'],
-      resources: ['*'],
-    }));
+
+    // We create our own default policy so we can set minimize to true and statements size
+    // remain small
+    const policy = new iam.Policy(this, 'DefaultPolicy', {
+      document: new iam.PolicyDocument({ minimize: true }),
+    });
+    role.attachInlinePolicy(policy);
+    this.policy = policy;
 
     const resourceType = 'AWS::Lambda::Function';
     class InLineLambda extends cdk.CfnResource {
@@ -97,17 +101,18 @@ export class NotificationsResourceHandler extends Construct {
         Description: 'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)',
         Code: { ZipFile: handlerSourceWithoutComments },
         Handler: 'index.handler',
-        Role: this.role.roleArn,
+        Role: role.roleArn,
         Runtime: 'python3.9',
         Timeout: 300,
       },
     });
-    resource.node.addDependency(this.role);
+    resource.node.addDependency(role);
+    resource.node.addDependency(policy);
 
     this.functionArn = resource.getAtt('Arn').toString();
   }
 
   public addToRolePolicy(statement: iam.PolicyStatement) {
-    this.role.addToPrincipalPolicy(statement);
+    this.policy.addStatements(statement);
   }
 }
