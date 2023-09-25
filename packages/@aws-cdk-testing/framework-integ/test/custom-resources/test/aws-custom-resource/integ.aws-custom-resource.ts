@@ -2,14 +2,13 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 
 interface AwsCdkSdkJsStackProps {
-  readonly runtime?: lambda.Runtime;
+  readonly v3Format?: boolean;
 }
 
 class AwsCdkSdkJsStack extends cdk.Stack {
@@ -20,8 +19,8 @@ class AwsCdkSdkJsStack extends cdk.Stack {
     const snsPublish = new AwsCustomResource(this, 'Publish', {
       resourceType: 'Custom::SNSPublisher',
       onUpdate: {
-        service: 'SNS',
-        action: 'publish',
+        service: props?.v3Format ? '@aws-sdk/client-sns' : 'SNS',
+        action: props?.v3Format ? 'PublishCommand' : 'publish',
         parameters: {
           Message: 'hello',
           TopicArn: topic.topicArn,
@@ -33,8 +32,8 @@ class AwsCdkSdkJsStack extends cdk.Stack {
 
     const listTopics = new AwsCustomResource(this, 'ListTopics', {
       onUpdate: {
-        service: 'SNS',
-        action: 'listTopics',
+        service: props?.v3Format ? '@aws-sdk/client-sns' : 'SNS',
+        action: props?.v3Format ? 'ListTopicsCommand' : 'listTopics',
         physicalResourceId: PhysicalResourceId.fromResponse('Topics.0.TopicArn'),
       },
       policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
@@ -47,8 +46,8 @@ class AwsCdkSdkJsStack extends cdk.Stack {
     const getParameter = new AwsCustomResource(this, 'GetParameter', {
       resourceType: 'Custom::SSMParameter',
       onUpdate: {
-        service: 'SSM',
-        action: 'getParameter',
+        service: props?.v3Format ? '@aws-sdk/client-ssm' : 'SSM',
+        action: props?.v3Format ? 'GetParameterCommand' : 'getParameter',
         parameters: {
           Name: ssmParameter.parameterName,
           WithDecryption: true,
@@ -73,8 +72,8 @@ class AwsCdkSdkJsStack extends cdk.Stack {
     const getParameterNoPolicy = new AwsCustomResource(this, 'GetParameterNoPolicy', {
       resourceType: 'Custom::SSMParameter',
       onUpdate: {
-        service: 'SSM',
-        action: 'getParameter',
+        service: props?.v3Format ? '@aws-sdk/client-ssm' : 'SSM',
+        action: props?.v3Format ? 'GetParameterCommand' : 'getParameter',
         parameters: {
           Name: ssmParameter.parameterName,
           WithDecryption: true,
@@ -87,8 +86,8 @@ class AwsCdkSdkJsStack extends cdk.Stack {
     new AwsCustomResource(this, 'DescribeCluster', {
       resourceType: 'Custom::EKSClusterDescription',
       onUpdate: {
-        service: 'EKS',
-        action: 'describeCluster',
+        service: props?.v3Format ? '@aws-sdk/client-eks' : 'EKS',
+        action: props?.v3Format ? 'DescribeClusterCommand' : 'describeCluster',
         parameters: {
           name: 'fake-cluster',
         },
@@ -102,12 +101,6 @@ class AwsCdkSdkJsStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'TopicArn', { value: listTopics.getResponseField('Topics.0.TopicArn') });
     new cdk.CfnOutput(this, 'ParameterValue', { value: getParameter.getResponseField('Parameter.Value') });
     new cdk.CfnOutput(this, 'ParameterValueNoPolicy', { value: getParameterNoPolicy.getResponseField('Parameter.Value') });
-
-    if (props?.runtime) {
-      const awsCustomResourceProviderId ='AWS679f53fac002430cb0da5b7982bd2287';
-      const provider = this.node.findChild(awsCustomResourceProviderId).node.defaultChild as lambda.CfnFunction;
-      provider.runtime = props.runtime.name;
-    }
   }
 }
 
@@ -117,7 +110,7 @@ new integ.IntegTest(app, 'AwsCustomResourceTest', {
   testCases: [
     new AwsCdkSdkJsStack(app, 'aws-cdk-sdk-js'),
     new AwsCdkSdkJsStack(app, 'aws-cdk-sdk-js-v3', {
-      runtime: lambda.Runtime.NODEJS_18_X,
+      v3Format: true,
     }),
   ],
   diffAssets: true,
