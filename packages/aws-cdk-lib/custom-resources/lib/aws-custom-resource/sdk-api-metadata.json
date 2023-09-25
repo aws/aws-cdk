@@ -3,7 +3,15 @@
     "name": "ACM",
     "cors": true
   },
+  "@aws-sdk/client-acm": {
+    "name": "ACM",
+    "cors": true
+  },
   "apigateway": {
+    "name": "APIGateway",
+    "cors": true
+  },
+  "@aws-sdk/client-api-gateway": {
     "name": "APIGateway",
     "cors": true
   },
@@ -12,17 +20,35 @@
     "name": "ApplicationAutoScaling",
     "cors": true
   },
+  "@aws-sdk/client-application-auto-scaling": {
+    "prefix": "application-autoscaling",
+    "name": "ApplicationAutoScaling",
+    "cors": true
+  },
   "appstream": {
+    "name": "AppStream"
+  },
+  "@aws-sdk/client-appstream": {
     "name": "AppStream"
   },
   "autoscaling": {
     "name": "AutoScaling",
     "cors": true
   },
+  "@aws-sdk/client-auto-scaling": {
+    "name": "AutoScaling",
+    "cors": true
+  },
   "batch": {
     "name": "Batch"
   },
+  "@aws-sdk/client-batch": {
+    "name": "Batch"
+  },
   "budgets": {
+    "name": "Budgets"
+  },
+  "@aws-sdk/client-budgets": {
     "name": "Budgets"
   },
   "clouddirectory": {
@@ -31,7 +57,17 @@
       "2016-05-10*"
     ]
   },
+  "@aws-sdk/client-clouddirectory": {
+    "name": "CloudDirectory",
+    "versions": [
+      "2016-05-10*"
+    ]
+  },
   "cloudformation": {
+    "name": "CloudFormation",
+    "cors": true
+  },
+  "@aws-sdk/client-cloudformation": {
     "name": "CloudFormation",
     "cors": true
   },
@@ -61,21 +97,66 @@
     ],
     "cors": true
   },
+  "@aws-sdk/client-cloudfront": {
+    "name": "CloudFront",
+    "versions": [
+      "2013-05-12*",
+      "2013-11-11*",
+      "2014-05-31*",
+      "2014-10-21*",
+      "2014-11-06*",
+      "2015-04-17*",
+      "2015-07-27*",
+      "2015-09-17*",
+      "2016-01-13*",
+      "2016-01-28*",
+      "2016-08-01*",
+      "2016-08-20*",
+      "2016-09-07*",
+      "2016-09-29*",
+      "2016-11-25*",
+      "2017-03-25*",
+      "2017-10-30*",
+      "2018-06-18*",
+      "2018-11-05*",
+      "2019-03-26*"
+    ],
+    "cors": true
+  },
   "cloudhsm": {
+    "name": "CloudHSM",
+    "cors": true
+  },
+  "@aws-sdk/client-cloudhsm": {
     "name": "CloudHSM",
     "cors": true
   },
   "cloudsearch": {
     "name": "CloudSearch"
   },
+  "@aws-sdk/client-cloudsearch": {
+    "name": "CloudSearch"
+  },
   "cloudsearchdomain": {
+    "name": "CloudSearchDomain"
+  },
+  "@aws-sdk/client-cloudsearch-domain": {
     "name": "CloudSearchDomain"
   },
   "cloudtrail": {
     "name": "CloudTrail",
     "cors": true
   },
+  "@aws-sdk/client-cloudtrail": {
+    "name": "CloudTrail",
+    "cors": true
+  },
   "cloudwatch": {
+    "prefix": "monitoring",
+    "name": "CloudWatch",
+    "cors": true
+  },
+  "@aws-sdk/client-cloudwatch": {
     "prefix": "monitoring",
     "name": "CloudWatch",
     "cors": true
@@ -88,7 +169,20 @@
     ],
     "cors": true
   },
+  "@aws-sdk/client-cloudwatch-events": {
+    "prefix": "events",
+    "name": "CloudWatchEvents",
+    "versions": [
+      "2014-02-03*"
+    ],
+    "cors": true
+  },
   "cloudwatchlogs": {
+    "prefix": "logs",
+    "name": "CloudWatchLogs",
+    "cors": true
+  },
+  "@aws-sdk/client-cloudwatch-logs": {
     "prefix": "logs",
     "name": "CloudWatchLogs",
     "cors": true
@@ -97,7 +191,15 @@
     "name": "CodeBuild",
     "cors": true
   },
+  "@aws-sdk/client-codebuild": {
+    "name": "CodeBuild",
+    "cors": true
+  },
   "codecommit": {
+    "name": "CodeCommit",
+    "cors": true
+  },
+  "@aws-sdk/client-codecommit": {
     "name": "CodeCommit",
     "cors": true
   },
@@ -105,11 +207,24 @@
     "name": "CodeDeploy",
     "cors": true
   },
+  "@aws-sdk/client-codedeploy": {
+    "name": "CodeDeploy",
+    "cors": true
+  },
   "codepipeline": {
     "name": "CodePipeline",
     "cors": true
   },
+  "@aws-sdk/client-codepipeline": {
+    "name": "CodePipeline",
+    "cors": true
+  },
   "cognitoidentity": {
+    "prefix": "cognito-identity",
+    "name": "CognitoIdentity",
+    "cors": true
+  },
+  "@aws-sdk/client-cognito-identity": {
     "prefix": "cognito-identity",
     "name": "CognitoIdentity",
     "cors": true
@@ -119,7 +234,17 @@
     "name": "CognitoIdentityServiceProvider",
     "cors": true
   },
+  "@aws-sdk/client-cognito-identity-provider": {
+    "prefix": "cognito-idp",
+    "name": "CognitoIdentityServiceProvider",
+    "cors": true
+  },
   "cognitosync": {
+    "prefix": "cognito-sync",
+    "name": "CognitoSync",
+    "cors": true
+  },
+  "@aws-sdk/client-cognito-sync": {
     "prefix": "cognito-sync",
     "name": "CognitoSync",
     "cors": true
@@ -129,14 +254,30 @@
     "name": "ConfigService",
     "cors": true
   },
+  "@aws-sdk/client-config-service": {
+    "prefix": "config",
+    "name": "ConfigService",
+    "cors": true
+  },
   "cur": {
+    "name": "CUR",
+    "cors": true
+  },
+  "@aws-sdk/client-cost-and-usage-report-service": {
     "name": "CUR",
     "cors": true
   },
   "datapipeline": {
     "name": "DataPipeline"
   },
+  "@aws-sdk/client-data-pipeline": {
+    "name": "DataPipeline"
+  },
   "devicefarm": {
+    "name": "DeviceFarm",
+    "cors": true
+  },
+  "@aws-sdk/client-device-farm": {
     "name": "DeviceFarm",
     "cors": true
   },
@@ -144,21 +285,44 @@
     "name": "DirectConnect",
     "cors": true
   },
+  "@aws-sdk/client-direct-connect": {
+    "name": "DirectConnect",
+    "cors": true
+  },
   "directoryservice": {
+    "prefix": "ds",
+    "name": "DirectoryService"
+  },
+  "@aws-sdk/client-directory-service": {
     "prefix": "ds",
     "name": "DirectoryService"
   },
   "discovery": {
     "name": "Discovery"
   },
+  "@aws-sdk/client-application-discovery-service": {
+    "name": "Discovery"
+  },
   "dms": {
+    "name": "DMS"
+  },
+  "@aws-sdk/client-database-migration-service": {
     "name": "DMS"
   },
   "dynamodb": {
     "name": "DynamoDB",
     "cors": true
   },
+  "@aws-sdk/client-dynamodb": {
+    "name": "DynamoDB",
+    "cors": true
+  },
   "dynamodbstreams": {
+    "prefix": "streams.dynamodb",
+    "name": "DynamoDBStreams",
+    "cors": true
+  },
+  "@aws-sdk/client-dynamodb-streams": {
     "prefix": "streams.dynamodb",
     "name": "DynamoDBStreams",
     "cors": true
@@ -181,7 +345,29 @@
     ],
     "cors": true
   },
+  "@aws-sdk/client-ec2": {
+    "name": "EC2",
+    "versions": [
+      "2013-06-15*",
+      "2013-10-15*",
+      "2014-02-01*",
+      "2014-05-01*",
+      "2014-06-15*",
+      "2014-09-01*",
+      "2014-10-01*",
+      "2015-03-01*",
+      "2015-04-15*",
+      "2015-10-01*",
+      "2016-04-01*",
+      "2016-09-15*"
+    ],
+    "cors": true
+  },
   "ecr": {
+    "name": "ECR",
+    "cors": true
+  },
+  "@aws-sdk/client-ecr": {
     "name": "ECR",
     "cors": true
   },
@@ -189,7 +375,16 @@
     "name": "ECS",
     "cors": true
   },
+  "@aws-sdk/client-ecs": {
+    "name": "ECS",
+    "cors": true
+  },
   "efs": {
+    "prefix": "elasticfilesystem",
+    "name": "EFS",
+    "cors": true
+  },
+  "@aws-sdk/client-efs": {
     "prefix": "elasticfilesystem",
     "name": "EFS",
     "cors": true
@@ -204,11 +399,30 @@
     ],
     "cors": true
   },
+  "@aws-sdk/client-elasticache": {
+    "name": "ElastiCache",
+    "versions": [
+      "2012-11-15*",
+      "2014-03-24*",
+      "2014-07-15*",
+      "2014-09-30*"
+    ],
+    "cors": true
+  },
   "elasticbeanstalk": {
     "name": "ElasticBeanstalk",
     "cors": true
   },
+  "@aws-sdk/client-elastic-beanstalk": {
+    "name": "ElasticBeanstalk",
+    "cors": true
+  },
   "elb": {
+    "prefix": "elasticloadbalancing",
+    "name": "ELB",
+    "cors": true
+  },
+  "@aws-sdk/client-elastic-load-balancing": {
     "prefix": "elasticloadbalancing",
     "name": "ELB",
     "cors": true
@@ -218,7 +432,17 @@
     "name": "ELBv2",
     "cors": true
   },
+  "@aws-sdk/client-elastic-load-balancing-v2": {
+    "prefix": "elasticloadbalancingv2",
+    "name": "ELBv2",
+    "cors": true
+  },
   "emr": {
+    "prefix": "elasticmapreduce",
+    "name": "EMR",
+    "cors": true
+  },
+  "@aws-sdk/client-emr": {
     "prefix": "elasticmapreduce",
     "name": "EMR",
     "cors": true
@@ -226,7 +450,14 @@
   "es": {
     "name": "ES"
   },
+  "@aws-sdk/client-elasticsearch-service": {
+    "name": "ES"
+  },
   "elastictranscoder": {
+    "name": "ElasticTranscoder",
+    "cors": true
+  },
+  "@aws-sdk/client-elastic-transcoder": {
     "name": "ElasticTranscoder",
     "cors": true
   },
@@ -234,17 +465,35 @@
     "name": "Firehose",
     "cors": true
   },
+  "@aws-sdk/client-firehose": {
+    "name": "Firehose",
+    "cors": true
+  },
   "gamelift": {
+    "name": "GameLift",
+    "cors": true
+  },
+  "@aws-sdk/client-gamelift": {
     "name": "GameLift",
     "cors": true
   },
   "glacier": {
     "name": "Glacier"
   },
+  "@aws-sdk/client-glacier": {
+    "name": "Glacier"
+  },
   "health": {
     "name": "Health"
   },
+  "@aws-sdk/client-health": {
+    "name": "Health"
+  },
   "iam": {
+    "name": "IAM",
+    "cors": true
+  },
+  "@aws-sdk/client-iam": {
     "name": "IAM",
     "cors": true
   },
@@ -258,7 +507,18 @@
     ],
     "cors": true
   },
+  "@aws-sdk/client-inspector": {
+    "name": "Inspector",
+    "versions": [
+      "2015-08-18*"
+    ],
+    "cors": true
+  },
   "iot": {
+    "name": "Iot",
+    "cors": true
+  },
+  "@aws-sdk/client-iot": {
     "name": "Iot",
     "cors": true
   },
@@ -267,18 +527,38 @@
     "name": "IotData",
     "cors": true
   },
+  "@aws-sdk/client-iot-data-plane": {
+    "prefix": "iot-data",
+    "name": "IotData",
+    "cors": true
+  },
   "kinesis": {
+    "name": "Kinesis",
+    "cors": true
+  },
+  "@aws-sdk/client-kinesis": {
     "name": "Kinesis",
     "cors": true
   },
   "kinesisanalytics": {
     "name": "KinesisAnalytics"
   },
+  "@aws-sdk/client-kinesis-analytics": {
+    "name": "KinesisAnalytics"
+  },
   "kms": {
     "name": "KMS",
     "cors": true
   },
+  "@aws-sdk/client-kms": {
+    "name": "KMS",
+    "cors": true
+  },
   "lambda": {
+    "name": "Lambda",
+    "cors": true
+  },
+  "@aws-sdk/client-lambda": {
     "name": "Lambda",
     "cors": true
   },
@@ -287,10 +567,22 @@
     "name": "LexRuntime",
     "cors": true
   },
+  "@aws-sdk/client-lex-runtime-service": {
+    "prefix": "runtime.lex",
+    "name": "LexRuntime",
+    "cors": true
+  },
   "lightsail": {
     "name": "Lightsail"
   },
+  "@aws-sdk/client-lightsail": {
+    "name": "Lightsail"
+  },
   "machinelearning": {
+    "name": "MachineLearning",
+    "cors": true
+  },
+  "@aws-sdk/client-machine-learning": {
     "name": "MachineLearning",
     "cors": true
   },
@@ -298,11 +590,24 @@
     "name": "MarketplaceCommerceAnalytics",
     "cors": true
   },
+  "@aws-sdk/client-marketplace-commerce-analytics": {
+    "name": "MarketplaceCommerceAnalytics",
+    "cors": true
+  },
   "marketplacemetering": {
     "prefix": "meteringmarketplace",
     "name": "MarketplaceMetering"
   },
+  "@aws-sdk/client-marketplace-metering": {
+    "prefix": "meteringmarketplace",
+    "name": "MarketplaceMetering"
+  },
   "mturk": {
+    "prefix": "mturk-requester",
+    "name": "MTurk",
+    "cors": true
+  },
+  "@aws-sdk/client-mturk": {
     "prefix": "mturk-requester",
     "name": "MTurk",
     "cors": true
@@ -315,16 +620,33 @@
     "name": "OpsWorks",
     "cors": true
   },
+  "@aws-sdk/client-opsworks": {
+    "name": "OpsWorks",
+    "cors": true
+  },
   "opsworkscm": {
+    "name": "OpsWorksCM"
+  },
+  "@aws-sdk/client-opsworkscm": {
     "name": "OpsWorksCM"
   },
   "organizations": {
     "name": "Organizations"
   },
+  "@aws-sdk/client-organizations": {
+    "name": "Organizations"
+  },
   "pinpoint": {
     "name": "Pinpoint"
   },
+  "@aws-sdk/client-pinpoint": {
+    "name": "Pinpoint"
+  },
   "polly": {
+    "name": "Polly",
+    "cors": true
+  },
+  "@aws-sdk/client-polly": {
     "name": "Polly",
     "cors": true
   },
@@ -335,7 +657,18 @@
     ],
     "cors": true
   },
+  "@aws-sdk/client-rds": {
+    "name": "RDS",
+    "versions": [
+      "2014-09-01*"
+    ],
+    "cors": true
+  },
   "redshift": {
+    "name": "Redshift",
+    "cors": true
+  },
+  "@aws-sdk/client-redshift": {
     "name": "Redshift",
     "cors": true
   },
@@ -343,10 +676,21 @@
     "name": "Rekognition",
     "cors": true
   },
+  "@aws-sdk/client-rekognition": {
+    "name": "Rekognition",
+    "cors": true
+  },
   "resourcegroupstaggingapi": {
     "name": "ResourceGroupsTaggingAPI"
   },
+  "@aws-sdk/client-resource-groups-tagging-api": {
+    "name": "ResourceGroupsTaggingAPI"
+  },
   "route53": {
+    "name": "Route53",
+    "cors": true
+  },
+  "@aws-sdk/client-route-53": {
     "name": "Route53",
     "cors": true
   },
@@ -354,7 +698,16 @@
     "name": "Route53Domains",
     "cors": true
   },
+  "@aws-sdk/client-route-53-domains": {
+    "name": "Route53Domains",
+    "cors": true
+  },
   "s3": {
+    "name": "S3",
+    "dualstackAvailable": true,
+    "cors": true
+  },
+  "@aws-sdk/client-s3": {
     "name": "S3",
     "dualstackAvailable": true,
     "cors": true
@@ -364,7 +717,16 @@
     "dualstackAvailable": true,
     "xmlNoDefaultLists": true
   },
+  "@aws-sdk/client-s3-control": {
+    "name": "S3Control",
+    "dualstackAvailable": true,
+    "xmlNoDefaultLists": true
+  },
   "servicecatalog": {
+    "name": "ServiceCatalog",
+    "cors": true
+  },
+  "@aws-sdk/client-service-catalog": {
     "name": "ServiceCatalog",
     "cors": true
   },
@@ -373,7 +735,15 @@
     "name": "SES",
     "cors": true
   },
+  "@aws-sdk/client-ses": {
+    "prefix": "email",
+    "name": "SES",
+    "cors": true
+  },
   "shield": {
+    "name": "Shield"
+  },
+  "@aws-sdk/client-shield": {
     "name": "Shield"
   },
   "simpledb": {
@@ -383,10 +753,20 @@
   "sms": {
     "name": "SMS"
   },
+  "@aws-sdk/client-sms": {
+    "name": "SMS"
+  },
   "snowball": {
     "name": "Snowball"
   },
+  "@aws-sdk/client-snowball": {
+    "name": "Snowball"
+  },
   "sns": {
+    "name": "SNS",
+    "cors": true
+  },
+  "@aws-sdk/client-sns": {
     "name": "SNS",
     "cors": true
   },
@@ -394,7 +774,15 @@
     "name": "SQS",
     "cors": true
   },
+  "@aws-sdk/client-sqs": {
+    "name": "SQS",
+    "cors": true
+  },
   "ssm": {
+    "name": "SSM",
+    "cors": true
+  },
+  "@aws-sdk/client-ssm": {
     "name": "SSM",
     "cors": true
   },
@@ -402,7 +790,15 @@
     "name": "StorageGateway",
     "cors": true
   },
+  "@aws-sdk/client-storage-gateway": {
+    "name": "StorageGateway",
+    "cors": true
+  },
   "stepfunctions": {
+    "prefix": "states",
+    "name": "StepFunctions"
+  },
+  "@aws-sdk/client-sfn": {
     "prefix": "states",
     "name": "StepFunctions"
   },
@@ -410,13 +806,27 @@
     "name": "STS",
     "cors": true
   },
+  "@aws-sdk/client-sts": {
+    "name": "STS",
+    "cors": true
+  },
   "support": {
+    "name": "Support"
+  },
+  "@aws-sdk/client-support": {
     "name": "Support"
   },
   "swf": {
     "name": "SWF"
   },
+  "@aws-sdk/client-swf": {
+    "name": "SWF"
+  },
   "xray": {
+    "name": "XRay",
+    "cors": true
+  },
+  "@aws-sdk/client-xray": {
     "name": "XRay",
     "cors": true
   },
@@ -424,7 +834,15 @@
     "name": "WAF",
     "cors": true
   },
+  "@aws-sdk/client-waf": {
+    "name": "WAF",
+    "cors": true
+  },
   "wafregional": {
+    "prefix": "waf-regional",
+    "name": "WAFRegional"
+  },
+  "@aws-sdk/client-waf-regional": {
     "prefix": "waf-regional",
     "name": "WAFRegional"
   },
@@ -432,13 +850,28 @@
     "name": "WorkDocs",
     "cors": true
   },
+  "@aws-sdk/client-workdocs": {
+    "name": "WorkDocs",
+    "cors": true
+  },
   "workspaces": {
+    "name": "WorkSpaces"
+  },
+  "@aws-sdk/client-workspaces": {
     "name": "WorkSpaces"
   },
   "codestar": {
     "name": "CodeStar"
   },
+  "@aws-sdk/client-codestar": {
+    "name": "CodeStar"
+  },
   "lexmodelbuildingservice": {
+    "prefix": "lex-models",
+    "name": "LexModelBuildingService",
+    "cors": true
+  },
+  "@aws-sdk/client-lex-model-building-service": {
     "prefix": "lex-models",
     "name": "LexModelBuildingService",
     "cors": true
@@ -447,17 +880,35 @@
     "prefix": "entitlement.marketplace",
     "name": "MarketplaceEntitlementService"
   },
+  "@aws-sdk/client-marketplace-entitlement-service": {
+    "prefix": "entitlement.marketplace",
+    "name": "MarketplaceEntitlementService"
+  },
   "athena": {
+    "name": "Athena",
+    "cors": true
+  },
+  "@aws-sdk/client-athena": {
     "name": "Athena",
     "cors": true
   },
   "greengrass": {
     "name": "Greengrass"
   },
+  "@aws-sdk/client-greengrass": {
+    "name": "Greengrass"
+  },
   "dax": {
     "name": "DAX"
   },
+  "@aws-sdk/client-dax": {
+    "name": "DAX"
+  },
   "migrationhub": {
+    "prefix": "AWSMigrationHub",
+    "name": "MigrationHub"
+  },
+  "@aws-sdk/client-migration-hub": {
     "prefix": "AWSMigrationHub",
     "name": "MigrationHub"
   },
@@ -465,13 +916,27 @@
     "name": "CloudHSMV2",
     "cors": true
   },
+  "@aws-sdk/client-cloudhsm-v2": {
+    "name": "CloudHSMV2",
+    "cors": true
+  },
   "glue": {
+    "name": "Glue"
+  },
+  "@aws-sdk/client-glue": {
     "name": "Glue"
   },
   "mobile": {
     "name": "Mobile"
   },
+  "@aws-sdk/client-mobile": {
+    "name": "Mobile"
+  },
   "pricing": {
+    "name": "Pricing",
+    "cors": true
+  },
+  "@aws-sdk/client-pricing": {
     "name": "Pricing",
     "cors": true
   },
@@ -480,16 +945,33 @@
     "name": "CostExplorer",
     "cors": true
   },
+  "@aws-sdk/client-cost-explorer": {
+    "prefix": "ce",
+    "name": "CostExplorer",
+    "cors": true
+  },
   "mediaconvert": {
+    "name": "MediaConvert"
+  },
+  "@aws-sdk/client-mediaconvert": {
     "name": "MediaConvert"
   },
   "medialive": {
     "name": "MediaLive"
   },
+  "@aws-sdk/client-medialive": {
+    "name": "MediaLive"
+  },
   "mediapackage": {
     "name": "MediaPackage"
   },
+  "@aws-sdk/client-mediapackage": {
+    "name": "MediaPackage"
+  },
   "mediastore": {
+    "name": "MediaStore"
+  },
+  "@aws-sdk/client-mediastore": {
     "name": "MediaStore"
   },
   "mediastoredata": {
@@ -497,16 +979,34 @@
     "name": "MediaStoreData",
     "cors": true
   },
+  "@aws-sdk/client-mediastore-data": {
+    "prefix": "mediastore-data",
+    "name": "MediaStoreData",
+    "cors": true
+  },
   "appsync": {
+    "name": "AppSync"
+  },
+  "@aws-sdk/client-appsync": {
     "name": "AppSync"
   },
   "guardduty": {
     "name": "GuardDuty"
   },
+  "@aws-sdk/client-guardduty": {
+    "name": "GuardDuty"
+  },
   "mq": {
     "name": "MQ"
   },
+  "@aws-sdk/client-mq": {
+    "name": "MQ"
+  },
   "comprehend": {
+    "name": "Comprehend",
+    "cors": true
+  },
+  "@aws-sdk/client-comprehend": {
     "name": "Comprehend",
     "cors": true
   },
@@ -514,7 +1014,16 @@
     "prefix": "iot-jobs-data",
     "name": "IoTJobsDataPlane"
   },
+  "@aws-sdk/client-iot-jobs-data-plane": {
+    "prefix": "iot-jobs-data",
+    "name": "IoTJobsDataPlane"
+  },
   "kinesisvideoarchivedmedia": {
+    "prefix": "kinesis-video-archived-media",
+    "name": "KinesisVideoArchivedMedia",
+    "cors": true
+  },
+  "@aws-sdk/client-kinesis-video-archived-media": {
     "prefix": "kinesis-video-archived-media",
     "name": "KinesisVideoArchivedMedia",
     "cors": true
@@ -524,7 +1033,16 @@
     "name": "KinesisVideoMedia",
     "cors": true
   },
+  "@aws-sdk/client-kinesis-video-media": {
+    "prefix": "kinesis-video-media",
+    "name": "KinesisVideoMedia",
+    "cors": true
+  },
   "kinesisvideo": {
+    "name": "KinesisVideo",
+    "cors": true
+  },
+  "@aws-sdk/client-kinesis-video": {
     "name": "KinesisVideo",
     "cors": true
   },
@@ -532,10 +1050,21 @@
     "prefix": "runtime.sagemaker",
     "name": "SageMakerRuntime"
   },
+  "@aws-sdk/client-sagemaker-runtime": {
+    "prefix": "runtime.sagemaker",
+    "name": "SageMakerRuntime"
+  },
   "sagemaker": {
     "name": "SageMaker"
   },
+  "@aws-sdk/client-sagemaker": {
+    "name": "SageMaker"
+  },
   "translate": {
+    "name": "Translate",
+    "cors": true
+  },
+  "@aws-sdk/client-translate": {
     "name": "Translate",
     "cors": true
   },
@@ -544,23 +1073,48 @@
     "name": "ResourceGroups",
     "cors": true
   },
+  "@aws-sdk/client-resource-groups": {
+    "prefix": "resource-groups",
+    "name": "ResourceGroups",
+    "cors": true
+  },
   "alexaforbusiness": {
     "name": "AlexaForBusiness"
   },
+  "@aws-sdk/client-alexa-for-business": {
+    "name": "AlexaForBusiness"
+  },
   "cloud9": {
+    "name": "Cloud9"
+  },
+  "@aws-sdk/client-cloud9": {
     "name": "Cloud9"
   },
   "serverlessapplicationrepository": {
     "prefix": "serverlessrepo",
     "name": "ServerlessApplicationRepository"
   },
+  "@aws-sdk/client-serverlessapplicationrepository": {
+    "prefix": "serverlessrepo",
+    "name": "ServerlessApplicationRepository"
+  },
   "servicediscovery": {
+    "name": "ServiceDiscovery"
+  },
+  "@aws-sdk/client-servicediscovery": {
     "name": "ServiceDiscovery"
   },
   "workmail": {
     "name": "WorkMail"
   },
+  "@aws-sdk/client-workmail": {
+    "name": "WorkMail"
+  },
   "autoscalingplans": {
+    "prefix": "autoscaling-plans",
+    "name": "AutoScalingPlans"
+  },
+  "@aws-sdk/client-auto-scaling-plans": {
     "prefix": "autoscaling-plans",
     "name": "AutoScalingPlans"
   },
@@ -568,7 +1122,15 @@
     "prefix": "transcribe",
     "name": "TranscribeService"
   },
+  "@aws-sdk/client-transcribe": {
+    "prefix": "transcribe",
+    "name": "TranscribeService"
+  },
   "connect": {
+    "name": "Connect",
+    "cors": true
+  },
+  "@aws-sdk/client-connect": {
     "name": "Connect",
     "cors": true
   },
@@ -576,10 +1138,21 @@
     "prefix": "acm-pca",
     "name": "ACMPCA"
   },
+  "@aws-sdk/client-acm-pca": {
+    "prefix": "acm-pca",
+    "name": "ACMPCA"
+  },
   "fms": {
     "name": "FMS"
   },
+  "@aws-sdk/client-fms": {
+    "name": "FMS"
+  },
   "secretsmanager": {
+    "name": "SecretsManager",
+    "cors": true
+  },
+  "@aws-sdk/client-secrets-manager": {
     "name": "SecretsManager",
     "cors": true
   },
@@ -587,7 +1160,15 @@
     "name": "IoTAnalytics",
     "cors": true
   },
+  "@aws-sdk/client-iotanalytics": {
+    "name": "IoTAnalytics",
+    "cors": true
+  },
   "iot1clickdevicesservice": {
+    "prefix": "iot1click-devices",
+    "name": "IoT1ClickDevicesService"
+  },
+  "@aws-sdk/client-iot-1click-devices-service": {
     "prefix": "iot1click-devices",
     "name": "IoT1ClickDevicesService"
   },
@@ -595,83 +1176,169 @@
     "prefix": "iot1click-projects",
     "name": "IoT1ClickProjects"
   },
+  "@aws-sdk/client-iot-1click-projects": {
+    "prefix": "iot1click-projects",
+    "name": "IoT1ClickProjects"
+  },
   "pi": {
+    "name": "PI"
+  },
+  "@aws-sdk/client-pi": {
     "name": "PI"
   },
   "neptune": {
     "name": "Neptune"
   },
+  "@aws-sdk/client-neptune": {
+    "name": "Neptune"
+  },
   "mediatailor": {
+    "name": "MediaTailor"
+  },
+  "@aws-sdk/client-mediatailor": {
     "name": "MediaTailor"
   },
   "eks": {
     "name": "EKS"
   },
+  "@aws-sdk/client-eks": {
+    "name": "EKS"
+  },
   "macie": {
+    "name": "Macie"
+  },
+  "@aws-sdk/client-macie": {
     "name": "Macie"
   },
   "dlm": {
     "name": "DLM"
   },
+  "@aws-sdk/client-dlm": {
+    "name": "DLM"
+  },
   "signer": {
     "name": "Signer"
   },
+  "@aws-sdk/client-signer": {
+    "name": "Signer"
+  },
   "chime": {
+    "name": "Chime"
+  },
+  "@aws-sdk/client-chime": {
     "name": "Chime"
   },
   "pinpointemail": {
     "prefix": "pinpoint-email",
     "name": "PinpointEmail"
   },
+  "@aws-sdk/client-pinpoint-email": {
+    "prefix": "pinpoint-email",
+    "name": "PinpointEmail"
+  },
   "ram": {
     "name": "RAM"
   },
+  "@aws-sdk/client-ram": {
+    "name": "RAM"
+  },
   "route53resolver": {
+    "name": "Route53Resolver"
+  },
+  "@aws-sdk/client-route53resolver": {
     "name": "Route53Resolver"
   },
   "pinpointsmsvoice": {
     "prefix": "sms-voice",
     "name": "PinpointSMSVoice"
   },
+  "@aws-sdk/client-pinpoint-sms-voice": {
+    "prefix": "sms-voice",
+    "name": "PinpointSMSVoice"
+  },
   "quicksight": {
+    "name": "QuickSight"
+  },
+  "@aws-sdk/client-quicksight": {
     "name": "QuickSight"
   },
   "rdsdataservice": {
     "prefix": "rds-data",
     "name": "RDSDataService"
   },
+  "@aws-sdk/client-rds-data": {
+    "prefix": "rds-data",
+    "name": "RDSDataService"
+  },
   "amplify": {
+    "name": "Amplify"
+  },
+  "@aws-sdk/client-amplify": {
     "name": "Amplify"
   },
   "datasync": {
     "name": "DataSync"
   },
+  "@aws-sdk/client-datasync": {
+    "name": "DataSync"
+  },
   "robomaker": {
+    "name": "RoboMaker"
+  },
+  "@aws-sdk/client-robomaker": {
     "name": "RoboMaker"
   },
   "transfer": {
     "name": "Transfer"
   },
+  "@aws-sdk/client-transfer": {
+    "name": "Transfer"
+  },
   "globalaccelerator": {
+    "name": "GlobalAccelerator"
+  },
+  "@aws-sdk/client-global-accelerator": {
     "name": "GlobalAccelerator"
   },
   "comprehendmedical": {
     "name": "ComprehendMedical",
     "cors": true
   },
+  "@aws-sdk/client-comprehendmedical": {
+    "name": "ComprehendMedical",
+    "cors": true
+  },
   "kinesisanalyticsv2": {
+    "name": "KinesisAnalyticsV2"
+  },
+  "@aws-sdk/client-kinesis-analytics-v2": {
     "name": "KinesisAnalyticsV2"
   },
   "mediaconnect": {
     "name": "MediaConnect"
   },
+  "@aws-sdk/client-mediaconnect": {
+    "name": "MediaConnect"
+  },
   "fsx": {
+    "name": "FSx"
+  },
+  "@aws-sdk/client-fsx": {
     "name": "FSx"
   },
   "securityhub": {
     "name": "SecurityHub"
   },
+  "@aws-sdk/client-securityhub": {
+    "name": "SecurityHub"
+  },
   "appmesh": {
+    "name": "AppMesh",
+    "versions": [
+      "2018-10-01*"
+    ]
+  },
+  "@aws-sdk/client-app-mesh": {
     "name": "AppMesh",
     "versions": [
       "2018-10-01*"
@@ -681,44 +1348,89 @@
     "prefix": "license-manager",
     "name": "LicenseManager"
   },
+  "@aws-sdk/client-license-manager": {
+    "prefix": "license-manager",
+    "name": "LicenseManager"
+  },
   "kafka": {
+    "name": "Kafka"
+  },
+  "@aws-sdk/client-kafka": {
     "name": "Kafka"
   },
   "apigatewaymanagementapi": {
     "name": "ApiGatewayManagementApi"
   },
+  "@aws-sdk/client-apigatewaymanagementapi": {
+    "name": "ApiGatewayManagementApi"
+  },
   "apigatewayv2": {
+    "name": "ApiGatewayV2"
+  },
+  "@aws-sdk/client-apigatewayv2": {
     "name": "ApiGatewayV2"
   },
   "docdb": {
     "name": "DocDB"
   },
+  "@aws-sdk/client-docdb": {
+    "name": "DocDB"
+  },
   "backup": {
+    "name": "Backup"
+  },
+  "@aws-sdk/client-backup": {
     "name": "Backup"
   },
   "worklink": {
     "name": "WorkLink"
   },
+  "@aws-sdk/client-worklink": {
+    "name": "WorkLink"
+  },
   "textract": {
     "name": "Textract"
   },
+  "@aws-sdk/client-textract": {
+    "name": "Textract"
+  },
   "managedblockchain": {
+    "name": "ManagedBlockchain"
+  },
+  "@aws-sdk/client-managedblockchain": {
     "name": "ManagedBlockchain"
   },
   "mediapackagevod": {
     "prefix": "mediapackage-vod",
     "name": "MediaPackageVod"
   },
+  "@aws-sdk/client-mediapackage-vod": {
+    "prefix": "mediapackage-vod",
+    "name": "MediaPackageVod"
+  },
   "groundstation": {
+    "name": "GroundStation"
+  },
+  "@aws-sdk/client-groundstation": {
     "name": "GroundStation"
   },
   "iotthingsgraph": {
     "name": "IoTThingsGraph"
   },
+  "@aws-sdk/client-iotthingsgraph": {
+    "name": "IoTThingsGraph"
+  },
   "iotevents": {
     "name": "IoTEvents"
   },
+  "@aws-sdk/client-iot-events": {
+    "name": "IoTEvents"
+  },
   "ioteventsdata": {
+    "prefix": "iotevents-data",
+    "name": "IoTEventsData"
+  },
+  "@aws-sdk/client-iot-events-data": {
     "prefix": "iotevents-data",
     "name": "IoTEventsData"
   },
@@ -726,7 +1438,16 @@
     "name": "Personalize",
     "cors": true
   },
+  "@aws-sdk/client-personalize": {
+    "name": "Personalize",
+    "cors": true
+  },
   "personalizeevents": {
+    "prefix": "personalize-events",
+    "name": "PersonalizeEvents",
+    "cors": true
+  },
+  "@aws-sdk/client-personalize-events": {
     "prefix": "personalize-events",
     "name": "PersonalizeEvents",
     "cors": true
@@ -736,7 +1457,16 @@
     "name": "PersonalizeRuntime",
     "cors": true
   },
+  "@aws-sdk/client-personalize-runtime": {
+    "prefix": "personalize-runtime",
+    "name": "PersonalizeRuntime",
+    "cors": true
+  },
   "applicationinsights": {
+    "prefix": "application-insights",
+    "name": "ApplicationInsights"
+  },
+  "@aws-sdk/client-application-insights": {
     "prefix": "application-insights",
     "name": "ApplicationInsights"
   },
@@ -744,17 +1474,36 @@
     "prefix": "service-quotas",
     "name": "ServiceQuotas"
   },
+  "@aws-sdk/client-service-quotas": {
+    "prefix": "service-quotas",
+    "name": "ServiceQuotas"
+  },
   "ec2instanceconnect": {
+    "prefix": "ec2-instance-connect",
+    "name": "EC2InstanceConnect"
+  },
+  "@aws-sdk/client-ec2-instance-connect": {
     "prefix": "ec2-instance-connect",
     "name": "EC2InstanceConnect"
   },
   "eventbridge": {
     "name": "EventBridge"
   },
+  "@aws-sdk/client-eventbridge": {
+    "name": "EventBridge"
+  },
   "lakeformation": {
     "name": "LakeFormation"
   },
+  "@aws-sdk/client-lakeformation": {
+    "name": "LakeFormation"
+  },
   "forecastservice": {
+    "prefix": "forecast",
+    "name": "ForecastService",
+    "cors": true
+  },
+  "@aws-sdk/client-forecast": {
     "prefix": "forecast",
     "name": "ForecastService",
     "cors": true
@@ -764,27 +1513,56 @@
     "name": "ForecastQueryService",
     "cors": true
   },
+  "@aws-sdk/client-forecastquery": {
+    "prefix": "forecastquery",
+    "name": "ForecastQueryService",
+    "cors": true
+  },
   "qldb": {
+    "name": "QLDB"
+  },
+  "@aws-sdk/client-qldb": {
     "name": "QLDB"
   },
   "qldbsession": {
     "prefix": "qldb-session",
     "name": "QLDBSession"
   },
+  "@aws-sdk/client-qldb-session": {
+    "prefix": "qldb-session",
+    "name": "QLDBSession"
+  },
   "workmailmessageflow": {
+    "name": "WorkMailMessageFlow"
+  },
+  "@aws-sdk/client-workmailmessageflow": {
     "name": "WorkMailMessageFlow"
   },
   "codestarnotifications": {
     "prefix": "codestar-notifications",
     "name": "CodeStarNotifications"
   },
+  "@aws-sdk/client-codestar-notifications": {
+    "prefix": "codestar-notifications",
+    "name": "CodeStarNotifications"
+  },
   "savingsplans": {
+    "name": "SavingsPlans"
+  },
+  "@aws-sdk/client-savingsplans": {
     "name": "SavingsPlans"
   },
   "sso": {
     "name": "SSO"
   },
+  "@aws-sdk/client-sso": {
+    "name": "SSO"
+  },
   "ssooidc": {
+    "prefix": "sso-oidc",
+    "name": "SSOOIDC"
+  },
+  "@aws-sdk/client-sso-oidc": {
     "prefix": "sso-oidc",
     "name": "SSOOIDC"
   },
@@ -793,69 +1571,139 @@
     "name": "MarketplaceCatalog",
     "cors": true
   },
+  "@aws-sdk/client-marketplace-catalog": {
+    "prefix": "marketplace-catalog",
+    "name": "MarketplaceCatalog",
+    "cors": true
+  },
   "dataexchange": {
     "name": "DataExchange"
   },
+  "@aws-sdk/client-dataexchange": {
+    "name": "DataExchange"
+  },
   "sesv2": {
+    "name": "SESV2"
+  },
+  "@aws-sdk/client-sesv2": {
     "name": "SESV2"
   },
   "migrationhubconfig": {
     "prefix": "migrationhub-config",
     "name": "MigrationHubConfig"
   },
+  "@aws-sdk/client-migrationhub-config": {
+    "prefix": "migrationhub-config",
+    "name": "MigrationHubConfig"
+  },
   "connectparticipant": {
+    "name": "ConnectParticipant"
+  },
+  "@aws-sdk/client-connectparticipant": {
     "name": "ConnectParticipant"
   },
   "appconfig": {
     "name": "AppConfig"
   },
+  "@aws-sdk/client-appconfig": {
+    "name": "AppConfig"
+  },
   "iotsecuretunneling": {
     "name": "IoTSecureTunneling"
   },
+  "@aws-sdk/client-iotsecuretunneling": {
+    "name": "IoTSecureTunneling"
+  },
   "wafv2": {
+    "name": "WAFV2"
+  },
+  "@aws-sdk/client-wafv2": {
     "name": "WAFV2"
   },
   "elasticinference": {
     "prefix": "elastic-inference",
     "name": "ElasticInference"
   },
+  "@aws-sdk/client-elastic-inference": {
+    "prefix": "elastic-inference",
+    "name": "ElasticInference"
+  },
   "imagebuilder": {
+    "name": "Imagebuilder"
+  },
+  "@aws-sdk/client-imagebuilder": {
     "name": "Imagebuilder"
   },
   "schemas": {
     "name": "Schemas"
   },
+  "@aws-sdk/client-schemas": {
+    "name": "Schemas"
+  },
   "accessanalyzer": {
+    "name": "AccessAnalyzer"
+  },
+  "@aws-sdk/client-accessanalyzer": {
     "name": "AccessAnalyzer"
   },
   "codegurureviewer": {
     "prefix": "codeguru-reviewer",
     "name": "CodeGuruReviewer"
   },
+  "@aws-sdk/client-codeguru-reviewer": {
+    "prefix": "codeguru-reviewer",
+    "name": "CodeGuruReviewer"
+  },
   "codeguruprofiler": {
+    "name": "CodeGuruProfiler"
+  },
+  "@aws-sdk/client-codeguruprofiler": {
     "name": "CodeGuruProfiler"
   },
   "computeoptimizer": {
     "prefix": "compute-optimizer",
     "name": "ComputeOptimizer"
   },
+  "@aws-sdk/client-compute-optimizer": {
+    "prefix": "compute-optimizer",
+    "name": "ComputeOptimizer"
+  },
   "frauddetector": {
+    "name": "FraudDetector"
+  },
+  "@aws-sdk/client-frauddetector": {
     "name": "FraudDetector"
   },
   "kendra": {
     "name": "Kendra"
   },
+  "@aws-sdk/client-kendra": {
+    "name": "Kendra"
+  },
   "networkmanager": {
     "name": "NetworkManager"
   },
+  "@aws-sdk/client-networkmanager": {
+    "name": "NetworkManager"
+  },
   "outposts": {
+    "name": "Outposts"
+  },
+  "@aws-sdk/client-outposts": {
     "name": "Outposts"
   },
   "augmentedairuntime": {
     "prefix": "sagemaker-a2i-runtime",
     "name": "AugmentedAIRuntime"
   },
+  "@aws-sdk/client-sage-maker-a2iruntime": {
+    "prefix": "sagemaker-a2i-runtime",
+    "name": "AugmentedAIRuntime"
+  },
   "ebs": {
+    "name": "EBS"
+  },
+  "@aws-sdk/client-ebs": {
     "name": "EBS"
   },
   "kinesisvideosignalingchannels": {
@@ -863,41 +1711,84 @@
     "name": "KinesisVideoSignalingChannels",
     "cors": true
   },
+  "@aws-sdk/client-kinesis-video-signaling": {
+    "prefix": "kinesis-video-signaling",
+    "name": "KinesisVideoSignalingChannels",
+    "cors": true
+  },
   "detective": {
+    "name": "Detective"
+  },
+  "@aws-sdk/client-detective": {
     "name": "Detective"
   },
   "codestarconnections": {
     "prefix": "codestar-connections",
     "name": "CodeStarconnections"
   },
+  "@aws-sdk/client-codestar-connections": {
+    "prefix": "codestar-connections",
+    "name": "CodeStarconnections"
+  },
   "synthetics": {
+    "name": "Synthetics"
+  },
+  "@aws-sdk/client-synthetics": {
     "name": "Synthetics"
   },
   "iotsitewise": {
     "name": "IoTSiteWise"
   },
+  "@aws-sdk/client-iotsitewise": {
+    "name": "IoTSiteWise"
+  },
   "macie2": {
+    "name": "Macie2"
+  },
+  "@aws-sdk/client-macie2": {
     "name": "Macie2"
   },
   "codeartifact": {
     "name": "CodeArtifact"
   },
+  "@aws-sdk/client-codeartifact": {
+    "name": "CodeArtifact"
+  },
   "honeycode": {
+    "name": "Honeycode"
+  },
+  "@aws-sdk/client-honeycode": {
     "name": "Honeycode"
   },
   "ivs": {
     "name": "IVS"
   },
+  "@aws-sdk/client-ivs": {
+    "name": "IVS"
+  },
   "braket": {
+    "name": "Braket"
+  },
+  "@aws-sdk/client-braket": {
     "name": "Braket"
   },
   "identitystore": {
     "name": "IdentityStore"
   },
+  "@aws-sdk/client-identitystore": {
+    "name": "IdentityStore"
+  },
   "appflow": {
     "name": "Appflow"
   },
+  "@aws-sdk/client-appflow": {
+    "name": "Appflow"
+  },
   "redshiftdata": {
+    "prefix": "redshift-data",
+    "name": "RedshiftData"
+  },
+  "@aws-sdk/client-redshift-data": {
     "prefix": "redshift-data",
     "name": "RedshiftData"
   },
@@ -905,7 +1796,15 @@
     "prefix": "sso-admin",
     "name": "SSOAdmin"
   },
+  "@aws-sdk/client-sso-admin": {
+    "prefix": "sso-admin",
+    "name": "SSOAdmin"
+  },
   "timestreamquery": {
+    "prefix": "timestream-query",
+    "name": "TimestreamQuery"
+  },
+  "@aws-sdk/client-timestream-query": {
     "prefix": "timestream-query",
     "name": "TimestreamQuery"
   },
@@ -913,13 +1812,27 @@
     "prefix": "timestream-write",
     "name": "TimestreamWrite"
   },
+  "@aws-sdk/client-timestream-write": {
+    "prefix": "timestream-write",
+    "name": "TimestreamWrite"
+  },
   "s3outposts": {
+    "name": "S3Outposts"
+  },
+  "@aws-sdk/client-s3outposts": {
     "name": "S3Outposts"
   },
   "databrew": {
     "name": "DataBrew"
   },
+  "@aws-sdk/client-databrew": {
+    "name": "DataBrew"
+  },
   "servicecatalogappregistry": {
+    "prefix": "servicecatalog-appregistry",
+    "name": "ServiceCatalogAppRegistry"
+  },
+  "@aws-sdk/client-service-catalog-appregistry": {
     "prefix": "servicecatalog-appregistry",
     "name": "ServiceCatalogAppRegistry"
   },
@@ -927,16 +1840,33 @@
     "prefix": "network-firewall",
     "name": "NetworkFirewall"
   },
+  "@aws-sdk/client-network-firewall": {
+    "prefix": "network-firewall",
+    "name": "NetworkFirewall"
+  },
   "mwaa": {
+    "name": "MWAA"
+  },
+  "@aws-sdk/client-mwaa": {
     "name": "MWAA"
   },
   "amplifybackend": {
     "name": "AmplifyBackend"
   },
+  "@aws-sdk/client-amplifybackend": {
+    "name": "AmplifyBackend"
+  },
   "appintegrations": {
     "name": "AppIntegrations"
   },
+  "@aws-sdk/client-appintegrations": {
+    "name": "AppIntegrations"
+  },
   "connectcontactlens": {
+    "prefix": "connect-contact-lens",
+    "name": "ConnectContactLens"
+  },
+  "@aws-sdk/client-connect-contact-lens": {
     "prefix": "connect-contact-lens",
     "name": "ConnectContactLens"
   },
@@ -944,14 +1874,29 @@
     "prefix": "devops-guru",
     "name": "DevOpsGuru"
   },
+  "@aws-sdk/client-devops-guru": {
+    "prefix": "devops-guru",
+    "name": "DevOpsGuru"
+  },
   "ecrpublic": {
+    "prefix": "ecr-public",
+    "name": "ECRPUBLIC"
+  },
+  "@aws-sdk/client-ecr-public": {
     "prefix": "ecr-public",
     "name": "ECRPUBLIC"
   },
   "lookoutvision": {
     "name": "LookoutVision"
   },
+  "@aws-sdk/client-lookoutvision": {
+    "name": "LookoutVision"
+  },
   "sagemakerfeaturestoreruntime": {
+    "prefix": "sagemaker-featurestore-runtime",
+    "name": "SageMakerFeatureStoreRuntime"
+  },
+  "@aws-sdk/client-sagemaker-featurestore-runtime": {
     "prefix": "sagemaker-featurestore-runtime",
     "name": "SageMakerFeatureStoreRuntime"
   },
@@ -959,17 +1904,35 @@
     "prefix": "customer-profiles",
     "name": "CustomerProfiles"
   },
+  "@aws-sdk/client-customer-profiles": {
+    "prefix": "customer-profiles",
+    "name": "CustomerProfiles"
+  },
   "auditmanager": {
+    "name": "AuditManager"
+  },
+  "@aws-sdk/client-auditmanager": {
     "name": "AuditManager"
   },
   "emrcontainers": {
     "prefix": "emr-containers",
     "name": "EMRcontainers"
   },
+  "@aws-sdk/client-emr-containers": {
+    "prefix": "emr-containers",
+    "name": "EMRcontainers"
+  },
   "healthlake": {
     "name": "HealthLake"
   },
+  "@aws-sdk/client-healthlake": {
+    "name": "HealthLake"
+  },
   "sagemakeredge": {
+    "prefix": "sagemaker-edge",
+    "name": "SagemakerEdge"
+  },
+  "@aws-sdk/client-sagemaker-edge": {
     "prefix": "sagemaker-edge",
     "name": "SagemakerEdge"
   },
@@ -977,26 +1940,53 @@
     "name": "Amp",
     "cors": true
   },
+  "@aws-sdk/client-amp": {
+    "name": "Amp",
+    "cors": true
+  },
   "greengrassv2": {
+    "name": "GreengrassV2"
+  },
+  "@aws-sdk/client-greengrassv2": {
     "name": "GreengrassV2"
   },
   "iotdeviceadvisor": {
     "name": "IotDeviceAdvisor"
   },
+  "@aws-sdk/client-iotdeviceadvisor": {
+    "name": "IotDeviceAdvisor"
+  },
   "iotfleethub": {
     "name": "IoTFleetHub"
   },
+  "@aws-sdk/client-iotfleethub": {
+    "name": "IoTFleetHub"
+  },
   "iotwireless": {
+    "name": "IoTWireless"
+  },
+  "@aws-sdk/client-iot-wireless": {
     "name": "IoTWireless"
   },
   "location": {
     "name": "Location",
     "cors": true
   },
+  "@aws-sdk/client-location": {
+    "name": "Location",
+    "cors": true
+  },
   "wellarchitected": {
     "name": "WellArchitected"
   },
+  "@aws-sdk/client-wellarchitected": {
+    "name": "WellArchitected"
+  },
   "lexmodelsv2": {
+    "prefix": "models.lex.v2",
+    "name": "LexModelsV2"
+  },
+  "@aws-sdk/client-lex-models-v2": {
     "prefix": "models.lex.v2",
     "name": "LexModelsV2"
   },
@@ -1005,25 +1995,52 @@
     "name": "LexRuntimeV2",
     "cors": true
   },
+  "@aws-sdk/client-lex-runtime-v2": {
+    "prefix": "runtime.lex.v2",
+    "name": "LexRuntimeV2",
+    "cors": true
+  },
   "fis": {
+    "name": "Fis"
+  },
+  "@aws-sdk/client-fis": {
     "name": "Fis"
   },
   "lookoutmetrics": {
     "name": "LookoutMetrics"
   },
+  "@aws-sdk/client-lookoutmetrics": {
+    "name": "LookoutMetrics"
+  },
   "mgn": {
+    "name": "Mgn"
+  },
+  "@aws-sdk/client-mgn": {
     "name": "Mgn"
   },
   "lookoutequipment": {
     "name": "LookoutEquipment"
   },
+  "@aws-sdk/client-lookoutequipment": {
+    "name": "LookoutEquipment"
+  },
   "nimble": {
+    "name": "Nimble"
+  },
+  "@aws-sdk/client-nimble": {
     "name": "Nimble"
   },
   "finspace": {
     "name": "Finspace"
   },
+  "@aws-sdk/client-finspace": {
+    "name": "Finspace"
+  },
   "finspacedata": {
+    "prefix": "finspace-data",
+    "name": "Finspacedata"
+  },
+  "@aws-sdk/client-finspace-data": {
     "prefix": "finspace-data",
     "name": "Finspacedata"
   },
@@ -1031,20 +2048,41 @@
     "prefix": "ssm-contacts",
     "name": "SSMContacts"
   },
+  "@aws-sdk/client-ssm-contacts": {
+    "prefix": "ssm-contacts",
+    "name": "SSMContacts"
+  },
   "ssmincidents": {
+    "prefix": "ssm-incidents",
+    "name": "SSMIncidents"
+  },
+  "@aws-sdk/client-ssm-incidents": {
     "prefix": "ssm-incidents",
     "name": "SSMIncidents"
   },
   "applicationcostprofiler": {
     "name": "ApplicationCostProfiler"
   },
+  "@aws-sdk/client-applicationcostprofiler": {
+    "name": "ApplicationCostProfiler"
+  },
   "apprunner": {
+    "name": "AppRunner"
+  },
+  "@aws-sdk/client-apprunner": {
     "name": "AppRunner"
   },
   "proton": {
     "name": "Proton"
   },
+  "@aws-sdk/client-proton": {
+    "name": "Proton"
+  },
   "route53recoverycluster": {
+    "prefix": "route53-recovery-cluster",
+    "name": "Route53RecoveryCluster"
+  },
+  "@aws-sdk/client-route53-recovery-cluster": {
     "prefix": "route53-recovery-cluster",
     "name": "Route53RecoveryCluster"
   },
@@ -1052,7 +2090,15 @@
     "prefix": "route53-recovery-control-config",
     "name": "Route53RecoveryControlConfig"
   },
+  "@aws-sdk/client-route53-recovery-control-config": {
+    "prefix": "route53-recovery-control-config",
+    "name": "Route53RecoveryControlConfig"
+  },
   "route53recoveryreadiness": {
+    "prefix": "route53-recovery-readiness",
+    "name": "Route53RecoveryReadiness"
+  },
+  "@aws-sdk/client-route53-recovery-readiness": {
     "prefix": "route53-recovery-readiness",
     "name": "Route53RecoveryReadiness"
   },
@@ -1060,7 +2106,15 @@
     "prefix": "chime-sdk-identity",
     "name": "ChimeSDKIdentity"
   },
+  "@aws-sdk/client-chime-sdk-identity": {
+    "prefix": "chime-sdk-identity",
+    "name": "ChimeSDKIdentity"
+  },
   "chimesdkmessaging": {
+    "prefix": "chime-sdk-messaging",
+    "name": "ChimeSDKMessaging"
+  },
+  "@aws-sdk/client-chime-sdk-messaging": {
     "prefix": "chime-sdk-messaging",
     "name": "ChimeSDKMessaging"
   },
@@ -1068,97 +2122,195 @@
     "prefix": "snow-device-management",
     "name": "SnowDeviceManagement"
   },
+  "@aws-sdk/client-snow-device-management": {
+    "prefix": "snow-device-management",
+    "name": "SnowDeviceManagement"
+  },
   "memorydb": {
+    "name": "MemoryDB"
+  },
+  "@aws-sdk/client-memory-db": {
     "name": "MemoryDB"
   },
   "opensearch": {
     "name": "OpenSearch"
   },
+  "@aws-sdk/client-opensearch": {
+    "name": "OpenSearch"
+  },
   "kafkaconnect": {
+    "name": "KafkaConnect"
+  },
+  "@aws-sdk/client-kafkaconnect": {
     "name": "KafkaConnect"
   },
   "voiceid": {
     "prefix": "voice-id",
     "name": "VoiceID"
   },
+  "@aws-sdk/client-voice-id": {
+    "prefix": "voice-id",
+    "name": "VoiceID"
+  },
   "wisdom": {
+    "name": "Wisdom"
+  },
+  "@aws-sdk/client-wisdom": {
     "name": "Wisdom"
   },
   "account": {
     "name": "Account"
   },
+  "@aws-sdk/client-account": {
+    "name": "Account"
+  },
   "cloudcontrol": {
+    "name": "CloudControl"
+  },
+  "@aws-sdk/client-cloudcontrol": {
     "name": "CloudControl"
   },
   "grafana": {
     "name": "Grafana"
   },
+  "@aws-sdk/client-grafana": {
+    "name": "Grafana"
+  },
   "panorama": {
+    "name": "Panorama"
+  },
+  "@aws-sdk/client-panorama": {
     "name": "Panorama"
   },
   "chimesdkmeetings": {
     "prefix": "chime-sdk-meetings",
     "name": "ChimeSDKMeetings"
   },
+  "@aws-sdk/client-chime-sdk-meetings": {
+    "prefix": "chime-sdk-meetings",
+    "name": "ChimeSDKMeetings"
+  },
   "resiliencehub": {
+    "name": "Resiliencehub"
+  },
+  "@aws-sdk/client-resiliencehub": {
     "name": "Resiliencehub"
   },
   "migrationhubstrategy": {
     "name": "MigrationHubStrategy"
   },
+  "@aws-sdk/client-migrationhubstrategy": {
+    "name": "MigrationHubStrategy"
+  },
   "appconfigdata": {
     "name": "AppConfigData"
   },
+  "@aws-sdk/client-appconfigdata": {
+    "name": "AppConfigData"
+  },
   "drs": {
+    "name": "Drs"
+  },
+  "@aws-sdk/client-drs": {
     "name": "Drs"
   },
   "migrationhubrefactorspaces": {
     "prefix": "migration-hub-refactor-spaces",
     "name": "MigrationHubRefactorSpaces"
   },
+  "@aws-sdk/client-migration-hub-refactor-spaces": {
+    "prefix": "migration-hub-refactor-spaces",
+    "name": "MigrationHubRefactorSpaces"
+  },
   "evidently": {
+    "name": "Evidently"
+  },
+  "@aws-sdk/client-evidently": {
     "name": "Evidently"
   },
   "inspector2": {
     "name": "Inspector2"
   },
+  "@aws-sdk/client-inspector2": {
+    "name": "Inspector2"
+  },
   "rbin": {
     "name": "Rbin"
   },
+  "@aws-sdk/client-rbin": {
+    "name": "Rbin"
+  },
   "rum": {
+    "name": "RUM"
+  },
+  "@aws-sdk/client-rum": {
     "name": "RUM"
   },
   "backupgateway": {
     "prefix": "backup-gateway",
     "name": "BackupGateway"
   },
+  "@aws-sdk/client-backup-gateway": {
+    "prefix": "backup-gateway",
+    "name": "BackupGateway"
+  },
   "iottwinmaker": {
+    "name": "IoTTwinMaker"
+  },
+  "@aws-sdk/client-iottwinmaker": {
     "name": "IoTTwinMaker"
   },
   "workspacesweb": {
     "prefix": "workspaces-web",
     "name": "WorkSpacesWeb"
   },
+  "@aws-sdk/client-workspaces-web": {
+    "prefix": "workspaces-web",
+    "name": "WorkSpacesWeb"
+  },
   "amplifyuibuilder": {
+    "name": "AmplifyUIBuilder"
+  },
+  "@aws-sdk/client-amplifyuibuilder": {
     "name": "AmplifyUIBuilder"
   },
   "keyspaces": {
     "name": "Keyspaces"
   },
+  "@aws-sdk/client-keyspaces": {
+    "name": "Keyspaces"
+  },
   "billingconductor": {
     "name": "Billingconductor"
   },
+  "@aws-sdk/client-billingconductor": {
+    "name": "Billingconductor"
+  },
   "gamesparks": {
+    "name": "GameSparks"
+  },
+  "@aws-sdk/client-gamesparks": {
     "name": "GameSparks"
   },
   "pinpointsmsvoicev2": {
     "prefix": "pinpoint-sms-voice-v2",
     "name": "PinpointSMSVoiceV2"
   },
+  "@aws-sdk/client-pinpoint-sms-voice-v2": {
+    "prefix": "pinpoint-sms-voice-v2",
+    "name": "PinpointSMSVoiceV2"
+  },
   "ivschat": {
     "name": "Ivschat"
   },
+  "@aws-sdk/client-ivschat": {
+    "name": "Ivschat"
+  },
   "chimesdkmediapipelines": {
+    "prefix": "chime-sdk-media-pipelines",
+    "name": "ChimeSDKMediaPipelines"
+  },
+  "@aws-sdk/client-chime-sdk-media-pipelines": {
     "prefix": "chime-sdk-media-pipelines",
     "name": "ChimeSDKMediaPipelines"
   },
@@ -1166,53 +2318,107 @@
     "prefix": "emr-serverless",
     "name": "EMRServerless"
   },
+  "@aws-sdk/client-emr-serverless": {
+    "prefix": "emr-serverless",
+    "name": "EMRServerless"
+  },
   "m2": {
     "name": "M2"
   },
+  "@aws-sdk/client-m2": {
+    "name": "M2"
+  },
   "connectcampaigns": {
+    "name": "ConnectCampaigns"
+  },
+  "@aws-sdk/client-connectcampaigns": {
     "name": "ConnectCampaigns"
   },
   "redshiftserverless": {
     "prefix": "redshift-serverless",
     "name": "RedshiftServerless"
   },
+  "@aws-sdk/client-redshift-serverless": {
+    "prefix": "redshift-serverless",
+    "name": "RedshiftServerless"
+  },
   "rolesanywhere": {
+    "name": "RolesAnywhere"
+  },
+  "@aws-sdk/client-rolesanywhere": {
     "name": "RolesAnywhere"
   },
   "licensemanagerusersubscriptions": {
     "prefix": "license-manager-user-subscriptions",
     "name": "LicenseManagerUserSubscriptions"
   },
+  "@aws-sdk/client-license-manager-user-subscriptions": {
+    "prefix": "license-manager-user-subscriptions",
+    "name": "LicenseManagerUserSubscriptions"
+  },
   "backupstorage": {
     "name": "BackupStorage"
   },
+  "@aws-sdk/client-backupstorage": {
+    "name": "BackupStorage"
+  },
   "privatenetworks": {
+    "name": "PrivateNetworks"
+  },
+  "@aws-sdk/client-privatenetworks": {
     "name": "PrivateNetworks"
   },
   "supportapp": {
     "prefix": "support-app",
     "name": "SupportApp"
   },
+  "@aws-sdk/client-support-app": {
+    "prefix": "support-app",
+    "name": "SupportApp"
+  },
   "controltower": {
+    "name": "ControlTower"
+  },
+  "@aws-sdk/client-controltower": {
     "name": "ControlTower"
   },
   "iotfleetwise": {
     "name": "IoTFleetWise"
   },
+  "@aws-sdk/client-iotfleetwise": {
+    "name": "IoTFleetWise"
+  },
   "migrationhuborchestrator": {
     "name": "MigrationHubOrchestrator"
   },
+  "@aws-sdk/client-migrationhuborchestrator": {
+    "name": "MigrationHubOrchestrator"
+  },
   "connectcases": {
+    "name": "ConnectCases"
+  },
+  "@aws-sdk/client-connectcases": {
     "name": "ConnectCases"
   },
   "resourceexplorer2": {
     "prefix": "resource-explorer-2",
     "name": "ResourceExplorer2"
   },
+  "@aws-sdk/client-resource-explorer-2": {
+    "prefix": "resource-explorer-2",
+    "name": "ResourceExplorer2"
+  },
   "scheduler": {
     "name": "Scheduler"
   },
+  "@aws-sdk/client-scheduler": {
+    "name": "Scheduler"
+  },
   "chimesdkvoice": {
+    "prefix": "chime-sdk-voice",
+    "name": "ChimeSDKVoice"
+  },
+  "@aws-sdk/client-chime-sdk-voice": {
     "prefix": "chime-sdk-voice",
     "name": "ChimeSDKVoice"
   },
@@ -1220,30 +2426,61 @@
     "prefix": "iot-roborunner",
     "name": "IoTRoboRunner"
   },
+  "@aws-sdk/client-iot-roborunner": {
+    "prefix": "iot-roborunner",
+    "name": "IoTRoboRunner"
+  },
   "ssmsap": {
+    "prefix": "ssm-sap",
+    "name": "SsmSap"
+  },
+  "@aws-sdk/client-ssm-sap": {
     "prefix": "ssm-sap",
     "name": "SsmSap"
   },
   "oam": {
     "name": "OAM"
   },
+  "@aws-sdk/client-oam": {
+    "name": "OAM"
+  },
   "arczonalshift": {
+    "prefix": "arc-zonal-shift",
+    "name": "ARCZonalShift"
+  },
+  "@aws-sdk/client-arc-zonal-shift": {
     "prefix": "arc-zonal-shift",
     "name": "ARCZonalShift"
   },
   "omics": {
     "name": "Omics"
   },
+  "@aws-sdk/client-omics": {
+    "name": "Omics"
+  },
   "opensearchserverless": {
+    "name": "OpenSearchServerless"
+  },
+  "@aws-sdk/client-opensearchserverless": {
     "name": "OpenSearchServerless"
   },
   "securitylake": {
     "name": "SecurityLake"
   },
+  "@aws-sdk/client-securitylake": {
+    "name": "SecurityLake"
+  },
   "simspaceweaver": {
     "name": "SimSpaceWeaver"
   },
+  "@aws-sdk/client-simspaceweaver": {
+    "name": "SimSpaceWeaver"
+  },
   "docdbelastic": {
+    "prefix": "docdb-elastic",
+    "name": "DocDBElastic"
+  },
+  "@aws-sdk/client-docdb-elastic": {
     "prefix": "docdb-elastic",
     "name": "DocDBElastic"
   },
@@ -1251,13 +2488,27 @@
     "prefix": "sagemaker-geospatial",
     "name": "SageMakerGeospatial"
   },
+  "@aws-sdk/client-sagemaker-geospatial": {
+    "prefix": "sagemaker-geospatial",
+    "name": "SageMakerGeospatial"
+  },
   "codecatalyst": {
+    "name": "CodeCatalyst"
+  },
+  "@aws-sdk/client-codecatalyst": {
     "name": "CodeCatalyst"
   },
   "pipes": {
     "name": "Pipes"
   },
+  "@aws-sdk/client-pipes": {
+    "name": "Pipes"
+  },
   "sagemakermetrics": {
+    "prefix": "sagemaker-metrics",
+    "name": "SageMakerMetrics"
+  },
+  "@aws-sdk/client-sagemaker-metrics": {
     "prefix": "sagemaker-metrics",
     "name": "SageMakerMetrics"
   },
@@ -1265,7 +2516,15 @@
     "prefix": "kinesis-video-webrtc-storage",
     "name": "KinesisVideoWebRTCStorage"
   },
+  "@aws-sdk/client-kinesis-video-webrtc-storage": {
+    "prefix": "kinesis-video-webrtc-storage",
+    "name": "KinesisVideoWebRTCStorage"
+  },
   "licensemanagerlinuxsubscriptions": {
+    "prefix": "license-manager-linux-subscriptions",
+    "name": "LicenseManagerLinuxSubscriptions"
+  },
+  "@aws-sdk/client-license-manager-linux-subscriptions": {
     "prefix": "license-manager-linux-subscriptions",
     "name": "LicenseManagerLinuxSubscriptions"
   },

@@ -487,8 +487,10 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
         // Derive statements from AWS SDK calls
         for (const call of [props.onCreate, props.onUpdate, props.onDelete]) {
           if (call && call.assumedRoleArn == null) {
+            const action = call.service.startsWith('@aws-sdk/client-') ? awsSdkV3ToIamAction(call.service, call.action)
+              : awsSdkV2ToIamAction(call.service, call.action);
             const statement = new iam.PolicyStatement({
-              actions: [awsSdkToIamAction(call.service, call.action)],
+              actions: [action],
               resources: props.policy.resources,
             });
             statements.push(statement);
@@ -603,10 +605,23 @@ function includesPhysicalResourceIdRef(obj: any | undefined) {
  *
  * TODO: is this mapping correct for all services?
  */
-function awsSdkToIamAction(service: string, action: string): string {
+function awsSdkV2ToIamAction(service: string, action: string): string {
   const srv = service.toLowerCase();
   const awsSdkMetadata = getAwsSdkMetadata();
   const iamService = (awsSdkMetadata[srv] && awsSdkMetadata[srv].prefix) || srv;
   const iamAction = action.charAt(0).toUpperCase() + action.slice(1);
+  return `${iamService}:${iamAction}`;
+}
+
+/**
+ * Transform SDK V3 packageName/command to IAM action using metadata from @aws-sdk/client module.
+ * Example: @aws-sdk/client-cloudwatch-logs with PutRetentionPolicyCommand => logs:PutRetentionPolicy
+ *
+ * TODO: is this mapping correct for all services?
+ */
+function awsSdkV3ToIamAction(packageName: string, command: string): string {
+  const awsSdkMetadata = getAwsSdkMetadata();
+  const iamService = (awsSdkMetadata[packageName] && awsSdkMetadata[packageName].prefix) || packageName.split('@aws-sdk/client-')[1];
+  const iamAction = command.split('Command')[0];
   return `${iamService}:${iamAction}`;
 }

@@ -677,6 +677,64 @@ test('can use existing role', () => {
   Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 0);
 });
 
+test('AWS SDK V3 patterns included in API metadata can use fromSdkCalls', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    onCreate: {
+      service: '@aws-sdk/client-cloudwatch-logs',
+      action: 'PutRetentionPolicyCommand',
+      physicalResourceId: PhysicalResourceId.of('id'),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    'PolicyDocument': {
+      'Statement': [
+        {
+          'Action': 'logs:PutRetentionPolicy',
+          'Effect': 'Allow',
+          'Resource': '*',
+        },
+      ],
+      'Version': '2012-10-17',
+    },
+  });
+});
+
+test('AWS SDK V3 patterns not included in API metadata can use fromSdkCalls', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    onCreate: {
+      service: '@aws-sdk/client-example-service',
+      action: 'CreateExampleCommand',
+      physicalResourceId: PhysicalResourceId.of('id'),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    'PolicyDocument': {
+      'Statement': [
+        {
+          'Action': 'example-service:CreateExample',
+          'Effect': 'Allow',
+          'Resource': '*',
+        },
+      ],
+      'Version': '2012-10-17',
+    },
+  });
+});
+
 test('getData', () => {
   // GIVEN
   const stack = new cdk.Stack();
