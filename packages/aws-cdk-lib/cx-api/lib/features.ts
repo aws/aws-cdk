@@ -93,7 +93,6 @@ export const EFS_MOUNTTARGET_ORDERINSENSITIVE_LOGICAL_ID = '@aws-cdk/aws-efs:mou
 export const AUTOSCALING_GENERATE_LAUNCH_TEMPLATE = '@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig';
 export const ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY = '@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby';
 export const LAMBDA_NODEJS_USE_LATEST_RUNTIME = '@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion';
-export const BATCH_ENABLE_OPTIONAL_DEFAULTS = '@aws-cdk/aws-batch:enableOptionalDefaults';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -907,20 +906,6 @@ export const FLAGS: Record<string, FlagInfo> = {
     `,
     introducedIn: { v2: '2.93.0' },
     recommendedValue: true,
-  },
-  //////////////////////////////////////////////////////////////////////
-  [BATCH_ENABLE_OPTIONAL_DEFAULTS]: {
-    type: FlagType.ApiDefault,
-    summary: 'Enables aws-lambda-nodejs.Function to use the latest available NodeJs runtime as the default',
-    detailsMd: `
-      If this is set, and a \`runtime\` prop is not passed to, Lambda NodeJs
-      functions will us the latest version of the runtime provided by the Lambda
-      service. Do not use this if you your lambda function is reliant on dependencies
-      shipped as part of the runtime environment.
-    `,
-    introducedIn: { v2: '2.93.0' },
-    recommendedValue: true,
-    compatibilityWithOldBehaviorMd: 'Pass `runtime: lambda.Runtime.NODEJS_16_X` to `Function` construct to restore the previous behavior.',
   },
 
 };
