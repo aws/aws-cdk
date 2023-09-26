@@ -6,6 +6,10 @@ import { baseJobDefinitionProperties, IJobDefinition, JobDefinitionBase, JobDefi
 import * as ec2 from '../../aws-ec2';
 import { ArnFormat, Lazy, Stack } from '../../core';
 
+/**
+ * Not a real instance type! Indicates that Batch will choose one it determines to be optimal
+ * for the workload.
+ */
 export class OptimalInstanceType extends ec2.InstanceType {
   public optimal = 'optimal';
   constructor() {
