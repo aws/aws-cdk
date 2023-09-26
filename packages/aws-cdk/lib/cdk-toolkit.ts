@@ -4,6 +4,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
+import { minimatch } from 'minimatch';
 import * as promptly from 'promptly';
 import { DeploymentMethod } from './api';
 import { SdkProvider } from './api/aws-auth';
@@ -27,7 +28,6 @@ import { Concurrency, WorkGraph } from './util/work-graph';
 import { WorkGraphBuilder } from './util/work-graph-builder';
 import { AssetBuildNode, AssetPublishNode, StackNode } from './util/work-graph-types';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../lib/api/cxapp/environments';
-import { minimatch } from 'minimatch';
 
 export interface CdkToolkitProps {
 
