@@ -10,4 +10,8 @@
 *.jpg binary
 *.tgz binary
 *.tar.gz binary
+# Hide snapshots from GitHub UI, except for the actual templates
+**/*.snapshot/** linguist-generated
+**/*.snapshot/**/*.template.json -linguist-generated
+**/*.snapshot/**/*DeployAssert*.template.json linguist-generated
 packages/@aws-cdk-testing/framework-integ/test/aws-codepipeline-actions/test/integ.pipeline-environment-variables.js.snapshot/asset.*.zip filter=lfs diff=lfs merge=lfs -text
