@@ -19,17 +19,11 @@ export abstract class Schedule extends CoreSchedule {
    * Create a schedule from a set of cron fields
    */
   public static cron(options: CoreCronOptions): Schedule {
-    let cronOptions: CoreCronOptions;
-    if (options.day !== undefined || options.weekDay !== undefined) {
-      cronOptions = options;
-    } else {
-      cronOptions = {
-        weekDay: '*', // to override core.Schedule's default
-        day: '*', // to override core.Schedule's default
-        ...options,
-      };
-    }
-    const cron = super.protectedCron(cronOptions);
+    const cron = super.protectedCron({
+      weekDay: '*', // to override core.Schedule's default
+      day: '*', // to override core.Schedule's default
+      ...options,
+    });
     const cronSplit = cron.expressionString.slice(5).split(' '); // remove "cron(" from start
     cronSplit.pop(); // remove year, since autoscaling does not accept it
     const autoscalingCron = cronSplit.join(' ');
