@@ -206,6 +206,18 @@ cluster.addNodegroupCapacity('custom-node-group', {
 });
 ```
 
+To define the maximum number of instances which can be simultaneously replaced in a node group during a version update you can set the `updateConfig` option.
+
+```ts
+declare const cluster: eks.Cluster;
+cluster.addNodegroupCapacity('custom-node-group', {
+  instanceTypes: [new ec2.InstanceType('m5.large')],
+  updateConfig: {
+    maxUnavailablePercentage: 33,
+  },
+});
+```
+
 #### Node Groups with IPv6 Support
 
 Node groups are available with IPv6 configured networks.  For custom roles assigned to node groups additional permissions are necessary in order for pods to obtain an IPv6 address.  The default node role will include these permissions.

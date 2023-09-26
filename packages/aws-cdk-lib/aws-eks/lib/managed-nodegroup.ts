@@ -282,6 +282,11 @@ export interface NodegroupOptions {
    * @default - ON_DEMAND
    */
   readonly capacityType?: CapacityType;
+  /**
+   * @default undefined
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eks-nodegroup-updateconfig.html
+   */
+  readonly updateConfig?: CfnNodegroup.UpdateConfigProperty;
 }
 
 /**
@@ -333,6 +338,11 @@ export class Nodegroup extends Resource implements INodegroup {
   private readonly desiredSize: number;
   private readonly maxSize: number;
   private readonly minSize: number;
+  /**
+   * @default undefined
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eks-nodegroup-updateconfig.html
+   */
+  private readonly updateConfig?: CfnNodegroup.UpdateConfigProperty;
 
   constructor(scope: Construct, id: string, props: NodegroupProps) {
     super(scope, id, {
@@ -344,6 +354,7 @@ export class Nodegroup extends Resource implements INodegroup {
     this.desiredSize = props.desiredSize ?? props.minSize ?? 2;
     this.maxSize = props.maxSize ?? this.desiredSize;
     this.minSize = props.minSize ?? 1;
+    this.updateConfig = props.updateConfig;
 
     withResolved(this.desiredSize, this.maxSize, (desired, max) => {
       if (desired === undefined) {return ;}
@@ -463,6 +474,7 @@ export class Nodegroup extends Resource implements INodegroup {
         minSize: this.minSize,
       },
       tags: props.tags,
+      updateConfig: this.updateConfig,
     });
 
     // managed nodegroups update the `aws-auth` on creation, but we still need to track
