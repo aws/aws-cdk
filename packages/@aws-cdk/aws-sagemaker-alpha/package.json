@@ -107,11 +107,6 @@
   "publishConfig": {
     "tag": "latest"
   },
-  "awslint": {
-    "exclude": [
-      "*:*"
-    ]
-  },
   "pkglint": {
     "exclude": [
       "naming/package-matches-directory",

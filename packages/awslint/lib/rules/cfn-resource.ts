@@ -37,7 +37,7 @@ export class CfnResourceReflection {
    * Returns all CFN resource classes within an assembly.
    */
   public static findAll(assembly: reflect.Assembly) {
-    return assembly.classes
+    return assembly.allClasses
       .filter(c => CoreTypes.isCfnResource(c))
       .map(c => new CfnResourceReflection(c));
   }
@@ -54,10 +54,7 @@ export class CfnResourceReflection {
 
     this.basename = cls.name.slice('Cfn'.length);
 
-    // HACK: extract full CFN name from initializer docs
-    const initializerDoc = (cls.initializer && cls.initializer.docs.docs.summary) || '';
-    const out = /a new `([^`]+)`/.exec(initializerDoc);
-    const fullname = out && out[1];
+    const fullname = cls.docs.customTag('cloudformationResource');
     if (!fullname) {
       throw new Error(`Unable to extract CloudFormation resource name from initializer documentation of ${cls}`);
     }

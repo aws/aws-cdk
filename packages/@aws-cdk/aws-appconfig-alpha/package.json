@@ -102,11 +102,6 @@
   },
   "stability": "experimental",
   "maturity": "experimental",
-  "awslint": {
-    "exclude": [
-      "*:*"
-    ]
-  },
   "awscdkio": {
     "announce": false
   },

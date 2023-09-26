@@ -137,7 +137,7 @@ function extractProviderError(value: any): string | undefined {
  * than that \ is going to lead to quoting hell when the keys are stored in JSON.
  */
 function colonQuote(xs: string): string {
-  return xs.replace('$', '$$').replace(':', '$:');
+  return xs.replace(/\$/g, '$$').replace(/:/g, '$:');
 }
 
 function propsToArray(props: {[key: string]: any}, keyPrefix = ''): string[] {

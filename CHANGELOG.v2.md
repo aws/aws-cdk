@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.98.0](https://github.com/aws/aws-cdk/compare/v2.97.1...v2.98.0) (2023-09-26)
+
+
+### Features
+
+* update AWS Service Spec ([#27276](https://github.com/aws/aws-cdk/issues/27276)) ([3d9ca8d](https://github.com/aws/aws-cdk/commit/3d9ca8dad29e6e6f813ab2340da7639c24ba5494))
+* **aws-cdk-lib:** reduce load time of JavaScript library ([#27217](https://github.com/aws/aws-cdk/issues/27217)) ([faffce0](https://github.com/aws/aws-cdk/commit/faffce06c3f1d543600f7e8dc430a5105c73ac5a))
+
+
+### Bug Fixes
+
+* **rds:** prevent rendering deprecated credentials when creating a database cluster from a snapshot (under feature flag) ([#27174](https://github.com/aws/aws-cdk/issues/27174)) ([1fd22a7](https://github.com/aws/aws-cdk/commit/1fd22a7498223ae5d2faf1799056e81be4f71f5c)), closes [#23815](https://github.com/aws/aws-cdk/issues/23815)
+
 ## [2.97.1](https://github.com/aws/aws-cdk/compare/v2.97.0...v2.97.1) (2023-09-25)
 
 

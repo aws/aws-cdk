@@ -296,6 +296,9 @@
   "aws-guardduty": [
     "AWS::GuardDuty"
   ],
+  "aws-healthimaging": [
+    "AWS::HealthImaging"
+  ],
   "aws-healthlake": [
     "AWS::HealthLake"
   ],

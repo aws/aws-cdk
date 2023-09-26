@@ -157,7 +157,7 @@ describe('Migrate Function Tests', () => {
 
     // Replaced stack file is referenced correctly in app file
     const app = fs.readFileSync(path.join(workDir, 'GoodJava', 'src', 'main', 'java', 'com', 'myorg', 'GoodJavaApp.java'), 'utf8').split('\n');
-    expect(app.map(line => line.match('public class GoodJavaApp \{')).filter(line => line).length).toEqual(1);
+    expect(app.map(line => line.match('public class GoodJavaApp {')).filter(line => line).length).toEqual(1);
     expect(app.map(line => line.match(/        new GoodJavaStack\(app, "GoodJava", StackProps.builder()/)).filter(line => line).length).toEqual(1);
 
     // Replaced stack file is correctly generated
