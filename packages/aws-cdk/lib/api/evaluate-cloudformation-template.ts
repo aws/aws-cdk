@@ -1,4 +1,5 @@
 import * as AWS from 'aws-sdk';
+import { PromiseResult } from 'aws-sdk/lib/request';
 import { ISDK } from './aws-auth';
 import { NestedStackNames } from './nested-stack-helpers';
 
@@ -34,7 +35,57 @@ export class LazyListStackResources implements ListStackResources {
   }
 }
 
-export class CfnEvaluationException extends Error {}
+export interface LookupExport {
+  lookupExport(name: string): Promise<AWS.CloudFormation.Export>;
+}
+
+export class LookupExportError extends Error { }
+
+export class LazyLookupExport implements LookupExport {
+  private exports: { [name: string]: AWS.CloudFormation.Export } = {}
+
+  constructor(private readonly sdk: ISDK) { }
+
+  async lookupExport(name: string): Promise<AWS.CloudFormation.Export> {
+    if (this.exports[name]) {
+      return this.exports[name];
+    }
+
+    for await (const exports of this.listExports()) {
+      for (const e of exports) {
+        if (!e.Name) {
+          throw new LookupExportError(`Unable to handle CloudFormation Export without Name! ${JSON.stringify(e)}`);
+        }
+        this.exports[e.Name] = e;
+
+        if (e.Name === name) {
+          return e;
+        }
+      }
+    }
+
+    throw new LookupExportError(`CloudFormation Export cannot be resolved as it does not exist: ${name}`);
+  }
+
+  private async * listExports() {
+    let nextToken: string | undefined = undefined;
+    let response: PromiseResult<AWS.CloudFormation.ListExportsOutput, AWS.AWSError>;
+    while (true) {
+      response = await this.sdk.cloudFormation().listExports({
+        NextToken: nextToken,
+      }).promise();
+
+      yield response.Exports ?? [];
+
+      if (!response.NextToken) {
+        return;
+      }
+      nextToken = response.NextToken;
+    }
+  }
+}
+
+export class CfnEvaluationException extends Error { }
 
 export interface ResourceDefinition {
   readonly LogicalId: string;
