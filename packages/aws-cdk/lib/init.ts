@@ -173,8 +173,8 @@ export class InitTemplate {
     }
     return template.replace(/%name%/g, project.name)
       .replace(/%stackname%/, project.stackName ?? '%name.PascalCased%Stack')
-      .replace(/%PascalStackName%/, camelCase(project.stackName, { pascalCase: true }) ?? '%name.PascalCased%Stack')
-      .replace(/%PascalStackProps%/, (camelCase(project.stackName, { pascalCase: true }) + 'Props') ?? 'StackProps')
+      .replace(/%PascalStackName%/, project.stackName ? camelCase(project.stackName, { pascalCase: true }) : '%name.PascalCased%Stack')
+      .replace(/%PascalStackProps%/, project.stackName ? (camelCase(project.stackName, { pascalCase: true }) + 'Props') : 'StackProps')
       .replace(/%name\.camelCased%/g, camelCase(project.name))
       .replace(/%name\.PascalCased%/g, camelCase(project.name, { pascalCase: true }))
       .replace(/%cdk-version%/g, cdkVersion)
