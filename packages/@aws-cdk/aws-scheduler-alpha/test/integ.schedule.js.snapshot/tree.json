@@ -156,6 +156,7 @@
                       "mode": "OFF"
                     },
                     "scheduleExpression": "rate(12 hours)",
+                    "scheduleExpressionTimezone": "Etc/UTC",
                     "state": "ENABLED",
                     "target": {
                       "arn": {
@@ -198,6 +199,7 @@
                       "mode": "OFF"
                     },
                     "scheduleExpression": "rate(12 hours)",
+                    "scheduleExpressionTimezone": "Etc/UTC",
                     "state": "DISABLED",
                     "target": {
                       "arn": {

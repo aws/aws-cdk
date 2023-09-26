@@ -328,6 +328,7 @@
     "./aws-greengrassv2": "./aws-greengrassv2/index.js",
     "./aws-groundstation": "./aws-groundstation/index.js",
     "./aws-guardduty": "./aws-guardduty/index.js",
+    "./aws-healthimaging": "./aws-healthimaging/index.js",
     "./aws-healthlake": "./aws-healthlake/index.js",
     "./aws-iam": "./aws-iam/index.js",
     "./aws-identitystore": "./aws-identitystore/index.js",
