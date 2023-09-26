@@ -107,7 +107,7 @@ function hasAnyChars(...chars: string[]): (x: string) => boolean {
  */
 function posixEscape(x: string) {
   // Turn ' -> '"'"'
-  x = x.replace("'", "'\"'\"'");
+  x = x.replace(/'/g, "'\"'\"'");
   return `'${x}'`;
 }
 
