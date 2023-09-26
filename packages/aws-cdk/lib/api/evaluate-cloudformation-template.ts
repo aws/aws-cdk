@@ -269,6 +269,14 @@ export class EvaluateCloudFormationTemplate {
           }
         });
       }
+
+      async 'Fn::ImportValue'(name: string): Promise<string> {
+        const exported = await self.lookupExport.lookupExport(name);
+        if (!exported.Value) {
+          throw new CfnEvaluationException(`Export '${name}' exists without a value`);
+        }
+        return exported.Value;
+      }
     }
 
     if (cfnExpression == null) {
