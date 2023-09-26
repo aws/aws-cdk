@@ -1,4 +1,5 @@
 import {
+  CfnEvaluationException,
   EvaluateCloudFormationTemplate,
   LazyListStackResources,
   LazyLookupExport,
@@ -106,8 +107,7 @@ describe('evaluateCfnExpression', () => {
       const evaluate = () => evaluateCfnTemplate.evaluateCfnExpression({
         'Fn::ImportValue': 'blah',
       });
-
-      await expect(evaluate).rejects.toBeInstanceOf(LookupExportError);
+      await expect(evaluate).rejects.toBeInstanceOf(CfnEvaluationException);
     });
   });
 });

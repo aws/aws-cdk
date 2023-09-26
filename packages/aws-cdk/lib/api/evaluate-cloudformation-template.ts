@@ -36,7 +36,7 @@ export class LazyListStackResources implements ListStackResources {
 }
 
 export interface LookupExport {
-  lookupExport(name: string): Promise<AWS.CloudFormation.Export>;
+  lookupExport(name: string): Promise<AWS.CloudFormation.Export | undefined>;
 }
 
 export class LookupExportError extends Error { }
@@ -46,7 +46,7 @@ export class LazyLookupExport implements LookupExport {
 
   constructor(private readonly sdk: ISDK) { }
 
-  async lookupExport(name: string): Promise<AWS.CloudFormation.Export> {
+  async lookupExport(name: string): Promise<AWS.CloudFormation.Export | undefined> {
     if (this.exports[name]) {
       return this.exports[name];
     }
@@ -64,7 +64,7 @@ export class LazyLookupExport implements LookupExport {
       }
     }
 
-    throw new LookupExportError(`CloudFormation Export cannot be resolved as it does not exist: ${name}`);
+    return undefined; // export not found
   }
 
   private async * listExports() {
@@ -272,6 +272,9 @@ export class EvaluateCloudFormationTemplate {
 
       async 'Fn::ImportValue'(name: string): Promise<string> {
         const exported = await self.lookupExport.lookupExport(name);
+        if (!exported) {
+          throw new CfnEvaluationException(`Export '${name}' could not be found for evaluation`);
+        }
         if (!exported.Value) {
           throw new CfnEvaluationException(`Export '${name}' exists without a value`);
         }

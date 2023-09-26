@@ -49,8 +49,8 @@ describe('LazyLookupExport', () => {
     it('returns the matching export', async () => {
       const name = 'test-name-3';
       const result = await lookup.lookupExport(name);
-      expect(result.Name).toEqual(name);
-      expect(result.Value).toEqual('test-value-3');
+      expect(result?.Name).toEqual(name);
+      expect(result?.Value).toEqual('test-value-3');
     });
 
     it('stops fetching once export is found', async () => {
@@ -76,8 +76,9 @@ describe('LazyLookupExport', () => {
       expect(listExports).toHaveBeenCalledTimes(1);
     });
 
-    it('throws if the export does not exist', async () => {
-      await expect(() => lookup.lookupExport('test-name-unknown')).rejects.toBeInstanceOf(LookupExportError);
+    it('returns undefined if the export does not exist', async () => {
+      const result = await lookup.lookupExport('test-name-unknown');
+      expect(result).toBeUndefined();
     });
   });
 });
