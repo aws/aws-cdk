@@ -959,7 +959,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       extra database secret when only using \`snapshotCredentials\` to create an RDS
       database cluster from a snapshot.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.98.0' },
     recommendedValue: true,
   },
 };
