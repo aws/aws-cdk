@@ -2,7 +2,7 @@ import { Template } from '../../assertions';
 import { InstanceClass, InstanceSize, InstanceType } from '../../aws-ec2';
 import * as ecs from '../../aws-ecs';
 import { Size, Stack } from '../../core';
-import { Compatibility, EcsEc2ContainerDefinition, MultiNodeJobDefinition } from '../lib';
+import { Compatibility, EcsEc2ContainerDefinition, MultiNodeJobDefinition, OptimalInstanceType } from '../lib';
 
 test('MultiNodeJobDefinition respects mainNode', () => {
   // GIVEN
@@ -189,4 +189,15 @@ test('multinode job requires at least one container', () => {
 
   // THEN
   expect(() => Template.fromStack(stack)).toThrow(/multinode job has no containers!/);
+});
+
+test('multinode job returns a dummy instance type when accessing `instanceType`', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  const jobDef = new MultiNodeJobDefinition(stack, 'ECSJobDefn');
+
+  // THEN
+  expect(jobDef.instanceType).toBeInstanceOf(OptimalInstanceType);
 });

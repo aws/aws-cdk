@@ -6,6 +6,15 @@ import { baseJobDefinitionProperties, IJobDefinition, JobDefinitionBase, JobDefi
 import * as ec2 from '../../aws-ec2';
 import { ArnFormat, Lazy, Stack } from '../../core';
 
+export class OptimalInstanceType extends ec2.InstanceType {
+  public optimal = 'optimal';
+  constructor() {
+    // this is not a real instance type! Batch uses an `undefined` value to mean 'optimal',
+    // which tells Batch to select the optimal instance type.
+    super('optimal');
+  }
+}
+
 interface IMultiNodeJobDefinition extends IJobDefinition {
   /**
    * The containers that this multinode job will run.
@@ -176,9 +185,13 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
     this.node.addValidation({ validate: () => validateContainers(this.containers) });
   }
 
+  /**
+   * If the prop `instanceType` is left `undefined`, then this
+   * will hold a fake instance type, for backwards compatibility reasons.
+   */
   public get instanceType(): ec2.InstanceType {
     if (!this._instanceType) {
-      return new ec2.InstanceType('optimal'); // this is not a real instance type, but signifies that batch is choosing the instance type
+      return new OptimalInstanceType();
     }
 
     return this._instanceType;
