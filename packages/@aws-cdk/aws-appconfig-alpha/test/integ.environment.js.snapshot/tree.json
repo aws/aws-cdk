@@ -66,13 +66,13 @@
             "id": "MyEnvironment",
             "path": "aws-appconfig-environment/MyEnvironment",
             "children": {
-              "Role2EA31": {
-                "id": "Role2EA31",
-                "path": "aws-appconfig-environment/MyEnvironment/Role2EA31",
+              "Role0": {
+                "id": "Role0",
+                "path": "aws-appconfig-environment/MyEnvironment/Role0",
                 "children": {
-                  "ImportRole2EA31": {
-                    "id": "ImportRole2EA31",
-                    "path": "aws-appconfig-environment/MyEnvironment/Role2EA31/ImportRole2EA31",
+                  "ImportRole0": {
+                    "id": "ImportRole0",
+                    "path": "aws-appconfig-environment/MyEnvironment/Role0/ImportRole0",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -80,7 +80,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-appconfig-environment/MyEnvironment/Role2EA31/Resource",
+                    "path": "aws-appconfig-environment/MyEnvironment/Role0/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -149,7 +149,7 @@
                         },
                         "alarmRoleArn": {
                           "Fn::GetAtt": [
-                            "MyEnvironmentRole2EA31107E16C4",
+                            "MyEnvironmentRole01C8C013F",
                             "Arn"
                           ]
                         }

@@ -18,7 +18,7 @@
     "Threshold": 10
    }
   },
-  "MyEnvironmentRole2EA31107E16C4": {
+  "MyEnvironmentRole01C8C013F": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -72,7 +72,7 @@
       },
       "AlarmRoleArn": {
        "Fn::GetAtt": [
-        "MyEnvironmentRole2EA31107E16C4",
+        "MyEnvironmentRole01C8C013F",
         "Arn"
        ]
       }
