@@ -98,6 +98,12 @@ describe('Migrate Function Tests', () => {
     expect(stack).toEqual(fs.readFileSync(path.join(...stackPath, 'S3Stack.cs'), 'utf8'));
   });
 
+  // TODO: fix with actual go template
+  test('generateStack generates the expected stack string when called for go', () => {
+    const stack = generateStack(validTemplate, 'GoodGo', 'go');
+    expect(stack).toEqual(fs.readFileSync(path.join(...stackPath, 's3.go'), 'utf8'));
+  });
+
   test('generateStack throws error when called for other language', () => {
     expect(() => generateStack(validTemplate, 'BadBadBad', 'php')).toThrowError('stack generation failed due to error \'unreachable\'');
   });
@@ -151,7 +157,7 @@ describe('Migrate Function Tests', () => {
 
     // Replaced stack file is referenced correctly in app file
     const app = fs.readFileSync(path.join(workDir, 'GoodJava', 'src', 'main', 'java', 'com', 'myorg', 'GoodJavaApp.java'), 'utf8').split('\n');
-    expect(app.map(line => line.match('public class GoodJavaApp \{')).filter(line => line).length).toEqual(1);
+    expect(app.map(line => line.match('public class GoodJavaApp {')).filter(line => line).length).toEqual(1);
     expect(app.map(line => line.match(/        new GoodJavaStack\(app, "GoodJava", StackProps.builder()/)).filter(line => line).length).toEqual(1);
 
     // Replaced stack file is correctly generated
@@ -176,6 +182,16 @@ describe('Migrate Function Tests', () => {
     // Replaced stack file is correctly generated
     const replacedStack = fs.readFileSync(path.join(workDir, 'GoodCSharp', 'src', 'GoodCSharp', 'GoodCSharpStack.cs'));
     expect(replacedStack).toEqual(fs.readFileSync(path.join(...stackPath, 'S3Stack.cs')));
+  });
+
+  cliTest('generatedCdkApp generates the expected cdk app when called for go', async (workDir) => {
+    const stack = generateStack(validTemplate, 'GoodGo', 'go');
+    await generateCdkApp('GoodGo', stack, 'go', workDir);
+
+    expect(fs.pathExists(path.join(workDir, 's3.go'))).toBeTruthy();
+    const app = fs.readFileSync(path.join(workDir, 'GoodGo', 'good_go.go'), 'utf8').split('\n');
+    expect(app.map(line => line.match(/func NewGoodGoStack\(scope constructs.Construct, id string, props GoodGoStackProps\) \*GoodGoStack \{/)).filter(line => line).length).toEqual(1);
+    expect(app.map(line => line.match(/    NewGoodGoStack\(app, "GoodGo", &GoodGoStackProps\{/)));
   });
 
   cliTest('generatedCdkApp generates a zip file when --compress is used', async (workDir) => {
