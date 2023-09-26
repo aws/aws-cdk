@@ -15,11 +15,6 @@ All notable changes to this project will be documented in this file. See [standa
 
 * **rds:** prevent rendering deprecated credentials when creating a database cluster from a snapshot (under feature flag) ([#27174](https://github.com/aws/aws-cdk/issues/27174)) ([1fd22a7](https://github.com/aws/aws-cdk/commit/1fd22a7498223ae5d2faf1799056e81be4f71f5c)), closes [#23815](https://github.com/aws/aws-cdk/issues/23815)
 
-
-### Reverts
-
-* "feat(core): `Schedule` class" ([#27284](https://github.com/aws/aws-cdk/issues/27284)) ([252d9ba](https://github.com/aws/aws-cdk/commit/252d9bad024497e096de4def2abff329214f5294)), closes [aws/aws-cdk#27105](https://github.com/aws/aws-cdk/issues/27105) [#27259](https://github.com/aws/aws-cdk/issues/27259)
-
 ## [2.97.1](https://github.com/aws/aws-cdk/compare/v2.97.0...v2.97.1) (2023-09-25)
 
 
