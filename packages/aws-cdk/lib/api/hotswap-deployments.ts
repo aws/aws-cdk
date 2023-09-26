@@ -3,7 +3,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import { ISDK, Mode, SdkProvider } from './aws-auth';
 import { DeployStackResult } from './deploy-stack';
-import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
+import { EvaluateCloudFormationTemplate, LazyLookupExport } from './evaluate-cloudformation-template';
 import { isHotswappableAppSyncChange } from './hotswap/appsync-mapping-templates';
 import { isHotswappableCodeBuildProjectChange } from './hotswap/code-build-projects';
 import { ICON, ChangeHotswapResult, HotswapMode, HotswappableChange, NonHotswappableChange, HotswappableChangeCandidate, ClassifiedResourceChanges, reportNonHotswappableChange } from './hotswap/common';
@@ -19,7 +19,7 @@ type HotswapDetector = (
   logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate
 ) => Promise<ChangeHotswapResult>;
 
-const RESOURCE_DETECTORS: { [key:string]: HotswapDetector } = {
+const RESOURCE_DETECTORS: { [key: string]: HotswapDetector } = {
   // Lambda
   'AWS::Lambda::Function': isHotswappableLambdaFunctionChange,
   'AWS::Lambda::Version': isHotswappableLambdaFunctionChange,
@@ -59,6 +59,8 @@ export async function tryHotswapDeployment(
 
   const currentTemplate = await loadCurrentTemplateWithNestedStacks(stackArtifact, sdk);
 
+  // CloudFormation Exports lookup to be able to resolve Fn::ImportValue intrinsics in template
+  const lookupExport = new LazyLookupExport(sdk);
   const evaluateCfnTemplate = new EvaluateCloudFormationTemplate({
     stackName: stackArtifact.stackName,
     template: stackArtifact.template,
@@ -69,6 +71,7 @@ export async function tryHotswapDeployment(
     urlSuffix: (region) => sdk.getEndpointSuffix(region),
     sdk,
     nestedStackNames: currentTemplate.nestedStackNames,
+    lookupExport,
   });
 
   const stackChanges = cfn_diff.diffTemplate(currentTemplate.deployedTemplate, stackArtifact.template);
@@ -247,8 +250,8 @@ async function findNestedHotswappableChanges(
 /** Returns 'true' if a pair of changes is for the same resource. */
 function changesAreForSameResource(oldChange: cfn_diff.ResourceDifference, newChange: cfn_diff.ResourceDifference): boolean {
   return oldChange.oldResourceType === newChange.newResourceType &&
-      // this isn't great, but I don't want to bring in something like underscore just for this comparison
-      JSON.stringify(oldChange.oldProperties) === JSON.stringify(newChange.newProperties);
+    // this isn't great, but I don't want to bring in something like underscore just for this comparison
+    JSON.stringify(oldChange.oldProperties) === JSON.stringify(newChange.newProperties);
 }
 
 function makeRenameDifference(
@@ -371,7 +374,7 @@ function logNonHotswappableChanges(nonHotswappableChanges: NonHotswappableChange
 
   for (const change of nonHotswappableChanges) {
     change.rejectedChanges.length > 0 ?
-      print('    logicalID: %s, type: %s, rejected changes: %s, reason: %s', chalk.bold(change.logicalId), chalk.bold(change.resourceType), chalk.bold(change.rejectedChanges), chalk.red(change.reason)):
+      print('    logicalID: %s, type: %s, rejected changes: %s, reason: %s', chalk.bold(change.logicalId), chalk.bold(change.resourceType), chalk.bold(change.rejectedChanges), chalk.red(change.reason)) :
       print('    logicalID: %s, type: %s, reason: %s', chalk.bold(change.logicalId), chalk.bold(change.resourceType), chalk.red(change.reason));
   }
 
