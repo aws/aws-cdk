@@ -1,5 +1,5 @@
 import * as AWS from 'aws-sdk';
-import { LazyLookupExport, LookupExportError } from '../../lib/api/evaluate-cloudformation-template';
+import { LazyLookupExport } from '../../lib/api/evaluate-cloudformation-template';
 import { MockSdk } from '../util/mock-sdk';
 
 describe('LazyLookupExport', () => {

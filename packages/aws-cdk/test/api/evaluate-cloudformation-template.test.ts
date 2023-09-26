@@ -3,7 +3,6 @@ import {
   EvaluateCloudFormationTemplate,
   LazyListStackResources,
   LazyLookupExport,
-  LookupExportError,
   Template,
 } from '../../lib/api/evaluate-cloudformation-template';
 import { MockSdk } from '../util/mock-sdk';
