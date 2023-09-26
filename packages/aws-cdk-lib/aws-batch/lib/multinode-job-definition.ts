@@ -11,7 +11,6 @@ import { ArnFormat, Lazy, Stack } from '../../core';
  * for the workload.
  */
 export class OptimalInstanceType extends ec2.InstanceType {
-  public optimal = 'optimal';
   constructor() {
     // this is not a real instance type! Batch uses an `undefined` value to mean 'optimal',
     // which tells Batch to select the optimal instance type.
