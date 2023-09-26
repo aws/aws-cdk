@@ -41,3 +41,6 @@ junit.xml
 
 # Nested node_modules
 aws-certificatemanager/lambda-packages/dns_validated_certificate_handler/node_modules
+
+# awslint config
+awslint.json

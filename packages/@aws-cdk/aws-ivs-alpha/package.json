@@ -42,11 +42,6 @@
       }
     }
   },
-  "awslint": {
-    "exclude": [
-      "*:*"
-    ]
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",

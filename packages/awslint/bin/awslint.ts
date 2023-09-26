@@ -18,12 +18,12 @@ async function main() {
     .command('$0', 'lint the current module (default)')
     .command('list', 'list all available rules')
     .option('include', { alias: 'i', type: 'array', desc: 'evaluate only this rule(s)', default: ['*'] })
-    .option('exclude', { alias: 'x', type: 'array', desc: 'do not evaludate these rules (takes priority over --include)', default: [] })
-    .option('save', { type: 'boolean', desc: 'updates package.json with "exclude" statements for all failing rules', default: false })
+    .option('exclude', { alias: 'x', type: 'array', desc: 'do not evaluate these rules (takes priority over --include)', default: [] })
+    .option('save', { type: 'boolean', desc: 'updates package.json (or awslint.json if it exists) with "exclude" statements for all failing rules', default: false })
     .option('verbose', { alias: 'v', type: 'boolean', desc: 'verbose output (prints all assertions)', default: false })
     .option('quiet', { alias: 'q', type: 'boolean', desc: 'quiet mode - shows only errors', default: true })
     .option('force', { type: 'boolean', desc: 'succeed silently if this is not a jsii module', default: true })
-    .option('config', { type: 'boolean', desc: 'reads options from the "awslint" section in package.json', default: true })
+    .option('config', { type: 'boolean', desc: 'reads options from "awslint.json" if it exists, and otherwise from the "awslint" section in package.json', default: true })
     .option('debug', { type: 'boolean', desc: 'debug output', default: false })
     .option('compile', { alias: 'c', type: 'boolean', desc: 'always run the jsii compiler (use "--no-compile" to never run the compiler, even if .jsii doesn\'t exist)' })
     .group('include', 'Filtering')
@@ -56,7 +56,8 @@ async function main() {
   const command = args._[0] || 'lint';
   const workdir = process.cwd();
 
-  const config = path.join(workdir, 'package.json');
+  const pkgConfig = path.join(workdir, 'package.json');
+  const awslintConfig = path.join(workdir, 'awslint.json');
 
   if (command === 'list') {
     for (const rule of ALL_RULES_LINTER.rules) {
@@ -66,11 +67,11 @@ async function main() {
   }
 
   // if no package.json and force is true (default), just don't do anything
-  if (!await fs.pathExists(config) && args.force) {
+  if (!await fs.pathExists(pkgConfig) && args.force) {
     return;
   }
 
-  const pkg = await fs.readJSON(config);
+  const pkg = await fs.readJSON(pkgConfig);
 
   // if this is not a jsii module we have nothing to look for
   if (!pkg.jsii) {
@@ -87,10 +88,21 @@ async function main() {
     await shell('jsii');
   }
 
+  // awslint.json takes precedence over package.json for awslint options.
+  const standloneOptions = await readStandaloneOptions(awslintConfig);
+
   // read "awslint" from package.json
   if (args.config) {
-    mergeOptions(args, pkg.awslint);
+    if (standloneOptions) {
+      if (pkg.awslint) {
+        console.warn('awslint options in package.json will be ignored since awslint.json exists.');
+      }
+      mergeOptions(args, standloneOptions);
+    } else {
+      mergeOptions(args, pkg.awslint);
+    }
   }
+
 
   if (args.debug) {
     console.error('command: ' + command);
@@ -153,15 +165,21 @@ async function main() {
     }
 
     if (excludesToSave.length > 0) {
-      if (!pkg.awslint) {
-        pkg.awslint = { };
+      if (standloneOptions) {
+        if (!standloneOptions.exclude) {
+          standloneOptions.exclude = [];
+        }
+      } else {
+        if (!pkg.awslint) {
+          pkg.awslint = { };
+        }
+
+        if (!pkg.awslint.exclude) {
+          pkg.awslint.exclude = [];
+        }
       }
 
-      if (!pkg.awslint.exclude) {
-        pkg.awslint.exclude = [];
-      }
-
-      const excludes: string[] = pkg.awslint.exclude;
+      const excludes: string[] = standloneOptions ? standloneOptions.exclude : pkg.awslint.exclude;
 
       for (const exclude of excludesToSave) {
         if (excludes.indexOf(exclude) === -1) {
@@ -170,7 +188,15 @@ async function main() {
       }
 
       if (excludes.length > 0) {
-        await fs.writeJSON(config, pkg, { spaces: 2 });
+        if (standloneOptions) {
+          // If awslint.json exists, write the excludes there instead of the old package.json (legacy format).
+          if (pkg.awslint) {
+            console.warn('Excludes will be written to awslint.json.');
+          }
+          await fs.writeJSON(awslintConfig, standloneOptions, { spaces: 2 });
+        } else {
+          await fs.writeJSON(pkgConfig, pkg, { spaces: 2 });
+        }
       }
     }
 
@@ -250,6 +276,15 @@ function mergeOptions(dest: any, pkg?: any) {
   }
 
   return dest;
+}
+
+async function readStandaloneOptions(awslintConfig: string) {
+  if (!await fs.pathExists(awslintConfig)) {
+    return;
+  }
+
+  const options = await fs.readJSON(awslintConfig);
+  return options;
 }
 
 async function shell(command: string) {

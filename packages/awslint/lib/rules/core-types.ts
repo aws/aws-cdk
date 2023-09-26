@@ -1,13 +1,13 @@
 import * as reflect from 'jsii-reflect';
 import { getDocTag } from './util';
 
-const CORE_MODULE = '@aws-cdk/core';
+const CORE_MODULE = 'aws-cdk-lib';
 enum CoreTypesFqn {
-  CfnResource = '@aws-cdk/core.CfnResource',
-  Resource = '@aws-cdk/core.Resource',
-  ResourceInterface = '@aws-cdk/core.IResource',
-  ResolvableInterface = '@aws-cdk/core.IResolvable',
-  PhysicalName = '@aws-cdk/core.PhysicalName',
+  CfnResource = 'aws-cdk-lib.CfnResource',
+  Resource = 'aws-cdk-lib.Resource',
+  ResourceInterface = 'aws-cdk-lib.IResource',
+  ResolvableInterface = 'aws-cdk-lib.IResolvable',
+  PhysicalName = 'aws-cdk-lib.PhysicalName',
 
   Construct = 'constructs.Construct',
   ConstructInterface = 'constructs.IConstruct',
@@ -79,10 +79,20 @@ export class CoreTypes {
   }
 
   /**
+   * Return true if the nesting parent of the given interface is a CFN class
+   */
+  public static isCfnNestedType(interfaceType: reflect.Type) {
+    return interfaceType.nestingParent && CoreTypes.isCfnType(interfaceType.nestingParent);
+  }
+
+  /**
    * Return true if the given interface type is a CFN class or prop type
    */
   public static isCfnType(interfaceType: reflect.Type) {
-    return interfaceType.name.startsWith('Cfn') || (interfaceType.namespace && interfaceType.namespace.startsWith('Cfn'));
+    return interfaceType.name.startsWith('Cfn')
+      || (interfaceType.namespace && interfaceType.namespace.startsWith('Cfn'))
+      // aws_service.CfnTheResource.SubType
+      || (interfaceType.namespace && interfaceType.namespace.split('.', 2).at(1)?.startsWith('Cfn'));
   }
 
   /**

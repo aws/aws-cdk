@@ -5,7 +5,7 @@ import * as s3 from '../../../aws-s3';
 import { RemovalPolicy } from '../../../core';
 import { DatabaseSecret } from '../database-secret';
 import { IEngine } from '../engine';
-import { CommonRotationUserOptions, Credentials } from '../props';
+import { CommonRotationUserOptions, Credentials, SnapshotCredentials } from '../props';
 
 /**
  * The default set of characters we exclude from generated passwords for database users.
@@ -102,6 +102,32 @@ export function renderCredentials(scope: Construct, engine: IEngine, credentials
       }),
       // pass username if it must be referenced as a string
       credentials?.usernameAsString ? renderedCredentials.username : undefined,
+    );
+  }
+
+  return renderedCredentials;
+}
+
+/**
+ * Renders the credentials for an instance or cluster using provided snapshot credentials
+ */
+export function renderSnapshotCredentials(scope: Construct, credentials?: SnapshotCredentials) {
+  let renderedCredentials = credentials;
+
+  let secret = renderedCredentials?.secret;
+  if (!secret && renderedCredentials?.generatePassword) {
+    if (!renderedCredentials.username) {
+      throw new Error('`snapshotCredentials` `username` must be specified when `generatePassword` is set to true');
+    }
+
+    renderedCredentials = SnapshotCredentials.fromSecret(
+      new DatabaseSecret(scope, 'SnapshotSecret', {
+        username: renderedCredentials.username,
+        encryptionKey: renderedCredentials.encryptionKey,
+        excludeCharacters: renderedCredentials.excludeCharacters,
+        replaceOnPasswordCriteriaChanges: renderedCredentials.replaceOnPasswordCriteriaChanges,
+        replicaRegions: renderedCredentials.replicaRegions,
+      }),
     );
   }
 
