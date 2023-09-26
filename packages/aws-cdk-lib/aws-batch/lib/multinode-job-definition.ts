@@ -156,7 +156,7 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
             targetNodes: container.startNode + ':' + container.endNode,
             container: {
               ...container.container._renderContainerDefinition(),
-              instanceType: this.instanceType?.toString(),
+              instanceType: this._instanceType?.toString(),
             },
           })),
         }),
@@ -178,7 +178,7 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
 
   public get instanceType(): ec2.InstanceType {
     if (!this._instanceType) {
-      throw new Error(`MultiNodeJobDefinition '${this.node.id}' does not specify an instance type!`);
+      return new ec2.InstanceType('optimal'); // this is not a real instance type, but signifies that batch is choosing the instance type
     }
 
     return this._instanceType;
