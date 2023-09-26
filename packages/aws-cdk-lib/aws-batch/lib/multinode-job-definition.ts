@@ -6,6 +6,18 @@ import { baseJobDefinitionProperties, IJobDefinition, JobDefinitionBase, JobDefi
 import * as ec2 from '../../aws-ec2';
 import { ArnFormat, Lazy, Stack } from '../../core';
 
+/**
+ * Not a real instance type! Indicates that Batch will choose one it determines to be optimal
+ * for the workload.
+ */
+export class OptimalInstanceType extends ec2.InstanceType {
+  constructor() {
+    // this is not a real instance type! Batch uses an `undefined` value to mean 'optimal',
+    // which tells Batch to select the optimal instance type.
+    super('optimal');
+  }
+}
+
 interface IMultiNodeJobDefinition extends IJobDefinition {
   /**
    * The containers that this multinode job will run.
@@ -16,8 +28,10 @@ interface IMultiNodeJobDefinition extends IJobDefinition {
 
   /**
    * The instance type that this job definition will run
+   *
+   * @default - optimal instance, selected by Batch
    */
-  readonly instanceType: ec2.InstanceType;
+  readonly instanceType?: ec2.InstanceType;
 
   /**
    * The index of the main node in this job.
@@ -72,8 +86,10 @@ export interface MultiNodeJobDefinitionProps extends JobDefinitionProps {
   /**
    * The instance type that this job definition
    * will run.
+   *
+   * @default - optimal instance, selected by Batch
    */
-  readonly instanceType: ec2.InstanceType;
+  readonly instanceType?: ec2.InstanceType;
 
   /**
    * The containers that this multinode job will run.
@@ -124,25 +140,26 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
   }
 
   public readonly containers: MultiNodeContainer[];
-  public readonly instanceType: ec2.InstanceType;
   public readonly mainNode?: number;
   public readonly propagateTags?: boolean;
 
   public readonly jobDefinitionArn: string;
   public readonly jobDefinitionName: string;
 
-  constructor(scope: Construct, id: string, props: MultiNodeJobDefinitionProps) {
+  private readonly _instanceType?: ec2.InstanceType;
+
+  constructor(scope: Construct, id: string, props?: MultiNodeJobDefinitionProps) {
     super(scope, id, props);
 
-    this.containers = props.containers ?? [];
-    this.mainNode = props.mainNode;
-    this.instanceType = props.instanceType;
+    this.containers = props?.containers ?? [];
+    this.mainNode = props?.mainNode;
+    this._instanceType = props?.instanceType;
     this.propagateTags = props?.propagateTags;
 
     const resource = new CfnJobDefinition(this, 'Resource', {
       ...baseJobDefinitionProperties(this),
       type: 'multinode',
-      jobDefinitionName: props.jobDefinitionName,
+      jobDefinitionName: props?.jobDefinitionName,
       propagateTags: this.propagateTags,
       nodeProperties: {
         mainNode: this.mainNode ?? 0,
@@ -151,7 +168,7 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
             targetNodes: container.startNode + ':' + container.endNode,
             container: {
               ...container.container._renderContainerDefinition(),
-              instanceType: this.instanceType.toString(),
+              instanceType: this._instanceType?.toString(),
             },
           })),
         }),
@@ -169,6 +186,18 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
     this.jobDefinitionName = this.getResourceNameAttribute(resource.ref);
 
     this.node.addValidation({ validate: () => validateContainers(this.containers) });
+  }
+
+  /**
+   * If the prop `instanceType` is left `undefined`, then this
+   * will hold a fake instance type, for backwards compatibility reasons.
+   */
+  public get instanceType(): ec2.InstanceType {
+    if (!this._instanceType) {
+      return new OptimalInstanceType();
+    }
+
+    return this._instanceType;
   }
 
   public addContainer(container: MultiNodeContainer) {

@@ -76,7 +76,6 @@
          ]
         },
         "Image": "amazon/amazon-ecs-sample",
-        "InstanceType": "r4.large",
         "ReadonlyRootFilesystem": false,
         "ResourceRequirements": [
          {
