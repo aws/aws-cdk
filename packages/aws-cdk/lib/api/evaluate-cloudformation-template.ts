@@ -103,6 +103,7 @@ export interface EvaluateCloudFormationTemplateProps {
   readonly urlSuffix: (region: string) => string;
   readonly sdk: ISDK;
   readonly nestedStackNames?: { [nestedStackLogicalId: string]: NestedStackNames };
+  readonly lookupExport: LookupExport;
 }
 
 export class EvaluateCloudFormationTemplate {
@@ -116,11 +117,13 @@ export class EvaluateCloudFormationTemplate {
   private readonly sdk: ISDK;
   private readonly nestedStackNames: { [nestedStackLogicalId: string]: NestedStackNames };
   private readonly stackResources: LazyListStackResources;
+  private readonly lookupExport: LookupExport;
 
   private cachedUrlSuffix: string | undefined;
 
   constructor(props: EvaluateCloudFormationTemplateProps) {
     this.stackName = props.stackName;
+    this.lookupExport = props.lookupExport;
     this.template = props.template;
     this.context = {
       'AWS::AccountId': props.account,
@@ -160,6 +163,7 @@ export class EvaluateCloudFormationTemplate {
       urlSuffix: this.urlSuffix,
       sdk: this.sdk,
       nestedStackNames: this.nestedStackNames,
+      lookupExport: this.lookupExport,
     });
   }
 

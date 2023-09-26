@@ -1,16 +1,19 @@
 import {
-  CfnEvaluationException,
   EvaluateCloudFormationTemplate,
-  ListStackResources,
+  LazyListStackResources,
+  LazyLookupExport,
+  LookupExportError,
   Template,
 } from '../../lib/api/evaluate-cloudformation-template';
-import { MockSdkProvider } from '../util/mock-sdk';
+import { MockSdk } from '../util/mock-sdk';
 
-const sdkProvider = new MockSdkProvider();
-const sdk = sdkProvider.sdk;
-const listStackResources: ListStackResources = {
-  listStackResources: jest.fn(),
-};
+const listStackResources = jest.fn();
+const listExports: jest.Mock<AWS.CloudFormation.ListExportsOutput, AWS.CloudFormation.ListExportsInput[]> = jest.fn();
+const sdk = new MockSdk();
+sdk.stubCloudFormation({
+  listExports,
+  listStackResources,
+});
 
 const createEvaluateCloudFormationTemplate = (template: Template) => new EvaluateCloudFormationTemplate({
   template,
@@ -19,7 +22,8 @@ const createEvaluateCloudFormationTemplate = (template: Template) => new Evaluat
   region: 'ap-south-east-2',
   partition: 'aws',
   urlSuffix: (region) => sdk.getEndpointSuffix(region),
-  listStackResources,
+  listStackResources: new LazyListStackResources(sdk, 'test-stack'),
+  lookupExport: new LazyLookupExport(sdk),
 });
 
 describe('evaluateCfnExpression', () => {
@@ -60,21 +64,50 @@ describe('evaluateCfnExpression', () => {
       // THEN
       expect(result).toEqual('Testing Fn::Sub Foo=testing Bar=1');
     });
-
-  });
-},
-);
-
-test('fails because Fn::ImportValue is unsupported', async () => {
-  // GIVEN
-  const template: Template = {};
-  const evaluateCfnTemplate = createEvaluateCloudFormationTemplate(template);
-
-  // WHEN
-  const evaluate = () => evaluateCfnTemplate.evaluateCfnExpression({
-    'Fn::ImportValue': 'blah',
   });
 
-  // THEN
-  await expect(evaluate).rejects.toBeInstanceOf(CfnEvaluationException);
+  describe('resolving Fn::ImportValue', () => {
+    const template: Template = {};
+    const evaluateCfnTemplate = createEvaluateCloudFormationTemplate(template);
+
+    const createMockExport = (num: number) => ({
+      ExportingStackId: `test-exporting-stack-id-${num}`,
+      Name: `test-name-${num}`,
+      Value: `test-value-${num}`,
+    });
+
+    beforeEach(async () => {
+      listExports.mockReset();
+      listExports
+        .mockReturnValueOnce({
+          Exports: [
+            createMockExport(1),
+            createMockExport(2),
+            createMockExport(3),
+          ],
+          NextToken: 'next-token-1',
+        })
+        .mockReturnValueOnce({
+          Exports: [
+            createMockExport(4),
+            createMockExport(5),
+            createMockExport(6),
+          ],
+          NextToken: undefined,
+        });
+    });
+
+    test('resolves Fn::ImportValue using lookup', async () => {
+      const result = await evaluateCfnTemplate.evaluateCfnExpression({ 'Fn::ImportValue': 'test-name-5' });
+      expect(result).toEqual('test-value-5');
+    });
+
+    test('throws error when Fn::ImportValue cannot be resolved', async () => {
+      const evaluate = () => evaluateCfnTemplate.evaluateCfnExpression({
+        'Fn::ImportValue': 'blah',
+      });
+
+      await expect(evaluate).rejects.toBeInstanceOf(LookupExportError);
+    });
+  });
 });
