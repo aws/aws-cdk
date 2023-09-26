@@ -188,6 +188,3 @@ removed:aws-cdk-lib.aws_cloudwatch.CfnAlarm.attrId
 removed:aws-cdk-lib.aws_ec2.CfnNetworkInterface.enablePrimaryIpv6
 removed:aws-cdk-lib.aws_ec2.CfnNetworkInterfaceAttachment.attrId
 removed:aws-cdk-lib.aws_ec2.CfnNetworkInterfaceProps.enablePrimaryIpv6
-
-# Make this optional so Batch can select the optimal instance type by default
-changed-type:aws-cdk-lib.aws_batch.MultiNodeJobDefinition.instanceType

@@ -128,19 +128,20 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
   }
 
   public readonly containers: MultiNodeContainer[];
-  public readonly instanceType?: ec2.InstanceType;
   public readonly mainNode?: number;
   public readonly propagateTags?: boolean;
 
   public readonly jobDefinitionArn: string;
   public readonly jobDefinitionName: string;
 
+  private readonly _instanceType?: ec2.InstanceType;
+
   constructor(scope: Construct, id: string, props?: MultiNodeJobDefinitionProps) {
     super(scope, id, props);
 
     this.containers = props?.containers ?? [];
     this.mainNode = props?.mainNode;
-    this.instanceType = props?.instanceType;
+    this._instanceType = props?.instanceType;
     this.propagateTags = props?.propagateTags;
 
     const resource = new CfnJobDefinition(this, 'Resource', {
@@ -173,6 +174,14 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
     this.jobDefinitionName = this.getResourceNameAttribute(resource.ref);
 
     this.node.addValidation({ validate: () => validateContainers(this.containers) });
+  }
+
+  public get instanceType(): ec2.InstanceType {
+    if (!this._instanceType) {
+      throw new Error(`MultiNodeJobDefinition '${this.node.id}' does not specify an instance type!`);
+    }
+
+    return this._instanceType;
   }
 
   public addContainer(container: MultiNodeContainer) {
