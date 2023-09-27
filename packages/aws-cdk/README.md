@@ -748,27 +748,32 @@ If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For exa
 
 ### `cdk migrate`
 
-⚠️**CAUTION**⚠️ CDK migrate is currently experimental. We make no guarantees about the outcome or stability of the Command or it's output.
+⚠️**CAUTION**⚠️ 
 
-Generates a CDK application from an existing Cloudformation template in any of the CDK supported languages. 
+CDK migrate is currently experimental and may have breaking changes in the future. 
+We make no guarantees about the outcome or stability of the Command nor it's output.
+
+Generates a CDK application from an existing CloudFormation template in any of the CDK supported languages. 
 
 
 #### Required Arguments:
 
 (You must specify either `--from-path` or `--from-stack`)
 
-* `--stack-name <my_stack_name>` - Used to name both the CDK application and stack. 
-* `--from-path <my_file_path>` - Takes the relative filse path to the JSON or YAML template of your choice.
+* `--stack-name <my_stack_name>` - The name for both the CDK application and stack. 
+* `--from-path <my_file_path>` - Takes the relative file path to the JSON or YAML CloudFormation template 
 * `--from-stack` - Retrieves a deployed cloudformation stack from your account with the same name as `--stack-name`.
 
 
 #### Optional Arguments:
 
 
-* `--output-path <my_output_path>` - file path to where the file should be generated. 
-  Default is the current working directory
+* `--output-path <my_output_path>` - file path to where the application should be generated. 
+Default behavior is to create a new directory with the same name as your `--stack-name` in the Current Working Directory
 * `--language <language>` - Which CDK supported language should be generated [typescript, python, csharp, java, go]
-  default is typesript
+  default is typescript
+
+
 ```console
 $ # generate a typescript application from template.json in the local directory
 $ cdk migrate --from-path ./template.json --stack-name MyAwesome
@@ -777,7 +782,21 @@ $ # generate a python application from MyDeployedStack in your acount
 $ cdk bootstrap migrate --stack-name MyDeployedStack --language python --from-stack
 ```
 
-In order for the generated stack to be immediatly deployable, that stack must either already exist in that region/account 
+#### Limitations
+
+
+TODO: Make this sound alot better (still working on it)
+
+
+CDK Migrate succesfully generating an application does *not* guarantee the application is immediately deployable.
+It simply generates a CDK application which will synthesize a template which has identical resource configurations to the provided template.
+Effectively this means there are 2 primary ways 
+
+- The provided template includes resources which already exist in the account, but are not managed by CloudFormation
+
+- The template 
+
+In order for the generated application to be immediately deployable, that stack must either already exist in that region/account  
 with the exact same configuration of resources, or not exist in that account/region at all. This effectively means 
 you need to get the template you are using from a deployed stack and use it in that region, or use it in a new one
 that wont have any overlap with deployed resources
