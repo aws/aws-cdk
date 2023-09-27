@@ -42,20 +42,20 @@ export interface LookupExport {
 export class LookupExportError extends Error { }
 
 export class LazyLookupExport implements LookupExport {
-  private exports: { [name: string]: AWS.CloudFormation.Export } = {}
+  private cachedExports: { [name: string]: AWS.CloudFormation.Export } = {}
 
   constructor(private readonly sdk: ISDK) { }
 
   async lookupExport(name: string): Promise<AWS.CloudFormation.Export | undefined> {
-    if (this.exports[name]) {
-      return this.exports[name];
+    if (this.cachedExports[name]) {
+      return this.cachedExports[name];
     }
 
     for await (const cfnExport of this.listExports()) {
       if (!cfnExport.Name) {
         throw new LookupExportError(`Unable to handle CloudFormation Export without Name! ${JSON.stringify(cfnExport)}`);
       }
-      this.exports[cfnExport.Name] = cfnExport;
+      this.cachedExports[cfnExport.Name] = cfnExport;
 
       if (cfnExport.Name === name) {
         return cfnExport;
