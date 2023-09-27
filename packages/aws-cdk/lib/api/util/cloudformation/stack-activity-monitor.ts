@@ -253,7 +253,7 @@ export class StackActivityMonitor {
 
           if (event.ResourceType === 'AWS::CloudFormation::Stack' && !CFN_SUCCESS_STATUS.includes(event.ResourceStatus ?? '')) {
             // If the event is not for `this` stack, recursively call for events in the nested stack
-            if (event.PhysicalResourceId !== stackToPollForEvents && event.LogicalResourceId !== stackToPollForEvents) {
+            if (event.PhysicalResourceId !== stackToPollForEvents) {
               await this.readNewEvents(event.PhysicalResourceId);
             }
           }
