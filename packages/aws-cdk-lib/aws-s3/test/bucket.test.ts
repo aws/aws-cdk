@@ -439,6 +439,103 @@ describe('bucket', () => {
     });
   });
 
+  test('with minimumTLSVersion', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket', {
+      enforceSSL: true,
+      minimumTLSVersion: 1.2,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+      'PolicyDocument': {
+        'Statement': [
+          {
+            'Action': 's3:*',
+            'Condition': {
+              'Bool': {
+                'aws:SecureTransport': 'false',
+              },
+            },
+            'Effect': 'Deny',
+            'Principal': { AWS: '*' },
+            'Resource': [
+              {
+                'Fn::GetAtt': [
+                  'MyBucketF68F3FF0',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'MyBucketF68F3FF0',
+                        'Arn',
+                      ],
+                    },
+                    '/*',
+                  ],
+                ],
+              },
+            ],
+          },
+          {
+            'Action': 's3:*',
+            'Condition': {
+              'NumericLessThan': {
+                's3:TlsVersion': 1.2,
+              },
+            },
+            'Effect': 'Deny',
+            'Principal': { AWS: '*' },
+            'Resource': [
+              {
+                'Fn::GetAtt': [
+                  'MyBucketF68F3FF0',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'MyBucketF68F3FF0',
+                        'Arn',
+                      ],
+                    },
+                    '/*',
+                  ],
+                ],
+              },
+            ],
+          },
+        ],
+        'Version': '2012-10-17',
+      },
+    });
+  });
+
+  test('enforceSSL must be enabled for minimumTLSVersion to work', () => {
+    const stack = new cdk.Stack();
+
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket1', {
+        enforceSSL: false,
+        minimumTLSVersion: 1.2,
+      });
+    }).toThrow(/'enforceSSL' must be enabled for 'minimumTLSVersion' to be applied/);
+
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket2', {
+        minimumTLSVersion: 1.2,
+      });
+    }).toThrow(/'enforceSSL' must be enabled for 'minimumTLSVersion' to be applied/);
+  });
+
   test.each([s3.BucketEncryption.KMS, s3.BucketEncryption.KMS_MANAGED])('bucketKeyEnabled can be enabled with %p encryption', (encryption) => {
     const stack = new cdk.Stack();
 

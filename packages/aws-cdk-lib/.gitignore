@@ -17,6 +17,7 @@ tsconfig.json
 !.eslintrc.js
 !jest.config.js
 cloudformation-include/cfn-types-2-classes.json
+!aws-synthetics/test/canaries/**/*
 
 junit.xml
 !**/*.snapshot/**/asset.*/*.js

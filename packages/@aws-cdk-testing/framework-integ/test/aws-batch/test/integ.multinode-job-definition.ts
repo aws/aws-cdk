@@ -8,7 +8,6 @@ const app = new App();
 const stack = new Stack(app, 'stack');
 
 new batch.MultiNodeJobDefinition(stack, 'SingleContainerMultiNodeJob', {
-  instanceType: InstanceType.of(InstanceClass.R4, InstanceSize.LARGE),
   containers: [{
     startNode: 0,
     endNode: 10,

@@ -556,7 +556,7 @@ In particular, the environment variable that tells the containers which one is t
 
 ```ts
 const multiNodeJob = new batch.MultiNodeJobDefinition(this, 'JobDefinition', {
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.R4, ec2.InstanceSize.LARGE),
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.R4, ec2.InstanceSize.LARGE), // optional, omit to let Batch choose the type for you
   containers: [{
     container: new batch.EcsEc2ContainerDefinition(this, 'mainMPIContainer', {
       image: ecs.ContainerImage.fromRegistry('yourregsitry.com/yourMPIImage:latest'),
