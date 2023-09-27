@@ -25,7 +25,7 @@ function installLatestSdk(packageName: string): void {
   console.log(`Installing latest AWS SDK v3: ${packageName}`);
   // Both HOME and --prefix are needed here because /tmp is the only writable location
   execSync(
-    `NPM_CONFIG_UPDATE_NOTIFIER=false HOME=/tmp npm install ${packageName} --omit=dev --no-package-lock --no-save --prefix /tmp`,
+    `NPM_CONFIG_UPDATE_NOTIFIER=false HOME=/tmp npm install ${JSON.stringify(packageName)} --omit=dev --no-package-lock --no-save --prefix /tmp`,
   );
   installedSdk = {
     ...installedSdk,

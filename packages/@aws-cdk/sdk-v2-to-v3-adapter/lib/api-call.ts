@@ -1,9 +1,9 @@
+import type { AwsCredentialIdentityProvider } from '@smithy/types';
 import { coerceApiParameters } from './coerce-api-parameters';
 import { findV3ClientConstructor } from './find-client-constructor';
 import { normalizeActionName, normalizeServiceName } from './sdk-info';
-import type { AwsCredentialIdentityProvider } from '@smithy/types';
 
-interface InvokeOptions {
+export interface InvokeOptions {
   /**
    * The SDKv3 package for the service.
    *
@@ -55,6 +55,8 @@ export class ApiCall {
   public readonly service: string;
   public readonly action: string;
   public readonly v3PackageName: string;
+
+  public v3Package?: any; // For testing purposes
   public client?: any; // For testing purposes
 
   constructor(service: string, action: string) {
@@ -65,24 +67,10 @@ export class ApiCall {
   }
 
   public async invoke(options: InvokeOptions): Promise<Record<string, unknown>> {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const v3Package = options.sdkPackage ?? this.loadPackage();
-    const ServiceClient = this.findConstructor(v3Package);
+    this.initializePackage(options.sdkPackage);
+    this.initializeClient(options);
 
-    this.client = new ServiceClient({
-      apiVersion: options.apiVersion,
-      credentials: options.credentials,
-      region: options.region,
-    });
-
-    const commandName = `${this.action}Command`;
-
-    const Command = Object.entries(v3Package).find(
-      ([name]) => name.toLowerCase() === commandName.toLowerCase(),
-    )?.[1] as { new (input: any): any };
-    if (!Command) {
-      throw new Error(`Unable to find command named: ${commandName} for action: ${this.action} in service package`);
-    }
+    const Command = this.findCommandClass();
 
     // Command must pass input value https://github.com/aws/aws-sdk-js-v3/issues/424
     const response = await this.client.send(
@@ -97,13 +85,50 @@ export class ApiCall {
     return (options.flattenResponse ? flatten(coerced) : coerced) as Record<string, unknown>;
   }
 
-  private loadPackage() {
+  public initializePackage(packageOverride?: any): any {
+    if (this.v3Package) {
+      return;
+    }
+
+    if (packageOverride) {
+      this.v3Package = packageOverride;
+      return;
+    }
+
     try {
       /* eslint-disable-next-line @typescript-eslint/no-require-imports */
-      return require(this.v3PackageName);
+      this.v3Package = require(this.v3PackageName);
     } catch (e) {
       throw Error(`Service ${this.service} client package with name '${this.v3PackageName}' does not exist.`);
     }
+  }
+
+  public initializeClient(options: Pick<InvokeOptions, 'apiVersion' | 'credentials' | 'region'>) {
+    if (!this.v3Package) {
+      this.initializePackage();
+    }
+    const ServiceClient = this.findConstructor(this.v3Package);
+
+    this.client = new ServiceClient({
+      apiVersion: options.apiVersion,
+      credentials: options.credentials,
+      region: options.region,
+    });
+    return this.client;
+  }
+
+  public findCommandClass() {
+    if (!this.v3Package) {
+      this.initializePackage();
+    }
+    const commandName = `${this.action}Command`;
+    const Command = Object.entries(this.v3Package ?? {}).find(
+      ([name]) => name.toLowerCase() === commandName.toLowerCase(),
+    )?.[1] as { new (input: any): any };
+    if (!Command) {
+      throw new Error(`Unable to find command named: ${commandName} for action: ${this.action} in service package ${this.v3PackageName}`);
+    }
+    return Command;
   }
 
   private findConstructor(pkg: Object) {
