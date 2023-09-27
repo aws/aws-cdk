@@ -98,9 +98,9 @@ export abstract class FlowLogResourceType {
    */
   public static fromTransitGatewayId(id: string): FlowLogResourceType {
     return {
-      resourceType: "TransitGateway",
-      resourceId: id
-    }
+      resourceType: 'TransitGateway',
+      resourceId: id,
+    };
   }
 
   /**
@@ -108,9 +108,9 @@ export abstract class FlowLogResourceType {
    */
   public static fromTransitGatewayAttachmentId(id: string): FlowLogResourceType {
     return {
-      resourceType: "TransitGatewayAttachment",
-      resourceId: id
-    }
+      resourceType: 'TransitGatewayAttachment',
+      resourceId: id,
+    };
   }
 
   /**
