@@ -751,10 +751,20 @@ If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For exa
 ⚠️**CAUTION**⚠️ CDK migrate is currently experimental. We make no guarantees about the outcome or stability of the Command or it's output.
 
 Generates a CDK application from an existing Cloudformation template in any of the CDK supported languages. 
-Required Arguments:
-* `--from-path <my_file_path>` - Takes the relative filse path to the JSON or YAML template of your choice
+
+
+#### Required Arguments:
+
+(You must specify either `--from-path` or `--from-stack`)
+
 * `--stack-name <my_stack_name>` - Used to name both the CDK application and stack. 
-Optional Arguments:
+* `--from-path <my_file_path>` - Takes the relative filse path to the JSON or YAML template of your choice.
+* `--from-stack` - Retrieves a deployed cloudformation stack from your account with the same name as `--stack-name`.
+
+
+#### Optional Arguments:
+
+
 * `--output-path <my_output_path>` - file path to where the file should be generated. 
   Default is the current working directory
 * `--language <language>` - Which CDK supported language should be generated [typescript, python, csharp, java, go]
@@ -763,8 +773,8 @@ Optional Arguments:
 $ # generate a typescript application from template.json in the local directory
 $ cdk migrate --from-path ./template.json --stack-name MyAwesome
 
-$ # generate a python application from template.json in the local directory
-$ cdk bootstrap migrate --from-path ./template.json --stack-name MyAwesome
+$ # generate a python application from MyDeployedStack in your acount
+$ cdk bootstrap migrate --stack-name MyDeployedStack --language python --from-stack
 ```
 
 In order for the generated stack to be immediatly deployable, that stack must either already exist in that region/account 
