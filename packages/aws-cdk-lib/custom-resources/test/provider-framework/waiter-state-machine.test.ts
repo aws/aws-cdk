@@ -74,9 +74,9 @@ describe('state machine', () => {
             },
           },
         ],
+        IncludeExecutionData: true,
+        Level: 'ALL',
       },
-      IncludeExecutionData: true,
-      Level: 'ALL',
     });
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {

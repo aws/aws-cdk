@@ -5,7 +5,7 @@ import { CfnResource, Duration, Stack } from '../../../core';
 import { LogGroup, RetentionDays } from '../../../aws-logs';
 import { LogLevel } from '../../../aws-stepfunctions';
 
-export interface LogOptions {
+export interface WaiterStateMachineLogOptions {
   /**
    * Determines whether execution data is included in your log.
    *
@@ -63,7 +63,7 @@ export interface WaiterStateMachineProps {
    *
    * @default - no logOptions
    */
-  readonly logOptions?: LogOptions;
+  readonly logOptions?: WaiterStateMachineLogOptions;
 
   /**
    * Disable StateMachine logging.

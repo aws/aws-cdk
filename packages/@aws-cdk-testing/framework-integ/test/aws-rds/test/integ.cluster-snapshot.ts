@@ -108,10 +108,10 @@ class Snapshoter extends Construct {
     const provider = new cr.Provider(this, 'SnapshotProvider', {
       onEventHandler,
       isCompleteHandler,
-      logOptionsForWaiterStateMachine: {
+      waiterStateMachineLogOptions: {
         logRetention: RetentionDays.ONE_DAY,
       },
-      disableLoggingForWaiterStateMachine: false,
+      disableWaiterStateMachineLog: false,
     });
 
     const customResource = new CustomResource(this, 'Snapshot', {
