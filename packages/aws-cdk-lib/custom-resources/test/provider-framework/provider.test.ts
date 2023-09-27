@@ -4,6 +4,7 @@ import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
 import * as lambda from '../../../aws-lambda';
 import * as logs from '../../../aws-logs';
+import { LogLevel } from '../../../aws-stepfunctions';
 import { Duration, Stack } from '../../../core';
 import * as cr from '../../lib';
 import * as util from '../../lib/provider-framework/util';
@@ -180,6 +181,12 @@ test('if isComplete is specified, the isComplete framework handler is also inclu
   new cr.Provider(stack, 'MyProvider', {
     onEventHandler: handler,
     isCompleteHandler: handler,
+    logOptionsForWaiterStateMachine: {
+      includeExecutionData: true,
+      level: LogLevel.ALL,
+      logRetention: logs.RetentionDays.ONE_DAY,
+    },
+    disableLoggingForWaiterStateMachine: false,
   });
 
   // THEN
@@ -238,10 +245,51 @@ test('if isComplete is specified, the isComplete framework handler is also inclu
         ],
       ],
     },
+    LoggingConfiguration: {
+      Destinations: [
+        {
+          CloudWatchLogsLogGroup: {
+            LogGroupArn: {
+              'Fn::GetAtt': [
+                'MyProviderwaiterstatemachineLogGroupD43CA868',
+                'Arn',
+              ],
+            },
+          },
+        },
+      ],
+    },
+    IncludeExecutionData: true,
+    Level: 'ALL',
   });
 });
 
-test('fails if "queryInterval" and/or "totalTimeout" are set without "isCompleteHandler"', () => {
+test('fails if logOptionsForWaiterStateMachine is specified and disableLoggingForWaiterStateMachine is true', () => {
+  // GIVEN
+  const stack = new Stack();
+  const handler = new lambda.Function(stack, 'MyHandler', {
+    code: new lambda.InlineCode('foo'),
+    handler: 'index.onEvent',
+    runtime: lambda.Runtime.NODEJS_LATEST,
+  });
+
+  // WHEN
+  // THEN
+  expect(() => {
+    new cr.Provider(stack, 'MyProvider', {
+      onEventHandler: handler,
+      isCompleteHandler: handler,
+      logOptionsForWaiterStateMachine: {
+        includeExecutionData: true,
+        level: LogLevel.ALL,
+        logRetention: logs.RetentionDays.ONE_DAY,
+      },
+      disableLoggingForWaiterStateMachine: true,
+    });
+  }).toThrow(/logOptionsForWaiterStateMachine must not be used if disableLoggingForWaiterStateMachine is true/);
+});
+
+test('fails if "queryInterval" or "totalTimeout" or "logOptionsForWaiterStateMachine" or "disableLoggingForWaiterStateMachine" are set without "isCompleteHandler"', () => {
   // GIVEN
   const stack = new Stack();
   const handler = new lambda.Function(stack, 'MyHandler', {
@@ -254,12 +302,26 @@ test('fails if "queryInterval" and/or "totalTimeout" are set without "isComplete
   expect(() => new cr.Provider(stack, 'provider1', {
     onEventHandler: handler,
     queryInterval: Duration.seconds(10),
-  })).toThrow(/\"queryInterval\" and \"totalTimeout\" can only be configured if \"isCompleteHandler\" is specified. Otherwise, they have no meaning/);
+  })).toThrow(/\"queryInterval\" and \"totalTimeout\" and \"logOptionsForWaiterStateMachine\" and \"disableLoggingForWaiterStateMachine\" can only be configured if \"isCompleteHandler\" is specified. Otherwise, they have no meaning/);
 
   expect(() => new cr.Provider(stack, 'provider2', {
     onEventHandler: handler,
     totalTimeout: Duration.seconds(100),
-  })).toThrow(/\"queryInterval\" and \"totalTimeout\" can only be configured if \"isCompleteHandler\" is specified. Otherwise, they have no meaning/);
+  })).toThrow(/\"queryInterval\" and \"totalTimeout\" and \"logOptionsForWaiterStateMachine\" and \"disableLoggingForWaiterStateMachine\" can only be configured if \"isCompleteHandler\" is specified. Otherwise, they have no meaning/);
+
+  expect(() => new cr.Provider(stack, 'provider3', {
+    onEventHandler: handler,
+    logOptionsForWaiterStateMachine: {
+      includeExecutionData: true,
+      level: LogLevel.ALL,
+      logRetention: logs.RetentionDays.ONE_DAY,
+    },
+  })).toThrow(/\"queryInterval\" and \"totalTimeout\" and \"logOptionsForWaiterStateMachine\" and \"disableLoggingForWaiterStateMachine\" can only be configured if \"isCompleteHandler\" is specified. Otherwise, they have no meaning/);
+
+  expect(() => new cr.Provider(stack, 'provider4', {
+    onEventHandler: handler,
+    disableLoggingForWaiterStateMachine: false,
+  })).toThrow(/\"queryInterval\" and \"totalTimeout\" and \"logOptionsForWaiterStateMachine\" and \"disableLoggingForWaiterStateMachine\" can only be configured if \"isCompleteHandler\" is specified. Otherwise, they have no meaning/);
 });
 
 describe('retry policy', () => {

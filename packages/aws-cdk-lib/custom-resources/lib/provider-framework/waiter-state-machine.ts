@@ -1,7 +1,34 @@
 import { Construct } from 'constructs';
-import { Grant, IGrantable, Role, ServicePrincipal } from '../../../aws-iam';
+import { Grant, IGrantable, PolicyStatement, Role, ServicePrincipal } from '../../../aws-iam';
 import { IFunction } from '../../../aws-lambda';
 import { CfnResource, Duration, Stack } from '../../../core';
+import { LogGroup, RetentionDays } from '../../../aws-logs';
+import { LogLevel } from '../../../aws-stepfunctions';
+
+export interface LogOptions {
+  /**
+   * Determines whether execution data is included in your log.
+   *
+   * @default false
+   */
+  readonly includeExecutionData?: boolean;
+
+  /**
+   * Defines which category of execution history events are logged.
+   *
+   * @default ERROR
+   */
+  readonly level?: LogLevel;
+
+  /**
+   * The number of days framework log events are kept in CloudWatch Logs. When
+   * updating this property, unsetting it doesn't remove the log retention policy.
+   * To remove the retention policy, set the value to `INFINITE`.
+   *
+   * @default logs.RetentionDays.INFINITE
+   */
+  readonly logRetention?: RetentionDays;
+}
 
 export interface WaiterStateMachineProps {
   /**
@@ -28,6 +55,22 @@ export interface WaiterStateMachineProps {
    * Backoff between attempts.
    */
   readonly backoffRate: number;
+
+  /**
+   * Options for StateMachine logging.
+   *
+   * If `disableLogging` is true, this property is ignored.
+   *
+   * @default - no logOptions
+   */
+  readonly logOptions?: LogOptions;
+
+  /**
+   * Disable StateMachine logging.
+   *
+   * @default false
+   */
+  readonly disableLogging?: boolean;
 }
 
 /**
@@ -48,6 +91,32 @@ export class WaiterStateMachine extends Construct {
     });
     props.isCompleteHandler.grantInvoke(role);
     props.timeoutHandler.grantInvoke(role);
+
+    let logGroup: LogGroup | undefined;
+    if (props.disableLogging) {
+      if (props.logOptions) {
+        throw new Error('logOptions must not be used if disableLogging is true');
+      }
+    } else {
+      logGroup = new LogGroup(this, 'LogGroup', {
+        retention: props.logOptions?.logRetention,
+      });
+      role.addToPrincipalPolicy(new PolicyStatement({
+        actions: [
+          'logs:CreateLogDelivery',
+          'logs:CreateLogStream',
+          'logs:GetLogDelivery',
+          'logs:UpdateLogDelivery',
+          'logs:DeleteLogDelivery',
+          'logs:ListLogDeliveries',
+          'logs:PutLogEvents',
+          'logs:PutResourcePolicy',
+          'logs:DescribeResourcePolicies',
+          'logs:DescribeLogGroups',
+        ],
+        resources: ['*'],
+      }));
+    }
 
     const definition = Stack.of(this).toJsonString({
       StartAt: 'framework-isComplete-task',
@@ -75,11 +144,24 @@ export class WaiterStateMachine extends Construct {
       },
     });
 
+    const logOptions = logGroup ? {
+      LoggingConfiguration: {
+        Destinations: [{
+          CloudWatchLogsLogGroup: {
+            LogGroupArn: logGroup.logGroupArn,
+          },
+        }],
+      },
+      IncludeExecutionData: props.logOptions?.includeExecutionData ?? false,
+      Level: props.logOptions?.level ?? LogLevel.ERROR,
+    } : undefined;
+
     const resource = new CfnResource(this, 'Resource', {
       type: 'AWS::StepFunctions::StateMachine',
       properties: {
         DefinitionString: definition,
         RoleArn: role.roleArn,
+        ...logOptions,
       },
     });
     resource.node.addDependency(role);
