@@ -4,9 +4,28 @@ import { CoreTypes } from './core-types';
 import { ResourceReflection } from './resource';
 import { Linter } from '../linter';
 
+const cfnResourceTagName = 'cloudformationResource';
+
 // this linter verifies that we have L2 coverage. it finds all "Cfn" classes and verifies
 // that we have a corresponding L1 class for it that's identified as a resource.
 export const cfnResourceLinter = new Linter(a => CfnResourceReflection.findAll(a));
+
+// Cache L1 constructs per type system.
+const l1ConstructCache = new Map<reflect.TypeSystem, Map<string, reflect.ClassType>>();
+
+function cacheL1ConstructsForTypeSystem(sys: reflect.TypeSystem) {
+  if (!l1ConstructCache.has(sys)) {
+    l1ConstructCache.set(sys, new Map<string, reflect.ClassType>());
+
+    for (const cls of sys.classes) {
+      const cfnResourceTag = cls.docs.customTag(cfnResourceTagName);
+
+      if (cfnResourceTag) {
+        l1ConstructCache.get(sys)?.set(cfnResourceTag?.toLocaleLowerCase()!, cls);
+      }
+    }
+  }
+}
 
 cfnResourceLinter.add({
   code: 'resource-class',
@@ -24,10 +43,13 @@ export class CfnResourceReflection {
    * @param fullName first two components are case-insensitive (e.g. `aws::s3::Bucket` is equivalent to `Aws::S3::Bucket`)
    */
   public static findByName(sys: reflect.TypeSystem, fullName: string) {
-    for (const cls of sys.classes) {
-      if (cls.docs.customTag('cloudformationResource')?.toLocaleLowerCase() === fullName.toLocaleLowerCase()) {
-        return new CfnResourceReflection(cls);
-      }
+    if (!l1ConstructCache.has(sys)) {
+      cacheL1ConstructsForTypeSystem(sys);
+    }
+
+    const cls = l1ConstructCache.get(sys)?.get(fullName.toLowerCase());
+    if (cls) {
+      return new CfnResourceReflection(cls);
     }
 
     return undefined;
