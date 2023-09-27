@@ -1,4 +1,4 @@
-import { decodeParameters, coerceResponse } from '../../../../lib/assertions/providers/lambda-handler/utils';
+import { decodeParameters, deepParseJson } from '../../../../lib/assertions/providers/lambda-handler/utils';
 
 describe('utils', () => {
   test('decode parameters', () => {
@@ -27,7 +27,7 @@ describe('utils', () => {
         array: ['value3'],
       };
 
-      await coerceResponse(response);
+      await deepParseJson(response);
 
       expect(response).toEqual({
         simple: 'value1',
@@ -49,7 +49,7 @@ describe('utils', () => {
         array: ['{ "foo3": "bar3" }'],
       };
 
-      await coerceResponse(response);
+      await deepParseJson(response);
 
       expect(response).toEqual({
         simple: { foo1: 'bar1' },
@@ -72,7 +72,7 @@ describe('utils', () => {
         },
       };
 
-      await coerceResponse(response);
+      await deepParseJson(response);
 
       expect(response).toEqual({
         Data: 'non-json',

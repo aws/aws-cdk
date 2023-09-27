@@ -1,7 +1,7 @@
-import { getV3ClientPackageName } from '../lib';
+import { ApiCall } from '../lib';
 
 test('can map service name to SDK v3 client name', () => {
-  expect(getV3ClientPackageName('S3')).toBe('@aws-sdk/client-s3');
+  expect(new ApiCall('S3', 'Bla').v3PackageName).toBe('@aws-sdk/client-s3');
 });
 
 test('will fail for unknown service', () => {
