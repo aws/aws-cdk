@@ -811,3 +811,4 @@ function shorten(maxWidth: number, p: string) {
 
 const TIMESTAMP_WIDTH = 12;
 const STATUS_WIDTH = 20;
+
