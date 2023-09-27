@@ -207,6 +207,14 @@ export class EvaluateCloudFormationTemplate {
 
   public async evaluateCfnExpression(cfnExpression: any): Promise<any> {
     const self = this;
+    /**
+     * Evaluates CloudFormation intrinsic functions
+     *
+     * Note that supported intrinsic functions are documented in README.md -- please update
+     * list of supported functions when adding new evaluations
+     *
+     * See: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html
+     */
     class CfnIntrinsics {
       public evaluateIntrinsic(intrinsic: Intrinsic): any {
         const intrinsicFunc = (this as any)[intrinsic.name];

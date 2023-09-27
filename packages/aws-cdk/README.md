@@ -434,6 +434,16 @@ and might have breaking changes in the future.
 
 **⚠ Note #3**: Expected defaults for certain parameters may be different with the hotswap parameter. For example, an ECS service's minimum healthy percentage will currently be set to 0. Please review the source accordingly if this occurs.
 
+**⚠ Note #4**: Only usage of certain [CloudFormation intrinsic functions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html) are supported as part of a hotswapped deployment. At time of writing, these are:
+
+- `Ref`
+- `Fn::GetAtt`
+- `Fn::ImportValue`
+- `Fn::Join`
+- `Fn::Select`
+- `Fn::Split`
+- `Fn::Sub`
+
 ### `cdk watch`
 
 The `watch` command is similar to `deploy`,
