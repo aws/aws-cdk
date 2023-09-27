@@ -11,6 +11,8 @@ import { CatchProps, Errors, IChainable, INextable, RetryProps } from '../types'
 export interface StateProps {
   /**
    * Optional name for this state
+   *
+   * @default LogicalResourceId
    */
   readonly stateName?: string;
 

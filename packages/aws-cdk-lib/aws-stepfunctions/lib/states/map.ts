@@ -13,6 +13,8 @@ import { CatchProps, IChainable, INextable, RetryProps } from '../types';
 export interface MapProps {
   /**
    * Optional name for this state
+   *
+   * @default LogicalResourceId
    */
   readonly stateName?: string;
 

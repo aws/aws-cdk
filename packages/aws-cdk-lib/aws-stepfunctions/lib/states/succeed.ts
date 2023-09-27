@@ -9,6 +9,8 @@ import { INextable } from '../types';
 export interface SucceedProps {
   /**
    * Optional name for this state
+   *
+   * @default LogicalResourceId
    */
   readonly stateName?: string;
 

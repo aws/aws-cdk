@@ -11,6 +11,8 @@ import { IChainable, INextable } from '../types';
 export interface ChoiceProps {
   /**
    * Optional name for this state
+   *
+   * @default LogicalResourceId
    */
   readonly stateName?: string;
 

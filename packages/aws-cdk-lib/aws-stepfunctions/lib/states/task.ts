@@ -23,6 +23,8 @@ export interface TaskProps {
 
   /**
    * Optional name for this state
+   *
+   * @default LogicalResourceId
    */
   readonly stateName?: string;
 

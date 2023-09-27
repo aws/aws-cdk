@@ -58,6 +58,8 @@ export class Result {
 export interface PassProps {
   /**
    * Optional name for this state
+   *
+   * @default LogicalResourceId
    */
   readonly stateName?: string;
 

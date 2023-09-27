@@ -52,6 +52,8 @@ export class WaitTime {
 export interface WaitProps {
   /**
    * Optional name for this state
+   *
+   * @default LogicalResourceId
    */
   readonly stateName?: string;
 

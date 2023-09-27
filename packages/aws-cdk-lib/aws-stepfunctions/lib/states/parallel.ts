@@ -11,6 +11,8 @@ import { CatchProps, IChainable, INextable, RetryProps } from '../types';
 export interface ParallelProps {
   /**
    * Optional name for this state
+   *
+   * @default LogicalResourceId
    */
   readonly stateName?: string;
 
