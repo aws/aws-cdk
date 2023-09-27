@@ -59,7 +59,7 @@ export interface PassProps {
   /**
    * Optional name for this state
    *
-   * @default LogicalResourceId
+   * @default - The construct ID will be used as state name
    */
   readonly stateName?: string;
 
@@ -151,7 +151,6 @@ export class Pass extends State implements INextable {
   public toStateJson(): object {
     return {
       Type: StateType.PASS,
-      StateName: this.stateName,
       Comment: this.comment,
       Result: this.result?.value,
       ResultPath: renderJsonPath(this.resultPath),

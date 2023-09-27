@@ -47,7 +47,6 @@ export class CustomState extends State implements IChainable, INextable {
    */
   public toStateJson(): object {
     return {
-      StateName: this.stateName,
       ...this.renderNextEnd(),
       ...this.stateJson,
     };

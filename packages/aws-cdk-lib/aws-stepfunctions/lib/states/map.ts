@@ -14,7 +14,7 @@ export interface MapProps {
   /**
    * Optional name for this state
    *
-   * @default LogicalResourceId
+   * @default - The construct ID will be used as state name
    */
   readonly stateName?: string;
 
@@ -175,7 +175,6 @@ export class Map extends State implements INextable {
   public toStateJson(): object {
     return {
       Type: StateType.MAP,
-      StateName: this.stateName,
       Comment: this.comment,
       ResultPath: renderJsonPath(this.resultPath),
       ...this.renderNextEnd(),

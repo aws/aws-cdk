@@ -24,7 +24,7 @@ export interface TaskProps {
   /**
    * Optional name for this state
    *
-   * @default LogicalResourceId
+   * @default - The construct ID will be used as state name
    */
   readonly stateName?: string;
 
@@ -168,7 +168,6 @@ export class Task extends State implements INextable {
       ...this.renderRetryCatch(),
       ...this.renderInputOutput(),
       Type: StateType.TASK,
-      StateName: this.stateName,
       Comment: this.comment,
       Resource: this.taskProps.resourceArn,
       Parameters: this.taskProps.parameters && FieldUtils.renderObject(this.taskProps.parameters),

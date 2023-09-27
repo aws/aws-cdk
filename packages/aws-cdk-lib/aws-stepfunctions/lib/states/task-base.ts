@@ -16,7 +16,7 @@ export interface TaskStateBaseProps {
   /**
    * Optional name for this state
    *
-   * @default LogicalResourceId
+   * @default - The construct ID will be used as state name
    */
   readonly stateName?: string;
 
@@ -338,7 +338,6 @@ export abstract class TaskStateBase extends State implements INextable {
   private renderTaskBase() {
     return {
       Type: 'Task',
-      StateName: this.stateName,
       Comment: this.comment,
       TimeoutSeconds: this.timeout?.toSeconds() ?? this.taskTimeout?.seconds,
       TimeoutSecondsPath: this.taskTimeout?.path,

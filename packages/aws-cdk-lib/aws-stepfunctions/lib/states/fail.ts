@@ -10,7 +10,7 @@ export interface FailProps {
   /**
    * Optional name for this state
    *
-   * @default LogicalResourceId
+   * @default - The construct ID will be used as state name
    */
   readonly stateName?: string;
 
@@ -78,7 +78,6 @@ export class Fail extends State {
   public toStateJson(): object {
     return {
       Type: StateType.FAIL,
-      StateName: this.stateName,
       Comment: this.comment,
       Error: this.error,
       ErrorPath: renderJsonPath(this.errorPath),

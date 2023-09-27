@@ -53,7 +53,7 @@ export interface WaitProps {
   /**
    * Optional name for this state
    *
-   * @default LogicalResourceId
+   * @default - The construct ID will be used as state name
    */
   readonly stateName?: string;
 
@@ -101,7 +101,6 @@ export class Wait extends State implements INextable {
   public toStateJson(): object {
     return {
       Type: StateType.WAIT,
-      StateName: this.stateName,
       Comment: this.comment,
       ...this.time._json,
       ...this.renderNextEnd(),

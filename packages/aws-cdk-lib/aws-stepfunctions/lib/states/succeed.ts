@@ -10,7 +10,7 @@ export interface SucceedProps {
   /**
    * Optional name for this state
    *
-   * @default LogicalResourceId
+   * @default - The construct ID will be used as state name
    */
   readonly stateName?: string;
 
@@ -61,7 +61,6 @@ export class Succeed extends State {
   public toStateJson(): object {
     return {
       Type: StateType.SUCCEED,
-      StateName: this.stateName,
       Comment: this.comment,
       ...this.renderInputOutput(),
     };

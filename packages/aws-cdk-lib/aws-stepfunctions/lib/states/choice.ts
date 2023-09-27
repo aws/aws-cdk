@@ -12,7 +12,7 @@ export interface ChoiceProps {
   /**
    * Optional name for this state
    *
-   * @default LogicalResourceId
+   * @default - The construct ID will be used as state name
    */
   readonly stateName?: string;
 
@@ -98,7 +98,6 @@ export class Choice extends State {
   public toStateJson(): object {
     return {
       Type: StateType.CHOICE,
-      StateName: this.stateName,
       Comment: this.comment,
       ...this.renderInputOutput(),
       ...this.renderChoices(),
