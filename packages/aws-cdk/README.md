@@ -746,6 +746,32 @@ NOTICES
 If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 16603".
 ```
 
+### `cdk migrate`
+
+⚠️**CAUTION**⚠️ CDK migrate is currently experimental. We make no guarantees about the outcome or stability of the Command or it's output.
+
+Generates a CDK application from an existing Cloudformation template in any of the CDK supported languages. 
+Required Arguments:
+* `--from-path <my_file_path>` - Takes the relative filse path to the JSON or YAML template of your choice
+* `--stack-name <my_stack_name>` - Used to name both the CDK application and stack. 
+Optional Arguments:
+* `--output-path <my_output_path>` - file path to where the file should be generated. 
+  Default is the current working directory
+* `--language <language>` - Which CDK supported language should be generated [typescript, python, csharp, java, go]
+  default is typesript
+```console
+$ # generate a typescript application from template.json in the local directory
+$ cdk migrate --from-path ./template.json --stack-name MyAwesome
+
+$ # generate a python application from template.json in the local directory
+$ cdk bootstrap migrate --from-path ./template.json --stack-name MyAwesome
+```
+
+In order for the generated stack to be immediatly deployable, that stack must either already exist in that region/account 
+with the exact same configuration of resources, or not exist in that account/region at all. This effectively means 
+you need to get the template you are using from a deployed stack and use it in that region, or use it in a new one
+that wont have any overlap with deployed resources
+
 ### Bundling
 
 By default asset bundling is skipped for `cdk list` and `cdk destroy`. For `cdk deploy`, `cdk diff`
