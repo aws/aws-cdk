@@ -64,7 +64,7 @@ export class ApiCall {
     this.v3PackageName = `@aws-sdk/client-${this.service}`;
   }
 
-  public async invoke(options: InvokeOptions) {
+  public async invoke(options: InvokeOptions): Promise<Record<string, unknown>> {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const v3Package = options.sdkPackage ?? this.loadPackage();
     const ServiceClient = this.findConstructor(v3Package);
@@ -94,7 +94,7 @@ export class ApiCall {
 
     const coerced = coerceSdkv3Response(response);
 
-    return options.flattenResponse ? flatten(coerced) : coerced;
+    return (options.flattenResponse ? flatten(coerced) : coerced) as Record<string, unknown>;
   }
 
   private loadPackage() {
