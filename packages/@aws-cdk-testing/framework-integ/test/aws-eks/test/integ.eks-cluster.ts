@@ -211,8 +211,12 @@ class EksClusterStack extends Stack {
     this.cluster.addNodegroupCapacity('extra-ng', {
       instanceTypes: [new ec2.InstanceType('t3.small')],
       minSize: 1,
+      maxSize: 4,
       // reusing the default capacity nodegroup instance role when available
       nodeRole: this.cluster.defaultCapacity ? this.cluster.defaultCapacity.role : undefined,
+      updateConfig: {
+        maxUnavailable: 3, // must be less than maxSize
+      },
     });
   }
   private assertNodeGroupSpot() {
@@ -262,6 +266,9 @@ class EksClusterStack extends Stack {
       minSize: 1,
       // reusing the default capacity nodegroup instance role when available
       nodeRole: this.cluster.defaultCapacity ? this.cluster.defaultCapacity.role : undefined,
+      updateConfig: {
+        maxUnavailablePercentage: 33,
+      },
     });
   }
   private assertNodeGroupGraviton3() {
