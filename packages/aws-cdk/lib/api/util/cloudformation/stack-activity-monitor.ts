@@ -252,7 +252,8 @@ export class StackActivityMonitor {
           });
 
           if (event.ResourceType === 'AWS::CloudFormation::Stack' && !CFN_SUCCESS_STATUS.includes(event.ResourceStatus ?? '')) {
-            if (event.PhysicalResourceId !== stackToPollForEvents) {
+            // If the event is not for `this` stack, recursively call for events in the nested stack
+            if (event.PhysicalResourceId !== stackToPollForEvents && event.LogicalResourceId !== stackToPollForEvents) {
               await this.readNewEvents(event.PhysicalResourceId);
             }
           }
@@ -482,7 +483,7 @@ abstract class ActivityPrinterBase implements IActivityPrinter {
       this.resourcesPrevCompleteState[activity.event.LogicalResourceId] = status;
     }
 
-    if (hookStatus!== undefined && hookStatus.endsWith('_COMPLETE_FAILED') && activity.event.LogicalResourceId !== undefined && hookType !== undefined) {
+    if (hookStatus !== undefined && hookStatus.endsWith('_COMPLETE_FAILED') && activity.event.LogicalResourceId !== undefined && hookType !== undefined) {
 
       if (this.hookFailureMap.has(activity.event.LogicalResourceId)) {
         this.hookFailureMap.get(activity.event.LogicalResourceId)?.set(hookType, activity.event.HookStatusReason ?? '');
