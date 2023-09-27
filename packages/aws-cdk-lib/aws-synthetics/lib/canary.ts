@@ -213,16 +213,6 @@ export interface CanaryProps {
   readonly securityGroups?: ec2.ISecurityGroup[];
 
   /**
-   * Whether or not to delete the lambda resources when the canary is deleted
-   *
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-synthetics-canary.html#cfn-synthetics-canary-deletelambdaresourcesoncanarydeletion
-   *
-   * @default false
-   * @deprecated this feature has been deprecated by the service team, use `cleanup: Cleanup.LAMBDA` instead which will use a Custom Resource to achieve the same effect.
-   */
-  readonly enableAutoDeleteLambdas?: boolean;
-
-  /**
    * Specify the underlying resources to be cleaned up when the canary is deleted.
    * Using `Cleanup.LAMBDA` will create a Custom Resource to achieve this.
    *
@@ -325,7 +315,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     this.canaryState = resource.attrState;
     this.canaryName = this.getResourceNameAttribute(resource.ref);
 
-    if (props.cleanup === Cleanup.LAMBDA ?? props.enableAutoDeleteLambdas) {
+    if (props.cleanup === Cleanup.LAMBDA) {
       this.cleanupUnderlyingResources();
     }
   }
@@ -509,10 +499,6 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
   private validateHandler(handler: string, runtime: Runtime) {
     const oldRuntimes = [
       Runtime.SYNTHETICS_PYTHON_SELENIUM_1_0,
-      Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_0,
-      Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_1,
-      Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_2,
-      Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_3,
     ];
     if (oldRuntimes.includes(runtime)) {
       if (!handler.match(/^[0-9A-Za-z_\\-]+\.handler*$/)) {
