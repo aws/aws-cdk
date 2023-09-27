@@ -111,7 +111,7 @@ class Snapshoter extends Construct {
       waiterStateMachineLogOptions: {
         logRetention: RetentionDays.ONE_DAY,
       },
-      disableWaiterStateMachineLog: false,
+      disableWaiterStateMachineLogging: false,
     });
 
     const customResource = new CustomResource(this, 'Snapshot', {

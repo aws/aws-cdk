@@ -131,7 +131,7 @@ export interface ProviderProps {
    * Log options for `WaiterStateMachine` with `isCompleteHandler` in the provider.
    *
    * This must not be used if `isCompleteHandler` is not specified or
-   * `disableWaiterStateMachineLog` is true.
+   * `disableWaiterStateMachineLogging` is true.
    *
    * @default - no log options
    */
@@ -144,7 +144,7 @@ export interface ProviderProps {
    *
    * @default false
    */
-  readonly disableWaiterStateMachineLog?: boolean;
+  readonly disableWaiterStateMachineLogging?: boolean;
 }
 
 /**
@@ -186,9 +186,9 @@ export class Provider extends Construct implements ICustomResourceProvider {
         props.queryInterval
         || props.totalTimeout
         || props.waiterStateMachineLogOptions
-        || props.disableWaiterStateMachineLog !== undefined
+        || props.disableWaiterStateMachineLogging !== undefined
       ) {
-        throw new Error('"queryInterval" and "totalTimeout" and "waiterStateMachineLogOptions" and "disableWaiterStateMachineLog" '
+        throw new Error('"queryInterval" and "totalTimeout" and "waiterStateMachineLogOptions" and "disableWaiterStateMachineLogging" '
           + 'can only be configured if "isCompleteHandler" is specified. '
           + 'Otherwise, they have no meaning');
       }
@@ -208,8 +208,8 @@ export class Provider extends Construct implements ICustomResourceProvider {
     const onEventFunction = this.createFunction(consts.FRAMEWORK_ON_EVENT_HANDLER_NAME, props.providerFunctionName);
 
     if (this.isCompleteHandler) {
-      if (props.disableWaiterStateMachineLog && props.waiterStateMachineLogOptions) {
-        throw new Error('waiterStateMachineLogOptions must not be used if disableWaiterStateMachineLog is true');
+      if (props.disableWaiterStateMachineLogging && props.waiterStateMachineLogOptions) {
+        throw new Error('waiterStateMachineLogOptions must not be used if disableWaiterStateMachineLogging is true');
       }
 
       const isCompleteFunction = this.createFunction(consts.FRAMEWORK_IS_COMPLETE_HANDLER_NAME);
@@ -222,8 +222,8 @@ export class Provider extends Construct implements ICustomResourceProvider {
         backoffRate: retry.backoffRate,
         interval: retry.interval,
         maxAttempts: retry.maxAttempts,
-        logOptions: !props.disableWaiterStateMachineLog ? props.waiterStateMachineLogOptions : undefined,
-        disableLogging: props.disableWaiterStateMachineLog,
+        logOptions: !props.disableWaiterStateMachineLogging ? props.waiterStateMachineLogOptions : undefined,
+        disableLogging: props.disableWaiterStateMachineLogging,
       });
       // the on-event entrypoint is going to start the execution of the waiter
       onEventFunction.addEnvironment(consts.WAITER_STATE_MACHINE_ARN_ENV, waiterStateMachine.stateMachineArn);
