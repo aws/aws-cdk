@@ -14,12 +14,30 @@ const wait = new sfn.Wait(stack, 'wait time', {
   time: sfn.WaitTime.secondsPath('$.waitSeconds'),
 });
 
+const shortWait = new sfn.Wait(stack, 'short wait time', {
+  time: sfn.WaitTime.duration(cdk.Duration.seconds(1)),
+});
+
+const choice = new sfn.Choice(stack, 'choice', {
+  comment: 'this is a comment for the choice state',
+});
+
+const success = new sfn.Succeed(stack, 'success');
+
+choice.when(sfn.Condition.isPresent('$.success'), success, {
+  comment: 'this is a comment for the when condition',
+});
+choice.when(sfn.Condition.isPresent('$.noComment'), shortWait);
+choice.otherwise(success);
+wait.next(choice);
+shortWait.next(success);
+
 const role = new iam.Role(stack, 'Role', {
   assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
 });
 
 const stateMachine = new sfn.StateMachine(stack, 'StateMachine', {
-  definition: wait,
+  definitionBody: sfn.DefinitionBody.fromChainable(wait),
   comment: 'a super cool state machine',
 });
 

@@ -37,13 +37,13 @@ describe('code', () => {
       // WHEN
       new lambda.Function(stack, 'Func1', {
         handler: 'foom',
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: lambda.Runtime.NODEJS_LATEST,
         code: directoryAsset,
       });
 
       new lambda.Function(stack, 'Func2', {
         handler: 'foom',
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: lambda.Runtime.NODEJS_LATEST,
         code: directoryAsset,
       });
 
@@ -65,7 +65,7 @@ describe('code', () => {
       // WHEN
       new lambda.Function(stack, 'Func1', {
         code: lambda.Code.fromAsset(location),
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: lambda.Runtime.NODEJS_LATEST,
         handler: 'foom',
       });
 
@@ -87,14 +87,14 @@ describe('code', () => {
       const stack1 = new cdk.Stack(app, 'Stack1');
       new lambda.Function(stack1, 'Func', {
         code: asset,
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: lambda.Runtime.NODEJS_LATEST,
         handler: 'foom',
       });
 
       const stack2 = new cdk.Stack(app, 'Stack2');
       expect(() => new lambda.Function(stack2, 'Func', {
         code: asset,
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: lambda.Runtime.NODEJS_LATEST,
         handler: 'foom',
       })).toThrow(/already associated/);
     });
@@ -106,7 +106,7 @@ describe('code', () => {
       const code = new lambda.CfnParametersCode();
       new lambda.Function(stack, 'Function', {
         code,
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: lambda.Runtime.NODEJS_LATEST,
         handler: 'index.handler',
       });
 
@@ -152,7 +152,7 @@ describe('code', () => {
 
       new lambda.Function(stack, 'Function', {
         code,
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: lambda.Runtime.NODEJS_LATEST,
         handler: 'index.handler',
       });
 
@@ -434,13 +434,13 @@ describe('code', () => {
       new lambda.Function(stack, 'Fn', {
         code: lambda.Code.fromDockerBuild(path.join(__dirname, 'docker-build-lambda')),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: lambda.Runtime.NODEJS_LATEST,
       });
 
       // then
       Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
         Metadata: {
-          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.7bbf7edf9881819a1b91e5b02acae3e3973f96fa93325c676a1285351ddacc62',
+          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: Match.stringLikeRegexp('asset\\.[0-9a-f]+'),
           [cxapi.ASSET_RESOURCE_METADATA_IS_BUNDLED_KEY]: false,
           [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code',
         },
@@ -460,7 +460,7 @@ describe('code', () => {
           imagePath: '/my/image/path',
         }),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: lambda.Runtime.NODEJS_LATEST,
       });
 
       // then
@@ -477,7 +477,7 @@ describe('code', () => {
           imagePath: '/my/image/path/',
         }),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: lambda.Runtime.NODEJS_LATEST,
       });
 
       // then
@@ -486,7 +486,7 @@ describe('code', () => {
   });
 });
 
-function defineFunction(code: lambda.Code, runtime: lambda.Runtime = lambda.Runtime.NODEJS_16_X) {
+function defineFunction(code: lambda.Code, runtime: lambda.Runtime = lambda.Runtime.NODEJS_LATEST) {
   const stack = new cdk.Stack();
   return new lambda.Function(stack, 'Func', {
     handler: 'foom',

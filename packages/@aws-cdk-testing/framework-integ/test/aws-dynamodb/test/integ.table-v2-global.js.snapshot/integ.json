@@ -1,0 +1,16 @@
+{
+  "version": "34.0.0",
+  "testCases": {
+    "aws-cdk-global-table-integ/DefaultTest": {
+      "stacks": [
+        "aws-cdk-global-table"
+      ],
+      "regions": [
+        "us-east-1"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "aws-cdk-global-table-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkglobaltableintegDefaultTestDeployAssertA2A9E81F"
+    }
+  }
+}
