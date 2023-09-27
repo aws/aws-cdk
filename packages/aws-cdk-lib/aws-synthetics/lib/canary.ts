@@ -1,17 +1,16 @@
 import * as crypto from 'crypto';
-import { Metric, MetricOptions, MetricProps } from 'aws-cdk-lib/aws-cloudwatch';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as cdk from 'aws-cdk-lib/core';
+import * as path from 'path';
 import { Construct } from 'constructs';
 import { Code } from './code';
 import { Runtime } from './runtime';
 import { Schedule } from './schedule';
-import { CloudWatchSyntheticsMetrics } from 'aws-cdk-lib/aws-synthetics/lib/synthetics-canned-metrics.generated';
-import { CfnCanary } from 'aws-cdk-lib/aws-synthetics';
-import { CustomResource, CustomResourceProvider, CustomResourceProviderRuntime } from 'aws-cdk-lib/core';
-import * as path from 'path';
+import { CloudWatchSyntheticsMetrics } from './synthetics-canned-metrics.generated';
+import { CfnCanary } from './synthetics.generated';
+import { Metric, MetricOptions, MetricProps } from '../../aws-cloudwatch';
+import * as ec2 from '../../aws-ec2';
+import * as iam from '../../aws-iam';
+import * as s3 from '../../aws-s3';
+import * as cdk from '../../core';
 
 const AUTO_DELETE_UNDERLYING_RESOURCES_RESOURCE_TYPE = 'Custom::SyntheticsAutoDeleteUnderlyingResources';
 const AUTO_DELETE_UNDERLYING_RESOURCES_TAG = 'aws-cdk:auto-delete-underlying-resources';
@@ -214,16 +213,6 @@ export interface CanaryProps {
   readonly securityGroups?: ec2.ISecurityGroup[];
 
   /**
-   * Whether or not to delete the lambda resources when the canary is deleted
-   *
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-synthetics-canary.html#cfn-synthetics-canary-deletelambdaresourcesoncanarydeletion
-   *
-   * @default false
-   * @deprecated this feature has been deprecated by the service team, use `cleanup: Cleanup.LAMBDA` instead which will use a Custom Resource to achieve the same effect.
-   */
-  readonly enableAutoDeleteLambdas?: boolean;
-
-  /**
    * Specify the underlying resources to be cleaned up when the canary is deleted.
    * Using `Cleanup.LAMBDA` will create a Custom Resource to achieve this.
    *
@@ -326,16 +315,16 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     this.canaryState = resource.attrState;
     this.canaryName = this.getResourceNameAttribute(resource.ref);
 
-    if (props.cleanup === Cleanup.LAMBDA ?? props.enableAutoDeleteLambdas) {
+    if (props.cleanup === Cleanup.LAMBDA) {
       this.cleanupUnderlyingResources();
     }
   }
 
   private cleanupUnderlyingResources() {
-    const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_UNDERLYING_RESOURCES_RESOURCE_TYPE, {
-      codeDirectory: path.join(__dirname, '..', 'custom-resource-handlers', 'dist', 'aws-synthetics-alpha', 'auto-delete-underlying-resources-handler'),
+    const provider = cdk.CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_UNDERLYING_RESOURCES_RESOURCE_TYPE, {
+      codeDirectory: path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-synthetics', 'auto-delete-underlying-resources-handler'),
       useCfnResponseWrapper: false,
-      runtime: CustomResourceProviderRuntime.NODEJS_18_X,
+      runtime: cdk.CustomResourceProviderRuntime.NODEJS_18_X,
       description: `Lambda function for auto-deleting underlying resources created by ${this.canaryName}.`,
       policyStatements: [{
         Effect: 'Allow',
@@ -348,7 +337,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
       }],
     });
 
-    new CustomResource(this, 'AutoDeleteUnderlyingResourcesCustomResource', {
+    new cdk.CustomResource(this, 'AutoDeleteUnderlyingResourcesCustomResource', {
       resourceType: AUTO_DELETE_UNDERLYING_RESOURCES_RESOURCE_TYPE,
       serviceToken: provider.serviceToken,
       properties: {
@@ -510,10 +499,6 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
   private validateHandler(handler: string, runtime: Runtime) {
     const oldRuntimes = [
       Runtime.SYNTHETICS_PYTHON_SELENIUM_1_0,
-      Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_0,
-      Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_1,
-      Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_2,
-      Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_3,
     ];
     if (oldRuntimes.includes(runtime)) {
       if (!handler.match(/^[0-9A-Za-z_\\-]+\.handler*$/)) {
