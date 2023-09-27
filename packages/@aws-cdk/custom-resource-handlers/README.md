@@ -2,19 +2,20 @@
 
 This package contains the following custom resource handlers:
 
-Stable:
+### Stable:
 
 - aws-s3/auto-delete-objects-handler
 - aws-ecr/auto-delete-images-handler
 - aws-events-targets/aws-api-handler
+- aws-synthetics/auto-delete-underlying-resources-handler
 - custom-resources/aws-custom-resource-handler
 
 These handlers are copied into `aws-cdk-lib/custom-resource-handlers` at build time
 and included as part of the `aws-cdk-lib` package.
 
-Experimental:
+### Experimental:
 
-- aws-synthetics-alpha/auto-delete-underlying-resources-handler
+- None currently
 
 These handlers are excluded from `aws-cdk-lib/custom-resource-handlers` and are individually
 copied into their respective `-alpha` packages at build time. When an `-alpha` package is

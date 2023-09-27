@@ -2,8 +2,8 @@
 
 import * as path from 'path';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as cdk from 'aws-cdk-lib';
-import * as synthetics from '../lib';
+import * as cdk from 'aws-cdk-lib/core';
+import * as synthetics from 'aws-cdk-lib/aws-synthetics';
 
 /*
  * Stack verification steps:

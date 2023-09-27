@@ -7,7 +7,7 @@ const mockLambdaClient = {
 const mockGetCanaryCommand = jest.fn().mockImplementation(() => { return {}; });
 const mockDeleteFunctionCommand = jest.fn().mockImplementation(() => { return {}; });
 
-import { autoDeleteHandler } from '../../lib/aws-synthetics-alpha/auto-delete-underlying-resources-handler';
+import { autoDeleteHandler } from '../../lib/aws-synthetics/auto-delete-underlying-resources-handler';
 
 jest.mock('@aws-sdk/client-lambda', () => {
   return {

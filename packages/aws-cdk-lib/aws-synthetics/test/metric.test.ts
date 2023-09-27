@@ -1,4 +1,4 @@
-import { App, Stack } from 'aws-cdk-lib';
+import { App, Stack } from '../../core';
 import * as synthetics from '../lib';
 
 test('.metricXxx() methods can be used to obtain Metrics for the canary', () => {
