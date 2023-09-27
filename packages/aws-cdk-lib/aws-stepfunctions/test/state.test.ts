@@ -8,6 +8,7 @@ test('JsonPath.DISCARD can be used to discard a state\'s output', () => {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'TestStack');
   const task = new FakeTask(stack, 'my-state', {
+    stateName: 'new-faketask-state',
     inputPath: JsonPath.DISCARD,
     outputPath: JsonPath.DISCARD,
     resultPath: JsonPath.DISCARD,
@@ -28,6 +29,7 @@ test('JsonPath.DISCARD can be used to discard a state\'s output', () => {
   expect(definition).toMatchObject({
     States: {
       'my-state': {
+        StateName: 'new-faketask-state',
         InputPath: null,
         OutputPath: null,
         ResultPath: null,

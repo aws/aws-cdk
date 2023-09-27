@@ -22,6 +22,11 @@ export interface TaskProps {
   readonly task: IStepFunctionsTask;
 
   /**
+   * Optional name for this state
+   */
+  readonly stateName?: string;
+
+  /**
    * An optional description for this state
    *
    * @default No comment
@@ -161,6 +166,7 @@ export class Task extends State implements INextable {
       ...this.renderRetryCatch(),
       ...this.renderInputOutput(),
       Type: StateType.TASK,
+      StateName: this.stateName,
       Comment: this.comment,
       Resource: this.taskProps.resourceArn,
       Parameters: this.taskProps.parameters && FieldUtils.renderObject(this.taskProps.parameters),

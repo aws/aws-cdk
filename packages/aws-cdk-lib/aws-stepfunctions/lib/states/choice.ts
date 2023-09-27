@@ -10,6 +10,11 @@ import { IChainable, INextable } from '../types';
  */
 export interface ChoiceProps {
   /**
+   * Optional name for this state
+   */
+  readonly stateName?: string;
+
+  /**
    * An optional description for this state
    *
    * @default No comment
@@ -91,6 +96,7 @@ export class Choice extends State {
   public toStateJson(): object {
     return {
       Type: StateType.CHOICE,
+      StateName: this.stateName,
       Comment: this.comment,
       ...this.renderInputOutput(),
       ...this.renderChoices(),

@@ -8,6 +8,11 @@ import { INextable } from '../types';
  */
 export interface SucceedProps {
   /**
+   * Optional name for this state
+   */
+  readonly stateName?: string;
+
+  /**
    * An optional description for this state
    *
    * @default No comment
@@ -54,6 +59,7 @@ export class Succeed extends State {
   public toStateJson(): object {
     return {
       Type: StateType.SUCCEED,
+      StateName: this.stateName,
       Comment: this.comment,
       ...this.renderInputOutput(),
     };

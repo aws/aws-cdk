@@ -51,6 +51,11 @@ export class WaitTime {
  */
 export interface WaitProps {
   /**
+   * Optional name for this state
+   */
+  readonly stateName?: string;
+
+  /**
    * An optional description for this state
    *
    * @default No comment
@@ -94,6 +99,7 @@ export class Wait extends State implements INextable {
   public toStateJson(): object {
     return {
       Type: StateType.WAIT,
+      StateName: this.stateName,
       Comment: this.comment,
       ...this.time._json,
       ...this.renderNextEnd(),

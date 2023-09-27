@@ -32,6 +32,7 @@ describe('Custom State', () => {
 
     // THEN
     expect(customState.toStateJson()).toStrictEqual({
+      StateName: undefined,
       ...stateJson,
       End: true,
     });

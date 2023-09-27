@@ -10,6 +10,11 @@ import { CatchProps, Errors, IChainable, INextable, RetryProps } from '../types'
  */
 export interface StateProps {
   /**
+   * Optional name for this state
+   */
+  readonly stateName?: string;
+
+  /**
    * A comment describing this state
    *
    * @default No comment
@@ -155,6 +160,7 @@ export abstract class State extends Construct implements IChainable {
   // features are shared by a couple of states, and it becomes cumbersome to
   // slice it out across all states. This is not great design, but it is
   // pragmatic!
+  protected readonly stateName?: string;
   protected readonly comment?: string;
   protected readonly inputPath?: string;
   protected readonly parameters?: object;
@@ -194,6 +200,7 @@ export abstract class State extends Construct implements IChainable {
 
     this.startState = this;
 
+    this.stateName = props.stateName;
     this.comment = props.comment;
     this.inputPath = props.inputPath;
     this.parameters = props.parameters;

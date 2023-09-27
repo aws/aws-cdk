@@ -57,6 +57,11 @@ export class Result {
  */
 export interface PassProps {
   /**
+   * Optional name for this state
+   */
+  readonly stateName?: string;
+
+  /**
    * An optional description for this state
    *
    * @default No comment
@@ -144,6 +149,7 @@ export class Pass extends State implements INextable {
   public toStateJson(): object {
     return {
       Type: StateType.PASS,
+      StateName: this.stateName,
       Comment: this.comment,
       Result: this.result?.value,
       ResultPath: renderJsonPath(this.resultPath),

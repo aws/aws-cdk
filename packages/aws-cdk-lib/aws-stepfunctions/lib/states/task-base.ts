@@ -14,6 +14,11 @@ import { CatchProps, IChainable, INextable, RetryProps } from '../types';
  */
 export interface TaskStateBaseProps {
   /**
+   * Optional name for this state
+   */
+  readonly stateName?: string;
+
+  /**
    * An optional description for this state
    *
    * @default - No comment
@@ -331,6 +336,7 @@ export abstract class TaskStateBase extends State implements INextable {
   private renderTaskBase() {
     return {
       Type: 'Task',
+      StateName: this.stateName,
       Comment: this.comment,
       TimeoutSeconds: this.timeout?.toSeconds() ?? this.taskTimeout?.seconds,
       TimeoutSecondsPath: this.taskTimeout?.path,

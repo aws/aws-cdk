@@ -8,6 +8,11 @@ import { INextable } from '../types';
  */
 export interface FailProps {
   /**
+   * Optional name for this state
+   */
+  readonly stateName?: string;
+
+  /**
    * An optional description for this state
    *
    * @default - No comment
@@ -71,6 +76,7 @@ export class Fail extends State {
   public toStateJson(): object {
     return {
       Type: StateType.FAIL,
+      StateName: this.stateName,
       Comment: this.comment,
       Error: this.error,
       ErrorPath: renderJsonPath(this.errorPath),

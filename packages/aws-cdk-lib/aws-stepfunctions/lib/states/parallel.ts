@@ -10,6 +10,11 @@ import { CatchProps, IChainable, INextable, RetryProps } from '../types';
  */
 export interface ParallelProps {
   /**
+   * Optional name for this state
+   */
+  readonly stateName?: string;
+
+  /**
    * An optional description for this state
    *
    * @default No comment
@@ -138,6 +143,7 @@ export class Parallel extends State implements INextable {
   public toStateJson(): object {
     return {
       Type: StateType.PARALLEL,
+      StateName: this.stateName,
       Comment: this.comment,
       ResultPath: renderJsonPath(this.resultPath),
       ...this.renderNextEnd(),

@@ -12,6 +12,11 @@ import { CatchProps, IChainable, INextable, RetryProps } from '../types';
  */
 export interface MapProps {
   /**
+   * Optional name for this state
+   */
+  readonly stateName?: string;
+
+  /**
    * An optional description for this state
    *
    * @default No comment
@@ -168,6 +173,7 @@ export class Map extends State implements INextable {
   public toStateJson(): object {
     return {
       Type: StateType.MAP,
+      StateName: this.stateName,
       Comment: this.comment,
       ResultPath: renderJsonPath(this.resultPath),
       ...this.renderNextEnd(),
