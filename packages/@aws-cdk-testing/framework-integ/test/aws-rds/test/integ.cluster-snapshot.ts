@@ -22,7 +22,7 @@ class TestStack extends Stack {
       isFromLegacyInstanceProps: true,
     };
     const cluster = new rds.DatabaseCluster(this, 'Cluster', {
-      engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_11_3 }),
+      engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_10_2 }),
       writer: ClusterInstance.provisioned('Instance1', {
         ...instanceProps,
       }),
@@ -43,7 +43,7 @@ class TestStack extends Stack {
     const fromSnapshot = new rds.DatabaseClusterFromSnapshot(this, 'FromSnapshot', {
       snapshotIdentifier: snapshoter.snapshotArn,
       snapshotCredentials: rds.SnapshotCredentials.fromGeneratedSecret('admin'),
-      engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_11_3 }),
+      engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_10_2 }),
       writer: ClusterInstance.provisioned('Instance1', {
         ...instanceProps,
       }),

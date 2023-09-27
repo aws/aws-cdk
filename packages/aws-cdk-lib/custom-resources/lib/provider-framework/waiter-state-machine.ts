@@ -151,9 +151,9 @@ export class WaiterStateMachine extends Construct {
             LogGroupArn: logGroup.logGroupArn,
           },
         }],
-        IncludeExecutionData: props.logOptions?.includeExecutionData ?? false,
-        Level: props.logOptions?.level ?? LogLevel.ERROR,
       },
+      IncludeExecutionData: props.logOptions?.includeExecutionData ?? false,
+      Level: props.logOptions?.level ?? LogLevel.ERROR,
     } : undefined;
 
     const resource = new CfnResource(this, 'Resource', {
