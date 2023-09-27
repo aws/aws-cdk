@@ -1,12 +1,13 @@
 /**
  * From the SDKv3 repository, extract important information.
  *
- * We extract two bits of information:
+ * We extract three bits of information:
  *
  * - An index of all types that are are "Blob"s or numbers, so we can properly
  *   convert input strings to the right type.
- * - We also extract an index of service names with mappings between SDKv2 and SDKv3
- *   names, and their IAM names.
+ * - An index of service names with their IAM prefix, and a list of actions that end
+ *   in the string `Command`.
+ * - A mapping of SDKv2 names to SDKv3 names (extracted from `aws-sdk-codemod`).
  *
  * ## Type index
  *
@@ -88,11 +89,11 @@ async function main(argv: string[]) {
   await renderStateMachineToTypeScript(sortedStateMachine, path.join(root, 'packages/@aws-cdk/sdk-v2-to-v3-adapter/lib/parameter-types.ts'));
 
   await writeAllServiceToModelFile(allServices, [
-    path.join(root, 'packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/sdk-v3-metadata.json'),
+    path.join(root, 'packages/aws-cdk-lib/custom-resources/lib/helpers-internal/sdk-v3-metadata.json'),
     path.join(root, 'packages/@aws-cdk/sdk-v2-to-v3-adapter/lib/sdk-v3-metadata.json'),
   ]);
   await writeV2ToV3Mapping([
-    path.join(root, 'packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/sdk-v2-to-v3.json'),
+    path.join(root, 'packages/aws-cdk-lib/custom-resources/lib/helpers-internal/sdk-v2-to-v3.json'),
     path.join(root, 'packages/@aws-cdk/sdk-v2-to-v3-adapter/lib/sdk-v2-to-v3.json'),
   ]);
 }
