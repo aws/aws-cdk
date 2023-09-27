@@ -51,17 +51,16 @@ export class LazyLookupExport implements LookupExport {
       return this.exports[name];
     }
 
-    for await (const exports of this.listExports()) {
-      for (const e of exports) {
-        if (!e.Name) {
-          throw new LookupExportError(`Unable to handle CloudFormation Export without Name! ${JSON.stringify(e)}`);
-        }
-        this.exports[e.Name] = e;
-
-        if (e.Name === name) {
-          return e;
-        }
+    for await (const cfnExport of this.listExports()) {
+      if (!cfnExport.Name) {
+        throw new LookupExportError(`Unable to handle CloudFormation Export without Name! ${JSON.stringify(cfnExport)}`);
       }
+      this.exports[cfnExport.Name] = cfnExport;
+
+      if (cfnExport.Name === name) {
+        return cfnExport;
+      }
+
     }
 
     return undefined; // export not found
@@ -75,7 +74,9 @@ export class LazyLookupExport implements LookupExport {
         NextToken: nextToken,
       }).promise();
 
-      yield response.Exports ?? [];
+      for (const cfnExport of response.Exports ?? []) {
+        yield cfnExport;
+      }
 
       if (!response.NextToken) {
         return;
