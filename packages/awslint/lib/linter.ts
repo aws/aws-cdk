@@ -41,8 +41,6 @@ export class AggregateLinter extends LinterBase {
   public eval(assembly: reflect.Assembly, options: LinterOptions | undefined): Diagnostic[] {
     const diags = new Array<Diagnostic>();
     for (const linter of this.linters) {
-      // // eslint-disable-next-line no-console
-      // console.log(`Running linter ${linter.constructor.name}`);
       diags.push(...linter.eval(assembly, options));
     }
     return diags;
@@ -128,8 +126,6 @@ export class Evaluation<T> {
    * @param extra Used to replace %s in the default message format string.
    */
   public assert(condition: any, scope: string, extra?: string): condition is true {
-    // eslint-disable-next-line no-console
-    // console.log(`assert for ${this.curr.code}:${scope}`);
     // deduplicate: skip if this specific assertion ("rule:scope") was already examined
     if (this.diagnostics.find(d => d.rule.code === this.curr.code && d.scope === scope)) {
       return condition;

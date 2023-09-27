@@ -10,7 +10,7 @@ const cfnResourceTagName = 'cloudformationResource';
 // that we have a corresponding L1 class for it that's identified as a resource.
 export const cfnResourceLinter = new Linter(a => CfnResourceReflection.findAll(a));
 
-// Cache the known L1 constructs per type system.
+// Cache L1 constructs per type system.
 const l1ConstructCache = new Map<reflect.TypeSystem, Map<string, reflect.ClassType>>();
 
 function cacheL1ConstructsForTypeSystem(sys: reflect.TypeSystem) {
