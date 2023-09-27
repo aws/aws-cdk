@@ -706,6 +706,15 @@ export interface ServiceProps {
    * @default - no VPC connector, uses the DEFAULT egress type instead
    */
   readonly vpcConnector?: IVpcConnector;
+
+  /**
+   * Settings for the health check that AWS App Runner performs to monitor the health of a service.
+   *
+   * You can specify it by static methods `HealthCheck.http` or `HealthCheck.tcp`.
+   *
+   * @default - no health check configuration
+   */
+  readonly healthCheck?: HealthCheck;
 }
 
 /**
@@ -845,6 +854,145 @@ export class GitHubConnection {
   public readonly connectionArn: string
   constructor(arn: string) {
     this.connectionArn = arn;
+  }
+}
+
+/**
+ * The health check protocol type
+ */
+export enum HealthCheckProtocolType {
+  /**
+   * HTTP protocol
+   */
+  HTTP = 'HTTP',
+
+  /**
+   * TCP protocol
+   */
+  TCP = 'TCP',
+}
+
+/**
+ * Describes the settings for the health check that AWS App Runner performs to monitor the health of a service.
+ */
+interface HealthCheckCommonOptions {
+  /**
+   * The number of consecutive checks that must succeed before App Runner decides that the service is healthy.
+   *
+   * @default 1
+   */
+  readonly healthyThreshold?: number;
+
+  /**
+   * The time interval, in seconds, between health checks.
+   *
+   * @default Duration.seconds(5)
+   */
+  readonly interval?: cdk.Duration;
+
+  /**
+   * The time, in seconds, to wait for a health check response before deciding it failed.
+   *
+   * @default Duration.seconds(2)
+   */
+  readonly timeout?: cdk.Duration;
+
+  /**
+   * The number of consecutive checks that must fail before App Runner decides that the service is unhealthy.
+   *
+   * @default 5
+   */
+  readonly unhealthyThreshold?: number;
+}
+
+/**
+ * Properties used to define HTTP Based healthchecks.
+ */
+export interface HttpHealthCheckOptions extends HealthCheckCommonOptions {
+  /**
+   * The URL that health check requests are sent to.
+   *
+   * @default /
+   */
+  readonly path?: string;
+}
+
+/**
+ * Properties used to define TCP Based healthchecks.
+ */
+export interface TcpHealthCheckOptions extends HealthCheckCommonOptions { }
+
+/**
+ * Contains static factory methods for creating health checks for different protocols
+ */
+export class HealthCheck {
+  /**
+   * Construct a HTTP health check
+   */
+  public static http(options: HttpHealthCheckOptions = {}): HealthCheck {
+    return new HealthCheck(
+      HealthCheckProtocolType.HTTP,
+      options.healthyThreshold,
+      options.interval,
+      options.timeout,
+      options.unhealthyThreshold,
+      options.path,
+    );
+  }
+
+  /**
+   * Construct a TCP health check
+   */
+  public static tcp(options: TcpHealthCheckOptions = {}): HealthCheck {
+    return new HealthCheck(
+      HealthCheckProtocolType.TCP,
+      options.healthyThreshold,
+      options.interval,
+      options.timeout,
+      options.unhealthyThreshold,
+    );
+  }
+
+  private constructor(
+    public readonly healthCheckProtocolType: HealthCheckProtocolType,
+    public readonly healthyThreshold: number = 1,
+    public readonly interval: cdk.Duration = cdk.Duration.seconds(5),
+    public readonly timeout: cdk.Duration = cdk.Duration.seconds(2),
+    public readonly unhealthyThreshold: number = 5,
+    public readonly path?: string,
+  ) {
+    if (this.healthCheckProtocolType === HealthCheckProtocolType.HTTP) {
+      if (this.path !== undefined && this.path.length === 0) {
+        throw new Error('path length must be greater than 0');
+      }
+      if (this.path === undefined) {
+        this.path = '/';
+      }
+    }
+
+    if (this.healthyThreshold < 1 || this.healthyThreshold > 20) {
+      throw new Error(`healthyThreshold must be between 1 and 20, got ${this.healthyThreshold}`);
+    }
+    if (this.unhealthyThreshold < 1 || this.unhealthyThreshold > 20) {
+      throw new Error(`unhealthyThreshold must be between 1 and 20, got ${this.unhealthyThreshold}`);
+    }
+    if (this.interval.toSeconds() < 1 || this.interval.toSeconds() > 20) {
+      throw new Error(`interval must be between 1 and 20 seconds, got ${this.interval.toSeconds()}`);
+    }
+    if (this.timeout.toSeconds() < 1 || this.timeout.toSeconds() > 20) {
+      throw new Error(`timeout must be between 1 and 20 seconds, got ${this.timeout.toSeconds()}`);
+    }
+  }
+
+  public bind(): CfnService.HealthCheckConfigurationProperty {
+    return {
+      healthyThreshold: this.healthyThreshold,
+      interval: this.interval?.toSeconds(),
+      path: this.path,
+      protocol: this.healthCheckProtocolType,
+      timeout: this.timeout?.toSeconds(),
+      unhealthyThreshold: this.unhealthyThreshold,
+    };
   }
 }
 
@@ -1097,6 +1245,9 @@ export class Service extends cdk.Resource implements iam.IGrantable {
           vpcConnectorArn: this.props.vpcConnector?.vpcConnectorArn,
         },
       },
+      healthCheckConfiguration: this.props.healthCheck ?
+        this.props.healthCheck.bind() :
+        undefined,
     });
 
     // grant required privileges for the role
