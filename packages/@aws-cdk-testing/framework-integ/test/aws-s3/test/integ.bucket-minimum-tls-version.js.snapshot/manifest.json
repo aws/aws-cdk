@@ -1,27 +1,28 @@
 {
-  "version": "34.0.0",
+  "version": "33.0.0",
   "artifacts": {
-    "aws-appconfig-environment.assets": {
+    "aws-cdk-s3-minimum-tls-version.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-appconfig-environment.assets.json",
+        "file": "aws-cdk-s3-minimum-tls-version.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-appconfig-environment": {
+    "aws-cdk-s3-minimum-tls-version": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-appconfig-environment.template.json",
+        "templateFile": "aws-cdk-s3-minimum-tls-version.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c5abc7ef2e341477218fc19664c82ee2ea13e9509f2deaae6fc6200a619a5d1c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f2e43c7b225e4a3bb913b8e3255e177873b0cf9eeb474e63af30152e8a0bdd01.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-appconfig-environment.assets"
+          "aws-cdk-s3-minimum-tls-version.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -30,61 +31,50 @@
         }
       },
       "dependencies": [
-        "aws-appconfig-environment.assets"
+        "aws-cdk-s3-minimum-tls-version.assets"
       ],
       "metadata": {
-        "/aws-appconfig-environment/MyApplicationForEnv/Resource": [
+        "/aws-cdk-s3-minimum-tls-version/Bucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyApplicationForEnv1F597ED9"
+            "data": "Bucket83908E77"
           }
         ],
-        "/aws-appconfig-environment/MyAlarm/Resource": [
+        "/aws-cdk-s3-minimum-tls-version/Bucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyAlarm696658B6"
+            "data": "BucketPolicyE9A3008A"
           }
         ],
-        "/aws-appconfig-environment/MyEnvironment/Role0/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyEnvironmentRole01C8C013F"
-          }
-        ],
-        "/aws-appconfig-environment/MyEnvironment/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyEnvironment465E4DEA"
-          }
-        ],
-        "/aws-appconfig-environment/BootstrapVersion": [
+        "/aws-cdk-s3-minimum-tls-version/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-appconfig-environment/CheckBootstrapVersion": [
+        "/aws-cdk-s3-minimum-tls-version/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-appconfig-environment"
+      "displayName": "aws-cdk-s3-minimum-tls-version"
     },
-    "appconfigenvironmentDefaultTestDeployAssert75BD28E7.assets": {
+    "awscdks3minimumtlsversionintegrationDefaultTestDeployAssert7BC7B4EF.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "appconfigenvironmentDefaultTestDeployAssert75BD28E7.assets.json",
+        "file": "awscdks3minimumtlsversionintegrationDefaultTestDeployAssert7BC7B4EF.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "appconfigenvironmentDefaultTestDeployAssert75BD28E7": {
+    "awscdks3minimumtlsversionintegrationDefaultTestDeployAssert7BC7B4EF": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "appconfigenvironmentDefaultTestDeployAssert75BD28E7.template.json",
+        "templateFile": "awscdks3minimumtlsversionintegrationDefaultTestDeployAssert7BC7B4EF.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -92,7 +82,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "appconfigenvironmentDefaultTestDeployAssert75BD28E7.assets"
+          "awscdks3minimumtlsversionintegrationDefaultTestDeployAssert7BC7B4EF.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -101,23 +91,23 @@
         }
       },
       "dependencies": [
-        "appconfigenvironmentDefaultTestDeployAssert75BD28E7.assets"
+        "awscdks3minimumtlsversionintegrationDefaultTestDeployAssert7BC7B4EF.assets"
       ],
       "metadata": {
-        "/appconfig-environment/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/aws-cdk-s3-minimum-tls-version-integration/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/appconfig-environment/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/aws-cdk-s3-minimum-tls-version-integration/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "appconfig-environment/DefaultTest/DeployAssert"
+      "displayName": "aws-cdk-s3-minimum-tls-version-integration/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
