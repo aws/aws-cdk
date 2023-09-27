@@ -1,9 +1,9 @@
 import { Construct } from 'constructs';
 import { Grant, IGrantable, PolicyStatement, Role, ServicePrincipal } from '../../../aws-iam';
 import { IFunction } from '../../../aws-lambda';
-import { CfnResource, Duration, Stack } from '../../../core';
 import { LogGroup, RetentionDays } from '../../../aws-logs';
 import { LogLevel } from '../../../aws-stepfunctions';
+import { CfnResource, Duration, Stack } from '../../../core';
 
 export interface WaiterStateMachineLogOptions {
   /**

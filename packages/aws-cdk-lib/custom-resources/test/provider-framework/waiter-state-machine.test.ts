@@ -2,10 +2,10 @@ import { Node } from 'constructs';
 import { Template } from '../../../assertions';
 import * as lambda from '../../../aws-lambda';
 import { Code, Function as lambdaFn } from '../../../aws-lambda';
+import { RetentionDays } from '../../../aws-logs';
+import { LogLevel } from '../../../aws-stepfunctions';
 import { Duration, Stack } from '../../../core';
 import { WaiterStateMachine } from '../../lib/provider-framework/waiter-state-machine';
-import { LogLevel } from '../../../aws-stepfunctions';
-import { RetentionDays } from '../../../aws-logs';
 
 describe('state machine', () => {
   test('contains the needed resources', () => {
