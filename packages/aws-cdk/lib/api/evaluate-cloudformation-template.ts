@@ -68,9 +68,8 @@ export class LazyLookupExport implements LookupExport {
 
   private async * listExports() {
     let nextToken: string | undefined = undefined;
-    let response: PromiseResult<AWS.CloudFormation.ListExportsOutput, AWS.AWSError>;
     while (true) {
-      response = await this.sdk.cloudFormation().listExports({
+      const response: PromiseResult<AWS.CloudFormation.ListExportsOutput, AWS.AWSError> = await this.sdk.cloudFormation().listExports({
         NextToken: nextToken,
       }).promise();
 
