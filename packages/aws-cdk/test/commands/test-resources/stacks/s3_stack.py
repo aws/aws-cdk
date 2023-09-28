@@ -27,17 +27,17 @@ class GoodPythonStack(Stack):
             'errorDocument': 'error.html',
           },
         )
-    s3Bucket.cfnOptions.deletionPolicy = cdk.CfnDeletionPolicy.RETAIN
+    s3Bucket.cfn_options.deletion_policy = cdk.CfnDeletionPolicy.RETAIN
 
     # Outputs
-    self.website_u_r_l = s3Bucket.attrwebsiteUrl
+    self.website_u_r_l = s3Bucket.attr_website_u_r_l
     cdk.CfnOutput(self, 'WebsiteURL', 
       description = 'URL for website hosted on S3',
       value = self.website_u_r_l,
     )
     self.s3_bucket_secure_u_r_l = [
       'https://',
-      s3Bucket.attrdomainName,
+      s3Bucket.attr_domain_name,
     ].join('')
     cdk.CfnOutput(self, 'S3BucketSecureURL', 
       description = 'Name of S3 bucket to hold website content',

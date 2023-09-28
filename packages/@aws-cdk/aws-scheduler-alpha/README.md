@@ -60,11 +60,6 @@ You can choose from three schedule types when configuring your schedule: rate-ba
 Both rate-based and cron-based schedules are recurring schedules. You can configure each recurring schedule type using a schedule expression. For 
 cron-based schedule you can specify a time zone in which EventBridge Scheduler evaluates the expression. 
 
-
-> ScheduleExpression should be used together with class Schedule, which is not yet implemented.
-
-[comment]: <> (TODO: Switch to `ts` once Schedule is implemented)
-
 ```ts
 declare const target: targets.LambdaInvoke;
 
@@ -129,12 +124,27 @@ new Schedule(this, 'Schedule', {
 });
 ```
 
+### Disabling Schedules
+
+By default, a schedule will be enabled. You can disable a schedule by setting the `enabled` property to false:
+
+```ts
+declare const target: targets.LambdaInvoke;
+
+new Schedule(this, 'Schedule', {
+    schedule: ScheduleExpression.rate(Duration.minutes(10)),
+    target: target,
+    enabled: false,
+});
+```
+
+
 ## Scheduler Targets
 
-The `@aws-cdk/aws-schedule-targets-alpha` module includes classes that implement the `IScheduleTarget` interface for
+The `@aws-cdk/aws-scheduler-targets-alpha` module includes classes that implement the `IScheduleTarget` interface for
 various AWS services. EventBridge Scheduler supports two types of targets: templated targets invoke common API
 operations across a core groups of services, and customizeable universal targets that you can use to call more
-than 6,000 operations across over 270 services. A list of supported targets can be found at `@aws-cdk/aws-schedule-targets-alpha`. 
+than 6,000 operations across over 270 services. A list of supported targets can be found at `@aws-cdk/aws-scheduler-targets-alpha`. 
 
 ### Input 
 
