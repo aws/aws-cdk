@@ -193,6 +193,141 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
+  test('calls the updateResolver() API when it receives only a code s3 location in a Pipeline Resolver', async () => {
+    // GIVEN
+    mockS3GetObject = jest.fn().mockImplementation(async () => {
+      return { Body: 'code defined in s3' };
+    });
+    hotswapMockSdkProvider.stubS3({ getObject: mockS3GetObject });
+    setup.setCurrentCfnStackTemplate({
+      Resources: {
+        AppSyncResolver: {
+          Type: 'AWS::AppSync::Resolver',
+          Properties: {
+            ApiId: 'apiId',
+            FieldName: 'myField',
+            TypeName: 'Query',
+            DataSourceName: 'my-datasource',
+            PipelineConfig: ['function1'],
+            CodeS3Location: 's3://test-bucket/old_location',
+          },
+          Metadata: {
+            'aws:asset:path': 'old-path',
+          },
+        },
+      },
+    });
+    setup.pushStackResourceSummaries(
+      setup.stackSummaryOf(
+        'AppSyncResolver',
+        'AWS::AppSync::Resolver',
+        'arn:aws:appsync:us-east-1:111111111111:apis/apiId/types/Query/resolvers/myField',
+      ),
+    );
+    const cdkStackArtifact = setup.cdkStackArtifactOf({
+      template: {
+        Resources: {
+          AppSyncResolver: {
+            Type: 'AWS::AppSync::Resolver',
+            Properties: {
+              ApiId: 'apiId',
+              FieldName: 'myField',
+              TypeName: 'Query',
+              DataSourceName: 'my-datasource',
+              PipelineConfig: ['function1'],
+              CodeS3Location: 's3://test-bucket/path/to/key',
+            },
+            Metadata: {
+              'aws:asset:path': 'new-path',
+            },
+          },
+        },
+      },
+    });
+
+    // WHEN
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+
+    // THEN
+    expect(deployStackResult).not.toBeUndefined();
+    expect(mockUpdateResolver).toHaveBeenCalledWith({
+      apiId: 'apiId',
+      dataSourceName: 'my-datasource',
+      typeName: 'Query',
+      fieldName: 'myField',
+      pipelineConfig: ['function1'],
+      code: 'code defined in s3',
+    });
+    expect(mockS3GetObject).toHaveBeenCalledWith({
+      Bucket: 'test-bucket',
+      Key: 'path/to/key',
+    });
+  });
+
+  test('calls the updateResolver() API when it receives only a code difference in a Pipeline Resolver', async () => {
+    // GIVEN
+    hotswapMockSdkProvider.stubS3({ getObject: mockS3GetObject });
+    setup.setCurrentCfnStackTemplate({
+      Resources: {
+        AppSyncResolver: {
+          Type: 'AWS::AppSync::Resolver',
+          Properties: {
+            ApiId: 'apiId',
+            FieldName: 'myField',
+            TypeName: 'Query',
+            DataSourceName: 'my-datasource',
+            PipelineConfig: ['function1'],
+            Code: 'old code',
+          },
+          Metadata: {
+            'aws:asset:path': 'old-path',
+          },
+        },
+      },
+    });
+    setup.pushStackResourceSummaries(
+      setup.stackSummaryOf(
+        'AppSyncResolver',
+        'AWS::AppSync::Resolver',
+        'arn:aws:appsync:us-east-1:111111111111:apis/apiId/types/Query/resolvers/myField',
+      ),
+    );
+    const cdkStackArtifact = setup.cdkStackArtifactOf({
+      template: {
+        Resources: {
+          AppSyncResolver: {
+            Type: 'AWS::AppSync::Resolver',
+            Properties: {
+              ApiId: 'apiId',
+              FieldName: 'myField',
+              TypeName: 'Query',
+              DataSourceName: 'my-datasource',
+              PipelineConfig: ['function1'],
+              Code: 'new code',
+            },
+            Metadata: {
+              'aws:asset:path': 'new-path',
+            },
+          },
+        },
+      },
+    });
+
+    // WHEN
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+
+    // THEN
+    expect(deployStackResult).not.toBeUndefined();
+    expect(mockUpdateResolver).toHaveBeenCalledWith({
+      apiId: 'apiId',
+      dataSourceName: 'my-datasource',
+      typeName: 'Query',
+      fieldName: 'myField',
+      pipelineConfig: ['function1'],
+      code: 'new code',
+    });
+  });
+
   test('calls the updateResolver() API when it receives only a mapping template difference in a Pipeline Resolver', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({

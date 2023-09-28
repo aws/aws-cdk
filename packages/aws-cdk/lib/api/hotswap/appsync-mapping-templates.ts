@@ -22,6 +22,8 @@ export async function isHotswappableAppSyncChange(
     'RequestMappingTemplateS3Location',
     'ResponseMappingTemplate',
     'ResponseMappingTemplateS3Location',
+    'Code',
+    'CodeS3Location',
     'Definition',
     'DefinitionS3Location',
   ]);
@@ -56,6 +58,8 @@ export async function isHotswappableAppSyncChange(
           requestMappingTemplateS3Location: change.newValue.Properties?.RequestMappingTemplateS3Location,
           responseMappingTemplate: change.newValue.Properties?.ResponseMappingTemplate,
           responseMappingTemplateS3Location: change.newValue.Properties?.ResponseMappingTemplateS3Location,
+          code: change.newValue.Properties?.Code,
+          codeS3Location: change.newValue.Properties?.CodeS3Location,
         };
         const evaluatedResourceProperties = await evaluateCfnTemplate.evaluateCfnExpression(sdkProperties);
         const sdkRequestObject = transformObjectKeys(evaluatedResourceProperties, lowerCaseFirstCharacter);
@@ -72,6 +76,10 @@ export async function isHotswappableAppSyncChange(
         if (sdkRequestObject.definitionS3Location) {
           sdkRequestObject.definition = await fetchFileFromS3(sdkRequestObject.definitionS3Location, sdk);
           delete sdkRequestObject.definitionS3Location;
+        }
+        if (sdkRequestObject.codeS3Location) {
+          sdkRequestObject.code = await fetchFileFromS3(sdkRequestObject.codeS3Location, sdk);
+          delete sdkRequestObject.codeS3Location;
         }
 
         if (isResolver) {
