@@ -1725,6 +1725,18 @@ in the `cdk.json` file.
 }
 ```
 
+### Transit Gateway
+
+You also can create a flow log for a transit gateway.
+
+```ts
+const transitGateway = new ec2.CfnTransitGateway(this, 'TransitGateway', {});
+new ec2.FlowLog(this, 'FlowLogsCW', {
+  resourceType: FlowLogResourceType.fromTransitGatewayId(transitGateway.ref),
+  flowLogName: 'TransitGatewayFlowLogName',
+});
+```
+
 ## User Data
 
 User data enables you to run a script when your instances start up.  In order to configure these scripts you can add commands directly to the script
