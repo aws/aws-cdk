@@ -27,7 +27,7 @@ class GoodPythonStack(Stack):
             'errorDocument': 'error.html',
           },
         )
-    s3Bucket.cfnOptions.deletionPolicy = cdk.CfnDeletionPolicy.RETAIN
+    s3Bucket.cfn_options.deletion_policy = cdk.CfnDeletionPolicy.RETAIN
 
     # Outputs
     self.website_u_r_l = s3Bucket.attr_website_u_r_l
