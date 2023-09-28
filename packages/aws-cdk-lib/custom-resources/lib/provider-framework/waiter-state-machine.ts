@@ -5,6 +5,9 @@ import { LogGroup, RetentionDays } from '../../../aws-logs';
 import { LogLevel } from '../../../aws-stepfunctions';
 import { CfnResource, Duration, Stack } from '../../../core';
 
+/**
+ * Log Options for the state machine.
+ */
 export interface WaiterStateMachineLogOptions {
   /**
    * Determines whether execution data is included in your log.
@@ -30,6 +33,9 @@ export interface WaiterStateMachineLogOptions {
   readonly logRetention?: RetentionDays;
 }
 
+/**
+ * Initialization properties for the `WaiterStateMachine` construct.
+ */
 export interface WaiterStateMachineProps {
   /**
    * The main handler that notifies if the waiter to decide 'complete' or 'incomplete'.
@@ -81,6 +87,9 @@ export interface WaiterStateMachineProps {
  * The handler is called `maxAttempts` times with an `interval` duration and a `backoffRate` rate.
  */
 export class WaiterStateMachine extends Construct {
+  /**
+   * The ARN of the state machine.
+   */
   public readonly stateMachineArn: string;
 
   constructor(scope: Construct, id: string, props: WaiterStateMachineProps) {
@@ -169,6 +178,9 @@ export class WaiterStateMachine extends Construct {
     this.stateMachineArn = resource.ref;
   }
 
+  /**
+   * Grant the given identity permissions on StartExecution of the state machine.
+   */
   public grantStartExecution(identity: IGrantable) {
     return Grant.addToPrincipal({
       grantee: identity,
