@@ -11,6 +11,8 @@ import { CfnResource, Duration, Stack } from '../../../core';
 export interface WaiterStateMachineLogOptions {
   /**
    * The log group where the execution history events will be logged.
+   *
+   * @default - Log group generated automatically
    */
   readonly destination?: ILogGroup;
 
