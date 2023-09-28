@@ -20,6 +20,7 @@ The AWS CDK Toolkit provides the `cdk` command-line interface that can be used t
 | [`cdk diff`](#cdk-diff)               | Diff stacks against current state                                          |
 | [`cdk deploy`](#cdk-deploy)           | Deploy a stack into an AWS account                                         |
 | [`cdk import`](#cdk-import)           | Import existing AWS resources into a CDK stack                             |
+| [`cdk migrate`](#cdk-migrate)         | Convert an existing CFN template into a CDK Application                    |
 | [`cdk watch`](#cdk-watch)             | Watches a CDK app for deployable and hotswappable changes                  |
 | [`cdk destroy`](#cdk-destroy)         | Deletes a stack from an AWS account                                        |
 | [`cdk bootstrap`](#cdk-bootstrap)     | Deploy a toolkit stack to support deploying large stacks & artifacts       |
@@ -559,6 +560,87 @@ This feature is currently in preview. Be aware of the following limitations:
   in the right order. The CLI will not help you import dependent resources in the right
   order, the CloudFormation deployment will fail with unresolved references.
 
+
+### `cdk migrate`
+
+⚠️**CAUTION**⚠️ 
+
+CDK migrate is currently experimental and may have breaking changes in the future. 
+We make no guarantees about the outcome or stability of the Command nor it's output.
+
+Generates a CDK application from an existing CloudFormation template in any of the CDK supported languages. 
+
+
+#### Required Arguments:
+
+(You must specify either `--from-path` or `--from-stack`)
+
+* `--stack-name <my_stack_name>` - The name for both the CDK application and stack. 
+* `--from-path <my_file_path>` - Takes the relative file path to the JSON or YAML CloudFormation template 
+* `--from-stack` - Retrieves a deployed cloudformation stack from your account with the same name as `--stack-name`.
+
+
+#### Optional Arguments:
+
+
+* `--output-path <my_output_path>` - file path to where the application should be generated. 
+Default behavior is to create a new directory with the same name as your `--stack-name` in the Current Working Directory
+* `--language <language>` - Which CDK supported language should be generated [typescript, python, csharp, java, go]
+  default is typescript
+
+
+```console
+$ # generate a typescript application from template.json in the local directory
+$ cdk migrate --from-path ./template.json --stack-name MyAwesome
+
+$ # generate a python application from MyDeployedStack in your acount
+$ cdk bootstrap migrate --stack-name MyDeployedStack --language python --from-stack
+```
+
+#### **CDK Migrate Limitations**
+
+
+CDK Migrate succesfully generating an application does *not* guarantee the application is immediately deployable.
+It simply generates a CDK application which will synthesize a template that has identical resource configurations 
+to the provided template. CDK Migrate does not interact with the CloudFormation service to verify the template 
+provided can deploy on it's own, nor does it validate that any resources in the provided template are already managed 
+in other CloudFormation Templates. In practice this is how CDK Migrate generated applications will 
+operate in the following scenarios:
+
+##### **The provided template is already deployed to cloudformation in the account/region**
+
+If the provided template came directly from a deployed cloudformation stack, and that stack has not experienced any drift, 
+then the generated application will be immediately deployable, and will not cause any changes to the deployed resources.
+Drift might occur if a resource in your template was modified outside of CloudFormation, namely via the console or CLI.
+
+##### **The provided template is not deployed to cloudformation in the account/region, and there *is not* overlap with with resources outside the template**
+
+If the provided template represents a set of resources that have no overlap with resources already deployed in the account/region, 
+then the generated application will be immediately deployable. A common reason for this might be because the template came 
+from a stack deployed in another account/region.
+
+In practice this means for any resource in the provided template. i.e.
+
+```
+    "S3Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": "MyBucket",
+        "AccessControl": "PublicRead",
+      },
+      "DeletionPolicy": "Retain"
+    }
+```
+There must not exist a resource of that type with the same name aka "MyBucket"
+
+##### **The provided template is not deployed to cloudformation in the account/region, and there *is* overlap with with resources outside the template**
+
+If the provided template represents a set of resources that have overlap with resources already deployed in the account/region, 
+then the generated application will not be immediately deployable. If those overlapped resources are already managed by 
+another CloudFormation stack in that account/region, then those resources will need to be manually removed from the provided
+template. Otherwise, if the overlapped resources are not managed by another CloudFormation stack, then first run remove those
+resources and deploy the template successfully, then re-add them and run `cdk import` to import them into your deployed stack.
+
 ### `cdk destroy`
 
 Deletes a stack from it's environment. This will cause the resources in the stack to be destroyed (unless they were
@@ -746,60 +828,6 @@ NOTICES
 If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 16603".
 ```
 
-### `cdk migrate`
-
-⚠️**CAUTION**⚠️ 
-
-CDK migrate is currently experimental and may have breaking changes in the future. 
-We make no guarantees about the outcome or stability of the Command nor it's output.
-
-Generates a CDK application from an existing CloudFormation template in any of the CDK supported languages. 
-
-
-#### Required Arguments:
-
-(You must specify either `--from-path` or `--from-stack`)
-
-* `--stack-name <my_stack_name>` - The name for both the CDK application and stack. 
-* `--from-path <my_file_path>` - Takes the relative file path to the JSON or YAML CloudFormation template 
-* `--from-stack` - Retrieves a deployed cloudformation stack from your account with the same name as `--stack-name`.
-
-
-#### Optional Arguments:
-
-
-* `--output-path <my_output_path>` - file path to where the application should be generated. 
-Default behavior is to create a new directory with the same name as your `--stack-name` in the Current Working Directory
-* `--language <language>` - Which CDK supported language should be generated [typescript, python, csharp, java, go]
-  default is typescript
-
-
-```console
-$ # generate a typescript application from template.json in the local directory
-$ cdk migrate --from-path ./template.json --stack-name MyAwesome
-
-$ # generate a python application from MyDeployedStack in your acount
-$ cdk bootstrap migrate --stack-name MyDeployedStack --language python --from-stack
-```
-
-#### Limitations
-
-
-TODO: Make this sound alot better (still working on it)
-
-
-CDK Migrate succesfully generating an application does *not* guarantee the application is immediately deployable.
-It simply generates a CDK application which will synthesize a template which has identical resource configurations to the provided template.
-Effectively this means there are 2 primary ways 
-
-- The provided template includes resources which already exist in the account, but are not managed by CloudFormation
-
-- The template 
-
-In order for the generated application to be immediately deployable, that stack must either already exist in that region/account  
-with the exact same configuration of resources, or not exist in that account/region at all. This effectively means 
-you need to get the template you are using from a deployed stack and use it in that region, or use it in a new one
-that wont have any overlap with deployed resources
 
 ### Bundling
 
