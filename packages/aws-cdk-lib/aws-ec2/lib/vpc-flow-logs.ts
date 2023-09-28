@@ -766,6 +766,13 @@ export class FlowLog extends FlowLogBase {
       }).join(' ');
     }
 
+    let trafficType: string | undefined = undefined;
+    if (!['TransitGateway', 'TransitGatewayAttachment'].includes(props.resourceType.resourceType)) {
+      trafficType = props.trafficType
+        ? props.trafficType
+        : FlowLogTrafficType.ALL;
+    }
+
     const flowLog = new CfnFlowLog(this, 'FlowLog', {
       destinationOptions: destinationConfig.destinationOptions,
       deliverLogsPermissionArn: this.iamRole ? this.iamRole.roleArn : undefined,
@@ -774,9 +781,7 @@ export class FlowLog extends FlowLogBase {
       maxAggregationInterval: props.maxAggregationInterval,
       resourceId: props.resourceType.resourceId,
       resourceType: props.resourceType.resourceType,
-      trafficType: props.trafficType
-        ? props.trafficType
-        : FlowLogTrafficType.ALL,
+      trafficType,
       logFormat: customLogFormat,
       logDestination,
     });

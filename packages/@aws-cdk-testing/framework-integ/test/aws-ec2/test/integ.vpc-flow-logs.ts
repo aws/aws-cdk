@@ -2,7 +2,7 @@ import { PolicyStatement, Effect, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import { IntegTest, ExpectedResult, AssertionsProvider } from '@aws-cdk/integ-tests-alpha';
-import { FlowLog, FlowLogDestination, FlowLogResourceType, Vpc, Instance, InstanceType, InstanceClass, InstanceSize, MachineImage, AmazonLinuxGeneration } from 'aws-cdk-lib/aws-ec2';
+import { FlowLog, FlowLogDestination, FlowLogResourceType, Vpc, Instance, InstanceType, InstanceClass, InstanceSize, MachineImage, AmazonLinuxGeneration, CfnTransitGateway } from 'aws-cdk-lib/aws-ec2';
 import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 
 const app = new App();
@@ -118,6 +118,18 @@ class TestStack extends Stack {
   }
 }
 
+class TransitGatewayFlowLogStack extends Stack {
+  constructor(scope: App, id: string, props?: StackProps) {
+    super(scope, id, props);
+
+    const transitGateway = new CfnTransitGateway(this, 'TransitGateway', {});
+    new FlowLog(this, 'FlowLogsCW', {
+      resourceType: FlowLogResourceType.fromTransitGatewayId(transitGateway.ref),
+      flowLogName: 'TransitGatewayFlowLogName',
+    });
+  }
+}
+
 const featureFlagTest = new FeatureFlagStack(app, 'FlowLogsFeatureFlag');
 
 const integ = new IntegTest(app, 'FlowLogs', {
@@ -125,6 +137,7 @@ const integ = new IntegTest(app, 'FlowLogs', {
     new TestStack(app, 'FlowLogsTestStack'),
     featureFlagTest,
     new DependencyTestStack(app, 'DependencyTestStack'),
+    new TransitGatewayFlowLogStack(app, 'TransitGatewayFlowLogStack'),
   ],
   diffAssets: true,
 });
