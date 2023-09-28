@@ -32,5 +32,5 @@ main().catch(e => {
   process.exit(1);
 }).finally(() => {
   buildTimer.end();
-  process.stdout.write(`Build times for ${currentPackageJson().name}: ${timers.display()}\n`);
+  process.stdout.write(`Lint times for ${currentPackageJson().name}: ${timers.display()}\n`);
 });
