@@ -239,7 +239,8 @@
                               "Action": [
                                 "s3:DeleteObject*",
                                 "s3:GetBucket*",
-                                "s3:List*"
+                                "s3:List*",
+                                "s3:PutBucketPolicy"
                               ],
                               "Effect": "Allow",
                               "Principal": {
@@ -1061,13 +1062,13 @@
             "id": "TestProduct",
             "path": "integ-servicecatalog-product-encrypted-asset/TestProduct",
             "children": {
-              "Templatecfae0edd2da0": {
-                "id": "Templatecfae0edd2da0",
-                "path": "integ-servicecatalog-product-encrypted-asset/TestProduct/Templatecfae0edd2da0",
+              "Template2e547177b81b": {
+                "id": "Template2e547177b81b",
+                "path": "integ-servicecatalog-product-encrypted-asset/TestProduct/Template2e547177b81b",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "integ-servicecatalog-product-encrypted-asset/TestProduct/Templatecfae0edd2da0/Stage",
+                    "path": "integ-servicecatalog-product-encrypted-asset/TestProduct/Template2e547177b81b/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -1075,7 +1076,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "integ-servicecatalog-product-encrypted-asset/TestProduct/Templatecfae0edd2da0/AssetBucket",
+                    "path": "integ-servicecatalog-product-encrypted-asset/TestProduct/Template2e547177b81b/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
@@ -1087,13 +1088,13 @@
                   "version": "0.0.0"
                 }
               },
-              "Template15761d1255cb": {
-                "id": "Template15761d1255cb",
-                "path": "integ-servicecatalog-product-encrypted-asset/TestProduct/Template15761d1255cb",
+              "Template0d8d51d704c5": {
+                "id": "Template0d8d51d704c5",
+                "path": "integ-servicecatalog-product-encrypted-asset/TestProduct/Template0d8d51d704c5",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "integ-servicecatalog-product-encrypted-asset/TestProduct/Template15761d1255cb/Stage",
+                    "path": "integ-servicecatalog-product-encrypted-asset/TestProduct/Template0d8d51d704c5/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -1101,7 +1102,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "integ-servicecatalog-product-encrypted-asset/TestProduct/Template15761d1255cb/AssetBucket",
+                    "path": "integ-servicecatalog-product-encrypted-asset/TestProduct/Template0d8d51d704c5/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
@@ -1235,7 +1236,7 @@
                 "path": "integ-product-encrypted-asset/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.69"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
@@ -1281,7 +1282,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.69"
+          "version": "10.2.70"
         }
       }
     },
