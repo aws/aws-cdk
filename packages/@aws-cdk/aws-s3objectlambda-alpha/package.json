@@ -108,11 +108,6 @@
   "publishConfig": {
     "tag": "latest"
   },
-  "awslint": {
-    "exclude": [
-      "*:*"
-    ]
-  },
   "private": false,
   "pkglint": {
     "exclude": [

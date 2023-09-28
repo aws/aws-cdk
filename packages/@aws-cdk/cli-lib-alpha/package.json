@@ -60,11 +60,6 @@
     "test": "cdk-test",
     "watch": "cdk-watch"
   },
-  "awslint": {
-    "exclude": [
-      "*:*"
-    ]
-  },
   "cdk-build": {
     "post": [
       "yarn attribute",
