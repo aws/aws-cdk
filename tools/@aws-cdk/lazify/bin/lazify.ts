@@ -17,7 +17,7 @@ async function main() {
         }
       },
       // Skip directories marked as 'custom resource's, so we don't affect asset hashes
-      async (d) => path.basename(d) !== 'node_modules' && await fs.pathExists(path.join(d, '.is_custom_resource')));
+      async (d) => path.basename(d) !== 'node_modules' && ! await fs.pathExists(path.join(d, '.is_custom_resource')));
   }
 }
 
