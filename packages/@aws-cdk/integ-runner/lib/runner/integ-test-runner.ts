@@ -202,8 +202,7 @@ export class IntegTestRunner extends IntegRunner {
     if (!actualTestCase) {
       throw new Error(`Did not find test case name '${options.testCaseName}' in '${Object.keys(this.actualTestSuite.testSuite)}'`);
     }
-    // const clean = options.clean ?? true;
-    const clean = false;
+    const clean = options.clean ?? true;
     const updateWorkflowEnabled = (options.updateWorkflow ?? true)
       && (actualTestCase.stackUpdateWorkflow ?? true);
     const enableForVerbosityLevel = (needed = 1) => {
