@@ -1732,7 +1732,7 @@ You also can create a flow log for a transit gateway.
 ```ts
 const transitGateway = new ec2.CfnTransitGateway(this, 'TransitGateway', {});
 new ec2.FlowLog(this, 'FlowLogsCW', {
-  resourceType: FlowLogResourceType.fromTransitGatewayId(transitGateway.ref),
+  resourceType: ec2.FlowLogResourceType.fromTransitGatewayId(transitGateway.ref),
   flowLogName: 'TransitGatewayFlowLogName',
 });
 ```
