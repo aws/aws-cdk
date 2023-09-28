@@ -63,7 +63,7 @@ export interface WaiterStateMachineProps {
   /**
    * Options for StateMachine logging.
    *
-   * This must not be used if `disableLogging` is true.
+   * This property must not be used if `disableLogging` is true.
    *
    * @default - no logOptions
    */

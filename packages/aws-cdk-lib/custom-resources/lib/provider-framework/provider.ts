@@ -130,7 +130,7 @@ export interface ProviderProps {
   /**
    * Log options for `WaiterStateMachine` with `isCompleteHandler` in the provider.
    *
-   * This must not be used if `isCompleteHandler` is not specified or
+   * This property must not be used if `isCompleteHandler` is not specified or
    * `disableWaiterStateMachineLogging` is true.
    *
    * @default - no log options
@@ -140,7 +140,7 @@ export interface ProviderProps {
   /**
    * Disable logging for `WaiterStateMachine` with `isCompleteHandler` in the provider.
    *
-   * This must not be used if `isCompleteHandler` is not specified.
+   * This property must not be used if `isCompleteHandler` is not specified.
    *
    * @default false
    */
