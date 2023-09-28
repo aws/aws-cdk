@@ -599,7 +599,7 @@ describe('event bus', () => {
       principals: [new iam.ArnPrincipal('arn')],
       actions: ['events:DeleteRule'],
       sid: 'statement2',
-      resources: [`${bus.eventBusArn}/*`],
+      resources: [bus.eventBusArn],
     });
 
     // WHEN
