@@ -28,6 +28,7 @@ const RESOURCE_DETECTORS: { [key:string]: HotswapDetector } = {
   // AppSync
   'AWS::AppSync::Resolver': isHotswappableAppSyncChange,
   'AWS::AppSync::FunctionConfiguration': isHotswappableAppSyncChange,
+  'AWS::AppSync::GraphQLSchema': isHotswappableAppSyncChange,
 
   'AWS::ECS::TaskDefinition': isHotswappableEcsServiceChange,
   'AWS::CodeBuild::Project': isHotswappableCodeBuildProjectChange,
