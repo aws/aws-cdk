@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallS3listObjectsV2": {
+  "AwsApiCallS3listObjectsV26b9d6cbe6c7fc63b1146226918d8056f": {
    "Type": "Custom::DeployAssert@SdkCallS3listObjectsV2",
    "Properties": {
     "ServiceToken": {
@@ -14,24 +14,33 @@
     "expected": "{\"$ObjectLike\":{\"KeyCount\":1}}",
     "parameters": {
      "Bucket": {
-      "Fn::ImportValue": "aws-cdk-msk-integ:ExportsOutputRefLoggingBucket1E5A6F3B2AAAD6ED"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-msk-integ:ExportsOutputRefLoggingBucket1E5A6F3B2AAAD6ED"
+        },
+        "\""
+       ]
+      ]
      },
-     "MaxKeys": 1,
+     "MaxKeys": "1",
      "Prefix": {
       "Fn::Join": [
        "",
        [
-        "AWSLogs/",
+        "\"AWSLogs/",
         {
          "Ref": "AWS::AccountId"
         },
-        "/KafkaBrokerLogs"
+        "/KafkaBrokerLogs\""
        ]
       ]
      }
     },
     "flattenResponse": "false",
-    "salt": "1676187604269"
+    "salt": "1695653151389"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -100,6 +109,15 @@
            ]
           }
          ]
+        },
+        {
+         "Action": [
+          "kafka:GetBootstrapBrokers"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
         }
        ]
       }
@@ -110,12 +128,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs18.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "1f3c2cfb18e102edc713fe4c4b4d87572f4297ee4a5e80a5960adf526ee9ea28.zip"
+     "S3Key": "63ae5d5f48d3638501e722718b99b5f2fddb9ab73a15d7cb607215a500df19e1.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -129,10 +147,10 @@
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallS3listObjectsV2": {
+  "AssertionResultsAwsApiCallS3listObjectsV26b9d6cbe6c7fc63b1146226918d8056f": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallS3listObjectsV2",
+     "AwsApiCallS3listObjectsV26b9d6cbe6c7fc63b1146226918d8056f",
      "assertion"
     ]
    }
