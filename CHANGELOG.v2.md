@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.99.0](https://github.com/aws/aws-cdk/compare/v2.98.0...v2.99.0) (2023-09-27)
+
+
+### Features
+
+* **s3:** specify minimum TLS version ([#27297](https://github.com/aws/aws-cdk/issues/27297)) ([f47d09c](https://github.com/aws/aws-cdk/commit/f47d09c08871517f06c1895a5ed262c8e87ee05b)), closes [#27279](https://github.com/aws/aws-cdk/issues/27279)
+* **synthetics:** graduate to stable 🚀 ([#27305](https://github.com/aws/aws-cdk/issues/27305)) ([dd00d05](https://github.com/aws/aws-cdk/commit/dd00d05c07cb3c6efd505e9f7ab577a5eec5070b))
+
+
+### Bug Fixes
+
+* **batch:** make `instanceType` optional on multinode jobs ([#27223](https://github.com/aws/aws-cdk/issues/27223)) ([6616026](https://github.com/aws/aws-cdk/commit/6616026d3879f0271b7813ed00f0899c666da1e3)), closes [#27185](https://github.com/aws/aws-cdk/issues/27185)
+
+## [2.98.0](https://github.com/aws/aws-cdk/compare/v2.97.1...v2.98.0) (2023-09-26)
+
+
+### Features
+
+* update AWS Service Spec ([#27276](https://github.com/aws/aws-cdk/issues/27276)) ([3d9ca8d](https://github.com/aws/aws-cdk/commit/3d9ca8dad29e6e6f813ab2340da7639c24ba5494))
+* **aws-cdk-lib:** reduce load time of JavaScript library ([#27217](https://github.com/aws/aws-cdk/issues/27217)) ([faffce0](https://github.com/aws/aws-cdk/commit/faffce06c3f1d543600f7e8dc430a5105c73ac5a))
+
+
+### Bug Fixes
+
+* **rds:** prevent rendering deprecated credentials when creating a database cluster from a snapshot (under feature flag) ([#27174](https://github.com/aws/aws-cdk/issues/27174)) ([1fd22a7](https://github.com/aws/aws-cdk/commit/1fd22a7498223ae5d2faf1799056e81be4f71f5c)), closes [#23815](https://github.com/aws/aws-cdk/issues/23815)
+
+## [2.97.1](https://github.com/aws/aws-cdk/compare/v2.97.0...v2.97.1) (2023-09-25)
+
+
+### Reverts
+
+* "feat(core): `Schedule` class" ([#27284](https://github.com/aws/aws-cdk/issues/27284)) ([e2fc724](https://github.com/aws/aws-cdk/commit/e2fc7240672b5c26394b2fe420531d62fe74189b)), closes [aws/aws-cdk#27105](https://github.com/aws/aws-cdk/issues/27105) [#27259](https://github.com/aws/aws-cdk/issues/27259)
+
 ## [2.97.0](https://github.com/aws/aws-cdk/compare/v2.96.2...v2.97.0) (2023-09-22)
 
 
