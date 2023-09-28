@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { Grant, IGrantable, PolicyStatement, Role, ServicePrincipal } from '../../../aws-iam';
 import { IFunction } from '../../../aws-lambda';
-import { LogGroup, RetentionDays } from '../../../aws-logs';
+import { ILogGroup, LogGroup } from '../../../aws-logs';
 import { LogLevel } from '../../../aws-stepfunctions';
 import { CfnResource, Duration, Stack } from '../../../core';
 
@@ -9,6 +9,11 @@ import { CfnResource, Duration, Stack } from '../../../core';
  * Log Options for the state machine.
  */
 export interface WaiterStateMachineLogOptions {
+  /**
+   * The log group where the execution history events will be logged.
+   */
+  readonly destination?: ILogGroup;
+
   /**
    * Determines whether execution data is included in your log.
    *
@@ -22,15 +27,6 @@ export interface WaiterStateMachineLogOptions {
    * @default ERROR
    */
   readonly level?: LogLevel;
-
-  /**
-   * The number of days framework log events are kept in CloudWatch Logs. When
-   * updating this property, unsetting it doesn't remove the log retention policy.
-   * To remove the retention policy, set the value to `INFINITE`.
-   *
-   * @default logs.RetentionDays.INFINITE
-   */
-  readonly logRetention?: RetentionDays;
 }
 
 /**
@@ -101,15 +97,15 @@ export class WaiterStateMachine extends Construct {
     props.isCompleteHandler.grantInvoke(role);
     props.timeoutHandler.grantInvoke(role);
 
-    let logGroup: LogGroup | undefined;
+    let logGroup: ILogGroup | undefined;
     if (props.disableLogging) {
       if (props.logOptions) {
         throw new Error('logOptions must not be used if disableLogging is true');
       }
     } else {
-      logGroup = new LogGroup(this, 'LogGroup', {
-        retention: props.logOptions?.logRetention,
-      });
+      logGroup = props.logOptions?.destination
+        ? props.logOptions.destination
+        : new LogGroup(this, 'LogGroup');
       role.addToPrincipalPolicy(new PolicyStatement({
         actions: [
           'logs:CreateLogDelivery',

@@ -9,7 +9,7 @@ import * as rds from 'aws-cdk-lib/aws-rds';
 import { ClusterInstance } from 'aws-cdk-lib/aws-rds';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
-import { RetentionDays } from 'aws-cdk-lib/aws-logs';
+import { LogLevel } from 'aws-cdk-lib/aws-stepfunctions';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -109,7 +109,8 @@ class Snapshoter extends Construct {
       onEventHandler,
       isCompleteHandler,
       waiterStateMachineLogOptions: {
-        logRetention: RetentionDays.ONE_DAY,
+        includeExecutionData: true,
+        level: LogLevel.ALL,
       },
       disableWaiterStateMachineLogging: false,
     });

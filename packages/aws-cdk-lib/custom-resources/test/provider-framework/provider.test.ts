@@ -184,7 +184,6 @@ test('if isComplete is specified, the isComplete framework handler is also inclu
     waiterStateMachineLogOptions: {
       includeExecutionData: true,
       level: LogLevel.ALL,
-      logRetention: logs.RetentionDays.ONE_DAY,
     },
     disableWaiterStateMachineLogging: false,
   });
@@ -282,7 +281,6 @@ test('fails if waiterStateMachineLogOptions is specified and disableWaiterStateM
       waiterStateMachineLogOptions: {
         includeExecutionData: true,
         level: LogLevel.ALL,
-        logRetention: logs.RetentionDays.ONE_DAY,
       },
       disableWaiterStateMachineLogging: true,
     });
@@ -314,7 +312,6 @@ test('fails if "queryInterval" or "totalTimeout" or "waiterStateMachineLogOption
     waiterStateMachineLogOptions: {
       includeExecutionData: true,
       level: LogLevel.ALL,
-      logRetention: logs.RetentionDays.ONE_DAY,
     },
   })).toThrow(/\"queryInterval\" and \"totalTimeout\" and \"waiterStateMachineLogOptions\" and \"disableWaiterStateMachineLogging\" can only be configured if \"isCompleteHandler\" is specified. Otherwise, they have no meaning/);
 

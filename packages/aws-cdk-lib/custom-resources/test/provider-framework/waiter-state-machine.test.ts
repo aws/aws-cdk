@@ -2,7 +2,7 @@ import { Node } from 'constructs';
 import { Template } from '../../../assertions';
 import * as lambda from '../../../aws-lambda';
 import { Code, Function as lambdaFn } from '../../../aws-lambda';
-import { RetentionDays } from '../../../aws-logs';
+import { LogGroup, RetentionDays } from '../../../aws-logs';
 import { LogLevel } from '../../../aws-stepfunctions';
 import { Duration, Stack } from '../../../core';
 import { WaiterStateMachine } from '../../lib/provider-framework/waiter-state-machine';
@@ -26,6 +26,9 @@ describe('state machine', () => {
     const interval = Duration.hours(2);
     const maxAttempts = 2;
     const backoffRate = 5;
+    const logGroup = new LogGroup(stack, 'LogGroup', {
+      retention: RetentionDays.ONE_DAY,
+    });
 
     // WHEN
     new WaiterStateMachine(stack, 'statemachine', {
@@ -37,7 +40,7 @@ describe('state machine', () => {
       logOptions: {
         includeExecutionData: true,
         level: LogLevel.ALL,
-        logRetention: RetentionDays.ONE_DAY,
+        destination: logGroup,
       },
     });
 
@@ -67,7 +70,7 @@ describe('state machine', () => {
             CloudWatchLogsLogGroup: {
               LogGroupArn: {
                 'Fn::GetAtt': [
-                  'statemachineLogGroupA08E43E4',
+                  'LogGroupF5B46931',
                   'Arn',
                 ],
               },
@@ -223,7 +226,6 @@ describe('state machine', () => {
         logOptions: {
           includeExecutionData: true,
           level: LogLevel.ALL,
-          logRetention: RetentionDays.ONE_DAY,
         },
         disableLogging: true,
       });
