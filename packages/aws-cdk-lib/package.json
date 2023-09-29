@@ -41,8 +41,7 @@
     "post": [
       "ts-node ./scripts/verify-imports-resolve-same.ts",
       "ts-node ./scripts/verify-imports-shielded.ts",
-      "ts-node ./cx-api/build-tools/flag-report.ts",
-      "env QUIET=1 lazify ."
+      "ts-node ./cx-api/build-tools/flag-report.ts"
     ]
   },
   "cdk-package": {
@@ -167,7 +166,6 @@
     "@types/jest": "^29.5.5",
     "@types/lodash": "^4.14.198",
     "@types/punycode": "^2.1.0",
-    "@aws-cdk/lazify": "0.0.0",
     "aws-sdk": "^2.1461.0",
     "aws-sdk-client-mock": "^3.0.0",
     "aws-sdk-client-mock-jest": "^3.0.0",
@@ -211,7 +209,11 @@
     "libRoot": "/root/remodel/packages/aws-cdk-lib"
   },
   "exports": {
-    ".": "./index.js",
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js",
+      "require": "./lazy-index.js"
+    },
     "./.jsii": "./.jsii",
     "./.warnings.jsii.js": "./.warnings.jsii.js",
     "./alexa-ask": "./alexa-ask/index.js",
