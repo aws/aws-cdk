@@ -20,34 +20,87 @@ function recFolderStructure(fileOrDir: string) {
   }
 }
 
-const bindingsDir = path.join(__dirname, '..', 'lib');
+async function main() {
+  const bindingsDir = path.join(__dirname, '..', 'lib');
 
-recFolderStructure(bindingsDir);
+  recFolderStructure(bindingsDir);
 
-for (const ep of entryPoints) {
-  void esbuild.build({
-    entryPoints: [ep],
-    outfile: calculateOutfile(ep),
-    external: ['@aws-sdk/*', 'aws-sdk'],
-    format: 'cjs',
-    platform: 'node',
-    bundle: true,
-    minify: true,
-    minifyWhitespace: true,
-    minifySyntax: true,
-    minifyIdentifiers: true,
-    sourcemap: false,
-    tsconfig: 'tsconfig.json',
-  });
+  for (const ep of entryPoints) {
+    const result = await esbuild.build({
+      entryPoints: [ep],
+      outfile: calculateOutfile(ep),
+      external: ['@aws-sdk/*', 'aws-sdk'],
+      format: 'cjs',
+      platform: 'node',
+      bundle: true,
+      minify: true,
+      minifyWhitespace: true,
+      minifySyntax: true,
+      minifyIdentifiers: true,
+      sourcemap: false,
+      tsconfig: 'tsconfig.json',
+
+      // These should be checked because they can lead to runtime failures. There are
+      // false positives, and the esbuild API does not provide a way to suppress them,
+      // so we need to do some postprocessing.
+      logOverride: {
+        'unsupported-dynamic-import': 'warning',
+        'unsupported-require-call': 'warning',
+        'indirect-require': 'warning',
+      },
+      logLevel: 'error',
+    });
+
+    const failures = [
+      ...result.errors,
+      ...ignoreWarnings(result),
+    ];
+
+    if (failures.length > 0) {
+      const messages = esbuild.formatMessagesSync(failures, {
+        kind: 'error',
+      });
+      // eslint-disable-next-line no-console
+      console.log(messages.join('\n'));
+      process.exitCode = 1;
+    }
+  }
+
+  function calculateOutfile(file: string) {
+    // turn ts extension into js extension
+    file = path.join(path.dirname(file), path.basename(file, path.extname(file)) + '.js');
+
+    // replace /lib with /dist
+    const fileContents = file.split(path.sep);
+    fileContents[fileContents.lastIndexOf('lib')] = 'dist';
+
+    return fileContents.join(path.sep);
+  }
 }
 
-function calculateOutfile(file: string) {
-  // turn ts extension into js extension
-  file = path.join(path.dirname(file), path.basename(file, path.extname(file)) + '.js');
+function ignoreWarnings(result: esbuild.BuildResult) {
+  const ret: esbuild.Message[] = [];
+  for (const warning of result.warnings) {
+    let suppressed = false;
+    if (warning.location?.file) {
+      const contents = fs.readFileSync(warning.location.file, { encoding: 'utf-8' });
+      const lines = contents.split('\n');
+      const lineBefore = lines[warning.location.line - 1 - 1];
 
-  // replace /lib with /dist
-  const fileContents = file.split(path.sep);
-  fileContents[fileContents.lastIndexOf('lib')] = 'dist';
+      if (lineBefore.includes(`esbuild-disable ${warning.id}`)) {
+        suppressed = true;
+      }
+    }
 
-  return fileContents.join(path.sep);
+    if (!suppressed) {
+      ret.push(warning);
+    }
+  }
+  return ret;
 }
+
+main().catch((e) => {
+  // eslint-disable-next-line no-console
+  console.error(e);
+  process.exitCode = 1;
+});

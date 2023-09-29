@@ -1,5 +1,3 @@
-import * as path from 'path';
-
 /**
  * Normalize a service name from:
  *
@@ -41,10 +39,10 @@ export function normalizeActionName(v3Service: string, action: string) {
 
 function v2ToV3Mapping(): Record<string, string> {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  return require(path.join(__dirname, 'sdk-v2-to-v3.json'));
+  return require('./sdk-v2-to-v3.json');
 }
 
 function v3Metadata(): Record<string, { iamPrefix?: string; commands?: string[] }> {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  return require(path.join(__dirname, 'sdk-v3-metadata.json'));
+  return require('./sdk-v3-metadata.json');
 }

@@ -96,7 +96,7 @@ export class ApiCall {
     }
 
     try {
-      /* eslint-disable-next-line @typescript-eslint/no-require-imports */
+      /* eslint-disable-next-line @typescript-eslint/no-require-imports */ // esbuild-disable unsupported-require-call
       this.v3Package = require(this.v3PackageName);
     } catch (e) {
       throw Error(`Service ${this.service} client package with name '${this.v3PackageName}' does not exist.`);
