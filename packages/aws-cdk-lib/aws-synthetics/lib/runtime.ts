@@ -122,7 +122,7 @@ export class Runtime {
    */
   public static readonly SYNTHETICS_NODEJS_PUPPETEER_5_1 = new Runtime('syn-nodejs-puppeteer-5.1', RuntimeFamily.NODEJS);
 
-   /**
+  /**
    * `syn-nodejs-puppeteer-6.0` includes the following:
    * - Lambda runtime Node.js 18.x
    * - Puppeteer-core version 19.7.0
