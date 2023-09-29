@@ -1,4 +1,4 @@
-import { ApiCall, InvokeOptions } from '../lib';
+import { ApiCall, InvokeOptions, coerceSdkv3Response, flatten } from '../lib';
 
 test('can map service name to SDK v3 client name', () => {
   expect(new ApiCall('S3', 'Bla').v3PackageName).toBe('@aws-sdk/client-s3');
@@ -77,6 +77,36 @@ describe('helpers for SDKv3', () => {
       }).toThrow('Unable to find command named: FooBarCommand');
     });
   });
+});
+
+test('flatten', () => {
+  expect(flatten({
+    foo: 'foo',
+    bar: {
+      foo: 'foo',
+      bar: 'bar',
+    },
+    baz: [
+      { foo: 'foo' },
+      { bar: 'bar' },
+    ],
+  })).toEqual({
+    'foo': 'foo',
+    'bar.foo': 'foo',
+    'bar.bar': 'bar',
+    'baz.0.foo': 'foo',
+    'baz.1.bar': 'bar',
+  });
+});
+
+test.each([
+  { transformToString: () => 'foo' },
+  Buffer.from('foo'),
+  new TextEncoder().encode('foo'),
+])('coerce %p', async (fooValue) => {
+  expect(await coerceSdkv3Response({
+    foo: fooValue,
+  })).toEqual({ foo: 'foo' });
 });
 
 function loadV3ClientPackage(service: string) {

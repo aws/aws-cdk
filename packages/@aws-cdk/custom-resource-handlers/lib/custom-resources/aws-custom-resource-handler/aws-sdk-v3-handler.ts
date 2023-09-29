@@ -119,7 +119,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 
       const flatData: { [key: string]: string } = {};
       try {
-        const response = await await apiCall.invoke({
+        const response = await apiCall.invoke({
           sdkPackage: awsSdk,
           apiVersion: call.apiVersion,
           credentials: credentials,
@@ -127,6 +127,8 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
           parameters: decodeSpecialValues(call.parameters, physicalResourceId),
           flattenResponse: true,
         });
+
+        console.log('API response', response);
 
         flatData.apiVersion = apiCall.client.config.apiVersion; // For test purposes: check if apiVersion was correctly passed.
         flatData.region = await apiCall.client.config.region().catch(() => undefined); // For test purposes: check if region was correctly passed.

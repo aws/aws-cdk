@@ -9,14 +9,23 @@ export const PHYSICAL_RESOURCE_ID_REFERENCE = 'PHYSICAL:RESOURCEID:';
  * Decodes encoded special values (physicalResourceId)
  */
 export function decodeSpecialValues(object: object, physicalResourceId: string) {
-  return JSON.parse(JSON.stringify(object), (_k, v) => {
-    switch (v) {
-      case PHYSICAL_RESOURCE_ID_REFERENCE:
-        return physicalResourceId;
-      default:
-        return v;
+  return recurse(object);
+
+  function recurse(x: any): any {
+    if (x === PHYSICAL_RESOURCE_ID_REFERENCE) {
+      return physicalResourceId;
     }
-  });
+    if (Array.isArray(x)) {
+      return x.map(recurse);
+    }
+    if (x && typeof x === 'object') {
+      for (const [key, value] of Object.entries(x)) {
+        x[key] = recurse(value);
+      }
+      return x;
+    }
+    return x;
+  }
 }
 
 /**

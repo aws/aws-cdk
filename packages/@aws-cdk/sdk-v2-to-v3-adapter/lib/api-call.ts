@@ -34,8 +34,10 @@ export interface InvokeOptions {
 
   /**
    * Parameters to the API call
+   *
+   * @default {}
    */
-  readonly parameters: Record<string, unknown>;
+  readonly parameters?: Record<string, unknown>;
 
   /**
    * Flatten the response object
@@ -74,13 +76,12 @@ export class ApiCall {
 
     // Command must pass input value https://github.com/aws/aws-sdk-js-v3/issues/424
     const response = await this.client.send(
-      new Command(options.parameters
-        ? coerceApiParameters(this.service, this.action, options.parameters)
-        : {},
-      ),
+      new Command(coerceApiParameters(this.service, this.action, options.parameters ?? {})),
     );
 
-    const coerced = coerceSdkv3Response(response);
+    delete response.$metadata;
+
+    const coerced = await coerceSdkv3Response(response);
 
     return (options.flattenResponse ? flatten(coerced) : coerced) as Record<string, unknown>;
   }
@@ -170,58 +171,18 @@ export function flatten(root: unknown): { [key: string]: any } {
   }
 }
 
-async function coerceValue(v: any) {
-  if (v && typeof(v) === 'object' && typeof((v as any).transformToString) === 'function') {
-    // in sdk v3 some return types are now adapters that we need to explicitly
-    // convert to strings. see example: https://github.com/aws/aws-sdk-js-v3/blob/main/UPGRADING.md?plain=1#L573-L576
-    // note we don't use 'instanceof Unit8Array' because observations show this won't always return true, even though
-    // the `transformToString` function will be available. (for example S3::GetObject)
-    const text = await (v as any).transformToString();
-    return tryJsonParse(text);
-  }
-  return tryJsonParse(v);
-
-}
-
-function tryJsonParse(v: any) {
-  if (typeof(v) !== 'string') {
-    return v;
-  }
-  try {
-    return JSON.parse(v);
-  } catch {
-    return v;
-  }
-}
-
-export async function coerceResponse(response: any) {
-
-  if (response == null) {
-    return;
-  }
-
-  for (const key of Object.keys(response)) {
-    response[key] = await coerceValue(response[key]);
-    if (typeof response[key] === 'object') {
-      await coerceResponse(response[key]);
-    }
-  }
-
-}
-
 /**
  * Text decoder used for Uint8Array response parsing
  */
 const decoder = new TextDecoder();
 
-async function coerceSdkv3Response(value: unknown): Promise<unknown> {
+export async function coerceSdkv3Response(value: unknown): Promise<unknown> {
   if (value && typeof(value) === 'object' && typeof((value as any).transformToString) === 'function') {
     // in sdk v3 some return types are now adapters that we need to explicitly
     // convert to strings. see example: https://github.com/aws/aws-sdk-js-v3/blob/main/UPGRADING.md?plain=1#L573-L576
     // note we don't use 'instanceof Unit8Array' because observations show this won't always return true, even though
     // the `transformToString` function will be available. (for example S3::GetObject)
-    const text = await (value as any).transformToString();
-    return tryJsonParse(text);
+    return (value as any).transformToString();
   }
   if (Buffer.isBuffer(value)) {
     return value.toString('utf8');
