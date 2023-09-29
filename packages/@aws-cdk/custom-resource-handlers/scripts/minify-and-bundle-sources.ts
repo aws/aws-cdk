@@ -59,9 +59,12 @@ async function main() {
     if (failures.length > 0) {
       const messages = esbuild.formatMessagesSync(failures, {
         kind: 'error',
+        color: true,
       });
       // eslint-disable-next-line no-console
       console.log(messages.join('\n'));
+      // eslint-disable-next-line no-console
+      console.log(`${messages.length} errors. For false positives, put '// esbuild-disable <code> - <motivation>' on the line before`);
       process.exitCode = 1;
     }
   }
