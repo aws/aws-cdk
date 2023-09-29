@@ -242,6 +242,9 @@
   "aws-emrserverless": [
     "AWS::EMRServerless"
   ],
+  "aws-entityresolution": [
+    "AWS::EntityResolution"
+  ],
   "aws-events": [
     "AWS::Events"
   ],
@@ -292,6 +295,9 @@
   ],
   "aws-guardduty": [
     "AWS::GuardDuty"
+  ],
+  "aws-healthimaging": [
+    "AWS::HealthImaging"
   ],
   "aws-healthlake": [
     "AWS::HealthLake"
@@ -432,6 +438,9 @@
   "aws-mediapackage": [
     "AWS::MediaPackage"
   ],
+  "aws-mediapackagev2": [
+    "AWS::MediaPackageV2"
+  ],
   "aws-mediastore": [
     "AWS::MediaStore"
   ],
@@ -485,6 +494,9 @@
   ],
   "aws-panorama": [
     "AWS::Panorama"
+  ],
+  "aws-pcaconnectorad": [
+    "AWS::PCAConnectorAD"
   ],
   "aws-personalize": [
     "AWS::Personalize"
@@ -662,6 +674,9 @@
   ],
   "aws-workspaces": [
     "AWS::WorkSpaces"
+  ],
+  "aws-workspacesweb": [
+    "AWS::WorkSpacesWeb"
   ],
   "aws-xray": [
     "AWS::XRay"
