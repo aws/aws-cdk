@@ -1,4 +1,3 @@
-"use strict";
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -806,8 +805,9 @@ var require_helpers_internal = __commonJS({
           __createBinding3(exports2, m, p);
     };
     Object.defineProperty(exports, "__esModule", { value: true });
-    __exportStar3((init_match(), __toCommonJS(match_exports)), exports);
-    __exportStar3((init_matcher(), __toCommonJS(matcher_exports)), exports);
+    Object.defineProperty(exports, "Match", { configurable: true, get: () => (init_match(), __toCommonJS(match_exports)).Match });
+    Object.defineProperty(exports, "Matcher", { configurable: true, get: () => (init_matcher(), __toCommonJS(matcher_exports)).Matcher });
+    Object.defineProperty(exports, "MatchResult", { configurable: true, get: () => (init_matcher(), __toCommonJS(matcher_exports)).MatchResult });
   }
 });
 
@@ -31884,7 +31884,6 @@ var CustomResourceHandler = class {
   constructor(event, context) {
     this.event = event;
     this.context = context;
-    this.timedOut = false;
     this.timeout = setTimeout(async () => {
       await this.respond({
         status: "FAILED",
@@ -31896,6 +31895,9 @@ var CustomResourceHandler = class {
     this.event = event;
     this.physicalResourceId = extractPhysicalResourceId(event);
   }
+  physicalResourceId;
+  timeout;
+  timedOut = false;
   /**
    * Handles executing the custom resource event. If `stateMachineArn` is present
    * in the props then trigger the waiter statemachine
@@ -32029,6 +32031,7 @@ var AssertionHandler = class extends CustomResourceHandler {
   }
 };
 var MatchCreator = class {
+  parsedObj;
   constructor(obj) {
     this.parsedObj = {
       matcher: obj

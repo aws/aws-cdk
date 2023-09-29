@@ -108,6 +108,7 @@
      "Mode": "OFF"
     },
     "ScheduleExpression": "rate(1 minute)",
+    "ScheduleExpressionTimezone": "Etc/UTC",
     "State": "ENABLED",
     "Target": {
      "Arn": {
