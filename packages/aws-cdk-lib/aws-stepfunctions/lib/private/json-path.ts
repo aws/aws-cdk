@@ -345,8 +345,6 @@ function singleQuotestring(x: string) {
       ret.push("\\'");
     } else if (c === '\\') {
       ret.push('\\\\');
-    } else if (c === '\n') {
-      ret.push('\\n');
     } else {
       ret.push(c);
     }
