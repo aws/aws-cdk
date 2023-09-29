@@ -73,8 +73,19 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
     validatePatternSupported(this.integrationPattern, AthenaStartQueryExecution.SUPPORTED_INTEGRATION_PATTERNS);
+    this.validateExecutionParameters(props.executionParameters);
 
     this.taskPolicies = this.createPolicyStatements();
+  }
+
+  private validateExecutionParameters(executionParameters?: string[]) {
+    if (executionParameters == null) return;
+    if (executionParameters.length == 0) {
+      throw new Error('Query executionParameters must not be an empty list');
+    }
+    if (executionParameters.length > 1024) {
+      throw new Error('Too many executionParameters for query, maximum 1024 supported');
+    }
   }
 
   private createPolicyStatements(): iam.PolicyStatement[] {
