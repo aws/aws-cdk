@@ -8499,13 +8499,14 @@ var require_MiddlewareStack = __commonJS({
         return isRemoved;
       };
       const cloneTo = (toStack) => {
+        var _a;
         absoluteEntries.forEach((entry) => {
           toStack.add(entry.middleware, { ...entry });
         });
         relativeEntries.forEach((entry) => {
           toStack.addRelativeTo(entry.middleware, { ...entry });
         });
-        toStack.identifyOnResolve(stack.identifyOnResolve());
+        (_a = toStack.identifyOnResolve) === null || _a === void 0 ? void 0 : _a.call(toStack, stack.identifyOnResolve());
         return toStack;
       };
       const expandRelativeMiddlewareList = (from) => {
@@ -8646,9 +8647,10 @@ var require_MiddlewareStack = __commonJS({
           return isRemoved;
         },
         concat: (from) => {
+          var _a, _b;
           const cloned = cloneTo((0, exports.constructStack)());
           cloned.use(from);
-          cloned.identifyOnResolve(identifyOnResolve || cloned.identifyOnResolve() || from.identifyOnResolve());
+          cloned.identifyOnResolve(identifyOnResolve || cloned.identifyOnResolve() || ((_b = (_a = from.identifyOnResolve) === null || _a === void 0 ? void 0 : _a.call(from)) !== null && _b !== void 0 ? _b : false));
           return cloned;
         },
         applyToStack: cloneTo,
@@ -10720,7 +10722,7 @@ var require_package = __commonJS({
     module2.exports = {
       name: "@aws-sdk/client-sfn",
       description: "AWS SDK for JavaScript Sfn Client for Node.js, Browser and React Native",
-      version: "3.414.0",
+      version: "3.421.0",
       scripts: {
         build: "concurrently 'yarn:build:cjs' 'yarn:build:es' 'yarn:build:types'",
         "build:cjs": "tsc -p tsconfig.cjs.json",
@@ -10740,39 +10742,39 @@ var require_package = __commonJS({
       dependencies: {
         "@aws-crypto/sha256-browser": "3.0.0",
         "@aws-crypto/sha256-js": "3.0.0",
-        "@aws-sdk/client-sts": "3.414.0",
-        "@aws-sdk/credential-provider-node": "3.414.0",
-        "@aws-sdk/middleware-host-header": "3.413.0",
-        "@aws-sdk/middleware-logger": "3.413.0",
-        "@aws-sdk/middleware-recursion-detection": "3.413.0",
-        "@aws-sdk/middleware-signing": "3.413.0",
-        "@aws-sdk/middleware-user-agent": "3.413.0",
-        "@aws-sdk/region-config-resolver": "3.413.0",
-        "@aws-sdk/types": "3.413.0",
-        "@aws-sdk/util-endpoints": "3.413.0",
-        "@aws-sdk/util-user-agent-browser": "3.413.0",
-        "@aws-sdk/util-user-agent-node": "3.413.0",
-        "@smithy/config-resolver": "^2.0.8",
-        "@smithy/fetch-http-handler": "^2.1.3",
-        "@smithy/hash-node": "^2.0.7",
-        "@smithy/invalid-dependency": "^2.0.7",
-        "@smithy/middleware-content-length": "^2.0.9",
-        "@smithy/middleware-endpoint": "^2.0.7",
-        "@smithy/middleware-retry": "^2.0.10",
-        "@smithy/middleware-serde": "^2.0.7",
-        "@smithy/middleware-stack": "^2.0.0",
-        "@smithy/node-config-provider": "^2.0.10",
-        "@smithy/node-http-handler": "^2.1.3",
-        "@smithy/protocol-http": "^3.0.3",
-        "@smithy/smithy-client": "^2.1.4",
-        "@smithy/types": "^2.3.1",
-        "@smithy/url-parser": "^2.0.7",
+        "@aws-sdk/client-sts": "3.421.0",
+        "@aws-sdk/credential-provider-node": "3.421.0",
+        "@aws-sdk/middleware-host-header": "3.418.0",
+        "@aws-sdk/middleware-logger": "3.418.0",
+        "@aws-sdk/middleware-recursion-detection": "3.418.0",
+        "@aws-sdk/middleware-signing": "3.418.0",
+        "@aws-sdk/middleware-user-agent": "3.418.0",
+        "@aws-sdk/region-config-resolver": "3.418.0",
+        "@aws-sdk/types": "3.418.0",
+        "@aws-sdk/util-endpoints": "3.418.0",
+        "@aws-sdk/util-user-agent-browser": "3.418.0",
+        "@aws-sdk/util-user-agent-node": "3.418.0",
+        "@smithy/config-resolver": "^2.0.10",
+        "@smithy/fetch-http-handler": "^2.1.5",
+        "@smithy/hash-node": "^2.0.9",
+        "@smithy/invalid-dependency": "^2.0.9",
+        "@smithy/middleware-content-length": "^2.0.11",
+        "@smithy/middleware-endpoint": "^2.0.9",
+        "@smithy/middleware-retry": "^2.0.12",
+        "@smithy/middleware-serde": "^2.0.9",
+        "@smithy/middleware-stack": "^2.0.2",
+        "@smithy/node-config-provider": "^2.0.12",
+        "@smithy/node-http-handler": "^2.1.5",
+        "@smithy/protocol-http": "^3.0.5",
+        "@smithy/smithy-client": "^2.1.6",
+        "@smithy/types": "^2.3.3",
+        "@smithy/url-parser": "^2.0.9",
         "@smithy/util-base64": "^2.0.0",
         "@smithy/util-body-length-browser": "^2.0.0",
         "@smithy/util-body-length-node": "^2.1.0",
-        "@smithy/util-defaults-mode-browser": "^2.0.8",
-        "@smithy/util-defaults-mode-node": "^2.0.10",
-        "@smithy/util-retry": "^2.0.0",
+        "@smithy/util-defaults-mode-browser": "^2.0.10",
+        "@smithy/util-defaults-mode-node": "^2.0.12",
+        "@smithy/util-retry": "^2.0.2",
         "@smithy/util-utf8": "^2.0.0",
         tslib: "^2.5.0"
       },
@@ -10860,7 +10862,7 @@ var require_package2 = __commonJS({
     module2.exports = {
       name: "@aws-sdk/client-sts",
       description: "AWS SDK for JavaScript Sts Client for Node.js, Browser and React Native",
-      version: "3.414.0",
+      version: "3.421.0",
       scripts: {
         build: "concurrently 'yarn:build:cjs' 'yarn:build:es' 'yarn:build:types'",
         "build:cjs": "tsc -p tsconfig.cjs.json",
@@ -10882,39 +10884,39 @@ var require_package2 = __commonJS({
       dependencies: {
         "@aws-crypto/sha256-browser": "3.0.0",
         "@aws-crypto/sha256-js": "3.0.0",
-        "@aws-sdk/credential-provider-node": "3.414.0",
-        "@aws-sdk/middleware-host-header": "3.413.0",
-        "@aws-sdk/middleware-logger": "3.413.0",
-        "@aws-sdk/middleware-recursion-detection": "3.413.0",
-        "@aws-sdk/middleware-sdk-sts": "3.413.0",
-        "@aws-sdk/middleware-signing": "3.413.0",
-        "@aws-sdk/middleware-user-agent": "3.413.0",
-        "@aws-sdk/region-config-resolver": "3.413.0",
-        "@aws-sdk/types": "3.413.0",
-        "@aws-sdk/util-endpoints": "3.413.0",
-        "@aws-sdk/util-user-agent-browser": "3.413.0",
-        "@aws-sdk/util-user-agent-node": "3.413.0",
-        "@smithy/config-resolver": "^2.0.8",
-        "@smithy/fetch-http-handler": "^2.1.3",
-        "@smithy/hash-node": "^2.0.7",
-        "@smithy/invalid-dependency": "^2.0.7",
-        "@smithy/middleware-content-length": "^2.0.9",
-        "@smithy/middleware-endpoint": "^2.0.7",
-        "@smithy/middleware-retry": "^2.0.10",
-        "@smithy/middleware-serde": "^2.0.7",
-        "@smithy/middleware-stack": "^2.0.0",
-        "@smithy/node-config-provider": "^2.0.10",
-        "@smithy/node-http-handler": "^2.1.3",
-        "@smithy/protocol-http": "^3.0.3",
-        "@smithy/smithy-client": "^2.1.4",
-        "@smithy/types": "^2.3.1",
-        "@smithy/url-parser": "^2.0.7",
+        "@aws-sdk/credential-provider-node": "3.421.0",
+        "@aws-sdk/middleware-host-header": "3.418.0",
+        "@aws-sdk/middleware-logger": "3.418.0",
+        "@aws-sdk/middleware-recursion-detection": "3.418.0",
+        "@aws-sdk/middleware-sdk-sts": "3.418.0",
+        "@aws-sdk/middleware-signing": "3.418.0",
+        "@aws-sdk/middleware-user-agent": "3.418.0",
+        "@aws-sdk/region-config-resolver": "3.418.0",
+        "@aws-sdk/types": "3.418.0",
+        "@aws-sdk/util-endpoints": "3.418.0",
+        "@aws-sdk/util-user-agent-browser": "3.418.0",
+        "@aws-sdk/util-user-agent-node": "3.418.0",
+        "@smithy/config-resolver": "^2.0.10",
+        "@smithy/fetch-http-handler": "^2.1.5",
+        "@smithy/hash-node": "^2.0.9",
+        "@smithy/invalid-dependency": "^2.0.9",
+        "@smithy/middleware-content-length": "^2.0.11",
+        "@smithy/middleware-endpoint": "^2.0.9",
+        "@smithy/middleware-retry": "^2.0.12",
+        "@smithy/middleware-serde": "^2.0.9",
+        "@smithy/middleware-stack": "^2.0.2",
+        "@smithy/node-config-provider": "^2.0.12",
+        "@smithy/node-http-handler": "^2.1.5",
+        "@smithy/protocol-http": "^3.0.5",
+        "@smithy/smithy-client": "^2.1.6",
+        "@smithy/types": "^2.3.3",
+        "@smithy/url-parser": "^2.0.9",
         "@smithy/util-base64": "^2.0.0",
         "@smithy/util-body-length-browser": "^2.0.0",
         "@smithy/util-body-length-node": "^2.1.0",
-        "@smithy/util-defaults-mode-browser": "^2.0.8",
-        "@smithy/util-defaults-mode-node": "^2.0.10",
-        "@smithy/util-retry": "^2.0.0",
+        "@smithy/util-defaults-mode-browser": "^2.0.10",
+        "@smithy/util-defaults-mode-node": "^2.0.12",
+        "@smithy/util-retry": "^2.0.2",
         "@smithy/util-utf8": "^2.0.0",
         "fast-xml-parser": "4.2.5",
         tslib: "^2.5.0"
@@ -13862,6 +13864,7 @@ var require_AssumeRoleCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var models_0_1 = require_models_0();
     var Aws_query_1 = require_Aws_query();
     var AssumeRoleCommand = class _AssumeRoleCommand extends smithy_client_1.Command {
@@ -13891,7 +13894,11 @@ var require_AssumeRoleCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: (_) => _,
-          outputFilterSensitiveLog: models_0_1.AssumeRoleResponseFilterSensitiveLog
+          outputFilterSensitiveLog: models_0_1.AssumeRoleResponseFilterSensitiveLog,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSSecurityTokenServiceV20110615",
+            operation: "AssumeRole"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -13919,6 +13926,7 @@ var require_AssumeRoleWithWebIdentityCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var models_0_1 = require_models_0();
     var Aws_query_1 = require_Aws_query();
     var AssumeRoleWithWebIdentityCommand = class _AssumeRoleWithWebIdentityCommand extends smithy_client_1.Command {
@@ -13947,7 +13955,11 @@ var require_AssumeRoleWithWebIdentityCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: models_0_1.AssumeRoleWithWebIdentityRequestFilterSensitiveLog,
-          outputFilterSensitiveLog: models_0_1.AssumeRoleWithWebIdentityResponseFilterSensitiveLog
+          outputFilterSensitiveLog: models_0_1.AssumeRoleWithWebIdentityResponseFilterSensitiveLog,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSSecurityTokenServiceV20110615",
+            operation: "AssumeRoleWithWebIdentity"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -15143,7 +15155,7 @@ var require_package3 = __commonJS({
     module2.exports = {
       name: "@aws-sdk/client-sso",
       description: "AWS SDK for JavaScript Sso Client for Node.js, Browser and React Native",
-      version: "3.414.0",
+      version: "3.421.0",
       scripts: {
         build: "concurrently 'yarn:build:cjs' 'yarn:build:es' 'yarn:build:types'",
         "build:cjs": "tsc -p tsconfig.cjs.json",
@@ -15163,36 +15175,36 @@ var require_package3 = __commonJS({
       dependencies: {
         "@aws-crypto/sha256-browser": "3.0.0",
         "@aws-crypto/sha256-js": "3.0.0",
-        "@aws-sdk/middleware-host-header": "3.413.0",
-        "@aws-sdk/middleware-logger": "3.413.0",
-        "@aws-sdk/middleware-recursion-detection": "3.413.0",
-        "@aws-sdk/middleware-user-agent": "3.413.0",
-        "@aws-sdk/region-config-resolver": "3.413.0",
-        "@aws-sdk/types": "3.413.0",
-        "@aws-sdk/util-endpoints": "3.413.0",
-        "@aws-sdk/util-user-agent-browser": "3.413.0",
-        "@aws-sdk/util-user-agent-node": "3.413.0",
-        "@smithy/config-resolver": "^2.0.8",
-        "@smithy/fetch-http-handler": "^2.1.3",
-        "@smithy/hash-node": "^2.0.7",
-        "@smithy/invalid-dependency": "^2.0.7",
-        "@smithy/middleware-content-length": "^2.0.9",
-        "@smithy/middleware-endpoint": "^2.0.7",
-        "@smithy/middleware-retry": "^2.0.10",
-        "@smithy/middleware-serde": "^2.0.7",
-        "@smithy/middleware-stack": "^2.0.0",
-        "@smithy/node-config-provider": "^2.0.10",
-        "@smithy/node-http-handler": "^2.1.3",
-        "@smithy/protocol-http": "^3.0.3",
-        "@smithy/smithy-client": "^2.1.4",
-        "@smithy/types": "^2.3.1",
-        "@smithy/url-parser": "^2.0.7",
+        "@aws-sdk/middleware-host-header": "3.418.0",
+        "@aws-sdk/middleware-logger": "3.418.0",
+        "@aws-sdk/middleware-recursion-detection": "3.418.0",
+        "@aws-sdk/middleware-user-agent": "3.418.0",
+        "@aws-sdk/region-config-resolver": "3.418.0",
+        "@aws-sdk/types": "3.418.0",
+        "@aws-sdk/util-endpoints": "3.418.0",
+        "@aws-sdk/util-user-agent-browser": "3.418.0",
+        "@aws-sdk/util-user-agent-node": "3.418.0",
+        "@smithy/config-resolver": "^2.0.10",
+        "@smithy/fetch-http-handler": "^2.1.5",
+        "@smithy/hash-node": "^2.0.9",
+        "@smithy/invalid-dependency": "^2.0.9",
+        "@smithy/middleware-content-length": "^2.0.11",
+        "@smithy/middleware-endpoint": "^2.0.9",
+        "@smithy/middleware-retry": "^2.0.12",
+        "@smithy/middleware-serde": "^2.0.9",
+        "@smithy/middleware-stack": "^2.0.2",
+        "@smithy/node-config-provider": "^2.0.12",
+        "@smithy/node-http-handler": "^2.1.5",
+        "@smithy/protocol-http": "^3.0.5",
+        "@smithy/smithy-client": "^2.1.6",
+        "@smithy/types": "^2.3.3",
+        "@smithy/url-parser": "^2.0.9",
         "@smithy/util-base64": "^2.0.0",
         "@smithy/util-body-length-browser": "^2.0.0",
         "@smithy/util-body-length-node": "^2.1.0",
-        "@smithy/util-defaults-mode-browser": "^2.0.8",
-        "@smithy/util-defaults-mode-node": "^2.0.10",
-        "@smithy/util-retry": "^2.0.0",
+        "@smithy/util-defaults-mode-browser": "^2.0.10",
+        "@smithy/util-defaults-mode-node": "^2.0.12",
+        "@smithy/util-retry": "^2.0.2",
         "@smithy/util-utf8": "^2.0.0",
         tslib: "^2.5.0"
       },
@@ -16330,6 +16342,7 @@ var require_GetRoleCredentialsCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var models_0_1 = require_models_02();
     var Aws_restJson1_1 = require_Aws_restJson1();
     var GetRoleCredentialsCommand = class _GetRoleCredentialsCommand extends smithy_client_1.Command {
@@ -16357,7 +16370,11 @@ var require_GetRoleCredentialsCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: models_0_1.GetRoleCredentialsRequestFilterSensitiveLog,
-          outputFilterSensitiveLog: models_0_1.GetRoleCredentialsResponseFilterSensitiveLog
+          outputFilterSensitiveLog: models_0_1.GetRoleCredentialsResponseFilterSensitiveLog,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "SWBPortalService",
+            operation: "GetRoleCredentials"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -16385,6 +16402,7 @@ var require_ListAccountRolesCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var models_0_1 = require_models_02();
     var Aws_restJson1_1 = require_Aws_restJson1();
     var ListAccountRolesCommand = class _ListAccountRolesCommand extends smithy_client_1.Command {
@@ -16412,7 +16430,11 @@ var require_ListAccountRolesCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: models_0_1.ListAccountRolesRequestFilterSensitiveLog,
-          outputFilterSensitiveLog: (_) => _
+          outputFilterSensitiveLog: (_) => _,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "SWBPortalService",
+            operation: "ListAccountRoles"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -16440,6 +16462,7 @@ var require_ListAccountsCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var models_0_1 = require_models_02();
     var Aws_restJson1_1 = require_Aws_restJson1();
     var ListAccountsCommand = class _ListAccountsCommand extends smithy_client_1.Command {
@@ -16467,7 +16490,11 @@ var require_ListAccountsCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: models_0_1.ListAccountsRequestFilterSensitiveLog,
-          outputFilterSensitiveLog: (_) => _
+          outputFilterSensitiveLog: (_) => _,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "SWBPortalService",
+            operation: "ListAccounts"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -16495,6 +16522,7 @@ var require_LogoutCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var models_0_1 = require_models_02();
     var Aws_restJson1_1 = require_Aws_restJson1();
     var LogoutCommand = class _LogoutCommand extends smithy_client_1.Command {
@@ -16522,7 +16550,11 @@ var require_LogoutCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: models_0_1.LogoutRequestFilterSensitiveLog,
-          outputFilterSensitiveLog: (_) => _
+          outputFilterSensitiveLog: (_) => _,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "SWBPortalService",
+            operation: "Logout"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -18476,6 +18508,7 @@ var require_AssumeRoleWithSAMLCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var models_0_1 = require_models_0();
     var Aws_query_1 = require_Aws_query();
     var AssumeRoleWithSAMLCommand = class _AssumeRoleWithSAMLCommand extends smithy_client_1.Command {
@@ -18504,7 +18537,11 @@ var require_AssumeRoleWithSAMLCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: models_0_1.AssumeRoleWithSAMLRequestFilterSensitiveLog,
-          outputFilterSensitiveLog: models_0_1.AssumeRoleWithSAMLResponseFilterSensitiveLog
+          outputFilterSensitiveLog: models_0_1.AssumeRoleWithSAMLResponseFilterSensitiveLog,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSSecurityTokenServiceV20110615",
+            operation: "AssumeRoleWithSAML"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -18533,6 +18570,7 @@ var require_DecodeAuthorizationMessageCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var Aws_query_1 = require_Aws_query();
     var DecodeAuthorizationMessageCommand = class _DecodeAuthorizationMessageCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
@@ -18561,7 +18599,11 @@ var require_DecodeAuthorizationMessageCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: (_) => _,
-          outputFilterSensitiveLog: (_) => _
+          outputFilterSensitiveLog: (_) => _,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSSecurityTokenServiceV20110615",
+            operation: "DecodeAuthorizationMessage"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -18590,6 +18632,7 @@ var require_GetAccessKeyInfoCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var Aws_query_1 = require_Aws_query();
     var GetAccessKeyInfoCommand = class _GetAccessKeyInfoCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
@@ -18618,7 +18661,11 @@ var require_GetAccessKeyInfoCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: (_) => _,
-          outputFilterSensitiveLog: (_) => _
+          outputFilterSensitiveLog: (_) => _,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSSecurityTokenServiceV20110615",
+            operation: "GetAccessKeyInfo"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -18647,6 +18694,7 @@ var require_GetCallerIdentityCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var Aws_query_1 = require_Aws_query();
     var GetCallerIdentityCommand = class _GetCallerIdentityCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
@@ -18675,7 +18723,11 @@ var require_GetCallerIdentityCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: (_) => _,
-          outputFilterSensitiveLog: (_) => _
+          outputFilterSensitiveLog: (_) => _,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSSecurityTokenServiceV20110615",
+            operation: "GetCallerIdentity"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -18704,6 +18756,7 @@ var require_GetFederationTokenCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var models_0_1 = require_models_0();
     var Aws_query_1 = require_Aws_query();
     var GetFederationTokenCommand = class _GetFederationTokenCommand extends smithy_client_1.Command {
@@ -18733,7 +18786,11 @@ var require_GetFederationTokenCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: (_) => _,
-          outputFilterSensitiveLog: models_0_1.GetFederationTokenResponseFilterSensitiveLog
+          outputFilterSensitiveLog: models_0_1.GetFederationTokenResponseFilterSensitiveLog,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSSecurityTokenServiceV20110615",
+            operation: "GetFederationToken"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -18762,6 +18819,7 @@ var require_GetSessionTokenCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var models_0_1 = require_models_0();
     var Aws_query_1 = require_Aws_query();
     var GetSessionTokenCommand = class _GetSessionTokenCommand extends smithy_client_1.Command {
@@ -18791,7 +18849,11 @@ var require_GetSessionTokenCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: (_) => _,
-          outputFilterSensitiveLog: models_0_1.GetSessionTokenResponseFilterSensitiveLog
+          outputFilterSensitiveLog: models_0_1.GetSessionTokenResponseFilterSensitiveLog,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSSecurityTokenServiceV20110615",
+            operation: "GetSessionToken"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -22255,6 +22317,7 @@ var require_CreateActivityCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var Aws_json1_0_1 = require_Aws_json1_0();
     var CreateActivityCommand = class _CreateActivityCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
@@ -22281,7 +22344,11 @@ var require_CreateActivityCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: (_) => _,
-          outputFilterSensitiveLog: (_) => _
+          outputFilterSensitiveLog: (_) => _,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSStepFunctions",
+            operation: "CreateActivity"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -22309,6 +22376,7 @@ var require_CreateStateMachineAliasCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var models_0_1 = require_models_03();
     var Aws_json1_0_1 = require_Aws_json1_0();
     var CreateStateMachineAliasCommand = class _CreateStateMachineAliasCommand extends smithy_client_1.Command {
@@ -22336,7 +22404,11 @@ var require_CreateStateMachineAliasCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: models_0_1.CreateStateMachineAliasInputFilterSensitiveLog,
-          outputFilterSensitiveLog: (_) => _
+          outputFilterSensitiveLog: (_) => _,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSStepFunctions",
+            operation: "CreateStateMachineAlias"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -22364,6 +22436,7 @@ var require_CreateStateMachineCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var models_0_1 = require_models_03();
     var Aws_json1_0_1 = require_Aws_json1_0();
     var CreateStateMachineCommand = class _CreateStateMachineCommand extends smithy_client_1.Command {
@@ -22391,7 +22464,11 @@ var require_CreateStateMachineCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: models_0_1.CreateStateMachineInputFilterSensitiveLog,
-          outputFilterSensitiveLog: (_) => _
+          outputFilterSensitiveLog: (_) => _,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSStepFunctions",
+            operation: "CreateStateMachine"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -22419,6 +22496,7 @@ var require_DeleteActivityCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var Aws_json1_0_1 = require_Aws_json1_0();
     var DeleteActivityCommand = class _DeleteActivityCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
@@ -22445,7 +22523,11 @@ var require_DeleteActivityCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: (_) => _,
-          outputFilterSensitiveLog: (_) => _
+          outputFilterSensitiveLog: (_) => _,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSStepFunctions",
+            operation: "DeleteActivity"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -22473,6 +22555,7 @@ var require_DeleteStateMachineAliasCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var Aws_json1_0_1 = require_Aws_json1_0();
     var DeleteStateMachineAliasCommand = class _DeleteStateMachineAliasCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
@@ -22499,7 +22582,11 @@ var require_DeleteStateMachineAliasCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: (_) => _,
-          outputFilterSensitiveLog: (_) => _
+          outputFilterSensitiveLog: (_) => _,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSStepFunctions",
+            operation: "DeleteStateMachineAlias"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -22527,6 +22614,7 @@ var require_DeleteStateMachineCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var Aws_json1_0_1 = require_Aws_json1_0();
     var DeleteStateMachineCommand = class _DeleteStateMachineCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
@@ -22553,7 +22641,11 @@ var require_DeleteStateMachineCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: (_) => _,
-          outputFilterSensitiveLog: (_) => _
+          outputFilterSensitiveLog: (_) => _,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSStepFunctions",
+            operation: "DeleteStateMachine"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -22581,6 +22673,7 @@ var require_DeleteStateMachineVersionCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var Aws_json1_0_1 = require_Aws_json1_0();
     var DeleteStateMachineVersionCommand = class _DeleteStateMachineVersionCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
@@ -22607,7 +22700,11 @@ var require_DeleteStateMachineVersionCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: (_) => _,
-          outputFilterSensitiveLog: (_) => _
+          outputFilterSensitiveLog: (_) => _,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSStepFunctions",
+            operation: "DeleteStateMachineVersion"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -22635,6 +22732,7 @@ var require_DescribeActivityCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var Aws_json1_0_1 = require_Aws_json1_0();
     var DescribeActivityCommand = class _DescribeActivityCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
@@ -22661,7 +22759,11 @@ var require_DescribeActivityCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: (_) => _,
-          outputFilterSensitiveLog: (_) => _
+          outputFilterSensitiveLog: (_) => _,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSStepFunctions",
+            operation: "DescribeActivity"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -22689,6 +22791,7 @@ var require_DescribeExecutionCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var models_0_1 = require_models_03();
     var Aws_json1_0_1 = require_Aws_json1_0();
     var DescribeExecutionCommand = class _DescribeExecutionCommand extends smithy_client_1.Command {
@@ -22716,7 +22819,11 @@ var require_DescribeExecutionCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: (_) => _,
-          outputFilterSensitiveLog: models_0_1.DescribeExecutionOutputFilterSensitiveLog
+          outputFilterSensitiveLog: models_0_1.DescribeExecutionOutputFilterSensitiveLog,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSStepFunctions",
+            operation: "DescribeExecution"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -22744,6 +22851,7 @@ var require_DescribeMapRunCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var Aws_json1_0_1 = require_Aws_json1_0();
     var DescribeMapRunCommand = class _DescribeMapRunCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
@@ -22770,7 +22878,11 @@ var require_DescribeMapRunCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: (_) => _,
-          outputFilterSensitiveLog: (_) => _
+          outputFilterSensitiveLog: (_) => _,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSStepFunctions",
+            operation: "DescribeMapRun"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -22798,6 +22910,7 @@ var require_DescribeStateMachineAliasCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var models_0_1 = require_models_03();
     var Aws_json1_0_1 = require_Aws_json1_0();
     var DescribeStateMachineAliasCommand = class _DescribeStateMachineAliasCommand extends smithy_client_1.Command {
@@ -22825,7 +22938,11 @@ var require_DescribeStateMachineAliasCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: (_) => _,
-          outputFilterSensitiveLog: models_0_1.DescribeStateMachineAliasOutputFilterSensitiveLog
+          outputFilterSensitiveLog: models_0_1.DescribeStateMachineAliasOutputFilterSensitiveLog,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSStepFunctions",
+            operation: "DescribeStateMachineAlias"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -22853,6 +22970,7 @@ var require_DescribeStateMachineCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var models_0_1 = require_models_03();
     var Aws_json1_0_1 = require_Aws_json1_0();
     var DescribeStateMachineCommand = class _DescribeStateMachineCommand extends smithy_client_1.Command {
@@ -22880,7 +22998,11 @@ var require_DescribeStateMachineCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: (_) => _,
-          outputFilterSensitiveLog: models_0_1.DescribeStateMachineOutputFilterSensitiveLog
+          outputFilterSensitiveLog: models_0_1.DescribeStateMachineOutputFilterSensitiveLog,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSStepFunctions",
+            operation: "DescribeStateMachine"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -22908,6 +23030,7 @@ var require_DescribeStateMachineForExecutionCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var models_0_1 = require_models_03();
     var Aws_json1_0_1 = require_Aws_json1_0();
     var DescribeStateMachineForExecutionCommand = class _DescribeStateMachineForExecutionCommand extends smithy_client_1.Command {
@@ -22935,7 +23058,11 @@ var require_DescribeStateMachineForExecutionCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: (_) => _,
-          outputFilterSensitiveLog: models_0_1.DescribeStateMachineForExecutionOutputFilterSensitiveLog
+          outputFilterSensitiveLog: models_0_1.DescribeStateMachineForExecutionOutputFilterSensitiveLog,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSStepFunctions",
+            operation: "DescribeStateMachineForExecution"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -22963,6 +23090,7 @@ var require_GetActivityTaskCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var models_0_1 = require_models_03();
     var Aws_json1_0_1 = require_Aws_json1_0();
     var GetActivityTaskCommand = class _GetActivityTaskCommand extends smithy_client_1.Command {
@@ -22990,7 +23118,11 @@ var require_GetActivityTaskCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: (_) => _,
-          outputFilterSensitiveLog: models_0_1.GetActivityTaskOutputFilterSensitiveLog
+          outputFilterSensitiveLog: models_0_1.GetActivityTaskOutputFilterSensitiveLog,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSStepFunctions",
+            operation: "GetActivityTask"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -23018,6 +23150,7 @@ var require_GetExecutionHistoryCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var models_0_1 = require_models_03();
     var Aws_json1_0_1 = require_Aws_json1_0();
     var GetExecutionHistoryCommand = class _GetExecutionHistoryCommand extends smithy_client_1.Command {
@@ -23045,7 +23178,11 @@ var require_GetExecutionHistoryCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: (_) => _,
-          outputFilterSensitiveLog: models_0_1.GetExecutionHistoryOutputFilterSensitiveLog
+          outputFilterSensitiveLog: models_0_1.GetExecutionHistoryOutputFilterSensitiveLog,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSStepFunctions",
+            operation: "GetExecutionHistory"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -23073,6 +23210,7 @@ var require_ListActivitiesCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var Aws_json1_0_1 = require_Aws_json1_0();
     var ListActivitiesCommand = class _ListActivitiesCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
@@ -23099,7 +23237,11 @@ var require_ListActivitiesCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: (_) => _,
-          outputFilterSensitiveLog: (_) => _
+          outputFilterSensitiveLog: (_) => _,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSStepFunctions",
+            operation: "ListActivities"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -23127,6 +23269,7 @@ var require_ListExecutionsCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var Aws_json1_0_1 = require_Aws_json1_0();
     var ListExecutionsCommand = class _ListExecutionsCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
@@ -23153,7 +23296,11 @@ var require_ListExecutionsCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: (_) => _,
-          outputFilterSensitiveLog: (_) => _
+          outputFilterSensitiveLog: (_) => _,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSStepFunctions",
+            operation: "ListExecutions"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -23181,6 +23328,7 @@ var require_ListMapRunsCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var Aws_json1_0_1 = require_Aws_json1_0();
     var ListMapRunsCommand = class _ListMapRunsCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
@@ -23207,7 +23355,11 @@ var require_ListMapRunsCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: (_) => _,
-          outputFilterSensitiveLog: (_) => _
+          outputFilterSensitiveLog: (_) => _,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSStepFunctions",
+            operation: "ListMapRuns"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -23235,6 +23387,7 @@ var require_ListStateMachineAliasesCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var Aws_json1_0_1 = require_Aws_json1_0();
     var ListStateMachineAliasesCommand = class _ListStateMachineAliasesCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
@@ -23261,7 +23414,11 @@ var require_ListStateMachineAliasesCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: (_) => _,
-          outputFilterSensitiveLog: (_) => _
+          outputFilterSensitiveLog: (_) => _,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSStepFunctions",
+            operation: "ListStateMachineAliases"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -23289,6 +23446,7 @@ var require_ListStateMachinesCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var Aws_json1_0_1 = require_Aws_json1_0();
     var ListStateMachinesCommand = class _ListStateMachinesCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
@@ -23315,7 +23473,11 @@ var require_ListStateMachinesCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: (_) => _,
-          outputFilterSensitiveLog: (_) => _
+          outputFilterSensitiveLog: (_) => _,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSStepFunctions",
+            operation: "ListStateMachines"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -23343,6 +23505,7 @@ var require_ListStateMachineVersionsCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var Aws_json1_0_1 = require_Aws_json1_0();
     var ListStateMachineVersionsCommand = class _ListStateMachineVersionsCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
@@ -23369,7 +23532,11 @@ var require_ListStateMachineVersionsCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: (_) => _,
-          outputFilterSensitiveLog: (_) => _
+          outputFilterSensitiveLog: (_) => _,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSStepFunctions",
+            operation: "ListStateMachineVersions"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -23397,6 +23564,7 @@ var require_ListTagsForResourceCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var Aws_json1_0_1 = require_Aws_json1_0();
     var ListTagsForResourceCommand = class _ListTagsForResourceCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
@@ -23423,7 +23591,11 @@ var require_ListTagsForResourceCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: (_) => _,
-          outputFilterSensitiveLog: (_) => _
+          outputFilterSensitiveLog: (_) => _,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSStepFunctions",
+            operation: "ListTagsForResource"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -23451,6 +23623,7 @@ var require_PublishStateMachineVersionCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var models_0_1 = require_models_03();
     var Aws_json1_0_1 = require_Aws_json1_0();
     var PublishStateMachineVersionCommand = class _PublishStateMachineVersionCommand extends smithy_client_1.Command {
@@ -23478,7 +23651,11 @@ var require_PublishStateMachineVersionCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: models_0_1.PublishStateMachineVersionInputFilterSensitiveLog,
-          outputFilterSensitiveLog: (_) => _
+          outputFilterSensitiveLog: (_) => _,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSStepFunctions",
+            operation: "PublishStateMachineVersion"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -23506,6 +23683,7 @@ var require_SendTaskFailureCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var models_0_1 = require_models_03();
     var Aws_json1_0_1 = require_Aws_json1_0();
     var SendTaskFailureCommand = class _SendTaskFailureCommand extends smithy_client_1.Command {
@@ -23533,7 +23711,11 @@ var require_SendTaskFailureCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: models_0_1.SendTaskFailureInputFilterSensitiveLog,
-          outputFilterSensitiveLog: (_) => _
+          outputFilterSensitiveLog: (_) => _,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSStepFunctions",
+            operation: "SendTaskFailure"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -23561,6 +23743,7 @@ var require_SendTaskHeartbeatCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var Aws_json1_0_1 = require_Aws_json1_0();
     var SendTaskHeartbeatCommand = class _SendTaskHeartbeatCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
@@ -23587,7 +23770,11 @@ var require_SendTaskHeartbeatCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: (_) => _,
-          outputFilterSensitiveLog: (_) => _
+          outputFilterSensitiveLog: (_) => _,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSStepFunctions",
+            operation: "SendTaskHeartbeat"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -23615,6 +23802,7 @@ var require_SendTaskSuccessCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var models_0_1 = require_models_03();
     var Aws_json1_0_1 = require_Aws_json1_0();
     var SendTaskSuccessCommand = class _SendTaskSuccessCommand extends smithy_client_1.Command {
@@ -23642,7 +23830,11 @@ var require_SendTaskSuccessCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: models_0_1.SendTaskSuccessInputFilterSensitiveLog,
-          outputFilterSensitiveLog: (_) => _
+          outputFilterSensitiveLog: (_) => _,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSStepFunctions",
+            operation: "SendTaskSuccess"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -23670,6 +23862,7 @@ var require_StartExecutionCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var models_0_1 = require_models_03();
     var Aws_json1_0_1 = require_Aws_json1_0();
     var StartExecutionCommand = class _StartExecutionCommand extends smithy_client_1.Command {
@@ -23697,7 +23890,11 @@ var require_StartExecutionCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: models_0_1.StartExecutionInputFilterSensitiveLog,
-          outputFilterSensitiveLog: (_) => _
+          outputFilterSensitiveLog: (_) => _,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSStepFunctions",
+            operation: "StartExecution"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -23725,6 +23922,7 @@ var require_StartSyncExecutionCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var models_0_1 = require_models_03();
     var Aws_json1_0_1 = require_Aws_json1_0();
     var StartSyncExecutionCommand = class _StartSyncExecutionCommand extends smithy_client_1.Command {
@@ -23752,7 +23950,11 @@ var require_StartSyncExecutionCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: models_0_1.StartSyncExecutionInputFilterSensitiveLog,
-          outputFilterSensitiveLog: models_0_1.StartSyncExecutionOutputFilterSensitiveLog
+          outputFilterSensitiveLog: models_0_1.StartSyncExecutionOutputFilterSensitiveLog,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSStepFunctions",
+            operation: "StartSyncExecution"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -23780,6 +23982,7 @@ var require_StopExecutionCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var models_0_1 = require_models_03();
     var Aws_json1_0_1 = require_Aws_json1_0();
     var StopExecutionCommand = class _StopExecutionCommand extends smithy_client_1.Command {
@@ -23807,7 +24010,11 @@ var require_StopExecutionCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: models_0_1.StopExecutionInputFilterSensitiveLog,
-          outputFilterSensitiveLog: (_) => _
+          outputFilterSensitiveLog: (_) => _,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSStepFunctions",
+            operation: "StopExecution"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -23835,6 +24042,7 @@ var require_TagResourceCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var Aws_json1_0_1 = require_Aws_json1_0();
     var TagResourceCommand = class _TagResourceCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
@@ -23861,7 +24069,11 @@ var require_TagResourceCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: (_) => _,
-          outputFilterSensitiveLog: (_) => _
+          outputFilterSensitiveLog: (_) => _,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSStepFunctions",
+            operation: "TagResource"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -23889,6 +24101,7 @@ var require_UntagResourceCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var Aws_json1_0_1 = require_Aws_json1_0();
     var UntagResourceCommand = class _UntagResourceCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
@@ -23915,7 +24128,11 @@ var require_UntagResourceCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: (_) => _,
-          outputFilterSensitiveLog: (_) => _
+          outputFilterSensitiveLog: (_) => _,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSStepFunctions",
+            operation: "UntagResource"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -23943,6 +24160,7 @@ var require_UpdateMapRunCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var Aws_json1_0_1 = require_Aws_json1_0();
     var UpdateMapRunCommand = class _UpdateMapRunCommand extends smithy_client_1.Command {
       static getEndpointParameterInstructions() {
@@ -23969,7 +24187,11 @@ var require_UpdateMapRunCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: (_) => _,
-          outputFilterSensitiveLog: (_) => _
+          outputFilterSensitiveLog: (_) => _,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSStepFunctions",
+            operation: "UpdateMapRun"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -23997,6 +24219,7 @@ var require_UpdateStateMachineAliasCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var models_0_1 = require_models_03();
     var Aws_json1_0_1 = require_Aws_json1_0();
     var UpdateStateMachineAliasCommand = class _UpdateStateMachineAliasCommand extends smithy_client_1.Command {
@@ -24024,7 +24247,11 @@ var require_UpdateStateMachineAliasCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: models_0_1.UpdateStateMachineAliasInputFilterSensitiveLog,
-          outputFilterSensitiveLog: (_) => _
+          outputFilterSensitiveLog: (_) => _,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSStepFunctions",
+            operation: "UpdateStateMachineAlias"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
@@ -24052,6 +24279,7 @@ var require_UpdateStateMachineCommand = __commonJS({
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
+    var types_1 = require_dist_cjs();
     var models_0_1 = require_models_03();
     var Aws_json1_0_1 = require_Aws_json1_0();
     var UpdateStateMachineCommand = class _UpdateStateMachineCommand extends smithy_client_1.Command {
@@ -24079,7 +24307,11 @@ var require_UpdateStateMachineCommand = __commonJS({
           clientName,
           commandName,
           inputFilterSensitiveLog: models_0_1.UpdateStateMachineInputFilterSensitiveLog,
-          outputFilterSensitiveLog: (_) => _
+          outputFilterSensitiveLog: (_) => _,
+          [types_1.SMITHY_CONTEXT_KEY]: {
+            service: "AWSStepFunctions",
+            operation: "UpdateStateMachine"
+          }
         };
         const { requestHandler } = configuration;
         return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
