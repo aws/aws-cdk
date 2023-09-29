@@ -1,10 +1,15 @@
 #!/usr/bin/env node
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
 import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-asg-integ');
+
+const role = new iam.Role(stack, 'role', {
+  assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+});
 
 const lt = new ec2.LaunchTemplate(stack, 'MainLT', {
   instanceType: new ec2.InstanceType('t3.micro'),
@@ -12,6 +17,7 @@ const lt = new ec2.LaunchTemplate(stack, 'MainLT', {
     generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
     cpuType: ec2.AmazonLinuxCpuType.X86_64,
   }),
+  role: role,
 });
 
 const ltOverrideT4g = new ec2.LaunchTemplate(stack, 'T4gLT', {
@@ -33,6 +39,7 @@ new autoscaling.AutoScalingGroup(stack, 'AsgFromLT', {
   minCapacity: 0,
   maxCapacity: 10,
   desiredCapacity: 5,
+  ssmSessionPermissions: true,
 });
 
 new autoscaling.AutoScalingGroup(stack, 'AsgWithDefaultInstanceWarmup', {
@@ -57,6 +64,7 @@ new autoscaling.AutoScalingGroup(stack, 'AsgFromMip', {
   minCapacity: 0,
   maxCapacity: 10,
   desiredCapacity: 5,
+  ssmSessionPermissions: true,
 });
 
 new autoscaling.AutoScalingGroup(stack, 'AsgFromMipWithoutDistribution', {
