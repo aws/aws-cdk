@@ -99,9 +99,6 @@ export function parseCliArgs(args: string[] = []) {
 
 export async function main(args: string[]) {
   const options = parseCliArgs(args);
-  console.log('owah')
-  console.log(options.synth);
-
   const testsFromArgs = await new IntegrationTests(path.resolve(options.directory)).fromCliOptions(options);
 
   // List only prints the discovered tests
