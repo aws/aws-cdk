@@ -56,6 +56,11 @@ export interface IntegRunnerOptions {
    * @default false
    */
   readonly showOutput?: boolean;
+
+  /**
+   * foo
+   */
+  readonly synth?: boolean;
 }
 
 /**
@@ -159,7 +164,8 @@ export abstract class IntegRunner {
     if (this.hasSnapshot()) {
       this.expectedTestSuite = this.loadManifest();
     }
-    this.actualTestSuite = this.generateActualSnapshot();
+
+    this.actualTestSuite = this.generateActualSnapshot(options.synth ?? true);
   }
 
   /**
@@ -181,21 +187,26 @@ export abstract class IntegRunner {
    * existing "expected" snapshot
    * This will synth and then load the integration test manifest
    */
-  public generateActualSnapshot(): IntegTestSuite | LegacyIntegTestSuite {
-    this.cdk.synthFast({
-      execCmd: this.cdkApp.split(' '),
-      env: {
-        ...DEFAULT_SYNTH_OPTIONS.env,
-        // we don't know the "actual" context yet (this method is what generates it) so just
-        // use the "expected" context. This is only run in order to read the manifest
-        CDK_CONTEXT_JSON: JSON.stringify(this.getContext(this.expectedTestSuite?.synthContext)),
-      },
-      output: path.relative(this.directory, this.cdkOutDir),
-    });
-    const manifest = this.loadManifest(this.cdkOutDir);
+  public generateActualSnapshot(synth: boolean): IntegTestSuite | LegacyIntegTestSuite {
+    if (synth) {
+      this.cdk.synthFast({
+        execCmd: this.cdkApp.split(' '),
+        env: {
+          ...DEFAULT_SYNTH_OPTIONS.env,
+          // we don't know the "actual" context yet (this method is what generates it) so just
+          // use the "expected" context. This is only run in order to read the manifest
+          CDK_CONTEXT_JSON: JSON.stringify(this.getContext(this.expectedTestSuite?.synthContext)),
+        },
+        output: path.relative(this.directory, this.cdkOutDir),
+      });
+    }
+    const manifest = this.loadManifest(this.cdkOutDir, synth);
     // after we load the manifest remove the tmp snapshot
     // so that it doesn't mess up the real snapshot created later
-    this.cleanup();
+    if (synth) {
+      this.cleanup();
+    }
+
     return manifest;
   }
 
@@ -213,11 +224,22 @@ export abstract class IntegRunner {
    * from the cloud assembly. If it doesn't exist, then we fallback to the
    * "legacy mode" and create a manifest from pragma
    */
-  protected loadManifest(dir?: string): IntegTestSuite | LegacyIntegTestSuite {
+  protected loadManifest(dir?: string, synth?: boolean): IntegTestSuite | LegacyIntegTestSuite {
     try {
+      // TODO: if no-synth, then we're trying to load a legacy test.
       const testSuite = IntegTestSuite.fromPath(dir ?? this.snapshotDir);
       return testSuite;
     } catch {
+      if (!synth) {
+        throw new Error(`can't --no-synth with legacy tests. That, or you've ran --no-synth without providing synthesis artifacts to a modern integ test.`);
+
+      }
+      let legacyFallBackCounter = JSON.parse(fs.readFileSync('/Users/comcalvi/Documents/legacyFallBackCounter.json', 'utf8')).count;
+      legacyFallBackCounter++;
+      fs.writeFileSync('/Users/comcalvi/Documents/legacyFallBackCounter.json', JSON.stringify({
+        count: legacyFallBackCounter,
+      }));
+      console.log(`test '${this.test.fileName}' is a legacy test; legacyFallBackCounter is ${legacyFallBackCounter}`);
       const testCases = LegacyIntegTestSuite.fromLegacy({
         cdk: this.cdk,
         testName: this.test.normalizedTestName,

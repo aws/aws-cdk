@@ -46,6 +46,7 @@ export function parseCliArgs(args: string[] = []) {
     })
     .option('app', { type: 'string', default: undefined, desc: 'The custom CLI command that will be used to run the test files. You can include {filePath} to specify where in the command the test file path should be inserted. Example: --app="python3.8 {filePath}".' })
     .option('test-regex', { type: 'array', desc: 'Detect integration test files matching this JavaScript regex pattern. If used multiple times, all files matching any one of the patterns are detected.', default: [] })
+    .option('synth', { type: 'boolean', desc: 'magic', default: true })
     .strict()
     .parse(args);
 
@@ -92,11 +93,14 @@ export function parseCliArgs(args: string[] = []) {
     disableUpdateWorkflow: argv['disable-update-workflow'] as boolean,
     language: arrayFromYargs(argv.language),
     watch: argv.watch as boolean,
+    synth: argv.synth,
   };
 }
 
 export async function main(args: string[]) {
   const options = parseCliArgs(args);
+  console.log('owah')
+  console.log(options.synth);
 
   const testsFromArgs = await new IntegrationTests(path.resolve(options.directory)).fromCliOptions(options);
 
@@ -128,6 +132,7 @@ export async function main(args: string[]) {
       failedSnapshots = await runSnapshotTests(pool, testsFromArgs, {
         retain: options.inspectFailures,
         verbose: options.verbose,
+        synth: options.synth ?? true,
       });
       for (const failure of failedSnapshots) {
         logger.warning(`Failed: ${failure.fileName}`);

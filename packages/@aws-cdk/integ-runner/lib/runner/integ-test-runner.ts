@@ -21,6 +21,11 @@ export interface CommonOptions {
    * @default 0
    */
   readonly verbosity?: number;
+
+  /**
+   * whether or not to synth
+   */
+  readonly synth?: boolean;
 }
 
 export interface WatchOptions extends CommonOptions { }
@@ -230,6 +235,7 @@ export class IntegTestRunner extends IntegRunner {
             ...this.actualTestSuite.enableLookups ? DEFAULT_SYNTH_OPTIONS.context : {},
           })),
         };
+        // TODO: the deploy worker also needs to respect --no-synth
         this.cdk.synthFast({
           execCmd: this.cdkApp.split(' '),
           env,

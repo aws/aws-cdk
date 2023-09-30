@@ -50,17 +50,25 @@ export class IntegSnapshotRunner extends IntegRunner {
       // the cdkOutDir exists already, but for some reason generateActualSnapshot
       // generates an incorrect snapshot and I have no idea why so synth again here
       // to produce the "correct" snapshot
+
       const env = {
         ...DEFAULT_SYNTH_OPTIONS.env,
         CDK_CONTEXT_JSON: JSON.stringify(this.getContext({
           ...this.actualTestSuite.enableLookups ? DEFAULT_SYNTH_OPTIONS.context : {},
         })),
       };
-      this.cdk.synthFast({
-        execCmd: this.cdkApp.split(' '),
-        env,
-        output: path.relative(this.directory, this.cdkOutDir),
-      });
+
+      // make this a if (options.synth)
+      // even if we could fix the bug and skip it, why would we want to?
+      // the only way that snapshot going to be there is with `--inspect-failures`,
+      // and that isn't what we want anyway.
+      if (options.synth) {
+        this.cdk.synthFast({
+          execCmd: this.cdkApp.split(' '),
+          env,
+          output: path.relative(this.directory, this.cdkOutDir),
+        });
+      }
 
       // read the "actual" snapshot
       const actualSnapshotAssembly = this.getSnapshotAssembly(this.cdkOutDir, this.actualTestSuite.stacks);

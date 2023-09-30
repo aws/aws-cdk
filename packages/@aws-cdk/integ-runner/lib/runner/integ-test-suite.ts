@@ -244,6 +244,7 @@ export class LegacyIntegTestSuite extends IntegTestSuite {
    * Save the integ manifest to a directory
    */
   public saveManifest(directory: string, context?: Record<string, any>): void {
+    console.log('saving manifeest...')
     const manifest: IntegManifest = {
       version: Manifest.version(),
       testCases: this.testSuite,

@@ -33,6 +33,7 @@ export function integTestWorker(request: IntegTestBatchRequest): IntegTestWorker
           CDK_DOCKER: process.env.CDK_DOCKER ?? 'docker',
         },
         showOutput: verbosity >= 2,
+        synth: request.synth ?? true,
       }, testInfo.destructiveChanges);
 
       const tests = runner.actualTests();
@@ -136,7 +137,7 @@ export function snapshotTestWorker(testInfo: IntegTestInfo, options: SnapshotVer
   }, 60_000);
 
   try {
-    const runner = new IntegSnapshotRunner({ test });
+    const runner = new IntegSnapshotRunner({ test, synth: options.synth });
     if (!runner.hasSnapshot()) {
       workerpool.workerEmit({
         reason: DiagnosticReason.NO_SNAPSHOT,

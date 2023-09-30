@@ -102,6 +102,12 @@ export interface SnapshotVerificationOptions {
    * @default false
    */
   readonly verbose?: boolean;
+
+  /**
+   * Synthesize the integration test.
+   * If false, use the one already on disk.
+   */
+  readonly synth?: boolean;
 }
 
 /**

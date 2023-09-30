@@ -17,6 +17,9 @@ export interface IntegTestBatchRequest extends IntegTestOptions {
    * The AWS profile to use when running this test
    */
   readonly profile?: string;
+
+  // todo move this to IntegTestOptions
+  readonly synth?: boolean;
 }
 
 /**
