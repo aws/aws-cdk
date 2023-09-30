@@ -167,7 +167,6 @@ export class AssetStaging extends Construct {
     this.sourcePath = path.resolve(props.sourcePath);
     this.fingerprintOptions = {
       ...props,
-      exclude: ['.is_custom_resource', ...props.exclude ?? []],
       extraHash: props.extraHash || salt ? `${props.extraHash ?? ''}${salt ?? ''}` : undefined,
     };
 
