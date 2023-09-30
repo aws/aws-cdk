@@ -108,6 +108,8 @@ export class WaiterStateMachine extends Construct {
       logGroup = props.logOptions?.destination
         ? props.logOptions.destination
         : new LogGroup(this, 'LogGroup');
+
+      // https://docs.aws.amazon.com/step-functions/latest/dg/cw-logs.html#cloudwatch-iam-policy
       role.addToPrincipalPolicy(new PolicyStatement({
         actions: [
           'logs:CreateLogDelivery',
