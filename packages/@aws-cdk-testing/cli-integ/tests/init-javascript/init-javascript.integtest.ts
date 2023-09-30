@@ -1,3 +1,5 @@
+import * as path from 'path';
+import * as fs from 'fs-extra';
 import { integTest, withTemporaryDirectory, ShellHelper, withPackages } from '../../lib';
 
 ['app', 'sample-app'].forEach(template => {
