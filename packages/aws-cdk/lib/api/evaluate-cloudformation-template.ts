@@ -116,7 +116,7 @@ export class EvaluateCloudFormationTemplate {
   private readonly urlSuffix: (region: string) => string;
   private readonly sdk: ISDK;
   private readonly nestedStackNames: { [nestedStackLogicalId: string]: NestedStackNames };
-  private readonly stackResources: LazyListStackResources;
+  private readonly stackResources: ListStackResources;
   private readonly lookupExport: LookupExport;
 
   private cachedUrlSuffix: string | undefined;
