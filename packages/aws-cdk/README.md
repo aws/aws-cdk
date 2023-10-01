@@ -437,12 +437,14 @@ and might have breaking changes in the future.
 **⚠ Note #4**: Only usage of certain [CloudFormation intrinsic functions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html) are supported as part of a hotswapped deployment. At time of writing, these are:
 
 - `Ref`
-- `Fn::GetAtt`
+- `Fn::GetAtt` *
 - `Fn::ImportValue`
 - `Fn::Join`
 - `Fn::Select`
 - `Fn::Split`
 - `Fn::Sub`
+
+> *: `Fn::GetAtt` is only partially supported, see [here](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk/lib/api/evaluate-cloudformation-template.ts#L403) for details.
 
 ### `cdk watch`
 
