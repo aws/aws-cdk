@@ -83,7 +83,6 @@
        },
        "RuleName": "Daily",
        "ScheduleExpression": "cron(0 5 * * ? *)",
-       "ScheduleExpressionTimezone": "Etc/UTC",
        "TargetBackupVault": {
         "Fn::GetAtt": [
          "Vault23237E5B",
@@ -97,7 +96,6 @@
        },
        "RuleName": "Weekly",
        "ScheduleExpression": "cron(0 5 ? * SAT *)",
-       "ScheduleExpressionTimezone": "Etc/UTC",
        "TargetBackupVault": {
         "Fn::GetAtt": [
          "Vault23237E5B",
@@ -112,7 +110,6 @@
        },
        "RuleName": "Monthly5Year",
        "ScheduleExpression": "cron(0 5 1 * ? *)",
-       "ScheduleExpressionTimezone": "Etc/UTC",
        "TargetBackupVault": {
         "Fn::GetAtt": [
          "Vault23237E5B",

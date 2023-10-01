@@ -236,10 +236,10 @@ export class Environment extends EnvironmentBase {
       applicationId: this.applicationId,
       name: this.name,
       description: this.description,
-      monitors: this.monitors?.map((monitor) => {
+      monitors: this.monitors?.map((monitor, index) => {
         return {
           alarmArn: monitor.alarm.alarmArn,
-          alarmRoleArn: monitor.alarmRole?.roleArn || this.createAlarmRole(monitor.alarm.alarmArn).roleArn,
+          alarmRoleArn: monitor.alarmRole?.roleArn || this.createAlarmRole(monitor.alarm.alarmArn, index).roleArn,
         };
       }),
     });
@@ -256,7 +256,7 @@ export class Environment extends EnvironmentBase {
     this.application.addExistingEnvironment(this);
   }
 
-  private createAlarmRole(alarmArn: string): iam.IRole {
+  private createAlarmRole(alarmArn: string, index: number): iam.IRole {
     const policy = new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       actions: ['cloudwatch:DescribeAlarms'],
@@ -265,7 +265,7 @@ export class Environment extends EnvironmentBase {
     const document = new iam.PolicyDocument({
       statements: [policy],
     });
-    const role = new iam.Role(this, 'Role', {
+    const role = new iam.Role(this, `Role${index}`, {
       roleName: PhysicalName.GENERATE_IF_NEEDED,
       assumedBy: new iam.ServicePrincipal('appconfig.amazonaws.com'),
       inlinePolicies: {

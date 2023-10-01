@@ -1,44 +1,57 @@
 import { Construct } from 'constructs';
-import { Annotations, CronOptions as CoreCronOptions, Schedule as CoreSchedule, TimeZone } from '../../core';
+import { Annotations } from '../../core';
 
 /**
  * Schedule for scheduled scaling actions
  */
-export abstract class Schedule extends CoreSchedule {
+export abstract class Schedule {
   /**
    * Construct a schedule from a literal schedule expression
    *
    * @param expression The expression to use. Must be in a format that AutoScaling will recognize
    * @see http://crontab.org/
    */
-  public static expression(expression: string, timeZone?: TimeZone): Schedule {
-    return super.protectedExpression(expression, timeZone);
+  public static expression(expression: string): Schedule {
+    return new LiteralSchedule(expression);
   }
 
   /**
    * Create a schedule from a set of cron fields
    */
-  public static cron(options: CoreCronOptions): Schedule {
-    const cron = super.protectedCron({
-      weekDay: '*', // to override core.Schedule's default
-      day: '*', // to override core.Schedule's default
-      ...options,
-    });
-    const cronSplit = cron.expressionString.slice(5).split(' '); // remove "cron(" from start
-    cronSplit.pop(); // remove year, since autoscaling does not accept it
-    const autoscalingCron = cronSplit.join(' ');
+  public static cron(options: CronOptions): Schedule {
+    if (options.weekDay !== undefined && options.day !== undefined) {
+      throw new Error('Cannot supply both \'day\' and \'weekDay\', use at most one');
+    }
+
+    const minute = fallback(options.minute, '*');
+    const hour = fallback(options.hour, '*');
+    const month = fallback(options.month, '*');
+    const day = fallback(options.day, '*');
+    const weekDay = fallback(options.weekDay, '*');
 
     return new class extends Schedule {
-      public readonly expressionString = autoscalingCron;
-      public readonly timeZone = options.timeZone;
+      public readonly expressionString: string = `${minute} ${hour} ${day} ${month} ${weekDay}`;
       public _bind(scope: Construct) {
         if (!options.minute) {
           Annotations.of(scope).addWarningV2('@aws-cdk/aws-autoscaling:scheduleDefaultRunsEveryMinute', 'cron: If you don\'t pass \'minute\', by default the event runs every minute. Pass \'minute: \'*\'\' if that\'s what you intend, or \'minute: 0\' to run once per hour instead.');
         }
-        return Schedule.expression(this.expressionString, this.timeZone);
+        return new LiteralSchedule(this.expressionString);
       }
     };
   }
+
+  /**
+   * Retrieve the expression for this schedule
+   */
+  public abstract readonly expressionString: string;
+
+  protected constructor() {}
+
+  /**
+   *
+   * @internal
+   */
+  public abstract _bind(scope: Construct): void;
 }
 
 /**
@@ -48,6 +61,52 @@ export abstract class Schedule extends CoreSchedule {
  * a field implies '*' or '?', whichever one is appropriate.
  *
  * @see http://crontab.org/
- * @deprecated use core.CronOptions
  */
-export interface CronOptions extends CoreCronOptions {}
+export interface CronOptions {
+  /**
+   * The minute to run this rule at
+   *
+   * @default - Every minute
+   */
+  readonly minute?: string;
+
+  /**
+   * The hour to run this rule at
+   *
+   * @default - Every hour
+   */
+  readonly hour?: string;
+
+  /**
+   * The day of the month to run this rule at
+   *
+   * @default - Every day of the month
+   */
+  readonly day?: string;
+
+  /**
+   * The month to run this rule at
+   *
+   * @default - Every month
+   */
+  readonly month?: string;
+
+  /**
+   * The day of the week to run this rule at
+   *
+   * @default - Any day of the week
+   */
+  readonly weekDay?: string;
+}
+
+class LiteralSchedule extends Schedule {
+  constructor(public readonly expressionString: string) {
+    super();
+  }
+
+  public _bind(): void {}
+}
+
+function fallback<T>(x: T | undefined, def: T): T {
+  return x === undefined ? def : x;
+}

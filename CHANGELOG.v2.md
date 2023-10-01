@@ -2,6 +2,70 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.99.0](https://github.com/aws/aws-cdk/compare/v2.98.0...v2.99.0) (2023-09-27)
+
+
+### Features
+
+* **s3:** specify minimum TLS version ([#27297](https://github.com/aws/aws-cdk/issues/27297)) ([f47d09c](https://github.com/aws/aws-cdk/commit/f47d09c08871517f06c1895a5ed262c8e87ee05b)), closes [#27279](https://github.com/aws/aws-cdk/issues/27279)
+* **synthetics:** graduate to stable 🚀 ([#27305](https://github.com/aws/aws-cdk/issues/27305)) ([dd00d05](https://github.com/aws/aws-cdk/commit/dd00d05c07cb3c6efd505e9f7ab577a5eec5070b))
+
+
+### Bug Fixes
+
+* **batch:** make `instanceType` optional on multinode jobs ([#27223](https://github.com/aws/aws-cdk/issues/27223)) ([6616026](https://github.com/aws/aws-cdk/commit/6616026d3879f0271b7813ed00f0899c666da1e3)), closes [#27185](https://github.com/aws/aws-cdk/issues/27185)
+
+## [2.98.0](https://github.com/aws/aws-cdk/compare/v2.97.1...v2.98.0) (2023-09-26)
+
+
+### Features
+
+* update AWS Service Spec ([#27276](https://github.com/aws/aws-cdk/issues/27276)) ([3d9ca8d](https://github.com/aws/aws-cdk/commit/3d9ca8dad29e6e6f813ab2340da7639c24ba5494))
+* **aws-cdk-lib:** reduce load time of JavaScript library ([#27217](https://github.com/aws/aws-cdk/issues/27217)) ([faffce0](https://github.com/aws/aws-cdk/commit/faffce06c3f1d543600f7e8dc430a5105c73ac5a))
+
+
+### Bug Fixes
+
+* **rds:** prevent rendering deprecated credentials when creating a database cluster from a snapshot (under feature flag) ([#27174](https://github.com/aws/aws-cdk/issues/27174)) ([1fd22a7](https://github.com/aws/aws-cdk/commit/1fd22a7498223ae5d2faf1799056e81be4f71f5c)), closes [#23815](https://github.com/aws/aws-cdk/issues/23815)
+
+## [2.97.1](https://github.com/aws/aws-cdk/compare/v2.97.0...v2.97.1) (2023-09-25)
+
+
+### Reverts
+
+* "feat(core): `Schedule` class" ([#27284](https://github.com/aws/aws-cdk/issues/27284)) ([e2fc724](https://github.com/aws/aws-cdk/commit/e2fc7240672b5c26394b2fe420531d62fe74189b)), closes [aws/aws-cdk#27105](https://github.com/aws/aws-cdk/issues/27105) [#27259](https://github.com/aws/aws-cdk/issues/27259)
+
+## [2.97.0](https://github.com/aws/aws-cdk/compare/v2.96.2...v2.97.0) (2023-09-22)
+
+
+### Features
+
+* update AWS Service Spec ([#27224](https://github.com/aws/aws-cdk/issues/27224)) ([a2a4f68](https://github.com/aws/aws-cdk/commit/a2a4f6860ce3e5794b443cd810882bbd60b2455f))
+* **appsync:** Standalone L2 construct for SourceApiAssociation ([#27121](https://github.com/aws/aws-cdk/issues/27121)) ([7b9652e](https://github.com/aws/aws-cdk/commit/7b9652ead250c0942bbf6058b89ae7f86182c9c6)), closes [#27025](https://github.com/aws/aws-cdk/issues/27025) [#26986](https://github.com/aws/aws-cdk/issues/26986)
+* **cloudwatch:** add verticalAnnotations property to GraphWidget ([#26819](https://github.com/aws/aws-cdk/issues/26819)) ([d41005e](https://github.com/aws/aws-cdk/commit/d41005e79b959aaca3ac56d669d4f6c28cea3a06)), closes [#7622](https://github.com/aws/aws-cdk/issues/7622)
+* **core:** `Schedule` class ([#27105](https://github.com/aws/aws-cdk/issues/27105)) ([a8f0a71](https://github.com/aws/aws-cdk/commit/a8f0a71e8d55ff9abb72013bd41a71a64475e2ab)), closes [#19197](https://github.com/aws/aws-cdk/issues/19197) [#27052](https://github.com/aws/aws-cdk/issues/27052) [#27012](https://github.com/aws/aws-cdk/issues/27012)
+* update AWS Service Spec ([#27218](https://github.com/aws/aws-cdk/issues/27218)) ([2855da6](https://github.com/aws/aws-cdk/commit/2855da66c7b8fd2def86ff0aa15b524894fd11e1))
+* **cloudwatch:** validate Dashboards with an `end` time must also have a `start` time ([#27124](https://github.com/aws/aws-cdk/issues/27124)) ([097bd0f](https://github.com/aws/aws-cdk/commit/097bd0fc3e98045a622b9455e6da391c831068ca)), closes [/github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-cloudwatch/lib/graph.ts#L245-L247](https://github.com/aws//github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-cloudwatch/lib/graph.ts/issues/L245-L247)
+* **cloudwatch:** Widgets can define `start` and `end` times, including relative values ([#26969](https://github.com/aws/aws-cdk/issues/26969)) ([2866240](https://github.com/aws/aws-cdk/commit/28662406d29529c826d174cf925b3eddb954a82b)), closes [#26945](https://github.com/aws/aws-cdk/issues/26945)
+* **core:** add setter for termination protection on stack ([#26992](https://github.com/aws/aws-cdk/issues/26992)) ([54083de](https://github.com/aws/aws-cdk/commit/54083de9e8faef8b62a2004941647d9cd4984a0b)), closes [#14463](https://github.com/aws/aws-cdk/issues/14463) [#21304](https://github.com/aws/aws-cdk/issues/21304)
+* **ec2:** support of m7i and m7i-flex ec2-instancetypes ([#27156](https://github.com/aws/aws-cdk/issues/27156)) ([fe0955f](https://github.com/aws/aws-cdk/commit/fe0955fffb17da7a9043e636cbb1e075233628b2)), closes [/docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance.html#aws-properties-ec2](https://github.com/aws//docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance.html/issues/aws-properties-ec2)
+* **ecr:** make `validateRepositoryName` errors human readable ([#27186](https://github.com/aws/aws-cdk/issues/27186)) ([e15d0c0](https://github.com/aws/aws-cdk/commit/e15d0c057ac9ee5d0a8cbca72f1256bac2f8282a)), closes [#26715](https://github.com/aws/aws-cdk/issues/26715)
+* **rds:** support CA certificate for cluster instances ([#27138](https://github.com/aws/aws-cdk/issues/27138)) ([f5a5a08](https://github.com/aws/aws-cdk/commit/f5a5a08af8563052f874c61cbe18f61064c00191)), closes [#26865](https://github.com/aws/aws-cdk/issues/26865)
+* **stepfunctions:** add comment ability for when condition ([#27010](https://github.com/aws/aws-cdk/issues/27010)) ([70006ab](https://github.com/aws/aws-cdk/commit/70006abcdbbf2be0a1eb043cc854e6349e92f0e5)), closes [#27005](https://github.com/aws/aws-cdk/issues/27005)
+* update AWS Service Spec ([#27163](https://github.com/aws/aws-cdk/issues/27163)) ([0634c68](https://github.com/aws/aws-cdk/commit/0634c68dfee43e5472a8aeb883704b28daf34e42))
+
+
+### Bug Fixes
+
+* **apigateway:** CORS response body has unexpected space ([#27219](https://github.com/aws/aws-cdk/issues/27219)) ([abf21c9](https://github.com/aws/aws-cdk/commit/abf21c9503b8d337e21bd78109c48c40365bc5da))
+* **cli:** equals sign in a tag value is dropped ([#27130](https://github.com/aws/aws-cdk/issues/27130)) ([b7eeda6](https://github.com/aws/aws-cdk/commit/b7eeda67b99ecdb9aaeae143ce767f7a4e6b9d29)), closes [#5773](https://github.com/aws/aws-cdk/issues/5773) [#21003](https://github.com/aws/aws-cdk/issues/21003)
+* **custom-resources:** does not accept strings where numbers are expected, skips recursive types ([#27112](https://github.com/aws/aws-cdk/issues/27112)) ([8e21b2c](https://github.com/aws/aws-cdk/commit/8e21b2cb58f70c1a438a330b3ca6db90f2c573df))
+* **ec2:** restrictDefaultSecurityGroup  fails when default rules are not present ([#27039](https://github.com/aws/aws-cdk/issues/27039)) ([1e67f9d](https://github.com/aws/aws-cdk/commit/1e67f9df1e9ba7ee0a1e177b8c51004481d55584)), closes [#26390](https://github.com/aws/aws-cdk/issues/26390)
+* **eks:** use Python 3.10 runtime for kubectl-provider ([#27031](https://github.com/aws/aws-cdk/issues/27031)) ([55859c9](https://github.com/aws/aws-cdk/commit/55859c929d9b4db0af09d30d6fe9bad535ec0e68)), closes [#26994](https://github.com/aws/aws-cdk/issues/26994)
+* **rds:** cluster.instanceIdentifiers does not container writer instance ID ([#26929](https://github.com/aws/aws-cdk/issues/26929)) ([d3789ab](https://github.com/aws/aws-cdk/commit/d3789ab005d59307834147cddd0ec8bbada97332)), closes [#25947](https://github.com/aws/aws-cdk/issues/25947)
+* **rds:** unable to create cluster with per-instance parameters (under feature flag) ([#27040](https://github.com/aws/aws-cdk/issues/27040)) ([1be9894](https://github.com/aws/aws-cdk/commit/1be9894682c13bbed46f725f4ee349b86fbc25fa)), closes [#27035](https://github.com/aws/aws-cdk/issues/27035)
+* **sample-app:** exclude all __pycache__  in cdk.json ([#27191](https://github.com/aws/aws-cdk/issues/27191)) ([d9f1f09](https://github.com/aws/aws-cdk/commit/d9f1f0908a1f7ec0bfcb0df4f9dd1b45c86b0144))
+
 ## [2.96.2](https://github.com/aws/aws-cdk/compare/v2.96.1...v2.96.2) (2023-09-14)
 
 
