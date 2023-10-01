@@ -15,6 +15,8 @@ export interface FirewallManagedDomainListProps {
 
 /**
  * A Firewall Managed Domain List
+ *
+ * @resource AWS::CloudFormation::CustomResource
  */
 export class FirewallManagedDomainList extends Resource implements IFirewallDomainList {
   public readonly firewallDomainListId: string;
