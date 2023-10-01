@@ -112,6 +112,32 @@ export interface SnsPublishProps extends sfn.TaskStateBaseProps {
    * @default - No subject
    */
   readonly subject?: string;
+
+  /**
+   * This parameter applies only to FIFO topics.
+   *
+   * The MessageGroupId is a tag that specifies that a message belongs to a specific message group.
+   * Messages that belong to the same message group are processed in a FIFO manner
+   * (however, messages in different message groups might be processed out of order).
+   * Every message must include a MessageGroupId.
+   *
+   * @default - Not used for standard topics, required for FIFO topics.
+   */
+  readonly messageGroupId?: string;
+
+  /**
+   * This parameter applies only to FIFO topics.
+   *
+   * Every message must have a unique MessageDeduplicationId, which is a token used for deduplication of sent messages.
+   * If a message with a particular MessageDeduplicationId is sent successfully, any message sent with the same MessageDeduplicationId
+   * during the 5-minute deduplication interval is treated as a duplicate.
+   *
+   * If the topic has ContentBasedDeduplication set, the system generates a MessageDeduplicationId
+   * based on the contents of the message. Your MessageDeduplicationId overrides the generated one.
+   *
+   * @default - Not used for standard topics, required for FIFO topics with ContentBasedDeduplication disabled.
+   */
+  readonly messageDeduplicationId?: string;
 }
 
 /**
@@ -142,6 +168,21 @@ export class SnsPublish extends sfn.TaskStateBase {
       }
     }
 
+    if (props.topic.fifo) {
+      if (!props.messageGroupId) {
+        throw new Error('\'messageGroupId\' is required for FIFO topics');
+      }
+      if (props.messageGroupId.length > 128) {
+        throw new Error(`\'messageGroupId\' must be at most 128 characters long, got ${props.messageGroupId.length}`);
+      }
+      if (!props.topic.contentBasedDeduplication && !props.messageDeduplicationId) {
+        throw new Error('\'messageDeduplicationId\' is required for FIFO topics with \'contentBasedDeduplication\' disabled');
+      }
+      if (props.messageDeduplicationId && props.messageDeduplicationId.length > 128) {
+        throw new Error(`\'messageDeduplicationId\' must be at most 128 characters long, got ${props.messageDeduplicationId.length}`);
+      }
+    }
+
     this.taskPolicies = [
       new iam.PolicyStatement({
         actions: ['sns:Publish'],
@@ -162,6 +203,8 @@ export class SnsPublish extends sfn.TaskStateBase {
       Parameters: sfn.FieldUtils.renderObject({
         TopicArn: this.props.topic.topicArn,
         Message: this.props.message.value,
+        MessageDeduplicationId: this.props.messageDeduplicationId,
+        MessageGroupId: this.props.messageGroupId,
         MessageStructure: this.props.messagePerSubscriptionType ? 'json' : undefined,
         MessageAttributes: renderMessageAttributes(this.props.messageAttributes),
         Subject: this.props.subject,
