@@ -103,7 +103,6 @@ export interface EvaluateCloudFormationTemplateProps {
   readonly urlSuffix: (region: string) => string;
   readonly sdk: ISDK;
   readonly nestedStackNames?: { [nestedStackLogicalId: string]: NestedStackNames };
-  readonly lookupExport: LookupExport;
 }
 
 export class EvaluateCloudFormationTemplate {
@@ -123,7 +122,6 @@ export class EvaluateCloudFormationTemplate {
 
   constructor(props: EvaluateCloudFormationTemplateProps) {
     this.stackName = props.stackName;
-    this.lookupExport = props.lookupExport;
     this.template = props.template;
     this.context = {
       'AWS::AccountId': props.account,
@@ -144,6 +142,9 @@ export class EvaluateCloudFormationTemplate {
     // We need them to figure out the physical name of a resource in case it wasn't specified by the user.
     // We fetch it lazily, to save a service call, in case all hotswapped resources have their physical names set.
     this.stackResources = new LazyListStackResources(this.sdk, this.stackName);
+
+    // CloudFormation Exports lookup to be able to resolve Fn::ImportValue intrinsics in template
+    this.lookupExport = new LazyLookupExport(this.sdk);
   }
 
   // clones current EvaluateCloudFormationTemplate object, but updates the stack name
@@ -163,7 +164,6 @@ export class EvaluateCloudFormationTemplate {
       urlSuffix: this.urlSuffix,
       sdk: this.sdk,
       nestedStackNames: this.nestedStackNames,
-      lookupExport: this.lookupExport,
     });
   }
 

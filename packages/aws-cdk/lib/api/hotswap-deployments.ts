@@ -59,8 +59,6 @@ export async function tryHotswapDeployment(
 
   const currentTemplate = await loadCurrentTemplateWithNestedStacks(stackArtifact, sdk);
 
-  // CloudFormation Exports lookup to be able to resolve Fn::ImportValue intrinsics in template
-  const lookupExport = new LazyLookupExport(sdk);
   const evaluateCfnTemplate = new EvaluateCloudFormationTemplate({
     stackName: stackArtifact.stackName,
     template: stackArtifact.template,
@@ -71,7 +69,6 @@ export async function tryHotswapDeployment(
     urlSuffix: (region) => sdk.getEndpointSuffix(region),
     sdk,
     nestedStackNames: currentTemplate.nestedStackNames,
-    lookupExport,
   });
 
   const stackChanges = cfn_diff.diffTemplate(currentTemplate.deployedTemplate, stackArtifact.template);

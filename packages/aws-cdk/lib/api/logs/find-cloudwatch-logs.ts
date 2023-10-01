@@ -2,7 +2,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
 import { Mode, SdkProvider, ISDK } from '../aws-auth';
 import { Deployments } from '../deployments';
-import { EvaluateCloudFormationTemplate, LazyListStackResources, LazyLookupExport } from '../evaluate-cloudformation-template';
+import { EvaluateCloudFormationTemplate, LazyListStackResources } from '../evaluate-cloudformation-template';
 
 // resource types that have associated CloudWatch Log Groups that should _not_ be monitored
 const IGNORE_LOGS_RESOURCE_TYPES = ['AWS::EC2::FlowLog', 'AWS::CloudTrail::Trail', 'AWS::CodeBuild::Project'];
@@ -55,7 +55,6 @@ export async function findCloudWatchLogGroups(
   }
 
   const listStackResources = new LazyListStackResources(sdk, stackArtifact.stackName);
-  const lookupExport = new LazyLookupExport(sdk);
   const evaluateCfnTemplate = new EvaluateCloudFormationTemplate({
     stackName: stackArtifact.stackName,
     template: stackArtifact.template,
@@ -65,7 +64,6 @@ export async function findCloudWatchLogGroups(
     partition: (await sdk.currentAccount()).partition,
     urlSuffix: (region) => sdk.getEndpointSuffix(region),
     sdk,
-    lookupExport,
   });
 
   const stackResources = await listStackResources.listStackResources();

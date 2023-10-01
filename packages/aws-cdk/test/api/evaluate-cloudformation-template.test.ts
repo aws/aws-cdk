@@ -1,8 +1,6 @@
 import {
   CfnEvaluationException,
   EvaluateCloudFormationTemplate,
-  LazyListStackResources,
-  LazyLookupExport,
   Template,
 } from '../../lib/api/evaluate-cloudformation-template';
 import { MockSdk } from '../util/mock-sdk';
@@ -22,8 +20,8 @@ const createEvaluateCloudFormationTemplate = (template: Template) => new Evaluat
   region: 'ap-south-east-2',
   partition: 'aws',
   urlSuffix: (region) => sdk.getEndpointSuffix(region),
-  listStackResources: new LazyListStackResources(sdk, 'test-stack'),
-  lookupExport: new LazyLookupExport(sdk),
+  sdk,
+  stackName: 'test-stack',
 });
 
 describe('evaluateCfnExpression', () => {
