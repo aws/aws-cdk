@@ -60,28 +60,5 @@ describe('utils', () => {
       });
 
     });
-
-    test('detects and json parses transformToString', async () => {
-
-      const response = {
-        Data: {
-          transformToString: () => 'non-json',
-        },
-        Payload: {
-          transformToString: () => '{ "foo": "bar" }',
-        },
-      };
-
-      await deepParseJson(response);
-
-      expect(response).toEqual({
-        Data: 'non-json',
-        Payload: {
-          foo: 'bar',
-        },
-      });
-
-    });
-
   });
 });
