@@ -566,9 +566,15 @@ This feature is currently in preview. Be aware of the following limitations:
 ⚠️**CAUTION**⚠️ 
 
 CDK migrate is currently experimental and may have breaking changes in the future. 
-We make no guarantees about the outcome or stability of the Command nor it's output.
 
-Generates a CDK application from an existing CloudFormation template in any of the CDK supported languages. 
+Generates an initialized CDK application from an existing CloudFormation template, with identical an 
+resource configuration as the provided template. Takes a CloudFormation template as input from either 
+a local file using `--from-path`, or from a deployed Cloudformation stack using `--from-stack`. 
+Generates a CDK application that will synthesize a template with identical resource configurations to the provided template. 
+The generated application will be initialized in the current working directory with a single stack where 
+the stack, app, and directory will all be named after the provided `--stack-name`. The generated application will 
+be within a generated subdirectory in your current working directory unless `--output-path` is specified. 
+All CDK supported lanaguages are supported, language choice can be specified with `--language`.
 
 
 #### Required Arguments:
