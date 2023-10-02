@@ -282,13 +282,24 @@ export interface NodegroupOptions {
    * @default - ON_DEMAND
    */
   readonly capacityType?: CapacityType;
-  /**
-   * The maximum number of instances which can be updated at a time in the node group.  Use maxUnavailable or MaxUnavailablePercentage.
-   *
-   * @default maxUnavailable: 1, this will allow a single instance in the node group to update at a time
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eks-nodegroup-updateconfig.html
-   */
-  readonly updateConfig?: CfnNodegroup.UpdateConfigProperty;
+    /**
+     * The maximum number of nodes unavailable at once during a version update.
+     *
+     * Nodes will be updated in parallel. This value or `maxUnavailablePercentage` is required to have a value. The maximum number is 100.
+     *
+     * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eks-nodegroup-updateconfig.html#cfn-eks-nodegroup-updateconfig-maxunavailable
+     * @default - 1
+     */
+    readonly maxUnavailable?: number;
+
+    /**
+     * The maximum percentage of nodes unavailable during a version update.
+     *
+     * This percentage of nodes will be updated in parallel, up to 100 nodes at once. This value or `maxUnavailable` is required to have a value.
+     *
+     * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eks-nodegroup-updateconfig.html#cfn-eks-nodegroup-updateconfig-maxunavailablepercentage
+     */
+    readonly maxUnavailablePercentage?: number;
 }
 
 /**
@@ -351,7 +362,6 @@ export class Nodegroup extends Resource implements INodegroup {
     this.desiredSize = props.desiredSize ?? props.minSize ?? 2;
     this.maxSize = props.maxSize ?? this.desiredSize;
     this.minSize = props.minSize ?? 1;
-    this.updateConfig = props.updateConfig;
 
     withResolved(this.desiredSize, this.maxSize, (desired, max) => {
       if (desired === undefined) {return ;}
@@ -471,7 +481,10 @@ export class Nodegroup extends Resource implements INodegroup {
         minSize: this.minSize,
       },
       tags: props.tags,
-      updateConfig: this.updateConfig,
+      updateConfig: {
+          maxUnavailable: props.maxUnavailable ?? 1,
+          maxUnavailablePercentage: props.maxUnavailablePercentage,
+      },
     });
 
     // managed nodegroups update the `aws-auth` on creation, but we still need to track
