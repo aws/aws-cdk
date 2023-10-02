@@ -159,7 +159,7 @@ export function transformFileContents(filename: string, contents: string, progre
         const module = require(file);
         const entries = Object.keys(module);
 
-        return entries.map((entry) =>
+        return entries.flatMap((entry) =>
           createModuleGetter(factory, entry, requiredModule, (mod) =>
             factory.createPropertyAccessExpression(mod, entry))
           );
@@ -212,25 +212,51 @@ function createAssignment(factory: ts.NodeFactory, name: string, expression: ts.
       expression));
 }
 
+/**
+ * Create an lazy getter for a particular value at the module level
+ *
+ * Since Node statically analyzes CommonJS modules to determine its exports
+ * (using the `cjs-module-lexer` module), we need to trick it into recognizing
+ * these exports as legitimate.
+ *
+ * We do that by generating one form it will recognize that doesn't do anything,
+ * in combination with a form that actually works, that doesn't disqualify the
+ * export name.
+ */
 function createModuleGetter(
   factory: ts.NodeFactory,
   exportName: string,
   moduleName: string,
   moduleFormatter: (x: ts.Expression) => ts.Expression,
 ) {
-  return factory.createExpressionStatement(factory.createCallExpression(
-    factory.createPropertyAccessExpression(factory.createIdentifier('Object'), factory.createIdentifier('defineProperty')),
-    undefined,
-    [
-      factory.createIdentifier('exports'),
-      factory.createStringLiteral(exportName),
-      factory.createObjectLiteralExpression([
-        factory.createPropertyAssignment('configurable', factory.createTrue()),
-        factory.createPropertyAssignment('get',
-          factory.createArrowFunction(undefined, undefined, [], undefined, undefined,
-            moduleFormatter(
-              factory.createCallExpression(factory.createIdentifier('require'), undefined, [factory.createStringLiteral(moduleName)])))),
-      ]),
-    ]
-  ));
+  return [
+    // exports.<name> = void 0;
+    factory.createExpressionStatement(factory.createBinaryExpression(
+      factory.createPropertyAccessExpression(
+        factory.createIdentifier('exports'),
+        factory.createIdentifier(exportName)),
+      ts.SyntaxKind.EqualsToken,
+      factory.createVoidZero())),
+    // Object.defineProperty(exports, "<n>" + "<ame>", { get: () =>  });
+    factory.createExpressionStatement(factory.createCallExpression(
+      factory.createPropertyAccessExpression(factory.createIdentifier('Object'), factory.createIdentifier('defineProperty')),
+      undefined,
+      [
+        factory.createIdentifier('exports'),
+        factory.createBinaryExpression(
+          factory.createStringLiteral(exportName.substring(0, 1)),
+          ts.SyntaxKind.PlusToken,
+          factory.createStringLiteral(exportName.substring(1)),
+        ),
+        factory.createObjectLiteralExpression([
+          factory.createPropertyAssignment('enumerable', factory.createTrue()),
+          factory.createPropertyAssignment('configurable', factory.createTrue()),
+          factory.createPropertyAssignment('get',
+            factory.createArrowFunction(undefined, undefined, [], undefined, undefined,
+              moduleFormatter(
+                factory.createCallExpression(factory.createIdentifier('require'), undefined, [factory.createStringLiteral(moduleName)])))),
+        ]),
+      ]
+    )
+  )];
 }
