@@ -139,6 +139,8 @@ export function transformFileContents(filename: string, contents: string, progre
 
   file = ts.transform(file, [(ctx: ts.TransformationContext): ts.Transformer<ts.SourceFile> => {
     const factory = ctx.factory;
+    const alreadyEmittedExports = new Set<string>();
+
     const visit: ts.Visitor = node => {
       if (node.parent && ts.isSourceFile(node.parent)
         && ts.isExpressionStatement(node)
@@ -160,7 +162,7 @@ export function transformFileContents(filename: string, contents: string, progre
         const entries = Object.keys(module);
 
         return entries.flatMap((entry) =>
-          createModuleGetter(factory, entry, requiredModule, (mod) =>
+          createModuleGetterOnce(alreadyEmittedExports)(factory, entry, requiredModule, (mod) =>
             factory.createPropertyAccessExpression(mod, entry))
           );
       }
@@ -180,7 +182,7 @@ export function transformFileContents(filename: string, contents: string, progre
 
         const exportName = node.expression.left.name.text;
         const moduleName = node.expression.right.arguments[0].text;
-        return createModuleGetter(factory, exportName, moduleName, (x) => x);
+        return createModuleGetterOnce(alreadyEmittedExports)(factory, exportName, moduleName, (x) => x);
       }
 
       return ts.visitEachChild(node, child => visit(child), ctx);
@@ -259,4 +261,20 @@ function createModuleGetter(
       ]
     )
   )];
+}
+
+/**
+ * Prevent emitting an export if it has already been emitted before
+ *
+ * This assumes that the symbols have the same definition, and are only duplicated because of
+ * accidental multiple `export *`s.
+ */
+function createModuleGetterOnce(alreadyEmittedExports: Set<string>): typeof createModuleGetter {
+  return (factory, exportName, moduleName, moduleFormatter) => {
+    if (alreadyEmittedExports.has(exportName)) {
+      return [];
+    }
+    alreadyEmittedExports.add(exportName);
+    return createModuleGetter(factory, exportName, moduleName, moduleFormatter);
+  };
 }
