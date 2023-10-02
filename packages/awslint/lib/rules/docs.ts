@@ -15,17 +15,17 @@ type DocsLinterContext = {
 
 export const docsLinter = new Linter<DocsLinterContext>(assembly => {
   return [
-    ...flatMap(assembly.classes, classType => [
+    ...flatMap(assembly.allClasses, classType => [
       { assembly, kind: 'type', documentable: classType, errorKey: classType.fqn },
       ...classType.ownProperties.map(property => ({ assembly, kind: 'class-property', containingType: classType, documentable: property, errorKey: `${classType.fqn}.${property.name}` })),
       ...classType.ownMethods.map(method => ({ assembly, kind: 'method', containingType: classType, documentable: method, errorKey: `${classType.fqn}.${method.name}` })),
     ]),
-    ...flatMap(assembly.interfaces, interfaceType => [
+    ...flatMap(assembly.allInterfaces, interfaceType => [
       { assembly, kind: 'type', documentable: interfaceType, errorKey: interfaceType.fqn },
       ...interfaceType.ownProperties.map(property => ({ assembly, kind: 'interface-property', containingType: interfaceType, documentable: property, errorKey: `${interfaceType.fqn}.${property.name}` })),
       ...interfaceType.ownMethods.map(method => ({ assembly, kind: 'method', containingType: interfaceType, documentable: method, errorKey: `${interfaceType.fqn}.${method.name}` })),
     ]),
-    ...flatMap(assembly.enums, enumType => [
+    ...flatMap(assembly.allEnums, enumType => [
       { assembly, kind: 'type', documentable: enumType, errorKey: enumType.fqn },
       ...enumType.members.map(member => ({ assembly, kind: 'enum-member', containingType: enumType, documentable: member, errorKey: `${enumType.fqn}.${member.name}` })),
     ]),
@@ -53,7 +53,9 @@ docsLinter.add({
     if (e.ctx.kind !== 'interface-property') { return; }
     if (!e.ctx.containingType.isDataType()) { return; }
     // this rule does not apply to L1 constructs
-    if (CoreTypes.isCfnType(e.ctx.containingType)) { return; }
+    if (CoreTypes.isCfnType(e.ctx.containingType) || CoreTypes.isCfnNestedType(e.ctx.containingType)) {
+      return;
+    }
 
     const property = e.ctx.documentable;
     e.assert(!property.optional || property.docs.docs.default !== undefined, e.ctx.errorKey);
