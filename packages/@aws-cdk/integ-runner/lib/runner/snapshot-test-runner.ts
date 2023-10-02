@@ -41,7 +41,7 @@ export class IntegSnapshotRunner extends IntegRunner {
    * @returns any diagnostics and any destructive changes
    */
   public testSnapshot(options: SnapshotVerificationOptions = {}): { diagnostics: Diagnostic[], destructiveChanges: DestructiveChange[] } {
-    let doClean = true;
+    let doClean = options.synth ?? true;
     try {
       const expectedSnapshotAssembly = this.getSnapshotAssembly(this.snapshotDir, this.expectedTestSuite?.stacks);
 
@@ -113,6 +113,7 @@ export class IntegSnapshotRunner extends IntegRunner {
       throw e;
     } finally {
       if (doClean) {
+        console.log('BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
         this.cleanup();
       }
     }
