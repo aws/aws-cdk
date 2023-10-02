@@ -282,24 +282,25 @@ export interface NodegroupOptions {
    * @default - ON_DEMAND
    */
   readonly capacityType?: CapacityType;
-    /**
-     * The maximum number of nodes unavailable at once during a version update.
-     *
-     * Nodes will be updated in parallel. This value or `maxUnavailablePercentage` is required to have a value. The maximum number is 100.
-     *
-     * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eks-nodegroup-updateconfig.html#cfn-eks-nodegroup-updateconfig-maxunavailable
-     * @default - 1
-     */
-    readonly maxUnavailable?: number;
+  /**
+   * The maximum number of nodes unavailable at once during a version update.
+   *
+   * Nodes will be updated in parallel. This value or `maxUnavailablePercentage` is required to have a value. The maximum number is 100.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eks-nodegroup-updateconfig.html#cfn-eks-nodegroup-updateconfig-maxunavailable
+   * @default 1
+   */
+  readonly maxUnavailable?: number;
 
-    /**
-     * The maximum percentage of nodes unavailable during a version update.
-     *
-     * This percentage of nodes will be updated in parallel, up to 100 nodes at once. This value or `maxUnavailable` is required to have a value.
-     *
-     * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eks-nodegroup-updateconfig.html#cfn-eks-nodegroup-updateconfig-maxunavailablepercentage
-     */
-    readonly maxUnavailablePercentage?: number;
+  /**
+   * The maximum percentage of nodes unavailable during a version update.
+   *
+   * This percentage of nodes will be updated in parallel, up to 100 nodes at once. This value or `maxUnavailable` is required to have a value.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eks-nodegroup-updateconfig.html#cfn-eks-nodegroup-updateconfig-maxunavailablepercentage
+   * @default undefined if left undefined this property is not applied.  maxUnavailable will be used instead.
+   */
+  readonly maxUnavailablePercentage?: number;
 }
 
 /**
@@ -443,6 +444,27 @@ export class Nodegroup extends Resource implements INodegroup {
       this.role = props.nodeRole;
     }
 
+    // sanity check updateConfig values
+    if (props.maxUnavailable || props.maxUnavailablePercentage) {
+      if (props.maxUnavailable && props.maxUnavailablePercentage) {
+        throw new Error('maxUnavailable and maxUnavailablePercentage are not allowed to be defined together.');
+      }
+      if (props.maxUnavailablePercentage && (props.maxUnavailablePercentage < 1 || props.maxUnavailablePercentage > 100)) {
+        throw new Error('maxUnavailablePercentage value is out-of-range.  Allowed values are between 1 and 100.');
+      }
+      if (props.maxUnavailable) {
+        if (props.maxSize && props.maxUnavailable > props.maxSize) {
+          throw new Error('maxUnavailable is not allowed to be higher than maxSize.  Reduce maxAvailable or increase maxSize.');
+        }
+        if (!props.maxSize) {
+          throw new Error('maxUnavailable must be greater than maxSize, but maxSize has not been defined.  Set maxSize to a number greater than maxUnavailable.');
+        }
+        if (props.maxUnavailable < 1 || props.maxUnavailable > 100) {
+          throw new Error('maxUnavailable value is out-of-range.  Allowed values are between 1 and 100.');
+        }
+      }
+    }
+
     const resource = new CfnNodegroup(this, 'Resource', {
       clusterName: this.cluster.clusterName,
       nodegroupName: props.nodegroupName,
@@ -482,8 +504,8 @@ export class Nodegroup extends Resource implements INodegroup {
       },
       tags: props.tags,
       updateConfig: {
-          maxUnavailable: props.maxUnavailable ?? 1,
-          maxUnavailablePercentage: props.maxUnavailablePercentage,
+        maxUnavailable: props.maxUnavailable ?? 1,
+        maxUnavailablePercentage: props.maxUnavailablePercentage,
       },
     });
 

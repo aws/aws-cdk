@@ -1425,4 +1425,135 @@ describe('node group', () => {
         },
       })).toThrow(/diskSize must be specified within the launch template/);
   });
+
+  test('create updateConfig for maxUnavailable correctly', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    new eks.Nodegroup(stack, 'Nodegroup', {
+      cluster,
+      maxUnavailable: 3,
+      maxSize: 5,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
+      UpdateConfig: {
+        MaxUnavailable: 3,
+      },
+    });
+  });
+
+  test('create updateConfig for maxUnavailablePercentage correctly', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    new eks.Nodegroup(stack, 'Nodegroup', {
+      cluster,
+      maxUnavailablePercentage: 33,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
+      UpdateConfig: {
+        MaxUnavailablePercentage: 33,
+      },
+    });
+  });
+
+  test('throws when maxUnavailable and maxUnavailablePercentage are set', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    // THEN
+    expect(() => cluster.addNodegroupCapacity('ng', { maxUnavailable: 3, maxUnavailablePercentage: 2 })).toThrow(/maxUnavailable and maxUnavailablePercentage are not allowed to be defined together./);
+  });
+
+  test('throws when maxUnavailable is greater than maxSize', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    // THEN
+    expect(() => cluster.addNodegroupCapacity('ng', { maxUnavailable: 3, maxSize: 2 })).toThrow(/maxUnavailable is not allowed to be higher than maxSize.  Reduce maxAvailable or increase maxSize./);
+  });
+
+  test('throws when maxUnavailable is set but maxSize is not', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    // THEN
+    expect(() => cluster.addNodegroupCapacity('ng', { maxUnavailable: 3 })).toThrow(/maxUnavailable must be greater than maxSize, but maxSize has not been defined.  Set maxSize to a number greater than maxUnavailable./);
+  });
+
+  test('throws when maxUnavailable is less than 1', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    // THEN
+    expect(() => cluster.addNodegroupCapacity('ng', { maxUnavailable: -3, maxSize: 10 })).toThrow(/maxUnavailable value is out-of-range.  Allowed values are between 1 and 100./);
+  });
+
+  test('throws when maxUnavailable is greater than 100', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    // THEN
+    expect(() => cluster.addNodegroupCapacity('ng', { maxUnavailable: 101, maxSize: 200 })).toThrow(/maxUnavailable value is out-of-range.  Allowed values are between 1 and 100./);
+  });
+
+  test('throws when maxUnavailablePercentage is less than 1', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    // THEN
+    expect(() => cluster.addNodegroupCapacity('ng', { maxUnavailablePercentage: -3, maxSize: 10 })).toThrow(/maxUnavailablePercentage value is out-of-range.  Allowed values are between 1 and 100./);
+  });
+
+  test('throws when maxUnavailablePercentage is greater than 100', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    // THEN
+    expect(() => cluster.addNodegroupCapacity('ng', { maxUnavailablePercentage: 101 })).toThrow(/maxUnavailablePercentage value is out-of-range.  Allowed values are between 1 and 100./);
+  });
 });
