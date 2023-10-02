@@ -567,41 +567,73 @@ This feature is currently in preview. Be aware of the following limitations:
 
 CDK migrate is currently experimental and may have breaking changes in the future. 
 
-Generates an initialized CDK application from an existing CloudFormation template, with identical an 
-resource configuration as the provided template. Takes a CloudFormation template as input from either 
-a local file using `--from-path`, or from a deployed Cloudformation stack using `--from-stack`. 
-Generates a CDK application that will synthesize a template with identical resource configurations to the provided template. 
+Generates an initialized CDK application from an existing CloudFormation template. 
+Takes a CloudFormation template as input from either a local file using `--from-path`, 
+or from a deployed Cloudformation stack using `--from-stack`. Generates a CDK application 
+that will synthesize a template with identical resource configurations to the provided template. 
 The generated application will be initialized in the current working directory with a single stack where 
 the stack, app, and directory will all be named after the provided `--stack-name`. The generated application will 
 be within a generated subdirectory in your current working directory unless `--output-path` is specified. 
 All CDK supported lanaguages are supported, language choice can be specified with `--language`.
 
-
-#### Required Arguments:
-
-(You must specify either `--from-path` or `--from-stack`)
-
-* `--stack-name <my_stack_name>` - The name for both the CDK application and stack. 
-* `--from-path <my_file_path>` - Takes the relative file path to the JSON or YAML CloudFormation template 
-* `--from-stack` - Retrieves a deployed cloudformation stack from your account with the same name as `--stack-name`.
-
-
-#### Optional Arguments:
-
-
-* `--output-path <my_output_path>` - file path to where the application should be generated. 
-Default behavior is to create a new directory with the same name as your `--stack-name` in the Current Working Directory
-* `--language <language>` - Which CDK supported language should be generated [typescript, python, csharp, java, go]
-  default is typescript
-
+#### Generate a typescript application from a local template.json file
 
 ```console
-$ # generate a typescript application from template.json in the local directory
-$ cdk migrate --from-path ./template.json --stack-name MyAwesome
+$ # template.json is a valid cloudformation template in the local directory
+$ cdk migrate --from-path ./template.json --stack-name MyAwesomeApplication
+```
 
+This command will generate a new direcotry named `MyAwesomeApplication` within your current working directory, and 
+then initialize a new CDK application within that directory which has the same resource configuration as the
+as the provided template.json
+
+This results in a CDK application with the following structure, where the lib directory contains a stack definition
+with the same resource configuration as the provided template.json.
+
+```console
+├── README.md
+├── bin
+│   └── my_awesome_application.ts
+├── cdk.json
+├── cdk.out
+│   ├── MyAwesomeApplication.assets.json
+│   ├── MyAwesomeApplication.template.json
+│   ├── cdk.out
+│   ├── manifest.json
+│   ├── synth.lock
+│   └── tree.json
+├── jest.config.js
+├── lib
+│   └── my_awesome_application-stack.ts
+```
+
+#### Generate a python application from a deployed stack
+
+If you already had a cloudformation stack deployed in your account and would like to migrate to using CDK instead of Cloudformation.
+You can use the `--from-stack` option to generate the application. In this case the `--stack-name` must match the name of the deployed stack. 
+
+```console
 $ # generate a python application from MyDeployedStack in your acount
 $ cdk bootstrap migrate --stack-name MyDeployedStack --language python --from-stack
 ```
+
+This will generate a python CDK application which will synthesize to the same configuration of resources as the deployed stack.
+
+#### Required Arguments
+
+(You must specify either `--from-path` or `--from-stack`)
+
+- `--stack-name <my_stack_name>` - The name for both the CDK application and stack. 
+- `--from-path <my_file_path>` - Takes the relative file path to the JSON or YAML CloudFormation template 
+- `--from-stack` - Retrieves a deployed cloudformation stack from your account with the same name as `--stack-name`.
+
+
+#### Optional Arguments
+
+- `--output-path <my_output_path>` - file path to where the application should be generated. 
+Default behavior is to create a new directory with the same name as your `--stack-name` in the Current Working Directory
+- `--language <language>` - Which CDK supported language should be generated [typescript, python, csharp, java, go]
+  default is typescript
 
 #### **CDK Migrate Limitations**
 
@@ -637,6 +669,7 @@ In practice this means for any resource in the provided template. i.e.
       "DeletionPolicy": "Retain"
     }
 ```
+
 There must not exist a resource of that type with the same name aka "MyBucket"
 
 ##### **The provided template is not deployed to cloudformation in the account/region, and there *is* overlap with with resources outside the template**
