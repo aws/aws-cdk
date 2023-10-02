@@ -340,13 +340,6 @@ export class Nodegroup extends Resource implements INodegroup {
   private readonly desiredSize: number;
   private readonly maxSize: number;
   private readonly minSize: number;
-  /**
-   * The maximum number of instances which can be updated at a time in the node group.  Use maxUnavailable or MaxUnavailablePercentage.
-   *
-   * @default maxUnavailable: 1, this will allow a single instance in the node group to update at a time
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eks-nodegroup-updateconfig.html
-   */
-  private readonly updateConfig?: CfnNodegroup.UpdateConfigProperty;
 
   constructor(scope: Construct, id: string, props: NodegroupProps) {
     super(scope, id, {
