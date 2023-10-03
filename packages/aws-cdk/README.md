@@ -622,6 +622,7 @@ This will generate a python CDK application which will synthesize to the same co
 
 #### **CDK Migrate Limitations**
 
+CDK Migrate will only generate L1 constructs and does not currently support any higher level abstractions.
 CDK Migrate succesfully generating an application does *not* guarantee the application is immediately deployable.
 It simply generates a CDK application which will synthesize a template that has identical resource configurations 
 to the provided template. CDK Migrate does not interact with the CloudFormation service to verify the template 
