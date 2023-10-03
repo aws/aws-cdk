@@ -567,8 +567,8 @@ This feature is currently in preview. Be aware of the following limitations:
 
 CDK migrate is currently experimental and may have breaking changes in the future. 
 
-Generates a ready-to-synthesize CDK application from an existing CloudFormation JSON/YAML template. 
-Takes a CloudFormation template as input from either a local file specified with `--from-path`, 
+Generates a CDK application from an existing JSON/YAML CloudFormation template.
+Takes a valid CloudFormation template as input from either a local file specified with `--from-path`,
 or from a deployed Cloudformation stack using `--from-stack`. Generates a CDK application 
 which will synthesize a CloudFormation template with identical resource configurations to the provided template. 
 The generated application will be initialized in the current working directory with a single stack where 
@@ -619,24 +619,7 @@ $ cdk bootstrap migrate --stack-name MyDeployedStack --language python --from-st
 
 This will generate a python CDK application which will synthesize to the same configuration of resources as the deployed stack.
 
-#### Required Arguments
-
-(You must specify either `--from-path` or `--from-stack`)
-
-- `--stack-name <my_stack_name>` - The name for both the CDK application and stack. 
-- `--from-path <my_file_path>` - Takes the relative file path to the JSON or YAML CloudFormation template 
-- `--from-stack` - Retrieves a deployed cloudformation stack from your account with the same name as `--stack-name`.
-
-
-#### Optional Arguments
-
-- `--output-path <my_output_path>` - file path to where the application should be generated. 
-Default behavior is to create a new directory with the same name as your `--stack-name` in the Current Working Directory
-- `--language <language>` - Which CDK supported language should be generated [typescript, python, csharp, java, go]
-  default is typescript
-
 #### **CDK Migrate Limitations**
-
 
 CDK Migrate succesfully generating an application does *not* guarantee the application is immediately deployable.
 It simply generates a CDK application which will synthesize a template that has identical resource configurations 
