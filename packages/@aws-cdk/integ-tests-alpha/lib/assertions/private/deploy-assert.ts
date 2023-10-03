@@ -112,7 +112,7 @@ export class DeployAssert extends Construct implements IDeployAssert {
   private uniqueAssertionId(id: string): string {
     const count = this.assertionIdCounts.get(id);
 
-    if (count == undefined) {
+    if (count === undefined) {
       // If we've never seen this id before, we'll return the id unchanged
       // to maintain backward compatibility.
       this.assertionIdCounts.set(id, 1);
