@@ -57,6 +57,21 @@ describe('DeployAssert', () => {
         },
       });
     });
+
+    test('multiple identical calls can be configured', () => {
+      // GIVEN
+      const app = new App();
+
+      // WHEN
+      const deployAssert = new DeployAssert(app);
+      deployAssert.invokeFunction({ functionName: 'my-func' });
+      deployAssert.invokeFunction({ functionName: 'my-func' });
+
+      // THEN
+      const template = Template.fromStack(deployAssert.scope);
+      template.resourceCountIs('AWS::Lambda::Function', 1);
+      template.resourceCountIs('Custom::DeployAssert@SdkCallLambdainvoke', 2);
+    });
   });
 
   describe('assertions', () => {
