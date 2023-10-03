@@ -643,7 +643,7 @@ from a stack deployed in another account/region.
 
 In practice this means for any resource in the provided template. i.e.
 
-```
+```Json
     "S3Bucket": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
