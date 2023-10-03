@@ -235,7 +235,7 @@ export class IntegTestRunner extends IntegRunner {
             ...this.actualTestSuite.enableLookups ? DEFAULT_SYNTH_OPTIONS.context : {},
           })),
         };
-        // TODO: the deploy worker also needs to respect --no-synth
+        // --dry-run and --no-synth can't be called together, so we don't need to check here
         this.cdk.synthFast({
           execCmd: this.cdkApp.split(' '),
           env,
@@ -245,7 +245,7 @@ export class IntegTestRunner extends IntegRunner {
       // only create the snapshot if there are no failed assertion results
       // (i.e. no failures)
       if (!assertionResults || !Object.values(assertionResults).some(result => result.status === 'fail')) {
-        this.createSnapshot(options.synth);
+        this.createSnapshot();
       }
     } catch (e) {
       throw e;
@@ -266,9 +266,7 @@ export class IntegTestRunner extends IntegRunner {
           });
         }
       }
-      if (options.synth) {
-        this.cleanup();
-      }
+      this.cleanup();
     }
     return assertionResults;
   }
@@ -286,16 +284,9 @@ export class IntegTestRunner extends IntegRunner {
           });
         });
       }
-      if (fs.existsSync(this.cdkOutDir)) {
-        console.error('yeah it exists before destroy()')
-      } else {
-        console.error('nope it does not exist before destory()')
-      }
       this.cdk.destroy({
         ...destroyArgs,
       });
-        console.error('made it past destroy()')
-
       if (actualTestCase.hooks?.postDestroy) {
         actualTestCase.hooks.postDestroy.forEach(cmd => {
           exec(chunks(cmd), {

@@ -111,7 +111,6 @@ export class IntegSnapshotRunner extends IntegRunner {
       throw e;
     } finally {
       if (doClean) {
-        console.log('BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
         this.cleanup();
       }
     }

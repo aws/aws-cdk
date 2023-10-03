@@ -58,7 +58,7 @@ export interface IntegRunnerOptions {
   readonly showOutput?: boolean;
 
   /**
-   * foo
+   * whether or not to synthesize the integ test again
    */
   readonly synth?: boolean;
 }
@@ -164,8 +164,6 @@ export abstract class IntegRunner {
       this.cdkApp = path.relative(this.directory, this.cdkOutDir);
     }
 
-    console.log(this.cdkApp);
-
     this.profile = options.profile;
     if (this.hasSnapshot()) {
       this.expectedTestSuite = this.loadManifest();
@@ -240,12 +238,6 @@ export abstract class IntegRunner {
         throw new Error(`can't --no-synth with legacy tests. That, or you've ran --no-synth without providing synthesis artifacts to a modern integ test.`);
 
       }
-      let legacyFallBackCounter = JSON.parse(fs.readFileSync('/Users/comcalvi/Documents/legacyFallBackCounter.json', 'utf8')).count;
-      legacyFallBackCounter++;
-      fs.writeFileSync('/Users/comcalvi/Documents/legacyFallBackCounter.json', JSON.stringify({
-        count: legacyFallBackCounter,
-      }));
-      console.log(`test '${this.test.fileName}' is a legacy test; legacyFallBackCounter is ${legacyFallBackCounter}`);
       const testCases = LegacyIntegTestSuite.fromLegacy({
         cdk: this.cdk,
         testName: this.test.normalizedTestName,
@@ -266,9 +258,7 @@ export abstract class IntegRunner {
 
   protected cleanup(): void {
     const cdkOutPath = this.cdkOutDir;
-    console.error('here we go')
     if (fs.existsSync(cdkOutPath)) {
-      console.error('why is this not being called?')
       fs.removeSync(cdkOutPath);
     }
   }
@@ -347,17 +337,14 @@ export abstract class IntegRunner {
    * If lookups are disabled (which means the stack is env agnostic) then just copy
    * the assembly that was output by the deployment
    */
-  protected createSnapshot(synth?: boolean): void {
-    console.error('creating snapshot, synth is ' + synth)
+  protected createSnapshot(): void {
     if (fs.existsSync(this.snapshotDir)) {
-      console.error('removing the snapshot ' + this.snapshotDir)
       fs.removeSync(this.snapshotDir);
     }
 
     // if lookups are enabled then we need to synth again
     // using dummy context and save that as the snapshot
     if (this.actualTestSuite.enableLookups) {
-      console.error('TODO were synthing for this')
       this.cdk.synthFast({
         execCmd: this.cdkApp.split(' '),
         env: {
@@ -367,7 +354,6 @@ export abstract class IntegRunner {
         output: path.relative(this.directory, this.snapshotDir),
       });
     } else {
-      console.error('moving ' + this.cdkOutDir + ' to ' + this.snapshotDir);
       fs.copySync(this.cdkOutDir, this.snapshotDir, { overwrite: true });
     }
 
