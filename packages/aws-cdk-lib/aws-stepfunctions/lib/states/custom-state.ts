@@ -7,7 +7,6 @@ import { IChainable, INextable } from '../types';
  * Properties for defining a custom state definition
  */
 export interface CustomStateProps {
-
   /**
    * Amazon States Language (JSON-based) definition of the state
    *
