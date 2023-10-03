@@ -52,7 +52,7 @@ export class Succeed extends State {
   public readonly endStates: INextable[] = [];
 
   constructor(scope: Construct, id: string, props: SucceedProps = {}) {
-    super(scope, id, props);
+    super(scope, props.stateName? props.stateName: id, props);
   }
 
   /**

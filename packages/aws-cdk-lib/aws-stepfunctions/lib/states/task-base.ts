@@ -157,7 +157,7 @@ export abstract class TaskStateBase extends State implements INextable {
   private readonly credentials?: Credentials;
 
   constructor(scope: Construct, id: string, props: TaskStateBaseProps) {
-    super(scope, id, props);
+    super(scope, props.stateName ? props.stateName: id, props);
 
     this.endStates = [this];
     this.timeout = props.timeout;

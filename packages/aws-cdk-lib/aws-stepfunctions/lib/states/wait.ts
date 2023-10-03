@@ -81,7 +81,7 @@ export class Wait extends State implements INextable {
   private readonly time: WaitTime;
 
   constructor(scope: Construct, id: string, props: WaitProps) {
-    super(scope, id, props);
+    super(scope, props.stateName? props.stateName: id, props);
 
     this.time = props.time;
     this.endStates = [this];

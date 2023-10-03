@@ -12,7 +12,7 @@ export interface StateProps {
   /**
    * Optional name for this state
    *
-   * @default LogicalResourceId
+   * @default - The construct ID will be used as state name
    */
   readonly stateName?: string;
 
@@ -198,7 +198,7 @@ export abstract class State extends Construct implements IChainable {
   private readonly incomingStates: State[] = [];
 
   constructor(scope: Construct, id: string, props: StateProps) {
-    super(scope, id);
+    super(scope, props.stateName? props.stateName: id);
 
     this.startState = this;
 

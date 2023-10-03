@@ -81,7 +81,7 @@ export class Parallel extends State implements INextable {
   private readonly _branches: IChainable[] = [];
 
   constructor(scope: Construct, id: string, props: ParallelProps = {}) {
-    super(scope, id, props);
+    super(scope, props.stateName? props.stateName: id, props);
 
     this.endStates = [this];
   }

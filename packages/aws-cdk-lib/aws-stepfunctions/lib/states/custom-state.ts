@@ -8,6 +8,13 @@ import { IChainable, INextable } from '../types';
  */
 export interface CustomStateProps {
   /**
+   * Optional name for this state
+   *
+   * @default - The construct ID will be used as state name
+   */
+  readonly stateName: string;
+
+  /**
    * Amazon States Language (JSON-based) definition of the state
    *
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/concepts-amazon-states-language.html
@@ -28,7 +35,7 @@ export class CustomState extends State implements IChainable, INextable {
   private readonly stateJson: { [key: string]: any};
 
   constructor(scope: Construct, id: string, props: CustomStateProps) {
-    super(scope, id, {});
+    super(scope, props.stateName? props.stateName: id, {});
 
     this.endStates = [this];
     this.stateJson = props.stateJson;

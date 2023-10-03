@@ -64,7 +64,7 @@ export class Fail extends State {
   private readonly causePath?: string;
 
   constructor(scope: Construct, id: string, props: FailProps = {}) {
-    super(scope, id, props);
+    super(scope, props.stateName? props.stateName: id, props);
 
     this.error = props.error;
     this.errorPath = props.errorPath;

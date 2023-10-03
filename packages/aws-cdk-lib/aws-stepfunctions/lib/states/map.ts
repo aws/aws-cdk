@@ -124,7 +124,7 @@ export class Map extends State implements INextable {
   private readonly itemsPath?: string;
 
   constructor(scope: Construct, id: string, props: MapProps = {}) {
-    super(scope, id, props);
+    super(scope, props.stateName? props.stateName: id, props);
     this.endStates = [this];
     this.maxConcurrency = props.maxConcurrency;
     this.itemsPath = props.itemsPath;
