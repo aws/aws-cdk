@@ -67,6 +67,11 @@ export function parseCliArgs(args: string[] = []) {
   if (tests.length > 0 && fromFile) {
     throw new Error('A list of tests cannot be provided if "--from-file" is provided');
   }
+
+  if (!argv.synth && argv['dry-run']) {
+    throw new Error('--dry-run with cannot be specified with --no-synth.');
+  }
+
   const requestedTests = fromFile
     ? (fs.readFileSync(fromFile, { encoding: 'utf8' })).split('\n').filter(x => x)
     : (tests.length > 0 ? tests : undefined); // 'undefined' means no request
@@ -161,6 +166,7 @@ export async function main(args: string[]) {
         verbosity: options.verbosity,
         updateWorkflow: !options.disableUpdateWorkflow,
         watch: options.watch,
+        synth: options.synth,
       });
       testsSucceeded = success;
 

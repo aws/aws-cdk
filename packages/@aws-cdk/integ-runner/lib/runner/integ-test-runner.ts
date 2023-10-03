@@ -245,7 +245,7 @@ export class IntegTestRunner extends IntegRunner {
       // only create the snapshot if there are no failed assertion results
       // (i.e. no failures)
       if (!assertionResults || !Object.values(assertionResults).some(result => result.status === 'fail')) {
-        this.createSnapshot();
+        this.createSnapshot(options.synth);
       }
     } catch (e) {
       throw e;
@@ -266,7 +266,9 @@ export class IntegTestRunner extends IntegRunner {
           });
         }
       }
-      this.cleanup();
+      if (options.synth) {
+        this.cleanup();
+      }
     }
     return assertionResults;
   }
@@ -284,9 +286,15 @@ export class IntegTestRunner extends IntegRunner {
           });
         });
       }
+      if (fs.existsSync(this.cdkOutDir)) {
+        console.error('yeah it exists before destroy()')
+      } else {
+        console.error('nope it does not exist before destory()')
+      }
       this.cdk.destroy({
         ...destroyArgs,
       });
+        console.error('made it past destroy()')
 
       if (actualTestCase.hooks?.postDestroy) {
         actualTestCase.hooks.postDestroy.forEach(cmd => {

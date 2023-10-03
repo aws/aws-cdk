@@ -174,6 +174,11 @@ export interface IntegTestOptions {
    * @default false
    */
   readonly watch?: boolean;
+
+  /**
+   * Whether or not to synth.
+   */
+  readonly synth?: boolean;
 }
 
 /**

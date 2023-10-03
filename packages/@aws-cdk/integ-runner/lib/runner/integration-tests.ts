@@ -103,6 +103,7 @@ export class IntegTest {
   readonly appCommand: string;
 
   constructor(public readonly info: IntegTestInfo) {
+    // TODO; what is info.appCommand?
     this.appCommand = info.appCommand ?? 'node {filePath}';
     this.absoluteFileName = path.resolve(info.fileName);
     this.fileName = path.relative(process.cwd(), info.fileName);
