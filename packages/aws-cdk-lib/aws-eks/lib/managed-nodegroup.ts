@@ -286,22 +286,22 @@ export interface NodegroupOptions {
   /**
    * The maximum number of nodes unavailable at once during a version update.
    * Nodes will be updated in parallel. The maximum number is 100.
-   * 
+   *
    * This value or `maxUnavailablePercentage` is required to have a value for custom update configurations to be applied.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eks-nodegroup-updateconfig.html#cfn-eks-nodegroup-updateconfig-maxunavailable
-   * @default undefined
+   * @default 1
    */
   readonly maxUnavailable?: number;
 
   /**
    * The maximum percentage of nodes unavailable during a version update.
-   * This percentage of nodes will be updated in parallel, up to 100 nodes at once. 
-   * 
+   * This percentage of nodes will be updated in parallel, up to 100 nodes at once.
+   *
    * This value or `maxUnavailable` is required to have a value for custom update configurations to be applied.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eks-nodegroup-updateconfig.html#cfn-eks-nodegroup-updateconfig-maxunavailablepercentage
-   * @default undefined
+   * @default undefined - node groups will update instances one at a time
    */
   readonly maxUnavailablePercentage?: number;
 }
@@ -447,23 +447,7 @@ export class Nodegroup extends Resource implements INodegroup {
       this.role = props.nodeRole;
     }
 
-    // sanity check updateConfig values
-    if (props.maxUnavailable || props.maxUnavailablePercentage) {
-      if (props.maxUnavailable && props.maxUnavailablePercentage) {
-        throw new Error('maxUnavailable and maxUnavailablePercentage are not allowed to be defined together.');
-      }
-      if (props.maxUnavailablePercentage && (props.maxUnavailablePercentage < 1 || props.maxUnavailablePercentage > 100)) {
-        throw new Error(`maxUnavailablePercentage must be between 1 and 100, got ${props.maxUnavailablePercentage}.`);
-      }
-      if (props.maxUnavailable) {
-        if (props.maxUnavailable > this.maxSize) {
-          throw new Error(`maxUnavailable must be lower than maxSize (${this.maxSize}), got ${props.maxUnavailable}`);
-        }
-        if (props.maxUnavailable < 1 || props.maxUnavailable > 100) {
-        throw new Error(`maxUnavailable must be between 1 and 100, got ${props.maxUnavailable}.`);
-        }
-      }
-    }
+    this.validateUpdateConfig(props.maxUnavailable, props.maxUnavailablePercentage);
 
     const resource = new CfnNodegroup(this, 'Resource', {
       clusterName: this.cluster.clusterName,
@@ -534,6 +518,26 @@ export class Nodegroup extends Resource implements INodegroup {
       resourceName: this.physicalName,
     });
     this.nodegroupName = this.getResourceNameAttribute(resource.ref);
+  }
+
+  private validateUpdateConfig(maxUnavailable?: number, maxUnavailablePercentage?: number) {
+
+    if (maxUnavailable || maxUnavailablePercentage) {
+      if (maxUnavailable && maxUnavailablePercentage) {
+        throw new Error('maxUnavailable and maxUnavailablePercentage are not allowed to be defined together');
+      }
+      if (maxUnavailablePercentage && (maxUnavailablePercentage < 1 || maxUnavailablePercentage > 100)) {
+        throw new Error(`maxUnavailablePercentage must be between 1 and 100, got ${maxUnavailablePercentage}`);
+      }
+      if (maxUnavailable) {
+        if (maxUnavailable > this.maxSize) {
+          throw new Error(`maxUnavailable must be lower than maxSize (${this.maxSize}), got ${maxUnavailable}`);
+        }
+        if (maxUnavailable < 1 || maxUnavailable > 100) {
+          throw new Error(`maxUnavailable must be between 1 and 100, got ${maxUnavailable}`);
+        }
+      }
+    }
   }
 }
 
