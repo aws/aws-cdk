@@ -422,7 +422,8 @@ Hotswapping is currently supported for the following changes
 - Container asset changes of AWS ECS Services.
 - Website asset changes of AWS S3 Bucket Deployments.
 - Source and Environment changes of AWS CodeBuild Projects.
-- VTL mapping template changes for AppSync Resolvers and Functions
+- VTL mapping template changes for AppSync Resolvers and Functions.
+- Schema changes for AppSync GraphQL Apis.
 
 **⚠ Note #1**: This command deliberately introduces drift in CloudFormation stacks in order to speed up deployments.
 For this reason, only use it for development purposes.
