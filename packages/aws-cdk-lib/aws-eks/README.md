@@ -214,7 +214,7 @@ To define the maximum number of instances which can be simultaneously replaced i
 declare const cluster: eks.Cluster;
 cluster.addNodegroupCapacity('custom-node-group', {
   instanceTypes: [new ec2.InstanceType('m5.large')],
-  maxSize, 5
+  maxSize: 5,
   maxUnavailable: 2,
 });
 ```
