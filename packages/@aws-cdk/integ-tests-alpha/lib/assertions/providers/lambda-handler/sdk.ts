@@ -11,10 +11,9 @@ export class AwsApiCallHandler extends CustomResourceHandler<AwsApiCallRequest, 
     const parameters = request.parameters ? decodeParameters(request.parameters) : {};
     console.log(`SDK request to ${apiCall.service}.${apiCall.action} with parameters ${JSON.stringify(parameters)}`);
     const response = await apiCall.invoke({ parameters }) as Record<string, unknown>;
-    const parsedResponse = deepParseJson(response);
 
-    console.log(`SDK response received ${JSON.stringify(parsedResponse)}`);
-    delete parsedResponse.$metadata;
+    console.log(`SDK response received ${JSON.stringify(response)}`);
+    delete response.$metadata;
 
     let resp: AwsApiCallResult | { [key: string]: unknown };
     if (request.outputPaths || request.flattenResponse === 'true') {
@@ -23,7 +22,7 @@ export class AwsApiCallHandler extends CustomResourceHandler<AwsApiCallRequest, 
       resp = request.outputPaths ? filterKeys(flattened, request.outputPaths) : flattened;
     } else {
       // Otherwise just return the response as-is, without exploding JSON fields
-      resp = { apiCallResponse: parsedResponse };
+      resp = { apiCallResponse: response };
     }
     console.log(`Returning result ${JSON.stringify(resp)}`);
     return resp;
