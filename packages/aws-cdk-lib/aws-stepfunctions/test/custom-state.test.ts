@@ -27,7 +27,6 @@ describe('Custom State', () => {
   test('maintains the state Json provided during construction', () => {
     // WHEN
     const customState = new sfn.CustomState(stack, 'Custom', {
-      stateName: 'my-custom-state-name',
       stateJson,
     });
 
@@ -41,17 +40,18 @@ describe('Custom State', () => {
   test('can add a next state to the chain', () => {
     // WHEN
     const definition = new sfn.CustomState(stack, 'Custom', {
-      stateName: 'my-custom-state-name',
       stateJson,
-    }).next(new sfn.Pass(stack, 'MyPass'));
+    }).next(new sfn.Pass(stack, 'MyPass', {
+      stateName: 'my-pass-state',
+    }));
 
     // THEN
     expect(render(stack, definition)).toStrictEqual(
       {
-        StartAt: 'my-custom-state-name',
+        StartAt: 'Custom',
         States: {
-          'my-custom-state-name': {
-            Next: 'MyPass',
+          'Custom': {
+            Next: 'my-pass-state',
             Type: 'Task',
             Resource: 'arn:aws:states:::dynamodb:putItem',
             Parameters: {
@@ -64,7 +64,7 @@ describe('Custom State', () => {
             },
             ResultPath: null,
           },
-          'MyPass': {
+          'my-pass-state': {
             Type: 'Pass',
             End: true,
           },

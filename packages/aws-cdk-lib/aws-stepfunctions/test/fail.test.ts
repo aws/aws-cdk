@@ -1,6 +1,6 @@
+import { render } from './private/render-util';
 import * as cdk from '../../core';
 import * as stepfunctions from '../lib';
-import { render } from './private/render-util';
 
 describe('Fail State', () => {
   let stack: cdk.Stack;
@@ -31,7 +31,6 @@ describe('Fail State', () => {
   test('can add a fail state to the chain with custom state name', () => {
   // WHEN
     const definition = new stepfunctions.CustomState(stack, 'Custom1', {
-      stateName: 'my-custom-state-name',
       stateJson,
     }).next(new stepfunctions.Pass(stack, 'MyPass'))
       .next(new stepfunctions.Fail(stack, 'Fail', {
@@ -44,9 +43,9 @@ describe('Fail State', () => {
     // THEN
     expect(render(stack, definition)).toStrictEqual(
       {
-        StartAt: 'my-custom-state-name',
+        StartAt: 'Custom1',
         States: {
-          'my-custom-state-name': {
+          'Custom1': {
             Next: 'MyPass',
             Type: 'Task',
             ...stateJson,
