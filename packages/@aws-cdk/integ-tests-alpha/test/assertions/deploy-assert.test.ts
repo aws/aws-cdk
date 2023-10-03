@@ -165,12 +165,12 @@ describe('DeployAssert', () => {
       const app = new App();
 
       // WHEN
-      const deplossert = new DeployAssert(app);
-      deplossert.awsApiCall('MyService', 'MyApi');
-      deplossert.awsApiCall('MyService', 'MyApi');
+      const deployAssert = new DeployAssert(app);
+      deployAssert.awsApiCall('MyService', 'MyApi');
+      deployAssert.awsApiCall('MyService', 'MyApi');
 
       // THEN
-      const template = Template.fromStack(deplossert.scope);
+      const template = Template.fromStack(deployAssert.scope);
       template.resourceCountIs('AWS::Lambda::Function', 1);
       template.resourceCountIs('Custom::DeployAssert@SdkCallMyServiceMyApi', 2);
     });
@@ -238,12 +238,12 @@ describe('DeployAssert', () => {
       const app = new App();
 
       // WHEN
-      const deplossert = new DeployAssert(app);
-      deplossert.httpApiCall('https://example.com/test');
-      deplossert.httpApiCall('https://example.com/test');
+      const deployAssert = new DeployAssert(app);
+      deployAssert.httpApiCall('https://example.com/test');
+      deployAssert.httpApiCall('https://example.com/test');
 
       // THEN
-      const template = Template.fromStack(deplossert.scope);
+      const template = Template.fromStack(deployAssert.scope);
       template.resourceCountIs('AWS::Lambda::Function', 1);
       template.resourceCountIs('Custom::DeployAssert@HttpCallexamplecomtest', 2);
     });
