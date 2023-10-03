@@ -282,23 +282,26 @@ export interface NodegroupOptions {
    * @default - ON_DEMAND
    */
   readonly capacityType?: CapacityType;
+
   /**
    * The maximum number of nodes unavailable at once during a version update.
-   *
-   * Nodes will be updated in parallel. This value or `maxUnavailablePercentage` is required to have a value. The maximum number is 100.
+   * Nodes will be updated in parallel. The maximum number is 100.
+   * 
+   * This value or `maxUnavailablePercentage` is required to have a value for custom update configurations to be applied.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eks-nodegroup-updateconfig.html#cfn-eks-nodegroup-updateconfig-maxunavailable
-   * @default 1
+   * @default undefined
    */
   readonly maxUnavailable?: number;
 
   /**
    * The maximum percentage of nodes unavailable during a version update.
-   *
-   * This percentage of nodes will be updated in parallel, up to 100 nodes at once. This value or `maxUnavailable` is required to have a value.
+   * This percentage of nodes will be updated in parallel, up to 100 nodes at once. 
+   * 
+   * This value or `maxUnavailable` is required to have a value for custom update configurations to be applied.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eks-nodegroup-updateconfig.html#cfn-eks-nodegroup-updateconfig-maxunavailablepercentage
-   * @default undefined if left undefined this property is not applied.  maxUnavailable will be used instead.
+   * @default undefined
    */
   readonly maxUnavailablePercentage?: number;
 }
@@ -450,17 +453,14 @@ export class Nodegroup extends Resource implements INodegroup {
         throw new Error('maxUnavailable and maxUnavailablePercentage are not allowed to be defined together.');
       }
       if (props.maxUnavailablePercentage && (props.maxUnavailablePercentage < 1 || props.maxUnavailablePercentage > 100)) {
-        throw new Error('maxUnavailablePercentage value is out-of-range.  Allowed values are between 1 and 100.');
+        throw new Error(`maxUnavailablePercentage must be between 1 and 100, got ${props.maxUnavailablePercentage}.`);
       }
       if (props.maxUnavailable) {
-        if (props.maxSize && props.maxUnavailable > props.maxSize) {
-          throw new Error('maxUnavailable is not allowed to be higher than maxSize.  Reduce maxAvailable or increase maxSize.');
-        }
-        if (!props.maxSize) {
-          throw new Error('maxUnavailable must be greater than maxSize, but maxSize has not been defined.  Set maxSize to a number greater than maxUnavailable.');
+        if (props.maxUnavailable > this.maxSize) {
+          throw new Error(`maxUnavailable must be lower than maxSize (${this.maxSize}), got ${props.maxUnavailable}`);
         }
         if (props.maxUnavailable < 1 || props.maxUnavailable > 100) {
-          throw new Error('maxUnavailable value is out-of-range.  Allowed values are between 1 and 100.');
+        throw new Error(`maxUnavailable must be between 1 and 100, got ${props.maxUnavailable}.`);
         }
       }
     }
@@ -503,10 +503,10 @@ export class Nodegroup extends Resource implements INodegroup {
         minSize: this.minSize,
       },
       tags: props.tags,
-      updateConfig: {
-        maxUnavailable: props.maxUnavailable ?? 1,
+      updateConfig: props.maxUnavailable || props.maxUnavailablePercentage ? {
+        maxUnavailable: props.maxUnavailable,
         maxUnavailablePercentage: props.maxUnavailablePercentage,
-      },
+      } : undefined,
     });
 
     // managed nodegroups update the `aws-auth` on creation, but we still need to track

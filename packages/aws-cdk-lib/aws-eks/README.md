@@ -206,7 +206,7 @@ cluster.addNodegroupCapacity('custom-node-group', {
 });
 ```
 
-To define the maximum number of instances which can be simultaneously replaced in a node group during a version update you can set maxUnavailable or maxUnavailablePercentage options.
+To define the maximum number of instances which can be simultaneously replaced in a node group during a version update you can set `maxUnavailable` or `maxUnavailablePercentage` options.
 
 > For more details visit [Nodegroup UpdateConfig](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eks-nodegroup-updateconfig.html)
 
