@@ -4,6 +4,7 @@ import { Construct } from 'constructs';
 import * as amplify from '../lib';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import * as fs from 'fs';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -14,7 +15,7 @@ class TestStack extends Stack {
     });
 
     const amplifyApp = new amplify.App(this, 'App', {});
-    amplifyApp.addBranch('main', { asset });
+    amplifyApp.addBranch('mooon', { asset });
   }
 }
 
@@ -24,6 +25,8 @@ const stack = new TestStack(app, 'cdk-amplify-app-asset-deployment');
 // Deploying the stack is sufficient to test the custom resources
 // On successful deployment we can check the Amplify app with the branch named as 'main' consisting of the asset file changes
 // On updating the asset file and re-deploying it updates the existing Amplify app with the new change.
+
+fs.writeFileSync('BADBADBADBAD.txt', 'written by stinky user code');
 new IntegTest(app, 'cdk-amplify-app-integ-test', {
   testCases: [stack],
 });
