@@ -4,8 +4,8 @@ import { AwsApiCallRequest, AwsApiCallResult } from './types';
 import { ApiCall, flatten } from '@aws-cdk/sdk-v2-to-v3-adapter';
 import { decodeParameters, deepParseJson } from './utils';
 
-export class AwsApiCallHandler extends CustomResourceHandler<AwsApiCallRequest, AwsApiCallResult | { [key: string]: string }> {
-  protected async processEvent(request: AwsApiCallRequest): Promise<AwsApiCallResult | { [key: string]: string } | undefined> {
+export class AwsApiCallHandler extends CustomResourceHandler<AwsApiCallRequest, AwsApiCallResult | { [key: string]: unknown }> {
+  protected async processEvent(request: AwsApiCallRequest): Promise<AwsApiCallResult | { [key: string]: unknown } | undefined> {
     const apiCall = new ApiCall(request.service, request.api);
 
     const parameters = request.parameters ? decodeParameters(request.parameters) : {};
@@ -16,18 +16,14 @@ export class AwsApiCallHandler extends CustomResourceHandler<AwsApiCallRequest, 
     console.log(`SDK response received ${JSON.stringify(parsedResponse)}`);
     delete parsedResponse.$metadata;
 
-    const respond = {
-      apiCallResponse: response,
-    };
-    const flatData: { [key: string]: string } = {
-      ...flatten(respond),
-    };
-
-    let resp: AwsApiCallResult | { [key: string]: string } = respond;
-    if (request.outputPaths) {
-      resp = filterKeys(flatData, request.outputPaths!);
-    } else if (request.flattenResponse === 'true') {
-      resp = flatData;
+    let resp: AwsApiCallResult | { [key: string]: unknown };
+    if (request.outputPaths || request.flattenResponse === 'true') {
+      // Flatten and explode JSON fields
+      const flattened = flatten(deepParseJson({ apiCallResponse: response }));
+      resp = request.outputPaths ? filterKeys(flattened, request.outputPaths) : flattened;
+    } else {
+      // Otherwise just return the response as-is, without exploding JSON fields
+      resp = { apiCallResponse: parsedResponse };
     }
     console.log(`Returning result ${JSON.stringify(resp)}`);
     return resp;
