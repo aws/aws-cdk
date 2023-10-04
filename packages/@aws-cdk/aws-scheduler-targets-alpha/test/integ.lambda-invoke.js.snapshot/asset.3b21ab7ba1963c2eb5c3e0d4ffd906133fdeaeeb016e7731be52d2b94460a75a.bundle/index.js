@@ -805,8 +805,9 @@ var require_helpers_internal = __commonJS({
           __createBinding3(exports2, m, p);
     };
     Object.defineProperty(exports, "__esModule", { value: true });
-    __exportStar3((init_match(), __toCommonJS(match_exports)), exports);
-    __exportStar3((init_matcher(), __toCommonJS(matcher_exports)), exports);
+    Object.defineProperty(exports, "Match", { configurable: true, get: () => (init_match(), __toCommonJS(match_exports)).Match });
+    Object.defineProperty(exports, "Matcher", { configurable: true, get: () => (init_matcher(), __toCommonJS(matcher_exports)).Matcher });
+    Object.defineProperty(exports, "MatchResult", { configurable: true, get: () => (init_matcher(), __toCommonJS(matcher_exports)).MatchResult });
   }
 });
 
@@ -1356,6 +1357,49 @@ var init_tslib_es6 = __esm({
   }
 });
 
+// ../../../node_modules/@smithy/protocol-http/dist-cjs/extensions/httpExtensionConfiguration.js
+var require_httpExtensionConfiguration = __commonJS({
+  "../../../node_modules/@smithy/protocol-http/dist-cjs/extensions/httpExtensionConfiguration.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.resolveHttpHandlerRuntimeConfig = exports.getHttpHandlerExtensionConfiguration = void 0;
+    var getHttpHandlerExtensionConfiguration = (runtimeConfig) => {
+      let httpHandler = runtimeConfig.httpHandler;
+      return {
+        setHttpHandler(handler2) {
+          httpHandler = handler2;
+        },
+        httpHandler() {
+          return httpHandler;
+        },
+        updateHttpClientConfig(key, value) {
+          httpHandler.updateHttpClientConfig(key, value);
+        },
+        httpHandlerConfigs() {
+          return httpHandler.httpHandlerConfigs();
+        }
+      };
+    };
+    exports.getHttpHandlerExtensionConfiguration = getHttpHandlerExtensionConfiguration;
+    var resolveHttpHandlerRuntimeConfig = (httpHandlerExtensionConfiguration) => {
+      return {
+        httpHandler: httpHandlerExtensionConfiguration.httpHandler()
+      };
+    };
+    exports.resolveHttpHandlerRuntimeConfig = resolveHttpHandlerRuntimeConfig;
+  }
+});
+
+// ../../../node_modules/@smithy/protocol-http/dist-cjs/extensions/index.js
+var require_extensions = __commonJS({
+  "../../../node_modules/@smithy/protocol-http/dist-cjs/extensions/index.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
+    tslib_1.__exportStar(require_httpExtensionConfiguration(), exports);
+  }
+});
+
 // ../../../node_modules/@smithy/types/dist-cjs/abort.js
 var require_abort = __commonJS({
   "../../../node_modules/@smithy/types/dist-cjs/abort.js"(exports) {
@@ -1619,7 +1663,7 @@ var require_defaultExtensionConfiguration = __commonJS({
 });
 
 // ../../../node_modules/@smithy/types/dist-cjs/extensions/index.js
-var require_extensions = __commonJS({
+var require_extensions2 = __commonJS({
   "../../../node_modules/@smithy/types/dist-cjs/extensions/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -1688,6 +1732,8 @@ var require_middleware = __commonJS({
   "../../../node_modules/@smithy/types/dist-cjs/middleware.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.SMITHY_CONTEXT_KEY = void 0;
+    exports.SMITHY_CONTEXT_KEY = "__smithy_context";
   }
 });
 
@@ -1852,7 +1898,7 @@ var require_dist_cjs = __commonJS({
     tslib_1.__exportStar(require_endpoint(), exports);
     tslib_1.__exportStar(require_endpoints(), exports);
     tslib_1.__exportStar(require_eventStream(), exports);
-    tslib_1.__exportStar(require_extensions(), exports);
+    tslib_1.__exportStar(require_extensions2(), exports);
     tslib_1.__exportStar(require_http(), exports);
     tslib_1.__exportStar(require_identity2(), exports);
     tslib_1.__exportStar(require_logger(), exports);
@@ -2048,6 +2094,7 @@ var require_dist_cjs2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
+    tslib_1.__exportStar(require_extensions(), exports);
     tslib_1.__exportStar(require_Field(), exports);
     tslib_1.__exportStar(require_Fields(), exports);
     tslib_1.__exportStar(require_httpHandler(), exports);
@@ -3798,6 +3845,18 @@ var require_dist_cjs9 = __commonJS({
   }
 });
 
+// ../../../node_modules/@smithy/util-middleware/dist-cjs/getSmithyContext.js
+var require_getSmithyContext = __commonJS({
+  "../../../node_modules/@smithy/util-middleware/dist-cjs/getSmithyContext.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.getSmithyContext = void 0;
+    var types_1 = require_dist_cjs();
+    var getSmithyContext = (context) => context[types_1.SMITHY_CONTEXT_KEY] || (context[types_1.SMITHY_CONTEXT_KEY] = {});
+    exports.getSmithyContext = getSmithyContext;
+  }
+});
+
 // ../../../node_modules/@smithy/util-middleware/dist-cjs/normalizeProvider.js
 var require_normalizeProvider = __commonJS({
   "../../../node_modules/@smithy/util-middleware/dist-cjs/normalizeProvider.js"(exports) {
@@ -3820,6 +3879,7 @@ var require_dist_cjs10 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
+    tslib_1.__exportStar(require_getSmithyContext(), exports);
     tslib_1.__exportStar(require_normalizeProvider(), exports);
   }
 });
@@ -4731,6 +4791,7 @@ var require_partitions = __commonJS({
         outputs: {
           dnsSuffix: "amazonaws.com",
           dualStackDnsSuffix: "api.aws",
+          implicitGlobalRegion: "us-east-1",
           name: "aws",
           supportsDualStack: true,
           supportsFIPS: true
@@ -4830,6 +4891,7 @@ var require_partitions = __commonJS({
         outputs: {
           dnsSuffix: "amazonaws.com.cn",
           dualStackDnsSuffix: "api.amazonwebservices.com.cn",
+          implicitGlobalRegion: "cn-northwest-1",
           name: "aws-cn",
           supportsDualStack: true,
           supportsFIPS: true
@@ -4851,6 +4913,7 @@ var require_partitions = __commonJS({
         outputs: {
           dnsSuffix: "amazonaws.com",
           dualStackDnsSuffix: "api.aws",
+          implicitGlobalRegion: "us-gov-west-1",
           name: "aws-us-gov",
           supportsDualStack: true,
           supportsFIPS: true
@@ -4872,6 +4935,7 @@ var require_partitions = __commonJS({
         outputs: {
           dnsSuffix: "c2s.ic.gov",
           dualStackDnsSuffix: "c2s.ic.gov",
+          implicitGlobalRegion: "us-iso-east-1",
           name: "aws-iso",
           supportsDualStack: false,
           supportsFIPS: true
@@ -4893,6 +4957,7 @@ var require_partitions = __commonJS({
         outputs: {
           dnsSuffix: "sc2s.sgov.gov",
           dualStackDnsSuffix: "sc2s.sgov.gov",
+          implicitGlobalRegion: "us-isob-east-1",
           name: "aws-iso-b",
           supportsDualStack: false,
           supportsFIPS: true
@@ -4911,6 +4976,7 @@ var require_partitions = __commonJS({
         outputs: {
           dnsSuffix: "cloud.adc-e.uk",
           dualStackDnsSuffix: "cloud.adc-e.uk",
+          implicitGlobalRegion: "eu-isoe-west-1",
           name: "aws-iso-e",
           supportsDualStack: false,
           supportsFIPS: true
@@ -4922,6 +4988,7 @@ var require_partitions = __commonJS({
         outputs: {
           dnsSuffix: "csp.hci.ic.gov",
           dualStackDnsSuffix: "csp.hci.ic.gov",
+          implicitGlobalRegion: "us-isof-south-1",
           name: "aws-iso-f",
           supportsDualStack: false,
           supportsFIPS: true
@@ -5416,6 +5483,14 @@ var require_eventStream2 = __commonJS({
   }
 });
 
+// ../../../node_modules/@aws-sdk/types/dist-cjs/extensions/index.js
+var require_extensions3 = __commonJS({
+  "../../../node_modules/@aws-sdk/types/dist-cjs/extensions/index.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // ../../../node_modules/@aws-sdk/types/dist-cjs/http.js
 var require_http2 = __commonJS({
   "../../../node_modules/@aws-sdk/types/dist-cjs/http.js"(exports) {
@@ -5630,6 +5705,7 @@ var require_dist_cjs17 = __commonJS({
     tslib_1.__exportStar(require_encode2(), exports);
     tslib_1.__exportStar(require_endpoint2(), exports);
     tslib_1.__exportStar(require_eventStream2(), exports);
+    tslib_1.__exportStar(require_extensions3(), exports);
     tslib_1.__exportStar(require_http2(), exports);
     tslib_1.__exportStar(require_identity3(), exports);
     tslib_1.__exportStar(require_logger2(), exports);
@@ -8391,6 +8467,7 @@ var require_MiddlewareStack = __commonJS({
     var constructStack = () => {
       let absoluteEntries = [];
       let relativeEntries = [];
+      let identifyOnResolve = false;
       const entriesNameSet = /* @__PURE__ */ new Set();
       const sort = (entries) => entries.sort((a, b) => stepWeights[b.step] - stepWeights[a.step] || priorityWeights[b.priority || "normal"] - priorityWeights[a.priority || "normal"]);
       const removeByName = (toRemove) => {
@@ -8429,6 +8506,7 @@ var require_MiddlewareStack = __commonJS({
         relativeEntries.forEach((entry) => {
           toStack.addRelativeTo(entry.middleware, { ...entry });
         });
+        toStack.identifyOnResolve(stack.identifyOnResolve());
         return toStack;
       };
       const expandRelativeMiddlewareList = (from) => {
@@ -8571,17 +8649,28 @@ var require_MiddlewareStack = __commonJS({
         concat: (from) => {
           const cloned = cloneTo((0, exports.constructStack)());
           cloned.use(from);
+          cloned.identifyOnResolve(identifyOnResolve || cloned.identifyOnResolve() || from.identifyOnResolve());
           return cloned;
         },
         applyToStack: cloneTo,
         identify: () => {
           return getMiddlewareList(true).map((mw) => {
-            return mw.name + ": " + (mw.tags || []).join(",");
+            var _a;
+            const step = (_a = mw.step) !== null && _a !== void 0 ? _a : mw.relation + " " + mw.toMiddleware;
+            return mw.name + " - " + step;
           });
+        },
+        identifyOnResolve(toggle) {
+          if (typeof toggle === "boolean")
+            identifyOnResolve = toggle;
+          return identifyOnResolve;
         },
         resolve: (handler2, context) => {
           for (const middleware of getMiddlewareList().map((entry) => entry.middleware).reverse()) {
             handler2 = middleware(handler2, context);
+          }
+          if (identifyOnResolve) {
+            console.log(stack.identify());
           }
           return handler2;
         }
@@ -9085,6 +9174,19 @@ var require_node_http_handler = __commonJS({
           writeRequestBodyPromise = (0, write_request_body_1.writeRequestBody)(req, request2, this.config.requestTimeout).catch(_reject);
         });
       }
+      updateHttpClientConfig(key, value) {
+        this.config = void 0;
+        this.configProvider = this.configProvider.then((config) => {
+          return {
+            ...config,
+            [key]: value
+          };
+        });
+      }
+      httpHandlerConfigs() {
+        var _a;
+        return (_a = this.config) !== null && _a !== void 0 ? _a : {};
+      }
     };
     exports.NodeHttpHandler = NodeHttpHandler;
   }
@@ -9365,6 +9467,19 @@ var require_node_http2_handler = __commonJS({
           });
           writeRequestBodyPromise = (0, write_request_body_1.writeRequestBody)(req, request2, requestTimeout);
         });
+      }
+      updateHttpClientConfig(key, value) {
+        this.config = void 0;
+        this.configProvider = this.configProvider.then((config) => {
+          return {
+            ...config,
+            [key]: value
+          };
+        });
+      }
+      httpHandlerConfigs() {
+        var _a;
+        return (_a = this.config) !== null && _a !== void 0 ? _a : {};
       }
       destroySession(session) {
         if (!session.destroyed) {
@@ -10157,16 +10272,14 @@ var require_checksum4 = __commonJS({
     } });
     var getChecksumConfiguration = (runtimeConfig) => {
       const checksumAlgorithms = [];
-      if (runtimeConfig.sha256 !== void 0) {
+      for (const id in types_1.AlgorithmId) {
+        const algorithmId = types_1.AlgorithmId[id];
+        if (runtimeConfig[algorithmId] === void 0) {
+          continue;
+        }
         checksumAlgorithms.push({
-          algorithmId: () => types_1.AlgorithmId.SHA256,
-          checksumConstructor: () => runtimeConfig.sha256
-        });
-      }
-      if (runtimeConfig.md5 != void 0) {
-        checksumAlgorithms.push({
-          algorithmId: () => types_1.AlgorithmId.MD5,
-          checksumConstructor: () => runtimeConfig.md5
+          algorithmId: () => algorithmId,
+          checksumConstructor: () => runtimeConfig[algorithmId]
         });
       }
       return {
@@ -10191,6 +10304,33 @@ var require_checksum4 = __commonJS({
   }
 });
 
+// ../../../node_modules/@smithy/smithy-client/dist-cjs/extensions/retry.js
+var require_retry3 = __commonJS({
+  "../../../node_modules/@smithy/smithy-client/dist-cjs/extensions/retry.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.resolveRetryRuntimeConfig = exports.getRetryConfiguration = void 0;
+    var getRetryConfiguration = (runtimeConfig) => {
+      let _retryStrategy = runtimeConfig.retryStrategy;
+      return {
+        setRetryStrategy(retryStrategy) {
+          _retryStrategy = retryStrategy;
+        },
+        retryStrategy() {
+          return _retryStrategy;
+        }
+      };
+    };
+    exports.getRetryConfiguration = getRetryConfiguration;
+    var resolveRetryRuntimeConfig = (retryStrategyConfiguration) => {
+      const runtimeConfig = {};
+      runtimeConfig.retryStrategy = retryStrategyConfiguration.retryStrategy();
+      return runtimeConfig;
+    };
+    exports.resolveRetryRuntimeConfig = resolveRetryRuntimeConfig;
+  }
+});
+
 // ../../../node_modules/@smithy/smithy-client/dist-cjs/extensions/defaultExtensionConfiguration.js
 var require_defaultExtensionConfiguration2 = __commonJS({
   "../../../node_modules/@smithy/smithy-client/dist-cjs/extensions/defaultExtensionConfiguration.js"(exports) {
@@ -10198,16 +10338,19 @@ var require_defaultExtensionConfiguration2 = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.resolveDefaultRuntimeConfig = exports.getDefaultClientConfiguration = exports.getDefaultExtensionConfiguration = void 0;
     var checksum_1 = require_checksum4();
+    var retry_1 = require_retry3();
     var getDefaultExtensionConfiguration = (runtimeConfig) => {
       return {
-        ...(0, checksum_1.getChecksumConfiguration)(runtimeConfig)
+        ...(0, checksum_1.getChecksumConfiguration)(runtimeConfig),
+        ...(0, retry_1.getRetryConfiguration)(runtimeConfig)
       };
     };
     exports.getDefaultExtensionConfiguration = getDefaultExtensionConfiguration;
     exports.getDefaultClientConfiguration = exports.getDefaultExtensionConfiguration;
     var resolveDefaultRuntimeConfig = (config) => {
       return {
-        ...(0, checksum_1.resolveChecksumRuntimeConfig)(config)
+        ...(0, checksum_1.resolveChecksumRuntimeConfig)(config),
+        ...(0, retry_1.resolveRetryRuntimeConfig)(config)
       };
     };
     exports.resolveDefaultRuntimeConfig = resolveDefaultRuntimeConfig;
@@ -10215,7 +10358,7 @@ var require_defaultExtensionConfiguration2 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/smithy-client/dist-cjs/extensions/index.js
-var require_extensions2 = __commonJS({
+var require_extensions4 = __commonJS({
   "../../../node_modules/@smithy/smithy-client/dist-cjs/extensions/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -10539,7 +10682,7 @@ var require_dist_cjs35 = __commonJS({
     tslib_1.__exportStar(require_default_error_handler(), exports);
     tslib_1.__exportStar(require_defaults_mode(), exports);
     tslib_1.__exportStar(require_emitWarningIfUnsupportedVersion(), exports);
-    tslib_1.__exportStar(require_extensions2(), exports);
+    tslib_1.__exportStar(require_extensions4(), exports);
     tslib_1.__exportStar(require_exceptions(), exports);
     tslib_1.__exportStar(require_extended_encode_uri_component(), exports);
     tslib_1.__exportStar(require_get_array_if_single_item(), exports);
@@ -10578,7 +10721,7 @@ var require_package = __commonJS({
     module2.exports = {
       name: "@aws-sdk/client-sfn",
       description: "AWS SDK for JavaScript Sfn Client for Node.js, Browser and React Native",
-      version: "3.405.0",
+      version: "3.414.0",
       scripts: {
         build: "concurrently 'yarn:build:cjs' 'yarn:build:es' 'yarn:build:types'",
         "build:cjs": "tsc -p tsconfig.cjs.json",
@@ -10598,37 +10741,38 @@ var require_package = __commonJS({
       dependencies: {
         "@aws-crypto/sha256-browser": "3.0.0",
         "@aws-crypto/sha256-js": "3.0.0",
-        "@aws-sdk/client-sts": "3.405.0",
-        "@aws-sdk/credential-provider-node": "3.405.0",
-        "@aws-sdk/middleware-host-header": "3.398.0",
-        "@aws-sdk/middleware-logger": "3.398.0",
-        "@aws-sdk/middleware-recursion-detection": "3.398.0",
-        "@aws-sdk/middleware-signing": "3.398.0",
-        "@aws-sdk/middleware-user-agent": "3.398.0",
-        "@aws-sdk/types": "3.398.0",
-        "@aws-sdk/util-endpoints": "3.398.0",
-        "@aws-sdk/util-user-agent-browser": "3.398.0",
-        "@aws-sdk/util-user-agent-node": "3.405.0",
-        "@smithy/config-resolver": "^2.0.5",
-        "@smithy/fetch-http-handler": "^2.0.5",
-        "@smithy/hash-node": "^2.0.5",
-        "@smithy/invalid-dependency": "^2.0.5",
-        "@smithy/middleware-content-length": "^2.0.5",
-        "@smithy/middleware-endpoint": "^2.0.5",
-        "@smithy/middleware-retry": "^2.0.5",
-        "@smithy/middleware-serde": "^2.0.5",
+        "@aws-sdk/client-sts": "3.414.0",
+        "@aws-sdk/credential-provider-node": "3.414.0",
+        "@aws-sdk/middleware-host-header": "3.413.0",
+        "@aws-sdk/middleware-logger": "3.413.0",
+        "@aws-sdk/middleware-recursion-detection": "3.413.0",
+        "@aws-sdk/middleware-signing": "3.413.0",
+        "@aws-sdk/middleware-user-agent": "3.413.0",
+        "@aws-sdk/region-config-resolver": "3.413.0",
+        "@aws-sdk/types": "3.413.0",
+        "@aws-sdk/util-endpoints": "3.413.0",
+        "@aws-sdk/util-user-agent-browser": "3.413.0",
+        "@aws-sdk/util-user-agent-node": "3.413.0",
+        "@smithy/config-resolver": "^2.0.8",
+        "@smithy/fetch-http-handler": "^2.1.3",
+        "@smithy/hash-node": "^2.0.7",
+        "@smithy/invalid-dependency": "^2.0.7",
+        "@smithy/middleware-content-length": "^2.0.9",
+        "@smithy/middleware-endpoint": "^2.0.7",
+        "@smithy/middleware-retry": "^2.0.10",
+        "@smithy/middleware-serde": "^2.0.7",
         "@smithy/middleware-stack": "^2.0.0",
-        "@smithy/node-config-provider": "^2.0.6",
-        "@smithy/node-http-handler": "^2.0.5",
-        "@smithy/protocol-http": "^2.0.5",
-        "@smithy/smithy-client": "^2.0.5",
-        "@smithy/types": "^2.2.2",
-        "@smithy/url-parser": "^2.0.5",
+        "@smithy/node-config-provider": "^2.0.10",
+        "@smithy/node-http-handler": "^2.1.3",
+        "@smithy/protocol-http": "^3.0.3",
+        "@smithy/smithy-client": "^2.1.4",
+        "@smithy/types": "^2.3.1",
+        "@smithy/url-parser": "^2.0.7",
         "@smithy/util-base64": "^2.0.0",
         "@smithy/util-body-length-browser": "^2.0.0",
         "@smithy/util-body-length-node": "^2.1.0",
-        "@smithy/util-defaults-mode-browser": "^2.0.6",
-        "@smithy/util-defaults-mode-node": "^2.0.6",
+        "@smithy/util-defaults-mode-browser": "^2.0.8",
+        "@smithy/util-defaults-mode-node": "^2.0.10",
         "@smithy/util-retry": "^2.0.0",
         "@smithy/util-utf8": "^2.0.0",
         tslib: "^2.5.0"
@@ -10717,7 +10861,7 @@ var require_package2 = __commonJS({
     module2.exports = {
       name: "@aws-sdk/client-sts",
       description: "AWS SDK for JavaScript Sts Client for Node.js, Browser and React Native",
-      version: "3.405.0",
+      version: "3.414.0",
       scripts: {
         build: "concurrently 'yarn:build:cjs' 'yarn:build:es' 'yarn:build:types'",
         "build:cjs": "tsc -p tsconfig.cjs.json",
@@ -10739,37 +10883,38 @@ var require_package2 = __commonJS({
       dependencies: {
         "@aws-crypto/sha256-browser": "3.0.0",
         "@aws-crypto/sha256-js": "3.0.0",
-        "@aws-sdk/credential-provider-node": "3.405.0",
-        "@aws-sdk/middleware-host-header": "3.398.0",
-        "@aws-sdk/middleware-logger": "3.398.0",
-        "@aws-sdk/middleware-recursion-detection": "3.398.0",
-        "@aws-sdk/middleware-sdk-sts": "3.398.0",
-        "@aws-sdk/middleware-signing": "3.398.0",
-        "@aws-sdk/middleware-user-agent": "3.398.0",
-        "@aws-sdk/types": "3.398.0",
-        "@aws-sdk/util-endpoints": "3.398.0",
-        "@aws-sdk/util-user-agent-browser": "3.398.0",
-        "@aws-sdk/util-user-agent-node": "3.405.0",
-        "@smithy/config-resolver": "^2.0.5",
-        "@smithy/fetch-http-handler": "^2.0.5",
-        "@smithy/hash-node": "^2.0.5",
-        "@smithy/invalid-dependency": "^2.0.5",
-        "@smithy/middleware-content-length": "^2.0.5",
-        "@smithy/middleware-endpoint": "^2.0.5",
-        "@smithy/middleware-retry": "^2.0.5",
-        "@smithy/middleware-serde": "^2.0.5",
+        "@aws-sdk/credential-provider-node": "3.414.0",
+        "@aws-sdk/middleware-host-header": "3.413.0",
+        "@aws-sdk/middleware-logger": "3.413.0",
+        "@aws-sdk/middleware-recursion-detection": "3.413.0",
+        "@aws-sdk/middleware-sdk-sts": "3.413.0",
+        "@aws-sdk/middleware-signing": "3.413.0",
+        "@aws-sdk/middleware-user-agent": "3.413.0",
+        "@aws-sdk/region-config-resolver": "3.413.0",
+        "@aws-sdk/types": "3.413.0",
+        "@aws-sdk/util-endpoints": "3.413.0",
+        "@aws-sdk/util-user-agent-browser": "3.413.0",
+        "@aws-sdk/util-user-agent-node": "3.413.0",
+        "@smithy/config-resolver": "^2.0.8",
+        "@smithy/fetch-http-handler": "^2.1.3",
+        "@smithy/hash-node": "^2.0.7",
+        "@smithy/invalid-dependency": "^2.0.7",
+        "@smithy/middleware-content-length": "^2.0.9",
+        "@smithy/middleware-endpoint": "^2.0.7",
+        "@smithy/middleware-retry": "^2.0.10",
+        "@smithy/middleware-serde": "^2.0.7",
         "@smithy/middleware-stack": "^2.0.0",
-        "@smithy/node-config-provider": "^2.0.6",
-        "@smithy/node-http-handler": "^2.0.5",
-        "@smithy/protocol-http": "^2.0.5",
-        "@smithy/smithy-client": "^2.0.5",
-        "@smithy/types": "^2.2.2",
-        "@smithy/url-parser": "^2.0.5",
+        "@smithy/node-config-provider": "^2.0.10",
+        "@smithy/node-http-handler": "^2.1.3",
+        "@smithy/protocol-http": "^3.0.3",
+        "@smithy/smithy-client": "^2.1.4",
+        "@smithy/types": "^2.3.1",
+        "@smithy/url-parser": "^2.0.7",
         "@smithy/util-base64": "^2.0.0",
         "@smithy/util-body-length-browser": "^2.0.0",
         "@smithy/util-body-length-node": "^2.1.0",
-        "@smithy/util-defaults-mode-browser": "^2.0.6",
-        "@smithy/util-defaults-mode-node": "^2.0.6",
+        "@smithy/util-defaults-mode-browser": "^2.0.8",
+        "@smithy/util-defaults-mode-node": "^2.0.10",
         "@smithy/util-retry": "^2.0.0",
         "@smithy/util-utf8": "^2.0.0",
         "fast-xml-parser": "4.2.5",
@@ -13948,11 +14093,10 @@ var require_getHomeDir = __commonJS({
     exports.getHomeDir = void 0;
     var os_1 = require("os");
     var path_1 = require("path");
-    var process_1 = require("process");
     var homeDirCache = {};
     var getHomeDirCacheKey = () => {
-      if (process_1.geteuid) {
-        return `${(0, process_1.geteuid)()}`;
+      if (process && process.geteuid) {
+        return `${process.geteuid()}`;
       }
       return "DEFAULT";
     };
@@ -14327,7 +14471,7 @@ var require_RemoteProviderInit = __commonJS({
 });
 
 // ../../../node_modules/@smithy/credential-provider-imds/dist-cjs/remoteProvider/retry.js
-var require_retry3 = __commonJS({
+var require_retry4 = __commonJS({
   "../../../node_modules/@smithy/credential-provider-imds/dist-cjs/remoteProvider/retry.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -14354,7 +14498,7 @@ var require_fromContainerMetadata = __commonJS({
     var httpRequest_1 = require_httpRequest2();
     var ImdsCredentials_1 = require_ImdsCredentials();
     var RemoteProviderInit_1 = require_RemoteProviderInit();
-    var retry_1 = require_retry3();
+    var retry_1 = require_retry4();
     exports.ENV_CMDS_FULL_URI = "AWS_CONTAINER_CREDENTIALS_FULL_URI";
     exports.ENV_CMDS_RELATIVE_URI = "AWS_CONTAINER_CREDENTIALS_RELATIVE_URI";
     exports.ENV_CMDS_AUTH_TOKEN = "AWS_CONTAINER_AUTHORIZATION_TOKEN";
@@ -14663,7 +14807,7 @@ var require_fromInstanceMetadata = __commonJS({
     var httpRequest_1 = require_httpRequest2();
     var ImdsCredentials_1 = require_ImdsCredentials();
     var RemoteProviderInit_1 = require_RemoteProviderInit();
-    var retry_1 = require_retry3();
+    var retry_1 = require_retry4();
     var getInstanceMetadataEndpoint_1 = require_getInstanceMetadataEndpoint();
     var staticStabilityProvider_1 = require_staticStabilityProvider();
     var IMDS_PATH = "/latest/meta-data/iam/security-credentials/";
@@ -14834,7 +14978,8 @@ var require_resolveAssumeRoleCredentials = __commonJS({
       const params = {
         RoleArn: data.role_arn,
         RoleSessionName: data.role_session_name || `aws-sdk-js-${Date.now()}`,
-        ExternalId: data.external_id
+        ExternalId: data.external_id,
+        DurationSeconds: parseInt(data.duration_seconds || "3600", 10)
       };
       const { mfa_serial } = data;
       if (mfa_serial) {
@@ -14999,7 +15144,7 @@ var require_package3 = __commonJS({
     module2.exports = {
       name: "@aws-sdk/client-sso",
       description: "AWS SDK for JavaScript Sso Client for Node.js, Browser and React Native",
-      version: "3.405.0",
+      version: "3.414.0",
       scripts: {
         build: "concurrently 'yarn:build:cjs' 'yarn:build:es' 'yarn:build:types'",
         "build:cjs": "tsc -p tsconfig.cjs.json",
@@ -15019,34 +15164,35 @@ var require_package3 = __commonJS({
       dependencies: {
         "@aws-crypto/sha256-browser": "3.0.0",
         "@aws-crypto/sha256-js": "3.0.0",
-        "@aws-sdk/middleware-host-header": "3.398.0",
-        "@aws-sdk/middleware-logger": "3.398.0",
-        "@aws-sdk/middleware-recursion-detection": "3.398.0",
-        "@aws-sdk/middleware-user-agent": "3.398.0",
-        "@aws-sdk/types": "3.398.0",
-        "@aws-sdk/util-endpoints": "3.398.0",
-        "@aws-sdk/util-user-agent-browser": "3.398.0",
-        "@aws-sdk/util-user-agent-node": "3.405.0",
-        "@smithy/config-resolver": "^2.0.5",
-        "@smithy/fetch-http-handler": "^2.0.5",
-        "@smithy/hash-node": "^2.0.5",
-        "@smithy/invalid-dependency": "^2.0.5",
-        "@smithy/middleware-content-length": "^2.0.5",
-        "@smithy/middleware-endpoint": "^2.0.5",
-        "@smithy/middleware-retry": "^2.0.5",
-        "@smithy/middleware-serde": "^2.0.5",
+        "@aws-sdk/middleware-host-header": "3.413.0",
+        "@aws-sdk/middleware-logger": "3.413.0",
+        "@aws-sdk/middleware-recursion-detection": "3.413.0",
+        "@aws-sdk/middleware-user-agent": "3.413.0",
+        "@aws-sdk/region-config-resolver": "3.413.0",
+        "@aws-sdk/types": "3.413.0",
+        "@aws-sdk/util-endpoints": "3.413.0",
+        "@aws-sdk/util-user-agent-browser": "3.413.0",
+        "@aws-sdk/util-user-agent-node": "3.413.0",
+        "@smithy/config-resolver": "^2.0.8",
+        "@smithy/fetch-http-handler": "^2.1.3",
+        "@smithy/hash-node": "^2.0.7",
+        "@smithy/invalid-dependency": "^2.0.7",
+        "@smithy/middleware-content-length": "^2.0.9",
+        "@smithy/middleware-endpoint": "^2.0.7",
+        "@smithy/middleware-retry": "^2.0.10",
+        "@smithy/middleware-serde": "^2.0.7",
         "@smithy/middleware-stack": "^2.0.0",
-        "@smithy/node-config-provider": "^2.0.6",
-        "@smithy/node-http-handler": "^2.0.5",
-        "@smithy/protocol-http": "^2.0.5",
-        "@smithy/smithy-client": "^2.0.5",
-        "@smithy/types": "^2.2.2",
-        "@smithy/url-parser": "^2.0.5",
+        "@smithy/node-config-provider": "^2.0.10",
+        "@smithy/node-http-handler": "^2.1.3",
+        "@smithy/protocol-http": "^3.0.3",
+        "@smithy/smithy-client": "^2.1.4",
+        "@smithy/types": "^2.3.1",
+        "@smithy/url-parser": "^2.0.7",
         "@smithy/util-base64": "^2.0.0",
         "@smithy/util-body-length-browser": "^2.0.0",
         "@smithy/util-body-length-node": "^2.1.0",
-        "@smithy/util-defaults-mode-browser": "^2.0.6",
-        "@smithy/util-defaults-mode-node": "^2.0.6",
+        "@smithy/util-defaults-mode-browser": "^2.0.8",
+        "@smithy/util-defaults-mode-node": "^2.0.10",
         "@smithy/util-retry": "^2.0.0",
         "@smithy/util-utf8": "^2.0.0",
         tslib: "^2.5.0"
@@ -15251,26 +15397,27 @@ var require_ruleset = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ruleSet = void 0;
-    var p = "required";
-    var q = "fn";
-    var r = "argv";
-    var s = "ref";
-    var a = "PartitionResult";
+    var q = "required";
+    var r = "fn";
+    var s = "argv";
+    var t = "ref";
+    var a = "isSet";
     var b = "tree";
     var c = "error";
     var d = "endpoint";
-    var e = { [p]: false, "type": "String" };
-    var f = { [p]: true, "default": false, "type": "Boolean" };
-    var g = { [s]: "Endpoint" };
-    var h = { [q]: "booleanEquals", [r]: [{ [s]: "UseFIPS" }, true] };
-    var i = { [q]: "booleanEquals", [r]: [{ [s]: "UseDualStack" }, true] };
-    var j = {};
-    var k = { [q]: "booleanEquals", [r]: [true, { [q]: "getAttr", [r]: [{ [s]: a }, "supportsFIPS"] }] };
-    var l = { [q]: "booleanEquals", [r]: [true, { [q]: "getAttr", [r]: [{ [s]: a }, "supportsDualStack"] }] };
-    var m = [g];
-    var n = [h];
-    var o = [i];
-    var _data = { version: "1.0", parameters: { Region: e, UseDualStack: f, UseFIPS: f, Endpoint: e }, rules: [{ conditions: [{ [q]: "aws.partition", [r]: [{ [s]: "Region" }], assign: a }], type: b, rules: [{ conditions: [{ [q]: "isSet", [r]: m }, { [q]: "parseURL", [r]: m, assign: "url" }], type: b, rules: [{ conditions: n, error: "Invalid Configuration: FIPS and custom endpoint are not supported", type: c }, { type: b, rules: [{ conditions: o, error: "Invalid Configuration: Dualstack and custom endpoint are not supported", type: c }, { endpoint: { url: g, properties: j, headers: j }, type: d }] }] }, { conditions: [h, i], type: b, rules: [{ conditions: [k, l], type: b, rules: [{ endpoint: { url: "https://portal.sso-fips.{Region}.{PartitionResult#dualStackDnsSuffix}", properties: j, headers: j }, type: d }] }, { error: "FIPS and DualStack are enabled, but this partition does not support one or both", type: c }] }, { conditions: n, type: b, rules: [{ conditions: [k], type: b, rules: [{ type: b, rules: [{ endpoint: { url: "https://portal.sso-fips.{Region}.{PartitionResult#dnsSuffix}", properties: j, headers: j }, type: d }] }] }, { error: "FIPS is enabled but this partition does not support FIPS", type: c }] }, { conditions: o, type: b, rules: [{ conditions: [l], type: b, rules: [{ endpoint: { url: "https://portal.sso.{Region}.{PartitionResult#dualStackDnsSuffix}", properties: j, headers: j }, type: d }] }, { error: "DualStack is enabled but this partition does not support DualStack", type: c }] }, { endpoint: { url: "https://portal.sso.{Region}.{PartitionResult#dnsSuffix}", properties: j, headers: j }, type: d }] }] };
+    var e = "PartitionResult";
+    var f = { [q]: false, "type": "String" };
+    var g = { [q]: true, "default": false, "type": "Boolean" };
+    var h = { [t]: "Endpoint" };
+    var i = { [r]: "booleanEquals", [s]: [{ [t]: "UseFIPS" }, true] };
+    var j = { [r]: "booleanEquals", [s]: [{ [t]: "UseDualStack" }, true] };
+    var k = {};
+    var l = { [r]: "booleanEquals", [s]: [true, { [r]: "getAttr", [s]: [{ [t]: e }, "supportsFIPS"] }] };
+    var m = { [r]: "booleanEquals", [s]: [true, { [r]: "getAttr", [s]: [{ [t]: e }, "supportsDualStack"] }] };
+    var n = [i];
+    var o = [j];
+    var p = [{ [t]: "Region" }];
+    var _data = { version: "1.0", parameters: { Region: f, UseDualStack: g, UseFIPS: g, Endpoint: f }, rules: [{ conditions: [{ [r]: a, [s]: [h] }], type: b, rules: [{ conditions: n, error: "Invalid Configuration: FIPS and custom endpoint are not supported", type: c }, { conditions: o, error: "Invalid Configuration: Dualstack and custom endpoint are not supported", type: c }, { endpoint: { url: h, properties: k, headers: k }, type: d }] }, { conditions: [{ [r]: a, [s]: p }], type: b, rules: [{ conditions: [{ [r]: "aws.partition", [s]: p, assign: e }], type: b, rules: [{ conditions: [i, j], type: b, rules: [{ conditions: [l, m], type: b, rules: [{ endpoint: { url: "https://portal.sso-fips.{Region}.{PartitionResult#dualStackDnsSuffix}", properties: k, headers: k }, type: d }] }, { error: "FIPS and DualStack are enabled, but this partition does not support one or both", type: c }] }, { conditions: n, type: b, rules: [{ conditions: [l], type: b, rules: [{ endpoint: { url: "https://portal.sso-fips.{Region}.{PartitionResult#dnsSuffix}", properties: k, headers: k }, type: d }] }, { error: "FIPS is enabled but this partition does not support FIPS", type: c }] }, { conditions: o, type: b, rules: [{ conditions: [m], type: b, rules: [{ endpoint: { url: "https://portal.sso.{Region}.{PartitionResult#dualStackDnsSuffix}", properties: k, headers: k }, type: d }] }, { error: "DualStack is enabled but this partition does not support DualStack", type: c }] }, { endpoint: { url: "https://portal.sso.{Region}.{PartitionResult#dnsSuffix}", properties: k, headers: k }, type: d }] }] }, { error: "Invalid Configuration: Missing Region", type: c }] };
     exports.ruleSet = _data;
   }
 });
@@ -15476,22 +15623,165 @@ var require_runtimeConfig = __commonJS({
   }
 });
 
+// ../../../node_modules/@aws-sdk/region-config-resolver/dist-cjs/extensions/index.js
+var require_extensions5 = __commonJS({
+  "../../../node_modules/@aws-sdk/region-config-resolver/dist-cjs/extensions/index.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.resolveAwsRegionExtensionConfiguration = exports.getAwsRegionExtensionConfiguration = void 0;
+    var getAwsRegionExtensionConfiguration = (runtimeConfig) => {
+      let runtimeConfigRegion = async () => {
+        if (runtimeConfig.region === void 0) {
+          throw new Error("Region is missing from runtimeConfig");
+        }
+        const region = runtimeConfig.region;
+        if (typeof region === "string") {
+          return region;
+        }
+        return region();
+      };
+      return {
+        setRegion(region) {
+          runtimeConfigRegion = region;
+        },
+        region() {
+          return runtimeConfigRegion;
+        }
+      };
+    };
+    exports.getAwsRegionExtensionConfiguration = getAwsRegionExtensionConfiguration;
+    var resolveAwsRegionExtensionConfiguration = (awsRegionExtensionConfiguration) => {
+      return {
+        region: awsRegionExtensionConfiguration.region()
+      };
+    };
+    exports.resolveAwsRegionExtensionConfiguration = resolveAwsRegionExtensionConfiguration;
+  }
+});
+
+// ../../../node_modules/@aws-sdk/region-config-resolver/dist-cjs/regionConfig/config.js
+var require_config4 = __commonJS({
+  "../../../node_modules/@aws-sdk/region-config-resolver/dist-cjs/regionConfig/config.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.NODE_REGION_CONFIG_FILE_OPTIONS = exports.NODE_REGION_CONFIG_OPTIONS = exports.REGION_INI_NAME = exports.REGION_ENV_NAME = void 0;
+    exports.REGION_ENV_NAME = "AWS_REGION";
+    exports.REGION_INI_NAME = "region";
+    exports.NODE_REGION_CONFIG_OPTIONS = {
+      environmentVariableSelector: (env) => env[exports.REGION_ENV_NAME],
+      configFileSelector: (profile) => profile[exports.REGION_INI_NAME],
+      default: () => {
+        throw new Error("Region is missing");
+      }
+    };
+    exports.NODE_REGION_CONFIG_FILE_OPTIONS = {
+      preferredFile: "credentials"
+    };
+  }
+});
+
+// ../../../node_modules/@aws-sdk/region-config-resolver/dist-cjs/regionConfig/isFipsRegion.js
+var require_isFipsRegion2 = __commonJS({
+  "../../../node_modules/@aws-sdk/region-config-resolver/dist-cjs/regionConfig/isFipsRegion.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.isFipsRegion = void 0;
+    var isFipsRegion = (region) => typeof region === "string" && (region.startsWith("fips-") || region.endsWith("-fips"));
+    exports.isFipsRegion = isFipsRegion;
+  }
+});
+
+// ../../../node_modules/@aws-sdk/region-config-resolver/dist-cjs/regionConfig/getRealRegion.js
+var require_getRealRegion2 = __commonJS({
+  "../../../node_modules/@aws-sdk/region-config-resolver/dist-cjs/regionConfig/getRealRegion.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.getRealRegion = void 0;
+    var isFipsRegion_1 = require_isFipsRegion2();
+    var getRealRegion = (region) => (0, isFipsRegion_1.isFipsRegion)(region) ? ["fips-aws-global", "aws-fips"].includes(region) ? "us-east-1" : region.replace(/fips-(dkr-|prod-)?|-fips/, "") : region;
+    exports.getRealRegion = getRealRegion;
+  }
+});
+
+// ../../../node_modules/@aws-sdk/region-config-resolver/dist-cjs/regionConfig/resolveRegionConfig.js
+var require_resolveRegionConfig2 = __commonJS({
+  "../../../node_modules/@aws-sdk/region-config-resolver/dist-cjs/regionConfig/resolveRegionConfig.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.resolveRegionConfig = void 0;
+    var getRealRegion_1 = require_getRealRegion2();
+    var isFipsRegion_1 = require_isFipsRegion2();
+    var resolveRegionConfig = (input) => {
+      const { region, useFipsEndpoint } = input;
+      if (!region) {
+        throw new Error("Region is missing");
+      }
+      return {
+        ...input,
+        region: async () => {
+          if (typeof region === "string") {
+            return (0, getRealRegion_1.getRealRegion)(region);
+          }
+          const providedRegion = await region();
+          return (0, getRealRegion_1.getRealRegion)(providedRegion);
+        },
+        useFipsEndpoint: async () => {
+          const providedRegion = typeof region === "string" ? region : await region();
+          if ((0, isFipsRegion_1.isFipsRegion)(providedRegion)) {
+            return true;
+          }
+          return typeof useFipsEndpoint !== "function" ? Promise.resolve(!!useFipsEndpoint) : useFipsEndpoint();
+        }
+      };
+    };
+    exports.resolveRegionConfig = resolveRegionConfig;
+  }
+});
+
+// ../../../node_modules/@aws-sdk/region-config-resolver/dist-cjs/regionConfig/index.js
+var require_regionConfig2 = __commonJS({
+  "../../../node_modules/@aws-sdk/region-config-resolver/dist-cjs/regionConfig/index.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
+    tslib_1.__exportStar(require_config4(), exports);
+    tslib_1.__exportStar(require_resolveRegionConfig2(), exports);
+  }
+});
+
+// ../../../node_modules/@aws-sdk/region-config-resolver/dist-cjs/index.js
+var require_dist_cjs46 = __commonJS({
+  "../../../node_modules/@aws-sdk/region-config-resolver/dist-cjs/index.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
+    tslib_1.__exportStar(require_extensions5(), exports);
+    tslib_1.__exportStar(require_regionConfig2(), exports);
+  }
+});
+
 // ../../../node_modules/@aws-sdk/client-sso/dist-cjs/runtimeExtensions.js
 var require_runtimeExtensions = __commonJS({
   "../../../node_modules/@aws-sdk/client-sso/dist-cjs/runtimeExtensions.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.resolveRuntimeExtensions = void 0;
+    var region_config_resolver_1 = require_dist_cjs46();
+    var protocol_http_1 = require_dist_cjs2();
     var smithy_client_1 = require_dist_cjs35();
     var asPartial = (t) => t;
     var resolveRuntimeExtensions = (runtimeConfig, extensions) => {
       const extensionConfiguration = {
-        ...asPartial((0, smithy_client_1.getDefaultExtensionConfiguration)(runtimeConfig))
+        ...asPartial((0, region_config_resolver_1.getAwsRegionExtensionConfiguration)(runtimeConfig)),
+        ...asPartial((0, smithy_client_1.getDefaultExtensionConfiguration)(runtimeConfig)),
+        ...asPartial((0, protocol_http_1.getHttpHandlerExtensionConfiguration)(runtimeConfig))
       };
       extensions.forEach((extension) => extension.configure(extensionConfiguration));
       return {
         ...runtimeConfig,
-        ...(0, smithy_client_1.resolveDefaultRuntimeConfig)(extensionConfiguration)
+        ...(0, region_config_resolver_1.resolveAwsRegionExtensionConfiguration)(extensionConfiguration),
+        ...(0, smithy_client_1.resolveDefaultRuntimeConfig)(extensionConfiguration),
+        ...(0, protocol_http_1.resolveHttpHandlerRuntimeConfig)(extensionConfiguration)
       };
     };
     exports.resolveRuntimeExtensions = resolveRuntimeExtensions;
@@ -16386,7 +16676,7 @@ var require_models = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/client-sso/dist-cjs/index.js
-var require_dist_cjs46 = __commonJS({
+var require_dist_cjs47 = __commonJS({
   "../../../node_modules/@aws-sdk/client-sso/dist-cjs/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -17532,7 +17822,7 @@ var require_nodeProvider = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/token-providers/dist-cjs/index.js
-var require_dist_cjs47 = __commonJS({
+var require_dist_cjs48 = __commonJS({
   "../../../node_modules/@aws-sdk/token-providers/dist-cjs/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -17550,8 +17840,8 @@ var require_resolveSSOCredentials = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.resolveSSOCredentials = void 0;
-    var client_sso_1 = require_dist_cjs46();
-    var token_providers_1 = require_dist_cjs47();
+    var client_sso_1 = require_dist_cjs47();
+    var token_providers_1 = require_dist_cjs48();
     var property_provider_1 = require_dist_cjs6();
     var shared_ini_file_loader_1 = require_dist_cjs38();
     var SHOULD_FAIL_CREDENTIAL_CHAIN = false;
@@ -17692,7 +17982,7 @@ var require_types7 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-sso/dist-cjs/index.js
-var require_dist_cjs48 = __commonJS({
+var require_dist_cjs49 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-sso/dist-cjs/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -17710,8 +18000,8 @@ var require_resolveSsoCredentials = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.resolveSsoCredentials = exports.isSsoProfile = void 0;
-    var credential_provider_sso_1 = require_dist_cjs48();
-    var credential_provider_sso_2 = require_dist_cjs48();
+    var credential_provider_sso_1 = require_dist_cjs49();
+    var credential_provider_sso_2 = require_dist_cjs49();
     Object.defineProperty(exports, "isSsoProfile", { enumerable: true, get: function() {
       return credential_provider_sso_2.isSsoProfile;
     } });
@@ -17804,7 +18094,7 @@ var require_fromTokenFile = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-web-identity/dist-cjs/index.js
-var require_dist_cjs49 = __commonJS({
+var require_dist_cjs50 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-web-identity/dist-cjs/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -17820,7 +18110,7 @@ var require_resolveWebIdentityCredentials = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.resolveWebIdentityCredentials = exports.isWebIdentityProfile = void 0;
-    var credential_provider_web_identity_1 = require_dist_cjs49();
+    var credential_provider_web_identity_1 = require_dist_cjs50();
     var isWebIdentityProfile = (arg) => Boolean(arg) && typeof arg === "object" && typeof arg.web_identity_token_file === "string" && typeof arg.role_arn === "string" && ["undefined", "string"].indexOf(typeof arg.role_session_name) > -1;
     exports.isWebIdentityProfile = isWebIdentityProfile;
     var resolveWebIdentityCredentials = async (profile, options) => (0, credential_provider_web_identity_1.fromTokenFile)({
@@ -17888,7 +18178,7 @@ var require_fromIni = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-ini/dist-cjs/index.js
-var require_dist_cjs50 = __commonJS({
+var require_dist_cjs51 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-ini/dist-cjs/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -17928,10 +18218,10 @@ var require_defaultProvider = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.defaultProvider = void 0;
     var credential_provider_env_1 = require_dist_cjs37();
-    var credential_provider_ini_1 = require_dist_cjs50();
+    var credential_provider_ini_1 = require_dist_cjs51();
     var credential_provider_process_1 = require_dist_cjs41();
-    var credential_provider_sso_1 = require_dist_cjs48();
-    var credential_provider_web_identity_1 = require_dist_cjs49();
+    var credential_provider_sso_1 = require_dist_cjs49();
+    var credential_provider_web_identity_1 = require_dist_cjs50();
     var property_provider_1 = require_dist_cjs6();
     var shared_ini_file_loader_1 = require_dist_cjs38();
     var remoteProvider_1 = require_remoteProvider();
@@ -17943,7 +18233,7 @@ var require_defaultProvider = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-node/dist-cjs/index.js
-var require_dist_cjs51 = __commonJS({
+var require_dist_cjs52 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-node/dist-cjs/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -17994,7 +18284,7 @@ var require_ruleset2 = __commonJS({
     var C = [{ [H]: "isSet", [I]: [o] }];
     var D = [x];
     var E = [y];
-    var _data = { version: "1.0", parameters: { Region: m, UseDualStack: n, UseFIPS: n, Endpoint: m, UseGlobalEndpoint: n }, rules: [{ conditions: [{ [H]: c, [I]: [{ [J]: "UseGlobalEndpoint" }, b] }, { [H]: "not", [I]: C }, p, r, { [H]: c, [I]: [s, a] }, { [H]: c, [I]: [t, a] }], [G]: d, rules: [{ conditions: [{ [H]: e, [I]: [q, "ap-northeast-1"] }], endpoint: u, [G]: i }, { conditions: [{ [H]: e, [I]: [q, "ap-south-1"] }], endpoint: u, [G]: i }, { conditions: [{ [H]: e, [I]: [q, "ap-southeast-1"] }], endpoint: u, [G]: i }, { conditions: [{ [H]: e, [I]: [q, "ap-southeast-2"] }], endpoint: u, [G]: i }, w, { conditions: [{ [H]: e, [I]: [q, "ca-central-1"] }], endpoint: u, [G]: i }, { conditions: [{ [H]: e, [I]: [q, "eu-central-1"] }], endpoint: u, [G]: i }, { conditions: [{ [H]: e, [I]: [q, "eu-north-1"] }], endpoint: u, [G]: i }, { conditions: [{ [H]: e, [I]: [q, "eu-west-1"] }], endpoint: u, [G]: i }, { conditions: [{ [H]: e, [I]: [q, "eu-west-2"] }], endpoint: u, [G]: i }, { conditions: [{ [H]: e, [I]: [q, "eu-west-3"] }], endpoint: u, [G]: i }, { conditions: [{ [H]: e, [I]: [q, "sa-east-1"] }], endpoint: u, [G]: i }, { conditions: [{ [H]: e, [I]: [q, h] }], endpoint: u, [G]: i }, { conditions: [{ [H]: e, [I]: [q, "us-east-2"] }], endpoint: u, [G]: i }, { conditions: [{ [H]: e, [I]: [q, "us-west-1"] }], endpoint: u, [G]: i }, { conditions: [{ [H]: e, [I]: [q, "us-west-2"] }], endpoint: u, [G]: i }, { endpoint: { url: j, properties: { authSchemes: [{ name: f, signingName: g, signingRegion: "{Region}" }] }, headers: v }, [G]: i }] }, { conditions: C, [G]: d, rules: [{ conditions: D, error: "Invalid Configuration: FIPS and custom endpoint are not supported", [G]: k }, { [G]: d, rules: [{ conditions: E, error: "Invalid Configuration: Dualstack and custom endpoint are not supported", [G]: k }, { endpoint: { url: o, properties: v, headers: v }, [G]: i }] }] }, { [G]: d, rules: [{ conditions: [p], [G]: d, rules: [{ conditions: [r], [G]: d, rules: [{ conditions: [x, y], [G]: d, rules: [{ conditions: [z, B], [G]: d, rules: [{ [G]: d, rules: [{ endpoint: { url: "https://sts-fips.{Region}.{PartitionResult#dualStackDnsSuffix}", properties: v, headers: v }, [G]: i }] }] }, { error: "FIPS and DualStack are enabled, but this partition does not support one or both", [G]: k }] }, { conditions: D, [G]: d, rules: [{ conditions: [z], [G]: d, rules: [{ [G]: d, rules: [{ conditions: [{ [H]: e, [I]: ["aws-us-gov", { [H]: l, [I]: [A, "name"] }] }], endpoint: { url: "https://sts.{Region}.amazonaws.com", properties: v, headers: v }, [G]: i }, { endpoint: { url: "https://sts-fips.{Region}.{PartitionResult#dnsSuffix}", properties: v, headers: v }, [G]: i }] }] }, { error: "FIPS is enabled but this partition does not support FIPS", [G]: k }] }, { conditions: E, [G]: d, rules: [{ conditions: [B], [G]: d, rules: [{ [G]: d, rules: [{ endpoint: { url: "https://sts.{Region}.{PartitionResult#dualStackDnsSuffix}", properties: v, headers: v }, [G]: i }] }] }, { error: "DualStack is enabled but this partition does not support DualStack", [G]: k }] }, { [G]: d, rules: [w, { endpoint: { url: j, properties: v, headers: v }, [G]: i }] }] }] }, { error: "Invalid Configuration: Missing Region", [G]: k }] }] };
+    var _data = { version: "1.0", parameters: { Region: m, UseDualStack: n, UseFIPS: n, Endpoint: m, UseGlobalEndpoint: n }, rules: [{ conditions: [{ [H]: c, [I]: [{ [J]: "UseGlobalEndpoint" }, b] }, { [H]: "not", [I]: C }, p, r, { [H]: c, [I]: [s, a] }, { [H]: c, [I]: [t, a] }], [G]: d, rules: [{ conditions: [{ [H]: e, [I]: [q, "ap-northeast-1"] }], endpoint: u, [G]: i }, { conditions: [{ [H]: e, [I]: [q, "ap-south-1"] }], endpoint: u, [G]: i }, { conditions: [{ [H]: e, [I]: [q, "ap-southeast-1"] }], endpoint: u, [G]: i }, { conditions: [{ [H]: e, [I]: [q, "ap-southeast-2"] }], endpoint: u, [G]: i }, w, { conditions: [{ [H]: e, [I]: [q, "ca-central-1"] }], endpoint: u, [G]: i }, { conditions: [{ [H]: e, [I]: [q, "eu-central-1"] }], endpoint: u, [G]: i }, { conditions: [{ [H]: e, [I]: [q, "eu-north-1"] }], endpoint: u, [G]: i }, { conditions: [{ [H]: e, [I]: [q, "eu-west-1"] }], endpoint: u, [G]: i }, { conditions: [{ [H]: e, [I]: [q, "eu-west-2"] }], endpoint: u, [G]: i }, { conditions: [{ [H]: e, [I]: [q, "eu-west-3"] }], endpoint: u, [G]: i }, { conditions: [{ [H]: e, [I]: [q, "sa-east-1"] }], endpoint: u, [G]: i }, { conditions: [{ [H]: e, [I]: [q, h] }], endpoint: u, [G]: i }, { conditions: [{ [H]: e, [I]: [q, "us-east-2"] }], endpoint: u, [G]: i }, { conditions: [{ [H]: e, [I]: [q, "us-west-1"] }], endpoint: u, [G]: i }, { conditions: [{ [H]: e, [I]: [q, "us-west-2"] }], endpoint: u, [G]: i }, { endpoint: { url: j, properties: { authSchemes: [{ name: f, signingName: g, signingRegion: "{Region}" }] }, headers: v }, [G]: i }] }, { conditions: C, [G]: d, rules: [{ conditions: D, error: "Invalid Configuration: FIPS and custom endpoint are not supported", [G]: k }, { conditions: E, error: "Invalid Configuration: Dualstack and custom endpoint are not supported", [G]: k }, { endpoint: { url: o, properties: v, headers: v }, [G]: i }] }, { conditions: [p], [G]: d, rules: [{ conditions: [r], [G]: d, rules: [{ conditions: [x, y], [G]: d, rules: [{ conditions: [z, B], [G]: d, rules: [{ endpoint: { url: "https://sts-fips.{Region}.{PartitionResult#dualStackDnsSuffix}", properties: v, headers: v }, [G]: i }] }, { error: "FIPS and DualStack are enabled, but this partition does not support one or both", [G]: k }] }, { conditions: D, [G]: d, rules: [{ conditions: [z], [G]: d, rules: [{ conditions: [{ [H]: e, [I]: ["aws-us-gov", { [H]: l, [I]: [A, "name"] }] }], endpoint: { url: "https://sts.{Region}.amazonaws.com", properties: v, headers: v }, [G]: i }, { endpoint: { url: "https://sts-fips.{Region}.{PartitionResult#dnsSuffix}", properties: v, headers: v }, [G]: i }] }, { error: "FIPS is enabled but this partition does not support FIPS", [G]: k }] }, { conditions: E, [G]: d, rules: [{ conditions: [B], [G]: d, rules: [{ endpoint: { url: "https://sts.{Region}.{PartitionResult#dualStackDnsSuffix}", properties: v, headers: v }, [G]: i }] }, { error: "DualStack is enabled but this partition does not support DualStack", [G]: k }] }, w, { endpoint: { url: j, properties: v, headers: v }, [G]: i }] }] }, { error: "Invalid Configuration: Missing Region", [G]: k }] };
     exports.ruleSet = _data;
   }
 });
@@ -18054,7 +18344,7 @@ var require_runtimeConfig2 = __commonJS({
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var package_json_1 = tslib_1.__importDefault(require_package2());
     var defaultStsRoleAssumers_1 = require_defaultStsRoleAssumers();
-    var credential_provider_node_1 = require_dist_cjs51();
+    var credential_provider_node_1 = require_dist_cjs52();
     var util_user_agent_node_1 = require_dist_cjs42();
     var config_resolver_1 = require_dist_cjs21();
     var hash_node_1 = require_dist_cjs43();
@@ -18103,16 +18393,22 @@ var require_runtimeExtensions2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.resolveRuntimeExtensions = void 0;
+    var region_config_resolver_1 = require_dist_cjs46();
+    var protocol_http_1 = require_dist_cjs2();
     var smithy_client_1 = require_dist_cjs35();
     var asPartial = (t) => t;
     var resolveRuntimeExtensions = (runtimeConfig, extensions) => {
       const extensionConfiguration = {
-        ...asPartial((0, smithy_client_1.getDefaultExtensionConfiguration)(runtimeConfig))
+        ...asPartial((0, region_config_resolver_1.getAwsRegionExtensionConfiguration)(runtimeConfig)),
+        ...asPartial((0, smithy_client_1.getDefaultExtensionConfiguration)(runtimeConfig)),
+        ...asPartial((0, protocol_http_1.getHttpHandlerExtensionConfiguration)(runtimeConfig))
       };
       extensions.forEach((extension) => extension.configure(extensionConfiguration));
       return {
         ...runtimeConfig,
-        ...(0, smithy_client_1.resolveDefaultRuntimeConfig)(extensionConfiguration)
+        ...(0, region_config_resolver_1.resolveAwsRegionExtensionConfiguration)(extensionConfiguration),
+        ...(0, smithy_client_1.resolveDefaultRuntimeConfig)(extensionConfiguration),
+        ...(0, protocol_http_1.resolveHttpHandlerRuntimeConfig)(extensionConfiguration)
       };
     };
     exports.resolveRuntimeExtensions = resolveRuntimeExtensions;
@@ -18607,7 +18903,7 @@ var require_defaultRoleAssumers = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/client-sts/dist-cjs/index.js
-var require_dist_cjs52 = __commonJS({
+var require_dist_cjs53 = __commonJS({
   "../../../node_modules/@aws-sdk/client-sts/dist-cjs/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -18652,7 +18948,7 @@ var require_ruleset3 = __commonJS({
     var o = [i];
     var p = [j];
     var q = [l];
-    var _data = { version: "1.0", parameters: { Region: f, UseDualStack: g, UseFIPS: g, Endpoint: f }, rules: [{ conditions: [{ [s]: a, [t]: [h] }], type: b, rules: [{ conditions: o, error: "Invalid Configuration: FIPS and custom endpoint are not supported", type: c }, { type: b, rules: [{ conditions: p, error: "Invalid Configuration: Dualstack and custom endpoint are not supported", type: c }, { endpoint: { url: h, properties: k, headers: k }, type: d }] }] }, { type: b, rules: [{ conditions: [{ [s]: a, [t]: q }], type: b, rules: [{ conditions: [{ [s]: "aws.partition", [t]: q, assign: e }], type: b, rules: [{ conditions: [i, j], type: b, rules: [{ conditions: [m, n], type: b, rules: [{ type: b, rules: [{ endpoint: { url: "https://states-fips.{Region}.{PartitionResult#dualStackDnsSuffix}", properties: k, headers: k }, type: d }] }] }, { error: "FIPS and DualStack are enabled, but this partition does not support one or both", type: c }] }, { conditions: o, type: b, rules: [{ conditions: [m], type: b, rules: [{ type: b, rules: [{ conditions: [{ [s]: "stringEquals", [t]: [l, "us-gov-west-1"] }], endpoint: { url: "https://states.us-gov-west-1.amazonaws.com", properties: k, headers: k }, type: d }, { endpoint: { url: "https://states-fips.{Region}.{PartitionResult#dnsSuffix}", properties: k, headers: k }, type: d }] }] }, { error: "FIPS is enabled but this partition does not support FIPS", type: c }] }, { conditions: p, type: b, rules: [{ conditions: [n], type: b, rules: [{ type: b, rules: [{ endpoint: { url: "https://states.{Region}.{PartitionResult#dualStackDnsSuffix}", properties: k, headers: k }, type: d }] }] }, { error: "DualStack is enabled but this partition does not support DualStack", type: c }] }, { type: b, rules: [{ endpoint: { url: "https://states.{Region}.{PartitionResult#dnsSuffix}", properties: k, headers: k }, type: d }] }] }] }, { error: "Invalid Configuration: Missing Region", type: c }] }] };
+    var _data = { version: "1.0", parameters: { Region: f, UseDualStack: g, UseFIPS: g, Endpoint: f }, rules: [{ conditions: [{ [s]: a, [t]: [h] }], type: b, rules: [{ conditions: o, error: "Invalid Configuration: FIPS and custom endpoint are not supported", type: c }, { conditions: p, error: "Invalid Configuration: Dualstack and custom endpoint are not supported", type: c }, { endpoint: { url: h, properties: k, headers: k }, type: d }] }, { conditions: [{ [s]: a, [t]: q }], type: b, rules: [{ conditions: [{ [s]: "aws.partition", [t]: q, assign: e }], type: b, rules: [{ conditions: [i, j], type: b, rules: [{ conditions: [m, n], type: b, rules: [{ endpoint: { url: "https://states-fips.{Region}.{PartitionResult#dualStackDnsSuffix}", properties: k, headers: k }, type: d }] }, { error: "FIPS and DualStack are enabled, but this partition does not support one or both", type: c }] }, { conditions: o, type: b, rules: [{ conditions: [m], type: b, rules: [{ conditions: [{ [s]: "stringEquals", [t]: [l, "us-gov-west-1"] }], endpoint: { url: "https://states.us-gov-west-1.amazonaws.com", properties: k, headers: k }, type: d }, { endpoint: { url: "https://states-fips.{Region}.{PartitionResult#dnsSuffix}", properties: k, headers: k }, type: d }] }, { error: "FIPS is enabled but this partition does not support FIPS", type: c }] }, { conditions: p, type: b, rules: [{ conditions: [n], type: b, rules: [{ endpoint: { url: "https://states.{Region}.{PartitionResult#dualStackDnsSuffix}", properties: k, headers: k }, type: d }] }, { error: "DualStack is enabled but this partition does not support DualStack", type: c }] }, { endpoint: { url: "https://states.{Region}.{PartitionResult#dnsSuffix}", properties: k, headers: k }, type: d }] }] }, { error: "Invalid Configuration: Missing Region", type: c }] };
     exports.ruleSet = _data;
   }
 });
@@ -18711,8 +19007,8 @@ var require_runtimeConfig3 = __commonJS({
     exports.getRuntimeConfig = void 0;
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var package_json_1 = tslib_1.__importDefault(require_package());
-    var client_sts_1 = require_dist_cjs52();
-    var credential_provider_node_1 = require_dist_cjs51();
+    var client_sts_1 = require_dist_cjs53();
+    var credential_provider_node_1 = require_dist_cjs52();
     var util_user_agent_node_1 = require_dist_cjs42();
     var config_resolver_1 = require_dist_cjs21();
     var hash_node_1 = require_dist_cjs43();
@@ -18761,16 +19057,22 @@ var require_runtimeExtensions3 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.resolveRuntimeExtensions = void 0;
+    var region_config_resolver_1 = require_dist_cjs46();
+    var protocol_http_1 = require_dist_cjs2();
     var smithy_client_1 = require_dist_cjs35();
     var asPartial = (t) => t;
     var resolveRuntimeExtensions = (runtimeConfig, extensions) => {
       const extensionConfiguration = {
-        ...asPartial((0, smithy_client_1.getDefaultExtensionConfiguration)(runtimeConfig))
+        ...asPartial((0, region_config_resolver_1.getAwsRegionExtensionConfiguration)(runtimeConfig)),
+        ...asPartial((0, smithy_client_1.getDefaultExtensionConfiguration)(runtimeConfig)),
+        ...asPartial((0, protocol_http_1.getHttpHandlerExtensionConfiguration)(runtimeConfig))
       };
       extensions.forEach((extension) => extension.configure(extensionConfiguration));
       return {
         ...runtimeConfig,
-        ...(0, smithy_client_1.resolveDefaultRuntimeConfig)(extensionConfiguration)
+        ...(0, region_config_resolver_1.resolveAwsRegionExtensionConfiguration)(extensionConfiguration),
+        ...(0, smithy_client_1.resolveDefaultRuntimeConfig)(extensionConfiguration),
+        ...(0, protocol_http_1.resolveHttpHandlerRuntimeConfig)(extensionConfiguration)
       };
     };
     exports.resolveRuntimeExtensions = resolveRuntimeExtensions;
@@ -24126,7 +24428,7 @@ var require_models3 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/client-sfn/dist-cjs/index.js
-var require_dist_cjs53 = __commonJS({
+var require_dist_cjs54 = __commonJS({
   "../../../node_modules/@aws-sdk/client-sfn/dist-cjs/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -31577,7 +31879,7 @@ var import_helpers_internal = __toESM(require_helpers_internal());
 // lib/assertions/providers/lambda-handler/base.ts
 var https = __toESM(require("https"));
 var url = __toESM(require("url"));
-var import_client_sfn = __toESM(require_dist_cjs53());
+var import_client_sfn = __toESM(require_dist_cjs54());
 var CustomResourceHandler = class {
   constructor(event, context) {
     this.event = event;

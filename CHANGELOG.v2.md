@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.99.1](https://github.com/aws/aws-cdk/compare/v2.99.0...v2.99.1) (2023-09-29)
+
+
+### Bug Fixes
+
+* load time regression ([#27314](https://github.com/aws/aws-cdk/issues/27314)) ([fca5a73](https://github.com/aws/aws-cdk/commit/fca5a7344d2e205663873b577d5d91f203dd9d14))
+
 ## [2.99.0](https://github.com/aws/aws-cdk/compare/v2.98.0...v2.99.0) (2023-09-27)
 
 

@@ -1534,6 +1534,28 @@ export class ConstructsDependency extends ValidationRule {
 }
 
 /**
+ * Peer dependencies should be a range, not a point version, to maximize compatibility
+ */
+export class PeerDependencyRange extends ValidationRule {
+  public readonly name = 'peerdependency/range';
+
+  public validate(pkg: PackageJson) {
+    const packages = ['aws-cdk-lib'];
+    for (const [name, version] of Object.entries(pkg.peerDependencies)) {
+      if (packages.includes(name) && version.match(/^[0-9]/)) {
+        pkg.report({
+          ruleName: this.name,
+          message: `peerDependency on" ${name}" should be a range, not a point version: "${version}"`,
+          fix: () => {
+            pkg.addPeerDependency(name, '^' + version);
+          },
+        });
+      }
+    }
+  }
+}
+
+/**
  * Do not announce new versions of AWS CDK modules in awscdk.io because it is very very spammy
  * and actually causes the @awscdkio twitter account to be blocked.
  *
