@@ -245,7 +245,7 @@ export class IntegTestRunner extends IntegRunner {
       // only create the snapshot if there are no failed assertion results
       // (i.e. no failures)
       if (!assertionResults || !Object.values(assertionResults).some(result => result.status === 'fail')) {
-        this.createSnapshot();
+        this.createSnapshot(options.synth ?? true);
       }
     } catch (e) {
       throw e;

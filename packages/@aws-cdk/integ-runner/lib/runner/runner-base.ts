@@ -235,8 +235,8 @@ export abstract class IntegRunner {
       return testSuite;
     } catch {
       if (!synth) {
-        throw new Error(`can't --no-synth with legacy tests. That, or you've ran --no-synth without providing synthesis artifacts to a modern integ test.`);
-
+        throw new Error(`You are using --no-synth with legacy tests, or you are using it with a modern test without providing synthesis artifacts. 
+                         These artifacts must be of the form 'cdk-integ.out.integ.<test-name>.js.snapshot'.`);
       }
       const testCases = LegacyIntegTestSuite.fromLegacy({
         cdk: this.cdk,
@@ -337,14 +337,14 @@ export abstract class IntegRunner {
    * If lookups are disabled (which means the stack is env agnostic) then just copy
    * the assembly that was output by the deployment
    */
-  protected createSnapshot(): void {
+  protected createSnapshot(synth: boolean): void {
     if (fs.existsSync(this.snapshotDir)) {
       fs.removeSync(this.snapshotDir);
     }
 
     // if lookups are enabled then we need to synth again
     // using dummy context and save that as the snapshot
-    if (this.actualTestSuite.enableLookups) {
+    if (this.actualTestSuite.enableLookups && synth) {
       this.cdk.synthFast({
         execCmd: this.cdkApp.split(' '),
         env: {
