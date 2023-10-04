@@ -55,12 +55,12 @@
   resolved "https://registry.npmjs.org/@aws-cdk/asset-node-proxy-agent-v6/-/asset-node-proxy-agent-v6-2.0.1.tgz#6dc9b7cdb22ff622a7176141197962360c33e9ac"
   integrity sha512-DDt4SLdLOwWCjGtltH4VCST7hpOI5DzieuhGZsBpZ+AgJdSI2GCjklCXm0GCTwJG/SolkL5dtQXyUKgg9luBDg==
 
-"@aws-cdk/aws-service-spec@^0.0.17":
-  version "0.0.17"
-  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.0.17.tgz#99dd8577d9d7578dd6e7331f7d2ef9e87e24de57"
-  integrity sha512-WU1Wo2caXL+JJ2DF7thETBUE+UxvxKtOKA3T1dnTK7hQAthVJ0do2A4nTur8+0664rN12DASo3kWbUpQnU50jA==
+"@aws-cdk/aws-service-spec@^0.0.18":
+  version "0.0.18"
+  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.0.18.tgz#f0284514ce2c0c13ca6a1cc05dfb7b79d75a1409"
+  integrity sha512-ei/t8HhJiCwCHvHyTeLPj9TLp8QEymEexAyrvCJFopjNPwY3MGEOSAOeVhmuVrzwCwCXylSmpez0hSkv4w+kWQ==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.17"
+    "@aws-cdk/service-spec-types" "^0.0.18"
     "@cdklabs/tskb" "^0.0.1"
 
 "@aws-cdk/lambda-layer-kubectl-v24@^2.0.242":
@@ -68,10 +68,10 @@
   resolved "https://registry.npmjs.org/@aws-cdk/lambda-layer-kubectl-v24/-/lambda-layer-kubectl-v24-2.0.242.tgz#4273a5ad7714f933a7eba155eb9280823086db71"
   integrity sha512-7/wIOo685tmrEe4hh6zqDELhBZh5OQGf3Hd2FU2Vnwy2ZubW8qTmEw5gqJCsCrGKeYDoa1BcVhDRZ/nzjkaqyA==
 
-"@aws-cdk/service-spec-types@^0.0.17":
-  version "0.0.17"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.17.tgz#adde4180cf7e2b00ac0e9025532efb6c2f270247"
-  integrity sha512-X/k57lQNs3g+9b6mCuMRCH4n8mDskkeIMDYAsy94eRpt+iP2N4pf/q/9hLDkJij/9CJTLOT8piUiLvWR/3vvDw==
+"@aws-cdk/service-spec-types@^0.0.18":
+  version "0.0.18"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.18.tgz#deaabcb63efad83ecf1c656f0653c146a2eae99d"
+  integrity sha512-Ru9VcbAezK5BvyOwK5DBMpeO/yGcS3Yc8jt7sQYtshBWQypq423m6KvcwCBB9gT/ZRZQ701aSYUcXwcBubXkDg==
   dependencies:
     "@cdklabs/tskb" "^0.0.1"
 
@@ -5468,7 +5468,7 @@ cidr-regex@^3.1.1:
   dependencies:
     ip-regex "^4.1.0"
 
-cjs-module-lexer@^1.0.0:
+cjs-module-lexer@^1.0.0, cjs-module-lexer@^1.2.3:
   version "1.2.3"
   resolved "https://registry.npmjs.org/cjs-module-lexer/-/cjs-module-lexer-1.2.3.tgz#6c370ab19f8a3394e318fe682686ec0ac684d107"
   integrity sha512-0TNiGstbQmCFwt4akjjBg5pLRTSyj/PkWQ1ZoO2zntmg9yLqSRxwEa4iCfQLGjqhiqBfOJa7W/E8wfGrTDmlZQ==
@@ -11673,9 +11673,9 @@ postcss-values-parser@^5.0.0:
     quote-unquote "^1.0.0"
 
 postcss@^8.1.7, postcss@^8.4.6:
-  version "8.4.30"
-  resolved "https://registry.npmjs.org/postcss/-/postcss-8.4.30.tgz#0e0648d551a606ef2192a26da4cabafcc09c1aa7"
-  integrity sha512-7ZEao1g4kd68l97aWG/etQKPKq07us0ieSZ2TnFDk11i0ZfDW2AwKHYU8qv4MZKqN2fdBfg+7q0ES06UA73C1g==
+  version "8.4.31"
+  resolved "https://registry.npmjs.org/postcss/-/postcss-8.4.31.tgz#92b451050a9f914da6755af352bdc0192508656d"
+  integrity sha512-PS08Iboia9mts/2ygV3eLpY5ghnUcfLV/EXTOW1E2qYxJKGGBUtNjN76FYHnMs36RmARn41bC0AZmn+rR0OVpQ==
   dependencies:
     nanoid "^3.3.6"
     picocolors "^1.0.0"
