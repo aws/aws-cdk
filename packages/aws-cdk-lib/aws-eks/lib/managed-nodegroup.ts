@@ -536,6 +536,7 @@ export class Nodegroup extends Resource implements INodegroup {
         throw new Error(`maxUnavailable must be between 1 and 100, got ${maxUnavailable}`);
       }
     }
+  }
 }
 
 /**
