@@ -123,8 +123,8 @@ describe('Migrate Function Tests', () => {
     expect(app.map(line => line.match(/new GoodTypeScriptStack\(app, \'GoodTypeScript\', \{/)).filter(line => line).length).toEqual(1);
 
     // Replaced stack file is correctly generated
-    const replacedStack = fs.readFileSync(path.join(workDir, 'GoodTypeScript', 'lib', 'good_type_script-stack.ts'));
-    expect(replacedStack).toEqual(fs.readFileSync(path.join(...stackPath, 's3-stack.ts')));
+    const replacedStack = fs.readFileSync(path.join(workDir, 'GoodTypeScript', 'lib', 'good_type_script-stack.ts'), 'utf8');
+    expect(replacedStack).toEqual(fs.readFileSync(path.join(...stackPath, 's3-stack.ts'), 'utf8'));
   });
 
   cliTest('generateCdkApp generates the expected cdk app when called for python', async (workDir) => {
@@ -142,8 +142,8 @@ describe('Migrate Function Tests', () => {
     expect(app.map(line => line.match(/GoodPythonStack\(app, "GoodPython",/)).filter(line => line).length).toEqual(1);
 
     // Replaced stack file is correctly generated
-    const replacedStack = fs.readFileSync(path.join(workDir, 'GoodPython', 'good_python', 'good_python_stack.py'));
-    expect(replacedStack).toEqual(fs.readFileSync(path.join(...stackPath, 's3_stack.py')));
+    const replacedStack = fs.readFileSync(path.join(workDir, 'GoodPython', 'good_python', 'good_python_stack.py'), 'utf8');
+    expect(replacedStack).toEqual(fs.readFileSync(path.join(...stackPath, 's3_stack.py'), 'utf8'));
   });
 
   cliTest('generateCdkApp generates the expected cdk app when called for java', async (workDir) => {
@@ -161,8 +161,8 @@ describe('Migrate Function Tests', () => {
     expect(app.map(line => line.match(/        new GoodJavaStack\(app, "GoodJava", StackProps.builder()/)).filter(line => line).length).toEqual(1);
 
     // Replaced stack file is correctly generated
-    const replacedStack = fs.readFileSync(path.join(workDir, 'GoodJava', 'src', 'main', 'java', 'com', 'myorg', 'GoodJavaStack.java'));
-    expect(replacedStack).toEqual(fs.readFileSync(path.join(...stackPath, 'S3Stack.java')));
+    const replacedStack = fs.readFileSync(path.join(workDir, 'GoodJava', 'src', 'main', 'java', 'com', 'myorg', 'GoodJavaStack.java'), 'utf8');
+    expect(replacedStack).toEqual(fs.readFileSync(path.join(...stackPath, 'S3Stack.java'), 'utf8'));
   });
 
   cliTest('generateCdkApp generates the expected cdk app when called for csharp', async (workDir) => {
@@ -180,8 +180,8 @@ describe('Migrate Function Tests', () => {
     expect(app.map(line => line.match(/        new GoodCSharpStack\(app, "GoodCSharp", new StackProps/)).filter(line => line).length).toEqual(1);
 
     // Replaced stack file is correctly generated
-    const replacedStack = fs.readFileSync(path.join(workDir, 'GoodCSharp', 'src', 'GoodCSharp', 'GoodCSharpStack.cs'));
-    expect(replacedStack).toEqual(fs.readFileSync(path.join(...stackPath, 'S3Stack.cs')));
+    const replacedStack = fs.readFileSync(path.join(workDir, 'GoodCSharp', 'src', 'GoodCSharp', 'GoodCSharpStack.cs'), 'utf8');
+    expect(replacedStack).toEqual(fs.readFileSync(path.join(...stackPath, 'S3Stack.cs'), 'utf8'));
   });
 
   cliTest('generatedCdkApp generates the expected cdk app when called for go', async (workDir) => {
