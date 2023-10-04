@@ -627,7 +627,7 @@ CDK Migrate will only generate L1 constructs and does not currently support any 
 CDK Migrate succesfully generating an application does *not* guarantee the application is immediately deployable.
 It simply generates a CDK application which will synthesize a template that has identical resource configurations 
 to the provided template. CDK Migrate does not interact with the CloudFormation service to verify the template 
-provided can deploy on it's own, nor does it validate that any resources in the provided template are already managed 
+provided can deploy on its own, nor does it validate that any resources in the provided template are already managed 
 in other CloudFormation Templates. In practice this is how CDK Migrate generated applications will 
 operate in the following scenarios:
 
