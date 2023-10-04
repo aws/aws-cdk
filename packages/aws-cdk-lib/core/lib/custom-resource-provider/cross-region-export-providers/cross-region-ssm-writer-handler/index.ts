@@ -30,13 +30,9 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         const removedExports = except(oldExports, exports);
         await throwIfAnyInUse(ssm, removedExports);
         // if the ones we are removing are not in use then delete them
-        // skip if no export names are to be deleted
         const removedExportsNames = Object.keys(removedExports);
-        if (removedExportsNames.length > 0) {
-          await ssm.deleteParameters({
-            Names: removedExportsNames,
-          });
-        }
+        // this method will skip if no export names are to be deleted
+        await deleteParameters(ssm, removedExportsNames);
 
         // also throw an error if we are creating a new export that already exists for some reason
         await throwIfAnyInUse(ssm, newExports);
@@ -48,9 +44,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         // the stack deletion.
         await throwIfAnyInUse(ssm, exports);
         // if none are in use then delete all of them
-        await ssm.deleteParameters({
-          Names: Object.keys(exports),
-        });
+        await deleteParameters(ssm, Object.keys(exports));
         return;
       default:
         return;
@@ -72,6 +66,27 @@ async function putParameters(ssm: SSM, parameters: CrossRegionExports): Promise<
       Type: 'String',
     });
   }));
+}
+
+/**
+ * Delete parameters no longer in use.
+ * From https://docs.aws.amazon.com/systems-manager/latest/APIReference/API_DeleteParameters.html there
+ * is a constraint on names. It must have size at least 1 and at most 10.
+ */
+async function deleteParameters(ssm: SSM, names: string[]) {
+  // max allowed by DeleteParameters api
+  const maxSize = 10;
+  // more testable if we delete in order
+  names.sort();
+  for (let chunkStartIdx = 0; chunkStartIdx < names.length; chunkStartIdx += maxSize) {
+    const chunkOfNames = names.slice(chunkStartIdx, chunkStartIdx + maxSize);
+    // also observe minimum size constraint: Names parameter must have size at least 1
+    if (chunkOfNames.length > 0) {
+      await ssm.deleteParameters({
+        Names: chunkOfNames,
+      });
+    }
+  }
 }
 
 /**
