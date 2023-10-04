@@ -33,7 +33,7 @@ export function integTestWorker(request: IntegTestBatchRequest): IntegTestWorker
           CDK_DOCKER: process.env.CDK_DOCKER ?? 'docker',
         },
         showOutput: verbosity >= 2,
-        synth: request.synth ?? true,
+        synth: request.synth,
       }, testInfo.destructiveChanges);
 
       const tests = runner.actualTests();

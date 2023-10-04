@@ -43,7 +43,7 @@ export class IntegSnapshotRunner extends IntegRunner {
   public testSnapshot(options: SnapshotVerificationOptions = {}): { diagnostics: Diagnostic[], destructiveChanges: DestructiveChange[] } {
     // without this, running with --no-synth will always delete the snapshot, meaning you can't run with --no-synth twice in a row.
     // should we require passing --inspect-falures to keep the snapshot in --no-synth mode?
-    let doClean = options.synth ?? true;
+    let doClean = this.synth ?? true;
     try {
       const expectedSnapshotAssembly = this.getSnapshotAssembly(this.snapshotDir, this.expectedTestSuite?.stacks);
 
@@ -60,7 +60,7 @@ export class IntegSnapshotRunner extends IntegRunner {
         })),
       };
 
-      if (options.synth) {
+      if (this.synth) {
         this.cdk.synthFast({
           execCmd: this.cdkApp.split(' '),
           env,

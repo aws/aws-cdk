@@ -137,6 +137,8 @@ export abstract class IntegRunner {
 
   protected readonly profile?: string;
 
+  protected readonly synth: boolean;
+
   protected _destructiveChanges?: DestructiveChange[];
   private legacyContext?: Record<string, any>;
   protected isLegacyTest?: boolean;
@@ -146,6 +148,7 @@ export abstract class IntegRunner {
     this.directory = this.test.directory;
     this.testName = this.test.testName;
     this.snapshotDir = this.test.snapshotDir;
+    this.synth = options.synth ?? true;
     this.cdkContextPath = path.join(this.directory, 'cdk.context.json');
 
     this.cdk = options.cdk ?? new CdkCliWrapper({
@@ -158,7 +161,7 @@ export abstract class IntegRunner {
     this.cdkOutDir = options.integOutDir ?? this.test.temporaryOutputDir;
 
     const testRunCommand = this.test.appCommand;
-    if (options.synth ?? true) {
+    if (this.synth) {
       this.cdkApp = testRunCommand.replace('{filePath}', path.relative(this.directory, this.test.fileName));
     } else {
       this.cdkApp = path.relative(this.directory, this.cdkOutDir);
@@ -169,7 +172,7 @@ export abstract class IntegRunner {
       this.expectedTestSuite = this.loadManifest();
     }
 
-    this.actualTestSuite = this.generateActualSnapshot(options.synth ?? true);
+    this.actualTestSuite = this.generateActualSnapshot();
   }
 
   /**
@@ -191,8 +194,8 @@ export abstract class IntegRunner {
    * existing "expected" snapshot
    * This will synth and then load the integration test manifest
    */
-  public generateActualSnapshot(synth: boolean): IntegTestSuite | LegacyIntegTestSuite {
-    if (synth) {
+  public generateActualSnapshot(): IntegTestSuite | LegacyIntegTestSuite {
+    if (this.synth) {
       this.cdk.synthFast({
         execCmd: this.cdkApp.split(' '),
         env: {
@@ -204,10 +207,10 @@ export abstract class IntegRunner {
         output: path.relative(this.directory, this.cdkOutDir),
       });
     }
-    const manifest = this.loadManifest(this.cdkOutDir, synth);
+    const manifest = this.loadManifest(this.cdkOutDir);
     // after we load the manifest remove the tmp snapshot
     // so that it doesn't mess up the real snapshot created later
-    if (synth) {
+    if (this.synth) {
       this.cleanup();
     }
 
@@ -228,13 +231,13 @@ export abstract class IntegRunner {
    * from the cloud assembly. If it doesn't exist, then we fallback to the
    * "legacy mode" and create a manifest from pragma
    */
-  protected loadManifest(dir?: string, synth?: boolean): IntegTestSuite | LegacyIntegTestSuite {
+  protected loadManifest(dir?: string): IntegTestSuite | LegacyIntegTestSuite {
     try {
       // TODO: if no-synth, then we're trying to load a legacy test.
       const testSuite = IntegTestSuite.fromPath(dir ?? this.snapshotDir);
       return testSuite;
     } catch {
-      if (!synth) {
+      if (!this.synth) {
         throw new Error(`You are using --no-synth with legacy tests, or you are using it with a modern test without providing synthesis artifacts. 
                          These artifacts must be of the form 'cdk-integ.out.integ.<test-name>.js.snapshot'.`);
       }
