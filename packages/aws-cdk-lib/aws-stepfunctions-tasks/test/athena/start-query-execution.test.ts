@@ -225,7 +225,7 @@ describe('Start Query Execution', () => {
     });
   });
 
-  test('execution parameters', () => {
+  test('execution parameters succeeds', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -277,5 +277,85 @@ describe('Start Query Execution', () => {
         ExecutionParameters: ['database'],
       },
     });
+  });
+
+  test('execution parameters succeeds with token', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const task = new AthenaStartQueryExecution(stack, 'Query', {
+      queryString: 'CREATE DATABASE ?',
+      clientRequestToken: 'unique-client-request-token',
+      queryExecutionContext: {
+        databaseName: 'mydatabase',
+        catalogName: 'AwsDataCatalog',
+      },
+      resultConfiguration: {
+        outputLocation: {
+          bucketName: 'query-results-bucket',
+          objectKey: 'folder',
+        },
+      },
+      workGroup: 'primary',
+      executionParameters: sfn.JsonPath.listAt('$.executionParameters'),
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::athena:startQueryExecution',
+          ],
+        ],
+      },
+      End: true,
+      Parameters: {
+        'QueryString': 'CREATE DATABASE ?',
+        'ClientRequestToken': 'unique-client-request-token',
+        'QueryExecutionContext': {
+          Database: 'mydatabase',
+          Catalog: 'AwsDataCatalog',
+        },
+        'ResultConfiguration': {
+          OutputLocation: 's3://query-results-bucket/folder/',
+        },
+        'WorkGroup': 'primary',
+        'ExecutionParameters.$': '$.executionParameters',
+      },
+    });
+  });
+
+  test('execution parameters fails on invalid values', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    expect(() => {
+      // WHEN
+      const task = new AthenaStartQueryExecution(stack, 'Query', {
+        queryString: 'CREATE DATABASE ?',
+        clientRequestToken: 'unique-client-request-token',
+        queryExecutionContext: {
+          databaseName: 'mydatabase',
+          catalogName: 'AwsDataCatalog',
+        },
+        resultConfiguration: {
+          outputLocation: {
+            bucketName: 'query-results-bucket',
+            objectKey: 'folder',
+          },
+        },
+        workGroup: 'primary',
+        executionParameters: ['valid1', 'database'.repeat(129), 'valid2'],
+      });
+      // THEN
+    }).toThrow(/length must be between 1 and 1024 characters/);
   });
 });
