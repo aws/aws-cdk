@@ -333,7 +333,7 @@ describe('Start Query Execution', () => {
     });
   });
 
-  test('execution parameters fails on invalid values', () => {
+  test('execution parameters fails on too long string', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -357,5 +357,57 @@ describe('Start Query Execution', () => {
       });
       // THEN
     }).toThrow(/length must be between 1 and 1024 characters/);
+  });
+
+  test('execution parameters fails on empty string', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    expect(() => {
+      // WHEN
+      const task = new AthenaStartQueryExecution(stack, 'Query', {
+        queryString: 'CREATE DATABASE ?',
+        clientRequestToken: 'unique-client-request-token',
+        queryExecutionContext: {
+          databaseName: 'mydatabase',
+          catalogName: 'AwsDataCatalog',
+        },
+        resultConfiguration: {
+          outputLocation: {
+            bucketName: 'query-results-bucket',
+            objectKey: 'folder',
+          },
+        },
+        workGroup: 'primary',
+        executionParameters: [''],
+      });
+      // THEN
+    }).toThrow(/length must be between 1 and 1024 characters/);
+  });
+
+  test('execution parameters fails on empty list', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    expect(() => {
+      // WHEN
+      const task = new AthenaStartQueryExecution(stack, 'Query', {
+        queryString: 'CREATE DATABASE ?',
+        clientRequestToken: 'unique-client-request-token',
+        queryExecutionContext: {
+          databaseName: 'mydatabase',
+          catalogName: 'AwsDataCatalog',
+        },
+        resultConfiguration: {
+          outputLocation: {
+            bucketName: 'query-results-bucket',
+            objectKey: 'folder',
+          },
+        },
+        workGroup: 'primary',
+        executionParameters: [],
+      });
+      // THEN
+    }).toThrow(/must be a non-empty list/);
   });
 });
