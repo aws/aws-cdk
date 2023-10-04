@@ -225,6 +225,26 @@ export class InstanceType {
   public static readonly INF1_XLARGE = InstanceType.of('ml.inf1.xlarge');
 
   /**
+   * ml.inf2.xlarge
+   */
+  public static readonly INF2_XLARGE = InstanceType.of('ml.inf2.xlarge');
+
+  /**
+   * ml.inf2.8xlarge
+   */
+  public static readonly INF2_8XLARGE = InstanceType.of('ml.inf2.8xlarge');
+
+  /**
+   * ml.inf2.24xlarge
+   */
+  public static readonly INF2_24XLARGE = InstanceType.of('ml.inf2.24xlarge');
+
+  /**
+   * ml.inf2.48xlarge
+   */
+  public static readonly INF2_48XLARGE = InstanceType.of('ml.inf2.48xlarge');
+
+  /**
    * ml.m4.10xlarge
    */
   public static readonly M4_10XLARGE = InstanceType.of('ml.m4.10xlarge');

@@ -2173,7 +2173,7 @@ describe('cluster', () => {
         },
       });
     });
-    test('inference instances are supported', () => {
+    test('inf1 instances are supported', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();
       const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
@@ -2181,6 +2181,24 @@ describe('cluster', () => {
       // WHEN
       cluster.addAutoScalingGroupCapacity('InferenceInstances', {
         instanceType: new ec2.InstanceType('inf1.2xlarge'),
+        minCapacity: 1,
+      });
+      const fileContents = fs.readFileSync(path.join(__dirname, '../lib', 'addons/neuron-device-plugin.yaml'), 'utf8');
+      const sanitized = YAML.parse(fileContents);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
+        Manifest: JSON.stringify([sanitized]),
+      });
+    });
+    test('inf2 instances are supported', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+      const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
+
+      // WHEN
+      cluster.addAutoScalingGroupCapacity('InferenceInstances', {
+        instanceType: new ec2.InstanceType('inf2.xlarge'),
         minCapacity: 1,
       });
       const fileContents = fs.readFileSync(path.join(__dirname, '../lib', 'addons/neuron-device-plugin.yaml'), 'utf8');
