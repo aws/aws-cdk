@@ -82,12 +82,13 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
   }
 
   private validateExecutionParameters(executionParameters?: string[]) {
-    if (executionParameters == null) return;
+    if (executionParameters === undefined || cdk.Token.isUnresolved(executionParameters)) return;
     if (executionParameters.length == 0) {
-      throw new Error('Query executionParameters must not be an empty list');
+      throw new Error('\'executionParameters\' must be a non-empty list');
     }
-    if (executionParameters.length > 1024) {
-      throw new Error('Too many executionParameters for query, maximum 1024 supported');
+    const invalidExecutionParameters = executionParameters.some(p => p.length < 1 || p.length > 1024);
+    if (invalidExecutionParameters) {
+        throw new Error('\'executionParameters\' items\'s length must be between 1 and 1024 characters');
     }
   }
 
