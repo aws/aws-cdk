@@ -617,6 +617,13 @@ This will generate a Python CDK application which will synthesize to the same co
 
 #### **CDK Migrate Limitations**
 
+| Situation                                                                     | Result                                                                                            |
+| ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Provided Template + stack-name is from a deployed stack in the account/region                     | The CDK application will deploy as the existing stack                         |
+| Provided Template has no overlap with resources already in the account/region                     | The CDK application will deploy a new stack successfully                      |
+| Provided Template has overlap with Cloudformation managed resources already in the account/region | The CDK application will not be deployable unless those resources are removed |
+| Provided Template has overlap with unmanaged resources already in the account/region              | The CDK application will not be deployable until those resources are adopted with CDK Import |
+
 CDK Migrate does not currently support nested stacks, Custom resources, or the `Fn::ForEach` intrinsic function.
 CDK Migrate will only generate L1 constructs and does not currently support any higher level abstractions.
 CDK Migrate succesfully generating an application does *not* guarantee the application is immediately deployable.
