@@ -2472,6 +2472,8 @@ export class Bucket extends BucketBase {
     // objects in the bucket
     this.addToResourcePolicy(new iam.PolicyStatement({
       actions: [
+        // prevent further PutObject calls
+        ...perms.BUCKET_PUT_POLICY_ACTIONS,
         // list objects
         ...perms.BUCKET_READ_METADATA_ACTIONS,
         ...perms.BUCKET_DELETE_ACTIONS, // and then delete them

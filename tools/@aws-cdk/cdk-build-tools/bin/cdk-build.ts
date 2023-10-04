@@ -57,7 +57,7 @@ async function main() {
   const overrides: CompilerOverrides = { eslint: args.eslint, jsii: args.jsii, tsc: args.tsc };
   await compileCurrentPackage(options, timers, overrides);
   if (!args['skip-lint']) {
-    await lintCurrentPackage(options, { ...overrides, fix: args.fix });
+    await lintCurrentPackage(options, timers, { ...overrides, fix: args.fix });
   }
 
   if (options.post) {

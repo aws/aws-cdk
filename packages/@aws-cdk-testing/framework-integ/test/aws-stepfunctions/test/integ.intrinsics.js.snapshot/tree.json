@@ -12,7 +12,7 @@
             "id": "pass",
             "path": "aws-stepfunctions-intrinsics-integ/pass",
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions.Pass",
+              "fqn": "aws-cdk-lib.aws_stepfunctions.Pass",
               "version": "0.0.0"
             }
           },
@@ -28,7 +28,7 @@
                     "id": "ImportRole",
                     "path": "aws-stepfunctions-intrinsics-integ/StateMachine/Role/ImportRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -53,13 +53,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -69,23 +69,23 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
                   "aws:cdk:cloudformation:props": {
+                    "definitionString": "{\"StartAt\":\"pass\",\"States\":{\"pass\":{\"Type\":\"Pass\",\"Parameters\":{\"array1.$\":\"States.Array('asdf', $.Id)\",\"arrayPartition1.$\":\"States.ArrayPartition($.inputArray, 4)\",\"arrayPartition2.$\":\"States.ArrayPartition($.inputArray, $.chunkSize)\",\"arrayContains1.$\":\"States.ArrayContains($.inputArray, 5)\",\"arrayContains2.$\":\"States.ArrayContains($.inputArray, 'a')\",\"arrayContains3.$\":\"States.ArrayContains($.inputArray, $.lookingFor)\",\"arrayRange1.$\":\"States.ArrayRange(1, 9, 2)\",\"arrayRange2.$\":\"States.ArrayRange($.start, $.end, $.step)\",\"arrayGetItem1.$\":\"States.ArrayGetItem($.inputArray, 5)\",\"arrayGetItem2.$\":\"States.ArrayGetItem($.inputArray, $.index)\",\"arrayLength1.$\":\"States.ArrayLength($.inputArray)\",\"arrayUnique1.$\":\"States.ArrayUnique($.inputArray)\",\"base64Encode1.$\":\"States.Base64Encode('Data to encode')\",\"base64Encode2.$\":\"States.Base64Encode($.input)\",\"base64Decode1.$\":\"States.Base64Decode('RGF0YSB0byBlbmNvZGU=')\",\"base64Decode2.$\":\"States.Base64Decode($.base64)\",\"hash1.$\":\"States.Hash('Input data', 'SHA-1')\",\"hash2.$\":\"States.Hash($.Data, $.Algorithm)\",\"jsonMerge1.$\":\"States.JsonMerge($.Obj1, $.Obj2, false)\",\"mathRandom1.$\":\"States.MathRandom(1, 999)\",\"mathRandom2.$\":\"States.MathRandom($.start, $.end)\",\"mathAdd1.$\":\"States.MathAdd(1, 999)\",\"mathAdd2.$\":\"States.MathAdd($.value1, $.step)\",\"stringSplit1.$\":\"States.StringSplit('1,2,3,4,5', ',')\",\"stringSplit2.$\":\"States.StringSplit($.inputString, $.splitter)\",\"stringSplit3.$\":\"States.StringSplit('1\\\\\\\\2\\\\\\\\3\\\\\\\\4\\\\\\\\5', '\\\\\\\\')\",\"uuid.$\":\"States.UUID()\",\"format1.$\":\"States.Format('Hi my name is {}.', $.Name)\",\"format2.$\":\"States.Format($.Format, $.Name)\",\"format3.$\":\"States.Format('Hello\\n{}', $.Name)\",\"stringToJson1.$\":\"States.StringToJson($.Str)\",\"jsonToString1.$\":\"States.JsonToString($.Obj)\"},\"End\":true}}}",
                     "roleArn": {
                       "Fn::GetAtt": [
                         "StateMachineRoleB840431D",
                         "Arn"
                       ]
-                    },
-                    "definitionString": "{\"StartAt\":\"pass\",\"States\":{\"pass\":{\"Type\":\"Pass\",\"Parameters\":{\"array1.$\":\"States.Array('asdf', $.Id)\",\"arrayPartition1.$\":\"States.ArrayPartition($.inputArray, 4)\",\"arrayPartition2.$\":\"States.ArrayPartition($.inputArray, $.chunkSize)\",\"arrayContains1.$\":\"States.ArrayContains($.inputArray, 5)\",\"arrayContains2.$\":\"States.ArrayContains($.inputArray, 'a')\",\"arrayContains3.$\":\"States.ArrayContains($.inputArray, $.lookingFor)\",\"arrayRange1.$\":\"States.ArrayRange(1, 9, 2)\",\"arrayRange2.$\":\"States.ArrayRange($.start, $.end, $.step)\",\"arrayGetItem1.$\":\"States.ArrayGetItem($.inputArray, 5)\",\"arrayGetItem2.$\":\"States.ArrayGetItem($.inputArray, $.index)\",\"arrayLength1.$\":\"States.ArrayLength($.inputArray)\",\"arrayUnique1.$\":\"States.ArrayUnique($.inputArray)\",\"base64Encode1.$\":\"States.Base64Encode('Data to encode')\",\"base64Encode2.$\":\"States.Base64Encode($.input)\",\"base64Decode1.$\":\"States.Base64Decode('RGF0YSB0byBlbmNvZGU=')\",\"base64Decode2.$\":\"States.Base64Decode($.base64)\",\"hash1.$\":\"States.Hash('Input data', 'SHA-1')\",\"hash2.$\":\"States.Hash($.Data, $.Algorithm)\",\"jsonMerge1.$\":\"States.JsonMerge($.Obj1, $.Obj2, false)\",\"mathRandom1.$\":\"States.MathRandom(1, 999)\",\"mathRandom2.$\":\"States.MathRandom($.start, $.end)\",\"mathAdd1.$\":\"States.MathAdd(1, 999)\",\"mathAdd2.$\":\"States.MathAdd($.value1, $.step)\",\"stringSplit1.$\":\"States.StringSplit('1,2,3,4,5', ',')\",\"stringSplit2.$\":\"States.StringSplit($.inputString, $.splitter)\",\"uuid.$\":\"States.UUID()\",\"format1.$\":\"States.Format('Hi my name is {}.', $.Name)\",\"format2.$\":\"States.Format($.Format, $.Name)\",\"stringToJson1.$\":\"States.StringToJson($.Str)\",\"jsonToString1.$\":\"States.JsonToString($.Obj)\"},\"End\":true}}}"
+                    }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-stepfunctions.CfnStateMachine",
+                  "fqn": "aws-cdk-lib.aws_stepfunctions.CfnStateMachine",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions.StateMachine",
+              "fqn": "aws-cdk-lib.aws_stepfunctions.StateMachine",
               "version": "0.0.0"
             }
           },
@@ -97,21 +97,21 @@
                 "id": "Output{\"Ref\":\"StateMachine2E01A3A5\"}",
                 "path": "aws-stepfunctions-intrinsics-integ/Exports/Output{\"Ref\":\"StateMachine2E01A3A5\"}",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.237"
+              "version": "10.2.70"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "aws-stepfunctions-intrinsics-integ/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
+              "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
             }
           },
@@ -119,13 +119,13 @@
             "id": "CheckBootstrapVersion",
             "path": "aws-stepfunctions-intrinsics-integ/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
         }
       },
@@ -142,64 +142,64 @@
                 "path": "StateMachineIntrinsicsTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.237"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "StateMachineIntrinsicsTest/DefaultTest/DeployAssert",
                 "children": {
-                  "AwsApiCallStepFunctionsdescribeStateMachine": {
-                    "id": "AwsApiCallStepFunctionsdescribeStateMachine",
-                    "path": "StateMachineIntrinsicsTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachine",
+                  "AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa": {
+                    "id": "AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa",
+                    "path": "StateMachineIntrinsicsTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "StateMachineIntrinsicsTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachine/SdkProvider",
+                        "path": "StateMachineIntrinsicsTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "StateMachineIntrinsicsTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachine/SdkProvider/AssertionsProvider",
+                            "path": "StateMachineIntrinsicsTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.237"
+                              "version": "10.2.70"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
                           "version": "0.0.0"
                         }
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "StateMachineIntrinsicsTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachine/Default",
+                        "path": "StateMachineIntrinsicsTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "StateMachineIntrinsicsTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachine/Default/Default",
+                            "path": "StateMachineIntrinsicsTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa/Default/Default",
                             "constructInfo": {
-                              "fqn": "@aws-cdk/core.CfnResource",
+                              "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CustomResource",
+                          "fqn": "aws-cdk-lib.CustomResource",
                           "version": "0.0.0"
                         }
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
-                        "path": "StateMachineIntrinsicsTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachine/AssertionResults",
+                        "path": "StateMachineIntrinsicsTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa/AssertionResults",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CfnOutput",
+                          "fqn": "aws-cdk-lib.CfnOutput",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/integ-tests.AwsApiCall",
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
                       "version": "0.0.0"
                     }
                   },
@@ -211,7 +211,7 @@
                         "id": "Staging",
                         "path": "StateMachineIntrinsicsTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "fqn": "aws-cdk-lib.AssetStaging",
                           "version": "0.0.0"
                         }
                       },
@@ -219,7 +219,7 @@
                         "id": "Role",
                         "path": "StateMachineIntrinsicsTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CfnResource",
+                          "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
                         }
                       },
@@ -227,21 +227,21 @@
                         "id": "Handler",
                         "path": "StateMachineIntrinsicsTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CfnResource",
+                          "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.237"
+                      "version": "10.2.70"
                     }
                   },
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
                     "path": "StateMachineIntrinsicsTest/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
                     }
                   },
@@ -249,25 +249,25 @@
                     "id": "CheckBootstrapVersion",
                     "path": "StateMachineIntrinsicsTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnRule",
+                      "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
+                  "fqn": "aws-cdk-lib.Stack",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
           "version": "0.0.0"
         }
       },
@@ -276,12 +276,12 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.237"
+          "version": "10.2.70"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
+      "fqn": "aws-cdk-lib.App",
       "version": "0.0.0"
     }
   }

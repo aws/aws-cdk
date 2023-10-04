@@ -344,6 +344,8 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_4_29 = MariaDbEngineVersion.of('10.4.29', '10.4')
   /** Version "10.4.30". */
   public static readonly VER_10_4_30 = MariaDbEngineVersion.of('10.4.30', '10.4')
+  /** Version "10.4.31". */
+  public static readonly VER_10_4_31 = MariaDbEngineVersion.of('10.4.31', '10.4')
 
   /** Version "10.5" (only a major version, without a specific minor version). */
   public static readonly VER_10_5 = MariaDbEngineVersion.of('10.5', '10.5');
@@ -369,6 +371,8 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_5_20 = MariaDbEngineVersion.of('10.5.20', '10.5');
   /** Version "10.5.21". */
   public static readonly VER_10_5_21 = MariaDbEngineVersion.of('10.5.21', '10.5');
+  /** Version "10.5.22". */
+  public static readonly VER_10_5_22 = MariaDbEngineVersion.of('10.5.22', '10.5');
 
   /** Version "10.6" (only a major version, without a specific minor version). */
   public static readonly VER_10_6 = MariaDbEngineVersion.of('10.6', '10.6');
@@ -388,6 +392,15 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_6_13 = MariaDbEngineVersion.of('10.6.13', '10.6');
   /** Version "10.6.14". */
   public static readonly VER_10_6_14 = MariaDbEngineVersion.of('10.6.14', '10.6');
+  /** Version "10.6.15". */
+  public static readonly VER_10_6_15 = MariaDbEngineVersion.of('10.6.15', '10.6');
+
+  /** Version "10.11" (only a major version, without a specific minor version). */
+  public static readonly VER_10_11 = MariaDbEngineVersion.of('10.11', '10.11');
+  /** Version "10.11.4". */
+  public static readonly VER_10_11_4 = MariaDbEngineVersion.of('10.11.4', '10.11');
+  /** Version "10.11.5". */
+  public static readonly VER_10_11_5 = MariaDbEngineVersion.of('10.11.5', '10.11');
 
   /**
    * Create a new MariaDbEngineVersion with an arbitrary version.
@@ -1913,6 +1926,8 @@ export class SqlServerEngineVersion {
   public static readonly VER_15_00_4236_7_V1 = SqlServerEngineVersion.of('15.00.4236.7.v1', '15.00');
   /** Version "15.00.4312.2.v1". */
   public static readonly VER_15_00_4312_2_V1 = SqlServerEngineVersion.of('15.00.4312.2.v1', '15.00');
+  /** Version "15.00.4316.3.v1". */
+  public static readonly VER_15_00_4316_3_V1 = SqlServerEngineVersion.of('15.00.4316.3.v1', '15.00');
 
   /**
    * Create a new SqlServerEngineVersion with an arbitrary version.

@@ -1,0 +1,13 @@
+{
+  "version": "34.0.0",
+  "testCases": {
+    "integtest-lambda-invoke/DefaultTest": {
+      "stacks": [
+        "aws-cdk-schedule"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "integtest-lambda-invoke/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestlambdainvokeDefaultTestDeployAssertEC6565E6"
+    }
+  }
+}

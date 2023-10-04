@@ -62,6 +62,9 @@ export interface ScheduleTargetBaseProps {
   readonly retryAttempts?: number;
 }
 
+/**
+ * Base class for Schedule Targets
+ */
 export abstract class ScheduleTargetBase {
 
   constructor(
@@ -91,6 +94,11 @@ export abstract class ScheduleTargetBase {
     };
   }
 
+  /**
+   * Create a return a Schedule Target Configuration for the given schedule
+   * @param schedule
+   * @returnn
+   */
   bind(schedule: ISchedule): ScheduleTargetConfig {
     return this.bindBaseTargetConfig(schedule);
   }

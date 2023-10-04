@@ -749,7 +749,7 @@ describe('handler validation', () => {
           handler: 'invalidHandler',
           code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
         }),
-        runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
+        runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_0,
       });
     }).toThrow(/Canary Handler must be specified either as 'fileName.handler', 'fileName.functionName', or 'folder\/fileName.functionName'/);
 
@@ -759,7 +759,7 @@ describe('handler validation', () => {
           handler: 'canary.functionName',
           code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
         }),
-        runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
+        runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_0,
       });
     }).not.toThrow();
 
@@ -769,7 +769,7 @@ describe('handler validation', () => {
           handler: 'folder/canary.functionName',
           code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
         }),
-        runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
+        runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_0,
       });
     }).not.toThrow();
   });
