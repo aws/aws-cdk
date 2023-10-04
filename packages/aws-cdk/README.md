@@ -569,23 +569,23 @@ This feature is currently in preview. Be aware of the following limitations:
 CDK migrate is currently experimental and may have breaking changes in the future. 
 
 Generates a CDK application from an existing JSON/YAML CloudFormation template.
-Takes a valid CloudFormation template as input from either a local file specified with `--from-path`,
-or from a deployed CloudFormation stack using `--from-stack`. Generates a CDK application 
+Takes a valid CloudFormation JSON or YAML template as input from either a local file specified with `--from-path`,
+or from a deployed Cloudformation stack using `--from-stack`. Generates a CDK application 
 which will synthesize a CloudFormation template with identical resource configurations to the provided template. 
 The generated application will be initialized in the current working directory with a single stack where 
 the stack, app, and directory will all be named using the provided `--stack-name`. The generated application will 
 be within a generated subdirectory in your current working directory unless `--output-path` is specified. 
-All CDK supported lanaguages are supported, language choice can be specified with `--language`.
+All CDK supported languages are supported, language choice can be specified with `--language`.
 
 #### Generate a typescript application from a local template.json file
 
 ```console
 $ # template.json is a valid cloudformation template in the local directory
-$ cdk migrate --from-path ./template.json --stack-name MyAwesomeApplication
+$ cdk migrate --stack-name MyDeployedStack --language python --from-stack
 ```
 
-This command will generate a new direcotry named `MyAwesomeApplication` within your current working directory, and 
-then initialize a new CDK application within that directory which has the same resource configuration as the
+This command will generate a new directory named `MyAwesomeApplication` within your current working directory, and  
+then initialize a new CDK application within that directory which has the same resource configuration
 as the provided template.json
 
 This results in a CDK application with the following structure, where the lib directory contains a stack definition
@@ -596,21 +596,16 @@ with the same resource configuration as the provided template.json.
 ├── bin
 │   └── my_awesome_application.ts
 ├── cdk.json
-├── cdk.out
-│   ├── MyAwesomeApplication.assets.json
-│   ├── MyAwesomeApplication.template.json
-│   ├── cdk.out
-│   ├── manifest.json
-│   ├── synth.lock
-│   └── tree.json
 ├── jest.config.js
 ├── lib
 │   └── my_awesome_application-stack.ts
+├── package.json
+├── tsconfig.json
 ```
 
 #### Generate a python application from a deployed stack
 
-If you already had a cloudformation stack deployed in your account and would like to migrate to using CDK instead of Cloudformation.
+If you already had a CloudFormation stack deployed in your account and would like to migrate to using CDK instead of CloudFormation.
 You can use the `--from-stack` option to generate the application. In this case the `--stack-name` must match the name of the deployed stack. 
 
 ```console
@@ -618,7 +613,7 @@ $ # generate a python application from MyDeployedStack in your acount
 $ cdk bootstrap migrate --stack-name MyDeployedStack --language python --from-stack
 ```
 
-This will generate a python CDK application which will synthesize to the same configuration of resources as the deployed stack.
+This will generate a Python CDK application which will synthesize to the same configuration of resources as the deployed stack.
 
 #### **CDK Migrate Limitations**
 
@@ -631,19 +626,19 @@ provided can deploy on its own, nor does it validate that any resources in the p
 in other CloudFormation Templates. In practice this is how CDK Migrate generated applications will 
 operate in the following scenarios:
 
-##### **The provided template is already deployed to cloudformation in the account/region**
+##### **The provided template is already deployed to CloudFormation in the account/region**
 
-If the provided template came directly from a deployed cloudformation stack, and that stack has not experienced any drift, 
+If the provided template came directly from a deployed CloudFormation stack, and that stack has not experienced any drift, 
 then the generated application will be immediately deployable, and will not cause any changes to the deployed resources.
-Drift might occur if a resource in your template was modified outside of CloudFormation, namely via the console or CLI.
+Drift might occur if a resource in your template was modified outside of CloudFormation, namely via the AWS Console or AWS CLI.
 
-##### **The provided template is not deployed to cloudformation in the account/region, and there *is not* overlap with with resources outside the template**
+##### **The provided template is not deployed to CloudFormation in the account/region, and there *is not* overlap with existing resources in the account/region**
 
 If the provided template represents a set of resources that have no overlap with resources already deployed in the account/region, 
-then the generated application will be immediately deployable. A common reason for this might be because the template came 
-from a stack deployed in another account/region.
+then the generated application will be immediately deployable. This could be because the stack has never been deployed, or
+the application was generated from a stack deployed in another account/region.
 
-In practice this means for any resource in the provided template. i.e.
+In practice this means for any resource in the provided template, for example,
 
 ```Json
     "S3Bucket": {
@@ -656,9 +651,10 @@ In practice this means for any resource in the provided template. i.e.
     }
 ```
 
-There must not exist a resource of that type with the same name aka "MyBucket"
+There must not exist a resource of that type with the same identifier in the desired region. In this example that identifer 
+would be "MyBucket"
 
-##### **The provided template is not deployed to cloudformation in the account/region, and there *is* overlap with with resources outside the template**
+##### **The provided template is not deployed to CloudFormation in the account/region, and there *is* overlap with existing resources in the account/region**
 
 If the provided template represents a set of resources that have overlap with resources already deployed in the account/region, 
 then the generated application will not be immediately deployable. If those overlapped resources are already managed by 
