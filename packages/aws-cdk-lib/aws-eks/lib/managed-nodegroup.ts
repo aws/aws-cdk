@@ -521,24 +521,21 @@ export class Nodegroup extends Resource implements INodegroup {
   }
 
   private validateUpdateConfig(maxUnavailable?: number, maxUnavailablePercentage?: number) {
-
-    if (maxUnavailable || maxUnavailablePercentage) {
-      if (maxUnavailable && maxUnavailablePercentage) {
-        throw new Error('maxUnavailable and maxUnavailablePercentage are not allowed to be defined together');
+    if (!maxUnavailable && !maxUnavailablePercentage) return;
+    if (maxUnavailable && maxUnavailablePercentage) {
+      throw new Error('maxUnavailable and maxUnavailablePercentage are not allowed to be defined together');
+    }
+    if (maxUnavailablePercentage && (maxUnavailablePercentage < 1 || maxUnavailablePercentage > 100)) {
+      throw new Error(`maxUnavailablePercentage must be between 1 and 100, got ${maxUnavailablePercentage}`);
+    }
+    if (maxUnavailable) {
+      if (maxUnavailable > this.maxSize) {
+        throw new Error(`maxUnavailable must be lower than maxSize (${this.maxSize}), got ${maxUnavailable}`);
       }
-      if (maxUnavailablePercentage && (maxUnavailablePercentage < 1 || maxUnavailablePercentage > 100)) {
-        throw new Error(`maxUnavailablePercentage must be between 1 and 100, got ${maxUnavailablePercentage}`);
-      }
-      if (maxUnavailable) {
-        if (maxUnavailable > this.maxSize) {
-          throw new Error(`maxUnavailable must be lower than maxSize (${this.maxSize}), got ${maxUnavailable}`);
-        }
-        if (maxUnavailable < 1 || maxUnavailable > 100) {
-          throw new Error(`maxUnavailable must be between 1 and 100, got ${maxUnavailable}`);
-        }
+      if (maxUnavailable < 1 || maxUnavailable > 100) {
+        throw new Error(`maxUnavailable must be between 1 and 100, got ${maxUnavailable}`);
       }
     }
-  }
 }
 
 /**
