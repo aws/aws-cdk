@@ -570,7 +570,7 @@ CDK migrate is currently experimental and may have breaking changes in the futur
 
 Generates a CDK application from an existing JSON/YAML CloudFormation template.
 Takes a valid CloudFormation template as input from either a local file specified with `--from-path`,
-or from a deployed Cloudformation stack using `--from-stack`. Generates a CDK application 
+or from a deployed CloudFormation stack using `--from-stack`. Generates a CDK application 
 which will synthesize a CloudFormation template with identical resource configurations to the provided template. 
 The generated application will be initialized in the current working directory with a single stack where 
 the stack, app, and directory will all be named using the provided `--stack-name`. The generated application will 
