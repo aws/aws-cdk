@@ -1,0 +1,19 @@
+{
+  "version": "34.0.0",
+  "files": {
+    "64af78e158883036644df105c31e63932b231bc7403c4ace65359b628e12a0fe": {
+      "source": {
+        "path": "aws-cdk-scheduler-targets-sfn-start-execution.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "64af78e158883036644df105c31e63932b231bc7403c4ace65359b628e12a0fe.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
