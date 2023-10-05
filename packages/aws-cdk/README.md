@@ -568,7 +568,7 @@ This feature currently has the following limitations:
 
 CDK Migrate is currently experimental and may have breaking changes in the future. 
 
-Generates a CDK application using an existing CloudFormation template in JSON or YAML format. 
+CDK Migrate Generates a CDK application using an existing CloudFormation template in JSON or YAML format. 
 Templates can be provided from either from a local file using `--from-path` or directly from a
 deployed CloudFormation stack with `--from-stack`. The generated CDK application will 
 synthesize a CloudFormation template with identical resource configurations to the provided template. 
@@ -626,12 +626,12 @@ This will generate a Python CDK application which will synthesize the same confi
 It simply generates a CDK application which will synthesize a template that has identical resource configurations 
 to the provided template. 
 
-- CDK Migrate does not interact with the CloudFormation service to verify the template 
+  - CDK Migrate does not interact with the CloudFormation service to verify the template 
 provided can deploy on its own. This means CDK Migrate will not verify that any resources in the provided 
 template are already managed in other CloudFormation templates, nor will it verify that the resources in the provided
 template are available in the desired regions, which may impact ADC or Opt-In regions. 
 
-- If the provided template has parameters without default values, those will need to be provided
+  - If the provided template has parameters without default values, those will need to be provided
 before deploying the generated application.
 
 In practice this is how CDK Migrate generated applications will operate in the following scenarios:
@@ -669,7 +669,7 @@ In practice this means for any resource in the provided template, for example,
     }
 ```
 
-There must not exist a resource of that type with the same identifier in the desired region. In this example that identifer 
+There must not exist a resource of that type with the same identifier in the desired region. In this example that identfier 
 would be "MyBucket"
 
 ##### **The provided template is not deployed to CloudFormation in the account/region, and there *is* overlap with existing resources in the account/region**
@@ -678,7 +678,7 @@ If the provided template represents a set of resources that overlap with resourc
 then the generated application will not be immediately deployable. If those overlapped resources are already managed by 
 another CloudFormation stack in that account/region, then those resources will need to be manually removed from the provided
 template. Otherwise, if the overlapped resources are not managed by another CloudFormation stack, then first remove those
-resources from your CDK Application STack and deploy the cdk application successfully, then re-add them and run `cdk import` 
+resources from your CDK Application Stack, deploy the cdk application successfully, then re-add them and run `cdk import` 
 to import them into your deployed stack.
 
 ### `cdk destroy`
