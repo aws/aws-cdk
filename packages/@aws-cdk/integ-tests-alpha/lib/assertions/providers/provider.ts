@@ -1,8 +1,7 @@
 import * as path from 'path';
 import { Duration, CfnResource, AssetStaging, Stack, FileAssetPackaging, Token, Lazy, Reference } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
-
-let SDK_METADATA: any = undefined;
+import { awsSdkToIamAction } from 'aws-cdk-lib/custom-resources/lib/helpers-internal';
 
 /**
  * Properties for a lambda function provider
@@ -157,15 +156,8 @@ class SingletonFunction extends Construct {
    * Create a policy statement from a specific api call
    */
   public addPolicyStatementFromSdkCall(service: string, api: string, resources?: string[]): void {
-    if (SDK_METADATA === undefined) {
-      // eslint-disable-next-line
-      SDK_METADATA = require('./sdk-api-metadata.json');
-    }
-    const srv = service.toLowerCase();
-    const iamService = (SDK_METADATA[srv] && SDK_METADATA[srv].prefix) || srv;
-    const iamAction = api.charAt(0).toUpperCase() + api.slice(1);
     this.lambdaFunction.addPolicies([{
-      Action: [`${iamService}:${iamAction}`],
+      Action: [awsSdkToIamAction(service, api)],
       Effect: 'Allow',
       Resource: resources || ['*'],
     }]);
