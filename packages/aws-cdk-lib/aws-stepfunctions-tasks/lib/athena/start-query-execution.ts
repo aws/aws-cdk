@@ -88,7 +88,7 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
     }
     const invalidExecutionParameters = executionParameters.some(p => p.length < 1 || p.length > 1024);
     if (invalidExecutionParameters) {
-        throw new Error('\'executionParameters\' items\'s length must be between 1 and 1024 characters');
+      throw new Error('\'executionParameters\' items\'s length must be between 1 and 1024 characters');
     }
   }
 
