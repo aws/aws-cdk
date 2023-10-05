@@ -1,5 +1,3 @@
-// done
-
 import * as cdk from '../../../core';
 import { Stack } from '../../../core';
 import { CodeBuildStep, CodePipeline, CodePipelineSource } from '../../../pipelines';

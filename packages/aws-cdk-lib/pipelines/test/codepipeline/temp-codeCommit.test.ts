@@ -1,5 +1,3 @@
-//hello
-
 import * as codecommit from '../../../aws-codecommit';
 import * as cdk from '../../../core';
 import { Stack } from '../../../core';
@@ -14,7 +12,7 @@ const repo = new codecommit.Repository(stack, 'WorkshopRepositoryMain', {
   repositoryName: 'WorkshopRepoMain',
 });
 
-const githubPipeline = new CodePipeline(stack, 'GithubPipeline', {
+const codeCommitPipeline = new CodePipeline(stack, 'CodeCommitPipeline', {
   pipelineName: 'WorkshopPipelineName1',
   synth: new CodeBuildStep('SynthStep1', {
     input: CodePipelineSource.codeCommit(repo, 'b1', {

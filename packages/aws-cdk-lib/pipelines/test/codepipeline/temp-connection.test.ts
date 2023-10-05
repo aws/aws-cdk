@@ -1,6 +1,3 @@
-// done
-
-import * as codecommit from '../../../aws-codecommit';
 import * as cdk from '../../../core';
 import { Stack } from '../../../core';
 import { CodeBuildStep, CodePipeline, CodePipelineSource } from '../../../pipelines';
@@ -38,12 +35,6 @@ const connectionPipeline = new CodePipeline(stack, 'ConnectionPipeline', {
 });
 
 test('connection synths', () => {
-  /*
-  expect(() => {
-    const assembly = app.synth();
-  }).toThrowError(/abc/);
-  ///Node with duplicate id:/);
-  */
   const assembly = app.synth();
   expect(assembly.stacks.length).toEqual(1);
 });
