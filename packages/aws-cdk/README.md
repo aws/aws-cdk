@@ -568,20 +568,21 @@ This feature currently has the following limitations:
 
 CDK migrate is currently experimental and may have breaking changes in the future. 
 
-Generates a CDK application from an existing JSON/YAML CloudFormation template.
-Takes a valid CloudFormation JSON or YAML template as input from either a local file specified with `--from-path`,
-or from a deployed Cloudformation stack using `--from-stack`. Generates a CDK application 
-which will synthesize a CloudFormation template with identical resource configurations to the provided template. 
+Generates a CDK application using an existing CloudFormation template in JSON or YAML format. 
+Templates can be provided from either from a local file using --from-path or directly from a 
+deployed CloudFormation stack with --from-stack. The generated CDK application will 
+synthesize a CloudFormation template with identical resource configurations to the provided template. 
 The generated application will be initialized in the current working directory with a single stack where 
-the stack, app, and directory will all be named using the provided `--stack-name`. The generated application will 
-be within a generated subdirectory in your current working directory unless `--output-path` is specified. 
+the stack, app, and directory will all be named using the provided `--stack-name`. It will also
+be within a generated subdirectory in your current working directory unless `--output-path` is specified.
+If a directory already exists with the same name as `--stack-name`, it will be replaced with the new application.
 All CDK supported languages are supported, language choice can be specified with `--language`.
 
 #### Generate a typescript application from a local template.json file
 
 ```console
 $ # template.json is a valid cloudformation template in the local directory
-$ cdk migrate --stack-name MyDeployedStack --language python --from-stack
+$ cdk migrate --stack-name MyAwesomeApplication --language typescript --from-path MyTemplate.json
 ```
 
 This command will generate a new directory named `MyAwesomeApplication` within your current working directory, and  
@@ -609,29 +610,39 @@ If you already had a CloudFormation stack deployed in your account and would lik
 You can use the `--from-stack` option to generate the application. In this case the `--stack-name` must match the name of the deployed stack. 
 
 ```console
-$ # generate a python application from MyDeployedStack in your acount
+$ # generate a python application from MyDeployedStack in your account
 $ cdk bootstrap migrate --stack-name MyDeployedStack --language python --from-stack
 ```
 
-This will generate a Python CDK application which will synthesize to the same configuration of resources as the deployed stack.
+This will generate a Python CDK application which will synthesize the same configuration of resources as the deployed stack.
 
 #### **CDK Migrate Limitations**
 
-| Situation                                                                     | Result                                                                                            |
-| ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| Provided Template + stack-name is from a deployed stack in the account/region                     | The CDK application will deploy as the existing stack                         |
+* CDK Migrate does not currently support nested stacks, custom resources, or the `Fn::ForEach` intrinsic function.
+
+* CDK Migrate will only generate L1 constructs and does not currently support any higher level abstractions.
+
+* CDK Migrate successfully generating an application does *not* guarantee the application is immediately deployable.
+It simply generates a CDK application which will synthesize a template that has identical resource configurations 
+to the provided template. 
+
+* CDK Migrate does not interact with the CloudFormation service to verify the template 
+provided can deploy on its own. This means CDK Migrate will not verify that any resources in the provided 
+template are already managed in other CloudFormation templates, nor will it verify that the resources in the provided
+template are available in the desired regions, which may impact ADC or Opt-In regions. 
+
+* If the provided template has parameters without default values, those will need to be will need to be provided
+before deploying the generated application.
+
+In practice this is how CDK Migrate generated applications will operate in the following scenarios:
+
+| Situation                                                                                         | Result                                                                        |
+| ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Provided Template + stack-name is from a deployed stack in the account/region                     | The CDK application will deploy as a changeset to the existing stack          |
 | Provided Template has no overlap with resources already in the account/region                     | The CDK application will deploy a new stack successfully                      |
 | Provided Template has overlap with Cloudformation managed resources already in the account/region | The CDK application will not be deployable unless those resources are removed |
 | Provided Template has overlap with unmanaged resources already in the account/region              | The CDK application will not be deployable until those resources are adopted with CDK Import |
 
-CDK Migrate does not currently support nested stacks, Custom resources, or the `Fn::ForEach` intrinsic function.
-CDK Migrate will only generate L1 constructs and does not currently support any higher level abstractions.
-CDK Migrate succesfully generating an application does *not* guarantee the application is immediately deployable.
-It simply generates a CDK application which will synthesize a template that has identical resource configurations 
-to the provided template. CDK Migrate does not interact with the CloudFormation service to verify the template 
-provided can deploy on its own, nor does it validate that any resources in the provided template are already managed 
-in other CloudFormation Templates. In practice this is how CDK Migrate generated applications will 
-operate in the following scenarios:
 
 ##### **The provided template is already deployed to CloudFormation in the account/region**
 
@@ -663,7 +674,7 @@ would be "MyBucket"
 
 ##### **The provided template is not deployed to CloudFormation in the account/region, and there *is* overlap with existing resources in the account/region**
 
-If the provided template represents a set of resources that have overlap with resources already deployed in the account/region, 
+If the provided template represents a set of resources overlap with resources already deployed in the account/region, 
 then the generated application will not be immediately deployable. If those overlapped resources are already managed by 
 another CloudFormation stack in that account/region, then those resources will need to be manually removed from the provided
 template. Otherwise, if the overlapped resources are not managed by another CloudFormation stack, then first run remove those
