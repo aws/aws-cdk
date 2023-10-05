@@ -253,7 +253,7 @@ class GitHubSource extends CodePipelineSource {
   private readonly authentication: SecretValue;
 
   constructor(repoString: string, readonly branch: string, readonly props: GitHubSourceOptions) {
-    super(props.actionName ?? repoString);
+    super(`${repoString}-${branch}`);
 
     const parts = repoString.split('/');
     if (Token.isUnresolved(repoString) || parts.length !== 2) {
@@ -278,6 +278,12 @@ class GitHubSource extends CodePipelineSource {
       variablesNamespace,
     });
   }
+
+  /*
+  private getNodeId(scope: Construct, oldId: string, newId: string): string {
+    return FeatureFlags.of(scope).isEnabled(cxapi.ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY) ? newId : oldId;
+  }
+  */
 }
 
 /**
@@ -312,7 +318,7 @@ export interface S3SourceOptions {
 
 class S3Source extends CodePipelineSource {
   constructor(readonly bucket: IBucket, private readonly objectKey: string, readonly props: S3SourceOptions) {
-    super(props.actionName ?? Node.of(bucket).addr); // Node.of deprecated, fix this?
+    super(`${Node.of(bucket).addr}-${objectKey}`);
 
     this.configurePrimaryOutput(new FileSet('Source', this));
   }
@@ -353,7 +359,7 @@ export interface ECRSourceOptions {
 
 class ECRSource extends CodePipelineSource {
   constructor(readonly repository: IRepository, readonly props: ECRSourceOptions) {
-    super(props.actionName ?? Node.of(repository).addr); // same thing here
+    super(Node.of(repository).addr);
 
     this.configurePrimaryOutput(new FileSet('Source', this));
   }
@@ -422,7 +428,7 @@ class CodeStarConnectionSource extends CodePipelineSource {
   private readonly repo: string;
 
   constructor(repoString: string, readonly branch: string, readonly props: ConnectionSourceOptions) {
-    super(props.actionName ?? repoString);
+    super(`${repoString}-${branch}`);
 
     const parts = repoString.split('/');
     if (Token.isUnresolved(repoString) || parts.length !== 2) {
@@ -491,9 +497,9 @@ export interface CodeCommitSourceOptions {
 
 class CodeCommitSource extends CodePipelineSource {
   constructor(private readonly repository: codecommit.IRepository, private readonly branch: string, private readonly props: CodeCommitSourceOptions) {
-    super(props.actionName ?? Token.isUnresolved(repository.repositoryName)
-      ? Node.of(repository).addr
-      : repository.repositoryName); // same thing here?
+    super(Token.isUnresolved(repository.repositoryName)
+      ? `${Node.of(repository).addr}-${branch}`
+      : `${repository.repositoryName}-${branch}`);
 
     this.configurePrimaryOutput(new FileSet('Source', this));
   }
