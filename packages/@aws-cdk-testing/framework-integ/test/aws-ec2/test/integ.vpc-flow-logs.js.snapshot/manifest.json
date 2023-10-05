@@ -14,7 +14,6 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "FlowLogsFeatureFlag.template.json",
-        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -266,7 +265,6 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "FlowLogsTestStack.template.json",
-        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -518,7 +516,6 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "DependencyTestStack.template.json",
-        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -715,84 +712,6 @@
       },
       "displayName": "DependencyTestStack"
     },
-    "TransitGatewayFlowLogStack.assets": {
-      "type": "cdk:asset-manifest",
-      "properties": {
-        "file": "TransitGatewayFlowLogStack.assets.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-      }
-    },
-    "TransitGatewayFlowLogStack": {
-      "type": "aws:cloudformation:stack",
-      "environment": "aws://unknown-account/unknown-region",
-      "properties": {
-        "templateFile": "TransitGatewayFlowLogStack.template.json",
-        "terminationProtection": false,
-        "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6cd4f2fb2e9ccebf6e628c43a73d2bfd39e3ce0559ce3e1eb89bc47068422002.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
-        "additionalDependencies": [
-          "TransitGatewayFlowLogStack.assets"
-        ],
-        "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
-          "requiresBootstrapStackVersion": 8,
-          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-        }
-      },
-      "dependencies": [
-        "TransitGatewayFlowLogStack.assets"
-      ],
-      "metadata": {
-        "/TransitGatewayFlowLogStack/TransitGateway": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TransitGateway"
-          }
-        ],
-        "/TransitGatewayFlowLogStack/FlowLogsCW/IAMRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FlowLogsCWIAMRole017AD736"
-          }
-        ],
-        "/TransitGatewayFlowLogStack/FlowLogsCW/IAMRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FlowLogsCWIAMRoleDefaultPolicy943C8A20"
-          }
-        ],
-        "/TransitGatewayFlowLogStack/FlowLogsCW/LogGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FlowLogsCWLogGroup0398E8F8"
-          }
-        ],
-        "/TransitGatewayFlowLogStack/FlowLogsCW/FlowLog": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FlowLogsCWFlowLog9CED86DA"
-          }
-        ],
-        "/TransitGatewayFlowLogStack/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/TransitGatewayFlowLogStack/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
-      "displayName": "TransitGatewayFlowLogStack"
-    },
     "FlowLogsDefaultTestDeployAssert6AFD1854.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -806,11 +725,10 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "FlowLogsDefaultTestDeployAssert6AFD1854.template.json",
-        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5d5e1f031198bd6c212cf3f11c6babb0118d8126ec24ec36821e6384e871c53a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0a54fc4eb92f43bc428991ec5ccf193c763471cfe51cb381fffe1f268e780105.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
