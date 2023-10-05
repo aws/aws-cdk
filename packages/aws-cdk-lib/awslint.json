@@ -687,7 +687,6 @@
     "docs-public-apis:aws-cdk-lib.aws_logs.DataIdentifier.PERMANENTRESIDENCENUMBER_CA",
     "docs-public-apis:aws-cdk-lib.aws_logs.DataIdentifier.PERSONALHEALTHNUMBER_CA",
     "docs-public-apis:aws-cdk-lib.aws_logs.DataIdentifier.PGPPRIVATEKEY",
-    "docs-public-apis:aws-cdk-lib.aws_logs.DataIdentifier.PHONENUMBER",
     "docs-public-apis:aws-cdk-lib.aws_logs.DataIdentifier.PHONENUMBER_BR",
     "docs-public-apis:aws-cdk-lib.aws_logs.DataIdentifier.PHONENUMBER_DE",
     "docs-public-apis:aws-cdk-lib.aws_logs.DataIdentifier.PHONENUMBER_ES",
