@@ -74,7 +74,7 @@ export function singletonEventRole(scope: IConstruct): iam.IRole {
 
   const role = new iam.Role(scope as Construct, id, {
     roleName: PhysicalName.GENERATE_IF_NEEDED,
-    assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
+    assumedBy: new iam.ServicePrincipal('scheduler.amazonaws.com'),
   });
 
   return role;
