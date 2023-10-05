@@ -740,3 +740,26 @@ it('throws validation errors of the specific queue prop, when setting queue and 
     });
   }).toThrow(new Error('visibilityTimeout can be set only when queue is not set. Specify them in the QueueProps of the queue'));
 });
+// Test to verify that the QueueProcessingFargateService correctly uses a provided taskDefinition
+test('test taskDefinition prop is respected', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDefinition', {
+    cpu: 256,
+    memoryLimitMiB: 512,
+  });
+
+  // WHEN
+  new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
+    cluster,
+    taskDefinition,
+    image: ecs.ContainerImage.fromRegistry('test'),
+  });
+
+  // THEN - The created service uses the provided taskDefinition
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+    TaskDefinition: taskDefinition.taskDefinitionArn,
+  });
+});
