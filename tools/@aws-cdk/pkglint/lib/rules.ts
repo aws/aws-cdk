@@ -1043,16 +1043,16 @@ export class RegularDependenciesMustSatisfyPeerDependencies extends ValidationRu
   public readonly name = 'dependencies/peer-dependencies-satisfied';
 
   public validate(pkg: PackageJson): void {
-    for (const [depName, peerVersion] of Object.entries(pkg.peerDependencies)) {
-      const depVersion = pkg.dependencies[depName];
-      if (depVersion === undefined) { continue; }
+    for (const [depName, peerRange] of Object.entries(pkg.peerDependencies)) {
+      const depRange = pkg.dependencies[depName];
+      if (depRange === undefined) { continue; }
 
       // Make sure that depVersion satisfies peerVersion.
-      if (!semver.satisfies(depVersion, peerVersion, { includePrerelease: true })) {
+      if (!semver.intersects(depRange, peerRange, { includePrerelease: true })) {
         pkg.report({
           ruleName: this.name,
-          message: `dependency ${depName}: concrete version ${depVersion} does not match peer version '${peerVersion}'`,
-          fix: () => pkg.addPeerDependency(depName, depVersion),
+          message: `dependency ${depName}: concrete version ${depRange} does not match peer version '${peerRange}'`,
+          fix: () => pkg.addPeerDependency(depName, depRange),
         });
       }
     }
