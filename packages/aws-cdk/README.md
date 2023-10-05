@@ -618,20 +618,20 @@ This will generate a Python CDK application which will synthesize the same confi
 
 #### **CDK Migrate Limitations**
 
-* CDK Migrate does not currently support nested stacks, custom resources, or the `Fn::ForEach` intrinsic function.
+- CDK Migrate does not currently support nested stacks, custom resources, or the `Fn::ForEach` intrinsic function.
 
-* CDK Migrate will only generate L1 constructs and does not currently support any higher level abstractions.
+- CDK Migrate will only generate L1 constructs and does not currently support any higher level abstractions.
 
-* CDK Migrate successfully generating an application does *not* guarantee the application is immediately deployable.
+- CDK Migrate successfully generating an application does *not* guarantee the application is immediately deployable.
 It simply generates a CDK application which will synthesize a template that has identical resource configurations 
 to the provided template. 
 
-* CDK Migrate does not interact with the CloudFormation service to verify the template 
+- CDK Migrate does not interact with the CloudFormation service to verify the template 
 provided can deploy on its own. This means CDK Migrate will not verify that any resources in the provided 
 template are already managed in other CloudFormation templates, nor will it verify that the resources in the provided
 template are available in the desired regions, which may impact ADC or Opt-In regions. 
 
-* If the provided template has parameters without default values, those will need to be will need to be provided
+- If the provided template has parameters without default values, those will need to be will need to be provided
 before deploying the generated application.
 
 In practice this is how CDK Migrate generated applications will operate in the following scenarios:
