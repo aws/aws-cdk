@@ -69,12 +69,16 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
     super(scope, id, props);
 
     // Create a Task Definition for the container to start
-    this.taskDefinition = new FargateTaskDefinition(this, 'QueueProcessingTaskDef', {
-      memoryLimitMiB: props.memoryLimitMiB || 512,
-      cpu: props.cpu || 256,
-      family: props.family,
-      runtimePlatform: props.runtimePlatform,
-    });
+    if (props.taskDefinition) {
+      this.taskDefinition = props.taskDefinition;
+    } else {
+      this.taskDefinition = new FargateTaskDefinition(this, 'QueueProcessingTaskDef', {
+        memoryLimitMiB: props.memoryLimitMiB || 512,
+        cpu: props.cpu || 256,
+        family: props.family,
+        runtimePlatform: props.runtimePlatform,
+      });
+    }
 
     const containerName = props.containerName ?? 'QueueProcessingContainer';
 
