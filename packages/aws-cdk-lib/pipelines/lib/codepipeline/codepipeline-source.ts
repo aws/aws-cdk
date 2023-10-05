@@ -278,12 +278,6 @@ class GitHubSource extends CodePipelineSource {
       variablesNamespace,
     });
   }
-
-  /*
-  private getNodeId(scope: Construct, oldId: string, newId: string): string {
-    return FeatureFlags.of(scope).isEnabled(cxapi.ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY) ? newId : oldId;
-  }
-  */
 }
 
 /**
