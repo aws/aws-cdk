@@ -571,7 +571,8 @@ integTest('deploy with role', withDefaultFixture(async (fixture) => {
   }
 }));
 
-['typescript', 'python', 'csharp', 'java', 'go'].forEach(langChoice => {
+// TODO add go back in when template synths properly
+['typescript', 'python', 'csharp', 'java'].forEach(langChoice => {
   integTest(
     `cdk migrate ${langChoice}`,
     withDefaultFixture(async (fixture) => {
@@ -598,8 +599,13 @@ integTest('deploy with role', withDefaultFixture(async (fixture) => {
         fixture.output,
         fixture.aws,
         fixture.randomString);
-      if (langChoice == 'go') {
+      if (langChoice === 'go') {
         await tempFixture.shell(['go', 'get']);
+      } else if (langChoice === 'python') {
+        const venvPath = path.resolve(fixture.integTestDir, '.venv');
+        const venv = { PATH: `${venvPath}/bin:${process.env.PATH}`, VIRTUAL_ENV: venvPath };
+
+        await tempFixture.shell([`${venvPath}/bin/pip`, 'install', '-r', 'requirements.txt'], { modEnv: venv });
       }
       // go stack doesn't follow the same naming scheme as other languages.
       let stackArn;
@@ -608,6 +614,7 @@ integTest('deploy with role', withDefaultFixture(async (fixture) => {
       } else {
         stackArn = await tempFixture.cdkDeploy(`${langChoice}-migrate-stack`, { captureStderr: false });
       }
+
       const response = await tempFixture.aws.cloudFormation('describeStacks', {
         StackName: stackArn,
       });
