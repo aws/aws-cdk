@@ -609,6 +609,7 @@ describe('event bus', () => {
     // THEN
     expect(add1.statementAdded).toBe(true);
     expect(add2.statementAdded).toBe(true);
+    Template.fromStack(stack).resourceCountIs('AWS::Events::EventBusPolicy', 2);
   });
 
   test('Event Bus policy statements must have a sid', () => {
