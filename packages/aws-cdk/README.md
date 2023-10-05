@@ -421,7 +421,8 @@ Hotswapping is currently supported for the following changes
 - Container asset changes of AWS ECS Services.
 - Website asset changes of AWS S3 Bucket Deployments.
 - Source and Environment changes of AWS CodeBuild Projects.
-- VTL mapping template changes for AppSync Resolvers and Functions
+- VTL mapping template changes for AppSync Resolvers and Functions.
+- Schema changes for AppSync GraphQL Apis.
 
 **⚠ Note #1**: This command deliberately introduces drift in CloudFormation stacks in order to speed up deployments.
 For this reason, only use it for development purposes.
@@ -430,7 +431,7 @@ For this reason, only use it for development purposes.
 **⚠ Note #2**: This command is considered experimental,
 and might have breaking changes in the future.
 
-**⚠ Note #3**: Expected defaults for certain parameters may be different with the hotswap parameter. For example, an ECS service's minimum healthy percentage will currently be set to 0. Please review the source accordingly if this occurs. 
+**⚠ Note #3**: Expected defaults for certain parameters may be different with the hotswap parameter. For example, an ECS service's minimum healthy percentage will currently be set to 0. Please review the source accordingly if this occurs.
 
 ### `cdk watch`
 
@@ -547,17 +548,17 @@ To import an existing resource to a CDK stack, follow the following steps:
 
 #### Limitations
 
-This feature is currently in preview. Be aware of the following limitations:
+This feature currently has the following limitations:
 
-- Importing resources in nested stacks is not possible.
-- Uses the deploy role credentials (necessary to read the encrypted staging
-  bucket). Requires a new version (version 12) of the bootstrap stack, for the added
-  IAM permissions to the `deploy-role`.
+- Importing resources into nested stacks is not possible.
 - There is no check on whether the properties you specify are correct and complete
   for the imported resource. Try starting a drift detection operation after importing.
 - Resources that depend on other resources must all be imported together, or one-by-one
-  in the right order. The CLI will not help you import dependent resources in the right
-  order, the CloudFormation deployment will fail with unresolved references.
+  in the right order. If you do not, the CloudFormation deployment will fail
+  with unresolved references.
+- Uses the deploy role credentials (necessary to read the encrypted staging
+  bucket). Requires version 12 of the bootstrap stack, for the added
+  IAM permissions to the `deploy-role`.
 
 ### `cdk destroy`
 
@@ -618,7 +619,7 @@ boundaries see the [Security And Safety Dev Guide](https://github.com/aws/aws-cd
 
 Once a bootstrap template has been deployed with a set of parameters, you must
 use the `--no-previous-parameters` CLI flag to change any of these parameters on
-future deployments. 
+future deployments.
 
 > **Note** Please note that when you use this flag, you must resupply
 >*all* previously supplied parameters.
