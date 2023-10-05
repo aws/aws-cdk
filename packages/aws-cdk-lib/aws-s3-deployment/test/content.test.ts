@@ -1,3 +1,5 @@
+import { Vpc } from '../../aws-ec2';
+import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
 import { Lazy, Stack } from '../../core';
@@ -52,6 +54,26 @@ test('string with a "Fn::GetAtt" token', () => {
   });
 });
 
+test('string is a single "Fn::Select" token', () => {
+  const stack = new Stack();
+  const bucket = new s3.Bucket(stack, 'Bucket');
+
+  expect(renderData(stack, bucket.bucketWebsiteDomainName)).toStrictEqual({
+    text: '<<marker:0xbaba:0>>',
+    markers: { '<<marker:0xbaba:0>>': { 'Fn::Select': [2, { 'Fn::Split': ['/', { 'Fn::GetAtt': ['Bucket83908E77', 'WebsiteURL'] }] }] } },
+  });
+});
+
+test('string with a "Fn::Select" token', () => {
+  const stack = new Stack();
+  const bucket = new s3.Bucket(stack, 'Bucket');
+
+  expect(renderData(stack, `test.${bucket.bucketWebsiteDomainName}`)).toStrictEqual({
+    text: 'test.<<marker:0xbaba:0>>',
+    markers: { '<<marker:0xbaba:0>>': { 'Fn::Select': [2, { 'Fn::Split': ['/', { 'Fn::GetAtt': ['Bucket83908E77', 'WebsiteURL'] }] }] } },
+  });
+});
+
 test('multiple markers', () => {
   const stack = new Stack();
   const bucket = new s3.Bucket(stack, 'Bucket');
@@ -68,16 +90,29 @@ test('multiple markers', () => {
 test('json-encoded string', () => {
   const stack = new Stack();
   const bucket = new s3.Bucket(stack, 'Bucket');
+  const tg = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup');
+  const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc: new Vpc(stack, 'vpc') });
+  lb.addListener('Listener', { port: 80, defaultTargetGroups: [tg] });
   const json = {
     BucketArn: bucket.bucketArn,
     BucketName: bucket.bucketName,
+    ComplexFnSelect: tg.firstLoadBalancerFullName + '/' + tg.targetGroupFullName,
   };
 
+  const expectedTextResult = {
+    BucketArn: '<<marker:0xbaba:0>>',
+    BucketName: '<<marker:0xbaba:1>>',
+    ComplexFnSelect: '<<marker:0xbaba:2>>/<<marker:0xbaba:3>>/<<marker:0xbaba:4>>/<<marker:0xbaba:5>>',
+  };
   expect(renderData(stack, JSON.stringify(json))).toStrictEqual({
-    text: JSON.stringify({ BucketArn: '<<marker:0xbaba:0>>', BucketName: '<<marker:0xbaba:1>>' }),
+    text: JSON.stringify(expectedTextResult),
     markers: {
       '<<marker:0xbaba:0>>': { 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] },
       '<<marker:0xbaba:1>>': { Ref: 'Bucket83908E77' },
+      '<<marker:0xbaba:2>>': { 'Fn::Select': [1, { 'Fn::Split': ['/', { Ref: 'LBListener49E825B4' }] }] },
+      '<<marker:0xbaba:3>>': { 'Fn::Select': [2, { 'Fn::Split': ['/', { Ref: 'LBListener49E825B4' }] }] },
+      '<<marker:0xbaba:4>>': { 'Fn::Select': [3, { 'Fn::Split': ['/', { Ref: 'LBListener49E825B4' }] }] },
+      '<<marker:0xbaba:5>>': { 'Fn::GetAtt': ['TargetGroup3D7CD9B8', 'TargetGroupFullName'] },
     },
   });
 });
