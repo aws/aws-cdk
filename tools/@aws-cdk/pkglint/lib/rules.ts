@@ -1048,7 +1048,7 @@ export class RegularDependenciesMustSatisfyPeerDependencies extends ValidationRu
       if (depVersion === undefined) { continue; }
 
       // Make sure that depVersion satisfies peerVersion.
-      if (!semver.intersects(depVersion, peerVersion)) {
+      if (!semver.satisfies(depVersion, peerVersion, { includePrerelease: true })) {
         pkg.report({
           ruleName: this.name,
           message: `dependency ${depName}: concrete version ${depVersion} does not match peer version '${peerVersion}'`,
