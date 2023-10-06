@@ -44,6 +44,13 @@ export abstract class SubnetFilter {
   }
 
   /**
+   * Chooses subnets which are inside of the CIDR Range.
+   */
+  public static byCidrRanges(vpcCidrs: string[]): SubnetFilter {
+    return new CidrRangeSubnetFilter(vpcCidrs);
+  }
+
+  /**
    * Executes the subnet filtering logic, returning a filtered set of subnets.
    */
   public selectSubnets(_subnets: ISubnet[]): ISubnet[] {
@@ -166,6 +173,36 @@ class CidrMaskSubnetFilter extends SubnetFilter {
     return subnets.filter(subnet => {
       const subnetCidr = new CidrBlock(subnet.ipv4CidrBlock);
       return subnetCidr.mask === this.mask;
+    });
+  }
+}
+
+/**
+ * Chooses subnets based on the CIDR Range
+ */
+class CidrRangeSubnetFilter extends SubnetFilter {
+
+  private readonly cidrRanges: string[]
+
+  constructor(cidrRanges: string[]) {
+    super();
+    this.cidrRanges = cidrRanges;
+  }
+
+  /**
+   * Executes the subnet filtering logic.
+   */
+  public selectSubnets(subnets: ISubnet[]): ISubnet[] {
+    return this.checkCidrRange(subnets, this.cidrRanges);
+  }
+
+  private checkCidrRange(subnets: ISubnet[], cidrRanges: string[]): ISubnet[] {
+    const vpcCidrs = cidrRanges.map(cidr => {
+      return new CidrBlock(cidr);
+    });
+    return subnets.filter(s => {
+      const subnetCidrBlock = new CidrBlock(s.ipv4CidrBlock);
+      return vpcCidrs.some(cidr => cidr.containsCidr(subnetCidrBlock));
     });
   }
 }

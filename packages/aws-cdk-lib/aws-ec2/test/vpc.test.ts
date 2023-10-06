@@ -2261,6 +2261,46 @@ describe('vpc', () => {
 
     });
 
+    test('can filter by multiple CIDR Ranges', () => {
+      // GIVEN
+      const stack = getTestStack();
+
+      // IP space is split into 6 pieces, one public/one private per AZ
+      const vpc = new Vpc(stack, 'VPC', {
+        ipAddresses: IpAddresses.cidr('10.0.0.0/16'),
+        maxAzs: 3,
+      });
+
+      // WHEN
+      // We want to place this endpoint in the same subnets as these IPv4
+      // address.
+      // WHEN
+      new InterfaceVpcEndpoint(stack, 'VPC Endpoint', {
+        vpc,
+        service: new InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc', 443),
+        subnets: {
+          subnetFilters: [SubnetFilter.byCidrRanges(['10.0.0.0/16'])],
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc',
+        SubnetIds: [
+          {
+            Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
+          },
+          {
+            Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
+          },
+          {
+            Ref: 'VPCPrivateSubnet3Subnet3EDCD457',
+          },
+        ],
+      });
+
+    });
+
     test('tests router types', () => {
       // GIVEN
       const stack = getTestStack();
