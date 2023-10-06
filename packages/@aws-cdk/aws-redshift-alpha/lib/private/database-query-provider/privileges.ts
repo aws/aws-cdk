@@ -1,9 +1,9 @@
 /* eslint-disable-next-line import/no-unresolved */
 import * as AWSLambda from 'aws-lambda';
+import { TablePrivilege, UserTablePrivilegesHandlerProps } from '../handler-props';
 import { executeStatement } from './redshift-data';
 import { ClusterProps } from './types';
 import { makePhysicalId } from './util';
-import { TablePrivilege, UserTablePrivilegesHandlerProps } from '../handler-props';
 
 export async function handler(props: UserTablePrivilegesHandlerProps & ClusterProps, event: AWSLambda.CloudFormationCustomResourceEvent) {
   const username = props.username;
@@ -62,13 +62,11 @@ async function updatePrivileges(
   }
 
   const oldTablePrivileges = oldResourceProperties.tablePrivileges;
-  const tablesToRevoke = oldTablePrivileges.filter(({ tableId, actions }) => {
-    const tableRemoved = !tablePrivileges.find(({ tableId: otherTableId }) => tableId === otherTableId);
-    const actionsRemoved = tablePrivileges.find(({ tableId: otherTableId, actions: otherActions }) => (
+  const tablesToRevoke = oldTablePrivileges.filter(({ tableId, actions }) => (
+    tablePrivileges.find(({ tableId: otherTableId, actions: otherActions }) => (
       tableId === otherTableId && actions.some(action => !otherActions.includes(action))
-    ));
-    return tableRemoved || actionsRemoved;
-  });
+    ))
+  ));
   if (tablesToRevoke.length > 0) {
     await revokePrivileges(username, tablesToRevoke, clusterProps);
   }

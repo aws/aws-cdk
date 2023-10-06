@@ -1,0 +1,555 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "stack": {
+        "id": "stack",
+        "path": "stack",
+        "children": {
+          "FirstSourceAPI": {
+            "id": "FirstSourceAPI",
+            "path": "stack/FirstSourceAPI",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "stack/FirstSourceAPI/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::GraphQLApi",
+                  "aws:cdk:cloudformation:props": {
+                    "authenticationType": "API_KEY",
+                    "name": "FirstSourceAPI"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnGraphQLApi",
+                  "version": "0.0.0"
+                }
+              },
+              "Schema": {
+                "id": "Schema",
+                "path": "stack/FirstSourceAPI/Schema",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::GraphQLSchema",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Fn::GetAtt": [
+                        "FirstSourceAPIB0DE8D5A",
+                        "ApiId"
+                      ]
+                    },
+                    "definition": "type firstTest {\n  version: String!\n}\ntype Query {\n  getFirstTests: [firstTest]!\n}\ntype Mutation {\n  addFirstTest(version: String!): firstTest\n}\n"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnGraphQLSchema",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultApiKey": {
+                "id": "DefaultApiKey",
+                "path": "stack/FirstSourceAPI/DefaultApiKey",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::ApiKey",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Fn::GetAtt": [
+                        "FirstSourceAPIB0DE8D5A",
+                        "ApiId"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnApiKey",
+                  "version": "0.0.0"
+                }
+              },
+              "LogGroup": {
+                "id": "LogGroup",
+                "path": "stack/FirstSourceAPI/LogGroup",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "FirstSourceDS": {
+                "id": "FirstSourceDS",
+                "path": "stack/FirstSourceAPI/FirstSourceDS",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "stack/FirstSourceAPI/FirstSourceDS/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppSync::DataSource",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Fn::GetAtt": [
+                            "FirstSourceAPIB0DE8D5A",
+                            "ApiId"
+                          ]
+                        },
+                        "name": "FirstSourceDS",
+                        "type": "NONE"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_appsync.CfnDataSource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.NoneDataSource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.GraphqlApi",
+              "version": "0.0.0"
+            }
+          },
+          "SecondSourceAPI": {
+            "id": "SecondSourceAPI",
+            "path": "stack/SecondSourceAPI",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "stack/SecondSourceAPI/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::GraphQLApi",
+                  "aws:cdk:cloudformation:props": {
+                    "authenticationType": "API_KEY",
+                    "name": "SecondSourceAPI"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnGraphQLApi",
+                  "version": "0.0.0"
+                }
+              },
+              "Schema": {
+                "id": "Schema",
+                "path": "stack/SecondSourceAPI/Schema",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::GraphQLSchema",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Fn::GetAtt": [
+                        "SecondSourceAPIE903371D",
+                        "ApiId"
+                      ]
+                    },
+                    "definition": "type secondTest {\n  version: String!\n}\ntype Query {\n  getSecondTests: [secondTest]!\n}\ntype Mutation {\n  addSecondTest(version: String!): secondTest\n}\n"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnGraphQLSchema",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultApiKey": {
+                "id": "DefaultApiKey",
+                "path": "stack/SecondSourceAPI/DefaultApiKey",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::ApiKey",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Fn::GetAtt": [
+                        "SecondSourceAPIE903371D",
+                        "ApiId"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnApiKey",
+                  "version": "0.0.0"
+                }
+              },
+              "LogGroup": {
+                "id": "LogGroup",
+                "path": "stack/SecondSourceAPI/LogGroup",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "SecondSourceDS": {
+                "id": "SecondSourceDS",
+                "path": "stack/SecondSourceAPI/SecondSourceDS",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "stack/SecondSourceAPI/SecondSourceDS/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppSync::DataSource",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Fn::GetAtt": [
+                            "SecondSourceAPIE903371D",
+                            "ApiId"
+                          ]
+                        },
+                        "name": "SecondSourceDS",
+                        "type": "NONE"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_appsync.CfnDataSource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.NoneDataSource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.GraphqlApi",
+              "version": "0.0.0"
+            }
+          },
+          "MergedAPI": {
+            "id": "MergedAPI",
+            "path": "stack/MergedAPI",
+            "children": {
+              "MergedApiExecutionRole": {
+                "id": "MergedApiExecutionRole",
+                "path": "stack/MergedAPI/MergedApiExecutionRole",
+                "children": {
+                  "ImportMergedApiExecutionRole": {
+                    "id": "ImportMergedApiExecutionRole",
+                    "path": "stack/MergedAPI/MergedApiExecutionRole/ImportMergedApiExecutionRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "stack/MergedAPI/MergedApiExecutionRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "appsync.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "stack/MergedAPI/MergedApiExecutionRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "stack/MergedAPI/MergedApiExecutionRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "appsync:SourceGraphQL",
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "MergedAPIFirstSourceAPIAssociationEC781BA9",
+                                        "SourceApiArn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::GetAtt": [
+                                        "MergedAPISecondSourceAPIAssociationBD1A08F4",
+                                        "SourceApiArn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Fn::GetAtt": [
+                                              "MergedAPIFirstSourceAPIAssociationEC781BA9",
+                                              "SourceApiArn"
+                                            ]
+                                          },
+                                          "/*"
+                                        ]
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Fn::GetAtt": [
+                                              "MergedAPISecondSourceAPIAssociationBD1A08F4",
+                                              "SourceApiArn"
+                                            ]
+                                          },
+                                          "/*"
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "Action": "appsync:StartSchemaMerge",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "MergedAPISecondSourceAPIAssociationBD1A08F4",
+                                      "AssociationArn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "MergedAPIMergedApiExecutionRoleDefaultPolicy31A96DBC",
+                            "roles": [
+                              {
+                                "Ref": "MergedAPIMergedApiExecutionRole5F2BCCAD"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "stack/MergedAPI/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::GraphQLApi",
+                  "aws:cdk:cloudformation:props": {
+                    "apiType": "MERGED",
+                    "authenticationType": "API_KEY",
+                    "mergedApiExecutionRoleArn": {
+                      "Fn::GetAtt": [
+                        "MergedAPIMergedApiExecutionRole5F2BCCAD",
+                        "Arn"
+                      ]
+                    },
+                    "name": "MergedAPI"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnGraphQLApi",
+                  "version": "0.0.0"
+                }
+              },
+              "FirstSourceAPIAssociation": {
+                "id": "FirstSourceAPIAssociation",
+                "path": "stack/MergedAPI/FirstSourceAPIAssociation",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::SourceApiAssociation",
+                  "aws:cdk:cloudformation:props": {
+                    "mergedApiIdentifier": {
+                      "Fn::GetAtt": [
+                        "MergedAPI08D3EAD1",
+                        "Arn"
+                      ]
+                    },
+                    "sourceApiAssociationConfig": {
+                      "mergeType": "MANUAL_MERGE"
+                    },
+                    "sourceApiIdentifier": {
+                      "Fn::GetAtt": [
+                        "FirstSourceAPIB0DE8D5A",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnSourceApiAssociation",
+                  "version": "0.0.0"
+                }
+              },
+              "SecondSourceAPIAssociation": {
+                "id": "SecondSourceAPIAssociation",
+                "path": "stack/MergedAPI/SecondSourceAPIAssociation",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::SourceApiAssociation",
+                  "aws:cdk:cloudformation:props": {
+                    "mergedApiIdentifier": {
+                      "Fn::GetAtt": [
+                        "MergedAPI08D3EAD1",
+                        "Arn"
+                      ]
+                    },
+                    "sourceApiAssociationConfig": {
+                      "mergeType": "AUTO_MERGE"
+                    },
+                    "sourceApiIdentifier": {
+                      "Fn::GetAtt": [
+                        "SecondSourceAPIE903371D",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnSourceApiAssociation",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultApiKey": {
+                "id": "DefaultApiKey",
+                "path": "stack/MergedAPI/DefaultApiKey",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::ApiKey",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Fn::GetAtt": [
+                        "MergedAPI08D3EAD1",
+                        "ApiId"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnApiKey",
+                  "version": "0.0.0"
+                }
+              },
+              "LogGroup": {
+                "id": "LogGroup",
+                "path": "stack/MergedAPI/LogGroup",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.GraphqlApi",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "stack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "stack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "api": {
+        "id": "api",
+        "path": "api",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "api/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "api/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "api/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "api/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "api/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.2.70"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

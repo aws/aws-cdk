@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/17feb5af3e2239c611984ffd3f36ac6d4f392c77f6e0347c54231e3cb1bd23af.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/23b0d2a14d3e7bc3dcf7cc5292fe80fa29dacb0aea32636c17ca9fce11d8aba9.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -333,18 +333,6 @@
             "data": "FromSnapshotSecurityGroupfromcdkintegclustersnapshotFromSnapshotRotationSingleUserSecurityGroup8B231219IndirectPort7C6DDFDF"
           }
         ],
-        "/cdk-integ-cluster-snapshot/FromSnapshot/Secret/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FromSnapshotSecret9100F61C"
-          }
-        ],
-        "/cdk-integ-cluster-snapshot/FromSnapshot/Secret/Attachment/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FromSnapshotSecretAttachmentB62DA1C6"
-          }
-        ],
         "/cdk-integ-cluster-snapshot/FromSnapshot/SnapshotSecret/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -415,6 +403,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "FromSnapshotSecret9100F61C": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FromSnapshotSecret9100F61C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "FromSnapshotSecretAttachmentB62DA1C6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FromSnapshotSecretAttachmentB62DA1C6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

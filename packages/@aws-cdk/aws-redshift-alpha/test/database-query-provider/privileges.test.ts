@@ -157,12 +157,17 @@ describe('update', () => {
       tablePrivileges: newTablePrivileges,
     };
 
+    // Checking if the table resource has not been recreated
     await expect(managePrivileges(newResourceProperties, event)).resolves.toMatchObject({
       PhysicalResourceId: physicalResourceId,
     });
+    // Upon a table name change, Redshift maintains the same table priviliges as before.
+    // The name of the table has changed, a new table has not been created.
+    // Therefore 'REVOKE' statements should not be used.
     expect(mockExecuteStatement).not.toHaveBeenCalledWith(expect.objectContaining({
       Sql: `REVOKE INSERT, SELECT ON ${newTableName} FROM ${username}`,
     }));
+    // Likewise, here the table name has changed, so the current priviliges will still be intact.
     expect(mockExecuteStatement).not.toHaveBeenCalledWith(expect.objectContaining({
       Sql: expect.stringMatching(new RegExp(`.+ ON ${tableName} TO ${username}`)),
     }));
@@ -175,12 +180,15 @@ describe('update', () => {
       tablePrivileges: newTablePrivileges,
     };
 
+    // Checking if the table resource has not been recreated
     await expect(managePrivileges(newResourceProperties, event)).resolves.toMatchObject({
       PhysicalResourceId: physicalResourceId,
     });
+    // Old actions are REVOKED, as they are not included in the list
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
       Sql: `REVOKE INSERT, SELECT ON ${tableName} FROM ${username}`,
     }));
+    // New actions are GRANTED, as they are included in the list
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
       Sql: `GRANT DROP ON ${tableName} TO ${username}`,
     }));
@@ -194,11 +202,20 @@ describe('update', () => {
       tablePrivileges: newTablePrivileges,
     };
 
+    // Checking if the table resource has not been recreated, we are not changing on table id either.
+    // Due to the construct only needing to be changed on a new user, not a new table
     await expect(managePrivileges(newResourceProperties, event)).resolves.toMatchObject({
       PhysicalResourceId: physicalResourceId,
     });
+    // Upon removal of the old table, the priviliges will also be revoked automatically,
+    // as the table no longer exists.
+    // Calling REVOKE statments on a non-existing table will throw errors by Redshift
     expect(mockExecuteStatement).not.toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `.+ ON ${tableName} FROM ${username}`,
+      Sql: expect.stringMatching(new RegExp(`REVOKE .+ ON ${tableName} FROM ${username}`)),
+    }));
+    // Adds the permissions onto the newly created table
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: expect.stringMatching(new RegExp(`GRANT .+ ON ${tableName} TO ${username}`)),
     }));
   });
 
@@ -217,11 +234,14 @@ describe('update', () => {
       },
     };
 
+    // Checking if the table resource has not been recreated
     await expect(managePrivileges(newResourceProperties, newEvent)).resolves.toMatchObject({
       PhysicalResourceId: physicalResourceId,
     });
+    // Upon initial deployment from non table id usage to table id usage,
+    // permissions would not need to be granted/revoked, as the table should already exist
     expect(mockExecuteStatement).not.toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `.+ ON ${tableName} FROM ${username}`,
+      Sql: expect.stringMatching(new RegExp(`.+ ON ${tableName} FROM ${username}`)),
     }));
   });
 });

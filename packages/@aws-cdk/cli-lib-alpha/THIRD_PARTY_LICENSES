@@ -1,6 +1,6 @@
 The @aws-cdk/cli-lib-alpha package includes the following third-party software/licensing:
 
-** @jsii/check-node@1.88.0 - https://www.npmjs.com/package/@jsii/check-node/v/1.88.0 | Apache-2.0
+** @jsii/check-node@1.89.0 - https://www.npmjs.com/package/@jsii/check-node/v/1.89.0 | Apache-2.0
 jsii
 Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
@@ -138,6 +138,32 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 ----------------
 
+** archiver-utils@3.0.4 - https://www.npmjs.com/package/archiver-utils/v/3.0.4 | MIT
+Copyright (c) 2015 Chris Talkington.
+
+Permission is hereby granted, free of charge, to any person
+obtaining a copy of this software and associated documentation
+files (the "Software"), to deal in the Software without
+restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following
+conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+
+----------------
+
 ** archiver@5.3.2 - https://www.npmjs.com/package/archiver/v/5.3.2 | MIT
 Copyright (c) 2012-2014 Chris Talkington, contributors.
 
@@ -238,7 +264,7 @@ THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH RE
 
 ----------------
 
-** aws-sdk@2.1447.0 - https://www.npmjs.com/package/aws-sdk/v/2.1447.0 | Apache-2.0
+** aws-sdk@2.1466.0 - https://www.npmjs.com/package/aws-sdk/v/2.1466.0 | Apache-2.0
 AWS SDK for JavaScript
 Copyright 2012-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
@@ -435,6 +461,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ----------------
 
+** cdk-from-cfn@0.47.0 - https://www.npmjs.com/package/cdk-from-cfn/v/0.47.0 | MIT OR Apache-2.0
+
+----------------
+
 ** chalk@4.1.2 - https://www.npmjs.com/package/chalk/v/4.1.2 | MIT
 MIT License
 
@@ -532,7 +562,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ----------------
 
-** compress-commons@4.1.1 - https://www.npmjs.com/package/compress-commons/v/4.1.1 | MIT
+** compress-commons@4.1.2 - https://www.npmjs.com/package/compress-commons/v/4.1.2 | MIT
 Copyright (c) 2014 Chris Talkington, contributors.
 
 Permission is hereby granted, free of charge, to any person
@@ -811,7 +841,7 @@ IN THE SOFTWARE.
 
 ----------------
 
-** crc32-stream@4.0.2 - https://www.npmjs.com/package/crc32-stream/v/4.0.2 | MIT
+** crc32-stream@4.0.3 - https://www.npmjs.com/package/crc32-stream/v/4.0.3 | MIT
 Copyright (c) 2014 Chris Talkington, contributors.
 
 Permission is hereby granted, free of charge, to any person
@@ -1367,7 +1397,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ----------------
 
-** https-proxy-agent@7.0.1 - https://www.npmjs.com/package/https-proxy-agent/v/7.0.1 | MIT
+** https-proxy-agent@7.0.2 - https://www.npmjs.com/package/https-proxy-agent/v/7.0.2 | MIT
 
 ----------------
 
@@ -2134,7 +2164,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ----------------
 
-** pac-proxy-agent@7.0.0 - https://www.npmjs.com/package/pac-proxy-agent/v/7.0.0 | MIT
+** pac-proxy-agent@7.0.1 - https://www.npmjs.com/package/pac-proxy-agent/v/7.0.1 | MIT
 
 ----------------
 
@@ -2224,7 +2254,7 @@ THE SOFTWARE.
 
 ----------------
 
-** proxy-agent@6.3.0 - https://www.npmjs.com/package/proxy-agent/v/6.3.0 | MIT
+** proxy-agent@6.3.1 - https://www.npmjs.com/package/proxy-agent/v/6.3.1 | MIT
 
 ----------------
 
@@ -2687,10 +2717,10 @@ THE SOFTWARE.
 
 ----------------
 
-** sax@1.2.4 - https://www.npmjs.com/package/sax/v/1.2.4 | ISC
+** sax@1.3.0 - https://www.npmjs.com/package/sax/v/1.3.0 | ISC
 The ISC License
 
-Copyright (c) Isaac Z. Schlueter and Contributors
+Copyright (c) 2010-2022 Isaac Z. Schlueter and Contributors
 
 Permission to use, copy, modify, and/or distribute this software for any
 purpose with or without fee is hereby granted, provided that the above
@@ -2709,7 +2739,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 `String.fromCodePoint` by Mathias Bynens used according to terms of MIT
 License, as follows:
 
-    Copyright Mathias Bynens <https://mathiasbynens.be/>
+Copyright (c) 2010-2022 Mathias Bynens <https://mathiasbynens.be/>
 
     Permission is hereby granted, free of charge, to any person obtaining
     a copy of this software and associated documentation files (the
@@ -2793,7 +2823,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ----------------
 
-** socks-proxy-agent@8.0.1 - https://www.npmjs.com/package/socks-proxy-agent/v/8.0.1 | MIT
+** socks-proxy-agent@8.0.2 - https://www.npmjs.com/package/socks-proxy-agent/v/8.0.2 | MIT
 
 ----------------
 
@@ -3375,7 +3405,7 @@ THE SOFTWARE.
 
 ----------------
 
-** zip-stream@4.1.0 - https://www.npmjs.com/package/zip-stream/v/4.1.0 | MIT
+** zip-stream@4.1.1 - https://www.npmjs.com/package/zip-stream/v/4.1.1 | MIT
 Copyright (c) 2014 Chris Talkington, contributors.
 
 Permission is hereby granted, free of charge, to any person

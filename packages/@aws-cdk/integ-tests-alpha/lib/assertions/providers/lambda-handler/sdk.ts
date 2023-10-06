@@ -1,110 +1,28 @@
 /* eslint-disable no-console */
 import { CustomResourceHandler } from './base';
 import { AwsApiCallRequest, AwsApiCallResult } from './types';
-import { getV3ClientPackageName, findV3ClientConstructor } from '@aws-cdk/sdk-v2-to-v3-adapter';
-import { decodeParameters, parseJsonPayload } from './utils';
+import { ApiCall, flatten } from '@aws-cdk/sdk-v2-to-v3-adapter';
+import { decodeParameters, deepParseJson } from './utils';
 
-/**
- * Flattens a nested object
- *
- * @param object the object to be flattened
- * @returns a flat object with path as keys
- */
-export function flatten(object: object): { [key: string]: any } {
-  return Object.assign(
-    {},
-    ...function _flatten(child: any, path: string[] = []): any {
-      return [].concat(...Object.keys(child)
-        .map(key => {
-          let childKey = Buffer.isBuffer(child[key]) ? child[key].toString('utf8') : child[key];
-          // if the value is a json string then treat it as an object
-          // and keep recursing. This allows for easier assertions against complex json strings
-          if (typeof childKey === 'string') {
-            childKey = isJsonString(childKey);
-          }
-          return typeof childKey === 'object' && childKey !== null
-            ? _flatten(childKey, path.concat([key]))
-            : ({ [path.concat([key]).join('.')]: childKey });
-        }));
-    }(object),
-  );
-}
+export class AwsApiCallHandler extends CustomResourceHandler<AwsApiCallRequest, AwsApiCallResult | { [key: string]: unknown }> {
+  protected async processEvent(request: AwsApiCallRequest): Promise<AwsApiCallResult | { [key: string]: unknown } | undefined> {
+    const apiCall = new ApiCall(request.service, request.api);
 
-interface V3SdkPkg {
-  service: string;
-  packageName: string;
-  pkg: object;
-}
-
-function getServicePackage(service: string): V3SdkPkg {
-  const packageName = getV3ClientPackageName(service);
-  try {
-    /* eslint-disable-next-line @typescript-eslint/no-require-imports */
-    const pkg = require(packageName);
-
-    return {
-      service,
-      pkg,
-      packageName,
-    };
-  } catch (e) {
-    throw Error(`Service ${service} client package with name '${packageName}' does not exist.`);
-  }
-}
-
-function getServiceClient(sdkPkg: V3SdkPkg): any {
-  try {
-    const ServiceClient = findV3ClientConstructor(sdkPkg.pkg);
-    return new ServiceClient({});
-  } catch (e) {
-    console.error(e);
-    throw Error(`No client constructor found within package: ${sdkPkg.packageName}`);
-  }
-}
-
-function getSdkCommand(sdkPkg: V3SdkPkg, api: string): any {
-  const commandName = api.endsWith('Command') ? api : `${api}Command`;
-  const command = Object.entries(sdkPkg.pkg).find(
-    ([name]) => name.toLowerCase() === commandName.toLowerCase(),
-  )?.[1] as { new (input: any): any };
-
-  if (!command) {
-    throw new Error(`Unable to find command named: ${commandName} for api: ${api} in service package`);
-  }
-  return command;
-}
-
-export class AwsApiCallHandler extends CustomResourceHandler<AwsApiCallRequest, AwsApiCallResult | { [key: string]: string }> {
-  protected async processEvent(request: AwsApiCallRequest): Promise<AwsApiCallResult | { [key: string]: string } | undefined> {
-    const sdkPkg = getServicePackage(request.service);
-    const client = getServiceClient(sdkPkg);
-
-    const Command = getSdkCommand(sdkPkg, request.api);
-    const commandInput = (request.parameters && decodeParameters(request.parameters)) ?? {};
-
-    console.log(`SDK request to ${sdkPkg.service}.${request.api} with parameters ${JSON.stringify(commandInput)}`);
-    const response = await client.send(new Command(commandInput));
-
-    // Lambda Invoke returns the payload as a buffer
-    // we need to serialize the buffer so we can assert on it
-    if (response.Payload) {
-      response.Payload = parseJsonPayload(response.Payload);
-    }
+    const parameters = request.parameters ? decodeParameters(request.parameters) : {};
+    console.log(`SDK request to ${apiCall.service}.${apiCall.action} with parameters ${JSON.stringify(parameters)}`);
+    const response = await apiCall.invoke({ parameters }) as Record<string, unknown>;
 
     console.log(`SDK response received ${JSON.stringify(response)}`);
     delete response.$metadata;
-    const respond = {
-      apiCallResponse: response,
-    };
-    const flatData: { [key: string]: string } = {
-      ...flatten(respond),
-    };
 
-    let resp: AwsApiCallResult | { [key: string]: string } = respond;
-    if (request.outputPaths) {
-      resp = filterKeys(flatData, request.outputPaths!);
-    } else if (request.flattenResponse === 'true') {
-      resp = flatData;
+    let resp: AwsApiCallResult | { [key: string]: unknown };
+    if (request.outputPaths || request.flattenResponse === 'true') {
+      // Flatten and explode JSON fields
+      const flattened = flatten(deepParseJson({ apiCallResponse: response }));
+      resp = request.outputPaths ? filterKeys(flattened, request.outputPaths) : flattened;
+    } else {
+      // Otherwise just return the response as-is, without exploding JSON fields
+      resp = { apiCallResponse: response };
     }
     console.log(`Returning result ${JSON.stringify(resp)}`);
     return resp;
@@ -120,12 +38,4 @@ function filterKeys(object: object, searchStrings: string[]): { [key: string]: s
     }
     return filteredObject;
   }, {});
-}
-
-function isJsonString(value: string): any {
-  try {
-    return JSON.parse(value);
-  } catch {
-    return value;
-  }
 }

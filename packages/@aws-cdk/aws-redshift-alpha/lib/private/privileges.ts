@@ -1,11 +1,11 @@
 import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
-import { DatabaseQuery } from './database-query';
-import { HandlerName } from './database-query-provider/handler-name';
-import { TablePrivilege as SerializedTablePrivilege, UserTablePrivilegesHandlerProps } from './handler-props';
 import { DatabaseOptions } from '../database-options';
 import { ITable, TableAction } from '../table';
 import { IUser } from '../user';
+import { DatabaseQuery } from './database-query';
+import { HandlerName } from './database-query-provider/handler-name';
+import { TablePrivilege as SerializedTablePrivilege, UserTablePrivilegesHandlerProps } from './handler-props';
 
 /**
  * The Redshift table and action that make up a privilege that can be granted to a Redshift user.
@@ -63,7 +63,7 @@ export class UserTablePrivileges extends Construct {
         tablePrivileges: cdk.Lazy.any({
           produce: () => {
             const reducedPrivileges = this.privileges.reduce((privileges, { table, actions }) => {
-              const tableId = table.id;
+              const tableId = table.node.id;
               if (!(tableId in privileges)) {
                 privileges[tableId] = {
                   tableName: table.tableName,

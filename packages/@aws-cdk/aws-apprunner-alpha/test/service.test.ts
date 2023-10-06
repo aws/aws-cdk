@@ -1351,3 +1351,232 @@ test('addToRolePolicy', () => {
     ],
   });
 });
+
+test('Service has healthCheck', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  // WHEN
+  new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromEcrPublic({
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
+    healthCheck: apprunner.HealthCheck.http({
+      healthyThreshold: 5,
+      interval: cdk.Duration.seconds(5),
+      path: '/',
+      timeout: cdk.Duration.seconds(2),
+      unhealthyThreshold: 5,
+    }),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+    HealthCheckConfiguration: {
+      HealthyThreshold: 5,
+      Interval: 5,
+      Path: '/',
+      Protocol: 'HTTP',
+      Timeout: 2,
+      UnhealthyThreshold: 5,
+    },
+  });
+});
+
+test('path cannot be empty in healthCheck', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+
+  // WHEN
+  expect(() => {
+    new apprunner.Service(stack, 'DemoService', {
+      source: apprunner.Source.fromEcrPublic({
+        imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+      }),
+      healthCheck: apprunner.HealthCheck.http({
+        healthyThreshold: 5,
+        interval: cdk.Duration.seconds(5),
+        path: '',
+        timeout: cdk.Duration.seconds(2),
+        unhealthyThreshold: 5,
+      }),
+    });
+  }).toThrow('path length must be greater than 0');
+});
+
+test('healthyThreshold must be greater than or equal to 1 in healthCheck', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+
+  // WHEN
+  expect(() => {
+    new apprunner.Service(stack, 'DemoService', {
+      source: apprunner.Source.fromEcrPublic({
+        imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+      }),
+      healthCheck: apprunner.HealthCheck.http({
+        healthyThreshold: 0,
+        interval: cdk.Duration.seconds(5),
+        path: '/',
+        timeout: cdk.Duration.seconds(2),
+        unhealthyThreshold: 5,
+      }),
+    });
+  }).toThrow('healthyThreshold must be between 1 and 20, got 0');
+});
+
+test('healthyThreshold must be less than or equal to 20 in healthCheck', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+
+  // WHEN
+  expect(() => {
+    new apprunner.Service(stack, 'DemoService', {
+      source: apprunner.Source.fromEcrPublic({
+        imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+      }),
+      healthCheck: apprunner.HealthCheck.http({
+        healthyThreshold: 21,
+        interval: cdk.Duration.seconds(5),
+        path: '/',
+        timeout: cdk.Duration.seconds(2),
+        unhealthyThreshold: 5,
+      }),
+    });
+  }).toThrow('healthyThreshold must be between 1 and 20, got 21');
+});
+
+test('unhealthyThreshold must be greater than or equal to 1 in healthCheck', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+
+  // WHEN
+  expect(() => {
+    new apprunner.Service(stack, 'DemoService', {
+      source: apprunner.Source.fromEcrPublic({
+        imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+      }),
+      healthCheck: apprunner.HealthCheck.http({
+        healthyThreshold: 5,
+        interval: cdk.Duration.seconds(5),
+        path: '/',
+        timeout: cdk.Duration.seconds(2),
+        unhealthyThreshold: 0,
+      }),
+    });
+  }).toThrow('unhealthyThreshold must be between 1 and 20, got 0');
+});
+
+test('unhealthyThreshold must be less than or equal to 20 in healthCheck', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+
+  // WHEN
+  expect(() => {
+    new apprunner.Service(stack, 'DemoService', {
+      source: apprunner.Source.fromEcrPublic({
+        imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+      }),
+      healthCheck: apprunner.HealthCheck.http({
+        healthyThreshold: 5,
+        interval: cdk.Duration.seconds(5),
+        path: '/',
+        timeout: cdk.Duration.seconds(2),
+        unhealthyThreshold: 21,
+      }),
+    });
+  }).toThrow('unhealthyThreshold must be between 1 and 20, got 21');
+});
+
+test('interval must be greater than or equal to 1 in healthCheck', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+
+  // WHEN
+  expect(() => {
+    new apprunner.Service(stack, 'DemoService', {
+      source: apprunner.Source.fromEcrPublic({
+        imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+      }),
+      healthCheck: apprunner.HealthCheck.http({
+        healthyThreshold: 5,
+        interval: cdk.Duration.seconds(0),
+        path: '/',
+        timeout: cdk.Duration.seconds(2),
+        unhealthyThreshold: 5,
+      }),
+    });
+  }).toThrow('interval must be between 1 and 20 seconds, got 0');
+});
+
+test('interval must be less than or equal to 20 in healthCheck', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+
+  // WHEN
+  expect(() => {
+    new apprunner.Service(stack, 'DemoService', {
+      source: apprunner.Source.fromEcrPublic({
+        imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+      }),
+      healthCheck: apprunner.HealthCheck.http({
+        healthyThreshold: 5,
+        interval: cdk.Duration.seconds(21),
+        path: '/',
+        timeout: cdk.Duration.seconds(2),
+        unhealthyThreshold: 5,
+      }),
+    });
+  }).toThrow('interval must be between 1 and 20 seconds, got 21');
+});
+
+test('timeout must be greater than or equal to 1 in healthCheck', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+
+  // WHEN
+  expect(() => {
+    new apprunner.Service(stack, 'DemoService', {
+      source: apprunner.Source.fromEcrPublic({
+        imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+      }),
+      healthCheck: apprunner.HealthCheck.http({
+        healthyThreshold: 5,
+        interval: cdk.Duration.seconds(5),
+        path: '/',
+        timeout: cdk.Duration.seconds(0),
+        unhealthyThreshold: 5,
+      }),
+    });
+  }).toThrow('timeout must be between 1 and 20 seconds, got 0');
+});
+
+test('timeout must be less than or equal to 20 in healthCheck', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+
+  // WHEN
+  expect(() => {
+    new apprunner.Service(stack, 'DemoService', {
+      source: apprunner.Source.fromEcrPublic({
+        imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+      }),
+      healthCheck: apprunner.HealthCheck.http({
+        healthyThreshold: 5,
+        interval: cdk.Duration.seconds(5),
+        path: '/',
+        timeout: cdk.Duration.seconds(21),
+        unhealthyThreshold: 5,
+      }),
+    });
+  }).toThrow('timeout must be between 1 and 20 seconds, got 21');
+});

@@ -3,6 +3,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as integ from '@aws-cdk/integ-tests-alpha';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 class TestStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
@@ -16,7 +17,7 @@ class TestStack extends cdk.Stack {
 
     secret.addRotationSchedule('Schedule', {
       rotationLambda: new lambda.Function(this, 'Lambda', {
-        runtime: lambda.Runtime.NODEJS_16_X,
+        runtime: STANDARD_NODEJS_RUNTIME,
         handler: 'index.handler',
         code: lambda.Code.fromInline('NOOP'),
       }),
