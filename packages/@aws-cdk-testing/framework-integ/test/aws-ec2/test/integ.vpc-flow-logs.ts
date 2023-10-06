@@ -119,14 +119,17 @@ class TestStack extends Stack {
 }
 
 class TransitGatewayFlowLogStack extends Stack {
+  public readonly flowLogId: string;
+
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
 
     const transitGateway = new CfnTransitGateway(this, 'TransitGateway', {});
-    new FlowLog(this, 'FlowLogsCW', {
+    const flowLog = new FlowLog(this, 'FlowLogsCW', {
       resourceType: FlowLogResourceType.fromTransitGatewayId(transitGateway.ref),
       flowLogName: 'TransitGatewayFlowLogName',
     });
+    this.flowLogId = this.exportValue(flowLog.flowLogId);
   }
 }
 
@@ -192,6 +195,15 @@ assertionProvider.addPolicyStatementFromSdkCall('s3', 'GetObject', [`${featureFl
 
 objects.expect(ExpectedResult.objectLike({
   KeyCount: 1,
+}));
+
+const flowLogs = integ.assertions.awsApiCall('EC2', 'describeFlowLogs', {
+  FlowLogId: transitGatewayFlowLogTest.flowLogId,
+});
+flowLogs.expect(ExpectedResult.objectLike({
+  FlowLogs: [{
+    FlowLogId: transitGatewayFlowLogTest.flowLogId,
+  }],
 }));
 
 app.synth();
