@@ -5,7 +5,6 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
 import * as cloud9 from '../lib';
 import { ConnectionType, ImageId, Owner } from '../lib';
-import { CfnUser } from 'aws-cdk-lib/aws-iam';
 
 let stack: cdk.Stack;
 let vpc: ec2.IVpc;
@@ -126,8 +125,8 @@ test('environment owner can be an IAM user', () => {
     owner: Owner.user(user),
   });
 
-  const userLogicalId = stack.getLogicalId(user.node.defaultChild as CfnUser);
   // THEN
+  const userLogicalId = stack.getLogicalId(user.node.defaultChild as iam.CfnUser);
   Template.fromStack(stack).hasResourceProperties('AWS::Cloud9::EnvironmentEC2', {
     OwnerArn: {
       'Fn::GetAtt': [userLogicalId, 'Arn'],
