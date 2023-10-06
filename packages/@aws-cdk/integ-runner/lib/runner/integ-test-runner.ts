@@ -244,23 +244,23 @@ export class IntegTestRunner extends IntegRunner {
     } catch (e) {
       throw e;
     } finally {
-      if (!options.dryRun) {
-        if (clean && (actualTestCase.cdkCommandOptions?.destroy?.enabled ?? true)) {
-          this.destroy(options.testCaseName, {
-            ...this.defaultArgs,
-            profile: this.profile,
-            all: true,
-            force: true,
-            app: this.cdkApp,
-            output: path.relative(this.directory, this.cdkOutDir),
-            ...actualTestCase.cdkCommandOptions?.destroy?.args,
-            context: this.getContext(actualTestCase.cdkCommandOptions?.destroy?.args?.context),
-            verbose: enableForVerbosityLevel(3),
-            debug: enableForVerbosityLevel(4),
-          });
-        }
-      }
-      this.cleanup();
+      // if (!options.dryRun) {
+      //   if (clean && (actualTestCase.cdkCommandOptions?.destroy?.enabled ?? true)) {
+      //     this.destroy(options.testCaseName, {
+      //       ...this.defaultArgs,
+      //       profile: this.profile,
+      //       all: true,
+      //       force: true,
+      //       app: this.cdkApp,
+      //       output: path.relative(this.directory, this.cdkOutDir),
+      //       ...actualTestCase.cdkCommandOptions?.destroy?.args,
+      //       context: this.getContext(actualTestCase.cdkCommandOptions?.destroy?.args?.context),
+      //       verbose: enableForVerbosityLevel(3),
+      //       debug: enableForVerbosityLevel(4),
+      //     });
+      //   }
+      // }
+      // this.cleanup();
     }
     return assertionResults;
   }

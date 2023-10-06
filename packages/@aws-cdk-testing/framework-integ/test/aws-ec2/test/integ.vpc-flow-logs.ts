@@ -2,7 +2,7 @@ import { PolicyStatement, Effect, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import { IntegTest, ExpectedResult, AssertionsProvider } from '@aws-cdk/integ-tests-alpha';
-import { FlowLog, FlowLogDestination, FlowLogResourceType, Vpc, Instance, InstanceType, InstanceClass, InstanceSize, MachineImage, AmazonLinuxGeneration, CfnTransitGateway } from 'aws-cdk-lib/aws-ec2';
+import { FlowLog, FlowLogDestination, FlowLogResourceType, Vpc, Instance, InstanceType, InstanceClass, InstanceSize, MachineImage, AmazonLinuxGeneration, CfnTransitGateway, IpAddresses, SubnetType, CfnTransitGatewayVpcAttachment } from 'aws-cdk-lib/aws-ec2';
 import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 
 const app = new App();
@@ -130,6 +130,59 @@ class TransitGatewayFlowLogStack extends Stack {
   }
 }
 
+class TransitGatewayAttachmentFlowLogStack extends Stack {
+  constructor(scope: App, id: string, props?: StackProps) {
+    super(scope, id, props);
+
+    const vpc = new Vpc(this, 'VpcForTransitGateway', {
+      ipAddresses: IpAddresses.cidr('10.0.1.0/24'),
+      enableDnsHostnames: true,
+      enableDnsSupport: true,
+      natGateways: 0,
+      maxAzs: 1,
+      subnetConfiguration: [
+        {
+          name: 'Public',
+          subnetType: SubnetType.PUBLIC,
+          cidrMask: 27,
+        },
+        {
+          name: 'Isolated',
+          subnetType: SubnetType.PRIVATE_ISOLATED,
+          cidrMask: 28,
+        },
+      ],
+    });
+
+    const transitGateway = new CfnTransitGateway(this, 'TransitGateway', {});
+    const transitGatewayAttachment = new CfnTransitGatewayVpcAttachment(
+      this,
+      'Transit Gateway attachment VPC A',
+      {
+        subnetIds: vpc.selectSubnets({
+          subnetType: SubnetType.PRIVATE_ISOLATED,
+        }).subnetIds,
+        transitGatewayId: transitGateway.ref,
+        vpcId: vpc.vpcId,
+        options: {
+          DnsSupport: 'enable',
+        },
+        tags: [
+          {
+            key: 'Name',
+            value: 'tgw-attach-vpc-a',
+          },
+        ],
+      },
+    );
+
+    new FlowLog(this, 'FlowLogFromTransitGatewayAttachment', {
+      resourceType: FlowLogResourceType.fromTransitGatewayAttachmentId(transitGatewayAttachment.ref),
+      flowLogName: 'TransitGatewayFlowLogName',
+    });
+  }
+}
+
 const featureFlagTest = new FeatureFlagStack(app, 'FlowLogsFeatureFlag');
 
 const integ = new IntegTest(app, 'FlowLogs', {
@@ -138,6 +191,7 @@ const integ = new IntegTest(app, 'FlowLogs', {
     featureFlagTest,
     new DependencyTestStack(app, 'DependencyTestStack'),
     new TransitGatewayFlowLogStack(app, 'TransitGatewayFlowLogStack'),
+    new TransitGatewayAttachmentFlowLogStack(app, 'TransitGatewayAttachmentFlowLogStack'),
   ],
   diffAssets: true,
 });

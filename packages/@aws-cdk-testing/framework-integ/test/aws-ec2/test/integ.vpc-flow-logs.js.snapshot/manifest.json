@@ -793,6 +793,168 @@
       },
       "displayName": "TransitGatewayFlowLogStack"
     },
+    "TransitGatewayAttachmentFlowLogStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "TransitGatewayAttachmentFlowLogStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "TransitGatewayAttachmentFlowLogStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "TransitGatewayAttachmentFlowLogStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ce70749115191ce7e2d3947c83642c0b6ca59e59f56d121ed85ce2c7f086a642.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "TransitGatewayAttachmentFlowLogStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "TransitGatewayAttachmentFlowLogStack.assets"
+      ],
+      "metadata": {
+        "/TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcForTransitGatewayA63961E4"
+          }
+        ],
+        "/TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcForTransitGatewayPublicSubnet1SubnetB93139C7"
+          }
+        ],
+        "/TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcForTransitGatewayPublicSubnet1RouteTableD54B341F"
+          }
+        ],
+        "/TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcForTransitGatewayPublicSubnet1RouteTableAssociationA8DA149E"
+          }
+        ],
+        "/TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcForTransitGatewayPublicSubnet1DefaultRoute498B6584"
+          }
+        ],
+        "/TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/IsolatedSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcForTransitGatewayIsolatedSubnet1SubnetCD5B52C3"
+          }
+        ],
+        "/TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/IsolatedSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcForTransitGatewayIsolatedSubnet1RouteTable0CC84D19"
+          }
+        ],
+        "/TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/IsolatedSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcForTransitGatewayIsolatedSubnet1RouteTableAssociation9B8C0C5C"
+          }
+        ],
+        "/TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcForTransitGatewayIGW992ADDC7"
+          }
+        ],
+        "/TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcForTransitGatewayVPCGW1EE89D42"
+          }
+        ],
+        "/TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/RestrictDefaultSecurityGroupCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcForTransitGatewayRestrictDefaultSecurityGroupCustomResourceCA78F3D4"
+          }
+        ],
+        "/TransitGatewayAttachmentFlowLogStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+          }
+        ],
+        "/TransitGatewayAttachmentFlowLogStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+          }
+        ],
+        "/TransitGatewayAttachmentFlowLogStack/TransitGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TransitGateway"
+          }
+        ],
+        "/TransitGatewayAttachmentFlowLogStack/Transit Gateway attachment VPC A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TransitGatewayattachmentVPCA"
+          }
+        ],
+        "/TransitGatewayAttachmentFlowLogStack/FlowLogFromTransitGatewayAttachment/IAMRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FlowLogFromTransitGatewayAttachmentIAMRole91E330D4"
+          }
+        ],
+        "/TransitGatewayAttachmentFlowLogStack/FlowLogFromTransitGatewayAttachment/IAMRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FlowLogFromTransitGatewayAttachmentIAMRoleDefaultPolicy8011ACE0"
+          }
+        ],
+        "/TransitGatewayAttachmentFlowLogStack/FlowLogFromTransitGatewayAttachment/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FlowLogFromTransitGatewayAttachmentLogGroupF6165333"
+          }
+        ],
+        "/TransitGatewayAttachmentFlowLogStack/FlowLogFromTransitGatewayAttachment/FlowLog": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FlowLogFromTransitGatewayAttachmentFlowLog94A1F500"
+          }
+        ],
+        "/TransitGatewayAttachmentFlowLogStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/TransitGatewayAttachmentFlowLogStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "TransitGatewayAttachmentFlowLogStack"
+    },
     "FlowLogsDefaultTestDeployAssert6AFD1854.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -810,7 +972,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a918b193199d93c2c090a58eb320e0187206014ee14d2ca9cbe2c6c7e7920988.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6619d355f65d2130ffbf0c6545fedde996ac53a032210b206e3b94b0a920a1fb.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

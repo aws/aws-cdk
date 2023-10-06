@@ -6,7 +6,8 @@
         "FlowLogsTestStack",
         "FlowLogsFeatureFlag",
         "DependencyTestStack",
-        "TransitGatewayFlowLogStack"
+        "TransitGatewayFlowLogStack",
+        "TransitGatewayAttachmentFlowLogStack"
       ],
       "diffAssets": true,
       "assertionStack": "FlowLogs/DefaultTest/DeployAssert",
