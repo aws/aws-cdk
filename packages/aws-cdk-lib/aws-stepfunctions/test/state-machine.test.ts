@@ -622,4 +622,34 @@ describe('State Machine', () => {
       StateMachineRevisionId: { 'Fn::GetAtt': ['MyStateMachine6C968CA5', 'StateMachineRevisionId'] },
     });
   });
+
+  test('comments rendered properly', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const choice = new sfn.Choice(stack, 'choice', {
+      comment: 'nebraska',
+    });
+    const success = new sfn.Succeed(stack, 'success');
+    choice.when(sfn.Condition.isPresent('$.success'), success, {
+      comment: 'london',
+    });
+    choice.otherwise(success);
+
+    // WHEN
+    const stateMachine = new sfn.StateMachine(stack, 'MyStateMachine', {
+      stateMachineName: 'MyStateMachine',
+      definitionBody: sfn.DefinitionBody.fromChainable(choice),
+    });
+
+    new sfn.CfnStateMachineVersion(stack, 'MyStateMachineVersion', {
+      stateMachineRevisionId: stateMachine.stateMachineRevisionId,
+      stateMachineArn: stateMachine.stateMachineArn,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+      DefinitionString: '{"StartAt":"choice","States":{"choice":{"Type":"Choice","Comment":"nebraska","Choices":[{"Variable":"$.success","IsPresent":true,"Next":"success","Comment":"london"}],"Default":"success"},"success":{"Type":"Succeed"}}}',
+    });
+  });
 });

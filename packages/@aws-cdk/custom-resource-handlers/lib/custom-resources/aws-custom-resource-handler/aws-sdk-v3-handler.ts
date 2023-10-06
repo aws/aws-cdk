@@ -2,7 +2,7 @@
 /* eslint-disable no-console */
 import { execSync } from 'child_process';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { coerceApiParametersToUint8Array, findV3ClientConstructor, getV3ClientPackageName } from '@aws-cdk/sdk-v2-to-v3-adapter';
+import { ApiCall } from '@aws-cdk/sdk-v2-to-v3-adapter';
 // import the AWSLambda package explicitly,
 // which is globally available in the Lambda runtime,
 // as otherwise linking this repository with link-all.sh
@@ -10,7 +10,7 @@ import { coerceApiParametersToUint8Array, findV3ClientConstructor, getV3ClientPa
 /* eslint-disable-next-line import/no-extraneous-dependencies,import/no-unresolved */
 import type * as AWSLambda from 'aws-lambda';
 import type { AwsSdkCall } from './construct-types';
-import { decodeCall, decodeSpecialValues, filterKeys, flatten, respond, startsWithOneOf } from './shared';
+import { decodeCall, decodeSpecialValues, filterKeys, respond, startsWithOneOf } from './shared';
 
 let installedSdk: { [service: string]: boolean } = {};
 
@@ -25,7 +25,7 @@ function installLatestSdk(packageName: string): void {
   console.log(`Installing latest AWS SDK v3: ${packageName}`);
   // Both HOME and --prefix are needed here because /tmp is the only writable location
   execSync(
-    `NPM_CONFIG_UPDATE_NOTIFIER=false HOME=/tmp npm install ${packageName} --omit=dev --no-package-lock --no-save --prefix /tmp`,
+    `NPM_CONFIG_UPDATE_NOTIFIER=false HOME=/tmp npm install ${JSON.stringify(packageName)} --omit=dev --no-package-lock --no-save --prefix /tmp`,
   );
   installedSdk = {
     ...installedSdk,
@@ -46,17 +46,21 @@ async function loadAwsSdk(
       try {
         installLatestSdk(packageName);
         // MUST use require here. Dynamic import() do not support importing from directories
+        // esbuild-disable unsupported-require-call -- not esbuildable but that's fine
         awsSdk = require(`/tmp/node_modules/${packageName}`);
       } catch (e) {
         console.log(`Failed to install latest AWS SDK v3. Falling back to pre-installed version. Error: ${e}`);
         // MUST use require as dynamic import() does not support importing from directories
+        // esbuild-disable unsupported-require-call -- not esbuildable but that's fine
         return require(packageName); // Fallback to pre-installed version
       }
 
     } else if (installedSdk[packageName]) {
       // MUST use require here. Dynamic import() do not support importing from directories
+      // esbuild-disable unsupported-require-call -- not esbuildable but that's fine
       awsSdk = require(`/tmp/node_modules/${packageName}`);
     } else {
+      // esbuild-disable unsupported-require-call -- not esbuildable but that's fine
       awsSdk = require(packageName);
     }
   } catch (error) {
@@ -89,14 +93,9 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     }
     const call: AwsSdkCall | undefined = event.ResourceProperties[event.RequestType];
     if (call) {
-      // when provide v2 service name, transform it v3 package name.
-      const packageName = call.service.startsWith('@aws-sdk/') ? call.service : getV3ClientPackageName(call.service);
-      const serviceShortName = packageName.split('/client-')[1]; // '@aws-sdk/client-s3' -> 's3'
+      const apiCall = new ApiCall(call.service, call.action);
 
-      let awsSdk: AwsSdk | Promise<AwsSdk> = loadAwsSdk(
-        packageName,
-        event.ResourceProperties.InstallLatestAwsSdk,
-      );
+      let awsSdk: AwsSdk | Promise<AwsSdk> = loadAwsSdk(apiCall.v3PackageName, event.ResourceProperties.InstallLatestAwsSdk);
 
       console.log(JSON.stringify({ ...event, ResponseURL: '...' }));
 
@@ -109,7 +108,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
           RoleSessionName: `${timestamp}-${physicalResourceId}`.substring(0, 64),
         };
 
-        const { fromTemporaryCredentials } = await import('@aws-sdk/credential-providers' as string);
+        const { fromTemporaryCredentials } = await import('@aws-sdk/credential-providers');
         credentials = fromTemporaryCredentials({
           params,
           clientConfig: call.region !== undefined ? { region: call.region } : undefined,
@@ -117,33 +116,23 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       }
 
       awsSdk = await awsSdk;
-      const ServiceClient = findV3ClientConstructor(awsSdk);
 
-      const client = new ServiceClient({
-        apiVersion: call.apiVersion,
-        credentials: credentials,
-        region: call.region,
-      });
-      const commandName = call.action.endsWith('Command') ? call.action : `${call.action}Command`;
-      const shortCommandName = commandName.replace(/Command$/, ''); // 'PutObjectCommand' -> 'PutObject'
-      const Command = Object.entries(awsSdk).find(
-        ([name]) => name.toLowerCase() === commandName.toLowerCase(),
-      )?.[1] as { new (input: any): any };
-
-      let flatData: { [key: string]: string } = {};
+      const flatData: { [key: string]: string } = {};
       try {
-        // Command must pass input value https://github.com/aws/aws-sdk-js-v3/issues/424
-        const response = await client.send(
-          new Command(call.parameters
-            ? coerceApiParametersToUint8Array(serviceShortName, shortCommandName, decodeSpecialValues(call.parameters, physicalResourceId))
-            : {},
-          ),
-        );
-        flatData = {
-          apiVersion: client.config.apiVersion, // For test purposes: check if apiVersion was correctly passed.
-          region: await client.config.region().catch(() => undefined), // For test purposes: check if region was correctly passed.
-          ...flatten(response),
-        };
+        const response = await apiCall.invoke({
+          sdkPackage: awsSdk,
+          apiVersion: call.apiVersion,
+          credentials: credentials,
+          region: call.region,
+          parameters: decodeSpecialValues(call.parameters, physicalResourceId),
+          flattenResponse: true,
+        });
+
+        console.log('API response', response);
+
+        flatData.apiVersion = apiCall.client.config.apiVersion; // For test purposes: check if apiVersion was correctly passed.
+        flatData.region = await apiCall.client.config.region().catch(() => undefined); // For test purposes: check if region was correctly passed.
+        Object.assign(flatData, response);
 
         let outputPaths: string[] | undefined;
         if (call.outputPath) {

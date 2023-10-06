@@ -188,3 +188,44 @@ removed:aws-cdk-lib.aws_cloudwatch.CfnAlarm.attrId
 removed:aws-cdk-lib.aws_ec2.CfnNetworkInterface.enablePrimaryIpv6
 removed:aws-cdk-lib.aws_ec2.CfnNetworkInterfaceAttachment.attrId
 removed:aws-cdk-lib.aws_ec2.CfnNetworkInterfaceProps.enablePrimaryIpv6
+
+# Changed type from GraphqlApi to IGraphqlApi to support import from a different stack, should not matter. 
+weakened:aws-cdk-lib.aws_appsync.SourceApi
+
+# Due to https://github.com/aws/aws-cdk/issues/27259, none of these could have worked
+# When reimplemented, we can remove this entry entirely
+removed:aws-cdk-lib.Schedule
+removed:aws-cdk-lib.aws_backup.Schedule
+removed:aws-cdk-lib.CronOptions
+base-types:aws-cdk-lib.aws_applicationautoscaling.Schedule
+removed:aws-cdk-lib.aws_applicationautoscaling.Schedule.protectedAt
+removed:aws-cdk-lib.aws_applicationautoscaling.Schedule.protectedCron
+removed:aws-cdk-lib.aws_applicationautoscaling.Schedule.protectedExpression
+removed:aws-cdk-lib.aws_applicationautoscaling.Schedule.protectedRate
+removed-argument:aws-cdk-lib.aws_applicationautoscaling.Schedule.at
+incompatible-argument:aws-cdk-lib.aws_applicationautoscaling.Schedule.cron
+removed-argument:aws-cdk-lib.aws_applicationautoscaling.Schedule.expression
+removed:aws-cdk-lib.aws_applicationautoscaling.Schedule.timeZone
+base-types:aws-cdk-lib.aws_autoscaling.Schedule
+removed:aws-cdk-lib.aws_autoscaling.Schedule.protectedAt
+removed:aws-cdk-lib.aws_autoscaling.Schedule.protectedCron
+removed:aws-cdk-lib.aws_autoscaling.Schedule.protectedExpression
+removed:aws-cdk-lib.aws_autoscaling.Schedule.protectedRate
+incompatible-argument:aws-cdk-lib.aws_autoscaling.Schedule.cron
+removed-argument:aws-cdk-lib.aws_autoscaling.Schedule.expression
+removed:aws-cdk-lib.aws_autoscaling.Schedule.timeZone
+base-types:aws-cdk-lib.aws_events.Schedule
+removed:aws-cdk-lib.aws_events.Schedule.protectedAt
+removed:aws-cdk-lib.aws_events.Schedule.protectedCron
+removed:aws-cdk-lib.aws_events.Schedule.protectedExpression
+removed:aws-cdk-lib.aws_events.Schedule.protectedRate
+removed:aws-cdk-lib.aws_events.Schedule.timeZone
+base-types:aws-cdk-lib.aws_applicationautoscaling.CronOptions
+removed:aws-cdk-lib.aws_applicationautoscaling.CronOptions.timeZone
+base-types:aws-cdk-lib.aws_autoscaling.CronOptions
+removed:aws-cdk-lib.aws_autoscaling.CronOptions.timeZone
+removed:aws-cdk-lib.aws_autoscaling.CronOptions.year
+removed:aws-cdk-lib.aws_backup.BackupPlanRuleProps.schedule
+
+# This data identifer was added by mistake; it had never worked.
+removed:aws-cdk-lib.aws_logs.DataIdentifier.PHONENUMBER

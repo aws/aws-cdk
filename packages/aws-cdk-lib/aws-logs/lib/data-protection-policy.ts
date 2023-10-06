@@ -253,7 +253,6 @@ export class DataIdentifier {
   public static readonly PERMANENTRESIDENCENUMBER_CA = new DataIdentifier('PermanentResidenceNumber-CA');
   public static readonly PERSONALHEALTHNUMBER_CA = new DataIdentifier('PersonalHealthNumber-CA');
   public static readonly PGPPRIVATEKEY = new DataIdentifier('PgpPrivateKey');
-  public static readonly PHONENUMBER = new DataIdentifier('PhoneNumber');
   public static readonly PHONENUMBER_BR = new DataIdentifier('PhoneNumber-BR');
   public static readonly PHONENUMBER_DE = new DataIdentifier('PhoneNumber-DE');
   public static readonly PHONENUMBER_ES = new DataIdentifier('PhoneNumber-ES');
