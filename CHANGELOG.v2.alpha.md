@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.100.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.99.1-alpha.0...v2.100.0-alpha.0) (2023-10-06)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **redshift:** the behavior of redshift tables has changed. UPDATE action will not be triggered on new table names and instead be triggered on table id changes.
+
+### Features
+
+* **synthetics:** CloudWatch Synthetics NodeJS Pupeteer 6.0 Runtime with NodeJS 18 ([#27339](https://github.com/aws/aws-cdk/issues/27339)) ([e48af04](https://github.com/aws/aws-cdk/commit/e48af04c0b483d705d99c97a1f7bf8c6cd8e71c6)), closes [#27337](https://github.com/aws/aws-cdk/issues/27337)
+
+
+### Bug Fixes
+
+* **redshift:** UserTablePriviliges to track changes using table IDs ([#26955](https://github.com/aws/aws-cdk/issues/26955)) ([7e4fdc7](https://github.com/aws/aws-cdk/commit/7e4fdc7ec12eb17224c4156ce9340da8c2bddc72)), closes [#26558](https://github.com/aws/aws-cdk/issues/26558)
+
 ## [2.99.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.99.0-alpha.0...v2.99.1-alpha.0) (2023-09-29)
 
 ## [2.99.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.98.0-alpha.0...v2.99.0-alpha.0) (2023-09-27)

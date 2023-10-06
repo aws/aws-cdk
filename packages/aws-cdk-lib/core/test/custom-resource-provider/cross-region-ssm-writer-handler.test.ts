@@ -361,7 +361,62 @@ describe('cross-region-ssm-writer entrypoint', () => {
       });
     });
 
-    test('thorws if parameters are in use', async () => {
+    test('more than 10 parameters are deleted', async () => {
+      // GIVEN
+      const event = makeEvent({
+        RequestType: 'Delete',
+        ResourceProperties: {
+          ServiceToken: '<ServiceToken>',
+          WriterProps: {
+            region: 'us-east-1',
+            exports: {
+              '/cdk/exports/MyStack/RemovedExport01': 'RemovedValue01',
+              '/cdk/exports/MyStack/RemovedExport02': 'RemovedValue02',
+              '/cdk/exports/MyStack/RemovedExport03': 'RemovedValue03',
+              '/cdk/exports/MyStack/RemovedExport04': 'RemovedValue04',
+              '/cdk/exports/MyStack/RemovedExport05': 'RemovedValue05',
+              '/cdk/exports/MyStack/RemovedExport06': 'RemovedValue06',
+              '/cdk/exports/MyStack/RemovedExport07': 'RemovedValue07',
+              '/cdk/exports/MyStack/RemovedExport08': 'RemovedValue08',
+              '/cdk/exports/MyStack/RemovedExport09': 'RemovedValue09',
+              '/cdk/exports/MyStack/RemovedExport10': 'RemovedValue10',
+              '/cdk/exports/MyStack/RemovedExport11': 'RemovedValue11',
+              '/cdk/exports/MyStack/RemovedExport12': 'RemovedValue12',
+            },
+          },
+        },
+      });
+
+      // WHEN
+      await handler(event);
+
+      // THEN
+      expect(mockPutParameter).toHaveBeenCalledTimes(0);
+      expect(mocklistTagsForResource).toHaveBeenCalledTimes(12);
+      expect(mockDeleteParameters).toHaveBeenCalledTimes(2);
+      expect(mockDeleteParameters).toHaveBeenCalledWith({
+        Names: [
+          '/cdk/exports/MyStack/RemovedExport01',
+          '/cdk/exports/MyStack/RemovedExport02',
+          '/cdk/exports/MyStack/RemovedExport03',
+          '/cdk/exports/MyStack/RemovedExport04',
+          '/cdk/exports/MyStack/RemovedExport05',
+          '/cdk/exports/MyStack/RemovedExport06',
+          '/cdk/exports/MyStack/RemovedExport07',
+          '/cdk/exports/MyStack/RemovedExport08',
+          '/cdk/exports/MyStack/RemovedExport09',
+          '/cdk/exports/MyStack/RemovedExport10',
+        ],
+      });
+      expect(mockDeleteParameters).toHaveBeenCalledWith({
+        Names: [
+          '/cdk/exports/MyStack/RemovedExport11',
+          '/cdk/exports/MyStack/RemovedExport12',
+        ],
+      });
+    });
+
+    test('throws if parameters are in use', async () => {
       // GIVEN
       const event = makeEvent({
         RequestType: 'Delete',

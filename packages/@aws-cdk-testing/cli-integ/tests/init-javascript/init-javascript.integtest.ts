@@ -25,8 +25,10 @@ integTest('Test importing CDK from ESM', withTemporaryDirectory(withPackages(asy
 
   // Rewrite some files
   await fs.writeFile(path.join(context.integTestDir, 'new-entrypoint.mjs'), `
-// Test two styles of imports
-import { Stack, aws_sns as sns, aws_sns_subscriptions as subs, aws_sqs as sqs } from 'aws-cdk-lib';
+// Test multiple styles of imports
+import { Stack, aws_sns as sns } from 'aws-cdk-lib';
+import { SqsSubscription } from 'aws-cdk-lib/aws-sns-subscriptions';
+import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as cdk from 'aws-cdk-lib';
 
 class TestjsStack extends Stack {
@@ -39,7 +41,7 @@ class TestjsStack extends Stack {
 
     const topic = new sns.Topic(this, 'TestjsTopic');
 
-    topic.addSubscription(new subs.SqsSubscription(queue));
+    topic.addSubscription(new SqsSubscription(queue));
   }
 }
 
