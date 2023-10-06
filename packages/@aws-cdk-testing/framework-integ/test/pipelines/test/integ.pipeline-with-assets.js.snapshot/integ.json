@@ -1,0 +1,13 @@
+{
+  "version": "32.0.0",
+  "testCases": {
+    "PipelineStackTest/DefaultTest": {
+      "stacks": [
+        "PipelineStack"
+      ],
+      "diffAssets": true,
+      "assertionStack": "PipelineStackTest/DefaultTest/DeployAssert",
+      "assertionStackName": "PipelineStackTestDefaultTestDeployAssertBC780F98"
+    }
+  }
+}

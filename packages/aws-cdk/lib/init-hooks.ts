@@ -84,7 +84,7 @@ async function dotnetAddProject(targetDirectory: string, context: HookContext, e
   const csprojPath = path.join(targetDirectory, 'src', pname, `${pname}.${ext}`);
   try {
     await shell(['dotnet', 'sln', slnPath, 'add', csprojPath]);
-  } catch (e) {
+  } catch (e: any) {
     throw new Error(`Could not add project ${pname}.${ext} to solution ${pname}.sln. ${e.message}`);
   }
 };

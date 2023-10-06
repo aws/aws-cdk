@@ -242,6 +242,11 @@ export interface CdkModernBootstrapCommandOptions extends CommonCdkBootstrapComm
    * @default undefined
    */
   readonly customPermissionsBoundary?: string;
+
+  /**
+   * @default undefined
+   */
+  readonly usePreviousParameters?: boolean;
 }
 
 export class TestFixture extends ShellHelper {
@@ -358,6 +363,9 @@ export class TestFixture extends ShellHelper {
       args.push('--custom-permissions-boundary', options.customPermissionsBoundary);
     } else if (options.examplePermissionsBoundary !== undefined) {
       args.push('--example-permissions-boundary');
+    }
+    if (options.usePreviousParameters === false) {
+      args.push('--no-previous-parameters');
     }
 
     return this.cdk(args, {

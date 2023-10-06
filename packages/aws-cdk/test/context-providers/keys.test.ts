@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import * as aws from 'aws-sdk';
 import * as AWS from 'aws-sdk-mock';
 import { KeyContextProviderPlugin } from '../../lib/context-providers/keys';
@@ -77,7 +78,6 @@ test('looks up the requested Key - multiple results', async () => {
     keyId: '1234abcd-12ab-34cd-56ef-123456789001',
   });
 });
-
 
 test('looks up the requested Key - multiple results with pagination', async () => {
   // GIVEN

@@ -48,7 +48,7 @@ export function integTest(
           output.write(`${s}\n`);
         },
       });
-    } catch (e) {
+    } catch (e: any) {
       process.stderr.write(`[INTEG TEST::${name}] Failed: ${e}\n`);
       output.write(e.message);
       output.write(e.stack);

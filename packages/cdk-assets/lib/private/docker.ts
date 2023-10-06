@@ -16,11 +16,18 @@ interface BuildOptions {
   readonly file?: string;
   readonly buildArgs?: Record<string, string>;
   readonly buildSecrets?: Record<string, string>;
+  readonly buildSsh?: string;
   readonly networkMode?: string;
   readonly platform?: string;
   readonly outputs?: string[];
   readonly cacheFrom?: DockerCacheOption[];
   readonly cacheTo?: DockerCacheOption;
+  readonly quiet?: boolean;
+}
+
+interface PushOptions {
+  readonly tag: string;
+  readonly quiet?: boolean;
 }
 
 export interface DockerCredentialsConfig {
@@ -57,7 +64,7 @@ export class Docker {
     try {
       await this.execute(['inspect', tag], { quiet: true });
       return true;
-    } catch (e) {
+    } catch (e: any) {
       const error: ProcessFailedError = e;
 
       /**
@@ -91,6 +98,7 @@ export class Docker {
       'build',
       ...flatten(Object.entries(options.buildArgs || {}).map(([k, v]) => ['--build-arg', `${k}=${v}`])),
       ...flatten(Object.entries(options.buildSecrets || {}).map(([k, v]) => ['--secret', `id=${k},${v}`])),
+      ...options.buildSsh ? ['--ssh', options.buildSsh] : [],
       '--tag', options.tag,
       ...options.target ? ['--target', options.target] : [],
       ...options.file ? ['--file', options.file] : [],
@@ -101,7 +109,10 @@ export class Docker {
       ...options.cacheTo ? ['--cache-to', this.cacheOptionToFlag(options.cacheTo)] : [],
       '.',
     ];
-    await this.execute(buildCommand, { cwd: options.directory });
+    await this.execute(buildCommand, {
+      cwd: options.directory,
+      quiet: options.quiet,
+    });
   }
 
   /**
@@ -128,8 +139,8 @@ export class Docker {
     await this.execute(['tag', sourceTag, targetTag]);
   }
 
-  public async push(tag: string) {
-    await this.execute(['push', tag]);
+  public async push(options: PushOptions) {
+    await this.execute(['push', options.tag], { quiet: options.quiet });
   }
 
   /**
@@ -181,7 +192,7 @@ export class Docker {
           PATH: `${pathToCdkAssets}${path.delimiter}${options.env?.PATH ?? process.env.PATH}`,
         },
       });
-    } catch (e) {
+    } catch (e: any) {
       if (e.code === 'ENOENT') {
         throw new Error('Unable to execute \'docker\' in order to build a container asset. Please install \'docker\' and try again.');
       }

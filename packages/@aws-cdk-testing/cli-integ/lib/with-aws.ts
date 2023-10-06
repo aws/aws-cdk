@@ -55,7 +55,7 @@ async function sanityCheck(aws: AwsClients) {
     try {
       await aws.account();
       sanityChecked = true;
-    } catch (e) {
+    } catch (e: any) {
       sanityChecked = false;
       throw new Error(`AWS credentials probably not configured, got error: ${e.message}`);
     }

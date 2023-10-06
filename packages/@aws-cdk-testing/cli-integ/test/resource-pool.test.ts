@@ -1,6 +1,8 @@
 import { sleep } from '../lib';
 import { ResourcePool } from '../lib/resource-pool';
 
+jest.setTimeout(30_000);
+
 const POOL_NAME = 'resource-pool.test';
 
 test('take and dispose', async () => {

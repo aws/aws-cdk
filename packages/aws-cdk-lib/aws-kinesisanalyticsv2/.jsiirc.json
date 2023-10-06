@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.KinesisAnalyticsV2"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.kinesisanalyticsv2"
+    },
+    "python": {
+      "module": "aws_cdk.aws_kinesisanalyticsv2"
+    }
+  }
+}

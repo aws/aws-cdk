@@ -57,7 +57,7 @@ export function formatDifferences(
  * Renders a diff of security changes to the given stream
  */
 export function formatSecurityChanges(
-  stream: NodeJS.WriteStream,
+  stream: NodeJS.WritableStream,
   templateDiff: TemplateDiff,
   logicalToPathMap: {[logicalId: string]: string} = {},
   context?: number) {

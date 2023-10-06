@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import { applyDefaults } from '../../lib/util';
 
 test('applyDefaults() works', () => {

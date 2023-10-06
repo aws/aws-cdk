@@ -69,7 +69,7 @@ export async function provideContextValues(
       }, resolvedEnvironment, sdk);
 
       value = await provider.getValue({ ...missingContext.props, lookupRoleArn: arns.lookupRoleArn });
-    } catch (e) {
+    } catch (e: any) {
       // Set a specially formatted provider value which will be interpreted
       // as a lookup failure in the toolkit.
       value = { [cxapi.PROVIDER_ERROR_KEY]: e.message, [TRANSIENT_CONTEXT_KEY]: true };

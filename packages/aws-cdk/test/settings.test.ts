@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import { Command, Context, Settings } from '../lib/settings';
 
 test('can delete values from Context object', () => {

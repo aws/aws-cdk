@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 
 const mockDeployStack = jest.fn();
 
@@ -202,6 +203,28 @@ describe('Bootstrapping v2', () => {
     expect(stderrMock.mock.calls).toEqual(expect.arrayContaining([
       expect.arrayContaining([
         expect.stringMatching(/Removing existing permissions boundary permissions-boundary-name/),
+      ]),
+    ]));
+  });
+
+  test('adding permission boundary with path in policy name', async () => {
+    mockTheToolkitInfo({
+      Parameters: [
+        {
+          ParameterKey: 'InputPermissionsBoundary',
+          ParameterValue: '',
+        },
+      ],
+    });
+    await bootstrapper.bootstrapEnvironment(env, sdk, {
+      parameters: {
+        customPermissionsBoundary: 'permissions-boundary-name/with/path',
+      },
+    });
+
+    expect(stderrMock.mock.calls).toEqual(expect.arrayContaining([
+      expect.arrayContaining([
+        expect.stringMatching(/Adding new permissions boundary permissions-boundary-name\/with\/path/),
       ]),
     ]));
   });

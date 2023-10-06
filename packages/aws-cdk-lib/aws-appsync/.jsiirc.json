@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.appsync"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.AppSync"
+    },
+    "python": {
+      "module": "aws_cdk.aws_appsync"
+    }
+  }
+}

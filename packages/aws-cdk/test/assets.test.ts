@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import { AssetMetadataEntry } from '@aws-cdk/cloud-assembly-schema';
 import { testStack } from './util';
 import { MockSdk } from './util/mock-sdk';
@@ -16,6 +17,7 @@ beforeEach(() => {
 describe('file assets', () => {
   test('convert to manifest and parameters', async () => {
     // GIVEN
+    const ext = __filename.match(/\.([tj]s)$/)?.[1];
     const stack = stackWithAssets([
       {
         sourceHash: 'source-hash',
@@ -34,7 +36,7 @@ describe('file assets', () => {
     // THEN
     expect(params).toEqual({
       BucketParameter: 'MockToolkitBucketName',
-      KeyParameter: 'assets/SomeStackSomeResource4567/||source-hash.js',
+      KeyParameter: `assets/SomeStackSomeResource4567/||source-hash.${ext}`,
       ArtifactHashParameter: 'source-hash',
     });
 
@@ -42,7 +44,7 @@ describe('file assets', () => {
       expect.objectContaining({
         destination: {
           bucketName: 'MockToolkitBucketName',
-          objectKey: 'assets/SomeStackSomeResource4567/source-hash.js',
+          objectKey: `assets/SomeStackSomeResource4567/source-hash.${ext}`,
         },
         source: {
           packaging: 'file',
@@ -54,6 +56,7 @@ describe('file assets', () => {
 
   test('hash and ID the same => only one path component', async () => {
     // GIVEN
+    const ext = __filename.match(/\.([tj]s)$/)?.[1];
     const stack = stackWithAssets([
       {
         sourceHash: 'source-hash',
@@ -74,7 +77,7 @@ describe('file assets', () => {
       expect.objectContaining({
         destination: {
           bucketName: 'MockToolkitBucketName',
-          objectKey: 'assets/source-hash.js',
+          objectKey: `assets/source-hash.${ext}`,
         },
       }),
     ]);

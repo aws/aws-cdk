@@ -1,5 +1,5 @@
 {
-  "$version": "109.0.0",
+  "$version": "130.1.0",
   "PropertyTypes": {
     "AWS::ManagedBlockchain::Member.ApprovalThresholdPolicy": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-managedblockchain-member-approvalthresholdpolicy.html",
@@ -168,6 +168,42 @@
     }
   },
   "ResourceTypes": {
+    "AWS::ManagedBlockchain::Accessor": {
+      "Attributes": {
+        "Arn": {
+          "PrimitiveType": "String"
+        },
+        "BillingToken": {
+          "PrimitiveType": "String"
+        },
+        "CreationDate": {
+          "PrimitiveType": "String"
+        },
+        "Id": {
+          "PrimitiveType": "String"
+        },
+        "Status": {
+          "PrimitiveType": "String"
+        }
+      },
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-managedblockchain-accessor.html",
+      "Properties": {
+        "AccessorType": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-managedblockchain-accessor.html#cfn-managedblockchain-accessor-accessortype",
+          "PrimitiveType": "String",
+          "Required": true,
+          "UpdateType": "Immutable"
+        },
+        "Tags": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-managedblockchain-accessor.html#cfn-managedblockchain-accessor-tags",
+          "DuplicatesAllowed": false,
+          "ItemType": "Tag",
+          "Required": false,
+          "Type": "List",
+          "UpdateType": "Mutable"
+        }
+      }
+    },
     "AWS::ManagedBlockchain::Member": {
       "Attributes": {
         "MemberId": {

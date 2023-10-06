@@ -1,0 +1,6 @@
+Resources:
+  Filler:
+    Type: AWS::CloudFormation::WaitConditionHandle
+Outputs:
+  Great:
+    Value: It works!

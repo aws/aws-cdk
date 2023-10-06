@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.WAFv2"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.wafv2"
+    },
+    "python": {
+      "module": "aws_cdk.aws_wafv2"
+    }
+  }
+}

@@ -113,6 +113,12 @@ export function diffKeyedEntities<T>(
   for (const logicalId of unionOf(Object.keys(oldValue || {}), Object.keys(newValue || {}))) {
     const oldElement = oldValue && oldValue[logicalId];
     const newElement = newValue && newValue[logicalId];
+
+    if (oldElement === undefined && newElement === undefined) {
+      // Shouldn't happen in reality, but may happen in tests. Skip.
+      continue;
+    }
+
     result[logicalId] = elementDiff(oldElement, newElement, logicalId);
   }
   return result;
@@ -132,6 +138,18 @@ export function unionOf(lv: string[] | Set<string>, rv: string[] | Set<string>):
     result.add(v);
   }
   return new Array(...result);
+}
+
+/**
+ * GetStackTemplate flattens any codepoint greater than "\u7f" to "?". This is
+ * true even for codepoints in the supplemental planes which are represented
+ * in JS as surrogate pairs, all the way up to "\u{10ffff}".
+ *
+ * This function implements the same mangling in order to provide diagnostic
+ * information in `cdk diff`.
+ */
+export function mangleLikeCloudFormation(payload: string) {
+  return payload.replace(/[\u{80}-\u{10ffff}]/gu, '?');
 }
 
 /**

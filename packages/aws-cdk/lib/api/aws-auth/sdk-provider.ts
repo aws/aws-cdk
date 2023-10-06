@@ -10,8 +10,8 @@ import { cached } from './cached';
 import { CredentialPlugins } from './credential-plugins';
 import { Mode } from './credentials';
 import { ISDK, SDK, isUnrecoverableAwsError } from './sdk';
+import { rootDir } from '../../util/directories';
 import { traceMethods } from '../../util/tracing';
-
 
 // Some configuration that can only be achieved by setting
 // environment variables.
@@ -173,8 +173,10 @@ export class SdkProvider {
     environment: cxapi.Environment,
     mode: Mode,
     options?: CredentialsOptions,
+    quiet = false,
   ): Promise<SdkForEnvironment> {
     const env = await this.resolveEnvironment(environment);
+
     const baseCreds = await this.obtainBaseCredentials(env.account, mode);
 
     // At this point, we need at least SOME credentials
@@ -200,7 +202,7 @@ export class SdkProvider {
     try {
       await sdk.forceCredentialRetrieval();
       return { sdk, didAssumeRole: true };
-    } catch (e) {
+    } catch (e: any) {
       if (isUnrecoverableAwsError(e)) {
         throw e;
       }
@@ -211,7 +213,8 @@ export class SdkProvider {
       // but if we can't then let's just try with available credentials anyway.
       if (baseCreds.source === 'correctDefault' || baseCreds.source === 'plugin') {
         debug(e.message);
-        warning(`${fmtObtainedCredentials(baseCreds)} could not be used to assume '${options.assumeRoleArn}', but are for the right account. Proceeding anyway.`);
+        const logger = quiet ? debug : warning;
+        logger(`${fmtObtainedCredentials(baseCreds)} could not be used to assume '${options.assumeRoleArn}', but are for the right account. Proceeding anyway.`);
         return { sdk: new SDK(baseCreds.credentials, env.region, this.sdkOptions), didAssumeRole: false };
       }
 
@@ -280,11 +283,11 @@ export class SdkProvider {
         }
 
         return await new SDK(creds, this.defaultRegion, this.sdkOptions).currentAccount();
-      } catch (e) {
+      } catch (e: any) {
         // Treat 'ExpiredToken' specially. This is a common situation that people may find themselves in, and
         // they are complaining about if we fail 'cdk synth' on them. We loudly complain in order to show that
         // the current situation is probably undesirable, but we don't fail.
-        if ((e as any).code === 'ExpiredToken') {
+        if (e.code === 'ExpiredToken') {
           warning('There are expired AWS credentials in your environment. The CDK app will synth without current account information.');
           return undefined;
         }
@@ -417,9 +420,7 @@ function parseHttpOptions(options: SdkHttpOptions) {
 
   let userAgent = options.userAgent;
   if (userAgent == null) {
-    // Find the package.json from the main toolkit
-    const pkg = JSON.parse(readIfPossible(path.join(__dirname, '..', '..', '..', 'package.json')) ?? '{}');
-    userAgent = `${pkg.name}/${pkg.version}`;
+    userAgent = defaultCliUserAgent();
   }
   config.customUserAgent = userAgent;
 
@@ -438,10 +439,24 @@ function parseHttpOptions(options: SdkHttpOptions) {
   // request.
   //
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const ProxyAgent = require('proxy-agent');
+  const { ProxyAgent } = require('proxy-agent');
   config.httpOptions.agent = new ProxyAgent(options.proxyAddress);
 
   return config;
+}
+
+/**
+ * Find the package.json from the main toolkit.
+ *
+ * If we can't read it for some reason, try to do something reasonable anyway.
+ * Fall back to argv[1], or a standard string if that is undefined for some reason.
+ */
+export function defaultCliUserAgent() {
+  const root = rootDir(false);
+  const pkg = JSON.parse((root ? readIfPossible(path.join(root, 'package.json')) : undefined) ?? '{}');
+  const name = pkg.name ?? path.basename(process.argv[1] ?? 'cdk-cli');
+  const version = pkg.version ?? '<unknown>';
+  return `${name}/${version}`;
 }
 
 /**
@@ -466,7 +481,7 @@ function readIfPossible(filename: string): string | undefined {
   try {
     if (!fs.pathExistsSync(filename)) { return undefined; }
     return fs.readFileSync(filename, { encoding: 'utf-8' });
-  } catch (e) {
+  } catch (e: any) {
     debug(e);
     return undefined;
   }
@@ -480,7 +495,7 @@ function readIfPossible(filename: string): string | undefined {
 function safeUsername() {
   try {
     return os.userInfo().username.replace(/[^\w+=,.@-]/g, '@');
-  } catch (e) {
+  } catch {
     return 'noname';
   }
 }

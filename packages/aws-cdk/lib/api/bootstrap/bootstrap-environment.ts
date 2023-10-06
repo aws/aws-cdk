@@ -17,7 +17,6 @@ export type BootstrapSource =
   | { source: 'default' }
   | { source: 'custom'; templateFile: string };
 
-
 export class Bootstrapper {
   constructor(private readonly source: BootstrapSource) {
   }
@@ -117,7 +116,7 @@ export class Bootstrapper {
       const implicitPolicy = `arn:${partition}:iam::aws:policy/AdministratorAccess`;
       warning(`Using default execution policy of '${implicitPolicy}'. Pass '--cloudformation-execution-policies' to customize.`);
     } else if (cloudFormationExecutionPolicies.length === 0) {
-      throw new Error('Please pass \'--cloudformation-execution-policies\' when using \'--trust\' to specify deployment permissions. Try a managed policy of the form \'arn:aws:iam::aws:policy/<PolicyName>\'.');
+      throw new Error(`Please pass \'--cloudformation-execution-policies\' when using \'--trust\' to specify deployment permissions. Try a managed policy of the form \'arn:${partition}:iam::aws:policy/<PolicyName>\'.`);
     } else {
       // Remind people what the current settings are
       info(`Execution policies: ${cloudFormationExecutionPolicies.join(', ')}`);
@@ -210,7 +209,7 @@ export class Bootstrapper {
       if (getPolicyResp.Policy) {
         return arn;
       }
-    } catch (e) {
+    } catch (e: any) {
       // https://docs.aws.amazon.com/IAM/latest/APIReference/API_GetPolicy.html#API_GetPolicy_Errors
       if (e.name === 'NoSuchEntity') {
         //noop, proceed with creating the policy
@@ -280,7 +279,9 @@ export class Bootstrapper {
 
   private validatePolicyName(permissionsBoundary: string) {
     // https://docs.aws.amazon.com/IAM/latest/APIReference/API_CreatePolicy.html
-    const regexp: RegExp = /[\w+=,.@-]+/;
+    // Added support for policy names with a path
+    // See https://github.com/aws/aws-cdk/issues/26320
+    const regexp: RegExp = /[\w+\/=,.@-]+/;
     const matches = regexp.exec(permissionsBoundary);
     if (!(matches && matches.length === 1 && matches[0] === permissionsBoundary)) {
       throw new Error(`The permissions boundary name ${permissionsBoundary} does not match the IAM conventions.`);

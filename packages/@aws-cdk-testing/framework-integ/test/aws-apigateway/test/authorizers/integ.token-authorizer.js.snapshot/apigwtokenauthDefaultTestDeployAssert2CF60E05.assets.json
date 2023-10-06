@@ -1,0 +1,32 @@
+{
+  "version": "34.0.0",
+  "files": {
+    "d69f83e949b9c49809604e7bcd3a868d44f04f936029b55662aa14982d9bd44b": {
+      "source": {
+        "path": "asset.d69f83e949b9c49809604e7bcd3a868d44f04f936029b55662aa14982d9bd44b.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "d69f83e949b9c49809604e7bcd3a868d44f04f936029b55662aa14982d9bd44b.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "32a3aac734a72e886e3c709c16dcc1dd16078db65460a952f17fbdba721411af": {
+      "source": {
+        "path": "apigwtokenauthDefaultTestDeployAssert2CF60E05.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "32a3aac734a72e886e3c709c16dcc1dd16078db65460a952f17fbdba721411af.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

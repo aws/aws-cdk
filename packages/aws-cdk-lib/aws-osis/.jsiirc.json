@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "services.osis"
+    },
+    "dotnet": {
+      "package": "Amazon.CDK.AWS.OSIS"
+    },
+    "python": {
+      "module": "aws_cdk.aws_osis"
+    }
+  }
+}

@@ -14,13 +14,12 @@ import * as path from 'path';
 export class RWLock {
   private readonly pidString: string;
   private readonly writerFile: string;
-  private readonly readerFile: string;
+  private readCounter = 0;
 
   constructor(public readonly directory: string) {
     this.pidString = `${process.pid}`;
 
     this.writerFile = path.join(this.directory, 'synth.lock');
-    this.readerFile = path.join(this.directory, `read.${this.pidString}.lock`);
   }
 
   /**
@@ -63,13 +62,25 @@ export class RWLock {
   }
 
   /**
+   * Obtains the name fo a (new) `readerFile` to use. This includes a counter so
+   * that if multiple threads of the same PID attempt to concurrently acquire
+   * the same lock, they're guaranteed to use a different reader file name (only
+   * one thread will ever execute JS code at once, guaranteeing the readCounter
+   * is incremented "atomically" from the point of view of this PID.).
+   */
+  private readerFile(): string {
+    return path.join(this.directory, `read.${this.pidString}.${++this.readCounter}.lock`);
+  }
+
+  /**
    * Do the actual acquiring of a read lock.
    */
   private async doAcquireRead(): Promise<ILock> {
-    await writeFileAtomic(this.readerFile, this.pidString);
+    const readerFile = this.readerFile();
+    await writeFileAtomic(readerFile, this.pidString);
     return {
       release: async () => {
-        await deleteFile(this.readerFile);
+        await deleteFile(readerFile);
       },
     };
   }
@@ -102,13 +113,13 @@ export class RWLock {
    * Check the current readers (if any)
    */
   private async currentReaders(): Promise<number[]> {
-    const re = /^read\.([^.]+)\.lock$/;
+    const re = /^read\.([^.]+)\.[^.]+\.lock$/;
     const ret = new Array<number>();
 
     let children;
     try {
       children = await fs.readdir(this.directory, { encoding: 'utf-8' });
-    } catch (e) {
+    } catch (e: any) {
       // Can't be locked if the directory doesn't exist
       if (e.code === 'ENOENT') { return []; }
       throw e;
@@ -150,15 +161,16 @@ export interface IWriterLock extends ILock {
 async function readFileIfExists(filename: string): Promise<string | undefined> {
   try {
     return await fs.readFile(filename, { encoding: 'utf-8' });
-  } catch (e) {
+  } catch (e: any) {
     if (e.code === 'ENOENT') { return undefined; }
     throw e;
   }
 }
 
+let tmpCounter = 0;
 async function writeFileAtomic(filename: string, contents: string): Promise<void> {
   await fs.mkdir(path.dirname(filename), { recursive: true });
-  const tmpFile = `${filename}.${process.pid}`;
+  const tmpFile = `${filename}.${process.pid}_${++tmpCounter}`;
   await fs.writeFile(tmpFile, contents, { encoding: 'utf-8' });
   await fs.rename(tmpFile, filename);
 }
@@ -166,7 +178,7 @@ async function writeFileAtomic(filename: string, contents: string): Promise<void
 async function deleteFile(filename: string) {
   try {
     await fs.unlink(filename);
-  } catch (e) {
+  } catch (e: any) {
     if (e.code === 'ENOENT') {
       return;
     }

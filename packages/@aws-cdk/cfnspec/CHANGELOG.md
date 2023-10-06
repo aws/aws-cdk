@@ -1,3 +1,3476 @@
+# CloudFormation Resource Specification v130.1.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::HealthLake::FHIRDatastore IdentityProviderConfiguration (__added__)
+* AWS::S3Outposts::Endpoint FailedReason (__added__)
+
+## Property Type Changes
+
+* AWS::HealthLake::FHIRDatastore.IdentityProviderConfiguration (__added__)
+* AWS::S3Outposts::Endpoint.FailedReason (__added__)
+* AWS::AppFlow::ConnectorProfile.SAPODataConnectorProfileProperties DisableSSO (__added__)
+* AWS::CleanRooms::ConfiguredTable.AnalysisRuleAggregation AllowedJoinOperators (__added__)
+* AWS::CleanRooms::ConfiguredTable.AnalysisRuleList AllowedJoinOperators (__added__)
+
+# CloudFormation Resource Specification (us-west-2) v130.1.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+
+
+# CloudFormation Resource Specification v130.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+* AWS::ApiGatewayV2::ApiMapping ApiMappingId (__added__)
+* AWS::SNS::TopicPolicy Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-policy.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topicpolicy.html
+* AWS::SNS::TopicPolicy Id (__added__)
+
+## Property Changes
+
+* AWS::InternetMonitor::Monitor HealthEventsConfig (__added__)
+* AWS::SNS::TopicPolicy PolicyDocument.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-policy.html#cfn-sns-topicpolicy-policydocument
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topicpolicy.html#cfn-sns-topicpolicy-policydocument
+* AWS::SNS::TopicPolicy Topics.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-policy.html#cfn-sns-topicpolicy-topics
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topicpolicy.html#cfn-sns-topicpolicy-topics
+
+## Property Type Changes
+
+* AWS::AppFlow::Flow.DataTransferApi (__added__)
+* AWS::InternetMonitor::Monitor.HealthEventsConfig (__added__)
+* AWS::AppFlow::Flow.CustomConnectorSourceProperties DataTransferApi (__added__)
+
+# CloudFormation Resource Specification (us-west-2) v130.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+
+
+# CloudFormation Resource Specification v129.0.0
+
+## New Resource Types
+
+* AWS::AppRunner::AutoScalingConfiguration
+* AWS::AppStream::AppBlockBuilder
+* AWS::Comprehend::DocumentClassifier
+* AWS::VerifiedPermissions::IdentitySource
+* AWS::VerifiedPermissions::Policy
+* AWS::VerifiedPermissions::PolicyStore
+* AWS::VerifiedPermissions::PolicyTemplate
+
+## Attribute Changes
+
+* AWS::EC2::LaunchTemplate LaunchTemplateId (__added__)
+* AWS::EC2::Subnet AvailabilityZoneId (__added__)
+* AWS::EC2::Subnet CidrBlock (__added__)
+* AWS::IAM::ServiceLinkedRole RoleName (__added__)
+* AWS::NetworkManager::Device CreatedAt (__added__)
+
+## Property Changes
+
+* AWS::AppStream::AppBlock PackagingType (__added__)
+* AWS::AppStream::AppBlock PostSetupScriptDetails (__added__)
+* AWS::AppStream::AppBlock SetupScriptDetails.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::EC2::KeyPair KeyFormat (__added__)
+* AWS::EC2::KeyPair PublicKeyMaterial.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::KeyPair Tags.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::LaunchTemplate TagSpecifications.DuplicatesAllowed (__added__)
+* AWS::IAM::ServiceLinkedRole AWSServiceName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::LakeFormation::Permissions DataLakePrincipal.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::LakeFormation::Permissions Resource.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::LakeFormation::Resource ResourceArn.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::LakeFormation::Resource UseServiceLinkedRole.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Conditional
+* AWS::NetworkManager::ConnectPeer InsideCidrBlocks.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::NetworkManager::Device AWSLocation (__added__)
+* AWS::NetworkManager::Device Tags.DuplicatesAllowed (__changed__)
+  * Old: true
+  * New: false
+* AWS::Panorama::ApplicationInstance DeviceId (__deleted__)
+* AWS::Panorama::ApplicationInstance StatusFilter (__deleted__)
+* AWS::QuickSight::Theme BaseThemeId.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::QuickSight::Theme Configuration.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::QuickSight::Theme Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::SageMaker::ModelPackage AdditionalInferenceSpecificationDefinition (__deleted__)
+* AWS::SageMaker::ModelPackage CreatedBy (__deleted__)
+* AWS::SageMaker::ModelPackage Environment (__deleted__)
+* AWS::SageMaker::ModelPackage LastModifiedBy (__deleted__)
+* AWS::SageMaker::ModelPackage ModelPackageStatusItem (__deleted__)
+* AWS::WAFv2::WebACL AssociationConfig (__added__)
+
+## Property Type Changes
+
+* AWS::LakeFormation::DataLakeSettings.Permissions (__removed__)
+* AWS::QuickSight::Analysis.ColorsConfiguration (__removed__)
+* AWS::QuickSight::Analysis.CustomColor (__removed__)
+* AWS::QuickSight::Dashboard.ColorsConfiguration (__removed__)
+* AWS::QuickSight::Dashboard.CustomColor (__removed__)
+* AWS::QuickSight::Template.ColorsConfiguration (__removed__)
+* AWS::QuickSight::Template.CustomColor (__removed__)
+* AWS::SageMaker::ModelPackage.UserContext (__removed__)
+* AWS::NetworkManager::Device.AWSLocation (__added__)
+* AWS::QuickSight::Analysis.GeospatialHeatmapColorScale (__added__)
+* AWS::QuickSight::Analysis.GeospatialHeatmapConfiguration (__added__)
+* AWS::QuickSight::Analysis.GeospatialHeatmapDataColor (__added__)
+* AWS::QuickSight::Analysis.PivotTableFieldCollapseStateOption (__added__)
+* AWS::QuickSight::Analysis.PivotTableFieldCollapseStateTarget (__added__)
+* AWS::QuickSight::Dashboard.GeospatialHeatmapColorScale (__added__)
+* AWS::QuickSight::Dashboard.GeospatialHeatmapConfiguration (__added__)
+* AWS::QuickSight::Dashboard.GeospatialHeatmapDataColor (__added__)
+* AWS::QuickSight::Dashboard.PivotTableFieldCollapseStateOption (__added__)
+* AWS::QuickSight::Dashboard.PivotTableFieldCollapseStateTarget (__added__)
+* AWS::QuickSight::Template.GeospatialHeatmapColorScale (__added__)
+* AWS::QuickSight::Template.GeospatialHeatmapConfiguration (__added__)
+* AWS::QuickSight::Template.GeospatialHeatmapDataColor (__added__)
+* AWS::QuickSight::Template.PivotTableFieldCollapseStateOption (__added__)
+* AWS::QuickSight::Template.PivotTableFieldCollapseStateTarget (__added__)
+* AWS::WAFv2::WebACL.AssociationConfig (__added__)
+* AWS::WAFv2::WebACL.RequestBodyAssociatedResourceTypeConfig (__added__)
+* AWS::AppStream::AppBlock.S3Location S3Key.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::EC2::LaunchTemplate.CapacityReservationSpecification CapacityReservationPreference.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-capacityreservationspecification.html#cfn-ec2-launchtemplate-launchtemplatedata-capacityreservationspecification-capacityreservationpreference
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-capacityreservationspecification.html#cfn-ec2-launchtemplate-capacityreservationspecification-capacityreservationpreference
+* AWS::EC2::LaunchTemplate.CapacityReservationSpecification CapacityReservationTarget.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-capacityreservationspecification.html#cfn-ec2-launchtemplate-launchtemplatedata-capacityreservationspecification-capacityreservationtarget
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-capacityreservationspecification.html#cfn-ec2-launchtemplate-capacityreservationspecification-capacityreservationtarget
+* AWS::EC2::LaunchTemplate.CpuOptions AmdSevSnp.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-cpuoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-cpuoptions-amdsevsnp
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-cpuoptions.html#cfn-ec2-launchtemplate-cpuoptions-amdsevsnp
+* AWS::EC2::LaunchTemplate.CpuOptions CoreCount.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-cpuoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-cpuoptions-corecount
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-cpuoptions.html#cfn-ec2-launchtemplate-cpuoptions-corecount
+* AWS::EC2::LaunchTemplate.CpuOptions ThreadsPerCore.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-cpuoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-cpuoptions-threadspercore
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-cpuoptions.html#cfn-ec2-launchtemplate-cpuoptions-threadspercore
+* AWS::EC2::LaunchTemplate.CreditSpecification CpuCredits.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-creditspecification.html#cfn-ec2-launchtemplate-launchtemplatedata-creditspecification-cpucredits
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-creditspecification.html#cfn-ec2-launchtemplate-creditspecification-cpucredits
+* AWS::EC2::LaunchTemplate.Ebs DeleteOnTermination.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-blockdevicemapping-ebs.html#cfn-ec2-launchtemplate-blockdevicemapping-ebs-deleteontermination
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-ebs.html#cfn-ec2-launchtemplate-ebs-deleteontermination
+* AWS::EC2::LaunchTemplate.Ebs Encrypted.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-blockdevicemapping-ebs.html#cfn-ec2-launchtemplate-blockdevicemapping-ebs-encrypted
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-ebs.html#cfn-ec2-launchtemplate-ebs-encrypted
+* AWS::EC2::LaunchTemplate.Ebs Iops.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-blockdevicemapping-ebs.html#cfn-ec2-launchtemplate-blockdevicemapping-ebs-iops
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-ebs.html#cfn-ec2-launchtemplate-ebs-iops
+* AWS::EC2::LaunchTemplate.Ebs KmsKeyId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-blockdevicemapping-ebs.html#cfn-ec2-launchtemplate-blockdevicemapping-ebs-kmskeyid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-ebs.html#cfn-ec2-launchtemplate-ebs-kmskeyid
+* AWS::EC2::LaunchTemplate.Ebs SnapshotId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-blockdevicemapping-ebs.html#cfn-ec2-launchtemplate-blockdevicemapping-ebs-snapshotid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-ebs.html#cfn-ec2-launchtemplate-ebs-snapshotid
+* AWS::EC2::LaunchTemplate.Ebs Throughput.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-blockdevicemapping-ebs.html#cfn-ec2-launchtemplate-blockdevicemapping-ebs-throughput
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-ebs.html#cfn-ec2-launchtemplate-ebs-throughput
+* AWS::EC2::LaunchTemplate.Ebs VolumeSize.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-blockdevicemapping-ebs.html#cfn-ec2-launchtemplate-blockdevicemapping-ebs-volumesize
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-ebs.html#cfn-ec2-launchtemplate-ebs-volumesize
+* AWS::EC2::LaunchTemplate.Ebs VolumeType.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-blockdevicemapping-ebs.html#cfn-ec2-launchtemplate-blockdevicemapping-ebs-volumetype
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-ebs.html#cfn-ec2-launchtemplate-ebs-volumetype
+* AWS::EC2::LaunchTemplate.EnclaveOptions Enabled.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-enclaveoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-enclaveoptions-enabled
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-enclaveoptions.html#cfn-ec2-launchtemplate-enclaveoptions-enabled
+* AWS::EC2::LaunchTemplate.HibernationOptions Configured.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-hibernationoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-hibernationoptions-configured
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-hibernationoptions.html#cfn-ec2-launchtemplate-hibernationoptions-configured
+* AWS::EC2::LaunchTemplate.IamInstanceProfile Arn.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-iaminstanceprofile.html#cfn-ec2-launchtemplate-launchtemplatedata-iaminstanceprofile-arn
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-iaminstanceprofile.html#cfn-ec2-launchtemplate-iaminstanceprofile-arn
+* AWS::EC2::LaunchTemplate.IamInstanceProfile Name.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-iaminstanceprofile.html#cfn-ec2-launchtemplate-launchtemplatedata-iaminstanceprofile-name
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-iaminstanceprofile.html#cfn-ec2-launchtemplate-iaminstanceprofile-name
+* AWS::EC2::LaunchTemplate.InstanceMarketOptions MarketType.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancemarketoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-instancemarketoptions-markettype
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancemarketoptions.html#cfn-ec2-launchtemplate-instancemarketoptions-markettype
+* AWS::EC2::LaunchTemplate.InstanceMarketOptions SpotOptions.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancemarketoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-instancemarketoptions-spotoptions
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancemarketoptions.html#cfn-ec2-launchtemplate-instancemarketoptions-spotoptions
+* AWS::EC2::LaunchTemplate.InstanceRequirements AcceleratorCount.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-acceleratorcount
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-acceleratorcount
+* AWS::EC2::LaunchTemplate.InstanceRequirements AcceleratorManufacturers.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.InstanceRequirements AcceleratorManufacturers.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-acceleratormanufacturers
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-acceleratormanufacturers
+* AWS::EC2::LaunchTemplate.InstanceRequirements AcceleratorNames.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.InstanceRequirements AcceleratorNames.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-acceleratornames
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-acceleratornames
+* AWS::EC2::LaunchTemplate.InstanceRequirements AcceleratorTotalMemoryMiB.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-acceleratortotalmemorymib
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-acceleratortotalmemorymib
+* AWS::EC2::LaunchTemplate.InstanceRequirements AcceleratorTypes.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.InstanceRequirements AcceleratorTypes.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-acceleratortypes
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-acceleratortypes
+* AWS::EC2::LaunchTemplate.InstanceRequirements AllowedInstanceTypes.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.InstanceRequirements AllowedInstanceTypes.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-allowedinstancetypes
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-allowedinstancetypes
+* AWS::EC2::LaunchTemplate.InstanceRequirements BareMetal.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-baremetal
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-baremetal
+* AWS::EC2::LaunchTemplate.InstanceRequirements BaselineEbsBandwidthMbps.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-baselineebsbandwidthmbps
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-baselineebsbandwidthmbps
+* AWS::EC2::LaunchTemplate.InstanceRequirements BurstablePerformance.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-burstableperformance
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-burstableperformance
+* AWS::EC2::LaunchTemplate.InstanceRequirements CpuManufacturers.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.InstanceRequirements CpuManufacturers.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-cpumanufacturers
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-cpumanufacturers
+* AWS::EC2::LaunchTemplate.InstanceRequirements ExcludedInstanceTypes.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.InstanceRequirements ExcludedInstanceTypes.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-excludedinstancetypes
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-excludedinstancetypes
+* AWS::EC2::LaunchTemplate.InstanceRequirements InstanceGenerations.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.InstanceRequirements InstanceGenerations.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-instancegenerations
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-instancegenerations
+* AWS::EC2::LaunchTemplate.InstanceRequirements LocalStorage.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-localstorage
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-localstorage
+* AWS::EC2::LaunchTemplate.InstanceRequirements LocalStorageTypes.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.InstanceRequirements LocalStorageTypes.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-localstoragetypes
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-localstoragetypes
+* AWS::EC2::LaunchTemplate.InstanceRequirements MemoryGiBPerVCpu.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-memorygibpervcpu
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-memorygibpervcpu
+* AWS::EC2::LaunchTemplate.InstanceRequirements MemoryMiB.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-memorymib
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-memorymib
+* AWS::EC2::LaunchTemplate.InstanceRequirements NetworkBandwidthGbps.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-networkbandwidthgbps
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-networkbandwidthgbps
+* AWS::EC2::LaunchTemplate.InstanceRequirements NetworkInterfaceCount.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-networkinterfacecount
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-networkinterfacecount
+* AWS::EC2::LaunchTemplate.InstanceRequirements OnDemandMaxPricePercentageOverLowestPrice.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-ondemandmaxpricepercentageoverlowestprice
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-ondemandmaxpricepercentageoverlowestprice
+* AWS::EC2::LaunchTemplate.InstanceRequirements RequireHibernateSupport.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-requirehibernatesupport
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-requirehibernatesupport
+* AWS::EC2::LaunchTemplate.InstanceRequirements SpotMaxPricePercentageOverLowestPrice.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-spotmaxpricepercentageoverlowestprice
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-spotmaxpricepercentageoverlowestprice
+* AWS::EC2::LaunchTemplate.InstanceRequirements TotalLocalStorageGB.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-totallocalstoragegb
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-totallocalstoragegb
+* AWS::EC2::LaunchTemplate.InstanceRequirements VCpuCount.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancerequirements.html#cfn-ec2-launchtemplate-launchtemplatedata-instancerequirements-vcpucount
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-instancerequirements.html#cfn-ec2-launchtemplate-instancerequirements-vcpucount
+* AWS::EC2::LaunchTemplate.LaunchTemplateData BlockDeviceMappings.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateData ElasticGpuSpecifications.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateData ElasticInferenceAccelerators.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateData LicenseSpecifications.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateData NetworkInterfaces.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateData SecurityGroupIds.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateData SecurityGroups.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateData TagSpecifications.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateTagSpecification Tags.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.MaintenanceOptions AutoRecovery.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-maintenanceoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-maintenanceoptions-autorecovery
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-maintenanceoptions.html#cfn-ec2-launchtemplate-maintenanceoptions-autorecovery
+* AWS::EC2::LaunchTemplate.MetadataOptions HttpEndpoint.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions-httpendpoint
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-metadataoptions.html#cfn-ec2-launchtemplate-metadataoptions-httpendpoint
+* AWS::EC2::LaunchTemplate.MetadataOptions HttpProtocolIpv6.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions-httpprotocolipv6
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-metadataoptions.html#cfn-ec2-launchtemplate-metadataoptions-httpprotocolipv6
+* AWS::EC2::LaunchTemplate.MetadataOptions HttpPutResponseHopLimit.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions-httpputresponsehoplimit
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-metadataoptions.html#cfn-ec2-launchtemplate-metadataoptions-httpputresponsehoplimit
+* AWS::EC2::LaunchTemplate.MetadataOptions HttpTokens.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions-httptokens
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-metadataoptions.html#cfn-ec2-launchtemplate-metadataoptions-httptokens
+* AWS::EC2::LaunchTemplate.MetadataOptions InstanceMetadataTags.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions-instancemetadatatags
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-metadataoptions.html#cfn-ec2-launchtemplate-metadataoptions-instancemetadatatags
+* AWS::EC2::LaunchTemplate.Monitoring Enabled.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-monitoring.html#cfn-ec2-launchtemplate-launchtemplatedata-monitoring-enabled
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-monitoring.html#cfn-ec2-launchtemplate-monitoring-enabled
+* AWS::EC2::LaunchTemplate.NetworkInterface Groups.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.NetworkInterface Ipv4Prefixes.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.NetworkInterface Ipv6Addresses.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.NetworkInterface Ipv6Prefixes.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.NetworkInterface PrivateIpAddresses.DuplicatesAllowed (__added__)
+* AWS::EC2::LaunchTemplate.Placement Affinity.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-placement.html#cfn-ec2-launchtemplate-launchtemplatedata-placement-affinity
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-placement.html#cfn-ec2-launchtemplate-placement-affinity
+* AWS::EC2::LaunchTemplate.Placement AvailabilityZone.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-placement.html#cfn-ec2-launchtemplate-launchtemplatedata-placement-availabilityzone
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-placement.html#cfn-ec2-launchtemplate-placement-availabilityzone
+* AWS::EC2::LaunchTemplate.Placement GroupId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-placement.html#cfn-ec2-launchtemplate-launchtemplatedata-placement-groupid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-placement.html#cfn-ec2-launchtemplate-placement-groupid
+* AWS::EC2::LaunchTemplate.Placement GroupName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-placement.html#cfn-ec2-launchtemplate-launchtemplatedata-placement-groupname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-placement.html#cfn-ec2-launchtemplate-placement-groupname
+* AWS::EC2::LaunchTemplate.Placement HostId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-placement.html#cfn-ec2-launchtemplate-launchtemplatedata-placement-hostid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-placement.html#cfn-ec2-launchtemplate-placement-hostid
+* AWS::EC2::LaunchTemplate.Placement HostResourceGroupArn.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-placement.html#cfn-ec2-launchtemplate-launchtemplatedata-placement-hostresourcegrouparn
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-placement.html#cfn-ec2-launchtemplate-placement-hostresourcegrouparn
+* AWS::EC2::LaunchTemplate.Placement PartitionNumber.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-placement.html#cfn-ec2-launchtemplate-launchtemplatedata-placement-partitionnumber
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-placement.html#cfn-ec2-launchtemplate-placement-partitionnumber
+* AWS::EC2::LaunchTemplate.Placement SpreadDomain.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-placement.html#cfn-ec2-launchtemplate-launchtemplatedata-placement-spreaddomain
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-placement.html#cfn-ec2-launchtemplate-placement-spreaddomain
+* AWS::EC2::LaunchTemplate.Placement Tenancy.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-placement.html#cfn-ec2-launchtemplate-launchtemplatedata-placement-tenancy
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-placement.html#cfn-ec2-launchtemplate-placement-tenancy
+* AWS::EC2::LaunchTemplate.PrivateDnsNameOptions EnableResourceNameDnsAAAARecord.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-privatednsnameoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-privatednsnameoptions-enableresourcenamednsaaaarecord
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-privatednsnameoptions.html#cfn-ec2-launchtemplate-privatednsnameoptions-enableresourcenamednsaaaarecord
+* AWS::EC2::LaunchTemplate.PrivateDnsNameOptions EnableResourceNameDnsARecord.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-privatednsnameoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-privatednsnameoptions-enableresourcenamednsarecord
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-privatednsnameoptions.html#cfn-ec2-launchtemplate-privatednsnameoptions-enableresourcenamednsarecord
+* AWS::EC2::LaunchTemplate.PrivateDnsNameOptions HostnameType.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-privatednsnameoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-privatednsnameoptions-hostnametype
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-privatednsnameoptions.html#cfn-ec2-launchtemplate-privatednsnameoptions-hostnametype
+* AWS::EC2::LaunchTemplate.SpotOptions BlockDurationMinutes.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancemarketoptions-spotoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-instancemarketoptions-spotoptions-blockdurationminutes
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-spotoptions.html#cfn-ec2-launchtemplate-spotoptions-blockdurationminutes
+* AWS::EC2::LaunchTemplate.SpotOptions InstanceInterruptionBehavior.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancemarketoptions-spotoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-instancemarketoptions-spotoptions-instanceinterruptionbehavior
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-spotoptions.html#cfn-ec2-launchtemplate-spotoptions-instanceinterruptionbehavior
+* AWS::EC2::LaunchTemplate.SpotOptions MaxPrice.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancemarketoptions-spotoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-instancemarketoptions-spotoptions-maxprice
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-spotoptions.html#cfn-ec2-launchtemplate-spotoptions-maxprice
+* AWS::EC2::LaunchTemplate.SpotOptions SpotInstanceType.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancemarketoptions-spotoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-instancemarketoptions-spotoptions-spotinstancetype
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-spotoptions.html#cfn-ec2-launchtemplate-spotoptions-spotinstancetype
+* AWS::EC2::LaunchTemplate.SpotOptions ValidUntil.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-instancemarketoptions-spotoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-instancemarketoptions-spotoptions-validuntil
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-spotoptions.html#cfn-ec2-launchtemplate-spotoptions-validuntil
+* AWS::EC2::LaunchTemplate.TagSpecification Tags.DuplicatesAllowed (__added__)
+* AWS::EC2::VerifiedAccessInstance.VerifiedAccessLogs IncludeTrustContext (__added__)
+* AWS::EC2::VerifiedAccessInstance.VerifiedAccessLogs LogVersion (__added__)
+* AWS::LakeFormation::DataLakeSettings.DataLakePrincipal DataLakePrincipalIdentifier.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::LakeFormation::DataLakeSettings.PrincipalPermissions Permissions.PrimitiveItemType (__added__)
+* AWS::LakeFormation::DataLakeSettings.PrincipalPermissions Permissions.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::LakeFormation::DataLakeSettings.PrincipalPermissions Permissions.Type (__changed__)
+  * Old: Permissions
+  * New: List
+* AWS::LakeFormation::DataLakeSettings.PrincipalPermissions Principal.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::QuickSight::Analysis.AggregationSortConfiguration AggregationFunction.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::QuickSight::Analysis.ColumnConfiguration ColorsConfiguration (__deleted__)
+* AWS::QuickSight::Analysis.DataLabelOptions TotalsVisibility (__added__)
+* AWS::QuickSight::Analysis.DestinationParameterValueConfiguration SourceColumn (__added__)
+* AWS::QuickSight::Analysis.FilterOperationSelectedFieldsConfiguration SelectedColumns (__added__)
+* AWS::QuickSight::Analysis.GeospatialPointStyleOptions HeatmapConfiguration (__added__)
+* AWS::QuickSight::Analysis.PivotTableCellConditionalFormatting Scopes (__added__)
+* AWS::QuickSight::Analysis.PivotTableFieldOptions CollapseStateOptions (__added__)
+* AWS::QuickSight::Analysis.PivotTableOptions CollapsedRowDimensionsVisibility (__added__)
+* AWS::QuickSight::Analysis.RadarChartConfiguration AxesRangeScale (__added__)
+* AWS::QuickSight::Analysis.ReferenceLineDynamicDataConfiguration MeasureAggregationFunction.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::QuickSight::Analysis.ScatterPlotCategoricallyAggregatedFieldWells Label (__added__)
+* AWS::QuickSight::Analysis.ScatterPlotUnaggregatedFieldWells Category (__added__)
+* AWS::QuickSight::Analysis.ScatterPlotUnaggregatedFieldWells Label (__added__)
+* AWS::QuickSight::Dashboard.AggregationSortConfiguration AggregationFunction.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::QuickSight::Dashboard.ColumnConfiguration ColorsConfiguration (__deleted__)
+* AWS::QuickSight::Dashboard.DataLabelOptions TotalsVisibility (__added__)
+* AWS::QuickSight::Dashboard.DestinationParameterValueConfiguration SourceColumn (__added__)
+* AWS::QuickSight::Dashboard.FilterOperationSelectedFieldsConfiguration SelectedColumns (__added__)
+* AWS::QuickSight::Dashboard.GeospatialPointStyleOptions HeatmapConfiguration (__added__)
+* AWS::QuickSight::Dashboard.PivotTableCellConditionalFormatting Scopes (__added__)
+* AWS::QuickSight::Dashboard.PivotTableFieldOptions CollapseStateOptions (__added__)
+* AWS::QuickSight::Dashboard.PivotTableOptions CollapsedRowDimensionsVisibility (__added__)
+* AWS::QuickSight::Dashboard.RadarChartConfiguration AxesRangeScale (__added__)
+* AWS::QuickSight::Dashboard.ReferenceLineDynamicDataConfiguration MeasureAggregationFunction.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::QuickSight::Dashboard.ScatterPlotCategoricallyAggregatedFieldWells Label (__added__)
+* AWS::QuickSight::Dashboard.ScatterPlotUnaggregatedFieldWells Category (__added__)
+* AWS::QuickSight::Dashboard.ScatterPlotUnaggregatedFieldWells Label (__added__)
+* AWS::QuickSight::Template.AggregationSortConfiguration AggregationFunction.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::QuickSight::Template.ColumnConfiguration ColorsConfiguration (__deleted__)
+* AWS::QuickSight::Template.DataLabelOptions TotalsVisibility (__added__)
+* AWS::QuickSight::Template.DestinationParameterValueConfiguration SourceColumn (__added__)
+* AWS::QuickSight::Template.FilterOperationSelectedFieldsConfiguration SelectedColumns (__added__)
+* AWS::QuickSight::Template.GeospatialPointStyleOptions HeatmapConfiguration (__added__)
+* AWS::QuickSight::Template.PivotTableCellConditionalFormatting Scopes (__added__)
+* AWS::QuickSight::Template.PivotTableFieldOptions CollapseStateOptions (__added__)
+* AWS::QuickSight::Template.PivotTableOptions CollapsedRowDimensionsVisibility (__added__)
+* AWS::QuickSight::Template.RadarChartConfiguration AxesRangeScale (__added__)
+* AWS::QuickSight::Template.ReferenceLineDynamicDataConfiguration MeasureAggregationFunction.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::QuickSight::Template.ScatterPlotCategoricallyAggregatedFieldWells Label (__added__)
+* AWS::QuickSight::Template.ScatterPlotUnaggregatedFieldWells Category (__added__)
+* AWS::QuickSight::Template.ScatterPlotUnaggregatedFieldWells Label (__added__)
+* AWS::QuickSight::Theme.ResourcePermission Resource (__added__)
+* AWS::SageMaker::ModelPackage.ModelPackageContainerDefinition ProductId (__deleted__)
+* AWS::SageMaker::ModelPackage.ModelPackageStatusDetails ImageScanStatuses (__deleted__)
+* AWS::SageMaker::ModelPackage.ModelPackageStatusDetails ValidationStatuses.Required (__changed__)
+  * Old: true
+  * New: false
+
+# CloudFormation Resource Specification (us-west-2) v129.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+
+
+# CloudFormation Resource Specification v128.1.0
+
+## New Resource Types
+
+* AWS::Glue::DataQualityRuleset
+* AWS::Organizations::Organization
+* AWS::StepFunctions::StateMachineAlias
+* AWS::StepFunctions::StateMachineVersion
+
+## Attribute Changes
+
+* AWS::ApiGateway::GatewayResponse Id (__deleted__)
+* AWS::EC2::NetworkAclEntry Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkaclentry.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl-entry.html
+* AWS::EC2::NetworkAclEntry Id (__deleted__)
+* AWS::EC2::VPNGatewayRoutePropagation Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpngatewayroutepropagation.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-gatewayrouteprop.html
+* AWS::EC2::VPNGatewayRoutePropagation Id (__deleted__)
+* AWS::EC2::VolumeAttachment Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volumeattachment.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volumeattachment.html
+
+## Property Changes
+
+* AWS::ApiGateway::GatewayResponse ResponseParameters.DuplicatesAllowed (__added__)
+* AWS::ApiGateway::GatewayResponse ResponseTemplates.DuplicatesAllowed (__added__)
+* AWS::Cassandra::Keyspace ReplicationSpecification (__added__)
+* AWS::EC2::NetworkAclEntry CidrBlock.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkaclentry.html#cfn-ec2-networkaclentry-cidrblock
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl-entry.html#cfn-ec2-networkaclentry-cidrblock
+* AWS::EC2::NetworkAclEntry Egress.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkaclentry.html#cfn-ec2-networkaclentry-egress
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl-entry.html#cfn-ec2-networkaclentry-egress
+* AWS::EC2::NetworkAclEntry Icmp.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkaclentry.html#cfn-ec2-networkaclentry-icmp
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl-entry.html#cfn-ec2-networkaclentry-icmp
+* AWS::EC2::NetworkAclEntry Ipv6CidrBlock.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkaclentry.html#cfn-ec2-networkaclentry-ipv6cidrblock
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl-entry.html#cfn-ec2-networkaclentry-ipv6cidrblock
+* AWS::EC2::NetworkAclEntry NetworkAclId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkaclentry.html#cfn-ec2-networkaclentry-networkaclid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl-entry.html#cfn-ec2-networkaclentry-networkaclid
+* AWS::EC2::NetworkAclEntry PortRange.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkaclentry.html#cfn-ec2-networkaclentry-portrange
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl-entry.html#cfn-ec2-networkaclentry-portrange
+* AWS::EC2::NetworkAclEntry Protocol.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkaclentry.html#cfn-ec2-networkaclentry-protocol
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl-entry.html#cfn-ec2-networkaclentry-protocol
+* AWS::EC2::NetworkAclEntry RuleAction.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkaclentry.html#cfn-ec2-networkaclentry-ruleaction
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl-entry.html#cfn-ec2-networkaclentry-ruleaction
+* AWS::EC2::NetworkAclEntry RuleNumber.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkaclentry.html#cfn-ec2-networkaclentry-rulenumber
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl-entry.html#cfn-ec2-networkaclentry-rulenumber
+* AWS::EC2::VPNGatewayRoutePropagation RouteTableIds.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpngatewayroutepropagation.html#cfn-ec2-vpngatewayroutepropagation-routetableids
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-gatewayrouteprop.html#cfn-ec2-vpngatewayrouteprop-routetableids
+* AWS::EC2::VPNGatewayRoutePropagation VpnGatewayId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpngatewayroutepropagation.html#cfn-ec2-vpngatewayroutepropagation-vpngatewayid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-gatewayrouteprop.html#cfn-ec2-vpngatewayrouteprop-vpngatewayid
+* AWS::EC2::VolumeAttachment Device.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volumeattachment.html#cfn-ec2-ebs-volumeattachment-device
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volumeattachment.html#cfn-ec2-volumeattachment-device
+* AWS::EC2::VolumeAttachment Device.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::EC2::VolumeAttachment InstanceId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volumeattachment.html#cfn-ec2-ebs-volumeattachment-instanceid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volumeattachment.html#cfn-ec2-volumeattachment-instanceid
+* AWS::EC2::VolumeAttachment VolumeId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volumeattachment.html#cfn-ec2-ebs-volumeattachment-volumeid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volumeattachment.html#cfn-ec2-volumeattachment-volumeid
+* AWS::MediaConnect::FlowSource GatewayBridgeSource (__added__)
+* AWS::SecurityHub::Hub AutoEnableControls (__added__)
+* AWS::SecurityHub::Hub ControlFindingGenerator (__added__)
+* AWS::SecurityHub::Hub EnableDefaultStandards (__added__)
+* AWS::Transfer::Server StructuredLogDestinations (__added__)
+
+## Property Type Changes
+
+* AWS::Cassandra::Keyspace.ReplicationSpecification (__added__)
+* AWS::MediaConnect::Flow.GatewayBridgeSource (__added__)
+* AWS::MediaConnect::Flow.VpcInterfaceAttachment (__added__)
+* AWS::MediaConnect::FlowSource.GatewayBridgeSource (__added__)
+* AWS::MediaConnect::FlowSource.VpcInterfaceAttachment (__added__)
+* AWS::Transfer::Server.StructuredLogDestination (__added__)
+* AWS::FSx::StorageVirtualMachine.ActiveDirectoryConfiguration NetBiosName.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::FSx::StorageVirtualMachine.SelfManagedActiveDirectoryConfiguration DomainName.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::FSx::StorageVirtualMachine.SelfManagedActiveDirectoryConfiguration FileSystemAdministratorsGroup.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::FSx::StorageVirtualMachine.SelfManagedActiveDirectoryConfiguration OrganizationalUnitDistinguishedName.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::MediaConnect::Flow.Source GatewayBridgeSource (__added__)
+
+# CloudFormation Resource Specification (us-west-2) v128.1.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+
+
+# CloudFormation Resource Specification v127.0.0
+
+## New Resource Types
+
+* AWS::CleanRooms::Collaboration
+* AWS::CleanRooms::ConfiguredTable
+* AWS::CleanRooms::ConfiguredTableAssociation
+* AWS::CleanRooms::Membership
+* AWS::CustomerProfiles::EventStream
+* AWS::MediaConnect::Bridge
+* AWS::MediaConnect::BridgeOutput
+* AWS::MediaConnect::BridgeSource
+* AWS::MediaConnect::Gateway
+* AWS::RDS::CustomDBEngineVersion
+* AWS::SecurityHub::AutomationRule
+* AWS::SecurityHub::Standard
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::IVS::Channel Preset (__added__)
+
+## Property Type Changes
+
+* AWS::ApplicationAutoScaling::ScalableTarget.ScheduledAction EndTime.PrimitiveType (__changed__)
+  * Old: String
+  * New: Timestamp
+* AWS::ApplicationAutoScaling::ScalableTarget.ScheduledAction StartTime.PrimitiveType (__changed__)
+  * Old: String
+  * New: Timestamp
+* AWS::DynamoDB::Table.TimeToLiveSpecification AttributeName.Required (__changed__)
+  * Old: true
+  * New: false
+
+# CloudFormation Resource Specification (us-west-2) v127.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+
+
+# CloudFormation Resource Specification v126.0.0
+
+## New Resource Types
+
+* AWS::Athena::CapacityReservation
+* AWS::CustomerProfiles::CalculatedAttributeDefinition
+
+## Attribute Changes
+
+* AWS::ApplicationAutoScaling::ScalableTarget Id (__added__)
+* AWS::Lambda::LayerVersion LayerVersionArn (__added__)
+
+## Property Changes
+
+* AWS::ApplicationAutoScaling::ScalableTarget RoleARN.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Lambda::LayerVersion CompatibleArchitectures.DuplicatesAllowed (__added__)
+* AWS::Lambda::LayerVersion CompatibleRuntimes.DuplicatesAllowed (__added__)
+* AWS::Omics::SequenceStore FallbackLocation (__added__)
+
+## Property Type Changes
+
+* AWS::ApplicationAutoScaling::ScalableTarget.ScheduledAction EndTime.PrimitiveType (__changed__)
+  * Old: Timestamp
+  * New: String
+* AWS::ApplicationAutoScaling::ScalableTarget.ScheduledAction StartTime.PrimitiveType (__changed__)
+  * Old: Timestamp
+  * New: String
+
+# CloudFormation Resource Specification (us-west-2) v126.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+
+
+# CloudFormation Resource Specification v125.0.0
+
+## New Resource Types
+
+* AWS::Detective::OrganizationAdmin
+
+## Attribute Changes
+
+* AWS::ApiGatewayV2::RouteResponse RouteResponseId (__added__)
+
+## Property Changes
+
+* AWS::ApiGatewayV2::RouteResponse ResponseParameters.PrimitiveType (__deleted__)
+* AWS::ApiGatewayV2::RouteResponse ResponseParameters.ItemType (__added__)
+* AWS::ApiGatewayV2::RouteResponse ResponseParameters.Type (__added__)
+* AWS::CloudTrail::EventDataStore IngestionEnabled (__added__)
+* AWS::CloudTrail::Trail AdvancedEventSelectors (__added__)
+* AWS::EC2::NetworkInterface EnablePrimaryIpv6 (__deleted__)
+* AWS::QuickSight::DataSet DataSetRefreshProperties (__added__)
+* AWS::QuickSight::DataSet DatasetParameters (__added__)
+* AWS::QuickSight::DataSet RowLevelPermissionTagConfiguration (__added__)
+
+## Property Type Changes
+
+* AWS::CloudTrail::Trail.AdvancedEventSelector (__added__)
+* AWS::CloudTrail::Trail.AdvancedFieldSelector (__added__)
+* AWS::QuickSight::DataSet.DataSetRefreshProperties (__added__)
+* AWS::QuickSight::DataSet.DatasetParameter (__added__)
+* AWS::QuickSight::DataSet.DateTimeDatasetParameter (__added__)
+* AWS::QuickSight::DataSet.DateTimeDatasetParameterDefaultValues (__added__)
+* AWS::QuickSight::DataSet.DecimalDatasetParameter (__added__)
+* AWS::QuickSight::DataSet.DecimalDatasetParameterDefaultValues (__added__)
+* AWS::QuickSight::DataSet.IncrementalRefresh (__added__)
+* AWS::QuickSight::DataSet.IntegerDatasetParameter (__added__)
+* AWS::QuickSight::DataSet.IntegerDatasetParameterDefaultValues (__added__)
+* AWS::QuickSight::DataSet.LookbackWindow (__added__)
+* AWS::QuickSight::DataSet.NewDefaultValues (__added__)
+* AWS::QuickSight::DataSet.OverrideDatasetParameterOperation (__added__)
+* AWS::QuickSight::DataSet.RefreshConfiguration (__added__)
+* AWS::QuickSight::DataSet.RowLevelPermissionTagConfiguration (__added__)
+* AWS::QuickSight::DataSet.RowLevelPermissionTagRule (__added__)
+* AWS::QuickSight::DataSet.StringDatasetParameter (__added__)
+* AWS::QuickSight::DataSet.StringDatasetParameterDefaultValues (__added__)
+* AWS::Glue::Job.JobCommand Runtime (__added__)
+* AWS::QuickSight::DataSet.RowLevelPermissionDataSet Status (__added__)
+* AWS::QuickSight::DataSet.TransformOperation OverrideDatasetParameterOperation (__added__)
+* AWS::QuickSight::DataSource.AthenaParameters RoleArn (__added__)
+* AWS::QuickSight::DataSource.S3Parameters RoleArn (__added__)
+
+# CloudFormation Resource Specification (us-west-2) v125.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+
+
+# CloudFormation Resource Specification v124.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::S3::AccessPoint PolicyStatus (__deleted__)
+* AWS::S3::AccessPoint PublicAccessBlockConfiguration.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+## Property Type Changes
+
+* AWS::S3::AccessPoint.PolicyStatus (__removed__)
+* AWS::S3::AccessPoint.PublicAccessBlockConfiguration BlockPublicAcls.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::S3::AccessPoint.PublicAccessBlockConfiguration BlockPublicPolicy.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::S3::AccessPoint.PublicAccessBlockConfiguration IgnorePublicAcls.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::S3::AccessPoint.PublicAccessBlockConfiguration RestrictPublicBuckets.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+
+
+# CloudFormation Resource Specification v124.0.0
+
+## New Resource Types
+
+* AWS::AppSync::SourceApiAssociation
+* AWS::Cognito::IdentityPoolPrincipalTag
+
+## Attribute Changes
+
+* AWS::Logs::LogStream Id (__deleted__)
+* AWS::NetworkManager::ConnectAttachment ProposedSegmentChange (__deleted__)
+* AWS::NetworkManager::ConnectAttachment ProposedSegmentChange.AttachmentPolicyRuleNumber (__deleted__)
+* AWS::NetworkManager::ConnectAttachment ProposedSegmentChange.SegmentName (__deleted__)
+* AWS::NetworkManager::ConnectAttachment ProposedSegmentChange.Tags (__deleted__)
+* AWS::NetworkManager::SiteToSiteVpnAttachment ProposedSegmentChange (__deleted__)
+* AWS::NetworkManager::SiteToSiteVpnAttachment ProposedSegmentChange.AttachmentPolicyRuleNumber (__deleted__)
+* AWS::NetworkManager::SiteToSiteVpnAttachment ProposedSegmentChange.SegmentName (__deleted__)
+* AWS::NetworkManager::SiteToSiteVpnAttachment ProposedSegmentChange.Tags (__deleted__)
+* AWS::NetworkManager::VpcAttachment ProposedSegmentChange (__deleted__)
+* AWS::NetworkManager::VpcAttachment ProposedSegmentChange.AttachmentPolicyRuleNumber (__deleted__)
+* AWS::NetworkManager::VpcAttachment ProposedSegmentChange.SegmentName (__deleted__)
+* AWS::NetworkManager::VpcAttachment ProposedSegmentChange.Tags (__deleted__)
+* AWS::SageMaker::Project ServiceCatalogProvisionedProductDetails (__deleted__)
+* AWS::SageMaker::Project ServiceCatalogProvisionedProductDetails.ProvisionedProductId (__deleted__)
+* AWS::SageMaker::Project ServiceCatalogProvisionedProductDetails.ProvisionedProductStatusMessage (__deleted__)
+* AWS::Synthetics::Canary Code.SourceLocationArn (__added__)
+
+## Property Changes
+
+* AWS::AppSync::GraphQLApi ApiType (__added__)
+* AWS::AppSync::GraphQLApi MergedApiExecutionRoleArn (__added__)
+* AWS::AppSync::GraphQLApi OwnerContact (__added__)
+* AWS::EC2::NetworkInterface EnablePrimaryIpv6 (__added__)
+* AWS::Grafana::Workspace GrafanaVersion (__added__)
+* AWS::IoTFleetWise::Campaign DataDestinationConfigs (__added__)
+* AWS::M2::Application RoleArn (__added__)
+* AWS::Neptune::DBCluster Port (__deleted__)
+* AWS::Neptune::DBCluster CopyTagsToSnapshot (__added__)
+* AWS::Neptune::DBCluster DBInstanceParameterGroupName (__added__)
+* AWS::Neptune::DBCluster ServerlessScalingConfiguration (__added__)
+* AWS::Neptune::DBCluster AssociatedRoles.DuplicatesAllowed (__added__)
+* AWS::Neptune::DBCluster AvailabilityZones.DuplicatesAllowed (__added__)
+* AWS::Neptune::DBCluster EnableCloudwatchLogsExports.DuplicatesAllowed (__added__)
+* AWS::Neptune::DBCluster EngineVersion.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Neptune::DBCluster Tags.DuplicatesAllowed (__added__)
+* AWS::Neptune::DBCluster VpcSecurityGroupIds.DuplicatesAllowed (__added__)
+* AWS::NetworkManager::ConnectAttachment ProposedSegmentChange (__added__)
+* AWS::NetworkManager::ConnectAttachment Tags.DuplicatesAllowed (__changed__)
+  * Old: true
+  * New: false
+* AWS::NetworkManager::ConnectPeer Tags.DuplicatesAllowed (__changed__)
+  * Old: true
+  * New: false
+* AWS::NetworkManager::CoreNetwork Tags.DuplicatesAllowed (__changed__)
+  * Old: true
+  * New: false
+* AWS::NetworkManager::SiteToSiteVpnAttachment ProposedSegmentChange (__added__)
+* AWS::NetworkManager::SiteToSiteVpnAttachment Tags.DuplicatesAllowed (__changed__)
+  * Old: true
+  * New: false
+* AWS::NetworkManager::VpcAttachment ProposedSegmentChange (__added__)
+* AWS::NetworkManager::VpcAttachment Tags.DuplicatesAllowed (__changed__)
+  * Old: true
+  * New: false
+* AWS::S3::AccessPoint PolicyStatus (__deleted__)
+* AWS::S3::AccessPoint PublicAccessBlockConfiguration.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SES::DedicatedIpPool ScalingMode.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Conditional
+* AWS::SageMaker::App ResourceSpec.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::SageMaker::Project ServiceCatalogProvisionedProductDetails (__added__)
+* AWS::SimSpaceWeaver::Simulation MaximumDuration (__added__)
+* AWS::SimSpaceWeaver::Simulation SnapshotS3Location (__added__)
+* AWS::SimSpaceWeaver::Simulation Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::SimSpaceWeaver::Simulation RoleArn.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::SimSpaceWeaver::Simulation RoleArn.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::SimSpaceWeaver::Simulation SchemaS3Location.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Synthetics::Canary DeleteLambdaResourcesOnCanaryDeletion (__deleted__)
+* AWS::Synthetics::Canary StartCanaryAfterCreation.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::XRay::Group GroupName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::Group Tags.ItemType (__changed__)
+  * Old: TagsItems
+  * New: Tag
+* AWS::XRay::SamplingRule RuleName (__deleted__)
+* AWS::XRay::SamplingRule SamplingRuleRecord (__deleted__)
+* AWS::XRay::SamplingRule SamplingRuleUpdate (__deleted__)
+* AWS::XRay::SamplingRule Tags.ItemType (__changed__)
+  * Old: TagsItems
+  * New: Tag
+
+## Property Type Changes
+
+* AWS::S3::AccessPoint.PolicyStatus (__removed__)
+* AWS::XRay::Group.TagsItems (__removed__)
+* AWS::XRay::SamplingRule.SamplingRuleRecord (__removed__)
+* AWS::XRay::SamplingRule.SamplingRuleUpdate (__removed__)
+* AWS::XRay::SamplingRule.TagsItems (__removed__)
+* AWS::IoTFleetWise::Campaign.DataDestinationConfig (__added__)
+* AWS::IoTFleetWise::Campaign.S3Config (__added__)
+* AWS::IoTFleetWise::Campaign.TimestreamConfig (__added__)
+* AWS::Neptune::DBCluster.ServerlessScalingConfiguration (__added__)
+* AWS::Glue::Crawler.CatalogTarget ConnectionName (__added__)
+* AWS::Glue::Crawler.CatalogTarget DlqEventQueueArn (__added__)
+* AWS::Glue::Crawler.CatalogTarget EventQueueArn (__added__)
+* AWS::NetworkManager::ConnectAttachment.ProposedSegmentChange Tags.DuplicatesAllowed (__changed__)
+  * Old: true
+  * New: false
+* AWS::NetworkManager::SiteToSiteVpnAttachment.ProposedSegmentChange Tags.DuplicatesAllowed (__changed__)
+  * Old: true
+  * New: false
+* AWS::NetworkManager::VpcAttachment.ProposedSegmentChange Tags.DuplicatesAllowed (__changed__)
+  * Old: true
+  * New: false
+* AWS::OpenSearchService::Domain.ClusterConfig MultiAZWithStandbyEnabled (__added__)
+* AWS::RefactorSpaces::Route.UriPathRouteInput AppendSourcePath (__added__)
+* AWS::ResilienceHub::App.ResourceMapping EksSourceName (__added__)
+* AWS::S3::AccessPoint.PublicAccessBlockConfiguration BlockPublicAcls.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::S3::AccessPoint.PublicAccessBlockConfiguration BlockPublicPolicy.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::S3::AccessPoint.PublicAccessBlockConfiguration IgnorePublicAcls.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::S3::AccessPoint.PublicAccessBlockConfiguration RestrictPublicBuckets.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SageMaker::App.ResourceSpec InstanceType.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::SageMaker::App.ResourceSpec SageMakerImageArn.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::SageMaker::App.ResourceSpec SageMakerImageVersionArn.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::SimSpaceWeaver::Simulation.S3Location BucketName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::SimSpaceWeaver::Simulation.S3Location ObjectKey.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Synthetics::Canary.Code SourceLocationArn (__added__)
+* AWS::XRay::SamplingRule.SamplingRule FixedRate.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule HTTPMethod.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule Host.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule Priority.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule ReservoirSize.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule ResourceARN.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule ServiceName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule ServiceType.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule URLPath.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule Version.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+
+# CloudFormation Resource Specification (us-west-2) v124.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+
+
+# CloudFormation Resource Specification v123.0.0
+
+## New Resource Types
+
+* AWS::Connect::Prompt
+* AWS::QuickSight::Topic
+* AWS::Shield::DRTAccess
+* AWS::Shield::ProactiveEngagement
+* AWS::Shield::Protection
+* AWS::Shield::ProtectionGroup
+
+## Attribute Changes
+
+* AWS::EC2::IPAM ResourceDiscoveryAssociationCount (__added__)
+* AWS::EC2::SubnetCidrBlock Id (__added__)
+* AWS::Logs::LogStream Id (__deleted__)
+* AWS::Synthetics::Canary Code.SourceLocationArn (__added__)
+
+## Property Changes
+
+* AWS::AppFlow::Flow FlowStatus (__added__)
+* AWS::EC2::IPAM ResourceDiscoveryAssociationCount (__deleted__)
+* AWS::Neptune::DBCluster Port (__deleted__)
+* AWS::Neptune::DBCluster CopyTagsToSnapshot (__added__)
+* AWS::Neptune::DBCluster DBInstanceParameterGroupName (__added__)
+* AWS::Neptune::DBCluster ServerlessScalingConfiguration (__added__)
+* AWS::Neptune::DBCluster AssociatedRoles.DuplicatesAllowed (__added__)
+* AWS::Neptune::DBCluster AvailabilityZones.DuplicatesAllowed (__added__)
+* AWS::Neptune::DBCluster EnableCloudwatchLogsExports.DuplicatesAllowed (__added__)
+* AWS::Neptune::DBCluster EngineVersion.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Neptune::DBCluster Tags.DuplicatesAllowed (__added__)
+* AWS::Neptune::DBCluster VpcSecurityGroupIds.DuplicatesAllowed (__added__)
+* AWS::S3::AccessPoint PolicyStatus (__deleted__)
+* AWS::S3::AccessPoint PublicAccessBlockConfiguration.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SimSpaceWeaver::Simulation MaximumDuration (__added__)
+* AWS::SimSpaceWeaver::Simulation SnapshotS3Location (__added__)
+* AWS::SimSpaceWeaver::Simulation Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::SimSpaceWeaver::Simulation RoleArn.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::SimSpaceWeaver::Simulation RoleArn.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::SimSpaceWeaver::Simulation SchemaS3Location.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Synthetics::Canary DeleteLambdaResourcesOnCanaryDeletion (__deleted__)
+* AWS::Synthetics::Canary StartCanaryAfterCreation.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::XRay::Group GroupName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::Group Tags.ItemType (__changed__)
+  * Old: TagsItems
+  * New: Tag
+* AWS::XRay::SamplingRule RuleName (__deleted__)
+* AWS::XRay::SamplingRule SamplingRuleRecord (__deleted__)
+* AWS::XRay::SamplingRule SamplingRuleUpdate (__deleted__)
+* AWS::XRay::SamplingRule Tags.ItemType (__changed__)
+  * Old: TagsItems
+  * New: Tag
+
+## Property Type Changes
+
+* AWS::S3::AccessPoint.PolicyStatus (__removed__)
+* AWS::XRay::Group.TagsItems (__removed__)
+* AWS::XRay::SamplingRule.SamplingRuleRecord (__removed__)
+* AWS::XRay::SamplingRule.SamplingRuleUpdate (__removed__)
+* AWS::XRay::SamplingRule.TagsItems (__removed__)
+* AWS::Neptune::DBCluster.ServerlessScalingConfiguration (__added__)
+* AWS::AppFlow::ConnectorProfile.SalesforceConnectorProfileCredentials JwtToken (__added__)
+* AWS::AppFlow::ConnectorProfile.SalesforceConnectorProfileCredentials OAuth2GrantType (__added__)
+* AWS::AppFlow::Flow.TriggerConfig ActivateFlowOnCreate (__deleted__)
+* AWS::S3::AccessPoint.PublicAccessBlockConfiguration BlockPublicAcls.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::S3::AccessPoint.PublicAccessBlockConfiguration BlockPublicPolicy.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::S3::AccessPoint.PublicAccessBlockConfiguration IgnorePublicAcls.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::S3::AccessPoint.PublicAccessBlockConfiguration RestrictPublicBuckets.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SimSpaceWeaver::Simulation.S3Location BucketName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::SimSpaceWeaver::Simulation.S3Location ObjectKey.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Synthetics::Canary.Code SourceLocationArn (__added__)
+* AWS::Transfer::Server.IdentityProviderDetails SftpAuthenticationMethods (__added__)
+* AWS::XRay::SamplingRule.SamplingRule FixedRate.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule HTTPMethod.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule Host.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule Priority.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule ReservoirSize.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule ResourceARN.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule ServiceName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule ServiceType.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule URLPath.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule Version.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+
+# CloudFormation Resource Specification (us-west-2) v123.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+
+
+# CloudFormation Resource Specification v122.0.0
+
+## New Resource Types
+
+* AWS::EC2::VerifiedAccessEndpoint
+* AWS::EC2::VerifiedAccessGroup
+* AWS::EC2::VerifiedAccessTrustProvider
+* AWS::IoT::BillingGroup
+* AWS::IoT::ThingGroup
+* AWS::IoT::ThingType
+* AWS::OSIS::Pipeline
+
+## Attribute Changes
+
+* AWS::Logs::LogStream Id (__deleted__)
+* AWS::SecretsManager::Secret Id (__added__)
+* AWS::Synthetics::Canary Code.SourceLocationArn (__added__)
+
+## Property Changes
+
+* AWS::ElastiCache::ReplicationGroup ClusterMode (__added__)
+* AWS::MediaConnect::FlowSource MinLatency (__added__)
+* AWS::MediaConnect::FlowSource SenderControlPort (__added__)
+* AWS::MediaConnect::FlowSource SenderIpAddress (__added__)
+* AWS::MediaConnect::FlowSource SourceListenerAddress (__added__)
+* AWS::MediaConnect::FlowSource SourceListenerPort (__added__)
+* AWS::Neptune::DBCluster Port (__deleted__)
+* AWS::Neptune::DBCluster AssociatedRoles.DuplicatesAllowed (__added__)
+* AWS::Neptune::DBCluster AvailabilityZones.DuplicatesAllowed (__added__)
+* AWS::Neptune::DBCluster EnableCloudwatchLogsExports.DuplicatesAllowed (__added__)
+* AWS::Neptune::DBCluster Tags.DuplicatesAllowed (__added__)
+* AWS::Neptune::DBCluster VpcSecurityGroupIds.DuplicatesAllowed (__added__)
+* AWS::S3::AccessPoint PolicyStatus (__deleted__)
+* AWS::S3::AccessPoint PublicAccessBlockConfiguration.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SecretsManager::Secret ReplicaRegions.DuplicatesAllowed (__added__)
+* AWS::SecretsManager::Secret Tags.DuplicatesAllowed (__added__)
+* AWS::SimSpaceWeaver::Simulation MaximumDuration (__added__)
+* AWS::SimSpaceWeaver::Simulation SnapshotS3Location (__added__)
+* AWS::SimSpaceWeaver::Simulation Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::SimSpaceWeaver::Simulation RoleArn.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::SimSpaceWeaver::Simulation RoleArn.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::SimSpaceWeaver::Simulation SchemaS3Location.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Synthetics::Canary DeleteLambdaResourcesOnCanaryDeletion (__deleted__)
+* AWS::Synthetics::Canary StartCanaryAfterCreation.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::XRay::Group GroupName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::Group Tags.ItemType (__changed__)
+  * Old: TagsItems
+  * New: Tag
+* AWS::XRay::SamplingRule RuleName (__deleted__)
+* AWS::XRay::SamplingRule SamplingRuleRecord (__deleted__)
+* AWS::XRay::SamplingRule SamplingRuleUpdate (__deleted__)
+* AWS::XRay::SamplingRule Tags.ItemType (__changed__)
+  * Old: TagsItems
+  * New: Tag
+
+## Property Type Changes
+
+* AWS::S3::AccessPoint.PolicyStatus (__removed__)
+* AWS::XRay::Group.TagsItems (__removed__)
+* AWS::XRay::SamplingRule.SamplingRuleRecord (__removed__)
+* AWS::XRay::SamplingRule.SamplingRuleUpdate (__removed__)
+* AWS::XRay::SamplingRule.TagsItems (__removed__)
+* AWS::NetworkFirewall::FirewallPolicy.IPSet (__added__)
+* AWS::NetworkFirewall::FirewallPolicy.PolicyVariables (__added__)
+* AWS::SageMaker::ModelCard.Container (__added__)
+* AWS::SageMaker::ModelCard.InferenceSpecification (__added__)
+* AWS::SageMaker::ModelCard.ModelPackageCreator (__added__)
+* AWS::SageMaker::ModelCard.ModelPackageDetails (__added__)
+* AWS::SageMaker::ModelCard.SourceAlgorithm (__added__)
+* AWS::MediaConnect::FlowSource.Encryption Algorithm.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy PolicyVariables (__added__)
+* AWS::S3::AccessPoint.PublicAccessBlockConfiguration BlockPublicAcls.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::S3::AccessPoint.PublicAccessBlockConfiguration BlockPublicPolicy.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::S3::AccessPoint.PublicAccessBlockConfiguration IgnorePublicAcls.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::S3::AccessPoint.PublicAccessBlockConfiguration RestrictPublicBuckets.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SageMaker::EndpointConfig.ServerlessConfig ProvisionedConcurrency (__added__)
+* AWS::SageMaker::ModelCard.Content ModelPackageDetails (__added__)
+* AWS::SimSpaceWeaver::Simulation.S3Location BucketName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::SimSpaceWeaver::Simulation.S3Location ObjectKey.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Synthetics::Canary.Code SourceLocationArn (__added__)
+* AWS::XRay::SamplingRule.SamplingRule FixedRate.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule HTTPMethod.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule Host.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule Priority.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule ReservoirSize.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule ResourceARN.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule ServiceName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule ServiceType.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule URLPath.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule Version.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+
+# CloudFormation Resource Specification (us-west-2) v122.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+
+
+# CloudFormation Resource Specification v121.0.0
+
+## New Resource Types
+
+* AWS::BackupGateway::Hypervisor
+* AWS::Connect::EvaluationForm
+* AWS::EC2::VerifiedAccessInstance
+* AWS::Proton::EnvironmentAccountConnection
+* AWS::Proton::EnvironmentTemplate
+* AWS::Proton::ServiceTemplate
+* AWS::QuickSight::VPCConnection
+
+## Attribute Changes
+
+* AWS::AppSync::GraphQLApi GraphQLDns (__added__)
+* AWS::AppSync::GraphQLApi RealtimeDns (__added__)
+* AWS::AppSync::GraphQLApi RealtimeUrl (__added__)
+* AWS::Lightsail::Disk Location (__deleted__)
+
+## Property Changes
+
+* AWS::AmplifyUIBuilder::Form LabelDecorator (__added__)
+* AWS::AppIntegrations::DataIntegration FileConfiguration (__added__)
+* AWS::AppIntegrations::DataIntegration ObjectConfiguration (__added__)
+* AWS::AppSync::GraphQLApi Visibility (__added__)
+* AWS::Detective::Graph AutoEnableMembers (__added__)
+* AWS::EC2::NetworkInsightsPath FilterAtDestination (__added__)
+* AWS::EC2::NetworkInsightsPath FilterAtSource (__added__)
+* AWS::FinSpace::Environment DataBundles (__deleted__)
+* AWS::FinSpace::Environment Tags (__added__)
+* AWS::FinSpace::Environment FederationParameters.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::GameLift::Build ServerSdkVersion (__added__)
+* AWS::LakeFormation::Resource WithFederation (__added__)
+* AWS::Lightsail::Disk Location (__added__)
+* AWS::Neptune::DBCluster Port (__deleted__)
+* AWS::Neptune::DBCluster AssociatedRoles.DuplicatesAllowed (__added__)
+* AWS::Neptune::DBCluster AvailabilityZones.DuplicatesAllowed (__added__)
+* AWS::Neptune::DBCluster EnableCloudwatchLogsExports.DuplicatesAllowed (__added__)
+* AWS::Neptune::DBCluster Tags.DuplicatesAllowed (__added__)
+* AWS::Neptune::DBCluster VpcSecurityGroupIds.DuplicatesAllowed (__added__)
+* AWS::S3::AccessPoint PolicyStatus (__deleted__)
+* AWS::S3::AccessPoint PublicAccessBlockConfiguration.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation Application.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation AttributeGroup.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::ServiceCatalogAppRegistry::ResourceAssociation Application.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::ServiceCatalogAppRegistry::ResourceAssociation Resource.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::ServiceCatalogAppRegistry::ResourceAssociation ResourceType.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::XRay::Group Tags.ItemType (__changed__)
+  * Old: TagsItems
+  * New: Tag
+* AWS::XRay::SamplingRule SamplingRuleRecord (__deleted__)
+* AWS::XRay::SamplingRule SamplingRuleUpdate (__deleted__)
+* AWS::XRay::SamplingRule Tags.ItemType (__changed__)
+  * Old: TagsItems
+  * New: Tag
+
+## Property Type Changes
+
+* AWS::S3::AccessPoint.PolicyStatus (__removed__)
+* AWS::XRay::Group.TagsItems (__removed__)
+* AWS::XRay::SamplingRule.SamplingRuleRecord (__removed__)
+* AWS::XRay::SamplingRule.SamplingRuleUpdate (__removed__)
+* AWS::XRay::SamplingRule.TagsItems (__removed__)
+* AWS::AmplifyUIBuilder::Form.FileUploaderFieldConfig (__added__)
+* AWS::AppIntegrations::DataIntegration.FileConfiguration (__added__)
+* AWS::EC2::NetworkInsightsPath.FilterPortRange (__added__)
+* AWS::EC2::NetworkInsightsPath.PathFilter (__added__)
+* AWS::FinSpace::Environment.AttributeMapItems (__added__)
+* AWS::KinesisFirehose::DeliveryStream.DocumentIdOptions (__added__)
+* AWS::AmplifyUIBuilder::Form.FieldInputConfig FileUploaderConfig (__added__)
+* AWS::AppIntegrations::DataIntegration.ScheduleConfig FirstExecutionFrom.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::AppIntegrations::DataIntegration.ScheduleConfig Object.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::CloudWatch::MetricStream.MetricStreamFilter MetricNames (__added__)
+* AWS::EC2::LaunchTemplate.CpuOptions AmdSevSnp (__added__)
+* AWS::FinSpace::Environment.FederationParameters ApplicationCallBackURL.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::FinSpace::Environment.FederationParameters AttributeMap.PrimitiveType (__deleted__)
+* AWS::FinSpace::Environment.FederationParameters AttributeMap.DuplicatesAllowed (__added__)
+* AWS::FinSpace::Environment.FederationParameters AttributeMap.ItemType (__added__)
+* AWS::FinSpace::Environment.FederationParameters AttributeMap.Type (__added__)
+* AWS::FinSpace::Environment.FederationParameters AttributeMap.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::FinSpace::Environment.FederationParameters FederationProviderName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::FinSpace::Environment.FederationParameters FederationURN.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::FinSpace::Environment.FederationParameters SamlMetadataDocument.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::FinSpace::Environment.FederationParameters SamlMetadataURL.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::KinesisFirehose::DeliveryStream.AmazonopensearchserviceDestinationConfiguration DocumentIdOptions (__added__)
+* AWS::KinesisFirehose::DeliveryStream.ElasticsearchDestinationConfiguration DocumentIdOptions (__added__)
+* AWS::S3::AccessPoint.PublicAccessBlockConfiguration BlockPublicAcls.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::S3::AccessPoint.PublicAccessBlockConfiguration BlockPublicPolicy.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::S3::AccessPoint.PublicAccessBlockConfiguration IgnorePublicAcls.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::S3::AccessPoint.PublicAccessBlockConfiguration RestrictPublicBuckets.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::S3ObjectLambda::AccessPoint.Alias Status.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::S3ObjectLambda::AccessPoint.Alias Value.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::SageMaker::Domain.DefaultSpaceSettings ExecutionRole.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::SageMaker::Domain.UserSettings ExecutionRole.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule FixedRate.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule HTTPMethod.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule Host.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule Priority.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule ReservoirSize.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule ResourceARN.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule ServiceName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule ServiceType.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule URLPath.Required (__changed__)
+  * Old: false
+  * New: true
+
+# CloudFormation Resource Specification (us-west-2) v121.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::DeviceFarm::Project VpcConfig (__added__)
+
+## Property Type Changes
+
+* AWS::DeviceFarm::Project.VpcConfig (__added__)
+
+
+# CloudFormation Resource Specification v120.0.0
+
+## New Resource Types
+
+* AWS::AppConfig::Extension
+* AWS::AppConfig::ExtensionAssociation
+* AWS::DataSync::StorageSystem
+* AWS::DevOpsGuru::LogAnomalyDetectionIntegration
+* AWS::FraudDetector::List
+* AWS::IoTWireless::WirelessDeviceImportTask
+* AWS::MSK::ClusterPolicy
+* AWS::MSK::VpcConnection
+* AWS::QuickSight::RefreshSchedule
+* AWS::RAM::Permission
+* AWS::SSMContacts::Plan
+* AWS::SSMContacts::Rotation
+
+## Attribute Changes
+
+* AWS::ApiGatewayV2::IntegrationResponse IntegrationResponseId (__added__)
+* AWS::ApiGatewayV2::Route RouteId (__added__)
+* AWS::IoTTwinMaker::Scene GeneratedSceneMetadata (__added__)
+* AWS::Macie::FindingsFilter FindingsFilterListItems (__deleted__)
+* AWS::StepFunctions::StateMachine StateMachineRevisionId (__added__)
+
+## Property Changes
+
+* AWS::ApiGatewayV2::IntegrationResponse ApiId.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::ApiGatewayV2::IntegrationResponse IntegrationId.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::ApiGatewayV2::Route AuthorizationScopes.DuplicatesAllowed (__added__)
+* AWS::AppFlow::ConnectorProfile ConnectorLabel.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::AppFlow::ConnectorProfile KMSArn.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EC2::Host HostMaintenance (__added__)
+* AWS::EC2::VPCEndpointServicePermissions AllowedPrincipals.DuplicatesAllowed (__added__)
+* AWS::GameLift::GameServerGroup LaunchTemplate.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Grafana::Workspace NetworkAccessControl (__added__)
+* AWS::Grafana::Workspace AccountAccessType.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Grafana::Workspace AuthenticationProviders.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Grafana::Workspace PermissionType.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::GroundStation::MissionProfile StreamsKmsKey (__added__)
+* AWS::GroundStation::MissionProfile StreamsKmsRole (__added__)
+* AWS::IVS::Channel InsecureIngest (__added__)
+* AWS::InternetMonitor::Monitor InternetMeasurementsLogDelivery (__added__)
+* AWS::InternetMonitor::Monitor TrafficPercentageToMonitor (__added__)
+* AWS::IoT::DomainConfiguration TlsConfig (__added__)
+* AWS::IoTTwinMaker::Scene SceneMetadata (__added__)
+* AWS::LakeFormation::DataLakeSettings AllowExternalDataFiltering (__added__)
+* AWS::LakeFormation::DataLakeSettings AuthorizedSessionTagValueList (__added__)
+* AWS::LakeFormation::DataLakeSettings CreateDatabaseDefaultPermissions (__added__)
+* AWS::LakeFormation::DataLakeSettings CreateTableDefaultPermissions (__added__)
+* AWS::LakeFormation::DataLakeSettings ExternalDataFilteringAllowList (__added__)
+* AWS::LakeFormation::DataLakeSettings Parameters (__added__)
+* AWS::Location::Tracker PricingPlan (__deleted__)
+* AWS::Location::Tracker PricingPlanDataSource (__deleted__)
+* AWS::Logs::SubscriptionFilter DestinationArn.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Logs::SubscriptionFilter Distribution.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Logs::SubscriptionFilter FilterPattern.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Logs::SubscriptionFilter RoleArn.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::MWAA::Environment StartupScriptS3ObjectVersion (__added__)
+* AWS::MWAA::Environment StartupScriptS3Path (__added__)
+* AWS::MediaLive::Channel Maintenance (__added__)
+* AWS::MemoryDB::Cluster SubnetGroupName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::MemoryDB::User AccessString.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::MemoryDB::User AuthenticationMode.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Neptune::DBCluster Port (__deleted__)
+* AWS::Neptune::DBCluster AssociatedRoles.DuplicatesAllowed (__added__)
+* AWS::Neptune::DBCluster AvailabilityZones.DuplicatesAllowed (__added__)
+* AWS::Neptune::DBCluster EnableCloudwatchLogsExports.DuplicatesAllowed (__added__)
+* AWS::Neptune::DBCluster Tags.DuplicatesAllowed (__added__)
+* AWS::Neptune::DBCluster VpcSecurityGroupIds.DuplicatesAllowed (__added__)
+* AWS::OpenSearchServerless::AccessPolicy Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::OpenSearchServerless::AccessPolicy Policy.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::OpenSearchServerless::AccessPolicy Type.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::OpenSearchServerless::SecurityPolicy Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::OpenSearchServerless::SecurityPolicy Type.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::RDS::DBCluster RestoreToTime (__added__)
+* AWS::RDS::DBInstance SourceDBClusterIdentifier (__added__)
+* AWS::RDS::GlobalCluster EngineVersion.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::XRay::Group Tags.ItemType (__changed__)
+  * Old: TagsItems
+  * New: Tag
+* AWS::XRay::SamplingRule SamplingRuleRecord (__deleted__)
+* AWS::XRay::SamplingRule SamplingRuleUpdate (__deleted__)
+* AWS::XRay::SamplingRule Tags.ItemType (__changed__)
+  * Old: TagsItems
+  * New: Tag
+
+## Property Type Changes
+
+* AWS::ApiGatewayV2::Route.ParameterConstraints (__removed__)
+* AWS::Batch::JobDefinition.EmptyDir (__removed__)
+* AWS::Batch::JobDefinition.HostPath (__removed__)
+* AWS::Batch::JobDefinition.Resources (__removed__)
+* AWS::Batch::JobDefinition.SecurityContext (__removed__)
+* AWS::Macie::FindingsFilter.FindingsFilterListItem (__removed__)
+* AWS::XRay::Group.TagsItems (__removed__)
+* AWS::XRay::SamplingRule.SamplingRuleRecord (__removed__)
+* AWS::XRay::SamplingRule.SamplingRuleUpdate (__removed__)
+* AWS::XRay::SamplingRule.TagsItems (__removed__)
+* AWS::Batch::JobDefinition.EksContainerResourceRequirements (__added__)
+* AWS::Batch::JobDefinition.EksContainerSecurityContext (__added__)
+* AWS::Batch::JobDefinition.EksEmptyDir (__added__)
+* AWS::Batch::JobDefinition.EksHostPath (__added__)
+* AWS::Batch::JobDefinition.EksSecret (__added__)
+* AWS::Batch::JobDefinition.EphemeralStorage (__added__)
+* AWS::Batch::JobDefinition.Metadata (__added__)
+* AWS::Glue::Crawler.DeltaTarget (__added__)
+* AWS::Glue::Database.FederatedDatabase (__added__)
+* AWS::Grafana::Workspace.NetworkAccessControl (__added__)
+* AWS::GroundStation::DataflowEndpointGroup.AwsGroundStationAgentEndpoint (__added__)
+* AWS::GroundStation::DataflowEndpointGroup.ConnectionDetails (__added__)
+* AWS::GroundStation::DataflowEndpointGroup.IntegerRange (__added__)
+* AWS::GroundStation::DataflowEndpointGroup.RangedConnectionDetails (__added__)
+* AWS::GroundStation::DataflowEndpointGroup.RangedSocketAddress (__added__)
+* AWS::GroundStation::MissionProfile.StreamsKmsKey (__added__)
+* AWS::InternetMonitor::Monitor.InternetMeasurementsLogDelivery (__added__)
+* AWS::InternetMonitor::Monitor.S3Config (__added__)
+* AWS::IoT::DomainConfiguration.TlsConfig (__added__)
+* AWS::LakeFormation::DataLakeSettings.CreateDatabaseDefaultPermissions (__added__)
+* AWS::LakeFormation::DataLakeSettings.CreateTableDefaultPermissions (__added__)
+* AWS::LakeFormation::DataLakeSettings.ExternalDataFilteringAllowList (__added__)
+* AWS::LakeFormation::DataLakeSettings.Permissions (__added__)
+* AWS::LakeFormation::DataLakeSettings.PrincipalPermissions (__added__)
+* AWS::MediaLive::Channel.AudioDolbyEDecode (__added__)
+* AWS::MediaLive::Channel.DolbyVision81Settings (__added__)
+* AWS::MediaLive::Channel.Eac3AtmosSettings (__added__)
+* AWS::MediaLive::Channel.Esam (__added__)
+* AWS::MediaLive::Channel.MaintenanceCreateSettings (__added__)
+* AWS::MediaLive::Channel.MaintenanceUpdateSettings (__added__)
+* AWS::MediaLive::Channel.TimecodeBurninSettings (__added__)
+* AWS::VpcLattice::Listener.FixedResponse (__added__)
+* AWS::VpcLattice::Rule.FixedResponse (__added__)
+* AWS::Batch::JobDefinition.ContainerProperties EphemeralStorage (__added__)
+* AWS::Batch::JobDefinition.EksContainer Resources.Type (__changed__)
+  * Old: Resources
+  * New: EksContainerResourceRequirements
+* AWS::Batch::JobDefinition.EksContainer SecurityContext.Type (__changed__)
+  * Old: SecurityContext
+  * New: EksContainerSecurityContext
+* AWS::Batch::JobDefinition.EksVolume EmptyDir.Type (__changed__)
+  * Old: EmptyDir
+  * New: EksEmptyDir
+* AWS::Batch::JobDefinition.EksVolume HostPath.Type (__changed__)
+  * Old: HostPath
+  * New: EksHostPath
+* AWS::Batch::JobDefinition.EksVolume Secret.Type (__changed__)
+  * Old: Secret
+  * New: EksSecret
+* AWS::Batch::JobDefinition.PodProperties Metadata (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings MapBooleanAsBoolean (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings MapBooleanAsBoolean (__added__)
+* AWS::Glue::Crawler.Targets DeltaTargets (__added__)
+* AWS::Glue::Database.DatabaseInput FederatedDatabase (__added__)
+* AWS::GroundStation::DataflowEndpointGroup.EndpointDetails AwsGroundStationAgentEndpoint (__added__)
+* AWS::MediaLive::Channel.AudioCodecSettings Eac3AtmosSettings (__added__)
+* AWS::MediaLive::Channel.AudioTrackSelection DolbyEDecode (__added__)
+* AWS::MediaLive::Channel.AvailSettings Esam (__added__)
+* AWS::MediaLive::Channel.CaptionDescription Accessibility (__added__)
+* AWS::MediaLive::Channel.FrameCaptureSettings TimecodeBurninSettings (__added__)
+* AWS::MediaLive::Channel.H264Settings TimecodeBurninSettings (__added__)
+* AWS::MediaLive::Channel.H265ColorSpaceSettings DolbyVision81Settings (__added__)
+* AWS::MediaLive::Channel.H265Settings TimecodeBurninSettings (__added__)
+* AWS::MediaLive::Channel.M2tsSettings Scte35PrerollPullupMilliseconds (__added__)
+* AWS::MediaLive::Channel.Mpeg2Settings TimecodeBurninSettings (__added__)
+* AWS::MediaLive::Channel.NielsenNaesIiNw Timezone (__added__)
+* AWS::SSMContacts::Contact.Stage RotationIds (__added__)
+* AWS::SSMContacts::Contact.Stage DurationInMinutes.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SageMaker::EndpointConfig.AsyncInferenceNotificationConfig IncludeInferenceResponseIn (__added__)
+* AWS::SageMaker::EndpointConfig.AsyncInferenceOutputConfig S3FailurePath (__added__)
+* AWS::SageMaker::EndpointConfig.AsyncInferenceOutputConfig S3OutputPath.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SageMaker::EndpointConfig.ProductionVariant EnableSSMAccess (__added__)
+* AWS::VpcLattice::Listener.DefaultAction FixedResponse (__added__)
+* AWS::VpcLattice::Listener.DefaultAction Forward.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::VpcLattice::Rule.Action FixedResponse (__added__)
+* AWS::VpcLattice::Rule.Action Forward.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::VpcLattice::TargetGroup.HealthCheckConfig ProtocolVersion (__added__)
+* AWS::VpcLattice::TargetGroup.TargetGroupConfig IpAddressType (__added__)
+* AWS::XRay::SamplingRule.SamplingRule FixedRate.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule HTTPMethod.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule Host.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule Priority.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule ReservoirSize.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule ResourceARN.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule ServiceName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule ServiceType.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule URLPath.Required (__changed__)
+  * Old: false
+  * New: true
+
+# CloudFormation Resource Specification (us-west-2) v120.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+* AWS::Serverless::Function.CognitoEvent (__added__)
+* AWS::Serverless::Function.EventSource Properties.Types (__changed__)
+  * Added CognitoEvent
+
+# CloudFormation Resource Specification v117.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+* AWS::QuickSight::Analysis Status (__deleted__)
+* AWS::QuickSight::Analysis Errors (__added__)
+* AWS::S3ObjectLambda::AccessPoint Alias (__added__)
+* AWS::S3ObjectLambda::AccessPoint Alias.Status (__added__)
+* AWS::S3ObjectLambda::AccessPoint Alias.Value (__added__)
+
+## Property Changes
+
+* AWS::GuardDuty::Detector Features (__added__)
+* AWS::InternetMonitor::Monitor MonitorName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoT::CACertificate Tags.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::OpenSearchService::Domain OffPeakWindowOptions (__added__)
+* AWS::OpenSearchService::Domain SoftwareUpdateOptions (__added__)
+* AWS::QuickSight::Analysis Errors (__deleted__)
+* AWS::QuickSight::Analysis Definition (__added__)
+* AWS::QuickSight::Analysis Status (__added__)
+* AWS::QuickSight::Analysis Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::QuickSight::Analysis SourceEntity.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::QuickSight::Dashboard Definition (__added__)
+* AWS::QuickSight::Dashboard Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::QuickSight::Dashboard SourceEntity.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::QuickSight::Template Definition (__added__)
+* AWS::QuickSight::Template SourceEntity.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::RefactorSpaces::Application EnvironmentIdentifier.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::RefactorSpaces::Application Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::RefactorSpaces::Application ProxyType.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::RefactorSpaces::Application VpcId.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::RefactorSpaces::Environment Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::RefactorSpaces::Environment NetworkFabricType.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::RefactorSpaces::Route RouteType.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::RefactorSpaces::Service EndpointType.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::RefactorSpaces::Service Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ServiceCatalog::CloudFormationProduct ProductType (__added__)
+
+## Property Type Changes
+
+* AWS::GuardDuty::Detector.FeatureAdditionalConfiguration (__added__)
+* AWS::GuardDuty::Detector.FeatureConfigurations (__added__)
+* AWS::OpenSearchService::Domain.OffPeakWindow (__added__)
+* AWS::OpenSearchService::Domain.OffPeakWindowOptions (__added__)
+* AWS::OpenSearchService::Domain.SoftwareUpdateOptions (__added__)
+* AWS::OpenSearchService::Domain.WindowStartTime (__added__)
+* AWS::QuickSight::Analysis.AggregationFunction (__added__)
+* AWS::QuickSight::Analysis.AggregationSortConfiguration (__added__)
+* AWS::QuickSight::Analysis.AnalysisDefaults (__added__)
+* AWS::QuickSight::Analysis.AnalysisDefinition (__added__)
+* AWS::QuickSight::Analysis.AnchorDateConfiguration (__added__)
+* AWS::QuickSight::Analysis.ArcAxisConfiguration (__added__)
+* AWS::QuickSight::Analysis.ArcAxisDisplayRange (__added__)
+* AWS::QuickSight::Analysis.ArcConfiguration (__added__)
+* AWS::QuickSight::Analysis.ArcOptions (__added__)
+* AWS::QuickSight::Analysis.AxisDataOptions (__added__)
+* AWS::QuickSight::Analysis.AxisDisplayMinMaxRange (__added__)
+* AWS::QuickSight::Analysis.AxisDisplayOptions (__added__)
+* AWS::QuickSight::Analysis.AxisDisplayRange (__added__)
+* AWS::QuickSight::Analysis.AxisLabelOptions (__added__)
+* AWS::QuickSight::Analysis.AxisLabelReferenceOptions (__added__)
+* AWS::QuickSight::Analysis.AxisLinearScale (__added__)
+* AWS::QuickSight::Analysis.AxisLogarithmicScale (__added__)
+* AWS::QuickSight::Analysis.AxisScale (__added__)
+* AWS::QuickSight::Analysis.AxisTickLabelOptions (__added__)
+* AWS::QuickSight::Analysis.BarChartAggregatedFieldWells (__added__)
+* AWS::QuickSight::Analysis.BarChartConfiguration (__added__)
+* AWS::QuickSight::Analysis.BarChartFieldWells (__added__)
+* AWS::QuickSight::Analysis.BarChartSortConfiguration (__added__)
+* AWS::QuickSight::Analysis.BarChartVisual (__added__)
+* AWS::QuickSight::Analysis.BinCountOptions (__added__)
+* AWS::QuickSight::Analysis.BinWidthOptions (__added__)
+* AWS::QuickSight::Analysis.BodySectionConfiguration (__added__)
+* AWS::QuickSight::Analysis.BodySectionContent (__added__)
+* AWS::QuickSight::Analysis.BoxPlotAggregatedFieldWells (__added__)
+* AWS::QuickSight::Analysis.BoxPlotChartConfiguration (__added__)
+* AWS::QuickSight::Analysis.BoxPlotFieldWells (__added__)
+* AWS::QuickSight::Analysis.BoxPlotOptions (__added__)
+* AWS::QuickSight::Analysis.BoxPlotSortConfiguration (__added__)
+* AWS::QuickSight::Analysis.BoxPlotStyleOptions (__added__)
+* AWS::QuickSight::Analysis.BoxPlotVisual (__added__)
+* AWS::QuickSight::Analysis.CalculatedField (__added__)
+* AWS::QuickSight::Analysis.CalculatedMeasureField (__added__)
+* AWS::QuickSight::Analysis.CascadingControlConfiguration (__added__)
+* AWS::QuickSight::Analysis.CascadingControlSource (__added__)
+* AWS::QuickSight::Analysis.CategoricalDimensionField (__added__)
+* AWS::QuickSight::Analysis.CategoricalMeasureField (__added__)
+* AWS::QuickSight::Analysis.CategoryDrillDownFilter (__added__)
+* AWS::QuickSight::Analysis.CategoryFilter (__added__)
+* AWS::QuickSight::Analysis.CategoryFilterConfiguration (__added__)
+* AWS::QuickSight::Analysis.ChartAxisLabelOptions (__added__)
+* AWS::QuickSight::Analysis.ClusterMarker (__added__)
+* AWS::QuickSight::Analysis.ClusterMarkerConfiguration (__added__)
+* AWS::QuickSight::Analysis.ColorScale (__added__)
+* AWS::QuickSight::Analysis.ColorsConfiguration (__added__)
+* AWS::QuickSight::Analysis.ColumnConfiguration (__added__)
+* AWS::QuickSight::Analysis.ColumnHierarchy (__added__)
+* AWS::QuickSight::Analysis.ColumnIdentifier (__added__)
+* AWS::QuickSight::Analysis.ColumnSort (__added__)
+* AWS::QuickSight::Analysis.ColumnTooltipItem (__added__)
+* AWS::QuickSight::Analysis.ComboChartAggregatedFieldWells (__added__)
+* AWS::QuickSight::Analysis.ComboChartConfiguration (__added__)
+* AWS::QuickSight::Analysis.ComboChartFieldWells (__added__)
+* AWS::QuickSight::Analysis.ComboChartSortConfiguration (__added__)
+* AWS::QuickSight::Analysis.ComboChartVisual (__added__)
+* AWS::QuickSight::Analysis.ComparisonConfiguration (__added__)
+* AWS::QuickSight::Analysis.ComparisonFormatConfiguration (__added__)
+* AWS::QuickSight::Analysis.Computation (__added__)
+* AWS::QuickSight::Analysis.ConditionalFormattingColor (__added__)
+* AWS::QuickSight::Analysis.ConditionalFormattingCustomIconCondition (__added__)
+* AWS::QuickSight::Analysis.ConditionalFormattingCustomIconOptions (__added__)
+* AWS::QuickSight::Analysis.ConditionalFormattingGradientColor (__added__)
+* AWS::QuickSight::Analysis.ConditionalFormattingIcon (__added__)
+* AWS::QuickSight::Analysis.ConditionalFormattingIconDisplayConfiguration (__added__)
+* AWS::QuickSight::Analysis.ConditionalFormattingIconSet (__added__)
+* AWS::QuickSight::Analysis.ConditionalFormattingSolidColor (__added__)
+* AWS::QuickSight::Analysis.ContributionAnalysisDefault (__added__)
+* AWS::QuickSight::Analysis.CurrencyDisplayFormatConfiguration (__added__)
+* AWS::QuickSight::Analysis.CustomActionFilterOperation (__added__)
+* AWS::QuickSight::Analysis.CustomActionNavigationOperation (__added__)
+* AWS::QuickSight::Analysis.CustomActionSetParametersOperation (__added__)
+* AWS::QuickSight::Analysis.CustomActionURLOperation (__added__)
+* AWS::QuickSight::Analysis.CustomColor (__added__)
+* AWS::QuickSight::Analysis.CustomContentConfiguration (__added__)
+* AWS::QuickSight::Analysis.CustomContentVisual (__added__)
+* AWS::QuickSight::Analysis.CustomFilterConfiguration (__added__)
+* AWS::QuickSight::Analysis.CustomFilterListConfiguration (__added__)
+* AWS::QuickSight::Analysis.CustomNarrativeOptions (__added__)
+* AWS::QuickSight::Analysis.CustomParameterValues (__added__)
+* AWS::QuickSight::Analysis.CustomValuesConfiguration (__added__)
+* AWS::QuickSight::Analysis.DataBarsOptions (__added__)
+* AWS::QuickSight::Analysis.DataColor (__added__)
+* AWS::QuickSight::Analysis.DataFieldSeriesItem (__added__)
+* AWS::QuickSight::Analysis.DataLabelOptions (__added__)
+* AWS::QuickSight::Analysis.DataLabelType (__added__)
+* AWS::QuickSight::Analysis.DataPathColor (__added__)
+* AWS::QuickSight::Analysis.DataPathLabelType (__added__)
+* AWS::QuickSight::Analysis.DataPathSort (__added__)
+* AWS::QuickSight::Analysis.DataPathValue (__added__)
+* AWS::QuickSight::Analysis.DataSetIdentifierDeclaration (__added__)
+* AWS::QuickSight::Analysis.DateAxisOptions (__added__)
+* AWS::QuickSight::Analysis.DateDimensionField (__added__)
+* AWS::QuickSight::Analysis.DateMeasureField (__added__)
+* AWS::QuickSight::Analysis.DateTimeDefaultValues (__added__)
+* AWS::QuickSight::Analysis.DateTimeFormatConfiguration (__added__)
+* AWS::QuickSight::Analysis.DateTimeHierarchy (__added__)
+* AWS::QuickSight::Analysis.DateTimeParameterDeclaration (__added__)
+* AWS::QuickSight::Analysis.DateTimePickerControlDisplayOptions (__added__)
+* AWS::QuickSight::Analysis.DateTimeValueWhenUnsetConfiguration (__added__)
+* AWS::QuickSight::Analysis.DecimalDefaultValues (__added__)
+* AWS::QuickSight::Analysis.DecimalParameterDeclaration (__added__)
+* AWS::QuickSight::Analysis.DecimalPlacesConfiguration (__added__)
+* AWS::QuickSight::Analysis.DecimalValueWhenUnsetConfiguration (__added__)
+* AWS::QuickSight::Analysis.DefaultFreeFormLayoutConfiguration (__added__)
+* AWS::QuickSight::Analysis.DefaultGridLayoutConfiguration (__added__)
+* AWS::QuickSight::Analysis.DefaultInteractiveLayoutConfiguration (__added__)
+* AWS::QuickSight::Analysis.DefaultNewSheetConfiguration (__added__)
+* AWS::QuickSight::Analysis.DefaultPaginatedLayoutConfiguration (__added__)
+* AWS::QuickSight::Analysis.DefaultSectionBasedLayoutConfiguration (__added__)
+* AWS::QuickSight::Analysis.DestinationParameterValueConfiguration (__added__)
+* AWS::QuickSight::Analysis.DimensionField (__added__)
+* AWS::QuickSight::Analysis.DonutCenterOptions (__added__)
+* AWS::QuickSight::Analysis.DonutOptions (__added__)
+* AWS::QuickSight::Analysis.DrillDownFilter (__added__)
+* AWS::QuickSight::Analysis.DropDownControlDisplayOptions (__added__)
+* AWS::QuickSight::Analysis.DynamicDefaultValue (__added__)
+* AWS::QuickSight::Analysis.EmptyVisual (__added__)
+* AWS::QuickSight::Analysis.Entity (__added__)
+* AWS::QuickSight::Analysis.ExcludePeriodConfiguration (__added__)
+* AWS::QuickSight::Analysis.ExplicitHierarchy (__added__)
+* AWS::QuickSight::Analysis.FieldBasedTooltip (__added__)
+* AWS::QuickSight::Analysis.FieldLabelType (__added__)
+* AWS::QuickSight::Analysis.FieldSeriesItem (__added__)
+* AWS::QuickSight::Analysis.FieldSort (__added__)
+* AWS::QuickSight::Analysis.FieldSortOptions (__added__)
+* AWS::QuickSight::Analysis.FieldTooltipItem (__added__)
+* AWS::QuickSight::Analysis.FilledMapAggregatedFieldWells (__added__)
+* AWS::QuickSight::Analysis.FilledMapConditionalFormatting (__added__)
+* AWS::QuickSight::Analysis.FilledMapConditionalFormattingOption (__added__)
+* AWS::QuickSight::Analysis.FilledMapConfiguration (__added__)
+* AWS::QuickSight::Analysis.FilledMapFieldWells (__added__)
+* AWS::QuickSight::Analysis.FilledMapShapeConditionalFormatting (__added__)
+* AWS::QuickSight::Analysis.FilledMapSortConfiguration (__added__)
+* AWS::QuickSight::Analysis.FilledMapVisual (__added__)
+* AWS::QuickSight::Analysis.Filter (__added__)
+* AWS::QuickSight::Analysis.FilterControl (__added__)
+* AWS::QuickSight::Analysis.FilterDateTimePickerControl (__added__)
+* AWS::QuickSight::Analysis.FilterDropDownControl (__added__)
+* AWS::QuickSight::Analysis.FilterGroup (__added__)
+* AWS::QuickSight::Analysis.FilterListConfiguration (__added__)
+* AWS::QuickSight::Analysis.FilterListControl (__added__)
+* AWS::QuickSight::Analysis.FilterOperationSelectedFieldsConfiguration (__added__)
+* AWS::QuickSight::Analysis.FilterOperationTargetVisualsConfiguration (__added__)
+* AWS::QuickSight::Analysis.FilterRelativeDateTimeControl (__added__)
+* AWS::QuickSight::Analysis.FilterScopeConfiguration (__added__)
+* AWS::QuickSight::Analysis.FilterSelectableValues (__added__)
+* AWS::QuickSight::Analysis.FilterSliderControl (__added__)
+* AWS::QuickSight::Analysis.FilterTextAreaControl (__added__)
+* AWS::QuickSight::Analysis.FilterTextFieldControl (__added__)
+* AWS::QuickSight::Analysis.FontConfiguration (__added__)
+* AWS::QuickSight::Analysis.FontSize (__added__)
+* AWS::QuickSight::Analysis.FontWeight (__added__)
+* AWS::QuickSight::Analysis.ForecastComputation (__added__)
+* AWS::QuickSight::Analysis.ForecastConfiguration (__added__)
+* AWS::QuickSight::Analysis.ForecastScenario (__added__)
+* AWS::QuickSight::Analysis.FormatConfiguration (__added__)
+* AWS::QuickSight::Analysis.FreeFormLayoutCanvasSizeOptions (__added__)
+* AWS::QuickSight::Analysis.FreeFormLayoutConfiguration (__added__)
+* AWS::QuickSight::Analysis.FreeFormLayoutElement (__added__)
+* AWS::QuickSight::Analysis.FreeFormLayoutElementBackgroundStyle (__added__)
+* AWS::QuickSight::Analysis.FreeFormLayoutElementBorderStyle (__added__)
+* AWS::QuickSight::Analysis.FreeFormLayoutScreenCanvasSizeOptions (__added__)
+* AWS::QuickSight::Analysis.FreeFormSectionLayoutConfiguration (__added__)
+* AWS::QuickSight::Analysis.FunnelChartAggregatedFieldWells (__added__)
+* AWS::QuickSight::Analysis.FunnelChartConfiguration (__added__)
+* AWS::QuickSight::Analysis.FunnelChartDataLabelOptions (__added__)
+* AWS::QuickSight::Analysis.FunnelChartFieldWells (__added__)
+* AWS::QuickSight::Analysis.FunnelChartSortConfiguration (__added__)
+* AWS::QuickSight::Analysis.FunnelChartVisual (__added__)
+* AWS::QuickSight::Analysis.GaugeChartArcConditionalFormatting (__added__)
+* AWS::QuickSight::Analysis.GaugeChartConditionalFormatting (__added__)
+* AWS::QuickSight::Analysis.GaugeChartConditionalFormattingOption (__added__)
+* AWS::QuickSight::Analysis.GaugeChartConfiguration (__added__)
+* AWS::QuickSight::Analysis.GaugeChartFieldWells (__added__)
+* AWS::QuickSight::Analysis.GaugeChartOptions (__added__)
+* AWS::QuickSight::Analysis.GaugeChartPrimaryValueConditionalFormatting (__added__)
+* AWS::QuickSight::Analysis.GaugeChartVisual (__added__)
+* AWS::QuickSight::Analysis.GeospatialCoordinateBounds (__added__)
+* AWS::QuickSight::Analysis.GeospatialMapAggregatedFieldWells (__added__)
+* AWS::QuickSight::Analysis.GeospatialMapConfiguration (__added__)
+* AWS::QuickSight::Analysis.GeospatialMapFieldWells (__added__)
+* AWS::QuickSight::Analysis.GeospatialMapStyleOptions (__added__)
+* AWS::QuickSight::Analysis.GeospatialMapVisual (__added__)
+* AWS::QuickSight::Analysis.GeospatialPointStyleOptions (__added__)
+* AWS::QuickSight::Analysis.GeospatialWindowOptions (__added__)
+* AWS::QuickSight::Analysis.GlobalTableBorderOptions (__added__)
+* AWS::QuickSight::Analysis.GradientColor (__added__)
+* AWS::QuickSight::Analysis.GradientStop (__added__)
+* AWS::QuickSight::Analysis.GridLayoutCanvasSizeOptions (__added__)
+* AWS::QuickSight::Analysis.GridLayoutConfiguration (__added__)
+* AWS::QuickSight::Analysis.GridLayoutElement (__added__)
+* AWS::QuickSight::Analysis.GridLayoutScreenCanvasSizeOptions (__added__)
+* AWS::QuickSight::Analysis.GrowthRateComputation (__added__)
+* AWS::QuickSight::Analysis.HeaderFooterSectionConfiguration (__added__)
+* AWS::QuickSight::Analysis.HeatMapAggregatedFieldWells (__added__)
+* AWS::QuickSight::Analysis.HeatMapConfiguration (__added__)
+* AWS::QuickSight::Analysis.HeatMapFieldWells (__added__)
+* AWS::QuickSight::Analysis.HeatMapSortConfiguration (__added__)
+* AWS::QuickSight::Analysis.HeatMapVisual (__added__)
+* AWS::QuickSight::Analysis.HistogramAggregatedFieldWells (__added__)
+* AWS::QuickSight::Analysis.HistogramBinOptions (__added__)
+* AWS::QuickSight::Analysis.HistogramConfiguration (__added__)
+* AWS::QuickSight::Analysis.HistogramFieldWells (__added__)
+* AWS::QuickSight::Analysis.HistogramVisual (__added__)
+* AWS::QuickSight::Analysis.InsightConfiguration (__added__)
+* AWS::QuickSight::Analysis.InsightVisual (__added__)
+* AWS::QuickSight::Analysis.IntegerDefaultValues (__added__)
+* AWS::QuickSight::Analysis.IntegerParameterDeclaration (__added__)
+* AWS::QuickSight::Analysis.IntegerValueWhenUnsetConfiguration (__added__)
+* AWS::QuickSight::Analysis.ItemsLimitConfiguration (__added__)
+* AWS::QuickSight::Analysis.KPIConditionalFormatting (__added__)
+* AWS::QuickSight::Analysis.KPIConditionalFormattingOption (__added__)
+* AWS::QuickSight::Analysis.KPIConfiguration (__added__)
+* AWS::QuickSight::Analysis.KPIFieldWells (__added__)
+* AWS::QuickSight::Analysis.KPIOptions (__added__)
+* AWS::QuickSight::Analysis.KPIPrimaryValueConditionalFormatting (__added__)
+* AWS::QuickSight::Analysis.KPIProgressBarConditionalFormatting (__added__)
+* AWS::QuickSight::Analysis.KPISortConfiguration (__added__)
+* AWS::QuickSight::Analysis.KPIVisual (__added__)
+* AWS::QuickSight::Analysis.LabelOptions (__added__)
+* AWS::QuickSight::Analysis.Layout (__added__)
+* AWS::QuickSight::Analysis.LayoutConfiguration (__added__)
+* AWS::QuickSight::Analysis.LegendOptions (__added__)
+* AWS::QuickSight::Analysis.LineChartAggregatedFieldWells (__added__)
+* AWS::QuickSight::Analysis.LineChartConfiguration (__added__)
+* AWS::QuickSight::Analysis.LineChartDefaultSeriesSettings (__added__)
+* AWS::QuickSight::Analysis.LineChartFieldWells (__added__)
+* AWS::QuickSight::Analysis.LineChartLineStyleSettings (__added__)
+* AWS::QuickSight::Analysis.LineChartMarkerStyleSettings (__added__)
+* AWS::QuickSight::Analysis.LineChartSeriesSettings (__added__)
+* AWS::QuickSight::Analysis.LineChartSortConfiguration (__added__)
+* AWS::QuickSight::Analysis.LineChartVisual (__added__)
+* AWS::QuickSight::Analysis.LineSeriesAxisDisplayOptions (__added__)
+* AWS::QuickSight::Analysis.ListControlDisplayOptions (__added__)
+* AWS::QuickSight::Analysis.ListControlSearchOptions (__added__)
+* AWS::QuickSight::Analysis.ListControlSelectAllOptions (__added__)
+* AWS::QuickSight::Analysis.LoadingAnimation (__added__)
+* AWS::QuickSight::Analysis.LocalNavigationConfiguration (__added__)
+* AWS::QuickSight::Analysis.LongFormatText (__added__)
+* AWS::QuickSight::Analysis.MappedDataSetParameter (__added__)
+* AWS::QuickSight::Analysis.MaximumLabelType (__added__)
+* AWS::QuickSight::Analysis.MaximumMinimumComputation (__added__)
+* AWS::QuickSight::Analysis.MeasureField (__added__)
+* AWS::QuickSight::Analysis.MetricComparisonComputation (__added__)
+* AWS::QuickSight::Analysis.MinimumLabelType (__added__)
+* AWS::QuickSight::Analysis.MissingDataConfiguration (__added__)
+* AWS::QuickSight::Analysis.NegativeValueConfiguration (__added__)
+* AWS::QuickSight::Analysis.NullValueFormatConfiguration (__added__)
+* AWS::QuickSight::Analysis.NumberDisplayFormatConfiguration (__added__)
+* AWS::QuickSight::Analysis.NumberFormatConfiguration (__added__)
+* AWS::QuickSight::Analysis.NumericAxisOptions (__added__)
+* AWS::QuickSight::Analysis.NumericEqualityDrillDownFilter (__added__)
+* AWS::QuickSight::Analysis.NumericEqualityFilter (__added__)
+* AWS::QuickSight::Analysis.NumericFormatConfiguration (__added__)
+* AWS::QuickSight::Analysis.NumericRangeFilter (__added__)
+* AWS::QuickSight::Analysis.NumericRangeFilterValue (__added__)
+* AWS::QuickSight::Analysis.NumericSeparatorConfiguration (__added__)
+* AWS::QuickSight::Analysis.NumericalAggregationFunction (__added__)
+* AWS::QuickSight::Analysis.NumericalDimensionField (__added__)
+* AWS::QuickSight::Analysis.NumericalMeasureField (__added__)
+* AWS::QuickSight::Analysis.PaginationConfiguration (__added__)
+* AWS::QuickSight::Analysis.PanelConfiguration (__added__)
+* AWS::QuickSight::Analysis.PanelTitleOptions (__added__)
+* AWS::QuickSight::Analysis.ParameterControl (__added__)
+* AWS::QuickSight::Analysis.ParameterDateTimePickerControl (__added__)
+* AWS::QuickSight::Analysis.ParameterDeclaration (__added__)
+* AWS::QuickSight::Analysis.ParameterDropDownControl (__added__)
+* AWS::QuickSight::Analysis.ParameterListControl (__added__)
+* AWS::QuickSight::Analysis.ParameterSelectableValues (__added__)
+* AWS::QuickSight::Analysis.ParameterSliderControl (__added__)
+* AWS::QuickSight::Analysis.ParameterTextAreaControl (__added__)
+* AWS::QuickSight::Analysis.ParameterTextFieldControl (__added__)
+* AWS::QuickSight::Analysis.PercentVisibleRange (__added__)
+* AWS::QuickSight::Analysis.PercentageDisplayFormatConfiguration (__added__)
+* AWS::QuickSight::Analysis.PercentileAggregation (__added__)
+* AWS::QuickSight::Analysis.PeriodOverPeriodComputation (__added__)
+* AWS::QuickSight::Analysis.PeriodToDateComputation (__added__)
+* AWS::QuickSight::Analysis.PieChartAggregatedFieldWells (__added__)
+* AWS::QuickSight::Analysis.PieChartConfiguration (__added__)
+* AWS::QuickSight::Analysis.PieChartFieldWells (__added__)
+* AWS::QuickSight::Analysis.PieChartSortConfiguration (__added__)
+* AWS::QuickSight::Analysis.PieChartVisual (__added__)
+* AWS::QuickSight::Analysis.PivotFieldSortOptions (__added__)
+* AWS::QuickSight::Analysis.PivotTableAggregatedFieldWells (__added__)
+* AWS::QuickSight::Analysis.PivotTableCellConditionalFormatting (__added__)
+* AWS::QuickSight::Analysis.PivotTableConditionalFormatting (__added__)
+* AWS::QuickSight::Analysis.PivotTableConditionalFormattingOption (__added__)
+* AWS::QuickSight::Analysis.PivotTableConditionalFormattingScope (__added__)
+* AWS::QuickSight::Analysis.PivotTableConfiguration (__added__)
+* AWS::QuickSight::Analysis.PivotTableDataPathOption (__added__)
+* AWS::QuickSight::Analysis.PivotTableFieldOption (__added__)
+* AWS::QuickSight::Analysis.PivotTableFieldOptions (__added__)
+* AWS::QuickSight::Analysis.PivotTableFieldSubtotalOptions (__added__)
+* AWS::QuickSight::Analysis.PivotTableFieldWells (__added__)
+* AWS::QuickSight::Analysis.PivotTableOptions (__added__)
+* AWS::QuickSight::Analysis.PivotTablePaginatedReportOptions (__added__)
+* AWS::QuickSight::Analysis.PivotTableSortBy (__added__)
+* AWS::QuickSight::Analysis.PivotTableSortConfiguration (__added__)
+* AWS::QuickSight::Analysis.PivotTableTotalOptions (__added__)
+* AWS::QuickSight::Analysis.PivotTableVisual (__added__)
+* AWS::QuickSight::Analysis.PivotTotalOptions (__added__)
+* AWS::QuickSight::Analysis.PredefinedHierarchy (__added__)
+* AWS::QuickSight::Analysis.ProgressBarOptions (__added__)
+* AWS::QuickSight::Analysis.RadarChartAggregatedFieldWells (__added__)
+* AWS::QuickSight::Analysis.RadarChartAreaStyleSettings (__added__)
+* AWS::QuickSight::Analysis.RadarChartConfiguration (__added__)
+* AWS::QuickSight::Analysis.RadarChartFieldWells (__added__)
+* AWS::QuickSight::Analysis.RadarChartSeriesSettings (__added__)
+* AWS::QuickSight::Analysis.RadarChartSortConfiguration (__added__)
+* AWS::QuickSight::Analysis.RadarChartVisual (__added__)
+* AWS::QuickSight::Analysis.RangeEndsLabelType (__added__)
+* AWS::QuickSight::Analysis.ReferenceLine (__added__)
+* AWS::QuickSight::Analysis.ReferenceLineCustomLabelConfiguration (__added__)
+* AWS::QuickSight::Analysis.ReferenceLineDataConfiguration (__added__)
+* AWS::QuickSight::Analysis.ReferenceLineDynamicDataConfiguration (__added__)
+* AWS::QuickSight::Analysis.ReferenceLineLabelConfiguration (__added__)
+* AWS::QuickSight::Analysis.ReferenceLineStaticDataConfiguration (__added__)
+* AWS::QuickSight::Analysis.ReferenceLineStyleConfiguration (__added__)
+* AWS::QuickSight::Analysis.ReferenceLineValueLabelConfiguration (__added__)
+* AWS::QuickSight::Analysis.RelativeDateTimeControlDisplayOptions (__added__)
+* AWS::QuickSight::Analysis.RelativeDatesFilter (__added__)
+* AWS::QuickSight::Analysis.RollingDateConfiguration (__added__)
+* AWS::QuickSight::Analysis.RowAlternateColorOptions (__added__)
+* AWS::QuickSight::Analysis.SameSheetTargetVisualConfiguration (__added__)
+* AWS::QuickSight::Analysis.SankeyDiagramAggregatedFieldWells (__added__)
+* AWS::QuickSight::Analysis.SankeyDiagramChartConfiguration (__added__)
+* AWS::QuickSight::Analysis.SankeyDiagramFieldWells (__added__)
+* AWS::QuickSight::Analysis.SankeyDiagramSortConfiguration (__added__)
+* AWS::QuickSight::Analysis.SankeyDiagramVisual (__added__)
+* AWS::QuickSight::Analysis.ScatterPlotCategoricallyAggregatedFieldWells (__added__)
+* AWS::QuickSight::Analysis.ScatterPlotConfiguration (__added__)
+* AWS::QuickSight::Analysis.ScatterPlotFieldWells (__added__)
+* AWS::QuickSight::Analysis.ScatterPlotUnaggregatedFieldWells (__added__)
+* AWS::QuickSight::Analysis.ScatterPlotVisual (__added__)
+* AWS::QuickSight::Analysis.ScrollBarOptions (__added__)
+* AWS::QuickSight::Analysis.SecondaryValueOptions (__added__)
+* AWS::QuickSight::Analysis.SectionAfterPageBreak (__added__)
+* AWS::QuickSight::Analysis.SectionBasedLayoutCanvasSizeOptions (__added__)
+* AWS::QuickSight::Analysis.SectionBasedLayoutConfiguration (__added__)
+* AWS::QuickSight::Analysis.SectionBasedLayoutPaperCanvasSizeOptions (__added__)
+* AWS::QuickSight::Analysis.SectionLayoutConfiguration (__added__)
+* AWS::QuickSight::Analysis.SectionPageBreakConfiguration (__added__)
+* AWS::QuickSight::Analysis.SectionStyle (__added__)
+* AWS::QuickSight::Analysis.SelectedSheetsFilterScopeConfiguration (__added__)
+* AWS::QuickSight::Analysis.SeriesItem (__added__)
+* AWS::QuickSight::Analysis.SetParameterValueConfiguration (__added__)
+* AWS::QuickSight::Analysis.ShapeConditionalFormat (__added__)
+* AWS::QuickSight::Analysis.SheetControlLayout (__added__)
+* AWS::QuickSight::Analysis.SheetControlLayoutConfiguration (__added__)
+* AWS::QuickSight::Analysis.SheetDefinition (__added__)
+* AWS::QuickSight::Analysis.SheetElementConfigurationOverrides (__added__)
+* AWS::QuickSight::Analysis.SheetElementRenderingRule (__added__)
+* AWS::QuickSight::Analysis.SheetTextBox (__added__)
+* AWS::QuickSight::Analysis.SheetVisualScopingConfiguration (__added__)
+* AWS::QuickSight::Analysis.ShortFormatText (__added__)
+* AWS::QuickSight::Analysis.SimpleClusterMarker (__added__)
+* AWS::QuickSight::Analysis.SliderControlDisplayOptions (__added__)
+* AWS::QuickSight::Analysis.SmallMultiplesOptions (__added__)
+* AWS::QuickSight::Analysis.Spacing (__added__)
+* AWS::QuickSight::Analysis.StringDefaultValues (__added__)
+* AWS::QuickSight::Analysis.StringFormatConfiguration (__added__)
+* AWS::QuickSight::Analysis.StringParameterDeclaration (__added__)
+* AWS::QuickSight::Analysis.StringValueWhenUnsetConfiguration (__added__)
+* AWS::QuickSight::Analysis.SubtotalOptions (__added__)
+* AWS::QuickSight::Analysis.TableAggregatedFieldWells (__added__)
+* AWS::QuickSight::Analysis.TableBorderOptions (__added__)
+* AWS::QuickSight::Analysis.TableCellConditionalFormatting (__added__)
+* AWS::QuickSight::Analysis.TableCellImageSizingConfiguration (__added__)
+* AWS::QuickSight::Analysis.TableCellStyle (__added__)
+* AWS::QuickSight::Analysis.TableConditionalFormatting (__added__)
+* AWS::QuickSight::Analysis.TableConditionalFormattingOption (__added__)
+* AWS::QuickSight::Analysis.TableConfiguration (__added__)
+* AWS::QuickSight::Analysis.TableFieldCustomIconContent (__added__)
+* AWS::QuickSight::Analysis.TableFieldCustomTextContent (__added__)
+* AWS::QuickSight::Analysis.TableFieldImageConfiguration (__added__)
+* AWS::QuickSight::Analysis.TableFieldLinkConfiguration (__added__)
+* AWS::QuickSight::Analysis.TableFieldLinkContentConfiguration (__added__)
+* AWS::QuickSight::Analysis.TableFieldOption (__added__)
+* AWS::QuickSight::Analysis.TableFieldOptions (__added__)
+* AWS::QuickSight::Analysis.TableFieldURLConfiguration (__added__)
+* AWS::QuickSight::Analysis.TableFieldWells (__added__)
+* AWS::QuickSight::Analysis.TableInlineVisualization (__added__)
+* AWS::QuickSight::Analysis.TableOptions (__added__)
+* AWS::QuickSight::Analysis.TablePaginatedReportOptions (__added__)
+* AWS::QuickSight::Analysis.TableRowConditionalFormatting (__added__)
+* AWS::QuickSight::Analysis.TableSideBorderOptions (__added__)
+* AWS::QuickSight::Analysis.TableSortConfiguration (__added__)
+* AWS::QuickSight::Analysis.TableUnaggregatedFieldWells (__added__)
+* AWS::QuickSight::Analysis.TableVisual (__added__)
+* AWS::QuickSight::Analysis.TextAreaControlDisplayOptions (__added__)
+* AWS::QuickSight::Analysis.TextConditionalFormat (__added__)
+* AWS::QuickSight::Analysis.TextControlPlaceholderOptions (__added__)
+* AWS::QuickSight::Analysis.TextFieldControlDisplayOptions (__added__)
+* AWS::QuickSight::Analysis.ThousandSeparatorOptions (__added__)
+* AWS::QuickSight::Analysis.TimeBasedForecastProperties (__added__)
+* AWS::QuickSight::Analysis.TimeEqualityFilter (__added__)
+* AWS::QuickSight::Analysis.TimeRangeDrillDownFilter (__added__)
+* AWS::QuickSight::Analysis.TimeRangeFilter (__added__)
+* AWS::QuickSight::Analysis.TimeRangeFilterValue (__added__)
+* AWS::QuickSight::Analysis.TooltipItem (__added__)
+* AWS::QuickSight::Analysis.TooltipOptions (__added__)
+* AWS::QuickSight::Analysis.TopBottomFilter (__added__)
+* AWS::QuickSight::Analysis.TopBottomMoversComputation (__added__)
+* AWS::QuickSight::Analysis.TopBottomRankedComputation (__added__)
+* AWS::QuickSight::Analysis.TotalAggregationComputation (__added__)
+* AWS::QuickSight::Analysis.TotalOptions (__added__)
+* AWS::QuickSight::Analysis.TreeMapAggregatedFieldWells (__added__)
+* AWS::QuickSight::Analysis.TreeMapConfiguration (__added__)
+* AWS::QuickSight::Analysis.TreeMapFieldWells (__added__)
+* AWS::QuickSight::Analysis.TreeMapSortConfiguration (__added__)
+* AWS::QuickSight::Analysis.TreeMapVisual (__added__)
+* AWS::QuickSight::Analysis.TrendArrowOptions (__added__)
+* AWS::QuickSight::Analysis.UnaggregatedField (__added__)
+* AWS::QuickSight::Analysis.UniqueValuesComputation (__added__)
+* AWS::QuickSight::Analysis.VisibleRangeOptions (__added__)
+* AWS::QuickSight::Analysis.Visual (__added__)
+* AWS::QuickSight::Analysis.VisualCustomAction (__added__)
+* AWS::QuickSight::Analysis.VisualCustomActionOperation (__added__)
+* AWS::QuickSight::Analysis.VisualPalette (__added__)
+* AWS::QuickSight::Analysis.VisualSubtitleLabelOptions (__added__)
+* AWS::QuickSight::Analysis.VisualTitleLabelOptions (__added__)
+* AWS::QuickSight::Analysis.WaterfallChartAggregatedFieldWells (__added__)
+* AWS::QuickSight::Analysis.WaterfallChartConfiguration (__added__)
+* AWS::QuickSight::Analysis.WaterfallChartFieldWells (__added__)
+* AWS::QuickSight::Analysis.WaterfallChartOptions (__added__)
+* AWS::QuickSight::Analysis.WaterfallChartSortConfiguration (__added__)
+* AWS::QuickSight::Analysis.WaterfallVisual (__added__)
+* AWS::QuickSight::Analysis.WhatIfPointScenario (__added__)
+* AWS::QuickSight::Analysis.WhatIfRangeScenario (__added__)
+* AWS::QuickSight::Analysis.WordCloudAggregatedFieldWells (__added__)
+* AWS::QuickSight::Analysis.WordCloudChartConfiguration (__added__)
+* AWS::QuickSight::Analysis.WordCloudFieldWells (__added__)
+* AWS::QuickSight::Analysis.WordCloudOptions (__added__)
+* AWS::QuickSight::Analysis.WordCloudSortConfiguration (__added__)
+* AWS::QuickSight::Analysis.WordCloudVisual (__added__)
+* AWS::QuickSight::Dashboard.AggregationFunction (__added__)
+* AWS::QuickSight::Dashboard.AggregationSortConfiguration (__added__)
+* AWS::QuickSight::Dashboard.AnalysisDefaults (__added__)
+* AWS::QuickSight::Dashboard.AnchorDateConfiguration (__added__)
+* AWS::QuickSight::Dashboard.ArcAxisConfiguration (__added__)
+* AWS::QuickSight::Dashboard.ArcAxisDisplayRange (__added__)
+* AWS::QuickSight::Dashboard.ArcConfiguration (__added__)
+* AWS::QuickSight::Dashboard.ArcOptions (__added__)
+* AWS::QuickSight::Dashboard.AxisDataOptions (__added__)
+* AWS::QuickSight::Dashboard.AxisDisplayMinMaxRange (__added__)
+* AWS::QuickSight::Dashboard.AxisDisplayOptions (__added__)
+* AWS::QuickSight::Dashboard.AxisDisplayRange (__added__)
+* AWS::QuickSight::Dashboard.AxisLabelOptions (__added__)
+* AWS::QuickSight::Dashboard.AxisLabelReferenceOptions (__added__)
+* AWS::QuickSight::Dashboard.AxisLinearScale (__added__)
+* AWS::QuickSight::Dashboard.AxisLogarithmicScale (__added__)
+* AWS::QuickSight::Dashboard.AxisScale (__added__)
+* AWS::QuickSight::Dashboard.AxisTickLabelOptions (__added__)
+* AWS::QuickSight::Dashboard.BarChartAggregatedFieldWells (__added__)
+* AWS::QuickSight::Dashboard.BarChartConfiguration (__added__)
+* AWS::QuickSight::Dashboard.BarChartFieldWells (__added__)
+* AWS::QuickSight::Dashboard.BarChartSortConfiguration (__added__)
+* AWS::QuickSight::Dashboard.BarChartVisual (__added__)
+* AWS::QuickSight::Dashboard.BinCountOptions (__added__)
+* AWS::QuickSight::Dashboard.BinWidthOptions (__added__)
+* AWS::QuickSight::Dashboard.BodySectionConfiguration (__added__)
+* AWS::QuickSight::Dashboard.BodySectionContent (__added__)
+* AWS::QuickSight::Dashboard.BoxPlotAggregatedFieldWells (__added__)
+* AWS::QuickSight::Dashboard.BoxPlotChartConfiguration (__added__)
+* AWS::QuickSight::Dashboard.BoxPlotFieldWells (__added__)
+* AWS::QuickSight::Dashboard.BoxPlotOptions (__added__)
+* AWS::QuickSight::Dashboard.BoxPlotSortConfiguration (__added__)
+* AWS::QuickSight::Dashboard.BoxPlotStyleOptions (__added__)
+* AWS::QuickSight::Dashboard.BoxPlotVisual (__added__)
+* AWS::QuickSight::Dashboard.CalculatedField (__added__)
+* AWS::QuickSight::Dashboard.CalculatedMeasureField (__added__)
+* AWS::QuickSight::Dashboard.CascadingControlConfiguration (__added__)
+* AWS::QuickSight::Dashboard.CascadingControlSource (__added__)
+* AWS::QuickSight::Dashboard.CategoricalDimensionField (__added__)
+* AWS::QuickSight::Dashboard.CategoricalMeasureField (__added__)
+* AWS::QuickSight::Dashboard.CategoryDrillDownFilter (__added__)
+* AWS::QuickSight::Dashboard.CategoryFilter (__added__)
+* AWS::QuickSight::Dashboard.CategoryFilterConfiguration (__added__)
+* AWS::QuickSight::Dashboard.ChartAxisLabelOptions (__added__)
+* AWS::QuickSight::Dashboard.ClusterMarker (__added__)
+* AWS::QuickSight::Dashboard.ClusterMarkerConfiguration (__added__)
+* AWS::QuickSight::Dashboard.ColorScale (__added__)
+* AWS::QuickSight::Dashboard.ColorsConfiguration (__added__)
+* AWS::QuickSight::Dashboard.ColumnConfiguration (__added__)
+* AWS::QuickSight::Dashboard.ColumnHierarchy (__added__)
+* AWS::QuickSight::Dashboard.ColumnIdentifier (__added__)
+* AWS::QuickSight::Dashboard.ColumnSort (__added__)
+* AWS::QuickSight::Dashboard.ColumnTooltipItem (__added__)
+* AWS::QuickSight::Dashboard.ComboChartAggregatedFieldWells (__added__)
+* AWS::QuickSight::Dashboard.ComboChartConfiguration (__added__)
+* AWS::QuickSight::Dashboard.ComboChartFieldWells (__added__)
+* AWS::QuickSight::Dashboard.ComboChartSortConfiguration (__added__)
+* AWS::QuickSight::Dashboard.ComboChartVisual (__added__)
+* AWS::QuickSight::Dashboard.ComparisonConfiguration (__added__)
+* AWS::QuickSight::Dashboard.ComparisonFormatConfiguration (__added__)
+* AWS::QuickSight::Dashboard.Computation (__added__)
+* AWS::QuickSight::Dashboard.ConditionalFormattingColor (__added__)
+* AWS::QuickSight::Dashboard.ConditionalFormattingCustomIconCondition (__added__)
+* AWS::QuickSight::Dashboard.ConditionalFormattingCustomIconOptions (__added__)
+* AWS::QuickSight::Dashboard.ConditionalFormattingGradientColor (__added__)
+* AWS::QuickSight::Dashboard.ConditionalFormattingIcon (__added__)
+* AWS::QuickSight::Dashboard.ConditionalFormattingIconDisplayConfiguration (__added__)
+* AWS::QuickSight::Dashboard.ConditionalFormattingIconSet (__added__)
+* AWS::QuickSight::Dashboard.ConditionalFormattingSolidColor (__added__)
+* AWS::QuickSight::Dashboard.ContributionAnalysisDefault (__added__)
+* AWS::QuickSight::Dashboard.CurrencyDisplayFormatConfiguration (__added__)
+* AWS::QuickSight::Dashboard.CustomActionFilterOperation (__added__)
+* AWS::QuickSight::Dashboard.CustomActionNavigationOperation (__added__)
+* AWS::QuickSight::Dashboard.CustomActionSetParametersOperation (__added__)
+* AWS::QuickSight::Dashboard.CustomActionURLOperation (__added__)
+* AWS::QuickSight::Dashboard.CustomColor (__added__)
+* AWS::QuickSight::Dashboard.CustomContentConfiguration (__added__)
+* AWS::QuickSight::Dashboard.CustomContentVisual (__added__)
+* AWS::QuickSight::Dashboard.CustomFilterConfiguration (__added__)
+* AWS::QuickSight::Dashboard.CustomFilterListConfiguration (__added__)
+* AWS::QuickSight::Dashboard.CustomNarrativeOptions (__added__)
+* AWS::QuickSight::Dashboard.CustomParameterValues (__added__)
+* AWS::QuickSight::Dashboard.CustomValuesConfiguration (__added__)
+* AWS::QuickSight::Dashboard.DashboardVersionDefinition (__added__)
+* AWS::QuickSight::Dashboard.DashboardVisualPublishOptions (__added__)
+* AWS::QuickSight::Dashboard.DataBarsOptions (__added__)
+* AWS::QuickSight::Dashboard.DataColor (__added__)
+* AWS::QuickSight::Dashboard.DataFieldSeriesItem (__added__)
+* AWS::QuickSight::Dashboard.DataLabelOptions (__added__)
+* AWS::QuickSight::Dashboard.DataLabelType (__added__)
+* AWS::QuickSight::Dashboard.DataPathColor (__added__)
+* AWS::QuickSight::Dashboard.DataPathLabelType (__added__)
+* AWS::QuickSight::Dashboard.DataPathSort (__added__)
+* AWS::QuickSight::Dashboard.DataPathValue (__added__)
+* AWS::QuickSight::Dashboard.DataPointDrillUpDownOption (__added__)
+* AWS::QuickSight::Dashboard.DataPointMenuLabelOption (__added__)
+* AWS::QuickSight::Dashboard.DataPointTooltipOption (__added__)
+* AWS::QuickSight::Dashboard.DataSetIdentifierDeclaration (__added__)
+* AWS::QuickSight::Dashboard.DateAxisOptions (__added__)
+* AWS::QuickSight::Dashboard.DateDimensionField (__added__)
+* AWS::QuickSight::Dashboard.DateMeasureField (__added__)
+* AWS::QuickSight::Dashboard.DateTimeDefaultValues (__added__)
+* AWS::QuickSight::Dashboard.DateTimeFormatConfiguration (__added__)
+* AWS::QuickSight::Dashboard.DateTimeHierarchy (__added__)
+* AWS::QuickSight::Dashboard.DateTimeParameterDeclaration (__added__)
+* AWS::QuickSight::Dashboard.DateTimePickerControlDisplayOptions (__added__)
+* AWS::QuickSight::Dashboard.DateTimeValueWhenUnsetConfiguration (__added__)
+* AWS::QuickSight::Dashboard.DecimalDefaultValues (__added__)
+* AWS::QuickSight::Dashboard.DecimalParameterDeclaration (__added__)
+* AWS::QuickSight::Dashboard.DecimalPlacesConfiguration (__added__)
+* AWS::QuickSight::Dashboard.DecimalValueWhenUnsetConfiguration (__added__)
+* AWS::QuickSight::Dashboard.DefaultFreeFormLayoutConfiguration (__added__)
+* AWS::QuickSight::Dashboard.DefaultGridLayoutConfiguration (__added__)
+* AWS::QuickSight::Dashboard.DefaultInteractiveLayoutConfiguration (__added__)
+* AWS::QuickSight::Dashboard.DefaultNewSheetConfiguration (__added__)
+* AWS::QuickSight::Dashboard.DefaultPaginatedLayoutConfiguration (__added__)
+* AWS::QuickSight::Dashboard.DefaultSectionBasedLayoutConfiguration (__added__)
+* AWS::QuickSight::Dashboard.DestinationParameterValueConfiguration (__added__)
+* AWS::QuickSight::Dashboard.DimensionField (__added__)
+* AWS::QuickSight::Dashboard.DonutCenterOptions (__added__)
+* AWS::QuickSight::Dashboard.DonutOptions (__added__)
+* AWS::QuickSight::Dashboard.DrillDownFilter (__added__)
+* AWS::QuickSight::Dashboard.DropDownControlDisplayOptions (__added__)
+* AWS::QuickSight::Dashboard.DynamicDefaultValue (__added__)
+* AWS::QuickSight::Dashboard.EmptyVisual (__added__)
+* AWS::QuickSight::Dashboard.Entity (__added__)
+* AWS::QuickSight::Dashboard.ExcludePeriodConfiguration (__added__)
+* AWS::QuickSight::Dashboard.ExplicitHierarchy (__added__)
+* AWS::QuickSight::Dashboard.ExportHiddenFieldsOption (__added__)
+* AWS::QuickSight::Dashboard.ExportWithHiddenFieldsOption (__added__)
+* AWS::QuickSight::Dashboard.FieldBasedTooltip (__added__)
+* AWS::QuickSight::Dashboard.FieldLabelType (__added__)
+* AWS::QuickSight::Dashboard.FieldSeriesItem (__added__)
+* AWS::QuickSight::Dashboard.FieldSort (__added__)
+* AWS::QuickSight::Dashboard.FieldSortOptions (__added__)
+* AWS::QuickSight::Dashboard.FieldTooltipItem (__added__)
+* AWS::QuickSight::Dashboard.FilledMapAggregatedFieldWells (__added__)
+* AWS::QuickSight::Dashboard.FilledMapConditionalFormatting (__added__)
+* AWS::QuickSight::Dashboard.FilledMapConditionalFormattingOption (__added__)
+* AWS::QuickSight::Dashboard.FilledMapConfiguration (__added__)
+* AWS::QuickSight::Dashboard.FilledMapFieldWells (__added__)
+* AWS::QuickSight::Dashboard.FilledMapShapeConditionalFormatting (__added__)
+* AWS::QuickSight::Dashboard.FilledMapSortConfiguration (__added__)
+* AWS::QuickSight::Dashboard.FilledMapVisual (__added__)
+* AWS::QuickSight::Dashboard.Filter (__added__)
+* AWS::QuickSight::Dashboard.FilterControl (__added__)
+* AWS::QuickSight::Dashboard.FilterDateTimePickerControl (__added__)
+* AWS::QuickSight::Dashboard.FilterDropDownControl (__added__)
+* AWS::QuickSight::Dashboard.FilterGroup (__added__)
+* AWS::QuickSight::Dashboard.FilterListConfiguration (__added__)
+* AWS::QuickSight::Dashboard.FilterListControl (__added__)
+* AWS::QuickSight::Dashboard.FilterOperationSelectedFieldsConfiguration (__added__)
+* AWS::QuickSight::Dashboard.FilterOperationTargetVisualsConfiguration (__added__)
+* AWS::QuickSight::Dashboard.FilterRelativeDateTimeControl (__added__)
+* AWS::QuickSight::Dashboard.FilterScopeConfiguration (__added__)
+* AWS::QuickSight::Dashboard.FilterSelectableValues (__added__)
+* AWS::QuickSight::Dashboard.FilterSliderControl (__added__)
+* AWS::QuickSight::Dashboard.FilterTextAreaControl (__added__)
+* AWS::QuickSight::Dashboard.FilterTextFieldControl (__added__)
+* AWS::QuickSight::Dashboard.FontConfiguration (__added__)
+* AWS::QuickSight::Dashboard.FontSize (__added__)
+* AWS::QuickSight::Dashboard.FontWeight (__added__)
+* AWS::QuickSight::Dashboard.ForecastComputation (__added__)
+* AWS::QuickSight::Dashboard.ForecastConfiguration (__added__)
+* AWS::QuickSight::Dashboard.ForecastScenario (__added__)
+* AWS::QuickSight::Dashboard.FormatConfiguration (__added__)
+* AWS::QuickSight::Dashboard.FreeFormLayoutCanvasSizeOptions (__added__)
+* AWS::QuickSight::Dashboard.FreeFormLayoutConfiguration (__added__)
+* AWS::QuickSight::Dashboard.FreeFormLayoutElement (__added__)
+* AWS::QuickSight::Dashboard.FreeFormLayoutElementBackgroundStyle (__added__)
+* AWS::QuickSight::Dashboard.FreeFormLayoutElementBorderStyle (__added__)
+* AWS::QuickSight::Dashboard.FreeFormLayoutScreenCanvasSizeOptions (__added__)
+* AWS::QuickSight::Dashboard.FreeFormSectionLayoutConfiguration (__added__)
+* AWS::QuickSight::Dashboard.FunnelChartAggregatedFieldWells (__added__)
+* AWS::QuickSight::Dashboard.FunnelChartConfiguration (__added__)
+* AWS::QuickSight::Dashboard.FunnelChartDataLabelOptions (__added__)
+* AWS::QuickSight::Dashboard.FunnelChartFieldWells (__added__)
+* AWS::QuickSight::Dashboard.FunnelChartSortConfiguration (__added__)
+* AWS::QuickSight::Dashboard.FunnelChartVisual (__added__)
+* AWS::QuickSight::Dashboard.GaugeChartArcConditionalFormatting (__added__)
+* AWS::QuickSight::Dashboard.GaugeChartConditionalFormatting (__added__)
+* AWS::QuickSight::Dashboard.GaugeChartConditionalFormattingOption (__added__)
+* AWS::QuickSight::Dashboard.GaugeChartConfiguration (__added__)
+* AWS::QuickSight::Dashboard.GaugeChartFieldWells (__added__)
+* AWS::QuickSight::Dashboard.GaugeChartOptions (__added__)
+* AWS::QuickSight::Dashboard.GaugeChartPrimaryValueConditionalFormatting (__added__)
+* AWS::QuickSight::Dashboard.GaugeChartVisual (__added__)
+* AWS::QuickSight::Dashboard.GeospatialCoordinateBounds (__added__)
+* AWS::QuickSight::Dashboard.GeospatialMapAggregatedFieldWells (__added__)
+* AWS::QuickSight::Dashboard.GeospatialMapConfiguration (__added__)
+* AWS::QuickSight::Dashboard.GeospatialMapFieldWells (__added__)
+* AWS::QuickSight::Dashboard.GeospatialMapStyleOptions (__added__)
+* AWS::QuickSight::Dashboard.GeospatialMapVisual (__added__)
+* AWS::QuickSight::Dashboard.GeospatialPointStyleOptions (__added__)
+* AWS::QuickSight::Dashboard.GeospatialWindowOptions (__added__)
+* AWS::QuickSight::Dashboard.GlobalTableBorderOptions (__added__)
+* AWS::QuickSight::Dashboard.GradientColor (__added__)
+* AWS::QuickSight::Dashboard.GradientStop (__added__)
+* AWS::QuickSight::Dashboard.GridLayoutCanvasSizeOptions (__added__)
+* AWS::QuickSight::Dashboard.GridLayoutConfiguration (__added__)
+* AWS::QuickSight::Dashboard.GridLayoutElement (__added__)
+* AWS::QuickSight::Dashboard.GridLayoutScreenCanvasSizeOptions (__added__)
+* AWS::QuickSight::Dashboard.GrowthRateComputation (__added__)
+* AWS::QuickSight::Dashboard.HeaderFooterSectionConfiguration (__added__)
+* AWS::QuickSight::Dashboard.HeatMapAggregatedFieldWells (__added__)
+* AWS::QuickSight::Dashboard.HeatMapConfiguration (__added__)
+* AWS::QuickSight::Dashboard.HeatMapFieldWells (__added__)
+* AWS::QuickSight::Dashboard.HeatMapSortConfiguration (__added__)
+* AWS::QuickSight::Dashboard.HeatMapVisual (__added__)
+* AWS::QuickSight::Dashboard.HistogramAggregatedFieldWells (__added__)
+* AWS::QuickSight::Dashboard.HistogramBinOptions (__added__)
+* AWS::QuickSight::Dashboard.HistogramConfiguration (__added__)
+* AWS::QuickSight::Dashboard.HistogramFieldWells (__added__)
+* AWS::QuickSight::Dashboard.HistogramVisual (__added__)
+* AWS::QuickSight::Dashboard.InsightConfiguration (__added__)
+* AWS::QuickSight::Dashboard.InsightVisual (__added__)
+* AWS::QuickSight::Dashboard.IntegerDefaultValues (__added__)
+* AWS::QuickSight::Dashboard.IntegerParameterDeclaration (__added__)
+* AWS::QuickSight::Dashboard.IntegerValueWhenUnsetConfiguration (__added__)
+* AWS::QuickSight::Dashboard.ItemsLimitConfiguration (__added__)
+* AWS::QuickSight::Dashboard.KPIConditionalFormatting (__added__)
+* AWS::QuickSight::Dashboard.KPIConditionalFormattingOption (__added__)
+* AWS::QuickSight::Dashboard.KPIConfiguration (__added__)
+* AWS::QuickSight::Dashboard.KPIFieldWells (__added__)
+* AWS::QuickSight::Dashboard.KPIOptions (__added__)
+* AWS::QuickSight::Dashboard.KPIPrimaryValueConditionalFormatting (__added__)
+* AWS::QuickSight::Dashboard.KPIProgressBarConditionalFormatting (__added__)
+* AWS::QuickSight::Dashboard.KPISortConfiguration (__added__)
+* AWS::QuickSight::Dashboard.KPIVisual (__added__)
+* AWS::QuickSight::Dashboard.LabelOptions (__added__)
+* AWS::QuickSight::Dashboard.Layout (__added__)
+* AWS::QuickSight::Dashboard.LayoutConfiguration (__added__)
+* AWS::QuickSight::Dashboard.LegendOptions (__added__)
+* AWS::QuickSight::Dashboard.LineChartAggregatedFieldWells (__added__)
+* AWS::QuickSight::Dashboard.LineChartConfiguration (__added__)
+* AWS::QuickSight::Dashboard.LineChartDefaultSeriesSettings (__added__)
+* AWS::QuickSight::Dashboard.LineChartFieldWells (__added__)
+* AWS::QuickSight::Dashboard.LineChartLineStyleSettings (__added__)
+* AWS::QuickSight::Dashboard.LineChartMarkerStyleSettings (__added__)
+* AWS::QuickSight::Dashboard.LineChartSeriesSettings (__added__)
+* AWS::QuickSight::Dashboard.LineChartSortConfiguration (__added__)
+* AWS::QuickSight::Dashboard.LineChartVisual (__added__)
+* AWS::QuickSight::Dashboard.LineSeriesAxisDisplayOptions (__added__)
+* AWS::QuickSight::Dashboard.ListControlDisplayOptions (__added__)
+* AWS::QuickSight::Dashboard.ListControlSearchOptions (__added__)
+* AWS::QuickSight::Dashboard.ListControlSelectAllOptions (__added__)
+* AWS::QuickSight::Dashboard.LoadingAnimation (__added__)
+* AWS::QuickSight::Dashboard.LocalNavigationConfiguration (__added__)
+* AWS::QuickSight::Dashboard.LongFormatText (__added__)
+* AWS::QuickSight::Dashboard.MappedDataSetParameter (__added__)
+* AWS::QuickSight::Dashboard.MaximumLabelType (__added__)
+* AWS::QuickSight::Dashboard.MaximumMinimumComputation (__added__)
+* AWS::QuickSight::Dashboard.MeasureField (__added__)
+* AWS::QuickSight::Dashboard.MetricComparisonComputation (__added__)
+* AWS::QuickSight::Dashboard.MinimumLabelType (__added__)
+* AWS::QuickSight::Dashboard.MissingDataConfiguration (__added__)
+* AWS::QuickSight::Dashboard.NegativeValueConfiguration (__added__)
+* AWS::QuickSight::Dashboard.NullValueFormatConfiguration (__added__)
+* AWS::QuickSight::Dashboard.NumberDisplayFormatConfiguration (__added__)
+* AWS::QuickSight::Dashboard.NumberFormatConfiguration (__added__)
+* AWS::QuickSight::Dashboard.NumericAxisOptions (__added__)
+* AWS::QuickSight::Dashboard.NumericEqualityDrillDownFilter (__added__)
+* AWS::QuickSight::Dashboard.NumericEqualityFilter (__added__)
+* AWS::QuickSight::Dashboard.NumericFormatConfiguration (__added__)
+* AWS::QuickSight::Dashboard.NumericRangeFilter (__added__)
+* AWS::QuickSight::Dashboard.NumericRangeFilterValue (__added__)
+* AWS::QuickSight::Dashboard.NumericSeparatorConfiguration (__added__)
+* AWS::QuickSight::Dashboard.NumericalAggregationFunction (__added__)
+* AWS::QuickSight::Dashboard.NumericalDimensionField (__added__)
+* AWS::QuickSight::Dashboard.NumericalMeasureField (__added__)
+* AWS::QuickSight::Dashboard.PaginationConfiguration (__added__)
+* AWS::QuickSight::Dashboard.PanelConfiguration (__added__)
+* AWS::QuickSight::Dashboard.PanelTitleOptions (__added__)
+* AWS::QuickSight::Dashboard.ParameterControl (__added__)
+* AWS::QuickSight::Dashboard.ParameterDateTimePickerControl (__added__)
+* AWS::QuickSight::Dashboard.ParameterDeclaration (__added__)
+* AWS::QuickSight::Dashboard.ParameterDropDownControl (__added__)
+* AWS::QuickSight::Dashboard.ParameterListControl (__added__)
+* AWS::QuickSight::Dashboard.ParameterSelectableValues (__added__)
+* AWS::QuickSight::Dashboard.ParameterSliderControl (__added__)
+* AWS::QuickSight::Dashboard.ParameterTextAreaControl (__added__)
+* AWS::QuickSight::Dashboard.ParameterTextFieldControl (__added__)
+* AWS::QuickSight::Dashboard.PercentVisibleRange (__added__)
+* AWS::QuickSight::Dashboard.PercentageDisplayFormatConfiguration (__added__)
+* AWS::QuickSight::Dashboard.PercentileAggregation (__added__)
+* AWS::QuickSight::Dashboard.PeriodOverPeriodComputation (__added__)
+* AWS::QuickSight::Dashboard.PeriodToDateComputation (__added__)
+* AWS::QuickSight::Dashboard.PieChartAggregatedFieldWells (__added__)
+* AWS::QuickSight::Dashboard.PieChartConfiguration (__added__)
+* AWS::QuickSight::Dashboard.PieChartFieldWells (__added__)
+* AWS::QuickSight::Dashboard.PieChartSortConfiguration (__added__)
+* AWS::QuickSight::Dashboard.PieChartVisual (__added__)
+* AWS::QuickSight::Dashboard.PivotFieldSortOptions (__added__)
+* AWS::QuickSight::Dashboard.PivotTableAggregatedFieldWells (__added__)
+* AWS::QuickSight::Dashboard.PivotTableCellConditionalFormatting (__added__)
+* AWS::QuickSight::Dashboard.PivotTableConditionalFormatting (__added__)
+* AWS::QuickSight::Dashboard.PivotTableConditionalFormattingOption (__added__)
+* AWS::QuickSight::Dashboard.PivotTableConditionalFormattingScope (__added__)
+* AWS::QuickSight::Dashboard.PivotTableConfiguration (__added__)
+* AWS::QuickSight::Dashboard.PivotTableDataPathOption (__added__)
+* AWS::QuickSight::Dashboard.PivotTableFieldOption (__added__)
+* AWS::QuickSight::Dashboard.PivotTableFieldOptions (__added__)
+* AWS::QuickSight::Dashboard.PivotTableFieldSubtotalOptions (__added__)
+* AWS::QuickSight::Dashboard.PivotTableFieldWells (__added__)
+* AWS::QuickSight::Dashboard.PivotTableOptions (__added__)
+* AWS::QuickSight::Dashboard.PivotTablePaginatedReportOptions (__added__)
+* AWS::QuickSight::Dashboard.PivotTableSortBy (__added__)
+* AWS::QuickSight::Dashboard.PivotTableSortConfiguration (__added__)
+* AWS::QuickSight::Dashboard.PivotTableTotalOptions (__added__)
+* AWS::QuickSight::Dashboard.PivotTableVisual (__added__)
+* AWS::QuickSight::Dashboard.PivotTotalOptions (__added__)
+* AWS::QuickSight::Dashboard.PredefinedHierarchy (__added__)
+* AWS::QuickSight::Dashboard.ProgressBarOptions (__added__)
+* AWS::QuickSight::Dashboard.RadarChartAggregatedFieldWells (__added__)
+* AWS::QuickSight::Dashboard.RadarChartAreaStyleSettings (__added__)
+* AWS::QuickSight::Dashboard.RadarChartConfiguration (__added__)
+* AWS::QuickSight::Dashboard.RadarChartFieldWells (__added__)
+* AWS::QuickSight::Dashboard.RadarChartSeriesSettings (__added__)
+* AWS::QuickSight::Dashboard.RadarChartSortConfiguration (__added__)
+* AWS::QuickSight::Dashboard.RadarChartVisual (__added__)
+* AWS::QuickSight::Dashboard.RangeEndsLabelType (__added__)
+* AWS::QuickSight::Dashboard.ReferenceLine (__added__)
+* AWS::QuickSight::Dashboard.ReferenceLineCustomLabelConfiguration (__added__)
+* AWS::QuickSight::Dashboard.ReferenceLineDataConfiguration (__added__)
+* AWS::QuickSight::Dashboard.ReferenceLineDynamicDataConfiguration (__added__)
+* AWS::QuickSight::Dashboard.ReferenceLineLabelConfiguration (__added__)
+* AWS::QuickSight::Dashboard.ReferenceLineStaticDataConfiguration (__added__)
+* AWS::QuickSight::Dashboard.ReferenceLineStyleConfiguration (__added__)
+* AWS::QuickSight::Dashboard.ReferenceLineValueLabelConfiguration (__added__)
+* AWS::QuickSight::Dashboard.RelativeDateTimeControlDisplayOptions (__added__)
+* AWS::QuickSight::Dashboard.RelativeDatesFilter (__added__)
+* AWS::QuickSight::Dashboard.RollingDateConfiguration (__added__)
+* AWS::QuickSight::Dashboard.RowAlternateColorOptions (__added__)
+* AWS::QuickSight::Dashboard.SameSheetTargetVisualConfiguration (__added__)
+* AWS::QuickSight::Dashboard.SankeyDiagramAggregatedFieldWells (__added__)
+* AWS::QuickSight::Dashboard.SankeyDiagramChartConfiguration (__added__)
+* AWS::QuickSight::Dashboard.SankeyDiagramFieldWells (__added__)
+* AWS::QuickSight::Dashboard.SankeyDiagramSortConfiguration (__added__)
+* AWS::QuickSight::Dashboard.SankeyDiagramVisual (__added__)
+* AWS::QuickSight::Dashboard.ScatterPlotCategoricallyAggregatedFieldWells (__added__)
+* AWS::QuickSight::Dashboard.ScatterPlotConfiguration (__added__)
+* AWS::QuickSight::Dashboard.ScatterPlotFieldWells (__added__)
+* AWS::QuickSight::Dashboard.ScatterPlotUnaggregatedFieldWells (__added__)
+* AWS::QuickSight::Dashboard.ScatterPlotVisual (__added__)
+* AWS::QuickSight::Dashboard.ScrollBarOptions (__added__)
+* AWS::QuickSight::Dashboard.SecondaryValueOptions (__added__)
+* AWS::QuickSight::Dashboard.SectionAfterPageBreak (__added__)
+* AWS::QuickSight::Dashboard.SectionBasedLayoutCanvasSizeOptions (__added__)
+* AWS::QuickSight::Dashboard.SectionBasedLayoutConfiguration (__added__)
+* AWS::QuickSight::Dashboard.SectionBasedLayoutPaperCanvasSizeOptions (__added__)
+* AWS::QuickSight::Dashboard.SectionLayoutConfiguration (__added__)
+* AWS::QuickSight::Dashboard.SectionPageBreakConfiguration (__added__)
+* AWS::QuickSight::Dashboard.SectionStyle (__added__)
+* AWS::QuickSight::Dashboard.SelectedSheetsFilterScopeConfiguration (__added__)
+* AWS::QuickSight::Dashboard.SeriesItem (__added__)
+* AWS::QuickSight::Dashboard.SetParameterValueConfiguration (__added__)
+* AWS::QuickSight::Dashboard.ShapeConditionalFormat (__added__)
+* AWS::QuickSight::Dashboard.SheetControlLayout (__added__)
+* AWS::QuickSight::Dashboard.SheetControlLayoutConfiguration (__added__)
+* AWS::QuickSight::Dashboard.SheetDefinition (__added__)
+* AWS::QuickSight::Dashboard.SheetElementConfigurationOverrides (__added__)
+* AWS::QuickSight::Dashboard.SheetElementRenderingRule (__added__)
+* AWS::QuickSight::Dashboard.SheetLayoutElementMaximizationOption (__added__)
+* AWS::QuickSight::Dashboard.SheetTextBox (__added__)
+* AWS::QuickSight::Dashboard.SheetVisualScopingConfiguration (__added__)
+* AWS::QuickSight::Dashboard.ShortFormatText (__added__)
+* AWS::QuickSight::Dashboard.SimpleClusterMarker (__added__)
+* AWS::QuickSight::Dashboard.SliderControlDisplayOptions (__added__)
+* AWS::QuickSight::Dashboard.SmallMultiplesOptions (__added__)
+* AWS::QuickSight::Dashboard.Spacing (__added__)
+* AWS::QuickSight::Dashboard.StringDefaultValues (__added__)
+* AWS::QuickSight::Dashboard.StringFormatConfiguration (__added__)
+* AWS::QuickSight::Dashboard.StringParameterDeclaration (__added__)
+* AWS::QuickSight::Dashboard.StringValueWhenUnsetConfiguration (__added__)
+* AWS::QuickSight::Dashboard.SubtotalOptions (__added__)
+* AWS::QuickSight::Dashboard.TableAggregatedFieldWells (__added__)
+* AWS::QuickSight::Dashboard.TableBorderOptions (__added__)
+* AWS::QuickSight::Dashboard.TableCellConditionalFormatting (__added__)
+* AWS::QuickSight::Dashboard.TableCellImageSizingConfiguration (__added__)
+* AWS::QuickSight::Dashboard.TableCellStyle (__added__)
+* AWS::QuickSight::Dashboard.TableConditionalFormatting (__added__)
+* AWS::QuickSight::Dashboard.TableConditionalFormattingOption (__added__)
+* AWS::QuickSight::Dashboard.TableConfiguration (__added__)
+* AWS::QuickSight::Dashboard.TableFieldCustomIconContent (__added__)
+* AWS::QuickSight::Dashboard.TableFieldCustomTextContent (__added__)
+* AWS::QuickSight::Dashboard.TableFieldImageConfiguration (__added__)
+* AWS::QuickSight::Dashboard.TableFieldLinkConfiguration (__added__)
+* AWS::QuickSight::Dashboard.TableFieldLinkContentConfiguration (__added__)
+* AWS::QuickSight::Dashboard.TableFieldOption (__added__)
+* AWS::QuickSight::Dashboard.TableFieldOptions (__added__)
+* AWS::QuickSight::Dashboard.TableFieldURLConfiguration (__added__)
+* AWS::QuickSight::Dashboard.TableFieldWells (__added__)
+* AWS::QuickSight::Dashboard.TableInlineVisualization (__added__)
+* AWS::QuickSight::Dashboard.TableOptions (__added__)
+* AWS::QuickSight::Dashboard.TablePaginatedReportOptions (__added__)
+* AWS::QuickSight::Dashboard.TableRowConditionalFormatting (__added__)
+* AWS::QuickSight::Dashboard.TableSideBorderOptions (__added__)
+* AWS::QuickSight::Dashboard.TableSortConfiguration (__added__)
+* AWS::QuickSight::Dashboard.TableUnaggregatedFieldWells (__added__)
+* AWS::QuickSight::Dashboard.TableVisual (__added__)
+* AWS::QuickSight::Dashboard.TextAreaControlDisplayOptions (__added__)
+* AWS::QuickSight::Dashboard.TextConditionalFormat (__added__)
+* AWS::QuickSight::Dashboard.TextControlPlaceholderOptions (__added__)
+* AWS::QuickSight::Dashboard.TextFieldControlDisplayOptions (__added__)
+* AWS::QuickSight::Dashboard.ThousandSeparatorOptions (__added__)
+* AWS::QuickSight::Dashboard.TimeBasedForecastProperties (__added__)
+* AWS::QuickSight::Dashboard.TimeEqualityFilter (__added__)
+* AWS::QuickSight::Dashboard.TimeRangeDrillDownFilter (__added__)
+* AWS::QuickSight::Dashboard.TimeRangeFilter (__added__)
+* AWS::QuickSight::Dashboard.TimeRangeFilterValue (__added__)
+* AWS::QuickSight::Dashboard.TooltipItem (__added__)
+* AWS::QuickSight::Dashboard.TooltipOptions (__added__)
+* AWS::QuickSight::Dashboard.TopBottomFilter (__added__)
+* AWS::QuickSight::Dashboard.TopBottomMoversComputation (__added__)
+* AWS::QuickSight::Dashboard.TopBottomRankedComputation (__added__)
+* AWS::QuickSight::Dashboard.TotalAggregationComputation (__added__)
+* AWS::QuickSight::Dashboard.TotalOptions (__added__)
+* AWS::QuickSight::Dashboard.TreeMapAggregatedFieldWells (__added__)
+* AWS::QuickSight::Dashboard.TreeMapConfiguration (__added__)
+* AWS::QuickSight::Dashboard.TreeMapFieldWells (__added__)
+* AWS::QuickSight::Dashboard.TreeMapSortConfiguration (__added__)
+* AWS::QuickSight::Dashboard.TreeMapVisual (__added__)
+* AWS::QuickSight::Dashboard.TrendArrowOptions (__added__)
+* AWS::QuickSight::Dashboard.UnaggregatedField (__added__)
+* AWS::QuickSight::Dashboard.UniqueValuesComputation (__added__)
+* AWS::QuickSight::Dashboard.VisibleRangeOptions (__added__)
+* AWS::QuickSight::Dashboard.Visual (__added__)
+* AWS::QuickSight::Dashboard.VisualAxisSortOption (__added__)
+* AWS::QuickSight::Dashboard.VisualCustomAction (__added__)
+* AWS::QuickSight::Dashboard.VisualCustomActionOperation (__added__)
+* AWS::QuickSight::Dashboard.VisualMenuOption (__added__)
+* AWS::QuickSight::Dashboard.VisualPalette (__added__)
+* AWS::QuickSight::Dashboard.VisualSubtitleLabelOptions (__added__)
+* AWS::QuickSight::Dashboard.VisualTitleLabelOptions (__added__)
+* AWS::QuickSight::Dashboard.WaterfallChartAggregatedFieldWells (__added__)
+* AWS::QuickSight::Dashboard.WaterfallChartConfiguration (__added__)
+* AWS::QuickSight::Dashboard.WaterfallChartFieldWells (__added__)
+* AWS::QuickSight::Dashboard.WaterfallChartOptions (__added__)
+* AWS::QuickSight::Dashboard.WaterfallChartSortConfiguration (__added__)
+* AWS::QuickSight::Dashboard.WaterfallVisual (__added__)
+* AWS::QuickSight::Dashboard.WhatIfPointScenario (__added__)
+* AWS::QuickSight::Dashboard.WhatIfRangeScenario (__added__)
+* AWS::QuickSight::Dashboard.WordCloudAggregatedFieldWells (__added__)
+* AWS::QuickSight::Dashboard.WordCloudChartConfiguration (__added__)
+* AWS::QuickSight::Dashboard.WordCloudFieldWells (__added__)
+* AWS::QuickSight::Dashboard.WordCloudOptions (__added__)
+* AWS::QuickSight::Dashboard.WordCloudSortConfiguration (__added__)
+* AWS::QuickSight::Dashboard.WordCloudVisual (__added__)
+* AWS::QuickSight::Template.AggregationFunction (__added__)
+* AWS::QuickSight::Template.AggregationSortConfiguration (__added__)
+* AWS::QuickSight::Template.AnalysisDefaults (__added__)
+* AWS::QuickSight::Template.AnchorDateConfiguration (__added__)
+* AWS::QuickSight::Template.ArcAxisConfiguration (__added__)
+* AWS::QuickSight::Template.ArcAxisDisplayRange (__added__)
+* AWS::QuickSight::Template.ArcConfiguration (__added__)
+* AWS::QuickSight::Template.ArcOptions (__added__)
+* AWS::QuickSight::Template.AxisDataOptions (__added__)
+* AWS::QuickSight::Template.AxisDisplayMinMaxRange (__added__)
+* AWS::QuickSight::Template.AxisDisplayOptions (__added__)
+* AWS::QuickSight::Template.AxisDisplayRange (__added__)
+* AWS::QuickSight::Template.AxisLabelOptions (__added__)
+* AWS::QuickSight::Template.AxisLabelReferenceOptions (__added__)
+* AWS::QuickSight::Template.AxisLinearScale (__added__)
+* AWS::QuickSight::Template.AxisLogarithmicScale (__added__)
+* AWS::QuickSight::Template.AxisScale (__added__)
+* AWS::QuickSight::Template.AxisTickLabelOptions (__added__)
+* AWS::QuickSight::Template.BarChartAggregatedFieldWells (__added__)
+* AWS::QuickSight::Template.BarChartConfiguration (__added__)
+* AWS::QuickSight::Template.BarChartFieldWells (__added__)
+* AWS::QuickSight::Template.BarChartSortConfiguration (__added__)
+* AWS::QuickSight::Template.BarChartVisual (__added__)
+* AWS::QuickSight::Template.BinCountOptions (__added__)
+* AWS::QuickSight::Template.BinWidthOptions (__added__)
+* AWS::QuickSight::Template.BodySectionConfiguration (__added__)
+* AWS::QuickSight::Template.BodySectionContent (__added__)
+* AWS::QuickSight::Template.BoxPlotAggregatedFieldWells (__added__)
+* AWS::QuickSight::Template.BoxPlotChartConfiguration (__added__)
+* AWS::QuickSight::Template.BoxPlotFieldWells (__added__)
+* AWS::QuickSight::Template.BoxPlotOptions (__added__)
+* AWS::QuickSight::Template.BoxPlotSortConfiguration (__added__)
+* AWS::QuickSight::Template.BoxPlotStyleOptions (__added__)
+* AWS::QuickSight::Template.BoxPlotVisual (__added__)
+* AWS::QuickSight::Template.CalculatedField (__added__)
+* AWS::QuickSight::Template.CalculatedMeasureField (__added__)
+* AWS::QuickSight::Template.CascadingControlConfiguration (__added__)
+* AWS::QuickSight::Template.CascadingControlSource (__added__)
+* AWS::QuickSight::Template.CategoricalDimensionField (__added__)
+* AWS::QuickSight::Template.CategoricalMeasureField (__added__)
+* AWS::QuickSight::Template.CategoryDrillDownFilter (__added__)
+* AWS::QuickSight::Template.CategoryFilter (__added__)
+* AWS::QuickSight::Template.CategoryFilterConfiguration (__added__)
+* AWS::QuickSight::Template.ChartAxisLabelOptions (__added__)
+* AWS::QuickSight::Template.ClusterMarker (__added__)
+* AWS::QuickSight::Template.ClusterMarkerConfiguration (__added__)
+* AWS::QuickSight::Template.ColorScale (__added__)
+* AWS::QuickSight::Template.ColorsConfiguration (__added__)
+* AWS::QuickSight::Template.ColumnConfiguration (__added__)
+* AWS::QuickSight::Template.ColumnHierarchy (__added__)
+* AWS::QuickSight::Template.ColumnIdentifier (__added__)
+* AWS::QuickSight::Template.ColumnSort (__added__)
+* AWS::QuickSight::Template.ColumnTooltipItem (__added__)
+* AWS::QuickSight::Template.ComboChartAggregatedFieldWells (__added__)
+* AWS::QuickSight::Template.ComboChartConfiguration (__added__)
+* AWS::QuickSight::Template.ComboChartFieldWells (__added__)
+* AWS::QuickSight::Template.ComboChartSortConfiguration (__added__)
+* AWS::QuickSight::Template.ComboChartVisual (__added__)
+* AWS::QuickSight::Template.ComparisonConfiguration (__added__)
+* AWS::QuickSight::Template.ComparisonFormatConfiguration (__added__)
+* AWS::QuickSight::Template.Computation (__added__)
+* AWS::QuickSight::Template.ConditionalFormattingColor (__added__)
+* AWS::QuickSight::Template.ConditionalFormattingCustomIconCondition (__added__)
+* AWS::QuickSight::Template.ConditionalFormattingCustomIconOptions (__added__)
+* AWS::QuickSight::Template.ConditionalFormattingGradientColor (__added__)
+* AWS::QuickSight::Template.ConditionalFormattingIcon (__added__)
+* AWS::QuickSight::Template.ConditionalFormattingIconDisplayConfiguration (__added__)
+* AWS::QuickSight::Template.ConditionalFormattingIconSet (__added__)
+* AWS::QuickSight::Template.ConditionalFormattingSolidColor (__added__)
+* AWS::QuickSight::Template.ContributionAnalysisDefault (__added__)
+* AWS::QuickSight::Template.CurrencyDisplayFormatConfiguration (__added__)
+* AWS::QuickSight::Template.CustomActionFilterOperation (__added__)
+* AWS::QuickSight::Template.CustomActionNavigationOperation (__added__)
+* AWS::QuickSight::Template.CustomActionSetParametersOperation (__added__)
+* AWS::QuickSight::Template.CustomActionURLOperation (__added__)
+* AWS::QuickSight::Template.CustomColor (__added__)
+* AWS::QuickSight::Template.CustomContentConfiguration (__added__)
+* AWS::QuickSight::Template.CustomContentVisual (__added__)
+* AWS::QuickSight::Template.CustomFilterConfiguration (__added__)
+* AWS::QuickSight::Template.CustomFilterListConfiguration (__added__)
+* AWS::QuickSight::Template.CustomNarrativeOptions (__added__)
+* AWS::QuickSight::Template.CustomParameterValues (__added__)
+* AWS::QuickSight::Template.CustomValuesConfiguration (__added__)
+* AWS::QuickSight::Template.DataBarsOptions (__added__)
+* AWS::QuickSight::Template.DataColor (__added__)
+* AWS::QuickSight::Template.DataFieldSeriesItem (__added__)
+* AWS::QuickSight::Template.DataLabelOptions (__added__)
+* AWS::QuickSight::Template.DataLabelType (__added__)
+* AWS::QuickSight::Template.DataPathColor (__added__)
+* AWS::QuickSight::Template.DataPathLabelType (__added__)
+* AWS::QuickSight::Template.DataPathSort (__added__)
+* AWS::QuickSight::Template.DataPathValue (__added__)
+* AWS::QuickSight::Template.DateAxisOptions (__added__)
+* AWS::QuickSight::Template.DateDimensionField (__added__)
+* AWS::QuickSight::Template.DateMeasureField (__added__)
+* AWS::QuickSight::Template.DateTimeDefaultValues (__added__)
+* AWS::QuickSight::Template.DateTimeFormatConfiguration (__added__)
+* AWS::QuickSight::Template.DateTimeHierarchy (__added__)
+* AWS::QuickSight::Template.DateTimeParameterDeclaration (__added__)
+* AWS::QuickSight::Template.DateTimePickerControlDisplayOptions (__added__)
+* AWS::QuickSight::Template.DateTimeValueWhenUnsetConfiguration (__added__)
+* AWS::QuickSight::Template.DecimalDefaultValues (__added__)
+* AWS::QuickSight::Template.DecimalParameterDeclaration (__added__)
+* AWS::QuickSight::Template.DecimalPlacesConfiguration (__added__)
+* AWS::QuickSight::Template.DecimalValueWhenUnsetConfiguration (__added__)
+* AWS::QuickSight::Template.DefaultFreeFormLayoutConfiguration (__added__)
+* AWS::QuickSight::Template.DefaultGridLayoutConfiguration (__added__)
+* AWS::QuickSight::Template.DefaultInteractiveLayoutConfiguration (__added__)
+* AWS::QuickSight::Template.DefaultNewSheetConfiguration (__added__)
+* AWS::QuickSight::Template.DefaultPaginatedLayoutConfiguration (__added__)
+* AWS::QuickSight::Template.DefaultSectionBasedLayoutConfiguration (__added__)
+* AWS::QuickSight::Template.DestinationParameterValueConfiguration (__added__)
+* AWS::QuickSight::Template.DimensionField (__added__)
+* AWS::QuickSight::Template.DonutCenterOptions (__added__)
+* AWS::QuickSight::Template.DonutOptions (__added__)
+* AWS::QuickSight::Template.DrillDownFilter (__added__)
+* AWS::QuickSight::Template.DropDownControlDisplayOptions (__added__)
+* AWS::QuickSight::Template.DynamicDefaultValue (__added__)
+* AWS::QuickSight::Template.EmptyVisual (__added__)
+* AWS::QuickSight::Template.Entity (__added__)
+* AWS::QuickSight::Template.ExcludePeriodConfiguration (__added__)
+* AWS::QuickSight::Template.ExplicitHierarchy (__added__)
+* AWS::QuickSight::Template.FieldBasedTooltip (__added__)
+* AWS::QuickSight::Template.FieldLabelType (__added__)
+* AWS::QuickSight::Template.FieldSeriesItem (__added__)
+* AWS::QuickSight::Template.FieldSort (__added__)
+* AWS::QuickSight::Template.FieldSortOptions (__added__)
+* AWS::QuickSight::Template.FieldTooltipItem (__added__)
+* AWS::QuickSight::Template.FilledMapAggregatedFieldWells (__added__)
+* AWS::QuickSight::Template.FilledMapConditionalFormatting (__added__)
+* AWS::QuickSight::Template.FilledMapConditionalFormattingOption (__added__)
+* AWS::QuickSight::Template.FilledMapConfiguration (__added__)
+* AWS::QuickSight::Template.FilledMapFieldWells (__added__)
+* AWS::QuickSight::Template.FilledMapShapeConditionalFormatting (__added__)
+* AWS::QuickSight::Template.FilledMapSortConfiguration (__added__)
+* AWS::QuickSight::Template.FilledMapVisual (__added__)
+* AWS::QuickSight::Template.Filter (__added__)
+* AWS::QuickSight::Template.FilterControl (__added__)
+* AWS::QuickSight::Template.FilterDateTimePickerControl (__added__)
+* AWS::QuickSight::Template.FilterDropDownControl (__added__)
+* AWS::QuickSight::Template.FilterGroup (__added__)
+* AWS::QuickSight::Template.FilterListConfiguration (__added__)
+* AWS::QuickSight::Template.FilterListControl (__added__)
+* AWS::QuickSight::Template.FilterOperationSelectedFieldsConfiguration (__added__)
+* AWS::QuickSight::Template.FilterOperationTargetVisualsConfiguration (__added__)
+* AWS::QuickSight::Template.FilterRelativeDateTimeControl (__added__)
+* AWS::QuickSight::Template.FilterScopeConfiguration (__added__)
+* AWS::QuickSight::Template.FilterSelectableValues (__added__)
+* AWS::QuickSight::Template.FilterSliderControl (__added__)
+* AWS::QuickSight::Template.FilterTextAreaControl (__added__)
+* AWS::QuickSight::Template.FilterTextFieldControl (__added__)
+* AWS::QuickSight::Template.FontConfiguration (__added__)
+* AWS::QuickSight::Template.FontSize (__added__)
+* AWS::QuickSight::Template.FontWeight (__added__)
+* AWS::QuickSight::Template.ForecastComputation (__added__)
+* AWS::QuickSight::Template.ForecastConfiguration (__added__)
+* AWS::QuickSight::Template.ForecastScenario (__added__)
+* AWS::QuickSight::Template.FormatConfiguration (__added__)
+* AWS::QuickSight::Template.FreeFormLayoutCanvasSizeOptions (__added__)
+* AWS::QuickSight::Template.FreeFormLayoutConfiguration (__added__)
+* AWS::QuickSight::Template.FreeFormLayoutElement (__added__)
+* AWS::QuickSight::Template.FreeFormLayoutElementBackgroundStyle (__added__)
+* AWS::QuickSight::Template.FreeFormLayoutElementBorderStyle (__added__)
+* AWS::QuickSight::Template.FreeFormLayoutScreenCanvasSizeOptions (__added__)
+* AWS::QuickSight::Template.FreeFormSectionLayoutConfiguration (__added__)
+* AWS::QuickSight::Template.FunnelChartAggregatedFieldWells (__added__)
+* AWS::QuickSight::Template.FunnelChartConfiguration (__added__)
+* AWS::QuickSight::Template.FunnelChartDataLabelOptions (__added__)
+* AWS::QuickSight::Template.FunnelChartFieldWells (__added__)
+* AWS::QuickSight::Template.FunnelChartSortConfiguration (__added__)
+* AWS::QuickSight::Template.FunnelChartVisual (__added__)
+* AWS::QuickSight::Template.GaugeChartArcConditionalFormatting (__added__)
+* AWS::QuickSight::Template.GaugeChartConditionalFormatting (__added__)
+* AWS::QuickSight::Template.GaugeChartConditionalFormattingOption (__added__)
+* AWS::QuickSight::Template.GaugeChartConfiguration (__added__)
+* AWS::QuickSight::Template.GaugeChartFieldWells (__added__)
+* AWS::QuickSight::Template.GaugeChartOptions (__added__)
+* AWS::QuickSight::Template.GaugeChartPrimaryValueConditionalFormatting (__added__)
+* AWS::QuickSight::Template.GaugeChartVisual (__added__)
+* AWS::QuickSight::Template.GeospatialCoordinateBounds (__added__)
+* AWS::QuickSight::Template.GeospatialMapAggregatedFieldWells (__added__)
+* AWS::QuickSight::Template.GeospatialMapConfiguration (__added__)
+* AWS::QuickSight::Template.GeospatialMapFieldWells (__added__)
+* AWS::QuickSight::Template.GeospatialMapStyleOptions (__added__)
+* AWS::QuickSight::Template.GeospatialMapVisual (__added__)
+* AWS::QuickSight::Template.GeospatialPointStyleOptions (__added__)
+* AWS::QuickSight::Template.GeospatialWindowOptions (__added__)
+* AWS::QuickSight::Template.GlobalTableBorderOptions (__added__)
+* AWS::QuickSight::Template.GradientColor (__added__)
+* AWS::QuickSight::Template.GradientStop (__added__)
+* AWS::QuickSight::Template.GridLayoutCanvasSizeOptions (__added__)
+* AWS::QuickSight::Template.GridLayoutConfiguration (__added__)
+* AWS::QuickSight::Template.GridLayoutElement (__added__)
+* AWS::QuickSight::Template.GridLayoutScreenCanvasSizeOptions (__added__)
+* AWS::QuickSight::Template.GrowthRateComputation (__added__)
+* AWS::QuickSight::Template.HeaderFooterSectionConfiguration (__added__)
+* AWS::QuickSight::Template.HeatMapAggregatedFieldWells (__added__)
+* AWS::QuickSight::Template.HeatMapConfiguration (__added__)
+* AWS::QuickSight::Template.HeatMapFieldWells (__added__)
+* AWS::QuickSight::Template.HeatMapSortConfiguration (__added__)
+* AWS::QuickSight::Template.HeatMapVisual (__added__)
+* AWS::QuickSight::Template.HistogramAggregatedFieldWells (__added__)
+* AWS::QuickSight::Template.HistogramBinOptions (__added__)
+* AWS::QuickSight::Template.HistogramConfiguration (__added__)
+* AWS::QuickSight::Template.HistogramFieldWells (__added__)
+* AWS::QuickSight::Template.HistogramVisual (__added__)
+* AWS::QuickSight::Template.InsightConfiguration (__added__)
+* AWS::QuickSight::Template.InsightVisual (__added__)
+* AWS::QuickSight::Template.IntegerDefaultValues (__added__)
+* AWS::QuickSight::Template.IntegerParameterDeclaration (__added__)
+* AWS::QuickSight::Template.IntegerValueWhenUnsetConfiguration (__added__)
+* AWS::QuickSight::Template.ItemsLimitConfiguration (__added__)
+* AWS::QuickSight::Template.KPIConditionalFormatting (__added__)
+* AWS::QuickSight::Template.KPIConditionalFormattingOption (__added__)
+* AWS::QuickSight::Template.KPIConfiguration (__added__)
+* AWS::QuickSight::Template.KPIFieldWells (__added__)
+* AWS::QuickSight::Template.KPIOptions (__added__)
+* AWS::QuickSight::Template.KPIPrimaryValueConditionalFormatting (__added__)
+* AWS::QuickSight::Template.KPIProgressBarConditionalFormatting (__added__)
+* AWS::QuickSight::Template.KPISortConfiguration (__added__)
+* AWS::QuickSight::Template.KPIVisual (__added__)
+* AWS::QuickSight::Template.LabelOptions (__added__)
+* AWS::QuickSight::Template.Layout (__added__)
+* AWS::QuickSight::Template.LayoutConfiguration (__added__)
+* AWS::QuickSight::Template.LegendOptions (__added__)
+* AWS::QuickSight::Template.LineChartAggregatedFieldWells (__added__)
+* AWS::QuickSight::Template.LineChartConfiguration (__added__)
+* AWS::QuickSight::Template.LineChartDefaultSeriesSettings (__added__)
+* AWS::QuickSight::Template.LineChartFieldWells (__added__)
+* AWS::QuickSight::Template.LineChartLineStyleSettings (__added__)
+* AWS::QuickSight::Template.LineChartMarkerStyleSettings (__added__)
+* AWS::QuickSight::Template.LineChartSeriesSettings (__added__)
+* AWS::QuickSight::Template.LineChartSortConfiguration (__added__)
+* AWS::QuickSight::Template.LineChartVisual (__added__)
+* AWS::QuickSight::Template.LineSeriesAxisDisplayOptions (__added__)
+* AWS::QuickSight::Template.ListControlDisplayOptions (__added__)
+* AWS::QuickSight::Template.ListControlSearchOptions (__added__)
+* AWS::QuickSight::Template.ListControlSelectAllOptions (__added__)
+* AWS::QuickSight::Template.LoadingAnimation (__added__)
+* AWS::QuickSight::Template.LocalNavigationConfiguration (__added__)
+* AWS::QuickSight::Template.LongFormatText (__added__)
+* AWS::QuickSight::Template.MappedDataSetParameter (__added__)
+* AWS::QuickSight::Template.MaximumLabelType (__added__)
+* AWS::QuickSight::Template.MaximumMinimumComputation (__added__)
+* AWS::QuickSight::Template.MeasureField (__added__)
+* AWS::QuickSight::Template.MetricComparisonComputation (__added__)
+* AWS::QuickSight::Template.MinimumLabelType (__added__)
+* AWS::QuickSight::Template.MissingDataConfiguration (__added__)
+* AWS::QuickSight::Template.NegativeValueConfiguration (__added__)
+* AWS::QuickSight::Template.NullValueFormatConfiguration (__added__)
+* AWS::QuickSight::Template.NumberDisplayFormatConfiguration (__added__)
+* AWS::QuickSight::Template.NumberFormatConfiguration (__added__)
+* AWS::QuickSight::Template.NumericAxisOptions (__added__)
+* AWS::QuickSight::Template.NumericEqualityDrillDownFilter (__added__)
+* AWS::QuickSight::Template.NumericEqualityFilter (__added__)
+* AWS::QuickSight::Template.NumericFormatConfiguration (__added__)
+* AWS::QuickSight::Template.NumericRangeFilter (__added__)
+* AWS::QuickSight::Template.NumericRangeFilterValue (__added__)
+* AWS::QuickSight::Template.NumericSeparatorConfiguration (__added__)
+* AWS::QuickSight::Template.NumericalAggregationFunction (__added__)
+* AWS::QuickSight::Template.NumericalDimensionField (__added__)
+* AWS::QuickSight::Template.NumericalMeasureField (__added__)
+* AWS::QuickSight::Template.PaginationConfiguration (__added__)
+* AWS::QuickSight::Template.PanelConfiguration (__added__)
+* AWS::QuickSight::Template.PanelTitleOptions (__added__)
+* AWS::QuickSight::Template.ParameterControl (__added__)
+* AWS::QuickSight::Template.ParameterDateTimePickerControl (__added__)
+* AWS::QuickSight::Template.ParameterDeclaration (__added__)
+* AWS::QuickSight::Template.ParameterDropDownControl (__added__)
+* AWS::QuickSight::Template.ParameterListControl (__added__)
+* AWS::QuickSight::Template.ParameterSelectableValues (__added__)
+* AWS::QuickSight::Template.ParameterSliderControl (__added__)
+* AWS::QuickSight::Template.ParameterTextAreaControl (__added__)
+* AWS::QuickSight::Template.ParameterTextFieldControl (__added__)
+* AWS::QuickSight::Template.PercentVisibleRange (__added__)
+* AWS::QuickSight::Template.PercentageDisplayFormatConfiguration (__added__)
+* AWS::QuickSight::Template.PercentileAggregation (__added__)
+* AWS::QuickSight::Template.PeriodOverPeriodComputation (__added__)
+* AWS::QuickSight::Template.PeriodToDateComputation (__added__)
+* AWS::QuickSight::Template.PieChartAggregatedFieldWells (__added__)
+* AWS::QuickSight::Template.PieChartConfiguration (__added__)
+* AWS::QuickSight::Template.PieChartFieldWells (__added__)
+* AWS::QuickSight::Template.PieChartSortConfiguration (__added__)
+* AWS::QuickSight::Template.PieChartVisual (__added__)
+* AWS::QuickSight::Template.PivotFieldSortOptions (__added__)
+* AWS::QuickSight::Template.PivotTableAggregatedFieldWells (__added__)
+* AWS::QuickSight::Template.PivotTableCellConditionalFormatting (__added__)
+* AWS::QuickSight::Template.PivotTableConditionalFormatting (__added__)
+* AWS::QuickSight::Template.PivotTableConditionalFormattingOption (__added__)
+* AWS::QuickSight::Template.PivotTableConditionalFormattingScope (__added__)
+* AWS::QuickSight::Template.PivotTableConfiguration (__added__)
+* AWS::QuickSight::Template.PivotTableDataPathOption (__added__)
+* AWS::QuickSight::Template.PivotTableFieldOption (__added__)
+* AWS::QuickSight::Template.PivotTableFieldOptions (__added__)
+* AWS::QuickSight::Template.PivotTableFieldSubtotalOptions (__added__)
+* AWS::QuickSight::Template.PivotTableFieldWells (__added__)
+* AWS::QuickSight::Template.PivotTableOptions (__added__)
+* AWS::QuickSight::Template.PivotTablePaginatedReportOptions (__added__)
+* AWS::QuickSight::Template.PivotTableSortBy (__added__)
+* AWS::QuickSight::Template.PivotTableSortConfiguration (__added__)
+* AWS::QuickSight::Template.PivotTableTotalOptions (__added__)
+* AWS::QuickSight::Template.PivotTableVisual (__added__)
+* AWS::QuickSight::Template.PivotTotalOptions (__added__)
+* AWS::QuickSight::Template.PredefinedHierarchy (__added__)
+* AWS::QuickSight::Template.ProgressBarOptions (__added__)
+* AWS::QuickSight::Template.RadarChartAggregatedFieldWells (__added__)
+* AWS::QuickSight::Template.RadarChartAreaStyleSettings (__added__)
+* AWS::QuickSight::Template.RadarChartConfiguration (__added__)
+* AWS::QuickSight::Template.RadarChartFieldWells (__added__)
+* AWS::QuickSight::Template.RadarChartSeriesSettings (__added__)
+* AWS::QuickSight::Template.RadarChartSortConfiguration (__added__)
+* AWS::QuickSight::Template.RadarChartVisual (__added__)
+* AWS::QuickSight::Template.RangeEndsLabelType (__added__)
+* AWS::QuickSight::Template.ReferenceLine (__added__)
+* AWS::QuickSight::Template.ReferenceLineCustomLabelConfiguration (__added__)
+* AWS::QuickSight::Template.ReferenceLineDataConfiguration (__added__)
+* AWS::QuickSight::Template.ReferenceLineDynamicDataConfiguration (__added__)
+* AWS::QuickSight::Template.ReferenceLineLabelConfiguration (__added__)
+* AWS::QuickSight::Template.ReferenceLineStaticDataConfiguration (__added__)
+* AWS::QuickSight::Template.ReferenceLineStyleConfiguration (__added__)
+* AWS::QuickSight::Template.ReferenceLineValueLabelConfiguration (__added__)
+* AWS::QuickSight::Template.RelativeDateTimeControlDisplayOptions (__added__)
+* AWS::QuickSight::Template.RelativeDatesFilter (__added__)
+* AWS::QuickSight::Template.RollingDateConfiguration (__added__)
+* AWS::QuickSight::Template.RowAlternateColorOptions (__added__)
+* AWS::QuickSight::Template.SameSheetTargetVisualConfiguration (__added__)
+* AWS::QuickSight::Template.SankeyDiagramAggregatedFieldWells (__added__)
+* AWS::QuickSight::Template.SankeyDiagramChartConfiguration (__added__)
+* AWS::QuickSight::Template.SankeyDiagramFieldWells (__added__)
+* AWS::QuickSight::Template.SankeyDiagramSortConfiguration (__added__)
+* AWS::QuickSight::Template.SankeyDiagramVisual (__added__)
+* AWS::QuickSight::Template.ScatterPlotCategoricallyAggregatedFieldWells (__added__)
+* AWS::QuickSight::Template.ScatterPlotConfiguration (__added__)
+* AWS::QuickSight::Template.ScatterPlotFieldWells (__added__)
+* AWS::QuickSight::Template.ScatterPlotUnaggregatedFieldWells (__added__)
+* AWS::QuickSight::Template.ScatterPlotVisual (__added__)
+* AWS::QuickSight::Template.ScrollBarOptions (__added__)
+* AWS::QuickSight::Template.SecondaryValueOptions (__added__)
+* AWS::QuickSight::Template.SectionAfterPageBreak (__added__)
+* AWS::QuickSight::Template.SectionBasedLayoutCanvasSizeOptions (__added__)
+* AWS::QuickSight::Template.SectionBasedLayoutConfiguration (__added__)
+* AWS::QuickSight::Template.SectionBasedLayoutPaperCanvasSizeOptions (__added__)
+* AWS::QuickSight::Template.SectionLayoutConfiguration (__added__)
+* AWS::QuickSight::Template.SectionPageBreakConfiguration (__added__)
+* AWS::QuickSight::Template.SectionStyle (__added__)
+* AWS::QuickSight::Template.SelectedSheetsFilterScopeConfiguration (__added__)
+* AWS::QuickSight::Template.SeriesItem (__added__)
+* AWS::QuickSight::Template.SetParameterValueConfiguration (__added__)
+* AWS::QuickSight::Template.ShapeConditionalFormat (__added__)
+* AWS::QuickSight::Template.SheetControlLayout (__added__)
+* AWS::QuickSight::Template.SheetControlLayoutConfiguration (__added__)
+* AWS::QuickSight::Template.SheetDefinition (__added__)
+* AWS::QuickSight::Template.SheetElementConfigurationOverrides (__added__)
+* AWS::QuickSight::Template.SheetElementRenderingRule (__added__)
+* AWS::QuickSight::Template.SheetTextBox (__added__)
+* AWS::QuickSight::Template.SheetVisualScopingConfiguration (__added__)
+* AWS::QuickSight::Template.ShortFormatText (__added__)
+* AWS::QuickSight::Template.SimpleClusterMarker (__added__)
+* AWS::QuickSight::Template.SliderControlDisplayOptions (__added__)
+* AWS::QuickSight::Template.SmallMultiplesOptions (__added__)
+* AWS::QuickSight::Template.Spacing (__added__)
+* AWS::QuickSight::Template.StringDefaultValues (__added__)
+* AWS::QuickSight::Template.StringFormatConfiguration (__added__)
+* AWS::QuickSight::Template.StringParameterDeclaration (__added__)
+* AWS::QuickSight::Template.StringValueWhenUnsetConfiguration (__added__)
+* AWS::QuickSight::Template.SubtotalOptions (__added__)
+* AWS::QuickSight::Template.TableAggregatedFieldWells (__added__)
+* AWS::QuickSight::Template.TableBorderOptions (__added__)
+* AWS::QuickSight::Template.TableCellConditionalFormatting (__added__)
+* AWS::QuickSight::Template.TableCellImageSizingConfiguration (__added__)
+* AWS::QuickSight::Template.TableCellStyle (__added__)
+* AWS::QuickSight::Template.TableConditionalFormatting (__added__)
+* AWS::QuickSight::Template.TableConditionalFormattingOption (__added__)
+* AWS::QuickSight::Template.TableConfiguration (__added__)
+* AWS::QuickSight::Template.TableFieldCustomIconContent (__added__)
+* AWS::QuickSight::Template.TableFieldCustomTextContent (__added__)
+* AWS::QuickSight::Template.TableFieldImageConfiguration (__added__)
+* AWS::QuickSight::Template.TableFieldLinkConfiguration (__added__)
+* AWS::QuickSight::Template.TableFieldLinkContentConfiguration (__added__)
+* AWS::QuickSight::Template.TableFieldOption (__added__)
+* AWS::QuickSight::Template.TableFieldOptions (__added__)
+* AWS::QuickSight::Template.TableFieldURLConfiguration (__added__)
+* AWS::QuickSight::Template.TableFieldWells (__added__)
+* AWS::QuickSight::Template.TableInlineVisualization (__added__)
+* AWS::QuickSight::Template.TableOptions (__added__)
+* AWS::QuickSight::Template.TablePaginatedReportOptions (__added__)
+* AWS::QuickSight::Template.TableRowConditionalFormatting (__added__)
+* AWS::QuickSight::Template.TableSideBorderOptions (__added__)
+* AWS::QuickSight::Template.TableSortConfiguration (__added__)
+* AWS::QuickSight::Template.TableUnaggregatedFieldWells (__added__)
+* AWS::QuickSight::Template.TableVisual (__added__)
+* AWS::QuickSight::Template.TemplateVersionDefinition (__added__)
+* AWS::QuickSight::Template.TextAreaControlDisplayOptions (__added__)
+* AWS::QuickSight::Template.TextConditionalFormat (__added__)
+* AWS::QuickSight::Template.TextControlPlaceholderOptions (__added__)
+* AWS::QuickSight::Template.TextFieldControlDisplayOptions (__added__)
+* AWS::QuickSight::Template.ThousandSeparatorOptions (__added__)
+* AWS::QuickSight::Template.TimeBasedForecastProperties (__added__)
+* AWS::QuickSight::Template.TimeEqualityFilter (__added__)
+* AWS::QuickSight::Template.TimeRangeDrillDownFilter (__added__)
+* AWS::QuickSight::Template.TimeRangeFilter (__added__)
+* AWS::QuickSight::Template.TimeRangeFilterValue (__added__)
+* AWS::QuickSight::Template.TooltipItem (__added__)
+* AWS::QuickSight::Template.TooltipOptions (__added__)
+* AWS::QuickSight::Template.TopBottomFilter (__added__)
+* AWS::QuickSight::Template.TopBottomMoversComputation (__added__)
+* AWS::QuickSight::Template.TopBottomRankedComputation (__added__)
+* AWS::QuickSight::Template.TotalAggregationComputation (__added__)
+* AWS::QuickSight::Template.TotalOptions (__added__)
+* AWS::QuickSight::Template.TreeMapAggregatedFieldWells (__added__)
+* AWS::QuickSight::Template.TreeMapConfiguration (__added__)
+* AWS::QuickSight::Template.TreeMapFieldWells (__added__)
+* AWS::QuickSight::Template.TreeMapSortConfiguration (__added__)
+* AWS::QuickSight::Template.TreeMapVisual (__added__)
+* AWS::QuickSight::Template.TrendArrowOptions (__added__)
+* AWS::QuickSight::Template.UnaggregatedField (__added__)
+* AWS::QuickSight::Template.UniqueValuesComputation (__added__)
+* AWS::QuickSight::Template.VisibleRangeOptions (__added__)
+* AWS::QuickSight::Template.Visual (__added__)
+* AWS::QuickSight::Template.VisualCustomAction (__added__)
+* AWS::QuickSight::Template.VisualCustomActionOperation (__added__)
+* AWS::QuickSight::Template.VisualPalette (__added__)
+* AWS::QuickSight::Template.VisualSubtitleLabelOptions (__added__)
+* AWS::QuickSight::Template.VisualTitleLabelOptions (__added__)
+* AWS::QuickSight::Template.WaterfallChartAggregatedFieldWells (__added__)
+* AWS::QuickSight::Template.WaterfallChartConfiguration (__added__)
+* AWS::QuickSight::Template.WaterfallChartFieldWells (__added__)
+* AWS::QuickSight::Template.WaterfallChartOptions (__added__)
+* AWS::QuickSight::Template.WaterfallChartSortConfiguration (__added__)
+* AWS::QuickSight::Template.WaterfallVisual (__added__)
+* AWS::QuickSight::Template.WhatIfPointScenario (__added__)
+* AWS::QuickSight::Template.WhatIfRangeScenario (__added__)
+* AWS::QuickSight::Template.WordCloudAggregatedFieldWells (__added__)
+* AWS::QuickSight::Template.WordCloudChartConfiguration (__added__)
+* AWS::QuickSight::Template.WordCloudFieldWells (__added__)
+* AWS::QuickSight::Template.WordCloudOptions (__added__)
+* AWS::QuickSight::Template.WordCloudSortConfiguration (__added__)
+* AWS::QuickSight::Template.WordCloudVisual (__added__)
+* AWS::S3ObjectLambda::AccessPoint.Alias (__added__)
+* AWS::QuickSight::Analysis.AnalysisError ViolatedEntities (__added__)
+* AWS::QuickSight::Analysis.ResourcePermission Resource (__added__)
+* AWS::QuickSight::Dashboard.DashboardError ViolatedEntities (__added__)
+* AWS::QuickSight::Dashboard.DashboardPublishOptions DataPointDrillUpDownOption (__added__)
+* AWS::QuickSight::Dashboard.DashboardPublishOptions DataPointMenuLabelOption (__added__)
+* AWS::QuickSight::Dashboard.DashboardPublishOptions DataPointTooltipOption (__added__)
+* AWS::QuickSight::Dashboard.DashboardPublishOptions ExportWithHiddenFieldsOption (__added__)
+* AWS::QuickSight::Dashboard.DashboardPublishOptions SheetLayoutElementMaximizationOption (__added__)
+* AWS::QuickSight::Dashboard.DashboardPublishOptions VisualAxisSortOption (__added__)
+* AWS::QuickSight::Dashboard.DashboardPublishOptions VisualMenuOption (__added__)
+* AWS::QuickSight::Dashboard.DashboardPublishOptions VisualPublishOptions (__added__)
+* AWS::QuickSight::Dashboard.ResourcePermission Resource (__added__)
+* AWS::QuickSight::Template.ResourcePermission Resource (__added__)
+* AWS::QuickSight::Template.TemplateError ViolatedEntities (__added__)
+* AWS::ServiceCatalog::CloudFormationProduct.ProvisioningArtifactProperties Type (__added__)
+* AWS::Wisdom::KnowledgeBase.AppIntegrationsConfiguration ObjectFields.Required (__changed__)
+  * Old: true
+  * New: false
+
+# CloudFormation Resource Specification (us-west-2) v117.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+
+
+# CloudFormation Resource Specification v116.0.0
+
+## New Resource Types
+
+* AWS::Chatbot::MicrosoftTeamsChannelConfiguration
+* AWS::Comprehend::Flywheel
+* AWS::SageMaker::InferenceExperiment
+* AWS::VpcLattice::AccessLogSubscription
+* AWS::VpcLattice::AuthPolicy
+* AWS::VpcLattice::Listener
+* AWS::VpcLattice::ResourcePolicy
+* AWS::VpcLattice::Rule
+* AWS::VpcLattice::Service
+* AWS::VpcLattice::ServiceNetwork
+* AWS::VpcLattice::ServiceNetworkServiceAssociation
+* AWS::VpcLattice::ServiceNetworkVpcAssociation
+* AWS::VpcLattice::TargetGroup
+
+## Attribute Changes
+
+* AWS::EC2::VPCDHCPOptionsAssociation Id (__deleted__)
+* AWS::EC2::VPCEndpoint Id (__added__)
+
+## Property Changes
+
+* AWS::Cassandra::Table ClientSideTimestampsEnabled (__added__)
+* AWS::ElasticLoadBalancingV2::ListenerRule ListenerArn.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SSMContacts::Contact Plan.Required (__changed__)
+  * Old: true
+  * New: false
+
+## Property Type Changes
+
+* AWS::Athena::WorkGroup.AclConfiguration (__added__)
+* AWS::Athena::WorkGroup.CustomerContentEncryptionConfiguration (__added__)
+* AWS::Athena::WorkGroup.ResultConfiguration AclConfiguration (__added__)
+* AWS::Athena::WorkGroup.ResultConfiguration ExpectedBucketOwner (__added__)
+* AWS::Athena::WorkGroup.WorkGroupConfiguration AdditionalConfiguration (__added__)
+* AWS::Athena::WorkGroup.WorkGroupConfiguration CustomerContentEncryptionConfiguration (__added__)
+* AWS::Athena::WorkGroup.WorkGroupConfiguration ExecutionRole (__added__)
+* AWS::MediaPackage::PackagingConfiguration.EncryptionContractConfiguration PresetSpeke20Audio (__deleted__)
+* AWS::MediaPackage::PackagingConfiguration.EncryptionContractConfiguration PresetSpeke20Video (__deleted__)
+* AWS::RUM::AppMonitor.MetricDefinition Namespace (__added__)
+* AWS::S3::MultiRegionAccessPoint.Region BucketAccountId (__added__)
+
+# CloudFormation Resource Specification (us-west-2) v116.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+
+
+# CloudFormation Resource Specification v115.0.0
+
+## New Resource Types
+
+* AWS::EC2::LocalGatewayRouteTable
+* AWS::EC2::LocalGatewayRouteTableVirtualInterfaceGroupAssociation
+* AWS::FMS::ResourceSet
+* AWS::IVSChat::LoggingConfiguration
+* AWS::IVSChat::Room
+* AWS::InternetMonitor::Monitor
+* AWS::ManagedBlockchain::Accessor
+* AWS::NetworkManager::TransitGatewayPeering
+* AWS::NetworkManager::TransitGatewayRouteTableAttachment
+* AWS::Organizations::ResourcePolicy
+* AWS::SageMaker::Space
+* AWS::SystemsManagerSAP::Application
+
+## Attribute Changes
+
+* AWS::ApiGateway::VpcLink VpcLinkId (__added__)
+* AWS::AppIntegrations::EventIntegration Associations (__deleted__)
+* AWS::DocDBElastic::Cluster ClusterEndpoint (__added__)
+* AWS::EC2::VPCEndpointService ServiceId (__added__)
+* AWS::EC2::VPNConnectionRoute Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-connection-route.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpnconnectionroute.html
+* AWS::Events::Archive ArchiveName (__deleted__)
+* AWS::MediaPackage::Asset EgressEndpoints (__deleted__)
+* AWS::RDS::DBProxyEndpoint TargetRole (__deleted__)
+* AWS::RUM::AppMonitor Id (__added__)
+* AWS::Redshift::ClusterParameterGroup ParameterGroupName (__deleted__)
+* AWS::Redshift::EndpointAccess VpcEndpoint (__added__)
+* AWS::Redshift::EndpointAccess VpcEndpoint.NetworkInterfaces (__added__)
+* AWS::Redshift::EndpointAccess VpcSecurityGroups (__added__)
+* AWS::RedshiftServerless::Namespace Namespace (__added__)
+* AWS::RedshiftServerless::Workgroup Workgroup (__added__)
+* AWS::RedshiftServerless::Workgroup Workgroup.ConfigParameters (__added__)
+* AWS::RedshiftServerless::Workgroup Workgroup.Endpoint (__added__)
+* AWS::RedshiftServerless::Workgroup Workgroup.Endpoint.VpcEndpoints (__added__)
+* AWS::Route53RecoveryControl::Cluster ClusterEndpoints (__added__)
+
+## Property Changes
+
+* AWS::ApiGateway::VpcLink Tags.DuplicatesAllowed (__added__)
+* AWS::ApiGateway::VpcLink TargetArns.DuplicatesAllowed (__added__)
+* AWS::AppConfig::HostedConfigurationVersion VersionLabel (__added__)
+* AWS::CodeStarNotifications::NotificationRule Tags.PrimitiveType (__deleted__)
+* AWS::CodeStarNotifications::NotificationRule Tags.PrimitiveItemType (__added__)
+* AWS::CodeStarNotifications::NotificationRule Tags.Type (__added__)
+* AWS::Config::OrganizationConfigRule OrganizationCustomCodeRuleMetadata (__deleted__)
+* AWS::Config::OrganizationConfigRule OrganizationCustomPolicyRuleMetadata (__added__)
+* AWS::DataSync::Agent ActivationKey.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationFSxONTAP Protocol.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationFSxOpenZFS FsxFilesystemArn.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationObjectStorage ServerCertificate (__added__)
+* AWS::DataSync::LocationS3 S3BucketArn.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DocDBElastic::Cluster PreferredMaintenanceWindow.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DynamoDB::Table DeletionProtectionEnabled (__added__)
+* AWS::EC2::NetworkInsightsAnalysis Tags.DuplicatesAllowed (__changed__)
+  * Old: true
+  * New: false
+* AWS::EC2::NetworkInsightsPath Destination.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::EC2::VPCEndpointService GatewayLoadBalancerArns.DuplicatesAllowed (__added__)
+* AWS::EC2::VPCEndpointService NetworkLoadBalancerArns.DuplicatesAllowed (__added__)
+* AWS::EC2::VPNConnectionRoute DestinationCidrBlock.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-connection-route.html#cfn-ec2-vpnconnectionroute-cidrblock
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpnconnectionroute.html#cfn-ec2-vpnconnectionroute-destinationcidrblock
+* AWS::EC2::VPNConnectionRoute VpnConnectionId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-connection-route.html#cfn-ec2-vpnconnectionroute-connectionid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpnconnectionroute.html#cfn-ec2-vpnconnectionroute-vpnconnectionid
+* AWS::ElastiCache::ReplicationGroup TransitEncryptionMode (__added__)
+* AWS::ElastiCache::ReplicationGroup TransitEncryptionEnabled.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ElastiCache::User Tags (__added__)
+* AWS::ElastiCache::UserGroup Tags (__added__)
+* AWS::ElastiCache::UserGroup UserIds.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Events::Endpoint Name.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::GreengrassV2::Deployment ParentTargetArn (__added__)
+* AWS::IoT::JobTemplate MaintenanceWindows (__added__)
+* AWS::Lambda::EventSourceMapping DocumentDBEventSourceConfig (__added__)
+* AWS::MediaPackage::Asset EgressEndpoints (__added__)
+* AWS::Oam::Link LabelTemplate.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::OpenSearchServerless::VpcEndpoint SubnetIds.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Organizations::Policy Content.PrimitiveType (__changed__)
+  * Old: String
+  * New: Json
+* AWS::RDS::DBProxyEndpoint TargetRole (__added__)
+* AWS::RDS::DBProxyTargetGroup DBProxyName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Redshift::ClusterParameterGroup ParameterGroupName (__added__)
+* AWS::Redshift::EndpointAccess VpcEndpoint (__deleted__)
+* AWS::Redshift::EndpointAccess VpcSecurityGroups (__deleted__)
+* AWS::RedshiftServerless::Namespace Namespace (__deleted__)
+* AWS::RedshiftServerless::Workgroup Workgroup (__deleted__)
+* AWS::RedshiftServerless::Workgroup Port (__added__)
+* AWS::Route53RecoveryControl::Cluster ClusterEndpoints (__deleted__)
+* AWS::Route53RecoveryControl::Cluster Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Route53Resolver::ResolverRule DomainName.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Conditional
+* AWS::ServiceCatalog::CloudFormationProduct SourceConnection (__added__)
+* AWS::ServiceCatalog::CloudFormationProduct ProvisioningArtifactParameters.Required (__changed__)
+  * Old: true
+  * New: false
+
+## Property Type Changes
+
+* AWS::AppIntegrations::EventIntegration.EventIntegrationAssociation (__removed__)
+* AWS::AppIntegrations::EventIntegration.Metadata (__removed__)
+* AWS::Config::OrganizationConfigRule.OrganizationCustomCodeRuleMetadata (__removed__)
+* AWS::Config::OrganizationConfigRule.OrganizationCustomPolicyRuleMetadata (__added__)
+* AWS::DynamoDB::GlobalTable.KinesisStreamSpecification (__added__)
+* AWS::IoT::JobTemplate.MaintenanceWindow (__added__)
+* AWS::Lambda::EventSourceMapping.DocumentDBEventSourceConfig (__added__)
+* AWS::ServiceCatalog::CloudFormationProduct.CodeStarParameters (__added__)
+* AWS::ServiceCatalog::CloudFormationProduct.ConnectionParameters (__added__)
+* AWS::ServiceCatalog::CloudFormationProduct.SourceConnection (__added__)
+* AWS::WAFv2::WebACL.AWSManagedRulesATPRuleSet (__added__)
+* AWS::WAFv2::WebACL.RequestInspection (__added__)
+* AWS::WAFv2::WebACL.ResponseInspection (__added__)
+* AWS::WAFv2::WebACL.ResponseInspectionBodyContains (__added__)
+* AWS::WAFv2::WebACL.ResponseInspectionHeader (__added__)
+* AWS::WAFv2::WebACL.ResponseInspectionJson (__added__)
+* AWS::WAFv2::WebACL.ResponseInspectionStatusCode (__added__)
+* AWS::AppFlow::ConnectorProfile.SalesforceConnectorProfileProperties usePrivateLinkForMetadataAndAuthorization (__added__)
+* AWS::AppFlow::Flow.TriggerConfig ActivateFlowOnCreate (__added__)
+* AWS::DynamoDB::GlobalTable.ReplicaSpecification DeletionProtectionEnabled (__added__)
+* AWS::DynamoDB::GlobalTable.ReplicaSpecification KinesisStreamSpecification (__added__)
+* AWS::EC2::NetworkInsightsAnalysis.AdditionalDetail LoadBalancers (__added__)
+* AWS::EC2::NetworkInsightsAnalysis.AdditionalDetail ServiceName (__added__)
+* AWS::EC2::NetworkInsightsAnalysis.PathComponent ServiceName (__added__)
+* AWS::Lex::Bot.CustomVocabularyItem DisplayAs (__added__)
+* AWS::MediaPackage::OriginEndpoint.EncryptionContractConfiguration PresetSpeke20Audio (__deleted__)
+* AWS::MediaPackage::OriginEndpoint.EncryptionContractConfiguration PresetSpeke20Video (__deleted__)
+* AWS::Route53Resolver::ResolverRule.TargetAddress Ipv6 (__added__)
+* AWS::Route53Resolver::ResolverRule.TargetAddress Ip.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SecretsManager::RotationSchedule.HostedRotationLambda Runtime (__added__)
+* AWS::WAFv2::WebACL.ManagedRuleGroupConfig AWSManagedRulesATPRuleSet (__added__)
+
+# CloudFormation Resource Specification (us-west-2) v115.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+
+
 # CloudFormation Resource Specification v109.0.0
 
 ## New Resource Types

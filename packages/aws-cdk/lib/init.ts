@@ -8,7 +8,6 @@ import { error, print, warning } from './logging';
 import { cdkHomeDir, rootDir } from './util/directories';
 import { rangeFromSemver } from './util/version-range';
 
-
 /* eslint-disable @typescript-eslint/no-var-requires */ // Packages don't have @types module
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const camelCase = require('camelcase');
@@ -248,7 +247,7 @@ export async function printAvailableTemplates(language?: string) {
   }
 }
 
-async function initializeProject(template: InitTemplate, language: string, canUseNetwork: boolean, generateOnly: boolean, workDir: string) {
+export async function initializeProject(template: InitTemplate, language: string, canUseNetwork: boolean, generateOnly: boolean, workDir: string) {
   await assertIsEmptyDirectory(workDir);
   print(`Applying project template ${chalk.green(template.name)} for ${chalk.blue(language)}`);
   await template.install(language, workDir);
@@ -278,7 +277,7 @@ async function initializeGitRepository(workDir: string) {
     await execute('git', ['init'], { cwd: workDir });
     await execute('git', ['add', '.'], { cwd: workDir });
     await execute('git', ['commit', '--message="Initial commit"', '--no-gpg-sign'], { cwd: workDir });
-  } catch (e) {
+  } catch {
     warning('Unable to initialize git repository for your project.');
   }
 }
@@ -311,7 +310,7 @@ async function postInstallTypescript(canUseNetwork: boolean, cwd: string) {
   print(`Executing ${chalk.green(`${command} install`)}...`);
   try {
     await execute(command, ['install'], { cwd });
-  } catch (e) {
+  } catch (e: any) {
     warning(`${command} install failed: ` + e.message);
   }
 }
@@ -326,7 +325,7 @@ async function postInstallJava(canUseNetwork: boolean, cwd: string) {
   print('Executing \'mvn package\'');
   try {
     await execute('mvn', ['package'], { cwd });
-  } catch (e) {
+  } catch {
     warning('Unable to package compiled code as JAR');
     warning(mvnPackageWarning);
   }
@@ -339,7 +338,7 @@ async function postInstallPython(cwd: string) {
   print(`Executing ${chalk.green('Creating virtualenv...')}`);
   try {
     await execute(python, ['-m venv', '.venv'], { cwd });
-  } catch (e) {
+  } catch {
     warning('Unable to create virtualenv automatically');
     warning(`Please run '${python} -m venv .venv'!`);
   }

@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.IoTFleetHub"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.iotfleethub"
+    },
+    "python": {
+      "module": "aws_cdk.aws_iotfleethub"
+    }
+  }
+}

@@ -106,7 +106,7 @@ async function main(args: string[]) {
 async function ensureGone(fileName: string) {
   try {
     await fs.unlink(fileName);
-  } catch (e) {
+  } catch (e: any) {
     if (e.code === 'ENOENT') { return; }
     throw e;
   }

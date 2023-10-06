@@ -1,0 +1,703 @@
+{
+  "version": "34.0.0",
+  "artifacts": {
+    "aws-cdk-log-retention-integ-retries0.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-log-retention-integ-retries0.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-log-retention-integ-retries0": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-log-retention-integ-retries0.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c03248e8ef2d441a16f2dcbd612489986315d1fc3e2ed8755007dc35c52adc00.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-log-retention-integ-retries0.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-log-retention-integ-retries0.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-log-retention-integ-retries0/LogRetention0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention0486EBFA5"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention1EE2E6696"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention21F957075"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention3148A75BA"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention4/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention494231F51"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention5/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention591D77AE3"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention6/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention6DF401EB9"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention7/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention72657EF61"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention8/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention880A4B8CA"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention9/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention90199550D"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention10/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention10F7ED9810"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention11/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention1122CC85FD"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention12/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention12FBA31490"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention13/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention136977A520"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention14/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention14731EBD69"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention15/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention153278A425"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention16/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention161FF830E5"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention17/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention176155FBE0"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention18/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention1831457E29"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention19/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention193D6F7E14"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention20/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention2029711E62"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention21/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention21F0A3EBF1"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention22/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention2233E364BF"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention23/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention2397FB44A4"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/LogRetention24/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention24A64A1B58"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries0/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-log-retention-integ-retries0"
+    },
+    "aws-cdk-log-retention-integ-retries1.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-log-retention-integ-retries1.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-log-retention-integ-retries1": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-log-retention-integ-retries1.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6caef44d453a9963759f82df84dbf057a66ed4d65308fdcdeed7d03241422997.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-log-retention-integ-retries1.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-log-retention-integ-retries1.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-log-retention-integ-retries1/LogRetention0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention0486EBFA5"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention1EE2E6696"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention21F957075"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention3148A75BA"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention4/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention494231F51"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention5/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention591D77AE3"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention6/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention6DF401EB9"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention7/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention72657EF61"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention8/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention880A4B8CA"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention9/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention90199550D"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention10/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention10F7ED9810"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention11/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention1122CC85FD"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention12/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention12FBA31490"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention13/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention136977A520"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention14/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention14731EBD69"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention15/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention153278A425"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention16/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention161FF830E5"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention17/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention176155FBE0"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention18/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention1831457E29"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention19/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention193D6F7E14"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention20/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention2029711E62"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention21/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention21F0A3EBF1"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention22/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention2233E364BF"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention23/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention2397FB44A4"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/LogRetention24/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention24A64A1B58"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries1/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-log-retention-integ-retries1"
+    },
+    "aws-cdk-log-retention-integ-retries2.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-log-retention-integ-retries2.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-log-retention-integ-retries2": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-log-retention-integ-retries2.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6e0ea013a6b8c4e2dc3640056b78b26229d014d36e82f53c5ae5ffc68e0481ed.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-log-retention-integ-retries2.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-log-retention-integ-retries2.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-log-retention-integ-retries2/LogRetention0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention0486EBFA5"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention1EE2E6696"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention21F957075"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention3148A75BA"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention4/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention494231F51"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention5/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention591D77AE3"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention6/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention6DF401EB9"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention7/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention72657EF61"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention8/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention880A4B8CA"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention9/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention90199550D"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention10/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention10F7ED9810"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention11/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention1122CC85FD"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention12/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention12FBA31490"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention13/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention136977A520"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention14/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention14731EBD69"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention15/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention153278A425"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention16/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention161FF830E5"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention17/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention176155FBE0"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention18/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention1831457E29"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention19/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention193D6F7E14"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention20/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention2029711E62"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention21/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention21F0A3EBF1"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention22/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention2233E364BF"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention23/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention2397FB44A4"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/LogRetention24/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetention24A64A1B58"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-log-retention-integ-retries2/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-log-retention-integ-retries2"
+    },
+    "LogRetentionIntegRetriesDefaultTestDeployAssert6D1A1A1C.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "LogRetentionIntegRetriesDefaultTestDeployAssert6D1A1A1C.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "LogRetentionIntegRetriesDefaultTestDeployAssert6D1A1A1C": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "LogRetentionIntegRetriesDefaultTestDeployAssert6D1A1A1C.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "LogRetentionIntegRetriesDefaultTestDeployAssert6D1A1A1C.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "LogRetentionIntegRetriesDefaultTestDeployAssert6D1A1A1C.assets"
+      ],
+      "metadata": {
+        "/LogRetentionIntegRetries/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/LogRetentionIntegRetries/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "LogRetentionIntegRetries/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

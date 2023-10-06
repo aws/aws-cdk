@@ -1,13 +1,14 @@
+/* eslint-disable import/order */
 jest.mock('child_process');
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import * as cdk from '@aws-cdk/core';
+import { bockfs } from '@aws-cdk/cdk-build-tools';
+import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
+import * as cdk from 'aws-cdk-lib';
 import * as semver from 'semver';
 import * as sinon from 'sinon';
 import { ImportMock } from 'ts-mock-imports';
 import { execProgram } from '../../lib/api/cxapp/exec';
 import { LogLevel, setLogLevel } from '../../lib/logging';
 import { Configuration } from '../../lib/settings';
-import * as bockfs from '../bockfs';
 import { testAssembly } from '../util';
 import { mockSpawn } from '../util/mock-child_process';
 import { MockSdkProvider } from '../util/mock-sdk';
@@ -232,7 +233,6 @@ test('cli does not throw when the `build` script succeeds', async () => {
   const { lock } = await execProgram(sdkProvider, config);
   await lock.release();
 }, TEN_SECOND_TIMEOUT);
-
 
 function writeOutputAssembly() {
   const asm = testAssembly({

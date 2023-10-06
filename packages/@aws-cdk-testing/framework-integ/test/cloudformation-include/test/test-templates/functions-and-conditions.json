@@ -1,0 +1,160 @@
+{
+  "Mappings": {
+    "RegionMap": {
+      "region-1": {
+        "HVM64": "name1",
+        "HVMG2": "name2"
+      }
+    }
+  },
+  "Conditions": {
+    "AlwaysTrueCond": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AWS::Region"
+            },
+            "completely-made-up-region"
+          ]
+        }
+      ]
+    },
+    "AndCond": {
+      "Fn::And": [
+        {
+          "Condition": "AlwaysTrueCond"
+        },
+        {
+          "Fn::Or": [
+            {
+              "Condition": "AlwaysTrueCond"
+            },
+            {
+              "Condition": "AlwaysTrueCond"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Resources": {
+    "Vpc": {
+      "Type": "AWS::EC2::VPC",
+      "Properties": {
+        "CidrBlock": {
+          "Fn::If": [
+            "AlwaysTrueCond",
+            {
+              "Fn::Cidr": [
+                "192.168.1.1/24",
+                2,
+                5
+              ]
+            },
+            {
+              "Fn::Cidr": [
+                "10.0.0.0/24",
+                "6",
+                "5"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": {
+          "Fn::If": [
+            "AndCond",
+            {
+              "Fn::FindInMap": [
+                "RegionMap",
+                "region-1",
+                "HVM64"
+              ]
+            },
+            "Unreachable"
+          ]
+        }
+      }
+    },
+    "Subnet1": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "VpcId": {
+          "Fn::If": [
+            "AlwaysTrueCond",
+            {
+              "Fn::Split": [
+                ",",
+                {
+                  "Fn::ImportValue": "ImportedVpcId"
+                }
+              ]
+            },
+            "Unreachable"
+          ]
+        },
+        "CidrBlock": "10.0.0.0/24",
+        "AvailabilityZone": {
+          "Fn::Select": [
+            "0",
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        }
+      }
+    },
+    "Subnet2": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "VpcId": {
+          "Fn::Select": [
+            0,
+            {
+              "Fn::Cidr": [
+                "10.0.0.0/24",
+                5,
+                2
+              ]
+            }
+          ]
+        },
+        "CidrBlock": "10.0.0.0/24",
+        "AvailabilityZone": {
+          "Fn::Select": [
+            "0",
+            {
+              "Fn::GetAZs": "eu-west-2"
+            }
+          ]
+        }
+      }
+    },
+    "TransformBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": {
+          "Fn::If": [
+            "AndCond",
+            {
+              "Fn::Transform": {
+                "Name": "AWS::Include",
+                "Parameters": {
+                  "Location": "location",
+                  "AnotherParameter": {
+                    "Fn::Base64": "AnotherValue"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

@@ -72,7 +72,7 @@ export class PluginHost {
         throw new Error(`Module ${moduleSpec} does not define a valid plug-in.`);
       }
       if (plugin.init) { plugin.init(PluginHost.instance); }
-    } catch (e) {
+    } catch (e: any) {
       error(`Unable to load ${chalk.green(moduleSpec)}: ${e.stack}`);
       throw new Error(`Unable to load plug-in: ${moduleSpec}`);
     }

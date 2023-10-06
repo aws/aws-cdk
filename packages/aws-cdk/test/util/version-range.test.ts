@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import { rangeFromSemver } from '../../lib/util/version-range';
 
 describe('rangeFromSemver', () => {

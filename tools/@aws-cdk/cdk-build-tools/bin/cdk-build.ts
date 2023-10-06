@@ -34,6 +34,11 @@ async function main() {
       desc: 'Fix linter errors',
       default: false,
     })
+    .option('skip-lint', {
+      type: 'boolean',
+      desc: 'Skip eslint during build',
+      default: false,
+    })
     .argv;
 
   const options = cdkBuildOptions();
@@ -51,7 +56,9 @@ async function main() {
 
   const overrides: CompilerOverrides = { eslint: args.eslint, jsii: args.jsii, tsc: args.tsc };
   await compileCurrentPackage(options, timers, overrides);
-  await lintCurrentPackage(options, { ...overrides, fix: args.fix });
+  if (!args['skip-lint']) {
+    await lintCurrentPackage(options, { ...overrides, fix: args.fix });
+  }
 
   if (options.post) {
     const commands = options.post.join(' && ');

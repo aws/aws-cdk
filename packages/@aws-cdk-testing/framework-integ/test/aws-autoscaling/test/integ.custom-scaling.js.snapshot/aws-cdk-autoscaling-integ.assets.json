@@ -1,0 +1,19 @@
+{
+  "version": "32.0.0",
+  "files": {
+    "0cb946e4b3e2979f177cb049c4977a5348fa520ad7d61cddd74603bb2b06373f": {
+      "source": {
+        "path": "aws-cdk-autoscaling-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "0cb946e4b3e2979f177cb049c4977a5348fa520ad7d61cddd74603bb2b06373f.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

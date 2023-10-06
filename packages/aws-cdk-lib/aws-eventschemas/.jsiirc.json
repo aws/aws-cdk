@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.EventSchemas"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.eventschemas"
+    },
+    "python": {
+      "module": "aws_cdk.aws_eventschemas"
+    }
+  }
+}

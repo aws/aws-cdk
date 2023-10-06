@@ -1,5 +1,0 @@
-// Fixture with imports, but nothing else
-import * as cdk from '@aws-cdk/core';
-import { AwsCdkCli, ICloudAssemblyDirectoryProducer } from '@aws-cdk/cli-lib';
-
-/// here

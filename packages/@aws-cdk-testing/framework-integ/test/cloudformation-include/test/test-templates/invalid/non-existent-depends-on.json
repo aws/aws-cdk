@@ -1,0 +1,11 @@
+{
+  "Resources": {
+    "Bucket2": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": "bucket2"
+      },
+      "DependsOn": "Bucket1"
+    }
+  }
+}

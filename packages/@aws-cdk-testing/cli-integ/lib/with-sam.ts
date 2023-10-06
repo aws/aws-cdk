@@ -10,7 +10,6 @@ import { AwsContext, withAws } from './with-aws';
 import { cloneDirectory, installNpmPackages, TestFixture, DEFAULT_TEST_TIMEOUT_S } from './with-cdk-app';
 import { withTimeout } from './with-timeout';
 
-
 export interface ActionOutput {
   actionSucceeded?: boolean;
   actionOutput?: any;
@@ -64,7 +63,7 @@ export function withSamIntegrationCdkApp<A extends TestContext & AwsContext>(blo
         });
       }
       await block(fixture);
-    } catch (e) {
+    } catch (e: any) {
       // We survive certain cases involving gopkg.in
       if (errorCausedByGoPkg(e.message)) {
         return;

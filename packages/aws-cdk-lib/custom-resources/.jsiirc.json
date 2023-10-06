@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.customresources"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.CustomResources"
+    },
+    "python": {
+      "module": "aws_cdk.custom_resources"
+    }
+  }
+}

@@ -1,10 +1,13 @@
 {
-  "$version": "109.0.0",
+  "$version": "130.1.0",
   "PropertyTypes": {},
   "ResourceTypes": {
     "AWS::DocDBElastic::Cluster": {
       "Attributes": {
         "ClusterArn": {
+          "PrimitiveType": "String"
+        },
+        "ClusterEndpoint": {
           "PrimitiveType": "String"
         }
       },
@@ -44,7 +47,7 @@
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-docdbelastic-cluster.html#cfn-docdbelastic-cluster-preferredmaintenancewindow",
           "PrimitiveType": "String",
           "Required": false,
-          "UpdateType": "Immutable"
+          "UpdateType": "Mutable"
         },
         "ShardCapacity": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-docdbelastic-cluster.html#cfn-docdbelastic-cluster-shardcapacity",

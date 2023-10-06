@@ -51,7 +51,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
   }
   try {
     await fs.mkdirp(outdir);
-  } catch (error) {
+  } catch (error: any) {
     throw new Error(`Could not create output directory ${outdir} (${error.message})`);
   }
 
@@ -130,8 +130,11 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
  */
 export function createAssembly(appDir: string) {
   try {
-    return new cxapi.CloudAssembly(appDir);
-  } catch (error) {
+    return new cxapi.CloudAssembly(appDir, {
+      // We sort as we deploy
+      topoSort: false,
+    });
+  } catch (error: any) {
     if (error.message.includes(cxschema.VERSION_MISMATCH)) {
       // this means the CLI version is too old.
       // we instruct the user to upgrade.
@@ -250,7 +253,7 @@ async function guessExecutable(commandLine: string[]) {
 
     try {
       fstat = await fs.stat(commandLine[0]);
-    } catch (error) {
+    } catch {
       debug(`Not a file: '${commandLine[0]}'. Using '${commandLine}' as command-line`);
       return commandLine;
     }

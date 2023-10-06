@@ -1,0 +1,19 @@
+{
+  "version": "34.0.0",
+  "files": {
+    "201464b7a8c8c9337e473a8819f83ed5d218ac4947392661839cacdff890aecb": {
+      "source": {
+        "path": "lambda-event-source-sns.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "201464b7a8c8c9337e473a8819f83ed5d218ac4947392661839cacdff890aecb.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,0 +1,26 @@
+digraph G {
+  # Arrows represent an "unlocks" relationship (opposite of dependency). So chosen
+  # because the layout looks more natural that way.
+  # To represent subgraph dependencies, subgraphs are represented by BEGIN/END nodes.
+  # To render: `dot -Tsvg VariablePipelineStackPipeline0F9B805A.dot > graph.svg`, open in a browser.
+  node [shape="box"];
+"BEGIN Build" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Build" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Build.Synth";
+"Source.c8afb86a650460a8cc607cf72a0827e7c93d0d6d5c" -> "Build.Synth";
+"BEGIN Build" -> "Build.Synth";
+"Build.Synth" -> "END Build";
+"BEGIN MyWave" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END MyWave" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Build.Synth" -> "BEGIN MyWave";
+"MyWave.Consume";
+"MyWave.Produce" -> "MyWave.Consume";
+"MyWave.Produce";
+"BEGIN MyWave" -> "MyWave.Produce";
+"MyWave.Consume" -> "END MyWave";
+"BEGIN Source" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Source" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Source.c8afb86a650460a8cc607cf72a0827e7c93d0d6d5c";
+"BEGIN Source" -> "Source.c8afb86a650460a8cc607cf72a0827e7c93d0d6d5c";
+"Source.c8afb86a650460a8cc607cf72a0827e7c93d0d6d5c" -> "END Source";
+}

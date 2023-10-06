@@ -209,7 +209,7 @@ export class CloudWatchLogEventMonitor {
           timestamp: new Date(endTime),
         });
       }
-    } catch (e) {
+    } catch (e: any) {
       // with Lambda functions the CloudWatch is not created
       // until something is logged, so just keep polling until
       // there is somthing to find

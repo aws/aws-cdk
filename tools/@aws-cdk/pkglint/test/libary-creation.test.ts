@@ -11,13 +11,14 @@ describe('createModuleDefinitionFromCfnNamespace', () => {
       moduleName: 'aws-ec2',
       moduleFamily: 'AWS',
       moduleBaseName: 'EC2',
-      packageName: '@aws-cdk/aws-ec2',
+      packageName: 'aws-cdk-lib/aws-ec2',
       dotnetPackage: 'Amazon.CDK.AWS.EC2',
       javaGroupId: 'software.amazon.awscdk',
       javaPackage: 'services.ec2',
       javaArtifactId: 'ec2',
       pythonDistName: 'aws-cdk.aws-ec2',
       pythonModuleName: 'aws_cdk.aws_ec2',
+      submoduleName: 'aws_ec2',
     });
   });
 
@@ -29,13 +30,14 @@ describe('createModuleDefinitionFromCfnNamespace', () => {
       moduleName: 'aws-sam',
       moduleFamily: 'AWS',
       moduleBaseName: 'SAM',
-      packageName: '@aws-cdk/aws-sam',
+      packageName: 'aws-cdk-lib/aws-sam',
       dotnetPackage: 'Amazon.CDK.AWS.SAM',
       javaGroupId: 'software.amazon.awscdk',
       javaPackage: 'services.sam',
       javaArtifactId: 'sam',
       pythonDistName: 'aws-cdk.aws-sam',
       pythonModuleName: 'aws_cdk.aws_sam',
+      submoduleName: 'aws_sam',
     });
   });
 
@@ -47,13 +49,14 @@ describe('createModuleDefinitionFromCfnNamespace', () => {
       moduleName: 'alexa-ask',
       moduleFamily: 'Alexa',
       moduleBaseName: 'ASK',
-      packageName: '@aws-cdk/alexa-ask',
+      packageName: 'aws-cdk-lib/alexa-ask',
       dotnetPackage: 'Amazon.CDK.Alexa.ASK',
       javaGroupId: 'software.amazon.awscdk',
       javaPackage: 'alexa.ask',
       javaArtifactId: 'alexa-ask',
       pythonDistName: 'aws-cdk.alexa-ask',
       pythonModuleName: 'aws_cdk.alexa_ask',
+      submoduleName: 'alexa_ask',
     });
   });
 });
@@ -78,6 +81,6 @@ describe('createLibraryReadme', () => {
     await createLibraryReadme('Alexa::ASK', readmePath);
 
     const readme = fs.readFileSync(readmePath, { encoding: 'utf8' });
-    expect(readme).toContain("import * as alexa_ask from '@aws-cdk/alexa-ask';");
+    expect(readme).toContain("import * as alexa_ask from 'aws-cdk-lib/alexa-ask';");
   });
 });

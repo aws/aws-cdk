@@ -1,0 +1,147 @@
+{
+  "version": "34.0.0",
+  "artifacts": {
+    "lambda-layer-node-proxy-agent-integ-stack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "lambda-layer-node-proxy-agent-integ-stack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "lambda-layer-node-proxy-agent-integ-stack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "lambda-layer-node-proxy-agent-integ-stack.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/60619ad1b8f74ca986f5e145eb363cc3641322bd2df42c61cc5665859f8de686.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "lambda-layer-node-proxy-agent-integ-stack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "lambda-layer-node-proxy-agent-integ-stack.assets"
+      ],
+      "metadata": {
+        "/lambda-layer-node-proxy-agent-integ-stack/NodeProxyAgentLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NodeProxyAgentLayer924C1971"
+          }
+        ],
+        "/lambda-layer-node-proxy-agent-integ-stack/Lambda$Node16/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaNode16ServiceRole639A5B64"
+          }
+        ],
+        "/lambda-layer-node-proxy-agent-integ-stack/Lambda$Node16/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaNode168CB141CB"
+          }
+        ],
+        "/lambda-layer-node-proxy-agent-integ-stack/ProviderNode16/framework-onEvent/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProviderNode16frameworkonEventServiceRole2CA3DCA3"
+          }
+        ],
+        "/lambda-layer-node-proxy-agent-integ-stack/ProviderNode16/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProviderNode16frameworkonEventServiceRoleDefaultPolicyBED16F1E"
+          }
+        ],
+        "/lambda-layer-node-proxy-agent-integ-stack/ProviderNode16/framework-onEvent/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProviderNode16frameworkonEventB6060997"
+          }
+        ],
+        "/lambda-layer-node-proxy-agent-integ-stack/CustomResourceNode16/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomResourceNode16"
+          }
+        ],
+        "/lambda-layer-node-proxy-agent-integ-stack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/lambda-layer-node-proxy-agent-integ-stack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "lambda-layer-node-proxy-agent-integ-stack"
+    },
+    "lambdalayernodeproxyagentintegtestDefaultTestDeployAssert951A1212.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "lambdalayernodeproxyagentintegtestDefaultTestDeployAssert951A1212.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "lambdalayernodeproxyagentintegtestDefaultTestDeployAssert951A1212": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "lambdalayernodeproxyagentintegtestDefaultTestDeployAssert951A1212.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "lambdalayernodeproxyagentintegtestDefaultTestDeployAssert951A1212.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "lambdalayernodeproxyagentintegtestDefaultTestDeployAssert951A1212.assets"
+      ],
+      "metadata": {
+        "/lambda-layer-node-proxy-agent-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/lambda-layer-node-proxy-agent-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "lambda-layer-node-proxy-agent-integ-test/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

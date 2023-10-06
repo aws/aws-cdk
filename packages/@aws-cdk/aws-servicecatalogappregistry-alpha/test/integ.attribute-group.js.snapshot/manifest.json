@@ -1,0 +1,94 @@
+{
+  "version": "31.0.0",
+  "artifacts": {
+    "integ-servicecatalogappregistry-attribute-group.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-servicecatalogappregistry-attribute-group.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integ-servicecatalogappregistry-attribute-group": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-servicecatalogappregistry-attribute-group.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/144db67f08537c9d5b0258f8161fe7c3f439db45763ee0b412d7eb15f90ec8f6.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-servicecatalogappregistry-attribute-group.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-servicecatalogappregistry-attribute-group.assets"
+      ],
+      "metadata": {
+        "/integ-servicecatalogappregistry-attribute-group/TestApplication/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestApplication2FBC585F"
+          }
+        ],
+        "/integ-servicecatalogappregistry-attribute-group/TestAttributeGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestAttributeGroupB1CB284F"
+          }
+        ],
+        "/integ-servicecatalogappregistry-attribute-group/TestAttributeGroup/ApplicationAttributeGroupAssociation73d834483ae3": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestAttributeGroupApplicationAttributeGroupAssociation73d834483ae31BB2BA9A"
+          }
+        ],
+        "/integ-servicecatalogappregistry-attribute-group/TestAttributeGroup/MyShareId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestAttributeGroupMyShareIdBAA9E628"
+          }
+        ],
+        "/integ-servicecatalogappregistry-attribute-group/MyRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRoleF48FFE04"
+          }
+        ],
+        "/integ-servicecatalogappregistry-attribute-group/MySecondRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MySecondRoleB9F57405"
+          }
+        ],
+        "/integ-servicecatalogappregistry-attribute-group/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-servicecatalogappregistry-attribute-group/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-servicecatalogappregistry-attribute-group"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

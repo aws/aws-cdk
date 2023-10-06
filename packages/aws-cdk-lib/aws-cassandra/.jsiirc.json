@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.Cassandra"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.cassandra"
+    },
+    "python": {
+      "module": "aws_cdk.aws_cassandra"
+    }
+  }
+}

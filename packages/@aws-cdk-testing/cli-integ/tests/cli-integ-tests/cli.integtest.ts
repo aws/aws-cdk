@@ -20,7 +20,12 @@ describe('ci', () => {
       const execOptions = {
         captureStderr: true,
         onlyStderr: true,
-        modEnv: { CI: 'true' },
+        modEnv: {
+          CI: 'true',
+          JSII_SILENCE_WARNING_KNOWN_BROKEN_NODE_VERSION: 'true',
+          JSII_SILENCE_WARNING_UNTESTED_NODE_VERSION: 'true',
+          JSII_SILENCE_WARNING_DEPRECATED_NODE_VERSION: 'true',
+        },
       };
 
       const deployOutput = await fixture.cdkDeploy('test-2', execOptions);
@@ -559,7 +564,7 @@ integTest('deploy with role', withDefaultFixture(async (fixture) => {
         });
       }
       await fixture.aws.iam('deleteRole', { RoleName: roleName });
-    } catch (e) {
+    } catch (e: any) {
       if (e.message.indexOf('cannot be found') > -1) { return; }
       throw e;
     }
@@ -646,6 +651,18 @@ integTest('cdk diff --security-only --fail exits when security changes are prese
   await expect(fixture.cdk(['diff', '--security-only', '--fail', fixture.fullStackName(stackName)])).rejects.toThrow('exited with error');
 }));
 
+integTest('cdk diff --quiet does not print \'There were no differences\' message for stacks which have no differences', withDefaultFixture(async (fixture) => {
+  // GIVEN
+  await fixture.cdkDeploy('test-1');
+
+  // WHEN
+  const diff = await fixture.cdk(['diff', '--quiet', fixture.fullStackName('test-1')]);
+
+  // THEN
+  expect(diff).not.toContain('Stack test-1');
+  expect(diff).not.toContain('There were no differences');
+}));
+
 integTest('deploy stack with docker asset', withDefaultFixture(async (fixture) => {
   await fixture.cdkDeploy('docker');
 }));
@@ -715,6 +732,17 @@ integTest('synthing a stage with errors can be suppressed', withDefaultFixture(a
       INTEG_STACK_SET: 'stage-with-errors',
     },
   });
+}));
+
+integTest('synth --quiet can be specified in cdk.json', withDefaultFixture(async (fixture) => {
+  let cdkJson = JSON.parse(await fs.readFile(path.join(fixture.integTestDir, 'cdk.json'), 'utf8'));
+  cdkJson = {
+    ...cdkJson,
+    quiet: true,
+  };
+  await fs.writeFile(path.join(fixture.integTestDir, 'cdk.json'), JSON.stringify(cdkJson));
+  const synthOutput = await fixture.cdk(['synth', fixture.fullStackName('test-2')]);
+  expect(synthOutput).not.toContain('topic152D84A37');
 }));
 
 integTest('deploy stack without resource', withDefaultFixture(async (fixture) => {

@@ -1,0 +1,30 @@
+openapi: "3.0.2"
+info:
+  version: 1.0.0
+  title: Test API for CDK
+paths:
+  /pets:
+    get:
+      summary: Test Method
+      operationId: testMethod
+      responses:
+        "200":
+          description: A paged array of pets
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Empty"
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: "200"
+        requestTemplates:
+          application/json: "{\"statusCode\": 200}"
+        passthroughBehavior: when_no_match
+        type: mock
+
+components:
+  schemas:
+    Empty:
+      title: Empty Schema
+      type: object

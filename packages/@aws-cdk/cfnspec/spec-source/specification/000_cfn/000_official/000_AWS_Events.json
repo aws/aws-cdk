@@ -1,5 +1,5 @@
 {
-  "$version": "109.0.0",
+  "$version": "130.1.0",
   "PropertyTypes": {
     "AWS::Events::Connection.ApiKeyAuthParameters": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-connection-apikeyauthparameters.html",
@@ -886,9 +886,6 @@
     },
     "AWS::Events::Archive": {
       "Attributes": {
-        "ArchiveName": {
-          "PrimitiveType": "String"
-        },
         "Arn": {
           "PrimitiveType": "String"
         }
@@ -1001,7 +998,7 @@
         "Name": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-endpoint.html#cfn-events-endpoint-name",
           "PrimitiveType": "String",
-          "Required": true,
+          "Required": false,
           "UpdateType": "Immutable"
         },
         "ReplicationConfig": {

@@ -1,0 +1,61 @@
+import { Construct } from 'constructs';
+import { Duration, Stack } from 'aws-cdk-lib';
+import * as codepipeline from 'aws-cdk-lib/aws-codepipeline';
+
+interface MyActionProps {
+  variablesNamespace?: string;
+  actionName: string;
+}
+
+class MyAction extends codepipeline.Action {
+  public variables: { [key: string]: string };
+  protected readonly providedActionProperties: codepipeline.ActionProperties; 
+
+  constructor(props: MyActionProps) {
+    super();
+    this.providedActionProperties = {
+      ...props,
+      category: codepipeline.ActionCategory.SOURCE,
+      provider: 'Fake',
+      artifactBounds: { minInputs: 0, maxInputs: 0, minOutputs: 1, maxOutputs: 4 },
+    };
+    this.variables = { 'myVariable': 'var' };
+  }
+
+  public bound(_scope: Construct, _stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
+  codepipeline.ActionConfig {
+    return {};
+  }
+}
+
+interface OtherActionProps {
+  config: string;
+  actionName: string;
+}
+
+class OtherAction extends codepipeline.Action {
+  protected readonly providedActionProperties: codepipeline.ActionProperties; 
+
+  constructor(props: OtherActionProps) {
+    super();
+    this.providedActionProperties = {
+      ...props,
+      category: codepipeline.ActionCategory.SOURCE,
+      provider: 'Fake',
+      artifactBounds: { minInputs: 0, maxInputs: 0, minOutputs: 1, maxOutputs: 4 },
+    };
+  }
+
+  public bound(_scope: Construct, _stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
+  codepipeline.ActionConfig {
+    return {};
+  }
+}
+
+class Context extends Stack {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+
+    /// here
+  }
+}

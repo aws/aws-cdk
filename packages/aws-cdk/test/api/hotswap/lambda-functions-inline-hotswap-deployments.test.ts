@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import { Lambda } from 'aws-sdk';
 import * as setup from './hotswap-test-setup';
 import { HotswapMode } from '../../../lib/api/hotswap/common';
@@ -30,7 +31,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('these tests do
             Code: {
               ZipFile: 'exports.handler = () => {return true}',
             },
-            Runtime: 'nodejs14.x',
+            Runtime: 'nodejs16.x',
             FunctionName: 'my-function',
           },
         },
@@ -46,7 +47,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('these tests do
               Code: {
                 ZipFile: newCode,
               },
-              Runtime: 'nodejs14.x',
+              Runtime: 'nodejs16.x',
               FunctionName: 'my-function',
             },
           },

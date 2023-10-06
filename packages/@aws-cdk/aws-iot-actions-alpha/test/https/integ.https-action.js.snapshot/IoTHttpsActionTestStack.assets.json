@@ -1,0 +1,19 @@
+{
+  "version": "31.0.0",
+  "files": {
+    "ceb4c33f2a2723481892f941c88433106a7019ed281d49385fdbaf9f0b09a343": {
+      "source": {
+        "path": "IoTHttpsActionTestStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "ceb4c33f2a2723481892f941c88433106a7019ed281d49385fdbaf9f0b09a343.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

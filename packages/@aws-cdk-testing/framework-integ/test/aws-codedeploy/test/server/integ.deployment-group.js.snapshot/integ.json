@@ -1,0 +1,14 @@
+{
+  "version": "32.0.0",
+  "testCases": {
+    "integ.deployment-group": {
+      "stacks": [
+        "aws-cdk-codedeploy-server-dg"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

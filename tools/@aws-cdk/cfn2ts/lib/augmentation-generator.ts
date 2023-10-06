@@ -32,11 +32,26 @@ import { SpecName } from './spec-utils';
  * <ClassBase>.prototype.<method> = // ...impl...
  * ```
  */
-export class AugmentationGenerator {
-  private readonly code = new CodeMaker();
-  private readonly outputFile: string;
+export interface AugmentationsGeneratorOptions {
+  /**
+  * Path of cloudwatch import to use when generating augmentation source
+  * files.
+  *
+  * @default '@aws-cdk/aws-cloudwatch'
+  */
+  cloudwatchImport?: string;
+}
 
-  constructor(moduleName: string, private readonly spec: schema.Specification, private readonly affix: string) {
+export class AugmentationGenerator {
+  public readonly outputFile: string;
+  private readonly code = new CodeMaker();
+
+  constructor(
+    moduleName: string,
+    private readonly spec: schema.Specification,
+    private readonly affix: string,
+    private readonly config?: AugmentationsGeneratorOptions,
+  ) {
     this.outputFile = `${moduleName}-augmentations.generated.ts`;
     this.code.openFile(this.outputFile);
 
@@ -53,7 +68,7 @@ export class AugmentationGenerator {
 
       if (aug.metrics) {
         if (!importedCloudWatch) {
-          this.code.line("import * as cloudwatch from '@aws-cdk/aws-cloudwatch';");
+          this.code.line(`import * as cloudwatch from '${this.config?.cloudwatchImport ?? '@aws-cdk/aws-cloudwatch'}';`);
           importedCloudWatch = true;
         }
         this.emitMetricAugmentations(resourceTypeName, aug.metrics, aug.options);

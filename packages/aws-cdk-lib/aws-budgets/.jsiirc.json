@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.budgets"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.Budgets"
+    },
+    "python": {
+      "module": "aws_cdk.aws_budgets"
+    }
+  }
+}

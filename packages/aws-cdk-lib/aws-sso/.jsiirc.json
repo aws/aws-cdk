@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.SSO"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.sso"
+    },
+    "python": {
+      "module": "aws_cdk.aws_sso"
+    }
+  }
+}

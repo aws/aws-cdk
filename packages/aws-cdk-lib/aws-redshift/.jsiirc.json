@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.redshift"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.Redshift"
+    },
+    "python": {
+      "module": "aws_cdk.aws_redshift"
+    }
+  }
+}

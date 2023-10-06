@@ -532,6 +532,27 @@
                 }
             }
         },
+        "AWS::Serverless::Function.CognitoEvent": {
+            "Documentation": "https://github.com/aws/serverless-application-model/blob/master/versions/2016-10-31.md#cognito",
+            "Properties": {
+                "Trigger": {
+                    "Documentation": "https://github.com/aws/serverless-application-model/blob/master/versions/2016-10-31.md#cognito",
+                    "PrimitiveItemTypes": [
+                        "String"
+                    ],
+                    "PrimitiveTypes": [
+                        "String"
+                    ],
+                    "Required": true
+                },
+                "UserPool": {
+                    "Documentation": "https://github.com/aws/serverless-application-model/blob/master/versions/2016-10-31.md#cognito",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
         "AWS::Serverless::Function.CollectionSAMPT": {
             "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
             "Properties": {
@@ -793,7 +814,8 @@
                         "IoTRuleEvent",
                         "AlexaSkillEvent",
                         "EventBridgeRuleEvent",
-                        "HttpApiEvent"
+                        "HttpApiEvent",
+                        "CognitoEvent"
                     ],
                     "UpdateType": "Immutable"
                 },

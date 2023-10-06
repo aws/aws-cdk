@@ -1,0 +1,13 @@
+{
+  "version": "32.0.0",
+  "testCases": {
+    "VariablePipelineTest/DefaultTest": {
+      "stacks": [
+        "VariablePipelineStack"
+      ],
+      "diffAssets": true,
+      "assertionStack": "VariablePipelineTest/DefaultTest/DeployAssert",
+      "assertionStackName": "VariablePipelineTestDefaultTestDeployAssertC1E57581"
+    }
+  }
+}

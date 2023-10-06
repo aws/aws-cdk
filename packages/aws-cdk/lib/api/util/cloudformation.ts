@@ -33,7 +33,7 @@ export class CloudFormationStack {
     try {
       const response = await cfn.describeStacks({ StackName: stackName }).promise();
       return new CloudFormationStack(cfn, stackName, response.Stacks && response.Stacks[0], retrieveProcessedTemplate);
-    } catch (e) {
+    } catch (e: any) {
       if (e.code === 'ValidationError' && e.message === `Stack with id ${stackName} does not exist`) {
         return new CloudFormationStack(cfn, stackName, undefined);
       }
@@ -156,7 +156,7 @@ export class CloudFormationStack {
     if (!this.exists) { return {}; }
     const ret: Record<string, string> = {};
     for (const param of this.stack!.Parameters ?? []) {
-      ret[param.ParameterKey!] = param.ParameterValue!;
+      ret[param.ParameterKey!] = param.ResolvedValue ?? param.ParameterValue!;
     }
     return ret;
   }

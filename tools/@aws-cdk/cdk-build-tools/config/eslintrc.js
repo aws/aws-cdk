@@ -35,7 +35,7 @@ module.exports = {
     'import/resolver': {
       node: {},
       typescript: {
-        directory: './tsconfig.json',
+        project: './tsconfig.json',
       },
     },
   },
@@ -44,6 +44,7 @@ module.exports = {
     '@aws-cdk/no-core-construct': ['error'],
     '@aws-cdk/no-qualified-construct': ['error'],
     '@aws-cdk/invalid-cfn-imports': ['error'],
+    '@aws-cdk/no-literal-partition': ['error'],
     // Require use of the `import { foo } from 'bar';` form instead of `import foo = require('bar');`
     '@typescript-eslint/no-require-imports': ['error'],
     '@typescript-eslint/indent': ['error', 2],
@@ -115,7 +116,7 @@ module.exports = {
     'quote-props': ['error', 'consistent-as-needed'],
 
     // No multiple empty lines
-    'no-multiple-empty-lines': ['error'],
+    'no-multiple-empty-lines': ['error', { 'max': 1 }],
 
     // Max line lengths
     'max-len': ['error', {
@@ -213,5 +214,7 @@ module.exports = {
     "jest/valid-expect": "off", // expect from '@aws-cdk/assert' can take a second argument
     "jest/valid-title": "off", // A little over-zealous with test('test foo') being an error.
     "jest/no-identical-title": "off", // TEMPORARY - Disabling this until https://github.com/jest-community/eslint-plugin-jest/issues/836 is resolved
+    'jest/no-disabled-tests': 'error', // Skipped tests are easily missed in PR reviews
+    'jest/no-focused-tests': 'error', // Focused tests are easily missed in PR reviews
   },
 };

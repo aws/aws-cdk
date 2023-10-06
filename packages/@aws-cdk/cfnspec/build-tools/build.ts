@@ -6,16 +6,28 @@
  */
 
 import * as path from 'path';
+import * as fs from 'fs-extra';
 import * as md5 from 'md5';
 import { massageSpec, normalize } from './massage-spec';;
 import { writeSorted, applyPatchSet, applyAndWrite } from './patch-set';
+import { validateSpecificationEvolution } from './validate-evolution';
 import { schema } from '../lib';
 
 async function main() {
   const inputDir = path.join(process.cwd(), 'spec-source');
   const outDir = path.join(process.cwd(), 'spec');
 
-  await generateResourceSpecification(inputDir, path.join(outDir, 'specification.json'));
+  // If this is a PR build check the spec for evolution (this is set in buildspec-pr.yaml)
+  const outputFile = path.join(outDir, 'specification.json');
+  if (process.env.CODEBUILD_WEBHOOK_TRIGGER?.startsWith('pr/')) {
+    await validateSpecificationEvolution(async () => {
+      await generateResourceSpecification(inputDir, outputFile, true);
+      return fs.readJson(outputFile);
+    });
+  } else {
+    await generateResourceSpecification(inputDir, outputFile, false);
+  }
+
   await applyAndWrite(path.join(outDir, 'cfn-lint.json'), path.join(inputDir, 'cfn-lint'));
   await applyAndWrite(path.join(outDir, 'cfn-docs.json'), path.join(inputDir, 'cfn-docs'));
 }
@@ -23,10 +35,12 @@ async function main() {
 /**
  * Generate CloudFormation resource specification from sources and patches
  */
-async function generateResourceSpecification(inputDir: string, outFile: string) {
+async function generateResourceSpecification(inputDir: string, outFile: string, failOnError = true) {
   const spec: schema.Specification = { PropertyTypes: {}, ResourceTypes: {}, Fingerprint: '' };
 
-  Object.assign(spec, await applyPatchSet(path.join(inputDir, 'specification')));
+  Object.assign(spec, await applyPatchSet(path.join(inputDir, 'specification'), {
+    strict: failOnError,
+  }));
   massageSpec(spec);
   spec.Fingerprint = md5(JSON.stringify(normalize(spec)));
 

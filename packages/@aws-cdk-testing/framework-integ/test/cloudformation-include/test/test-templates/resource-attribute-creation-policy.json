@@ -1,0 +1,24 @@
+{
+  "Parameters": {
+    "CountParameter": {
+      "Type": "Number",
+      "Default": 3
+    }
+  },
+  "Resources": {
+    "Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "CreationPolicy": {
+        "AutoScalingCreationPolicy": {
+          "MinSuccessfulInstancesPercent": 50
+        },
+        "ResourceSignal": {
+          "Count": {
+            "Ref": "CountParameter"
+          },
+          "Timeout":"PT5H4M3S"
+        }
+      }
+    }
+  }
+}

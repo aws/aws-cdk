@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.KinesisVideo"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.kinesisvideo"
+    },
+    "python": {
+      "module": "aws_cdk.aws_kinesisvideo"
+    }
+  }
+}

@@ -11,10 +11,10 @@ import { checkForPlatformWarnings } from './platform-warnings';
 import { enableTracing } from './util/tracing';
 import { SdkProvider } from '../lib/api/aws-auth';
 import { BootstrapSource, Bootstrapper } from '../lib/api/bootstrap';
-import { CloudFormationDeployments } from '../lib/api/cloudformation-deployments';
 import { StackSelector } from '../lib/api/cxapp/cloud-assembly';
 import { CloudExecutable, Synthesizer } from '../lib/api/cxapp/cloud-executable';
 import { execProgram } from '../lib/api/cxapp/exec';
+import { Deployments } from '../lib/api/deployments';
 import { PluginHost } from '../lib/api/plugin';
 import { ToolkitInfo } from '../lib/api/toolkit-info';
 import { StackActivityProgress } from '../lib/api/util/cloudformation/stack-activity-monitor';
@@ -22,6 +22,7 @@ import { CdkToolkit, AssetBuildTime } from '../lib/cdk-toolkit';
 import { realHandler as context } from '../lib/commands/context';
 import { realHandler as docs } from '../lib/commands/docs';
 import { realHandler as doctor } from '../lib/commands/doctor';
+import { MIGRATE_SUPPORTED_LANGUAGES, cliMigrate } from '../lib/commands/migrate';
 import { RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
 import { data, debug, error, print, setLogLevel, setCI } from '../lib/logging';
@@ -77,8 +78,8 @@ async function parseCommandLineArguments(args: string[]) {
     .option('ca-bundle-path', { type: 'string', desc: 'Path to CA certificate to use when validating HTTPS requests. Will read from AWS_CA_BUNDLE environment variable if not specified', requiresArg: true })
     .option('ec2creds', { type: 'boolean', alias: 'i', default: undefined, desc: 'Force trying to fetch EC2 instance credentials. Default: guess EC2 instance status' })
     .option('version-reporting', { type: 'boolean', desc: 'Include the "AWS::CDK::Metadata" resource in synthesized templates (enabled by default)', default: undefined })
-    .option('path-metadata', { type: 'boolean', desc: 'Include "aws:cdk:path" CloudFormation metadata for each resource (enabled by default)', default: true })
-    .option('asset-metadata', { type: 'boolean', desc: 'Include "aws:asset:*" CloudFormation metadata for resources that uses assets (enabled by default)', default: true })
+    .option('path-metadata', { type: 'boolean', desc: 'Include "aws:cdk:path" CloudFormation metadata for each resource (enabled by default)', default: undefined })
+    .option('asset-metadata', { type: 'boolean', desc: 'Include "aws:asset:*" CloudFormation metadata for resources that uses assets (enabled by default)', default: undefined })
     .option('role-arn', { type: 'string', alias: 'r', desc: 'ARN of Role to use when invoking CloudFormation', default: undefined, requiresArg: true })
     .option('staging', { type: 'boolean', desc: 'Copy assets to the output directory (use --no-staging to disable the copy of assets which allows local debugging via the SAM CLI to reference the original source files)', default: true })
     .option('output', { type: 'string', alias: 'o', desc: 'Emits the synthesized cloud assembly into a directory (default: cdk.out)', requiresArg: true })
@@ -109,7 +110,8 @@ async function parseCommandLineArguments(args: string[]) {
       .option('termination-protection', { type: 'boolean', default: undefined, desc: 'Toggle CloudFormation termination protection on the bootstrap stacks' })
       .option('show-template', { type: 'boolean', desc: 'Instead of actual bootstrapping, print the current CLI\'s bootstrapping template to stdout for customization', default: false })
       .option('toolkit-stack-name', { type: 'string', desc: 'The name of the CDK toolkit stack to create', requiresArg: true })
-      .option('template', { type: 'string', requiresArg: true, desc: 'Use the template from the given file instead of the built-in one (use --show-template to obtain an example)' }),
+      .option('template', { type: 'string', requiresArg: true, desc: 'Use the template from the given file instead of the built-in one (use --show-template to obtain an example)' })
+      .option('previous-parameters', { type: 'boolean', default: true, desc: 'Use previous values for existing parameters (you must specify all parameters on every deployment if this is disabled)' }),
     )
     .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', (yargs: Argv) => yargs
       .option('all', { type: 'boolean', default: false, desc: 'Deploy all available stacks' })
@@ -256,16 +258,23 @@ async function parseCommandLineArguments(args: string[]) {
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only diff requested stacks, don\'t include dependencies' })
       .option('context-lines', { type: 'number', desc: 'Number of context lines to include in arbitrary JSON diff rendering', default: 3, requiresArg: true })
       .option('template', { type: 'string', desc: 'The path to the CloudFormation template to compare with', requiresArg: true })
-      .option('strict', { type: 'boolean', desc: 'Do not filter out AWS::CDK::Metadata resources', default: false })
+      .option('strict', { type: 'boolean', desc: 'Do not filter out AWS::CDK::Metadata resources or mangled non-ASCII characters', default: false })
       .option('security-only', { type: 'boolean', desc: 'Only diff for broadened security changes', default: false })
       .option('fail', { type: 'boolean', desc: 'Fail with exit code 1 in case of diff' })
-      .option('processed', { type: 'boolean', desc: 'Whether to compare against the template with Transforms already processed', default: false }))
+      .option('processed', { type: 'boolean', desc: 'Whether to compare against the template with Transforms already processed', default: false })
+      .option('quiet', { type: 'boolean', alias: 'q', desc: 'Do not print stack name and default message when there is no diff to stdout', default: false }))
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')
     .command(['acknowledge [ID]', 'ack [ID]'], 'Acknowledge a notice so that it does not show up anymore')
     .command('notices', 'Returns a list of relevant notices')
     .command('init [TEMPLATE]', 'Create a new, empty CDK project from a template.', (yargs: Argv) => yargs
       .option('language', { type: 'string', alias: 'l', desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)', choices: initTemplateLanguages })
       .option('list', { type: 'boolean', desc: 'List the available templates' })
+      .option('generate-only', { type: 'boolean', default: false, desc: 'If true, only generates project files, without executing additional operations such as setting up a git repo, installing dependencies or compiling the project' }),
+    )
+    .command('migrate', false /* hidden from "cdk --help" */, (yargs: Argv) => yargs
+      .option('language', { type: 'string', alias: 'l', desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)', choices: MIGRATE_SUPPORTED_LANGUAGES })
+      .option('input-path', { type: 'string', alias: 'inputpath', desc: 'The path to the CloudFormation template to migrate' })
+      .option('output-path', { type: 'string', alias: 'outputpath', desc: 'The output path for the migrated cdk code' })
       .option('generate-only', { type: 'boolean', default: false, desc: 'If true, only generates project files, without executing additional operations such as setting up a git repo, installing dependencies or compiling the project' }),
     )
     .command('context', 'Manage cached context values', (yargs: Argv) => yargs
@@ -347,7 +356,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
     },
   });
 
-  const cloudFormation = new CloudFormationDeployments({ sdkProvider });
+  const cloudFormation = new Deployments({ sdkProvider });
 
   let outDirLock: ILock | undefined;
   const cloudExecutable = new CloudExecutable({
@@ -381,7 +390,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
     function tryResolve(plugin: string): string {
       try {
         return require.resolve(plugin);
-      } catch (e) {
+      } catch (e: any) {
         error(`Unable to resolve plugin ${chalk.green(plugin)}: ${e.stack}`);
         throw new Error(`Unable to resolve plug-in: ${plugin}`);
       }
@@ -447,7 +456,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
     const cli = new CdkToolkit({
       cloudExecutable,
-      cloudFormation,
+      deployments: cloudFormation,
       verbose: argv.trace || argv.verbose > 0,
       ignoreErrors: argv['ignore-errors'],
       strict: argv.strict,
@@ -470,7 +479,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         return cli.list(args.STACKS, { long: args.long, json: argv.json });
 
       case 'diff':
-        const enableDiffNoFail = isFeatureEnabled(configuration, cxapi.ENABLE_DIFF_NO_FAIL);
+        const enableDiffNoFail = isFeatureEnabled(configuration, cxapi.ENABLE_DIFF_NO_FAIL_CONTEXT);
         return cli.diff({
           stackNames: args.STACKS,
           exclusively: args.exclusively,
@@ -481,10 +490,11 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           fail: args.fail != null ? args.fail : !enableDiffNoFail,
           stream: args.ci ? process.stdout : undefined,
           compareAgainstProcessedTemplate: args.processed,
+          quiet: args.quiet,
         });
 
       case 'bootstrap':
-        const source: BootstrapSource = determineBootsrapVersion(args, configuration);
+        const source: BootstrapSource = determineBootstrapVersion(args, configuration);
 
         const bootstrapper = new Bootstrapper(source);
 
@@ -499,6 +509,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           execute: args.execute,
           tags: configuration.settings.get(['tags']),
           terminationProtection: args.terminationProtection,
+          usePreviousParameters: args['previous-parameters'],
           parameters: {
             bucketName: configuration.settings.get(['toolkitBucket', 'bucketName']),
             kmsKeyId: configuration.settings.get(['toolkitBucket', 'kmsKeyId']),
@@ -575,8 +586,11 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           selector,
           toolkitStackName,
           roleArn: args.roleArn,
-          execute: args.execute,
-          changeSetName: args.changeSetName,
+          deploymentMethod: {
+            method: 'change-set',
+            execute: args.execute,
+            changeSetName: args.changeSetName,
+          },
           progress: configuration.settings.get(['progress']),
           rollback: configuration.settings.get(['rollback']),
           recordResourceMapping: args['record-resource-mapping'],
@@ -596,7 +610,10 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           toolkitStackName,
           roleArn: args.roleArn,
           reuseAssets: args['build-exclude'],
-          changeSetName: args.changeSetName,
+          deploymentMethod: {
+            method: 'change-set',
+            changeSetName: args.changeSetName,
+          },
           force: args.force,
           progress: configuration.settings.get(['progress']),
           rollback: configuration.settings.get(['rollback']),
@@ -616,10 +633,11 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
       case 'synthesize':
       case 'synth':
+        const quiet = configuration.settings.get(['quiet']) ?? args.quiet;
         if (args.exclusively) {
-          return cli.synth(args.STACKS, args.exclusively, args.quiet, args.validation, argv.json);
+          return cli.synth(args.STACKS, args.exclusively, quiet, args.validation, argv.json);
         } else {
-          return cli.synth(args.STACKS, true, args.quiet, args.validation, argv.json);
+          return cli.synth(args.STACKS, true, quiet, args.validation, argv.json);
         }
 
       case 'notices':
@@ -640,6 +658,9 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         } else {
           return cliInit(args.TEMPLATE, language, undefined, args.generateOnly);
         }
+      case 'migrate':
+        const migrateLanguage = configuration.settings.get(['language']);
+        return cliMigrate(args.inputpath, migrateLanguage, args.generateOnly, args.outputpath);
       case 'version':
         return data(version.DISPLAY_VERSION);
 
@@ -647,14 +668,13 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         throw new Error('Unknown command: ' + command);
     }
   }
-
 }
 
 /**
  * Determine which version of bootstrapping
  * (legacy, or "new") should be used.
  */
-function determineBootsrapVersion(args: { template?: string }, configuration: Configuration): BootstrapSource {
+function determineBootstrapVersion(args: { template?: string }, configuration: Configuration): BootstrapSource {
   const isV1 = version.DISPLAY_VERSION.startsWith('1.');
   return isV1 ? determineV1BootstrapSource(args, configuration) : determineV2BootstrapSource(args);
 }
