@@ -7,15 +7,6 @@ from constructs import Construct
   AWS CloudFormation Sample Template S3_Website_Bucket_With_Retain_On_Delete: Sample template showing how to create a publicly accessible S3 bucket configured for website access with a deletion policy of retain on delete.
 """
 class GoodPythonStack(Stack):
-  """
-    URL for website hosted on S3
-  """
-  global website_u_r_l
-  """
-    Name of S3 bucket to hold website content
-  """
-  global s3_bucket_secure_u_r_l
-
   def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
@@ -30,18 +21,26 @@ class GoodPythonStack(Stack):
     s3Bucket.cfn_options.deletion_policy = cdk.CfnDeletionPolicy.RETAIN
 
     # Outputs
-    self.website_u_r_l = s3Bucket.attr_website_u_r_l
+    """
+      URL for website hosted on S3
+    """
+    self.website_url = s3Bucket.attr_website_url
     cdk.CfnOutput(self, 'WebsiteURL', 
       description = 'URL for website hosted on S3',
-      value = self.website_u_r_l,
+      value = str(self.website_url),
     )
-    self.s3_bucket_secure_u_r_l = [
+
+    """
+      Name of S3 bucket to hold website content
+    """
+    self.s3_bucket_secure_url = ''.join([
       'https://',
       s3Bucket.attr_domain_name,
-    ].join('')
+    ])
     cdk.CfnOutput(self, 'S3BucketSecureURL', 
       description = 'Name of S3 bucket to hold website content',
-      value = self.s3_bucket_secure_u_r_l,
+      value = str(self.s3_bucket_secure_url),
     )
+
 
 

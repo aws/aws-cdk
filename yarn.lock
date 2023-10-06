@@ -5515,10 +5515,10 @@ case@1.6.3, case@^1.6.3:
   resolved "https://registry.npmjs.org/case/-/case-1.6.3.tgz#0a4386e3e9825351ca2e6216c60467ff5f1ea1c9"
   integrity sha512-mzDSXIPaFwVDvZAHqZ9VlbyF4yyXRuX6IvB06WvPYkqJVO24kX1PPhv9bfpKNFZyxYFmmgo03HUiD8iklmJYRQ==
 
-cdk-from-cfn@^0.36.0:
-  version "0.36.0"
-  resolved "https://registry.npmjs.org/cdk-from-cfn/-/cdk-from-cfn-0.36.0.tgz#d5363d8475e10e09bcb7e8f5a64df19b8794df87"
-  integrity sha512-UWDcoLhph/1qUul2u7V2C2MMlbWGo4VhguyWEOHVDTSN4CZ/XuMH3GNDCaNVoQgeLh/GVJFtZAd92WUZNzj4hw==
+cdk-from-cfn@^0.47.0:
+  version "0.47.0"
+  resolved "https://registry.npmjs.org/cdk-from-cfn/-/cdk-from-cfn-0.47.0.tgz#76998b826245ba28809746a173ef1f844294c32b"
+  integrity sha512-GNTTgBlFT1A2WezIeH4pjoTE2zuRJxpjl3emQCiTpQmDeTeQSfe30fvatrKc4Dn0TJZtNhTubpRJeRf2dfDDeA==
 
 cdk-generate-synthetic-examples@^0.1.291:
   version "0.1.291"
