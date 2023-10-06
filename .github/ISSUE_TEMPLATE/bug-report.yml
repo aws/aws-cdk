@@ -95,7 +95,7 @@ body:
       label: Language
       multiple: true
       options:
-        - Typescript
+        - TypeScript
         - Python
         - .NET
         - Java
