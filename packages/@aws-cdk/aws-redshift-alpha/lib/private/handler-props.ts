@@ -25,6 +25,7 @@ export interface TableHandlerProps {
 }
 
 export interface TablePrivilege {
+  readonly tableId: string;
   readonly tableName: string;
   readonly actions: string[];
 }
