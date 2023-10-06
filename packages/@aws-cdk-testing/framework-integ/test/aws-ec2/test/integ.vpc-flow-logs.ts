@@ -170,14 +170,13 @@ const featureFlagTest = new FeatureFlagStack(app, 'FlowLogsFeatureFlag');
 const transitGatewayFlowLogTest = new TransitGatewayFlowLogStack(app, 'TransitGatewayFlowLogStack');
 const transitGatewayAttachmentFlowLogTest = new TransitGatewayAttachmentFlowLogStack(app, 'TransitGatewayAttachmentFlowLogStack');
 
-// @ts-ignore
 const integ = new IntegTest(app, 'FlowLogs', {
   testCases: [
     new TestStack(app, 'FlowLogsTestStack'),
     featureFlagTest,
     new DependencyTestStack(app, 'DependencyTestStack'),
-    new TransitGatewayFlowLogStack(app, 'TransitGatewayFlowLogStack'),
-    new TransitGatewayAttachmentFlowLogStack(app, 'TransitGatewayAttachmentFlowLogStack'),
+    transitGatewayFlowLogTest,
+    transitGatewayAttachmentFlowLogTest,
   ],
   diffAssets: true,
 });
