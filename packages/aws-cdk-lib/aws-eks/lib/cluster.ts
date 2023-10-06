@@ -1800,10 +1800,16 @@ export class Cluster extends ClusterBase {
    * @param options options for creating a new nodegroup
    */
   public addNodegroupCapacity(id: string, options?: NodegroupOptions): Nodegroup {
-    return new Nodegroup(this, `Nodegroup${id}`, {
+    const mng = new Nodegroup(this, `Nodegroup${id}`, {
       cluster: this,
       ...options,
     });
+
+    if (options?.instanceTypes?.some(instanceType => nodeTypeForInstanceType(instanceType) === NodeType.INFERENTIA)) {
+      this.addNeuronDevicePlugin();
+    }
+
+    return mng;
   }
 
   /**
