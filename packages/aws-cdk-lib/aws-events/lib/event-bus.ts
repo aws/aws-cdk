@@ -309,11 +309,6 @@ export class EventBus extends EventBusBase {
    */
   public readonly eventSourceName?: string;
 
-  /**
-   * The EventBusPolicies attached to this event bus
-   */
-  public readonly policies: EventBusPolicy[];
-
   constructor(scope: Construct, id: string, props?: EventBusProps) {
     const { eventBusName, eventSourceName } = EventBus.eventBusProps(
       Lazy.string({ produce: () => Names.uniqueId(this) }),
@@ -321,8 +316,6 @@ export class EventBus extends EventBusBase {
     );
 
     super(scope, id, { physicalName: eventBusName });
-
-    this.policies = [];
 
     const eventBus = new CfnEventBus(this, 'Resource', {
       name: this.physicalName,
@@ -348,12 +341,11 @@ export class EventBus extends EventBusBase {
       throw new Error('Event Bus policy statements must have a sid');
     }
 
-    const policy = new EventBusPolicy(this, statement.sid, {
+    new EventBusPolicy(this, statement.sid, {
       eventBus: this,
       statement: statement.toJSON(),
       statementId: statement.sid,
     });
-    this.policies.push(policy);
 
     return { statementAdded: true, policyDependable: policy };
   }
