@@ -129,6 +129,8 @@ new cloud9.Ec2Environment(this, 'C9Env', {
 
 To specify a specific IAM User as the environment owner, use `Owner.user()`. The user should have the `AWSCloud9Administrator` managed policy
 
+The user should have the `AWSCloud9User` (preferred) or `AWSCloud9Administrator` managed policy attached.
+
 ```ts
 import * as iam from 'aws-cdk-lib/aws-iam';
 
@@ -143,7 +145,9 @@ new cloud9.Ec2Environment(this, 'C9Env', {
 })
 ```
 
-To specify a specific IAM Federated User as the environment owner, use `Owner.federatedUser(accountId, userName)`. The user should have the `AWSCloud9Administrator` managed policy
+To specify a specific IAM Federated User as the environment owner, use `Owner.federatedUser(accountId, userName)`.
+
+The user should have the `AWSCloud9User` (preferred) or `AWSCloud9Administrator` managed policy attached.
 
 ```ts
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -156,7 +160,9 @@ new cloud9.Ec2Environment(this, 'C9Env', {
 })
 ```
 
-To specify an IAM Assumed Role as the environment owner, use `Owner.assumedRole(accountId: string, roleName: string)`. The role should have the `AWSCloud9Administrator` managed policy
+To specify an IAM Assumed Role as the environment owner, use `Owner.assumedRole(accountId: string, roleName: string)`.
+
+The role should have the `AWSCloud9User` (preferred) or `AWSCloud9Administrator` managed policy attached.
 
 ```ts
 import * as iam from 'aws-cdk-lib/aws-iam';
