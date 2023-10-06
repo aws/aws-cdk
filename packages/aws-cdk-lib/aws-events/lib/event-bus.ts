@@ -341,7 +341,7 @@ export class EventBus extends EventBusBase {
       throw new Error('Event Bus policy statements must have a sid');
     }
 
-    new EventBusPolicy(this, statement.sid, {
+    const policy = new EventBusPolicy(this, statement.sid, {
       eventBus: this,
       statement: statement.toJSON(),
       statementId: statement.sid,
