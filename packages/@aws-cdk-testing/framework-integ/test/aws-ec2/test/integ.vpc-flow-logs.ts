@@ -136,20 +136,12 @@ class TransitGatewayAttachmentFlowLogStack extends Stack {
 
     const vpc = new Vpc(this, 'VpcForTransitGateway', {
       ipAddresses: IpAddresses.cidr('10.0.1.0/24'),
-      enableDnsHostnames: true,
-      enableDnsSupport: true,
       natGateways: 0,
       maxAzs: 1,
       subnetConfiguration: [
         {
-          name: 'Public',
-          subnetType: SubnetType.PUBLIC,
-          cidrMask: 27,
-        },
-        {
-          name: 'Isolated',
+          name: 'IsolatedSubnet',
           subnetType: SubnetType.PRIVATE_ISOLATED,
-          cidrMask: 28,
         },
       ],
     });
@@ -157,22 +149,13 @@ class TransitGatewayAttachmentFlowLogStack extends Stack {
     const transitGateway = new CfnTransitGateway(this, 'TransitGateway', {});
     const transitGatewayAttachment = new CfnTransitGatewayVpcAttachment(
       this,
-      'Transit Gateway attachment VPC A',
+      'TransitGatewayAttachment',
       {
         subnetIds: vpc.selectSubnets({
           subnetType: SubnetType.PRIVATE_ISOLATED,
         }).subnetIds,
         transitGatewayId: transitGateway.ref,
         vpcId: vpc.vpcId,
-        options: {
-          DnsSupport: 'enable',
-        },
-        tags: [
-          {
-            key: 'Name',
-            value: 'tgw-attach-vpc-a',
-          },
-        ],
       },
     );
 
@@ -184,7 +167,10 @@ class TransitGatewayAttachmentFlowLogStack extends Stack {
 }
 
 const featureFlagTest = new FeatureFlagStack(app, 'FlowLogsFeatureFlag');
+const transitGatewayFlowLogTest = new TransitGatewayFlowLogStack(app, 'TransitGatewayFlowLogStack');
+const transitGatewayAttachmentFlowLogTest = new TransitGatewayAttachmentFlowLogStack(app, 'TransitGatewayAttachmentFlowLogStack');
 
+// @ts-ignore
 const integ = new IntegTest(app, 'FlowLogs', {
   testCases: [
     new TestStack(app, 'FlowLogsTestStack'),
