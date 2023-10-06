@@ -1,0 +1,12 @@
+{
+  "version": "34.0.0",
+  "testCases": {
+    "IntegCanaryTest/DefaultTest": {
+      "stacks": [
+        "canary-one"
+      ],
+      "assertionStack": "IntegCanaryTest/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegCanaryTestDefaultTestDeployAssert3AD5A094"
+    }
+  }
+}

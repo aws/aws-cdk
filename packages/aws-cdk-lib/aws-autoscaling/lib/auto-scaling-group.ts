@@ -1295,10 +1295,6 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       });
       this.grantPrincipal = this._role;
 
-      if (props.ssmSessionPermissions) {
-        this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'));
-      }
-
       const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
         roles: [this.role.roleName],
       });
@@ -1352,6 +1348,10 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         launchConfig.node.addDependency(this.role);
         this.osType = imageConfig.osType;
       }
+    }
+
+    if (props.ssmSessionPermissions && this._role) {
+      this._role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'));
     }
 
     // desiredCapacity just reflects what the user has supplied.

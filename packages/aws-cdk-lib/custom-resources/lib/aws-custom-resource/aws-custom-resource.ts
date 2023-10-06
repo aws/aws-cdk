@@ -1,4 +1,3 @@
-import * as fs from 'fs';
 import * as path from 'path';
 import { Construct } from 'constructs';
 import * as ec2 from '../../../aws-ec2';
@@ -8,6 +7,7 @@ import * as logs from '../../../aws-logs';
 import * as cdk from '../../../core';
 import { Annotations } from '../../../core';
 import * as cxapi from '../../../cx-api';
+import { awsSdkToIamAction } from '../helpers-internal/sdk-info';
 
 // Shared definition with packages/@aws-cdk/custom-resource-handlers/lib/custom-resources/aws-custom-resource-handler/shared.ts
 const PHYSICAL_RESOURCE_ID_REFERENCE = 'PHYSICAL:RESOURCEID:';
@@ -85,12 +85,25 @@ export interface AwsSdkCall {
   /**
    * The service to call
    *
+   * This is the name of an AWS service, in one of the following forms:
+   *
+   * - An AWS SDK for JavaScript v3 package name (`@aws-sdk/client-api-gateway`)
+   * - An AWS SDK for JavaScript v3 client name (`api-gateway`)
+   * - An AWS SDK for JavaScript v2 constructor name (`APIGateway`)
+   * - A lowercase AWS SDK for JavaScript v2 constructor name (`apigateway`)
+   *
    * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html
    */
   readonly service: string;
 
   /**
    * The service action to call
+   *
+   * This is the name of an AWS API call, in one of the following forms:
+   *
+   * - An API call name as found in the API Reference documentation (`GetObject`)
+   * - The API call name starting with a lowercase letter (`getObject`)
+   * - The AWS SDK for JavaScript v3 command class name (`GetObjectCommand`)
    *
    * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html
    */
@@ -555,25 +568,6 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
 }
 
 /**
- * AWS SDK service metadata.
- */
-export type AwsSdkMetadata = {[key: string]: any};
-
-/**
- * Gets awsSdkMetaData from file or from cache
- */
-let getAwsSdkMetadata = (() => {
-  let _awsSdkMetadata: AwsSdkMetadata;
-  return function () {
-    if (_awsSdkMetadata) {
-      return _awsSdkMetadata;
-    } else {
-      return _awsSdkMetadata = JSON.parse(fs.readFileSync(path.join(__dirname, 'sdk-api-metadata.json'), 'utf-8'));
-    }
-  };
-})();
-
-/**
  * Returns true if `obj` includes a `PhysicalResourceIdReference` in one of the
  * values.
  * @param obj Any object.
@@ -595,18 +589,4 @@ function includesPhysicalResourceIdRef(obj: any | undefined) {
   });
 
   return foundRef;
-}
-
-/**
- * Transform SDK service/action to IAM action using metadata from aws-sdk module.
- * Example: CloudWatchLogs with putRetentionPolicy => logs:PutRetentionPolicy
- *
- * TODO: is this mapping correct for all services?
- */
-function awsSdkToIamAction(service: string, action: string): string {
-  const srv = service.toLowerCase();
-  const awsSdkMetadata = getAwsSdkMetadata();
-  const iamService = (awsSdkMetadata[srv] && awsSdkMetadata[srv].prefix) || srv;
-  const iamAction = action.charAt(0).toUpperCase() + action.slice(1);
-  return `${iamService}:${iamAction}`;
 }

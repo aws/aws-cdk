@@ -3,8 +3,12 @@ using Amazon.CDK.AWS.S3;
 using Constructs;
 using System.Collections.Generic;
 
-namespace Com.Acme.Test.Simple
+namespace GoodCSharpStack
 {
+    public class GoodCSharpStackProps : StackProps
+    {
+    }
+
     /// <summary>
     /// AWS CloudFormation Sample Template S3_Website_Bucket_With_Retain_On_Delete: Sample template showing how to create a publicly accessible S3 bucket configured for website access with a deletion policy of retain on delete.
     /// </summary>

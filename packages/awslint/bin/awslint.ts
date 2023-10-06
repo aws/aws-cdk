@@ -6,7 +6,7 @@ import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import * as reflect from 'jsii-reflect';
 import * as yargs from 'yargs';
-import { ALL_RULES_LINTER, DiagnosticLevel } from '../lib';
+import { ALL_RULES_LINTER, DiagnosticLevel, RuleFilterSet } from '../lib';
 
 let stackTrace = false;
 
@@ -37,7 +37,7 @@ async function main() {
     .example('awslint', 'lints the current module against all rules')
     .example('awslint -v -i "resource*" -i "import*"', 'lints against all rules that start with "resource" or "import" and print successes')
     .example('awslint -x "*:@aws-cdk/aws-s3*"', 'evaluate all rules in all scopes besides ones that begin with "@aws-cdk/aws-s3"')
-    .example('awslint --save', 'updated "package.json" with "exclude"s for all failing rules');
+    .example('awslint --save', 'updated "awslint.json" with "exclude"s for all failing rules');
 
   if (!process.stdout.isTTY) {
     // Disable chalk color highlighting
@@ -118,11 +118,14 @@ async function main() {
     const excludesToSave = new Array<string>();
     let errors = 0;
 
+    const includeRules = new RuleFilterSet(args.include);
+    const excludeRules = new RuleFilterSet(args.exclude);
+
     const results = [];
 
     results.push(...ALL_RULES_LINTER.eval(assembly, {
-      include: args.include,
-      exclude: args.exclude,
+      includeRules: includeRules,
+      excludeRules: excludeRules,
     }));
 
     // Sort errors to the top (highest severity first)

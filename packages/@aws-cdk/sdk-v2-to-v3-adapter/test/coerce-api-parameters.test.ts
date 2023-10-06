@@ -507,7 +507,7 @@ describe('number', () => {
     });
 
     test('can convert string parameters to number in map & union', () => {
-      const params = coerceApiParameters('ApiGateway', 'createApi', {
+      const params = coerceApiParameters('apigatewayv2', 'createApi', {
         CorsConfiguration: {
           MaxAge: '300',
         },

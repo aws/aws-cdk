@@ -226,3 +226,6 @@ base-types:aws-cdk-lib.aws_autoscaling.CronOptions
 removed:aws-cdk-lib.aws_autoscaling.CronOptions.timeZone
 removed:aws-cdk-lib.aws_autoscaling.CronOptions.year
 removed:aws-cdk-lib.aws_backup.BackupPlanRuleProps.schedule
+
+# This data identifer was added by mistake; it had never worked.
+removed:aws-cdk-lib.aws_logs.DataIdentifier.PHONENUMBER

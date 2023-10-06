@@ -40,7 +40,11 @@ spec:
                       - inf1.xlarge
                       - inf1.2xlarge
                       - inf1.6xlarge
-                      - inf1.4xlarge
+                      - inf1.24xlarge
+                      - inf2.xlarge
+                      - inf2.8xlarge
+                      - inf2.24xlarge
+                      - inf2.48xlarge
               - matchExpressions:
                   - key: "node.kubernetes.io/instance-type"
                     operator: In
@@ -49,6 +53,10 @@ spec:
                       - inf1.2xlarge
                       - inf1.6xlarge
                       - inf1.24xlarge
+                      - inf2.xlarge
+                      - inf2.8xlarge
+                      - inf2.24xlarge
+                      - inf2.48xlarge
       containers:
         - image: 790709498068.dkr.ecr.us-west-2.amazonaws.com/neuron-device-plugin:1.0.9043.0
           imagePullPolicy: Always

@@ -25,6 +25,11 @@ class EksClusterInferenceStack extends Stack {
       instanceType: new ec2.InstanceType('inf1.2xlarge'),
       minCapacity: 1,
     });
+
+    cluster.addAutoScalingGroupCapacity('Inference2Instances', {
+      instanceType: new ec2.InstanceType('inf2.xlarge'),
+      minCapacity: 1,
+    });
   }
 }
 

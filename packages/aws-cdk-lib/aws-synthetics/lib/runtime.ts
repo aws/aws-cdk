@@ -123,6 +123,21 @@ export class Runtime {
   public static readonly SYNTHETICS_NODEJS_PUPPETEER_5_1 = new Runtime('syn-nodejs-puppeteer-5.1', RuntimeFamily.NODEJS);
 
   /**
+   * `syn-nodejs-puppeteer-6.0` includes the following:
+   * - Lambda runtime Node.js 18.x
+   * - Puppeteer-core version 19.7.0
+   * - Chromium version 111.0.5563.146
+   *
+   * New Features:
+   * - **Dependency upgrade**: The Node.js dependency is upgraded to 18.x.
+   * Bug fixes:
+   * - **Bug fix**: Clean up core dump generated when Chromium crashes during a canary run.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-6.0
+   */
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_6_0 = new Runtime('syn-nodejs-puppeteer-6.0', RuntimeFamily.NODEJS);
+
+  /**
    * `syn-python-selenium-1.0` includes the following:
    * - Lambda runtime Python 3.8
    * - Selenium version 3.141.0

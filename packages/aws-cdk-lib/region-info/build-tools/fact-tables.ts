@@ -207,6 +207,7 @@ export const APPMESH_ECR_ACCOUNTS: { [region: string]: string } = {
   'eu-west-1': '840364872350',
   'eu-west-2': '840364872350',
   'eu-west-3': '840364872350',
+  'il-central-1': '564877687649',
   'me-south-1': '772975370895',
   'sa-east-1': '840364872350',
   'us-east-1': '840364872350',

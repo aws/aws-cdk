@@ -1,41 +1,36 @@
-async function coerceValue(v: any) {
-
-  if (v && typeof(v) === 'object' && typeof((v as any).transformToString) === 'function') {
-    // in sdk v3 some return types are now adapters that we need to explicitly
-    // convert to strings. see example: https://github.com/aws/aws-sdk-js-v3/blob/main/UPGRADING.md?plain=1#L573-L576
-    // note we don't use 'instanceof Unit8Array' because observations show this won't always return true, even though
-    // the `transformToString` function will be available. (for example S3::GetObject)
-    const text = await (v as any).transformToString();
-    return tryJsonParse(text);
+/**
+ * Recurse into the given object, trying to parse any string as JSON
+ */
+export function deepParseJson<A extends string>(x: A): unknown;
+export function deepParseJson<A extends object>(x: A): A;
+export function deepParseJson(x: unknown): unknown {
+  if (typeof x === 'string') {
+    return tryJsonParse(x);
   }
-  return tryJsonParse(v);
+  if (Array.isArray(x)) {
+    return x.map(deepParseJson);
+  }
+  if (x && typeof x === 'object') {
+    for (const [key, value] of Object.entries(x)) {
+      (x as any)[key] = deepParseJson(value);
+    }
 
+    return x;
+  }
+
+  return x;
 }
 
-function tryJsonParse(v: any) {
+function tryJsonParse(v: string): unknown {
   if (typeof(v) !== 'string') {
     return v;
   }
+
   try {
     return JSON.parse(v);
   } catch {
     return v;
   }
-}
-
-export async function coerceResponse(response: any) {
-
-  if (response == null) {
-    return;
-  }
-
-  for (const key of Object.keys(response)) {
-    response[key] = await coerceValue(response[key]);
-    if (typeof response[key] === 'object') {
-      await coerceResponse(response[key]);
-    }
-  }
-
 }
 
 export function decodeParameters(obj: Record<string, any>): any {
