@@ -462,6 +462,8 @@ describe('serverless cluster', () => {
         minCapacity: AuroraCapacityUnit.ACU_1,
         maxCapacity: AuroraCapacityUnit.ACU_128,
         autoPause: cdk.Duration.minutes(10),
+        secondsBeforeTimeout: cdk.Duration.seconds(0),
+        timeoutAction: String('RollbackCapacityChange'),
       },
     });
 
@@ -472,6 +474,8 @@ describe('serverless cluster', () => {
         MaxCapacity: 128,
         MinCapacity: 1,
         SecondsUntilAutoPause: 600,
+        SecondsBeforeTimeout: cdk.Duration.seconds(0),
+        TimeoutAction: String('RollbackCapacityChange'),
       },
     });
   });

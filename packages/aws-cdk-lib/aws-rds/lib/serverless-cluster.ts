@@ -272,6 +272,20 @@ export interface ServerlessScalingOptions {
    * @default - automatic pause enabled after 5 minutes
    */
   readonly autoPause?: Duration;
+
+  /**
+   * The amount of time, in seconds, that Aurora Serverless v1 tries to find a scaling point to perform seamless scaling before enforcing the timeout action.
+   * @default - automatic timeout after
+   */
+  readonly secondsBeforeTimeout?: Duration;
+
+  /**
+   * The action to take when the timeout is reached, either ForceApplyCapacityChange or RollbackCapacityChange.
+   * ForceApplyCapacityChange sets the capacity to the specified value as soon as possible.
+   * RollbackCapacityChange, the default, ignores the capacity change if a scaling point isn't found in the timeout period.
+   * @default - RollbackCapacityChange
+   */
+  readonly timeoutAction? : string;
 }
 
 /**
@@ -440,10 +454,24 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
       defaultPort: ec2.Port.tcp(Lazy.number({ produce: () => this.clusterEndpoint.port })),
     });
   }
+  // valid timeout
+  private timeoutValidation(timeout: number | undefined, timeoutAction?: string | undefined): void {
+    if (timeout && (timeout < 60 || timeout > 600)) {
+      throw new Error('seconds before timeout must be between 60 and 600 seconds.');
+    }
+
+    if (timeoutAction && (timeoutAction !== 'ForceApplyCapacityChange' && timeoutAction !== 'RollbackCapacityChange')) {
+      throw new Error('timeout action must be ForceApplyCapacityChange or RollbackCapacityChange.');
+    }
+  }
 
   private renderScalingConfiguration(options: ServerlessScalingOptions): CfnDBCluster.ScalingConfigurationProperty {
     const minCapacity = options.minCapacity;
     const maxCapacity = options.maxCapacity;
+    const timeout = options.secondsBeforeTimeout?.toSeconds();
+    const timeoutAction = options.timeoutAction;
+
+    this.timeoutValidation(timeout, timeoutAction);
 
     if (minCapacity && maxCapacity && minCapacity > maxCapacity) {
       throw new Error('maximum capacity must be greater than or equal to minimum capacity.');
@@ -458,6 +486,8 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
       autoPause: (secondsToAutoPause === 0) ? false : true,
       minCapacity: options.minCapacity,
       maxCapacity: options.maxCapacity,
+      secondsBeforeTimeout: (timeout === 0) ? undefined : timeout,
+      timeoutAction: options.timeoutAction,
       secondsUntilAutoPause: (secondsToAutoPause === 0) ? undefined : secondsToAutoPause,
     };
   }

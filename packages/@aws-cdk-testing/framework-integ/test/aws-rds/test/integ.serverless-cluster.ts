@@ -43,4 +43,14 @@ const noCopyTagsCluster = new rds.ServerlessCluster(stack, 'Serverless Database 
 });
 noCopyTagsCluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');
 
+const slc = new rds.ServerlessCluster(stack, 'Serverless Database', {
+  engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
+  vpc,
+  scaling: {
+    secondsBeforeTimeout: cdk.Duration.seconds(0),
+    timeoutAction: String('RollbackCapacityChange'),
+  },
+});
+slc.connections.allowDefaultPortFromAnyIpv4('Severless Cluster with timeout');
+
 app.synth();

@@ -1013,6 +1013,8 @@ const cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
     autoPause: Duration.minutes(10), // default is to pause after 5 minutes of idle time
     minCapacity: rds.AuroraCapacityUnit.ACU_8, // default is 2 Aurora capacity units (ACUs)
     maxCapacity: rds.AuroraCapacityUnit.ACU_32, // default is 16 Aurora capacity units (ACUs)
+    secondsBeforeTimeout: Duration.seconds(300),
+    timeoutAction: string("RollbackCapacityChange") 
   }
 });
 ```
