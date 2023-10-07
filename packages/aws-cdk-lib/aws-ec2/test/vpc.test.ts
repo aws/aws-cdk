@@ -2164,7 +2164,6 @@ describe('vpc', () => {
       // WHEN
       // We want to place this endpoint in the same subnets as these IPv4
       // address.
-      // WHEN
       new InterfaceVpcEndpoint(stack, 'VPC Endpoint', {
         vpc,
         service: new InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc', 443),
@@ -2261,7 +2260,7 @@ describe('vpc', () => {
 
     });
 
-    test('can filter by multiple CIDR Ranges', () => {
+    test('can filter by CIDR Range', () => {
       // GIVEN
       const stack = getTestStack();
 
@@ -2272,9 +2271,7 @@ describe('vpc', () => {
       });
 
       // WHEN
-      // We want to place this endpoint in the same subnets as these IPv4
-      // address.
-      // WHEN
+      // We want to place this endpoint in subnets that are within a given CIDR range
       new InterfaceVpcEndpoint(stack, 'VPC Endpoint', {
         vpc,
         service: new InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc', 443),
@@ -2299,6 +2296,25 @@ describe('vpc', () => {
         ],
       });
 
+    });
+
+    test('can filter by CIDR Range if CIDR is associated with VPC', () => {
+      // GIVEN
+      const stack = getTestStack();
+
+      // IP space is split into 6 pieces, one public/one private per AZ
+      const vpc = new Vpc(stack, 'VPC', {
+        ipAddresses: IpAddresses.cidr('10.0.0.0/16'),
+        maxAzs: 3,
+      });
+
+      // WHEN
+      const subnets = vpc.selectSubnets({
+        subnetFilters: [SubnetFilter.byCidrRanges(['100.64.0.0/16'])],
+      });
+
+      // THEN
+      expect(subnets.subnetIds.length).toEqual(0);
     });
 
     test('tests router types', () => {

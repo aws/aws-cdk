@@ -44,7 +44,7 @@ export abstract class SubnetFilter {
   }
 
   /**
-   * Chooses subnets which are inside any of the specified CIDR Range.
+   * Chooses subnets which are inside any of the specified CIDR range.
    */
   public static byCidrRanges(vpcCidrs: string[]): SubnetFilter {
     return new CidrRangesSubnetFilter(vpcCidrs);
@@ -178,7 +178,7 @@ class CidrMaskSubnetFilter extends SubnetFilter {
 }
 
 /**
- * Chooses subnets based on the CIDR Range
+ * Chooses subnets based on the CIDR range
  */
 class CidrRangesSubnetFilter extends SubnetFilter {
 
@@ -197,9 +197,7 @@ class CidrRangesSubnetFilter extends SubnetFilter {
   }
 
   private checkCidrRanges(subnets: ISubnet[], cidrRanges: string[]): ISubnet[] {
-    const vpcCidrs = cidrRanges.map(cidr => {
-      return new CidrBlock(cidr);
-    });
+    const vpcCidrs = cidrRanges.map(cidr => new CidrBlock(cidr));
     return subnets.filter(s => {
       const subnetCidrBlock = new CidrBlock(s.ipv4CidrBlock);
       return vpcCidrs.some(cidr => cidr.containsCidr(subnetCidrBlock));
