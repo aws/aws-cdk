@@ -277,7 +277,7 @@ export interface ServerlessScalingOptions {
    * The amount of time, in seconds, that Aurora Serverless v1 tries to find a scaling point to perform seamless scaling before enforcing the timeout action.
    * @default - automatic timeout after
    */
-  readonly secondsBeforeTimeout?: Duration;
+  readonly secondsBeforeTimeout? : Duration;
 
   /**
    * The action to take when the timeout is reached, either ForceApplyCapacityChange or RollbackCapacityChange.
@@ -454,14 +454,15 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
       defaultPort: ec2.Port.tcp(Lazy.number({ produce: () => this.clusterEndpoint.port })),
     });
   }
+
   // valid timeout
   private timeoutValidation(timeout: number | undefined, timeoutAction?: string | undefined): void {
     if (timeout && (timeout < 60 || timeout > 600)) {
-      throw new Error('seconds before timeout must be between 60 and 600 seconds.');
+      throw Error('seconds before timeout must be between 60 and 600 seconds.');
     }
 
     if (timeoutAction && (timeoutAction !== 'ForceApplyCapacityChange' && timeoutAction !== 'RollbackCapacityChange')) {
-      throw new Error('timeout action must be ForceApplyCapacityChange or RollbackCapacityChange.');
+      throw Error('timeout action must be ForceApplyCapacityChange or RollbackCapacityChange.');
     }
   }
 
@@ -486,8 +487,10 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
       autoPause: (secondsToAutoPause === 0) ? false : true,
       minCapacity: options.minCapacity,
       maxCapacity: options.maxCapacity,
-      secondsBeforeTimeout: (timeout === 0) ? undefined : timeout,
+
+      secondsBeforeTimeout: (timeout === 300) ? undefined : timeout,
       timeoutAction: options.timeoutAction,
+
       secondsUntilAutoPause: (secondsToAutoPause === 0) ? undefined : secondsToAutoPause,
     };
   }

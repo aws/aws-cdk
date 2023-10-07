@@ -474,8 +474,8 @@ describe('serverless cluster', () => {
         MaxCapacity: 128,
         MinCapacity: 1,
         SecondsUntilAutoPause: 600,
-        SecondsBeforeTimeout: cdk.Duration.seconds(0),
-        TimeoutAction: String('RollbackCapacityChange'),
+        SecondsBeforeTimeout: 0,
+        TimeoutAction: 'RollbackCapacityChange',
       },
     });
   });
@@ -538,6 +538,37 @@ describe('serverless cluster', () => {
         AutoPause: false,
       },
     });
+  });
+
+  test('throws when invalid seconds before time out is specified', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
+
+    expect(() =>
+      new ServerlessCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        scaling: {
+          secondsBeforeTimeout: cdk.Duration.seconds(650),
+        },
+      })).toThrow(/seconds before timeout must be between 60 and 600 seconds./);
+  });
+
+  test('throws when invalid time out action set', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
+
+    // WHEN
+    expect(() =>
+      new ServerlessCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        scaling: {
+          timeoutAction: String('helloworld'),
+        },
+      })).toThrow(/timeout action must be ForceApplyCapacityChange or RollbackCapacityChange./);
   });
 
   test('throws when invalid auto pause time is specified', () => {
@@ -946,3 +977,4 @@ function testStack(app?: cdk.App, id?: string): cdk.Stack {
   stack.node.setContext('availability-zones:12345:us-test-1', ['us-test-1a', 'us-test-1b']);
   return stack;
 }
+

@@ -47,7 +47,7 @@ const slc = new rds.ServerlessCluster(stack, 'Serverless Database', {
   engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
   vpc,
   scaling: {
-    secondsBeforeTimeout: cdk.Duration.seconds(0),
+    secondsBeforeTimeout: cdk.Duration.seconds(300),
     timeoutAction: String('RollbackCapacityChange'),
   },
 });
