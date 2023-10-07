@@ -178,8 +178,8 @@ class CidrMaskSubnetFilter extends SubnetFilter {
 }
 
 /**
- * Chooses subnets based on the CIDR range
- */
+  * Chooses subnets which are inside any of the specified CIDR range.
+  */
 class CidrRangesSubnetFilter extends SubnetFilter {
 
   private readonly cidrRanges: string[]
