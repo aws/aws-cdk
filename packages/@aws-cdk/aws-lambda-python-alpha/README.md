@@ -127,6 +127,7 @@ new python.PythonFunction(this, 'function', {
 **Including hashes**
 
 You can include hashes in `poetry` using the optional boolean parameter `poetryIncludeHashes`:
+
 ```ts
 new python.PythonFunction(this, 'function', {
   entry: '/path/to/poetry-function',
@@ -140,6 +141,7 @@ new python.PythonFunction(this, 'function', {
 **Excluding URLs**
 
 You can exclude URLs in `poetry` using the optional boolean parameter `poetryWithoutUrls`:
+
 ```ts
 new python.PythonFunction(this, 'function', {
   entry: '/path/to/poetry-function',
