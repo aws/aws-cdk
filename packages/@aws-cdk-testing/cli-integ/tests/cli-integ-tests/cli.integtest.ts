@@ -594,10 +594,7 @@ integTest('deploy with role', withDefaultFixture(async (fixture) => {
         await fixture.shell(['go', 'get']);
       } else if (langChoice === 'python') {
         await fixture.packages.makeCliAvailable();
-        const venvPath = path.resolve(fixture.integTestDir, '.venv');
-        const venv = { PATH: `${venvPath}/bin:${process.env.PATH}`, VIRTUAL_ENV: venvPath };
-        await fixture.shell([`${venvPath}/bin/pip`, 'install', '-r', 'requirements.txt'], { modEnv: venv });
-        await fixture.cdkSynth({ modEnv: venv });
+        await fixture.shell(['pip', 'install', '-r', 'requirements.txt']);
       }
       // go stack doesn't follow the same naming scheme as other languages.
       const stackArn = await fixture.cdk(['deploy', '--require-approval', 'never'], { captureStderr: false });
