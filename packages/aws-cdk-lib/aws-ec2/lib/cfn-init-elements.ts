@@ -425,7 +425,7 @@ export abstract class InitFile extends InitElement {
   public static fromAsset(targetFileName: string, path: string, options: InitFileAssetOptions = {}): InitFile {
     return new class extends InitFile {
       protected _doBind(bindOptions: InitBindOptions) {
-        const asset = new s3_assets.Asset(bindOptions.scope, `${md5hash(bindOptions.scope.node.id)}${targetFileName}Asset`, {
+        const asset = new s3_assets.Asset(bindOptions.scope, `${md5hash(bindOptions.scope.node.children.toString())}${targetFileName}Asset`, {
           path,
           ...options,
         });
@@ -942,7 +942,7 @@ export abstract class InitSource extends InitElement {
   public static fromAsset(targetDirectory: string, path: string, options: InitSourceAssetOptions = {}): InitSource {
     return new class extends InitSource {
       protected _doBind(bindOptions: InitBindOptions) {
-        const asset = new s3_assets.Asset(bindOptions.scope, `${md5hash(bindOptions.scope.node.id)}${targetDirectory}Asset`, {
+        const asset = new s3_assets.Asset(bindOptions.scope, `${md5hash(bindOptions.scope.node.children.toString())}${targetDirectory}Asset`, {
           path,
           ...bindOptions,
         });
