@@ -1,7 +1,7 @@
 import { promises as fs, existsSync } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { integTest, cloneDirectory, shell, withDefaultFixture, retry, sleep, randomInteger, withSamIntegrationFixture, RESOURCES_DIR, TestFixture } from '../../lib';
+import { integTest, cloneDirectory, shell, withDefaultFixture, retry, sleep, randomInteger, withSamIntegrationFixture, RESOURCES_DIR, TestFixture, withTemporaryDirectory, withPackages, ShellHelper } from '../../lib';
 
 jest.setTimeout(2 * 60 * 60_000); // Includes the time to acquire locks, worst-case single-threaded runtime
 
@@ -576,51 +576,37 @@ integTest('deploy with role', withDefaultFixture(async (fixture) => {
   integTest(
     `cdk migrate ${langChoice}`,
     withDefaultFixture(async (fixture) => {
-      const tempPath = path.join(fixture.integTestDir);
-
       const inputFile = path.join(__dirname, '../../resources/templates/', 'sqs-template.json');
       const stackName = fixture.stackNamePrefix + `-${langChoice}-migrate-stack`;
 
       await fixture.cdk([
         'migrate',
         '--language',
-        `${langChoice}`,
+        langChoice,
         '--stack-name',
         stackName,
         '--from-path',
         inputFile.toString(),
-        '--output-path',
-        tempPath.toString(),
       ]);
-      // Create a new fixture for the migrated app directory
-      const tempFixture = new TestFixture(
-        path.join(tempPath.toString(), stackName),
-        fixture.stackNamePrefix,
-        fixture.output,
-        fixture.aws,
-        fixture.randomString);
+
+      await fixture.shell(['cd', stackName]);
       if (langChoice === 'go') {
-        await tempFixture.shell(['go', 'get']);
+        await fixture.shell(['go', 'get']);
       } else if (langChoice === 'python') {
         await fixture.packages.makeCliAvailable();
         const venvPath = path.resolve(fixture.integTestDir, '.venv');
         const venv = { PATH: `${venvPath}/bin:${process.env.PATH}`, VIRTUAL_ENV: venvPath };
-
-        await tempFixture.shell([`${venvPath}/bin/pip`, 'install', '-r', 'requirements.txt'], { modEnv: venv });
+        await fixture.shell([`${venvPath}/bin/pip`, 'install', '-r', 'requirements.txt'], { modEnv: venv });
+        await fixture.cdkSynth({ modEnv: venv });
       }
       // go stack doesn't follow the same naming scheme as other languages.
-      let stackArn;
-      if (langChoice == 'go') {
-        stackArn = await tempFixture.cdk(['deploy', '--require-approval', 'never'], { captureStderr: false });
-      } else {
-        stackArn = await tempFixture.cdkDeploy(`${langChoice}-migrate-stack`, { captureStderr: false });
-      }
-
-      const response = await tempFixture.aws.cloudFormation('describeStacks', {
+      const stackArn = await fixture.cdk(['deploy', '--require-approval', 'never'], { captureStderr: false });
+      const response = await fixture.aws.cloudFormation('describeStacks', {
         StackName: stackArn,
       });
+
       expect(response.Stacks?.[0].StackStatus).toEqual('CREATE_COMPLETE');
-      await tempFixture.cdkDestroy(`${langChoice}-migrate-stack`);
+      await fixture.cdkDestroy(`${langChoice}-migrate-stack`);
     }),
   );
 });
