@@ -306,7 +306,7 @@ test('Bundling a function with poetry and no assetExcludes', () => {
 test('Bundling a function with poetry dependencies, with hashes', () => {
   const entry = path.join(__dirname, 'lambda-handler-poetry');
 
-  Bundling.bundle({
+  const assetCode = Bundling.bundle({
     entry: path.join(entry, '.'),
     runtime: Runtime.PYTHON_3_9,
     architecture: Architecture.X86_64,
@@ -322,12 +322,19 @@ test('Bundling a function with poetry dependencies, with hashes', () => {
       ],
     }),
   }));
+
+  const files = fs.readdirSync(assetCode.path);
+  expect(files).toContain('index.py');
+  expect(files).toContain('pyproject.toml');
+  expect(files).toContain('poetry.lock');
+  // Contains hidden files.
+  expect(files).toContain('.ignorefile');
 });
 
 test('Bundling a function with poetry dependencies, without urls', () => {
   const entry = path.join(__dirname, 'lambda-handler-poetry');
 
-  Bundling.bundle({
+  const assetCode = Bundling.bundle({
     entry: path.join(entry, '.'),
     runtime: Runtime.PYTHON_3_9,
     architecture: Architecture.X86_64,
@@ -343,6 +350,13 @@ test('Bundling a function with poetry dependencies, without urls', () => {
       ],
     }),
   }));
+
+  const files = fs.readdirSync(assetCode.path);
+  expect(files).toContain('index.py');
+  expect(files).toContain('pyproject.toml');
+  expect(files).toContain('poetry.lock');
+  // Contains hidden files.
+  expect(files).toContain('.ignorefile');
 });
 
 test('Bundling a function with custom bundling image', () => {
