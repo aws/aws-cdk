@@ -5,6 +5,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 import { Column } from './schema';
 import { PartitionIndex, TableBase, TableBaseProps } from './table-base';
+import { PartitionProjection } from './partition-projection';
 
 /**
  * Encryption options for a Table.
@@ -53,6 +54,12 @@ export interface S3TableProps extends TableBaseProps {
    * @default - No prefix. The data will be stored under the root of the bucket.
    */
   readonly s3Prefix?: string;
+
+  /**
+   * Optional Partition Projection for this table.
+   * TODO: Add the option for multiple partition projections.
+   */
+  readonly partitionProjection?: PartitionProjection;
 
   /**
    * The kind of encryption to secure the data with.
@@ -137,11 +144,11 @@ export class S3Table extends TableBase {
 
         partitionKeys: renderColumns(props.partitionKeys),
 
-        parameters: {
+        parameters: Object.assign({
           'classification': props.dataFormat.classificationString?.value,
           'has_encrypted_data': true,
           'partition_filtering.enabled': props.enablePartitionFiltering,
-        },
+        }, props.partitionProjection ? props.partitionProjection.toOutputFormat() : {}),
         storageDescriptor: {
           location: `s3://${this.bucket.bucketName}/${this.s3Prefix}`,
           compressed: this.compressed,

@@ -12,5 +12,6 @@ export * from './s3-table';
 export * from './schema';
 export * from './security-configuration';
 export * from './storage-parameter';
+export * from './partition-projection';
 export * from './table-base';
 export * from './table-deprecated';

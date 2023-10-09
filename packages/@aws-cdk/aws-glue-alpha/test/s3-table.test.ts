@@ -4,6 +4,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as glue from '../lib';
+import { DateIntervalUnit, DatePartitionProjection } from '../lib';
 
 test('encrypted table: SSE-S3', () => {
   const stack = new cdk.Stack();
@@ -1093,6 +1094,145 @@ describe('validate', () => {
       encryption: glue.TableEncryption.CLIENT_SIDE_KMS,
     })).not.toThrow();
   });
+});
+
+describe('Partition-Projection', () => {
+  test('Date partition projection', () => {
+    const stack = new cdk.Stack();
+    const database = new glue.Database(stack, 'Database');
+    const partitionProjection = new DatePartitionProjection(
+        'columnName',
+        's3://DOC-EXAMPLE-BUCKET/prefix/${columnName}/',
+        'NOW-3YEARS,NOW',
+        'dd-MM-yyyy',
+        1,
+        DateIntervalUnit.DAYS,
+    );
+  
+    const table = new glue.S3Table(stack, 'Table', {
+      database,
+      columns: [{
+        name: 'col',
+        type: glue.Schema.STRING,
+      }],
+      partitionProjection: partitionProjection,
+      dataFormat: glue.DataFormat.JSON,
+    });
+  
+    Template.fromStack(stack).hasResourceProperties('AWS::Glue::Table', {
+      TableInput: {
+        Parameters: {
+          'projection.enabled': true,
+          'projection.columnName.type': 'date',
+          'projection.columnName.range': 'NOW-3YEARS,NOW',
+          'projection.columnName.format': 'dd-MM-yyyy',
+          'projection.columnName.interval': '1',
+          'projection.columnName.interval.unit': 'DAYS',
+          'storage.location.template': 's3://DOC-EXAMPLE-BUCKET/prefix/${columnName}/',
+        },
+      },
+    });
+  });
+
+  test('Date partition projection with bucket', () => {
+    const stack = new cdk.Stack();
+    const database = new glue.Database(stack, 'Database');
+    const bucket = new s3.Bucket(stack, 'Bucket');
+    const partitionProjection = new DatePartitionProjection(
+        'columnName',
+        's3://DOC-EXAMPLE-BUCKET/prefix/${columnName}/',
+        '2021/01/01,NOW',
+        'yyyy/MM/dd',
+        1,
+        DateIntervalUnit.DAYS,
+    );
+  
+    const table = new glue.S3Table(stack, 'Table', {
+      tableName: 'glue-table-on-s3', 
+      description: 'The raw data from firehose',
+      database,
+      columns: [{
+        name: 'col',
+        type: glue.Schema.STRING,
+      }],
+      partitionKeys: [{
+        name: 'columnName',
+        type: glue.Schema.STRING,
+      }],
+      bucket: bucket,
+      s3Prefix: 'events/table=event-table/',
+      storedAsSubDirectories: true,
+      partitionProjection: partitionProjection,
+      storageParameters: [
+        glue.StorageParameter.compressionType(glue.CompressionType.GZIP),
+      ],
+      dataFormat: glue.DataFormat.JSON,
+      enablePartitionFiltering: true,
+      compressed: true,
+    });
+  
+    Template.fromStack(stack).hasResourceProperties('AWS::Glue::Table', {
+      CatalogId: {
+        Ref: 'AWS::AccountId',
+      },
+      DatabaseName: {
+        Ref: 'DatabaseB269D8BB',
+      },  
+      TableInput: {
+        Name: 'glue-table-on-s3',
+        Description: 'The raw data from firehose',  
+        Parameters: {
+          classification: 'json',
+          has_encrypted_data: true,  
+          'projection.enabled': true,
+          'projection.columnName.type': 'date',
+          'projection.columnName.range': '2021/01/01,NOW',
+          'projection.columnName.format': 'yyyy/MM/dd',
+          'projection.columnName.interval': '1',
+          'projection.columnName.interval.unit': 'DAYS',
+          'storage.location.template': 's3://DOC-EXAMPLE-BUCKET/prefix/${columnName}/',
+        },
+        PartitionKeys: [
+          {
+           Name: "columnName",
+           Type: "string"
+          }
+         ],
+        StorageDescriptor: {
+          Columns: [
+            {
+              Name: 'col',
+              Type: 'string',
+            },
+          ],
+          Compressed: true,
+          InputFormat: 'org.apache.hadoop.mapred.TextInputFormat',
+          Location: {
+            'Fn::Join': [
+              '',
+              [
+                's3://',
+                {
+                  Ref: 'Bucket83908E77',
+                },
+                '/events/table=event-table/',
+              ],
+            ],
+          },
+          OutputFormat: 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat',
+          Parameters: {
+            compression_type: "gzip"
+          },
+          SerdeInfo: {
+            SerializationLibrary: 'org.openx.data.jsonserde.JsonSerDe',
+          },
+          StoredAsSubDirectories: true,
+        },
+        TableType: 'EXTERNAL_TABLE',
+      },
+    });
+  });
+
 });
 
 function createTable(props: Pick<glue.S3TableProps, Exclude<keyof glue.S3TableProps, 'database' | 'dataFormat'>>): void {

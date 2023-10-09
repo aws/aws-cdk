@@ -286,6 +286,40 @@ new glue.S3Table(this, 'MyTable', {
 });
 ```
 
+### Partition Projection
+
+From the [Athena documentation](https://docs.aws.amazon.com/athena/latest/ug/partition-projection.html):
+> You can use partition projection in Athena to speed up query processing of highly partitioned tables and automate partition management.
+
+> In partition projection, Athena calculates partition values and locations using the table properties that you configure directly on your table in AWS Glue. The table properties allow Athena to 'project', or determine, the necessary partition information instead of having to do a more time-consuming metadata lookup in the AWS Glue Data Catalog. Because in-memory operations are often faster than remote operations, partition projection can reduce the runtime of queries against highly partitioned tables. Depending on the specific characteristics of the query and underlying data, partition projection can significantly reduce query runtime for queries that are constrained on partition metadata retrieval.
+
+```ts
+declare const myDatabase: glue.Database;
+const partitionProjection = new DatePartitionProjection(
+    'datehour',
+    's3://DOC-EXAMPLE-BUCKET/prefix/${datehour}/',
+    '2021/01/01,NOW',
+    'yyyy/MM/dd',
+    1,
+    DateIntervalUnit.DAYS,
+);
+
+new glue.S3Table(this, 'MyTable', {
+  database: myDatabase,
+  columns: [{
+    name: 'col1',
+    type: glue.Schema.STRING,
+  }],
+  partitionKeys: [{
+    name: 'datehour',
+    type: glue.Schema.STRING,
+  }],
+  partitionProjection,
+  dataFormat: glue.DataFormat.JSON,
+});
+```
+
+
 ### Partition Indexes
 
 Another way to improve query performance is to specify partition indexes. If no partition indexes are
