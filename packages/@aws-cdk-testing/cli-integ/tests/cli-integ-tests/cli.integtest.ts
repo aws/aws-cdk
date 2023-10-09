@@ -602,6 +602,7 @@ integTest('deploy with role', withDefaultFixture(async (fixture) => {
       if (langChoice === 'go') {
         await tempFixture.shell(['go', 'get']);
       } else if (langChoice === 'python') {
+        await fixture.packages.makeCliAvailable();
         const venvPath = path.resolve(fixture.integTestDir, '.venv');
         const venv = { PATH: `${venvPath}/bin:${process.env.PATH}`, VIRTUAL_ENV: venvPath };
 
