@@ -384,13 +384,13 @@ export interface SparkUIProps {
   /**
    * The bucket where the Glue job stores the logs.
    *
-   * @default a new bucket will be created.
+   * @default - a new bucket will be created.
    */
   readonly bucket?: s3.IBucket;
 
   /**
    * The path inside the bucket (objects prefix) where the Glue job stores the logs.
-   * Use format `'/foo/bar'`
+   * Use format `'foo/bar/'`
    *
    * @default - the logs will be written at the root of the bucket
    */
@@ -406,13 +406,15 @@ export interface SparkUIProps {
 export interface SparkUILoggingLocation {
   /**
    * The bucket where the Glue job stores the logs.
+   * 
+   * @default - a new bucket will be created.
    */
   readonly bucket: s3.IBucket;
 
   /**
    * The path inside the bucket (objects prefix) where the Glue job stores the logs.
    *
-   * @default '/' - the logs will be written at the root of the bucket
+   * @default - the logs will be written at the root of the bucket
    */
   readonly prefix?: string;
 }
