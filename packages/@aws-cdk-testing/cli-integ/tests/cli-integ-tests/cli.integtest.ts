@@ -573,7 +573,7 @@ integTest('deploy with role', withDefaultFixture(async (fixture) => {
 
 // TODO add go back in when template synths properly
 ['typescript', 'python', 'csharp', 'java'].forEach(language => {
-  withCDKMigrateFixture(language, async (fixture) => {
+  integTest(`cdk migrate ${language}`, withCDKMigrateFixture(language, async (fixture) => {
     await fixture.cdkMigrate(language, fixture.stackNamePrefix);
     await fixture.shell(['ls']);
     await fixture.shell(['pwd']);
@@ -592,8 +592,7 @@ integTest('deploy with role', withDefaultFixture(async (fixture) => {
 
     expect(response.Stacks?.[0].StackStatus).toEqual('CREATE_COMPLETE');
     await fixture.cdkDestroy(fixture.stackNamePrefix);
-
-  });
+  }));
 });
 
 integTest('cdk diff', withDefaultFixture(async (fixture) => {
