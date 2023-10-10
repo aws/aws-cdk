@@ -406,7 +406,7 @@ export interface SparkUIProps {
 export interface SparkUILoggingLocation {
   /**
    * The bucket where the Glue job stores the logs.
-   * 
+   *
    * @default - a new bucket will be created.
    */
   readonly bucket: s3.IBucket;
