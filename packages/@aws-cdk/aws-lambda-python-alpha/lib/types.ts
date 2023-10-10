@@ -15,10 +15,17 @@ export interface BundlingOptions extends DockerRunOptions {
   readonly poetryIncludeHashes?: boolean;
 
   /**
- * List of file patterns to exclude when copying assets from source for bundling.
- *
- * @default - Empty list
- */
+   * Whether to export Poetry dependencies with source repository urls.
+   *
+   * @default URLs are included in the exported `requirements.txt` file.
+   */
+  readonly poetryWithoutUrls?: boolean;
+
+  /**
+   * List of file patterns to exclude when copying assets from source for bundling.
+   *
+   * @default - Empty list
+   */
   readonly assetExcludes?: string[];
 
   /**
