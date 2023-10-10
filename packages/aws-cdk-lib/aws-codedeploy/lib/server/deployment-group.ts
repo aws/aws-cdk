@@ -172,6 +172,16 @@ export interface ServerDeploymentGroupProps {
   readonly loadBalancer?: LoadBalancer;
 
   /**
+   * CodeDeploy supports the deployment to multiple LoadBalancers
+   * the list can be created from either multiple Classic Load Balancers, or
+   * Application Load Balancers / Network Load Balancers Target Groups.
+   *
+   * @default - Deployment Group will not have load balancers defined.
+   */
+
+  readonly loadBalancers?: LoadBalancer[];
+
+  /**
    * All EC2 instances matching the given set of tags when a deployment occurs will be added to this Deployment Group.
    *
    * @default - No additional EC2 instances will be added to the Deployment Group.
@@ -277,8 +287,8 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
       deploymentConfigName: props.deploymentConfig &&
         props.deploymentConfig.deploymentConfigName,
       autoScalingGroups: cdk.Lazy.list({ produce: () => this._autoScalingGroups.map(asg => asg.autoScalingGroupName) }, { omitEmpty: true }),
-      loadBalancerInfo: this.loadBalancerInfo(props.loadBalancer),
-      deploymentStyle: props.loadBalancer === undefined
+      loadBalancerInfo: props.loadBalancers ? this.loadBalancersInfo(props.loadBalancers) : this.loadBalancerInfo(props.loadBalancer),
+      deploymentStyle: props.loadBalancer === undefined && props.loadBalancers === undefined
         ? undefined
         : {
           deploymentOption: 'WITH_TRAFFIC_CONTROL',
@@ -389,6 +399,39 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
           ],
         };
     }
+  }
+
+  private loadBalancersInfo(loadBalancers?: LoadBalancer[]):
+  CfnDeploymentGroup.LoadBalancerInfoProperty | undefined {
+
+    if (!loadBalancers) {
+      return undefined;
+    }
+
+    // TODO, find a better type here
+    const loadBalancerInfo: {
+      elbInfoList: {name: string}[],
+      targetGroupInfoList: {name: string}[]
+    } = {
+      elbInfoList: [],
+      targetGroupInfoList: [],
+    };
+
+    loadBalancers.forEach(loadBalancer => {
+
+      switch (loadBalancer.generation) {
+        case LoadBalancerGeneration.FIRST:
+          loadBalancerInfo.elbInfoList.push({ name: loadBalancer.name });
+          break;
+        case LoadBalancerGeneration.SECOND:
+          loadBalancerInfo.targetGroupInfoList.push({ name: loadBalancer.name });
+          break;
+        default:
+          throw new Error('Unknown load balancer generation');
+      }
+    });
+
+    return loadBalancerInfo;
   }
 
   private ec2TagSet(tagSet?: InstanceTagSet):

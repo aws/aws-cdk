@@ -2,6 +2,7 @@ import { Match, Template } from '../../../assertions';
 import * as autoscaling from '../../../aws-autoscaling';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
+import * as lbv1 from '../../../aws-elasticloadbalancing';
 import * as lbv2 from '../../../aws-elasticloadbalancingv2';
 import * as cdk from '../../../core';
 import * as codedeploy from '../../lib';
@@ -202,6 +203,70 @@ describe('CodeDeploy Server Deployment Group', () => {
                 'ALBListenerFleetGroup008CEEE4',
                 'TargetGroupName',
               ],
+            },
+          },
+        ],
+      },
+      'DeploymentStyle': {
+        'DeploymentOption': 'WITH_TRAFFIC_CONTROL',
+      },
+    });
+  });
+
+  test('can be created with mulitple ALB Target Groups as the load balancers', () => {
+    const stack = new cdk.Stack();
+    const defaultVpc = new ec2.Vpc(stack, 'VPC');
+
+    const clb = new lbv1.LoadBalancer(stack, 'CLB', {
+      vpc: defaultVpc,
+    });
+
+    const alb = new lbv2.ApplicationLoadBalancer(stack, 'ALB', {
+      vpc: defaultVpc,
+    });
+
+    const nlb = new lbv2.NetworkLoadBalancer(stack, 'NLB', {
+      vpc: defaultVpc,
+    });
+
+    const listener = alb.addListener('Listener', { protocol: lbv2.ApplicationProtocol.HTTP });
+    const targetGroup = listener.addTargets('Fleet', { protocol: lbv2.ApplicationProtocol.HTTP });
+
+    const nlbListener = nlb.addListener('Listener', { port: 80 });
+    const nlbTargetGroup = nlbListener.addTargets('Fleet', { port: 80 });
+
+    new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
+      loadBalancers: [
+        codedeploy.LoadBalancer.classic(clb),
+        codedeploy.LoadBalancer.application(targetGroup),
+        codedeploy.LoadBalancer.network(nlbTargetGroup),
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
+      'LoadBalancerInfo': {
+        'TargetGroupInfoList': [
+          {
+            'Name': {
+              'Fn::GetAtt': [
+                'ALBListenerFleetGroup008CEEE4',
+                'TargetGroupName',
+              ],
+            },
+          },
+          {
+            'Name': {
+              'Fn::GetAtt': [
+                'NLBListenerFleetGroupB882EC86',
+                'TargetGroupName',
+              ],
+            },
+          },
+        ],
+        'ElbInfoList': [
+          {
+            'Name': {
+              'Ref': 'CLBA83A883E',
             },
           },
         ],
