@@ -384,13 +384,13 @@ export interface SparkUIProps {
   /**
    * The bucket where the Glue job stores the logs.
    *
-   * @default a new bucket will be created.
+   * @default - a new bucket will be created.
    */
   readonly bucket?: s3.IBucket;
 
   /**
    * The path inside the bucket (objects prefix) where the Glue job stores the logs.
-   * Use format `'/foo/bar'`
+   * Use format `'foo/bar/'`
    *
    * @default - the logs will be written at the root of the bucket
    */
@@ -406,13 +406,15 @@ export interface SparkUIProps {
 export interface SparkUILoggingLocation {
   /**
    * The bucket where the Glue job stores the logs.
+   *
+   * @default - a new bucket will be created.
    */
   readonly bucket: s3.IBucket;
 
   /**
    * The path inside the bucket (objects prefix) where the Glue job stores the logs.
    *
-   * @default '/' - the logs will be written at the root of the bucket
+   * @default - the logs will be written at the root of the bucket
    */
   readonly prefix?: string;
 }
@@ -840,12 +842,12 @@ export class Job extends JobBase {
 
     const errors: string[] = [];
 
-    if (!prefix.startsWith('/')) {
-      errors.push('Prefix must begin with \'/\'');
+    if (prefix.startsWith('/')) {
+      errors.push('Prefix must not begin with \'/\'');
     }
 
-    if (prefix.endsWith('/')) {
-      errors.push('Prefix must not end with \'/\'');
+    if (!prefix.endsWith('/')) {
+      errors.push('Prefix must end with \'/\'');
     }
 
     if (errors.length > 0) {
@@ -854,7 +856,7 @@ export class Job extends JobBase {
   }
 
   private cleanPrefixForGrant(prefix?: string): string | undefined {
-    return prefix !== undefined ? prefix.slice(1) + '/*' : undefined;
+    return prefix !== undefined ? `${prefix}*` : undefined;
   }
 
   private setupContinuousLogging(role: iam.IRole, props: ContinuousLoggingProps) {
