@@ -172,13 +172,12 @@ export interface ServerDeploymentGroupProps {
   readonly loadBalancer?: LoadBalancer;
 
   /**
-   * CodeDeploy supports the deployment to multiple LoadBalancers
-   * the list can be created from either multiple Classic Load Balancers, or
+   * CodeDeploy supports the deployment to multiple load balancers.
+   * Specify either multiple Classic Load Balancers, or
    * Application Load Balancers / Network Load Balancers Target Groups.
    *
    * @default - Deployment Group will not have load balancers defined.
    */
-
   readonly loadBalancers?: LoadBalancer[];
 
   /**
