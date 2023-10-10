@@ -124,6 +124,22 @@ new glue.S3Table(stack, 'MyTableWithStorageDescriptorParameters', {
   ],
 });
 
+new glue.S3Table(stack, 'MyTableWithPartitionProjectionParameters', {
+  database,
+  bucket,
+  tableName: 'table_with_partition_projection_parameters',
+  columns,
+  dataFormat: glue.DataFormat.JSON,
+  partitionProjection: new glue.DatePartitionProjection(
+    'columnName',
+    's3://DOC-EXAMPLE-BUCKET/prefix/${columnName}/',
+    'NOW-3YEARS,NOW',
+    'dd-MM-yyyy',
+    1,
+    glue.DateIntervalUnit.DAYS,
+  )
+});
+
 new glue.Table(stack, 'MyDeprecatedTable', {
   database,
   bucket,
