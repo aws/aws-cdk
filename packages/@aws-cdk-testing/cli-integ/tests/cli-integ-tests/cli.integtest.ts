@@ -590,14 +590,16 @@ integTest('deploy with role', withDefaultFixture(async (fixture) => {
       ]);
 
       await fixture.shell(['cd', stackName]);
+      await fixture.shell(['ls']);
+      await fixture.shell(['pwd']);
       if (langChoice === 'go') {
         await fixture.shell(['go', 'get']);
       } else if (langChoice === 'python') {
         await fixture.packages.makeCliAvailable();
-        await fixture.shell(['pip', 'install', '-r', 'requirements.txt']);
+        await fixture.shell(['pip3', 'install', '-r', 'requirements.txt']);
       }
       // go stack doesn't follow the same naming scheme as other languages.
-      const stackArn = await fixture.cdk(['deploy', '--require-approval', 'never'], { captureStderr: false });
+      const stackArn = await fixture.cdk(['deploy', '--require-approval', 'never'], { captureStderr: false, verbose: true });
       const response = await fixture.aws.cloudFormation('describeStacks', {
         StackName: stackArn,
       });
