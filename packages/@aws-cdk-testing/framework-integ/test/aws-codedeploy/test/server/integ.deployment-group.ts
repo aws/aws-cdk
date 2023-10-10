@@ -23,10 +23,13 @@ elb.addListener({
   externalPort: 80,
 });
 
+<<<<<<< HEAD
 const clb = new lb.LoadBalancer(stack, 'CLB', {
   vpc: vpc,
 });
 
+=======
+>>>>>>> 69d34c502b (Add integration test to loadBalancers field)
 const alb = new lb2.ApplicationLoadBalancer(stack, 'ALB', {
   vpc: vpc,
 });
@@ -46,7 +49,7 @@ new codedeploy.ServerDeploymentGroup(stack, 'CodeDeployGroup', {
   autoScalingGroups: [asg],
   loadBalancer: codedeploy.LoadBalancer.classic(elb),
   loadBalancers: [
-    codedeploy.LoadBalancer.classic(clb),
+    codedeploy.LoadBalancer.classic(elb),
     codedeploy.LoadBalancer.application(targetGroup),
     codedeploy.LoadBalancer.network(nlbTargetGroup),
   ],

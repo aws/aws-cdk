@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "34.0.0",
   "artifacts": {
     "aws-cdk-codedeploy-server-dg.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-codedeploy-server-dg.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f8e6ede2e8bf4d32dc013a76bff9a6bbde55993ddf3336f77a370c1fa0073da2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/797cd892d9e90d2d4a19edc1dc48fe01dbc54ea8735edaf4d32a03f6061c2f13.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -225,6 +226,60 @@
             "data": "ELBF276B85D"
           }
         ],
+        "/aws-cdk-codedeploy-server-dg/ALB/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ALBAEE750D2"
+          }
+        ],
+        "/aws-cdk-codedeploy-server-dg/ALB/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ALBSecurityGroup8B8624F8"
+          }
+        ],
+        "/aws-cdk-codedeploy-server-dg/ALB/Listener/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ALBListener3B99FF85"
+          }
+        ],
+        "/aws-cdk-codedeploy-server-dg/ALB/Listener/FleetGroup": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "When creating an empty TargetGroup, you should specify a 'targetType' (this warning may become an error in the future). [ack: @aws-cdk/aws-elbv2:targetGroupSpecifyTargetTypeForEmptyTargetGroup]"
+          }
+        ],
+        "/aws-cdk-codedeploy-server-dg/ALB/Listener/FleetGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ALBListenerFleetGroup008CEEE4"
+          }
+        ],
+        "/aws-cdk-codedeploy-server-dg/NLB/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NLB55158F82"
+          }
+        ],
+        "/aws-cdk-codedeploy-server-dg/NLB/Listener/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NLBListener96C8170F"
+          }
+        ],
+        "/aws-cdk-codedeploy-server-dg/NLB/Listener/FleetGroup": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "When creating an empty TargetGroup, you should specify a 'targetType' (this warning may become an error in the future). [ack: @aws-cdk/aws-elbv2:targetGroupSpecifyTargetTypeForEmptyTargetGroup]"
+          }
+        ],
+        "/aws-cdk-codedeploy-server-dg/NLB/Listener/FleetGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NLBListenerFleetGroupB882EC86"
+          }
+        ],
         "/aws-cdk-codedeploy-server-dg/Alarm1/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -259,15 +314,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "ASGLaunchTemplateProfileB99C522F": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ASGLaunchTemplateProfileB99C522F",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },
