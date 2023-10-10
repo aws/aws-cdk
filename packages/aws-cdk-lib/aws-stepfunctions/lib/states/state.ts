@@ -198,7 +198,7 @@ export abstract class State extends Construct implements IChainable {
   private readonly incomingStates: State[] = [];
 
   constructor(scope: Construct, id: string, props: StateProps) {
-    super(scope, props.stateName? props.stateName: id);
+    super(scope, id);
 
     this.startState = this;
 
@@ -228,7 +228,7 @@ export abstract class State extends Construct implements IChainable {
    * Tokenized string that evaluates to the state's ID
    */
   public get stateId(): string {
-    return this.prefixes.concat(this.id).join('');
+    return this.prefixes.concat(this.stateName? this.stateName: this.id).join('');
   }
 
   /**

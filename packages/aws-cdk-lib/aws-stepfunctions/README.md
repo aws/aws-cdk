@@ -124,7 +124,7 @@ becomes new the new Data object. This behavior can be modified by supplying valu
 
 These properties impact how each individual step interacts with the state machine data:
 
-* `stateName`: the custom state name to each state if required else we used the construct id
+* `stateName`: the name of the state in the state machine definition. If not supplied, defaults to the construct id.
 * `inputPath`: the part of the data object that gets passed to the step (`itemsPath` for `Map` states)
 * `resultSelector`: the part of the step result that should be added to the state machine data
 * `resultPath`: where in the state machine data the step result should be inserted
@@ -250,8 +250,6 @@ An arbitrary JSON object (specified at execution start) is passed from state to
 state and transformed during the execution of the workflow. For more
 information, see the States Language spec.
 
-You can add custom state names to all states and if not it defaults to construct id.
-
 ### Task
 
 A `Task` represents some work that needs to be done. Do not use the `Task` class directly.
@@ -284,12 +282,11 @@ The `Pass` state also supports passing key-value pairs as input. Values can
 be static, or selected from the input with a path.
 
 The following example filters the `greeting` field from the state input
-and also injects a field called `otherData`. You can also add custom state name
-to Pass state.
+and also injects a field called `otherData`.
 
 ```ts
 const pass = new sfn.Pass(this, 'Filter input and inject data', {
-  stateName: 'my-pass-state',
+  stateName: 'my-pass-state', // the custom state name for the Pass state, defaults to 'Filter input and inject data' as the state name
   parameters: { // input to the pass state
     input: sfn.JsonPath.stringAt('$.input.greeting'),
     otherData: 'some-extra-stuff',
@@ -307,13 +304,12 @@ Learn more about the [Pass state](https://docs.aws.amazon.com/step-functions/lat
 
 A `Wait` state waits for a given number of seconds, or until the current time
 hits a particular time. The time to wait may be taken from the execution's JSON
-state. You can also add custom state name to Wait state.
+state.
 
 ```ts
 // Wait until it's the time mentioned in the the state object's "triggerTime"
 // field.
 const wait = new sfn.Wait(this, 'Wait For Trigger Time', {
-  stateName: 'new-wait-state',
   time: sfn.WaitTime.timestampPath('$.triggerTime'),
 });
 

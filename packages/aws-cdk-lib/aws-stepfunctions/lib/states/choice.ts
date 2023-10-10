@@ -54,7 +54,7 @@ export class Choice extends State {
   public readonly endStates: INextable[] = [];
 
   constructor(scope: Construct, id: string, props: ChoiceProps = {}) {
-    super(scope, props.stateName? props.stateName: id, props);
+    super(scope, id, props);
   }
 
   /**

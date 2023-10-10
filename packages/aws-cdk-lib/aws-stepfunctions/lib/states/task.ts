@@ -117,7 +117,7 @@ export class Task extends State implements INextable {
   private readonly taskProps: StepFunctionsTaskConfig;
 
   constructor(scope: Construct, id: string, props: TaskProps) {
-    super(scope, props.stateName? props.stateName: id, props);
+    super(scope, id, props);
 
     this.timeout = props.timeout;
     const taskProps = props.task.bind(this);
