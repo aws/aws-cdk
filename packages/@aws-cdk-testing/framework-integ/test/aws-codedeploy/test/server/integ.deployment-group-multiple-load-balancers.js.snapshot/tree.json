@@ -4,17 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "aws-cdk-codedeploy-server-dg": {
-        "id": "aws-cdk-codedeploy-server-dg",
-        "path": "aws-cdk-codedeploy-server-dg",
+      "aws-cdk-codedeploy-server-dg-multi-lb": {
+        "id": "aws-cdk-codedeploy-server-dg-multi-lb",
+        "path": "aws-cdk-codedeploy-server-dg-multi-lb",
         "children": {
           "VPC": {
             "id": "VPC",
-            "path": "aws-cdk-codedeploy-server-dg/VPC",
+            "path": "aws-cdk-codedeploy-server-dg-multi-lb/VPC",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-codedeploy-server-dg/VPC/Resource",
+                "path": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
                   "aws:cdk:cloudformation:props": {
@@ -25,7 +25,7 @@
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "aws-cdk-codedeploy-server-dg/VPC"
+                        "value": "aws-cdk-codedeploy-server-dg-multi-lb/VPC"
                       }
                     ]
                   }
@@ -37,11 +37,11 @@
               },
               "PublicSubnet1": {
                 "id": "PublicSubnet1",
-                "path": "aws-cdk-codedeploy-server-dg/VPC/PublicSubnet1",
+                "path": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PublicSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-cdk-codedeploy-server-dg/VPC/PublicSubnet1/Subnet",
+                    "path": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PublicSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -66,7 +66,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-cdk-codedeploy-server-dg/VPC/PublicSubnet1"
+                            "value": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PublicSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -81,7 +81,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-cdk-codedeploy-server-dg/VPC/PublicSubnet1/Acl",
+                    "path": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PublicSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -89,14 +89,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-cdk-codedeploy-server-dg/VPC/PublicSubnet1/RouteTable",
+                    "path": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PublicSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-codedeploy-server-dg/VPC/PublicSubnet1"
+                            "value": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PublicSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -111,7 +111,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-cdk-codedeploy-server-dg/VPC/PublicSubnet1/RouteTableAssociation",
+                    "path": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PublicSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -130,7 +130,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-cdk-codedeploy-server-dg/VPC/PublicSubnet1/DefaultRoute",
+                    "path": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PublicSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -150,7 +150,7 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "aws-cdk-codedeploy-server-dg/VPC/PublicSubnet1/EIP",
+                    "path": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PublicSubnet1/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -158,7 +158,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-codedeploy-server-dg/VPC/PublicSubnet1"
+                            "value": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PublicSubnet1"
                           }
                         ]
                       }
@@ -170,7 +170,7 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "aws-cdk-codedeploy-server-dg/VPC/PublicSubnet1/NATGateway",
+                    "path": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PublicSubnet1/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
@@ -186,7 +186,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-codedeploy-server-dg/VPC/PublicSubnet1"
+                            "value": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PublicSubnet1"
                           }
                         ]
                       }
@@ -204,11 +204,11 @@
               },
               "PublicSubnet2": {
                 "id": "PublicSubnet2",
-                "path": "aws-cdk-codedeploy-server-dg/VPC/PublicSubnet2",
+                "path": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PublicSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-cdk-codedeploy-server-dg/VPC/PublicSubnet2/Subnet",
+                    "path": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PublicSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -233,7 +233,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-cdk-codedeploy-server-dg/VPC/PublicSubnet2"
+                            "value": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PublicSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -248,7 +248,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-cdk-codedeploy-server-dg/VPC/PublicSubnet2/Acl",
+                    "path": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PublicSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -256,14 +256,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-cdk-codedeploy-server-dg/VPC/PublicSubnet2/RouteTable",
+                    "path": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PublicSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-codedeploy-server-dg/VPC/PublicSubnet2"
+                            "value": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PublicSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -278,7 +278,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-cdk-codedeploy-server-dg/VPC/PublicSubnet2/RouteTableAssociation",
+                    "path": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PublicSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -297,7 +297,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-cdk-codedeploy-server-dg/VPC/PublicSubnet2/DefaultRoute",
+                    "path": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PublicSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -317,7 +317,7 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "aws-cdk-codedeploy-server-dg/VPC/PublicSubnet2/EIP",
+                    "path": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PublicSubnet2/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -325,7 +325,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-codedeploy-server-dg/VPC/PublicSubnet2"
+                            "value": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PublicSubnet2"
                           }
                         ]
                       }
@@ -337,7 +337,7 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "aws-cdk-codedeploy-server-dg/VPC/PublicSubnet2/NATGateway",
+                    "path": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PublicSubnet2/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
@@ -353,7 +353,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-codedeploy-server-dg/VPC/PublicSubnet2"
+                            "value": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PublicSubnet2"
                           }
                         ]
                       }
@@ -371,11 +371,11 @@
               },
               "PrivateSubnet1": {
                 "id": "PrivateSubnet1",
-                "path": "aws-cdk-codedeploy-server-dg/VPC/PrivateSubnet1",
+                "path": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PrivateSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-cdk-codedeploy-server-dg/VPC/PrivateSubnet1/Subnet",
+                    "path": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PrivateSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -400,7 +400,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-cdk-codedeploy-server-dg/VPC/PrivateSubnet1"
+                            "value": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PrivateSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -415,7 +415,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-cdk-codedeploy-server-dg/VPC/PrivateSubnet1/Acl",
+                    "path": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PrivateSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -423,14 +423,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-cdk-codedeploy-server-dg/VPC/PrivateSubnet1/RouteTable",
+                    "path": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PrivateSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-codedeploy-server-dg/VPC/PrivateSubnet1"
+                            "value": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PrivateSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -445,7 +445,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-cdk-codedeploy-server-dg/VPC/PrivateSubnet1/RouteTableAssociation",
+                    "path": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PrivateSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -464,7 +464,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-cdk-codedeploy-server-dg/VPC/PrivateSubnet1/DefaultRoute",
+                    "path": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PrivateSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -490,11 +490,11 @@
               },
               "PrivateSubnet2": {
                 "id": "PrivateSubnet2",
-                "path": "aws-cdk-codedeploy-server-dg/VPC/PrivateSubnet2",
+                "path": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PrivateSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-cdk-codedeploy-server-dg/VPC/PrivateSubnet2/Subnet",
+                    "path": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PrivateSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -519,7 +519,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-cdk-codedeploy-server-dg/VPC/PrivateSubnet2"
+                            "value": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PrivateSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -534,7 +534,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-cdk-codedeploy-server-dg/VPC/PrivateSubnet2/Acl",
+                    "path": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PrivateSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -542,14 +542,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-cdk-codedeploy-server-dg/VPC/PrivateSubnet2/RouteTable",
+                    "path": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PrivateSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-codedeploy-server-dg/VPC/PrivateSubnet2"
+                            "value": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PrivateSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -564,7 +564,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-cdk-codedeploy-server-dg/VPC/PrivateSubnet2/RouteTableAssociation",
+                    "path": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PrivateSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -583,7 +583,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-cdk-codedeploy-server-dg/VPC/PrivateSubnet2/DefaultRoute",
+                    "path": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PrivateSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -609,14 +609,14 @@
               },
               "IGW": {
                 "id": "IGW",
-                "path": "aws-cdk-codedeploy-server-dg/VPC/IGW",
+                "path": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/IGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
                   "aws:cdk:cloudformation:props": {
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "aws-cdk-codedeploy-server-dg/VPC"
+                        "value": "aws-cdk-codedeploy-server-dg-multi-lb/VPC"
                       }
                     ]
                   }
@@ -628,7 +628,7 @@
               },
               "VPCGW": {
                 "id": "VPCGW",
-                "path": "aws-cdk-codedeploy-server-dg/VPC/VPCGW",
+                "path": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/VPCGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
@@ -653,19 +653,19 @@
           },
           "ASG": {
             "id": "ASG",
-            "path": "aws-cdk-codedeploy-server-dg/ASG",
+            "path": "aws-cdk-codedeploy-server-dg-multi-lb/ASG",
             "children": {
               "InstanceSecurityGroup": {
                 "id": "InstanceSecurityGroup",
-                "path": "aws-cdk-codedeploy-server-dg/ASG/InstanceSecurityGroup",
+                "path": "aws-cdk-codedeploy-server-dg-multi-lb/ASG/InstanceSecurityGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-codedeploy-server-dg/ASG/InstanceSecurityGroup/Resource",
+                    "path": "aws-cdk-codedeploy-server-dg-multi-lb/ASG/InstanceSecurityGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                       "aws:cdk:cloudformation:props": {
-                        "groupDescription": "aws-cdk-codedeploy-server-dg/ASG/InstanceSecurityGroup",
+                        "groupDescription": "aws-cdk-codedeploy-server-dg-multi-lb/ASG/InstanceSecurityGroup",
                         "securityGroupEgress": [
                           {
                             "cidrIp": "0.0.0.0/0",
@@ -676,7 +676,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-codedeploy-server-dg/ASG"
+                            "value": "aws-cdk-codedeploy-server-dg-multi-lb/ASG"
                           }
                         ],
                         "vpcId": {
@@ -697,11 +697,11 @@
               },
               "InstanceRole": {
                 "id": "InstanceRole",
-                "path": "aws-cdk-codedeploy-server-dg/ASG/InstanceRole",
+                "path": "aws-cdk-codedeploy-server-dg-multi-lb/ASG/InstanceRole",
                 "children": {
                   "ImportInstanceRole": {
                     "id": "ImportInstanceRole",
-                    "path": "aws-cdk-codedeploy-server-dg/ASG/InstanceRole/ImportInstanceRole",
+                    "path": "aws-cdk-codedeploy-server-dg-multi-lb/ASG/InstanceRole/ImportInstanceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -709,7 +709,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-codedeploy-server-dg/ASG/InstanceRole/Resource",
+                    "path": "aws-cdk-codedeploy-server-dg-multi-lb/ASG/InstanceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -728,7 +728,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-codedeploy-server-dg/ASG"
+                            "value": "aws-cdk-codedeploy-server-dg-multi-lb/ASG"
                           }
                         ]
                       }
@@ -740,11 +740,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "aws-cdk-codedeploy-server-dg/ASG/InstanceRole/DefaultPolicy",
+                    "path": "aws-cdk-codedeploy-server-dg-multi-lb/ASG/InstanceRole/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-codedeploy-server-dg/ASG/InstanceRole/DefaultPolicy/Resource",
+                        "path": "aws-cdk-codedeploy-server-dg-multi-lb/ASG/InstanceRole/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -821,7 +821,7 @@
               },
               "InstanceProfile": {
                 "id": "InstanceProfile",
-                "path": "aws-cdk-codedeploy-server-dg/ASG/InstanceProfile",
+                "path": "aws-cdk-codedeploy-server-dg-multi-lb/ASG/InstanceProfile",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
                   "aws:cdk:cloudformation:props": {
@@ -839,7 +839,7 @@
               },
               "ImportedInstanceProfile": {
                 "id": "ImportedInstanceProfile",
-                "path": "aws-cdk-codedeploy-server-dg/ASG/ImportedInstanceProfile",
+                "path": "aws-cdk-codedeploy-server-dg-multi-lb/ASG/ImportedInstanceProfile",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
@@ -847,11 +847,11 @@
               },
               "LaunchTemplate": {
                 "id": "LaunchTemplate",
-                "path": "aws-cdk-codedeploy-server-dg/ASG/LaunchTemplate",
+                "path": "aws-cdk-codedeploy-server-dg-multi-lb/ASG/LaunchTemplate",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-codedeploy-server-dg/ASG/LaunchTemplate/Resource",
+                    "path": "aws-cdk-codedeploy-server-dg-multi-lb/ASG/LaunchTemplate/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::LaunchTemplate",
                       "aws:cdk:cloudformation:props": {
@@ -885,7 +885,7 @@
                               "tags": [
                                 {
                                   "key": "Name",
-                                  "value": "aws-cdk-codedeploy-server-dg/ASG/LaunchTemplate"
+                                  "value": "aws-cdk-codedeploy-server-dg-multi-lb/ASG/LaunchTemplate"
                                 }
                               ]
                             },
@@ -894,7 +894,7 @@
                               "tags": [
                                 {
                                   "key": "Name",
-                                  "value": "aws-cdk-codedeploy-server-dg/ASG/LaunchTemplate"
+                                  "value": "aws-cdk-codedeploy-server-dg-multi-lb/ASG/LaunchTemplate"
                                 }
                               ]
                             }
@@ -924,7 +924,7 @@
                             "tags": [
                               {
                                 "key": "Name",
-                                "value": "aws-cdk-codedeploy-server-dg/ASG/LaunchTemplate"
+                                "value": "aws-cdk-codedeploy-server-dg-multi-lb/ASG/LaunchTemplate"
                               }
                             ]
                           }
@@ -944,7 +944,7 @@
               },
               "ASG": {
                 "id": "ASG",
-                "path": "aws-cdk-codedeploy-server-dg/ASG/ASG",
+                "path": "aws-cdk-codedeploy-server-dg-multi-lb/ASG/ASG",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AutoScaling::AutoScalingGroup",
                   "aws:cdk:cloudformation:props": {
@@ -964,7 +964,7 @@
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "aws-cdk-codedeploy-server-dg/ASG",
+                        "value": "aws-cdk-codedeploy-server-dg-multi-lb/ASG",
                         "propagateAtLaunch": true
                       }
                     ],
@@ -991,7 +991,7 @@
           },
           "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": {
             "id": "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
-            "path": "aws-cdk-codedeploy-server-dg/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
+            "path": "aws-cdk-codedeploy-server-dg-multi-lb/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -999,7 +999,7 @@
           },
           "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118": {
             "id": "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118",
-            "path": "aws-cdk-codedeploy-server-dg/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118",
+            "path": "aws-cdk-codedeploy-server-dg-multi-lb/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118",
             "constructInfo": {
               "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
@@ -1007,19 +1007,19 @@
           },
           "ELB": {
             "id": "ELB",
-            "path": "aws-cdk-codedeploy-server-dg/ELB",
+            "path": "aws-cdk-codedeploy-server-dg-multi-lb/ELB",
             "children": {
               "SecurityGroup": {
                 "id": "SecurityGroup",
-                "path": "aws-cdk-codedeploy-server-dg/ELB/SecurityGroup",
+                "path": "aws-cdk-codedeploy-server-dg-multi-lb/ELB/SecurityGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-codedeploy-server-dg/ELB/SecurityGroup/Resource",
+                    "path": "aws-cdk-codedeploy-server-dg-multi-lb/ELB/SecurityGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                       "aws:cdk:cloudformation:props": {
-                        "groupDescription": "aws-cdk-codedeploy-server-dg/ELB/SecurityGroup",
+                        "groupDescription": "aws-cdk-codedeploy-server-dg-multi-lb/ELB/SecurityGroup",
                         "securityGroupEgress": [
                           {
                             "cidrIp": "255.255.255.255/32",
@@ -1056,7 +1056,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-codedeploy-server-dg/ELB/Resource",
+                "path": "aws-cdk-codedeploy-server-dg-multi-lb/ELB/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancing::LoadBalancer",
                   "aws:cdk:cloudformation:props": {
@@ -1099,47 +1099,282 @@
               "version": "0.0.0"
             }
           },
-          "Alarm1": {
-            "id": "Alarm1",
-            "path": "aws-cdk-codedeploy-server-dg/Alarm1",
+          "ALB": {
+            "id": "ALB",
+            "path": "aws-cdk-codedeploy-server-dg-multi-lb/ALB",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-codedeploy-server-dg/Alarm1/Resource",
+                "path": "aws-cdk-codedeploy-server-dg-multi-lb/ALB/Resource",
                 "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                  "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
                   "aws:cdk:cloudformation:props": {
-                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
-                    "evaluationPeriods": 1,
-                    "metricName": "Errors",
-                    "namespace": "my.namespace",
-                    "period": 300,
-                    "statistic": "Average",
-                    "threshold": 1
+                    "loadBalancerAttributes": [
+                      {
+                        "key": "deletion_protection.enabled",
+                        "value": "false"
+                      }
+                    ],
+                    "scheme": "internal",
+                    "securityGroups": [
+                      {
+                        "Fn::GetAtt": [
+                          "ALBSecurityGroup8B8624F8",
+                          "GroupId"
+                        ]
+                      }
+                    ],
+                    "subnets": [
+                      {
+                        "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+                      },
+                      {
+                        "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+                      }
+                    ],
+                    "type": "application"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
+                  "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.CfnLoadBalancer",
+                  "version": "0.0.0"
+                }
+              },
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "aws-cdk-codedeploy-server-dg-multi-lb/ALB/SecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-codedeploy-server-dg-multi-lb/ALB/SecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "Automatically created Security Group for ELB awscdkcodedeployserverdgmultilbALB4D2A9235",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "255.255.255.255/32",
+                            "description": "Disallow all traffic",
+                            "ipProtocol": "icmp",
+                            "fromPort": 252,
+                            "toPort": 86
+                          }
+                        ],
+                        "securityGroupIngress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "ipProtocol": "tcp",
+                            "fromPort": 80,
+                            "toPort": 80,
+                            "description": "Allow from anyone on port 80"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "Listener": {
+                "id": "Listener",
+                "path": "aws-cdk-codedeploy-server-dg-multi-lb/ALB/Listener",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-codedeploy-server-dg-multi-lb/ALB/Listener/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::Listener",
+                      "aws:cdk:cloudformation:props": {
+                        "defaultActions": [
+                          {
+                            "type": "forward",
+                            "targetGroupArn": {
+                              "Ref": "ALBListenerFleetGroup008CEEE4"
+                            }
+                          }
+                        ],
+                        "loadBalancerArn": {
+                          "Ref": "ALBAEE750D2"
+                        },
+                        "port": 80,
+                        "protocol": "HTTP"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.CfnListener",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "FleetGroup": {
+                    "id": "FleetGroup",
+                    "path": "aws-cdk-codedeploy-server-dg-multi-lb/ALB/Listener/FleetGroup",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-codedeploy-server-dg-multi-lb/ALB/Listener/FleetGroup/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+                          "aws:cdk:cloudformation:props": {
+                            "port": 80,
+                            "protocol": "HTTP",
+                            "targetGroupAttributes": [
+                              {
+                                "key": "stickiness.enabled",
+                                "value": "false"
+                              }
+                            ],
+                            "vpcId": {
+                              "Ref": "VPCB9E5F0B4"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.CfnTargetGroup",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.ApplicationTargetGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.ApplicationListener",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
+              "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.ApplicationLoadBalancer",
               "version": "0.0.0"
             }
           },
-          "CodeDeployGroup": {
-            "id": "CodeDeployGroup",
-            "path": "aws-cdk-codedeploy-server-dg/CodeDeployGroup",
+          "NLB": {
+            "id": "NLB",
+            "path": "aws-cdk-codedeploy-server-dg-multi-lb/NLB",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-codedeploy-server-dg-multi-lb/NLB/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+                  "aws:cdk:cloudformation:props": {
+                    "loadBalancerAttributes": [
+                      {
+                        "key": "deletion_protection.enabled",
+                        "value": "false"
+                      }
+                    ],
+                    "scheme": "internal",
+                    "subnets": [
+                      {
+                        "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+                      },
+                      {
+                        "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+                      }
+                    ],
+                    "type": "network"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.CfnLoadBalancer",
+                  "version": "0.0.0"
+                }
+              },
+              "Listener": {
+                "id": "Listener",
+                "path": "aws-cdk-codedeploy-server-dg-multi-lb/NLB/Listener",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-codedeploy-server-dg-multi-lb/NLB/Listener/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::Listener",
+                      "aws:cdk:cloudformation:props": {
+                        "defaultActions": [
+                          {
+                            "type": "forward",
+                            "targetGroupArn": {
+                              "Ref": "NLBListenerFleetGroupB882EC86"
+                            }
+                          }
+                        ],
+                        "loadBalancerArn": {
+                          "Ref": "NLB55158F82"
+                        },
+                        "port": 80,
+                        "protocol": "TCP"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.CfnListener",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "FleetGroup": {
+                    "id": "FleetGroup",
+                    "path": "aws-cdk-codedeploy-server-dg-multi-lb/NLB/Listener/FleetGroup",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-codedeploy-server-dg-multi-lb/NLB/Listener/FleetGroup/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+                          "aws:cdk:cloudformation:props": {
+                            "port": 80,
+                            "protocol": "TCP",
+                            "vpcId": {
+                              "Ref": "VPCB9E5F0B4"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.CfnTargetGroup",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.NetworkTargetGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.NetworkListener",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.NetworkLoadBalancer",
+              "version": "0.0.0"
+            }
+          },
+          "CodeDeployGroupMultipleLoadBalancers": {
+            "id": "CodeDeployGroupMultipleLoadBalancers",
+            "path": "aws-cdk-codedeploy-server-dg-multi-lb/CodeDeployGroupMultipleLoadBalancers",
             "children": {
               "Role": {
                 "id": "Role",
-                "path": "aws-cdk-codedeploy-server-dg/CodeDeployGroup/Role",
+                "path": "aws-cdk-codedeploy-server-dg-multi-lb/CodeDeployGroupMultipleLoadBalancers/Role",
                 "children": {
                   "ImportRole": {
                     "id": "ImportRole",
-                    "path": "aws-cdk-codedeploy-server-dg/CodeDeployGroup/Role/ImportRole",
+                    "path": "aws-cdk-codedeploy-server-dg-multi-lb/CodeDeployGroupMultipleLoadBalancers/Role/ImportRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -1147,7 +1382,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-codedeploy-server-dg/CodeDeployGroup/Role/Resource",
+                    "path": "aws-cdk-codedeploy-server-dg-multi-lb/CodeDeployGroupMultipleLoadBalancers/Role/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -1192,11 +1427,11 @@
               },
               "Application": {
                 "id": "Application",
-                "path": "aws-cdk-codedeploy-server-dg/CodeDeployGroup/Application",
+                "path": "aws-cdk-codedeploy-server-dg-multi-lb/CodeDeployGroupMultipleLoadBalancers/Application",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-codedeploy-server-dg/CodeDeployGroup/Application/Resource",
+                    "path": "aws-cdk-codedeploy-server-dg-multi-lb/CodeDeployGroupMultipleLoadBalancers/Application/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::CodeDeploy::Application",
                       "aws:cdk:cloudformation:props": {
@@ -1216,7 +1451,7 @@
               },
               "Bucket": {
                 "id": "Bucket",
-                "path": "aws-cdk-codedeploy-server-dg/CodeDeployGroup/Bucket",
+                "path": "aws-cdk-codedeploy-server-dg-multi-lb/CodeDeployGroupMultipleLoadBalancers/Bucket",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                   "version": "0.0.0"
@@ -1224,25 +1459,21 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-codedeploy-server-dg/CodeDeployGroup/Resource",
+                "path": "aws-cdk-codedeploy-server-dg-multi-lb/CodeDeployGroupMultipleLoadBalancers/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::CodeDeploy::DeploymentGroup",
                   "aws:cdk:cloudformation:props": {
                     "alarmConfiguration": {
-                      "alarms": [
-                        {
-                          "name": {
-                            "Ref": "Alarm1F9009D71"
-                          }
-                        }
-                      ],
-                      "enabled": true
+                      "enabled": false
                     },
                     "applicationName": {
-                      "Ref": "CodeDeployGroupApplication13EFBDA6"
+                      "Ref": "CodeDeployGroupMultipleLoadBalancersApplication399620E3"
                     },
                     "autoRollbackConfiguration": {
-                      "enabled": false
+                      "enabled": true,
+                      "events": [
+                        "DEPLOYMENT_FAILURE"
+                      ]
                     },
                     "autoScalingGroups": [
                       {
@@ -1250,21 +1481,9 @@
                       }
                     ],
                     "deploymentConfigName": "CodeDeployDefault.AllAtOnce",
-                    "deploymentStyle": {
-                      "deploymentOption": "WITH_TRAFFIC_CONTROL"
-                    },
-                    "loadBalancerInfo": {
-                      "elbInfoList": [
-                        {
-                          "name": {
-                            "Ref": "ELBF276B85D"
-                          }
-                        }
-                      ]
-                    },
                     "serviceRoleArn": {
                       "Fn::GetAtt": [
-                        "CodeDeployGroupRole1D304F7A",
+                        "CodeDeployGroupMultipleLoadBalancersRole1C8C12D4",
                         "Arn"
                       ]
                     }
@@ -1283,7 +1502,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "aws-cdk-codedeploy-server-dg/BootstrapVersion",
+            "path": "aws-cdk-codedeploy-server-dg-multi-lb/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -1291,7 +1510,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "aws-cdk-codedeploy-server-dg/CheckBootstrapVersion",
+            "path": "aws-cdk-codedeploy-server-dg-multi-lb/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
@@ -1300,6 +1519,60 @@
         },
         "constructInfo": {
           "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "ServerDeploymentGroupMultipleLB": {
+        "id": "ServerDeploymentGroupMultipleLB",
+        "path": "ServerDeploymentGroupMultipleLB",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "ServerDeploymentGroupMultipleLB/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "ServerDeploymentGroupMultipleLB/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "ServerDeploymentGroupMultipleLB/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "ServerDeploymentGroupMultipleLB/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "ServerDeploymentGroupMultipleLB/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
           "version": "0.0.0"
         }
       },

@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-codedeploy-server-dg/VPC"
+      "Value": "aws-cdk-codedeploy-server-dg-multi-lb/VPC"
      }
     ]
    }
@@ -39,7 +39,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-codedeploy-server-dg/VPC/PublicSubnet1"
+      "Value": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -53,7 +53,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-codedeploy-server-dg/VPC/PublicSubnet1"
+      "Value": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -94,7 +94,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-codedeploy-server-dg/VPC/PublicSubnet1"
+      "Value": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PublicSubnet1"
      }
     ]
    }
@@ -114,7 +114,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-codedeploy-server-dg/VPC/PublicSubnet1"
+      "Value": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PublicSubnet1"
      }
     ]
    },
@@ -147,7 +147,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-codedeploy-server-dg/VPC/PublicSubnet2"
+      "Value": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -161,7 +161,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-codedeploy-server-dg/VPC/PublicSubnet2"
+      "Value": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -202,7 +202,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-codedeploy-server-dg/VPC/PublicSubnet2"
+      "Value": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PublicSubnet2"
      }
     ]
    }
@@ -222,7 +222,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-codedeploy-server-dg/VPC/PublicSubnet2"
+      "Value": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PublicSubnet2"
      }
     ]
    },
@@ -255,7 +255,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-codedeploy-server-dg/VPC/PrivateSubnet1"
+      "Value": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -269,7 +269,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-codedeploy-server-dg/VPC/PrivateSubnet1"
+      "Value": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -324,7 +324,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-codedeploy-server-dg/VPC/PrivateSubnet2"
+      "Value": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -338,7 +338,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-codedeploy-server-dg/VPC/PrivateSubnet2"
+      "Value": "aws-cdk-codedeploy-server-dg-multi-lb/VPC/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -375,7 +375,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-codedeploy-server-dg/VPC"
+      "Value": "aws-cdk-codedeploy-server-dg-multi-lb/VPC"
      }
     ]
    }
@@ -394,7 +394,7 @@
   "ASGInstanceSecurityGroup0525485D": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "aws-cdk-codedeploy-server-dg/ASG/InstanceSecurityGroup",
+    "GroupDescription": "aws-cdk-codedeploy-server-dg-multi-lb/ASG/InstanceSecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -405,7 +405,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-codedeploy-server-dg/ASG"
+      "Value": "aws-cdk-codedeploy-server-dg-multi-lb/ASG"
      }
     ],
     "VpcId": {
@@ -431,7 +431,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-codedeploy-server-dg/ASG"
+      "Value": "aws-cdk-codedeploy-server-dg-multi-lb/ASG"
      }
     ]
    }
@@ -536,7 +536,7 @@
        "Tags": [
         {
          "Key": "Name",
-         "Value": "aws-cdk-codedeploy-server-dg/ASG/LaunchTemplate"
+         "Value": "aws-cdk-codedeploy-server-dg-multi-lb/ASG/LaunchTemplate"
         }
        ]
       },
@@ -545,7 +545,7 @@
        "Tags": [
         {
          "Key": "Name",
-         "Value": "aws-cdk-codedeploy-server-dg/ASG/LaunchTemplate"
+         "Value": "aws-cdk-codedeploy-server-dg-multi-lb/ASG/LaunchTemplate"
         }
        ]
       }
@@ -575,7 +575,7 @@
       "Tags": [
        {
         "Key": "Name",
-        "Value": "aws-cdk-codedeploy-server-dg/ASG/LaunchTemplate"
+        "Value": "aws-cdk-codedeploy-server-dg-multi-lb/ASG/LaunchTemplate"
        }
       ]
      }
@@ -606,7 +606,7 @@
      {
       "Key": "Name",
       "PropagateAtLaunch": true,
-      "Value": "aws-cdk-codedeploy-server-dg/ASG"
+      "Value": "aws-cdk-codedeploy-server-dg-multi-lb/ASG"
      }
     ],
     "VPCZoneIdentifier": [
@@ -627,7 +627,7 @@
   "ELBSecurityGroupF148FD2E": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "aws-cdk-codedeploy-server-dg/ELB/SecurityGroup",
+    "GroupDescription": "aws-cdk-codedeploy-server-dg-multi-lb/ELB/SecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "255.255.255.255/32",
@@ -682,19 +682,146 @@
     ]
    }
   },
-  "Alarm1F9009D71": {
-   "Type": "AWS::CloudWatch::Alarm",
+  "ALBAEE750D2": {
+   "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
    "Properties": {
-    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "EvaluationPeriods": 1,
-    "MetricName": "Errors",
-    "Namespace": "my.namespace",
-    "Period": 300,
-    "Statistic": "Average",
-    "Threshold": 1
+    "LoadBalancerAttributes": [
+     {
+      "Key": "deletion_protection.enabled",
+      "Value": "false"
+     }
+    ],
+    "Scheme": "internal",
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "ALBSecurityGroup8B8624F8",
+       "GroupId"
+      ]
+     }
+    ],
+    "Subnets": [
+     {
+      "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+     },
+     {
+      "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+     }
+    ],
+    "Type": "application"
    }
   },
-  "CodeDeployGroupRole1D304F7A": {
+  "ALBSecurityGroup8B8624F8": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Automatically created Security Group for ELB awscdkcodedeployserverdgmultilbALB4D2A9235",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "255.255.255.255/32",
+      "Description": "Disallow all traffic",
+      "FromPort": 252,
+      "IpProtocol": "icmp",
+      "ToPort": 86
+     }
+    ],
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow from anyone on port 80",
+      "FromPort": 80,
+      "IpProtocol": "tcp",
+      "ToPort": 80
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "ALBListener3B99FF85": {
+   "Type": "AWS::ElasticLoadBalancingV2::Listener",
+   "Properties": {
+    "DefaultActions": [
+     {
+      "TargetGroupArn": {
+       "Ref": "ALBListenerFleetGroup008CEEE4"
+      },
+      "Type": "forward"
+     }
+    ],
+    "LoadBalancerArn": {
+     "Ref": "ALBAEE750D2"
+    },
+    "Port": 80,
+    "Protocol": "HTTP"
+   }
+  },
+  "ALBListenerFleetGroup008CEEE4": {
+   "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+   "Properties": {
+    "Port": 80,
+    "Protocol": "HTTP",
+    "TargetGroupAttributes": [
+     {
+      "Key": "stickiness.enabled",
+      "Value": "false"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "NLB55158F82": {
+   "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+   "Properties": {
+    "LoadBalancerAttributes": [
+     {
+      "Key": "deletion_protection.enabled",
+      "Value": "false"
+     }
+    ],
+    "Scheme": "internal",
+    "Subnets": [
+     {
+      "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+     },
+     {
+      "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+     }
+    ],
+    "Type": "network"
+   }
+  },
+  "NLBListener96C8170F": {
+   "Type": "AWS::ElasticLoadBalancingV2::Listener",
+   "Properties": {
+    "DefaultActions": [
+     {
+      "TargetGroupArn": {
+       "Ref": "NLBListenerFleetGroupB882EC86"
+      },
+      "Type": "forward"
+     }
+    ],
+    "LoadBalancerArn": {
+     "Ref": "NLB55158F82"
+    },
+    "Port": 80,
+    "Protocol": "TCP"
+   }
+  },
+  "NLBListenerFleetGroupB882EC86": {
+   "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+   "Properties": {
+    "Port": 80,
+    "Protocol": "TCP",
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "CodeDeployGroupMultipleLoadBalancersRole1C8C12D4": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -725,30 +852,26 @@
     ]
    }
   },
-  "CodeDeployGroupApplication13EFBDA6": {
+  "CodeDeployGroupMultipleLoadBalancersApplication399620E3": {
    "Type": "AWS::CodeDeploy::Application",
    "Properties": {
     "ComputePlatform": "Server"
    }
   },
-  "CodeDeployGroup58220FC8": {
+  "CodeDeployGroupMultipleLoadBalancers49CDA4C4": {
    "Type": "AWS::CodeDeploy::DeploymentGroup",
    "Properties": {
     "AlarmConfiguration": {
-     "Alarms": [
-      {
-       "Name": {
-        "Ref": "Alarm1F9009D71"
-       }
-      }
-     ],
-     "Enabled": true
+     "Enabled": false
     },
     "ApplicationName": {
-     "Ref": "CodeDeployGroupApplication13EFBDA6"
+     "Ref": "CodeDeployGroupMultipleLoadBalancersApplication399620E3"
     },
     "AutoRollbackConfiguration": {
-     "Enabled": false
+     "Enabled": true,
+     "Events": [
+      "DEPLOYMENT_FAILURE"
+     ]
     },
     "AutoScalingGroups": [
      {
@@ -756,21 +879,9 @@
      }
     ],
     "DeploymentConfigName": "CodeDeployDefault.AllAtOnce",
-    "DeploymentStyle": {
-     "DeploymentOption": "WITH_TRAFFIC_CONTROL"
-    },
-    "LoadBalancerInfo": {
-     "ElbInfoList": [
-      {
-       "Name": {
-        "Ref": "ELBF276B85D"
-       }
-      }
-     ]
-    },
     "ServiceRoleArn": {
      "Fn::GetAtt": [
-      "CodeDeployGroupRole1D304F7A",
+      "CodeDeployGroupMultipleLoadBalancersRole1C8C12D4",
       "Arn"
      ]
     }

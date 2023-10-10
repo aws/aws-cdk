@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/797cd892d9e90d2d4a19edc1dc48fe01dbc54ea8735edaf4d32a03f6061c2f13.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/311f99f3a451f89703d918b7882c557c5685e0fc80390abc634597fa70d365da.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -226,60 +226,6 @@
             "data": "ELBF276B85D"
           }
         ],
-        "/aws-cdk-codedeploy-server-dg/ALB/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ALBAEE750D2"
-          }
-        ],
-        "/aws-cdk-codedeploy-server-dg/ALB/SecurityGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ALBSecurityGroup8B8624F8"
-          }
-        ],
-        "/aws-cdk-codedeploy-server-dg/ALB/Listener/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ALBListener3B99FF85"
-          }
-        ],
-        "/aws-cdk-codedeploy-server-dg/ALB/Listener/FleetGroup": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "When creating an empty TargetGroup, you should specify a 'targetType' (this warning may become an error in the future). [ack: @aws-cdk/aws-elbv2:targetGroupSpecifyTargetTypeForEmptyTargetGroup]"
-          }
-        ],
-        "/aws-cdk-codedeploy-server-dg/ALB/Listener/FleetGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ALBListenerFleetGroup008CEEE4"
-          }
-        ],
-        "/aws-cdk-codedeploy-server-dg/NLB/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "NLB55158F82"
-          }
-        ],
-        "/aws-cdk-codedeploy-server-dg/NLB/Listener/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "NLBListener96C8170F"
-          }
-        ],
-        "/aws-cdk-codedeploy-server-dg/NLB/Listener/FleetGroup": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "When creating an empty TargetGroup, you should specify a 'targetType' (this warning may become an error in the future). [ack: @aws-cdk/aws-elbv2:targetGroupSpecifyTargetTypeForEmptyTargetGroup]"
-          }
-        ],
-        "/aws-cdk-codedeploy-server-dg/NLB/Listener/FleetGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "NLBListenerFleetGroupB882EC86"
-          }
-        ],
         "/aws-cdk-codedeploy-server-dg/Alarm1/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -314,6 +260,69 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "ALBAEE750D2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ALBAEE750D2",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ALBSecurityGroup8B8624F8": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ALBSecurityGroup8B8624F8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ALBListener3B99FF85": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ALBListener3B99FF85",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ALBListenerFleetGroup008CEEE4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ALBListenerFleetGroup008CEEE4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "NLB55158F82": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NLB55158F82",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "NLBListener96C8170F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NLBListener96C8170F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "NLBListenerFleetGroupB882EC86": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NLBListenerFleetGroupB882EC86",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
