@@ -2,7 +2,7 @@
   "name": "@aws-cdk/aws-synthetics-alpha",
   "version": "0.0.0",
   "private": false,
-  "description": "The CDK Construct Library for AWS::Synthetics",
+  "description": "This module is deprecated. All constructs are now available under aws-cdk-lib/aws-synthetics",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -104,8 +104,8 @@
   "engines": {
     "node": ">= 14.15.0"
   },
-  "stability": "experimental",
-  "maturity": "developer-preview",
+  "stability": "deprecated",
+  "maturity": "deprecated",
   "awscdkio": {
     "announce": false
   },
@@ -117,5 +117,6 @@
       "naming/package-matches-directory",
       "assert/assert-dependency"
     ]
-  }
+  },
+  "deprecated": "This package has been stabilized in aws-cdk-lib is no longer being updated under the -alpha name. Users should migrate to aws-<module> in aws-cdk-lib."
 }
