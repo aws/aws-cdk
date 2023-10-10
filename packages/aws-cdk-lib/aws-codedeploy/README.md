@@ -152,7 +152,7 @@ const deploymentGroup = new codedeploy.ServerDeploymentGroup(this, 'DeploymentGr
 
 It is also possible to provide multiple Elastic Load Balancers through the `loadBalancers` field:
 
-```
+```ts
 import * as elb from 'aws-cdk-lib/aws-elasticloadbalancing';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 
