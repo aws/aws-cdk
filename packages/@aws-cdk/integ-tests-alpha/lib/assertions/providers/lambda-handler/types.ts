@@ -92,9 +92,9 @@ export interface HttpResponse {
   readonly statusText?: string;
 
   /**
-   * The response as JSON
+   * The response, either as parsed JSON or a string literal.
    */
-  readonly responseJson?: { [key: string]: any };
+  readonly body?: any;
 
   /**
    * Headers associated with the response
