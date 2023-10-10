@@ -1,7 +1,7 @@
 import { promises as fs, existsSync } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { integTest, cloneDirectory, shell, withDefaultFixture, retry, sleep, randomInteger, withSamIntegrationFixture, RESOURCES_DIR } from '../../lib';
+import { integTest, cloneDirectory, shell, withDefaultFixture, retry, sleep, randomInteger, withSamIntegrationFixture, RESOURCES_DIR, withCDKMigrateFixture } from '../../lib';
 
 jest.setTimeout(2 * 60 * 60_000); // Includes the time to acquire locks, worst-case single-threaded runtime
 
@@ -572,42 +572,28 @@ integTest('deploy with role', withDefaultFixture(async (fixture) => {
 }));
 
 // TODO add go back in when template synths properly
-['typescript', 'python', 'csharp', 'java'].forEach(langChoice => {
-  integTest(
-    `cdk migrate ${langChoice}`,
-    withDefaultFixture(async (fixture) => {
-      const inputFile = path.join(__dirname, '../../resources/templates/', 'sqs-template.json');
-      const stackName = fixture.stackNamePrefix + `-${langChoice}-migrate-stack`;
+['typescript', 'python', 'csharp', 'java'].forEach(language => {
+  withCDKMigrateFixture(language, async (fixture) => {
+    await fixture.cdkMigrate(language, fixture.stackNamePrefix);
+    await fixture.shell(['ls']);
+    await fixture.shell(['pwd']);
+    await fixture.shell(['cd', fixture.stackNamePrefix]);
+    await fixture.shell(['ls']);
+    await fixture.shell(['pwd']);
 
-      await fixture.cdk([
-        'migrate',
-        '--language',
-        langChoice,
-        '--stack-name',
-        stackName,
-        '--from-path',
-        inputFile.toString(),
-      ]);
+    if (language === 'python') {
+      await fixture.shell(['pip', 'install', '-r', 'requirements.txt']);
+    }
 
-      await fixture.shell(['cd', stackName]);
-      await fixture.shell(['ls']);
-      await fixture.shell(['pwd']);
-      if (langChoice === 'go') {
-        await fixture.shell(['go', 'get']);
-      } else if (langChoice === 'python') {
-        await fixture.packages.makeCliAvailable();
-        await fixture.shell(['pip3', 'install', '-r', 'requirements.txt']);
-      }
-      // go stack doesn't follow the same naming scheme as other languages.
-      const stackArn = await fixture.cdk(['deploy', '--require-approval', 'never'], { captureStderr: false, verbose: true });
-      const response = await fixture.aws.cloudFormation('describeStacks', {
-        StackName: stackArn,
-      });
+    const stackArn = await fixture.cdkDeploy(fixture.stackNamePrefix, { neverRequireApproval: true, verbose: true, captureStderr: false });
+    const response = await fixture.aws.cloudFormation('describeStacks', {
+      StackName: stackArn,
+    });
 
-      expect(response.Stacks?.[0].StackStatus).toEqual('CREATE_COMPLETE');
-      await fixture.cdkDestroy(`${langChoice}-migrate-stack`);
-    }),
-  );
+    expect(response.Stacks?.[0].StackStatus).toEqual('CREATE_COMPLETE');
+    await fixture.cdkDestroy(fixture.stackNamePrefix);
+
+  });
 });
 
 integTest('cdk diff', withDefaultFixture(async (fixture) => {
