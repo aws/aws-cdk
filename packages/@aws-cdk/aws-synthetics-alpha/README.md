@@ -3,17 +3,15 @@
 
 ---
 
-![cdk-constructs: Developer Preview](https://img.shields.io/badge/cdk--constructs-developer--preview-informational.svg?style=for-the-badge)
+![Deprecated](https://img.shields.io/badge/deprecated-critical.svg?style=for-the-badge)
 
-> The APIs of higher level constructs in this module are in **developer preview** before they
-> become stable. We will only make breaking changes to address unforeseen API issues. Therefore,
-> these APIs are not subject to [Semantic Versioning](https://semver.org/), and breaking changes
-> will be announced in release notes. This means that while you may use them, you may need to
-> update your source code when upgrading to a newer version of this package.
+> This API may emit warnings. Backward compatibility is not guaranteed.
 
 ---
 
 <!--END STABILITY BANNER-->
+
+All constructs moved to aws-cdk-lib/aws-synthetics.
 
 Amazon CloudWatch Synthetics allow you to monitor your application by generating **synthetic** traffic. The traffic is produced by a **canary**: a configurable script that runs on a schedule. You configure the canary script to follow the same routes and perform the same actions as a user, which allows you to continually verify your user experience even when you don't have any traffic on your applications.
 
