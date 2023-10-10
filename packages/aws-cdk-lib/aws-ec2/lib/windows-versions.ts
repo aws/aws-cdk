@@ -2,6 +2,7 @@
  * The Windows version to use for the WindowsImage
  */
 export enum WindowsVersion {
+  /** EKS Optimized - Start */
   WINDOWS_SERVER_2019_ENGLISH_CORE_EKS_OPTIMIZED_1_22 = 'Windows_Server-2019-English-Core-EKS_Optimized-1.22',
   WINDOWS_SERVER_2019_ENGLISH_FULL_EKS_OPTIMIZED_1_22 = 'Windows_Server-2019-English-Full-EKS_Optimized-1.22',
   WINDOWS_SERVER_2019_ENGLISH_CORE_EKS_OPTIMIZED_1_23 = 'Windows_Server-2019-English-Core-EKS_Optimized-1.23',
@@ -28,12 +29,20 @@ export enum WindowsVersion {
   WINDOWS_SERVER_2022_ENGLISH_FULL_EKS_OPTIMIZED_1_27 = 'Windows_Server-2022-English-Full-EKS_Optimized-1.27',
   WINDOWS_SERVER_2022_ENGLISH_CORE_EKS_OPTIMIZED_1_28 = 'Windows_Server-2022-English-Core-EKS_Optimized-1.28',
   WINDOWS_SERVER_2022_ENGLISH_FULL_EKS_OPTIMIZED_1_28 = 'Windows_Server-2022-English-Full-EKS_Optimized-1.28',
+  /** EKS Optimized - End */
+  /** 1709 - Start */
   WINDOWS_SERVER_1709_ENGLISH_CORE_CONTAINERSLATEST = 'Windows_Server-1709-English-Core-ContainersLatest',
   WINDOWS_SERVER_1709_ENGLISH_CORE_BASE = 'Windows_Server-1709-English-Core-Base',
+  /** 1709 - End */
+  /** 1803 - Start */
   WINDOWS_SERVER_1803_ENGLISH_CORE_BASE = 'Windows_Server-1803-English-Core-Base',
   WINDOWS_SERVER_1803_ENGLISH_CORE_CONTAINERSLATEST = 'Windows_Server-1803-English-Core-ContainersLatest',
+  /** 1803 - End */
+  /** 1809 - Start */
   WINDOWS_SERVER_1809_ENGLISH_CORE_BASE = 'Windows_Server-1809-English-Core-Base',
   WINDOWS_SERVER_1809_ENGLISH_CORE_CONTAINERSLATEST = 'Windows_Server-1809-English-Core-ContainersLatest',
+  /** 1809 - End */
+  /** 2003 - Start */
   WINDOWS_SERVER_2003_R2_SP2_LANGUAGE_PACKS_32BIT_BASE = 'Windows_Server-2003-R2_SP2-Language_Packs-32Bit-Base',
   WINDOWS_SERVER_2003_R2_SP2_ENGLISH_64BIT_SQL_2005_SP4_EXPRESS = 'Windows_Server-2003-R2_SP2-English-64Bit-SQL_2005_SP4_Express',
   WINDOWS_SERVER_2003_R2_SP2_LANGUAGE_PACKS_64BIT_SQL_2005_SP4_STANDARD = 'Windows_Server-2003-R2_SP2-Language_Packs-64Bit-SQL_2005_SP4_Standard',
@@ -42,7 +51,11 @@ export enum WindowsVersion {
   WINDOWS_SERVER_2003_R2_SP2_LANGUAGE_PACKS_64BIT_SQL_2005_SP4_EXPRESS = 'Windows_Server-2003-R2_SP2-Language_Packs-64Bit-SQL_2005_SP4_Express',
   WINDOWS_SERVER_2003_R2_SP2_ENGLISH_64BIT_SQL_2005_SP4_STANDARD = 'Windows_Server-2003-R2_SP2-English-64Bit-SQL_2005_SP4_Standard',
   WINDOWS_SERVER_2003_R2_SP2_LANGUAGE_PACKS_64BIT_BASE = 'Windows_Server-2003-R2_SP2-Language_Packs-64Bit-Base',
+  /** 2003 - End */
+  /** 2007 - Start */
   WINDOWS_SERVER_2007_R2_SP1_LANGUAGE_PACKS_64BIT_BASE = 'Windows_Server-2008-R2_SP1-Language_Packs-64Bit-Base',
+  /** 2007 - End */
+  /** 2008 - Start */
   WINDOWS_SERVER_2008_SP2_ENGLISH_64BIT_SQL_2008_SP4_EXPRESS = 'Windows_Server-2008-SP2-English-64Bit-SQL_2008_SP4_Express',
   WINDOWS_SERVER_2008_R2_SP1_ENGLISH_64BIT_SQL_2008_R2_SP3_WEB = 'Windows_Server-2008-R2_SP1-English-64Bit-SQL_2008_R2_SP3_Web',
   WINDOWS_SERVER_2008_R2_SP1_ENGLISH_64BIT_SQL_2012_SP4_EXPRESS = 'Windows_Server-2008-R2_SP1-English-64Bit-SQL_2012_SP4_Express',
@@ -77,6 +90,8 @@ export enum WindowsVersion {
   WINDOWS_SERVER_2008_R2_SP1_ENGLISH_64BIT_CORE = 'Windows_Server-2008-R2_SP1-English-64Bit-Core',
   WINDOWS_SERVER_2008_R2_SP1_ENGLISH_64BIT_SQL_2008_R2_SP3_STANDARD = 'Windows_Server-2008-R2_SP1-English-64Bit-SQL_2008_R2_SP3_Standard',
   WINDOWS_SERVER_2008_R2_SP1_ENGLISH_64BIT_SHAREPOINT_2010_SP2_FOUNDATION = 'Windows_Server-2008-R2_SP1-English-64Bit-SharePoint_2010_SP2_Foundation',
+  /** 2008 - End */
+  /** 2012 - Start */
   WINDOWS_SERVER_2012_R2_RTM_CHINESE_SIMPLIFIED_64BIT_BASE = 'Windows_Server-2012-R2_RTM-Chinese_Simplified-64Bit-Base',
   WINDOWS_SERVER_2012_R2_RTM_CHINESE_TRADITIONAL_64BIT_BASE = 'Windows_Server-2012-R2_RTM-Chinese_Traditional-64Bit-Base',
   WINDOWS_SERVER_2012_R2_RTM_DUTCH_64BIT_BASE = 'Windows_Server-2012-R2_RTM-Dutch-64Bit-Base',
@@ -195,6 +210,8 @@ export enum WindowsVersion {
   WINDOWS_SERVER_2012_RTM_JAPANESE_64BIT_SQL_2012_SP4_EXPRESS = 'Windows_Server-2012-RTM-Japanese-64Bit-SQL_2012_SP4_Express',
   WINDOWS_SERVER_2012_R2_RTM_JAPANESE_64BIT_SQL_2016_SP3_ENTERPRISE = 'Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2016_SP3_Enterprise',
   WINDOWS_SERVER_2012_R2_RTM_ENGLISH_64BIT_SQL_2016_SP3_ENTERPRISE = 'Windows_Server-2012-R2_RTM-English-64Bit-SQL_2016_SP3_Enterprise',
+  /** 2012 - End */
+  /** 2016 - Start */
   WINDOWS_SERVER_2016_ENGLISH_CORE_CONTAINERS = 'Windows_Server-2016-English-Core-Containers',
   WINDOWS_SERVER_2016_ENGLISH_CORE_SQL_2016_SP1_WEB = 'Windows_Server-2016-English-Core-SQL_2016_SP1_Web',
   WINDOWS_SERVER_2016_GERMAN_FULL_BASE = 'Windows_Server-2016-German-Full-Base',
@@ -288,6 +305,8 @@ export enum WindowsVersion {
   WINDOWS_SERVER_2016_ENGLISH_CORE_SQL_2016_SP3_STANDARD = 'Windows_Server-2016-English-Core-SQL_2016_SP3_Standard',
   WINDOWS_SERVER_2016_JAPANESE_FULL_SQL_2016_SP1_EXPRESS = 'Windows_Server-2016-Japanese-Full-SQL_2016_SP1_Express',
   WINDOWS_SERVER_2016_ENGLISH_FULL_SQL_2016_SP1_ENTERPRISE = 'Windows_Server-2016-English-Full-SQL_2016_SP1_Enterprise',
+  /** 2016 - End */
+  /** 2019 - Start */
   WINDOWS_SERVER_2019_ENGLISH_FULL_SQL_2017_WEB = 'Windows_Server-2019-English-Full-SQL_2017_Web',
   WINDOWS_SERVER_2019_FRENCH_FULL_BASE = 'Windows_Server-2019-French-Full-Base',
   WINDOWS_SERVER_2019_KOREAN_FULL_BASE = 'Windows_Server-2019-Korean-Full-Base',
@@ -349,6 +368,8 @@ export enum WindowsVersion {
   WINDOWS_SERVER_2019_POLISH_FULL_BASE = 'Windows_Server-2019-Polish-Full-Base',
   WINDOWS_SERVER_2019_GERMAN_FULL_BASE = 'Windows_Server-2019-German-Full-Base',
   WINDOWS_SERVER_2019_DUTCH_FULL_BASE = 'Windows_Server-2019-Dutch-Full-Base',
+  /** 2019 - End */
+  /** 2022 - Start */
   WINDOWS_SERVER_2022_ENGLISH_STIG_FULL = 'Windows_Server-2022-English-STIG-Full',
   WINDOWS_SERVER_2022_JAPANESE_FULL_SQL_2022_WEB = 'Windows_Server-2022-Japanese-Full-SQL_2022_Web',
   WINDOWS_SERVER_2022_ENGLISH_FULL_SQL_2022_WEB = 'Windows_Server-2022-English-Full-SQL_2022_Web',
@@ -394,5 +415,6 @@ export enum WindowsVersion {
   WINDOWS_SERVER_2022_ENGLISH_FULL_SQL_2022_EXPRESS = 'Windows_Server-2022-English-Full-SQL_2022_Express',
   WINDOWS_SERVER_2022_ENGLISH_FULL_SQL_2022_STANDARD = 'Windows_Server-2022-English-Full-SQL_2022_Standard',
   WINDOWS_SERVER_2022_JAPANESE_FULL_SQL_2022_STANDARD = 'Windows_Server-2022-Japanese-Full-SQL_2022_Standard',
-  WINDOWS_SERVER_2022_JAPANESE_FULL_SQL_2022_ENTERPRISE = 'Windows_Server-2022-Japanese-Full-SQL_2022_Enterprise'
+  WINDOWS_SERVER_2022_JAPANESE_FULL_SQL_2022_ENTERPRISE = 'Windows_Server-2022-Japanese-Full-SQL_2022_Enterprise',
+  /** 2022 - End */
 }
