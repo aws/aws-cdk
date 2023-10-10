@@ -23,13 +23,6 @@ elb.addListener({
   externalPort: 80,
 });
 
-<<<<<<< HEAD
-const clb = new lb.LoadBalancer(stack, 'CLB', {
-  vpc: vpc,
-});
-
-=======
->>>>>>> 69d34c502b (Add integration test to loadBalancers field)
 const alb = new lb2.ApplicationLoadBalancer(stack, 'ALB', {
   vpc: vpc,
 });
