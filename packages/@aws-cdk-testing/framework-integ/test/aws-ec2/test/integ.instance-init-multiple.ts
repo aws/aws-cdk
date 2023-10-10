@@ -6,7 +6,8 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const tmpDir = fs.mkdtempSync('/tmp/cfn-init-test');
-fs.writeFileSync(path.resolve(tmpDir, 'testFile'), 'Hello World!\n');
+fs.writeFileSync(path.resolve(tmpDir, 'testConfigFile'), 'Hello World!\n');
+fs.writeFileSync(path.resolve(tmpDir, 'testConfigFile2'), 'Hello World2!\n');
 
 const app = new cdk.App();
 class TestStack extends cdk.Stack {
@@ -30,7 +31,7 @@ class TestStack extends cdk.Stack {
           default: new ec2.InitConfig([
             ec2.InitFile.fromAsset(
               '/target/path/config.json',
-              tmpDir,
+              path.join(tmpDir, 'testConfigFile'),
             ),
           ]),
         },
@@ -52,7 +53,7 @@ class TestStack extends cdk.Stack {
           default: new ec2.InitConfig([
             ec2.InitFile.fromAsset(
               '/target/path/config.json',
-              tmpDir,
+              path.join(tmpDir, 'testConfigFile2'),
             ),
           ]),
         },
