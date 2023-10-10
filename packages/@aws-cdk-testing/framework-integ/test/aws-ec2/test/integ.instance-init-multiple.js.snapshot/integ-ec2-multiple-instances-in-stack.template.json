@@ -669,7 +669,7 @@
       "Fn::Join": [
        "",
        [
-        "#!/bin/bash\n# fingerprint: f195f2cfd04f905a\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ",
+        "#!/bin/bash\n# fingerprint: 7651159f4f0bfabe\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ",
         {
          "Ref": "AWS::Region"
         },
@@ -712,7 +712,7 @@
       "files": {
        "/target/path/config.json": {
         "source": {
-         "Fn::Sub": "https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930b.zip"
+         "Fn::Sub": "https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b9ca21e9930115b91ab7e6877bec3bc97b410a6d41fd58816b56aba6db2643bd.b9ca21e9930115b91ab7e6877bec3bc97b410a6d41fd58816b56aba6db2643bd"
         },
         "mode": "000644",
         "owner": "root",
@@ -898,7 +898,7 @@
       "Fn::Join": [
        "",
        [
-        "#!/bin/bash\n# fingerprint: f195f2cfd04f905a\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ",
+        "#!/bin/bash\n# fingerprint: 8787022e9944cbeb\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ",
         {
          "Ref": "AWS::Region"
         },
@@ -941,7 +941,7 @@
       "files": {
        "/target/path/config.json": {
         "source": {
-         "Fn::Sub": "https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930b.zip"
+         "Fn::Sub": "https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/04c44be8722f4360fe0830af22298ad0870480310d7bd6eedbbd2391aecf59a8.04c44be8722f4360fe0830af22298ad0870480310d7bd6eedbbd2391aecf59a8"
         },
         "mode": "000644",
         "owner": "root",
