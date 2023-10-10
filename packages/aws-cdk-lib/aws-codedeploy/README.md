@@ -150,6 +150,30 @@ const deploymentGroup = new codedeploy.ServerDeploymentGroup(this, 'DeploymentGr
 });
 ```
 
+It is also possible to provide multiple Elastic Load Balancers through the `loadBalancers` field:
+
+```
+import * as elb from 'aws-cdk-lib/aws-elasticloadbalancing';
+import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
+
+declare const lb: elb.LoadBalancer;
+lb.addListener({
+  externalPort: 80,
+});
+
+declare const alb: elbv2.ApplicationLoadBalancer;
+const listener = alb.addListener('Listener', { port: 80 });
+const targetGroup = listener.addTargets('Fleet', { port: 80 });
+
+const deploymentGroup = new codedeploy.ServerDeploymentGroup(this, 'DeploymentGroup', {
+  loadBalancers: [
+    codedeploy.LoadBalancer.classic(elb),
+    codedeploy.LoadBalancer.application(targetGroup),
+  ]
+});
+
+```
+
 ## EC2/on-premise Deployment Configurations
 
 You can also pass a Deployment Configuration when creating the Deployment Group:
