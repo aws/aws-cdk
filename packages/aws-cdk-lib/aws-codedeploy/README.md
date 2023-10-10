@@ -171,7 +171,6 @@ const deploymentGroup = new codedeploy.ServerDeploymentGroup(this, 'DeploymentGr
     codedeploy.LoadBalancer.application(targetGroup),
   ]
 });
-
 ```
 
 ## EC2/on-premise Deployment Configurations
