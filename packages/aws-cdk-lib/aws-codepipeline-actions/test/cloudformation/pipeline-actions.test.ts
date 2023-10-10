@@ -446,15 +446,15 @@ class RoleDouble extends iam.Role {
 }
 
 class BucketDouble extends s3.Bucket {
-  public grantRead(identity: iam.IGrantable, _objectsKeyPattern: any = '*'): iam.Grant {
+  public grantRead(identity: iam.IGrantable, _objectsKeyPattern: string = '*'): iam.Grant {
     return iam.Grant.drop(identity, '');
   }
 
-  public grantWrite(identity: iam.IGrantable, _objectsKeyPattern: any = '*'): iam.Grant {
+  public grantWrite(identity: iam.IGrantable, _objectsKeyPattern: string = '*'): iam.Grant {
     return iam.Grant.drop(identity, '');
   }
 
-  public grantReadWrite(identity: iam.IGrantable, _objectsKeyPattern: any = '*'): iam.Grant {
+  public grantReadWrite(identity: iam.IGrantable, _objectsKeyPattern: string = '*'): iam.Grant {
     return iam.Grant.drop(identity, '');
   }
 }

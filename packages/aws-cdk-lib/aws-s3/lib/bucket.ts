@@ -186,7 +186,7 @@ export interface IBucket extends IResource {
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
-  grantRead(identity: iam.IGrantable, objectsKeyPattern?: any): iam.Grant;
+  grantRead(identity: iam.IGrantable, objectsKeyPattern?: string): iam.Grant;
 
   /**
    * Grant write permissions to this bucket to an IAM principal.
@@ -206,7 +206,7 @@ export interface IBucket extends IResource {
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    * @param allowedActionPatterns Restrict the permissions to certain list of action patterns
    */
-  grantWrite(identity: iam.IGrantable, objectsKeyPattern?: any, allowedActionPatterns?: string[]): iam.Grant;
+  grantWrite(identity: iam.IGrantable, objectsKeyPattern?: string, allowedActionPatterns?: string[]): iam.Grant;
 
   /**
    * Grants s3:PutObject* and s3:Abort* permissions for this bucket to an IAM principal.
@@ -216,7 +216,7 @@ export interface IBucket extends IResource {
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
-  grantPut(identity: iam.IGrantable, objectsKeyPattern?: any): iam.Grant;
+  grantPut(identity: iam.IGrantable, objectsKeyPattern?: string): iam.Grant;
 
   /**
    * Grant the given IAM identity permissions to modify the ACLs of objects in the given Bucket.
@@ -237,7 +237,7 @@ export interface IBucket extends IResource {
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
-  grantDelete(identity: iam.IGrantable, objectsKeyPattern?: any): iam.Grant;
+  grantDelete(identity: iam.IGrantable, objectsKeyPattern?: string): iam.Grant;
 
   /**
    * Grants read/write permissions for this bucket and it's contents to an IAM
@@ -257,7 +257,7 @@ export interface IBucket extends IResource {
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
-  grantReadWrite(identity: iam.IGrantable, objectsKeyPattern?: any): iam.Grant;
+  grantReadWrite(identity: iam.IGrantable, objectsKeyPattern?: string): iam.Grant;
 
   /**
    * Allows unrestricted access to objects from this bucket.
@@ -767,13 +767,13 @@ export abstract class BucketBase extends Resource implements IBucket {
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
-  public grantRead(identity: iam.IGrantable, objectsKeyPattern: any = '*') {
+  public grantRead(identity: iam.IGrantable, objectsKeyPattern: string = '*') {
     return this.grant(identity, perms.BUCKET_READ_ACTIONS, perms.KEY_READ_ACTIONS,
       this.bucketArn,
       this.arnForObjects(objectsKeyPattern));
   }
 
-  public grantWrite(identity: iam.IGrantable, objectsKeyPattern: any = '*', allowedActionPatterns: string[] = []) {
+  public grantWrite(identity: iam.IGrantable, objectsKeyPattern: string = '*', allowedActionPatterns: string[] = []) {
     const grantedWriteActions = allowedActionPatterns.length > 0 ? allowedActionPatterns : this.writeActions;
     return this.grant(identity, grantedWriteActions, perms.KEY_WRITE_ACTIONS,
       this.bucketArn,
@@ -788,7 +788,7 @@ export abstract class BucketBase extends Resource implements IBucket {
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
-  public grantPut(identity: iam.IGrantable, objectsKeyPattern: any = '*') {
+  public grantPut(identity: iam.IGrantable, objectsKeyPattern: string = '*') {
     return this.grant(identity, this.putActions, perms.KEY_WRITE_ACTIONS,
       this.arnForObjects(objectsKeyPattern));
   }
@@ -805,12 +805,12 @@ export abstract class BucketBase extends Resource implements IBucket {
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
-  public grantDelete(identity: iam.IGrantable, objectsKeyPattern: any = '*') {
+  public grantDelete(identity: iam.IGrantable, objectsKeyPattern: string = '*') {
     return this.grant(identity, perms.BUCKET_DELETE_ACTIONS, [],
       this.arnForObjects(objectsKeyPattern));
   }
 
-  public grantReadWrite(identity: iam.IGrantable, objectsKeyPattern: any = '*') {
+  public grantReadWrite(identity: iam.IGrantable, objectsKeyPattern: string = '*') {
     const bucketActions = perms.BUCKET_READ_ACTIONS.concat(this.writeActions);
     // we need unique permissions because some permissions are common between read and write key actions
     const keyActions = [...new Set([...perms.KEY_READ_ACTIONS, ...perms.KEY_WRITE_ACTIONS])];
