@@ -213,7 +213,7 @@ describe('CodeDeploy Server Deployment Group', () => {
     });
   });
 
-  test('can be created with mulitple ALB Target Groups as the load balancers', () => {
+  test('can be created with multiple ALB Target Groups as the load balancers', () => {
     const stack = new cdk.Stack();
     const defaultVpc = new ec2.Vpc(stack, 'VPC');
 
