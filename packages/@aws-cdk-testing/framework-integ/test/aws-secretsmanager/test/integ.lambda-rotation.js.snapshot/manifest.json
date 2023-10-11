@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "cdk-integ-secret-lambda-rotation.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dc90d37690ac7b3f65298669ac91e7fd063d66752c781aab7febf755ae8694bf.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4e81755b5ba8cd19fd697a14075c9c8dba43c651e234a8bff4b4f4218c21018d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -81,6 +82,24 @@
             "data": "LambdaInvokeN0a2GKfZP0JmDqDEVhhu6A0TUv3NyNbk4YMFKNc69846677"
           }
         ],
+        "/cdk-integ-secret-lambda-rotation/SecretForRotationDisabled/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecretForRotationDisabledD3CC9741"
+          }
+        ],
+        "/cdk-integ-secret-lambda-rotation/LambdaForRotationDisabled/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaForRotationDisabledServiceRole9FA05754"
+          }
+        ],
+        "/cdk-integ-secret-lambda-rotation/LambdaForRotationDisabled/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaForRotationDisabled3F8DC7F6"
+          }
+        ],
         "/cdk-integ-secret-lambda-rotation/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -109,6 +128,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "cdkintegsecretlambdarotationtestDefaultTestDeployAssert65AE5426.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",

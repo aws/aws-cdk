@@ -19,8 +19,22 @@ class TestStack extends cdk.Stack {
       rotationLambda: new lambda.Function(this, 'Lambda', {
         runtime: STANDARD_NODEJS_RUNTIME,
         handler: 'index.handler',
-        code: lambda.Code.fromInline('NOOP'),
+        code: lambda.Code.fromInline('// dummy func'),
       }),
+    });
+
+    const secretForRotationDisabled = new secretsmanager.Secret(this, 'SecretForRotationDisabled', {
+      encryptionKey: key,
+    });
+
+    secretForRotationDisabled.addRotationSchedule('ScheduleForRotationDisabled', {
+      rotationLambda: new lambda.Function(this, 'LambdaForRotationDisabled', {
+        runtime: STANDARD_NODEJS_RUNTIME,
+        handler: 'index.handler',
+        code: lambda.Code.fromInline('// dummy func'),
+      }),
+      automaticallyAfter: cdk.Duration.days(0),
+      rotateImmediatelyOnUpdate: false,
     });
   }
 }

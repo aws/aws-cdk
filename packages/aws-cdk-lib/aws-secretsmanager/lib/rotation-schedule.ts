@@ -86,6 +86,10 @@ export class RotationSchedule extends Resource {
   constructor(scope: Construct, id: string, props: RotationScheduleProps) {
     super(scope, id);
 
+    if (props.automaticallyAfter && props.automaticallyAfter.toMilliseconds() === 0) {
+      return;
+    }
+
     if ((!props.rotationLambda && !props.hostedRotation) || (props.rotationLambda && props.hostedRotation)) {
       throw new Error('One of `rotationLambda` or `hostedRotation` must be specified.');
     }

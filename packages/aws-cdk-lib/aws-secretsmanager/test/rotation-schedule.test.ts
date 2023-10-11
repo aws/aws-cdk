@@ -611,15 +611,7 @@ describe('manual rotations', () => {
       });
 
       // THEN
-      Template.fromStack(localStack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', Match.objectEquals({
-        SecretId: { Ref: 'SecretA720EF05' },
-        RotationLambdaARN: {
-          'Fn::GetAtt': [
-            'LambdaD247545B',
-            'Arn',
-          ],
-        },
-      }));
+      Template.fromStack(localStack).resourceCountIs('AWS::SecretsManager::RotationSchedule', 0);
     };
 
     checkRotationNotSet(Duration.days(0));
