@@ -93,7 +93,7 @@ const putParameterStep = new tasks.CallAwsService(this, 'PutParameter', {
 
 const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
   definitionBody: sfn.DefinitionBody.fromChainable(putParameterStep)
-})
+});
 
 new Schedule(this, 'Schedule', {
   schedule: ScheduleExpression.rate(Duration.hours(1)),
