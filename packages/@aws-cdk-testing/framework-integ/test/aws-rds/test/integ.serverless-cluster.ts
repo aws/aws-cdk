@@ -14,6 +14,7 @@ const subnetGroup = new rds.SubnetGroup(stack, 'SubnetGroup', {
   vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
   description: 'My Subnet Group',
   subnetGroupName: 'MyNotLowerCaseSubnetGroupName',
+
 });
 
 const cluster = new rds.ServerlessCluster(stack, 'Serverless Database', {
@@ -26,6 +27,10 @@ const cluster = new rds.ServerlessCluster(stack, 'Serverless Database', {
   vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
   subnetGroup,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
+  scaling: {
+    secondsBeforeTimeout: cdk.Duration.seconds(300),
+    timeoutAction: String('RollbackCapacityChange'),
+  },
 });
 cluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');
 
@@ -40,17 +45,11 @@ const noCopyTagsCluster = new rds.ServerlessCluster(stack, 'Serverless Database 
   subnetGroup,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   copyTagsToSnapshot: false,
-});
-noCopyTagsCluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');
-
-const slc = new rds.ServerlessCluster(stack, 'Serverless Database', {
-  engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
-  vpc,
   scaling: {
     secondsBeforeTimeout: cdk.Duration.seconds(300),
     timeoutAction: String('RollbackCapacityChange'),
   },
 });
-slc.connections.allowDefaultPortFromAnyIpv4('Severless Cluster with timeout');
+noCopyTagsCluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');
 
 app.synth();
