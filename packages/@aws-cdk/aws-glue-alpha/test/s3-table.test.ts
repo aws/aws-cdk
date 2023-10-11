@@ -1109,7 +1109,7 @@ describe('Partition-Projection', () => {
         DateIntervalUnit.DAYS,
     );
   
-    const table = new glue.S3Table(stack, 'Table', {
+    new glue.S3Table(stack, 'Table', {
       database,
       columns: [{
         name: 'col',
@@ -1147,7 +1147,7 @@ describe('Partition-Projection', () => {
         DateIntervalUnit.DAYS,
     );
   
-    const table = new glue.S3Table(stack, 'Table', {
+    new glue.S3Table(stack, 'Table', {
       tableName: 'glue-table-on-s3', 
       description: 'The raw data from firehose',
       database,
