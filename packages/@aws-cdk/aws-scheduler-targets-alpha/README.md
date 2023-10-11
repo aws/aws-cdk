@@ -25,6 +25,7 @@ number of supported AWS Services.
 The following targets are supported:
 
 1. `targets.LambdaInvoke`: [Invoke an AWS Lambda function](#invoke-a-lambda-function))
+2. `targets.StepFunctionsStartExecution`: [Start an AWS Step Function](#start-an-aws-step-function)
 
 ## Invoke a Lambda function
 
@@ -59,5 +60,45 @@ const target = new targets.LambdaInvoke(fn, {
 const schedule = new Schedule(this, 'Schedule', {
     schedule: ScheduleExpression.rate(Duration.hours(1)),
     target
+});
+```
+
+## Start an AWS Step Function
+
+Use the `StepFunctionsStartExecution` target to start a new execution on a StepFunction.
+
+The code snippet below creates an event rule with a Step Function as a target
+called every hour by Event Bridge Scheduler with a custom payload.
+
+```ts
+import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
+import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
+
+const payload = {
+  Name: "MyParameter",
+  Value: '🌥️',
+};
+
+const putParameterStep = new tasks.CallAwsService(this, 'PutParameter', {
+  service: 'ssm',
+  action: 'putParameter',
+  iamResources: ['*'],
+  parameters: {
+    "Name.$": '$.Name',
+    "Value.$": '$.Value',
+    Type: 'String',
+    Overwrite: true,
+  },
+});
+
+const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
+  definitionBody: sfn.DefinitionBody.fromChainable(putParameterStep)
+});
+
+new Schedule(this, 'Schedule', {
+  schedule: ScheduleExpression.rate(Duration.hours(1)),
+  target: new targets.StepFunctionsStartExecution(stateMachine, {
+    input: ScheduleTargetInput.fromObject(payload),
+  }),
 });
 ```
