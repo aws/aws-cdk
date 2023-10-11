@@ -37,7 +37,7 @@ export class Fact {
     const foundFact = this.find(region, name);
 
     if (!foundFact) {
-      throw new Error(`No fact ${name} could be found for region: ${region} and name: ${name}`);
+      throw new Error(`No fact ${name} could be found for region: ${region} and name: ${name}. Regions is a fixed list and defined in aws-entities.ts as AWS_REGIONS.`);
     }
 
     return foundFact;
