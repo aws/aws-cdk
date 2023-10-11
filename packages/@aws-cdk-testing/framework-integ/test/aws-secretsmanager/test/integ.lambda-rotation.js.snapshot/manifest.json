@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f4fdd90dcd71ca0b7554de3c7f61b27608a571c3951fd12fb5e76aff96307630.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e2cf90582c26dbb55788610e7e9db883f3c23dbd288f0f236854e924de6a1efa.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -86,6 +86,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SecretForRotationDisabledD3CC9741"
+          }
+        ],
+        "/cdk-integ-secret-lambda-rotation/SecretForRotationDisabled/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecretForRotationDisabledPolicy2D7771E3"
           }
         ],
         "/cdk-integ-secret-lambda-rotation/LambdaForRotationDisabled/ServiceRole/Resource": [

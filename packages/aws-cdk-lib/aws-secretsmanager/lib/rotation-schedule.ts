@@ -124,6 +124,9 @@ export class RotationSchedule extends Resource {
       );
     }
 
+    // Prevent secrets deletions when rotation is in place
+    props.secret.denyAccountRootDelete();
+
     if (props.automaticallyAfter && props.automaticallyAfter.toMilliseconds() === 0) {
       return;
     }
@@ -139,9 +142,6 @@ export class RotationSchedule extends Resource {
       rotationRules,
       rotateImmediatelyOnUpdate: props.rotateImmediatelyOnUpdate,
     });
-
-    // Prevent secrets deletions when rotation is in place
-    props.secret.denyAccountRootDelete();
   }
 }
 
