@@ -1400,6 +1400,7 @@ describe('bucket', () => {
               'Action': [
                 's3:GetObject*',
                 's3:GetBucket*',
+                's3:HeadObject',
                 's3:List*',
               ],
               'Resource': [{
@@ -1539,6 +1540,7 @@ describe('bucket', () => {
                   'Action': [
                     's3:GetObject*',
                     's3:GetBucket*',
+                    's3:HeadObject',
                     's3:List*',
                   ],
                   'Effect': 'Allow',
@@ -1611,6 +1613,7 @@ describe('bucket', () => {
                     'Action': [
                       's3:GetObject*',
                       's3:GetBucket*',
+                      's3:HeadObject',
                       's3:List*',
                       's3:DeleteObject*',
                       's3:PutObject',
@@ -1673,7 +1676,7 @@ describe('bucket', () => {
           'Version': '2012-10-17',
           'Statement': [
             {
-              'Action': ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
+              'Action': ['s3:GetObject*', 's3:GetBucket*', 's3:HeadObject', 's3:List*'],
               'Condition': { 'StringEquals': { 'aws:PrincipalOrgID': 'o-1234' } },
               'Effect': 'Allow',
               'Principal': { AWS: '*' },
@@ -1717,6 +1720,7 @@ describe('bucket', () => {
               'Action': [
                 's3:GetObject*',
                 's3:GetBucket*',
+                's3:HeadObject',
                 's3:List*',
                 's3:DeleteObject*',
                 's3:PutObject',
@@ -2040,6 +2044,7 @@ describe('bucket', () => {
                     'Action': [
                       's3:GetObject*',
                       's3:GetBucket*',
+                      's3:HeadObject',
                       's3:List*',
                     ],
                     'Effect': 'Allow',
@@ -2099,6 +2104,7 @@ describe('bucket', () => {
               'Action': [
                 's3:GetObject*',
                 's3:GetBucket*',
+                's3:HeadObject',
                 's3:List*',
               ],
               'Effect': 'Allow',
@@ -2128,6 +2134,7 @@ describe('bucket', () => {
               'Action': [
                 's3:GetObject*',
                 's3:GetBucket*',
+                's3:HeadObject',
                 's3:List*',
               ],
               'Effect': 'Allow',
