@@ -418,8 +418,7 @@ export class TestFixture extends ShellHelper {
   }
 
   public async cdkMigrate(language: string, stackName: string, inputPath?: string, options?: CdkCliOptions) {
-    inputPath ?? path.join(__dirname, 'resources', 'templates', 'sqs-template.json').toString();
-
+    console.log(path.join(__dirname, 'resources', 'templates', 'sqs-template.json').toString());
     return this.cdk([
       'migrate',
       '--language',
@@ -427,7 +426,7 @@ export class TestFixture extends ShellHelper {
       '--stack-name',
       stackName,
       '--from-path',
-      inputPath!,
+      inputPath ?? path.join(__dirname, 'resources', 'templates', 'sqs-template.json').toString(),
       ...(options?.options ?? []),
     ], options);
   }
