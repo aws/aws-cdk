@@ -117,5 +117,5 @@
       "naming/package-matches-directory",
       "assert/assert-dependency"
     ]
-  },
+  }
 }
