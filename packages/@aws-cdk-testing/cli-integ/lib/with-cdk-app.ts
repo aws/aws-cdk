@@ -426,7 +426,7 @@ export class TestFixture extends ShellHelper {
       '--stack-name',
       stackName,
       '--from-path',
-      inputPath ?? path.join(__dirname, 'resources', 'templates', 'sqs-template.json').toString(),
+      inputPath ?? path.join(__dirname, '..', 'resources', 'templates', 'sqs-template.json').toString(),
       ...(options?.options ?? []),
     ], options);
   }
