@@ -57,6 +57,7 @@ describe('S3 Deploy Action', () => {
             'Action': [
               's3:GetObject*',
               's3:GetBucket*',
+              's3:HeadObject',
               's3:List*',
               's3:DeleteObject*',
               's3:PutObject',

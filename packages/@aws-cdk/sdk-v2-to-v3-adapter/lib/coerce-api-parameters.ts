@@ -8,9 +8,9 @@ type StateOrConversion = TypeCoercionStateMachine[number][string];
  * Given a minimal AWS SDKv3 call definition (service, action, parameters),
  * coerces nested parameter values into a Uint8Array if that's what the SDKv3 expects.
  */
-export function coerceApiParameters(service: string, action: string, parameters: ApiParameters = {}): ApiParameters {
+export function coerceApiParameters(v3service: string, action: string, parameters: ApiParameters = {}): ApiParameters {
   const typeMachine = typeCoercionStateMachine();
-  return new Coercer(typeMachine).coerceApiParameters(service, action, parameters);
+  return new Coercer(typeMachine).coerceApiParameters(v3service, action, parameters);
 }
 
 /**
@@ -19,9 +19,9 @@ export function coerceApiParameters(service: string, action: string, parameters:
 export class Coercer {
   constructor(private readonly typeMachine: TypeCoercionStateMachine) { }
 
-  public coerceApiParameters(service: string, action: string, parameters: ApiParameters = {}): ApiParameters {
+  public coerceApiParameters(v3service: string, action: string, parameters: ApiParameters = {}): ApiParameters {
     // Get the initial state corresponding to the current service+action, then recurse through the parameters
-    const actionState = this.progress(action.toLowerCase(), this.progress(service.toLowerCase(), 0));
+    const actionState = this.progress(action.toLowerCase(), this.progress(v3service.toLowerCase(), 0));
     return this.recurse(parameters, actionState) as any;
   }
 

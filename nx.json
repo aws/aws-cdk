@@ -17,7 +17,8 @@
       "outputs": [
         "{projectRoot}/**/*.integ.*.js.snapshot/*",
         "{projectRoot}/tsconfig.json",
-        "{projectRoot}/**/lib/aws-custom-resource/sdk-api-metadata.json",
+        "{projectRoot}/**/lib/aws-custom-resource/sdk-v2-to-v3.json",
+        "{projectRoot}/**/lib/aws-custom-resource/sdk-v3-metadata.json",
         "{projectRoot}/**/build-info.json",
         "{projectRoot}/**/*.js",
         "{projectRoot}/**/*.js.map",
