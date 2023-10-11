@@ -25,6 +25,7 @@ const startQueryExecutionJob = new AthenaStartQueryExecution(stack, 'Start Athen
       objectKey: 'folder',
     },
   },
+  executionParameters: ['param1', 'param2'],
 });
 
 const chain = sfn.Chain.start(startQueryExecutionJob);
