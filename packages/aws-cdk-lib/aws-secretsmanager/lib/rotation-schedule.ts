@@ -86,10 +86,6 @@ export class RotationSchedule extends Resource {
   constructor(scope: Construct, id: string, props: RotationScheduleProps) {
     super(scope, id);
 
-    if (props.automaticallyAfter && props.automaticallyAfter.toMilliseconds() === 0) {
-      return;
-    }
-
     if ((!props.rotationLambda && !props.hostedRotation) || (props.rotationLambda && props.hostedRotation)) {
       throw new Error('One of `rotationLambda` or `hostedRotation` must be specified.');
     }
@@ -128,17 +124,13 @@ export class RotationSchedule extends Resource {
       );
     }
 
-    let automaticallyAfterDays: number | undefined = undefined;
-    if (props.automaticallyAfter?.toMilliseconds() !== 0) {
-      automaticallyAfterDays = props.automaticallyAfter?.toDays() || 30;
+    if (props.automaticallyAfter && props.automaticallyAfter.toMilliseconds() === 0) {
+      return;
     }
 
-    let rotationRules: CfnRotationSchedule.RotationRulesProperty | undefined = undefined;
-    if (automaticallyAfterDays !== undefined) {
-      rotationRules = {
-        automaticallyAfterDays,
-      };
-    }
+    const rotationRules = {
+      automaticallyAfterDays: props.automaticallyAfter?.toDays() || 30,
+    };
 
     new CfnRotationSchedule(this, 'Resource', {
       secretId: props.secret.secretArn,
