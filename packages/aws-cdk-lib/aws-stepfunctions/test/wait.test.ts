@@ -75,4 +75,25 @@ describe('Wait State', () => {
     });
   });
 
+  test('supports adding a custom state name', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const waitTime = new Wait(stack, 'myWaitState', {
+      stateName: 'wait-state-custom-name',
+      time: WaitTime.duration(cdk.Duration.seconds(30)),
+    });
+
+    // THEN
+    expect(render(stack, waitTime)).toEqual({
+      StartAt: 'wait-state-custom-name',
+      States: {
+        'wait-state-custom-name': {
+          Seconds: 30,
+          Type: 'Wait',
+          End: true,
+        },
+      },
+    });
+  });
+
 });
