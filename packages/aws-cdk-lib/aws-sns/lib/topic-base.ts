@@ -26,6 +26,13 @@ export interface ITopic extends IResource, notifications.INotificationRuleTarget
   readonly topicName: string;
 
   /**
+   * Enables content-based deduplication for FIFO topics.
+   *
+   * @attribute
+   */
+  readonly contentBasedDeduplication: boolean;
+
+  /**
    * Whether this topic is an Amazon SNS FIFO queue. If false, this is a standard topic.
    *
    * @attribute
@@ -61,6 +68,8 @@ export abstract class TopicBase extends Resource implements ITopic {
   public abstract readonly topicName: string;
 
   public abstract readonly fifo: boolean;
+
+  public abstract readonly contentBasedDeduplication: boolean;
 
   /**
    * Controls automatic creation of policy objects.
