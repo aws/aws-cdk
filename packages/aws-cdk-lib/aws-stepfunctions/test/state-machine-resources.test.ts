@@ -642,6 +642,7 @@ describe('State Machine Resources', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const task = new stepfunctions.Pass(stack, 'Pass', {
+      stateName: 'my-pass-state',
       inputPath: '$',
       outputPath: '$.state',
       parameters: {

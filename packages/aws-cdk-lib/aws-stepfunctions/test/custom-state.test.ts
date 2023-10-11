@@ -41,15 +41,17 @@ describe('Custom State', () => {
     // WHEN
     const definition = new sfn.CustomState(stack, 'Custom', {
       stateJson,
-    }).next(new sfn.Pass(stack, 'MyPass'));
+    }).next(new sfn.Pass(stack, 'MyPass', {
+      stateName: 'my-pass-state',
+    }));
 
     // THEN
     expect(render(stack, definition)).toStrictEqual(
       {
         StartAt: 'Custom',
         States: {
-          Custom: {
-            Next: 'MyPass',
+          'Custom': {
+            Next: 'my-pass-state',
             Type: 'Task',
             Resource: 'arn:aws:states:::dynamodb:putItem',
             Parameters: {
@@ -62,7 +64,7 @@ describe('Custom State', () => {
             },
             ResultPath: null,
           },
-          MyPass: {
+          'my-pass-state': {
             Type: 'Pass',
             End: true,
           },
