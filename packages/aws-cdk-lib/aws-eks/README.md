@@ -63,12 +63,12 @@ This example defines an Amazon EKS cluster with the following configuration:
 * A Kubernetes pod with a container based on the [paulbouwer/hello-kubernetes](https://github.com/paulbouwer/hello-kubernetes) image.
 
 ```ts
-import { KubectlV27Layer } from '@aws-cdk/lambda-layer-kubectl-v27';
+import { KubectlV28Layer } from '@aws-cdk/lambda-layer-kubectl-v28';
 
 // provisioning a cluster
 const cluster = new eks.Cluster(this, 'hello-eks', {
   version: eks.KubernetesVersion.V1_28,
-  kubectlLayer: new KubectlV27Layer(this, 'kubectl'),
+  kubectlLayer: new KubectlV28Layer(this, 'kubectl'),
 });
 
 // apply a kubernetes manifest to the cluster
@@ -756,11 +756,11 @@ Depending on which version of kubernetes you're targeting, you will need to use 
 the `@aws-cdk/lambda-layer-kubectl-vXY` packages.
 
 ```ts
-import { KubectlV27Layer } from '@aws-cdk/lambda-layer-kubectl-v27';
+import { KubectlV28Layer } from '@aws-cdk/lambda-layer-kubectl-v28';
 
 const cluster = new eks.Cluster(this, 'hello-eks', {
   version: eks.KubernetesVersion.V1_28,
-  kubectlLayer: new KubectlV27Layer(this, 'kubectl'),
+  kubectlLayer: new KubectlV28Layer(this, 'kubectl'),
 });
 ```
 
@@ -956,7 +956,7 @@ To access the Kubernetes resources from the console, make sure your viewing prin
 in the `aws-auth` ConfigMap. Some options to consider:
 
 ```ts
-import { KubectlV27Layer } from '@aws-cdk/lambda-layer-kubectl-v27';
+import { KubectlV28Layer } from '@aws-cdk/lambda-layer-kubectl-v28';
 declare const cluster: eks.Cluster;
 declare const your_current_role: iam.Role;
 declare const vpc: ec2.Vpc;
@@ -976,7 +976,7 @@ your_current_role.addToPolicy(new iam.PolicyStatement({
 
 ```ts
 // Option 2: create your custom mastersRole with scoped assumeBy arn as the Cluster prop. Switch to this role from the AWS console.
-import { KubectlV27Layer } from '@aws-cdk/lambda-layer-kubectl-v27';
+import { KubectlV28Layer } from '@aws-cdk/lambda-layer-kubectl-v28';
 declare const vpc: ec2.Vpc;
 
 const mastersRole = new iam.Role(this, 'MastersRole', {
@@ -986,7 +986,7 @@ const mastersRole = new iam.Role(this, 'MastersRole', {
 const cluster = new eks.Cluster(this, 'EksCluster', {
   vpc,
   version: eks.KubernetesVersion.V1_28,
-  kubectlLayer: new KubectlV27Layer(this, 'KubectlLayer'),
+  kubectlLayer: new KubectlV28Layer(this, 'KubectlLayer'),
   mastersRole,
 });
 
