@@ -16,7 +16,7 @@ const integ = new IntegTest(app, 'AssertionsTest', {
   testCases: [stack],
 });
 
-integ.assertions.awsApiCall('SSM', 'getParameter', {
+const firstAssertion = integ.assertions.awsApiCall('SSM', 'getParameter', {
   Name: ssmParameter.ref,
   WithDecryption: true,
 }).expect(
@@ -27,3 +27,17 @@ integ.assertions.awsApiCall('SSM', 'getParameter', {
     },
   }),
 );
+
+const secondAssertion = integ.assertions.awsApiCall('SSM', 'getParameter', {
+  Name: ssmParameter.ref,
+  WithDecryption: true,
+}).expect(
+  ExpectedResult.objectLike({
+    Parameter: {
+      Type: 'String',
+      Value: 'ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ!"#¤%&/()=?`´^*+~_-.,:;<>|',
+    },
+  }),
+);
+
+firstAssertion.next(secondAssertion);
