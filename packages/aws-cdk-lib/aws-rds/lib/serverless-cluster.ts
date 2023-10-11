@@ -487,10 +487,8 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
       autoPause: (secondsToAutoPause === 0) ? false : true,
       minCapacity: options.minCapacity,
       maxCapacity: options.maxCapacity,
-
       secondsBeforeTimeout: (timeout === 300) ? undefined : timeout,
       timeoutAction: options.timeoutAction,
-
       secondsUntilAutoPause: (secondsToAutoPause === 0) ? undefined : secondsToAutoPause,
     };
   }
