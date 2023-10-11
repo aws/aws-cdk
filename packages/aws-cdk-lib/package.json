@@ -33,7 +33,6 @@
     "compressAssembly": true,
     "pre": [
       "ts-node -P tsconfig.dev.json region-info/build-tools/generate-static-data.ts",
-      "(cp -f $(node -p 'require.resolve(\"aws-sdk/apis/metadata.json\")') custom-resources/lib/aws-custom-resource/sdk-api-metadata.json && rm -rf custom-resources/test/aws-custom-resource/cdk.out)",
       "(rm -rf core/test/fs/fixtures && cd core/test/fs && tar -xzf fixtures.tar.gz)",
       "(rm -rf assets/test/fs/fixtures && cd assets/test/fs && tar -xzvf fixtures.tar.gz)",
       "./scripts/airlift-custom-resource-handlers.sh"
@@ -475,6 +474,7 @@
     "./core": "./core/index.js",
     "./core/lib/helpers-internal": "./core/lib/helpers-internal/index.js",
     "./custom-resources": "./custom-resources/index.js",
+    "./custom-resources/lib/helpers-internal": "./custom-resources/lib/helpers-internal/index.js",
     "./cx-api": "./cx-api/index.js",
     "./lambda-layer-awscli": "./lambda-layer-awscli/index.js",
     "./lambda-layer-kubectl": "./lambda-layer-kubectl/index.js",
