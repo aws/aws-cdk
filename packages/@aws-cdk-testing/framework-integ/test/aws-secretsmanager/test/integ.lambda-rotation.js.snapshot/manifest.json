@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4e81755b5ba8cd19fd697a14075c9c8dba43c651e234a8bff4b4f4218c21018d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f4fdd90dcd71ca0b7554de3c7f61b27608a571c3951fd12fb5e76aff96307630.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -94,10 +94,22 @@
             "data": "LambdaForRotationDisabledServiceRole9FA05754"
           }
         ],
+        "/cdk-integ-secret-lambda-rotation/LambdaForRotationDisabled/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaForRotationDisabledServiceRoleDefaultPolicy39277994"
+          }
+        ],
         "/cdk-integ-secret-lambda-rotation/LambdaForRotationDisabled/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LambdaForRotationDisabled3F8DC7F6"
+          }
+        ],
+        "/cdk-integ-secret-lambda-rotation/LambdaForRotationDisabled/InvokeN0--a2GKfZP0JmDqDE--Vhhu6+A0TUv3NyNbk4YM+FKNc=": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaForRotationDisabledInvokeN0a2GKfZP0JmDqDEVhhu6A0TUv3NyNbk4YMFKNc22F50A98"
           }
         ],
         "/cdk-integ-secret-lambda-rotation/BootstrapVersion": [

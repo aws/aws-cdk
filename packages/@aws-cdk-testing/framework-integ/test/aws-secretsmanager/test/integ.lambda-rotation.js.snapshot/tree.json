@@ -117,6 +117,12 @@
                             "AWS": [
                               {
                                 "Fn::GetAtt": [
+                                  "LambdaForRotationDisabledServiceRole9FA05754",
+                                  "Arn"
+                                ]
+                              },
+                              {
+                                "Fn::GetAtt": [
                                   "LambdaServiceRoleA8ED4D3B",
                                   "Arn"
                                 ]
@@ -573,6 +579,57 @@
                       "fqn": "constructs.Construct",
                       "version": "10.2.70"
                     }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "cdk-integ-secret-lambda-rotation/LambdaForRotationDisabled/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "cdk-integ-secret-lambda-rotation/LambdaForRotationDisabled/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "secretsmanager:DescribeSecret",
+                                    "secretsmanager:GetSecretValue",
+                                    "secretsmanager:PutSecretValue",
+                                    "secretsmanager:UpdateSecretVersionStage"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Ref": "SecretForRotationDisabledD3CC9741"
+                                  }
+                                },
+                                {
+                                  "Action": "secretsmanager:GetRandomPassword",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "LambdaForRotationDisabledServiceRoleDefaultPolicy39277994",
+                            "roles": [
+                              {
+                                "Ref": "LambdaForRotationDisabledServiceRole9FA05754"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.70"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
+                    }
                   }
                 },
                 "constructInfo": {
@@ -597,6 +654,27 @@
                       ]
                     },
                     "runtime": "nodejs18.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              },
+              "InvokeN0--a2GKfZP0JmDqDE--Vhhu6+A0TUv3NyNbk4YM+FKNc=": {
+                "id": "InvokeN0--a2GKfZP0JmDqDE--Vhhu6+A0TUv3NyNbk4YM+FKNc=",
+                "path": "cdk-integ-secret-lambda-rotation/LambdaForRotationDisabled/InvokeN0--a2GKfZP0JmDqDE--Vhhu6+A0TUv3NyNbk4YM+FKNc=",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "LambdaForRotationDisabled3F8DC7F6",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "secretsmanager.amazonaws.com"
                   }
                 },
                 "constructInfo": {
