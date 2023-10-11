@@ -57,6 +57,13 @@ export class Result {
  */
 export interface PassProps {
   /**
+   * Optional name for this state
+   *
+   * @default - The construct ID will be used as state name
+   */
+  readonly stateName?: string;
+
+  /**
    * An optional description for this state
    *
    * @default No comment
