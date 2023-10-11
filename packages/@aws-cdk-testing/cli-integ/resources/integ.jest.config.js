@@ -17,7 +17,7 @@ module.exports = {
   testTimeout: 300000,
 
   // Affects test.concurrent(), these are self-limiting anyway
-  maxWorkers: '50%',
+  maxConcurrency: 10,
   reporters: [
     "default",
     [ "jest-junit", { suiteName: "jest tests", outputDirectory: "coverage" } ]
