@@ -1,5 +1,3 @@
-import { AWS_REGIONS } from './aws-entities';
-
 /**
  * A database of regional information.
  */
@@ -10,7 +8,7 @@ export class Fact {
    */
   public static get regions(): string[] {
     // Return by copy to ensure no modifications can be made to the undelying constant.
-    return Array.from(AWS_REGIONS);
+    return Array.from(Object.keys(this.database));
   }
 
   /**
@@ -37,7 +35,7 @@ export class Fact {
     const foundFact = this.find(region, name);
 
     if (!foundFact) {
-      throw new Error(`No fact ${name} could be found for region: ${region} and name: ${name}. Regions is a fixed list and defined in aws-entities.ts as AWS_REGIONS.`);
+      throw new Error(`No fact ${name} could be found for region: ${region} and name: ${name}.`);
     }
 
     return foundFact;

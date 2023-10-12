@@ -89,4 +89,19 @@ describe('register', () => {
     // Cleanup
     Fact.unregister(region, name);
   });
+
+  test('registering a fact with a new region adds the region', () => {
+    // GIVEN
+    const region = 'us-unreleased-1';
+    const name = FactName.PARTITION;
+    const value = 'nebraska';
+
+    // WHEN
+    expect(Fact.find(region, name)).not.toBe(value);
+    expect(() => Fact.register({ region, name, value })).not.toThrowError();
+
+    // THEN
+    expect(Fact.regions.includes('us-unreleased-1')).toBeTruthy();
+    expect(Fact.find(region, name)).toBe('nebraska');
+  });
 });
