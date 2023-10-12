@@ -127,6 +127,16 @@
          ]
         }
        ]
+      },
+      {
+       "Action": "lambda:GetFunctionConfiguration",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "Handler886CB40B",
+         "Arn"
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"

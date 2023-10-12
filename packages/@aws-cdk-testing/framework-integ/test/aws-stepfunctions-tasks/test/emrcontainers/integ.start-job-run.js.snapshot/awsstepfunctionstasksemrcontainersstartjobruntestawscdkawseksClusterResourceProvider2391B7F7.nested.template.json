@@ -50,7 +50,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b8426d60bacb99593213adedd37997b7d83efb99683ef98c85e692a82056e829.zip"
+     "S3Key": "9efb96d8186dd343e3f84c72cfbcaaf16aa5579bbac0c02c60d4f19f4300d832.zip"
     },
     "Description": "onEvent handler for EKS cluster resource provider",
     "Environment": {
@@ -115,7 +115,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b8426d60bacb99593213adedd37997b7d83efb99683ef98c85e692a82056e829.zip"
+     "S3Key": "9efb96d8186dd343e3f84c72cfbcaaf16aa5579bbac0c02c60d4f19f4300d832.zip"
     },
     "Description": "isComplete handler for EKS cluster resource provider",
     "Environment": {
@@ -223,6 +223,16 @@
          ]
         }
        ]
+      },
+      {
+       "Action": "lambda:GetFunctionConfiguration",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "OnEventHandler42BEBAE0",
+         "Arn"
+        ]
+       }
       },
       {
        "Action": "states:StartExecution",
@@ -367,6 +377,16 @@
          ]
         }
        ]
+      },
+      {
+       "Action": "lambda:GetFunctionConfiguration",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "OnEventHandler42BEBAE0",
+         "Arn"
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -501,6 +521,16 @@
          ]
         }
        ]
+      },
+      {
+       "Action": "lambda:GetFunctionConfiguration",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "OnEventHandler42BEBAE0",
+         "Arn"
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"

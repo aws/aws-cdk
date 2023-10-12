@@ -166,6 +166,16 @@
          ]
         }
        ]
+      },
+      {
+       "Action": "lambda:GetFunctionConfiguration",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "comamazonawscdkcustomresourcess3fileproviders3fileonevent48293DE8",
+         "Arn"
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -489,6 +499,16 @@
        ]
       },
       {
+       "Action": "lambda:GetFunctionConfiguration",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "comamazonawscdkcustomresourcess3assertproviders3assertoneventF1EEF783",
+         "Arn"
+        ]
+       }
+      },
+      {
        "Action": "states:StartExecution",
        "Effect": "Allow",
        "Resource": {
@@ -631,6 +651,16 @@
          ]
         }
        ]
+      },
+      {
+       "Action": "lambda:GetFunctionConfiguration",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "comamazonawscdkcustomresourcess3assertproviders3assertoneventF1EEF783",
+         "Arn"
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -765,6 +795,16 @@
          ]
         }
        ]
+      },
+      {
+       "Action": "lambda:GetFunctionConfiguration",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "comamazonawscdkcustomresourcess3assertproviders3assertoneventF1EEF783",
+         "Arn"
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"

@@ -287,6 +287,16 @@
                                           ]
                                         }
                                       ]
+                                    },
+                                    {
+                                      "Action": "lambda:GetFunctionConfiguration",
+                                      "Effect": "Allow",
+                                      "Resource": {
+                                        "Fn::GetAtt": [
+                                          "LambdaNode19AFA38E",
+                                          "Arn"
+                                        ]
+                                      }
                                     }
                                   ],
                                   "Version": "2012-10-17"

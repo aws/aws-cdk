@@ -1563,7 +1563,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "b8426d60bacb99593213adedd37997b7d83efb99683ef98c85e692a82056e829.zip"
+                          "s3Key": "9efb96d8186dd343e3f84c72cfbcaaf16aa5579bbac0c02c60d4f19f4300d832.zip"
                         },
                         "description": "onEvent handler for EKS cluster resource provider",
                         "environment": {
@@ -1695,7 +1695,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "b8426d60bacb99593213adedd37997b7d83efb99683ef98c85e692a82056e829.zip"
+                          "s3Key": "9efb96d8186dd343e3f84c72cfbcaaf16aa5579bbac0c02c60d4f19f4300d832.zip"
                         },
                         "description": "isComplete handler for EKS cluster resource provider",
                         "environment": {
@@ -1846,6 +1846,16 @@
                                               ]
                                             }
                                           ]
+                                        },
+                                        {
+                                          "Action": "lambda:GetFunctionConfiguration",
+                                          "Effect": "Allow",
+                                          "Resource": {
+                                            "Fn::GetAtt": [
+                                              "OnEventHandler42BEBAE0",
+                                              "Arn"
+                                            ]
+                                          }
                                         },
                                         {
                                           "Action": "states:StartExecution",
@@ -2074,6 +2084,16 @@
                                               ]
                                             }
                                           ]
+                                        },
+                                        {
+                                          "Action": "lambda:GetFunctionConfiguration",
+                                          "Effect": "Allow",
+                                          "Resource": {
+                                            "Fn::GetAtt": [
+                                              "OnEventHandler42BEBAE0",
+                                              "Arn"
+                                            ]
+                                          }
                                         }
                                       ],
                                       "Version": "2012-10-17"
@@ -2292,6 +2312,16 @@
                                               ]
                                             }
                                           ]
+                                        },
+                                        {
+                                          "Action": "lambda:GetFunctionConfiguration",
+                                          "Effect": "Allow",
+                                          "Resource": {
+                                            "Fn::GetAtt": [
+                                              "OnEventHandler42BEBAE0",
+                                              "Arn"
+                                            ]
+                                          }
                                         }
                                       ],
                                       "Version": "2012-10-17"
@@ -2601,7 +2631,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/01f7a717a95eec3eff0cfeaaf9148889a50eccdc02d44fed2434c766959f9dca.json"
+                          "/593106bf5b0ba2db40ed82cf0d1eeb6e00e544b2bbb32f2bf227f28604abd7c7.json"
                         ]
                       ]
                     }
@@ -2662,7 +2692,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "7ee709fdaf72d4a95dabe6f431ed4176b1dbcb78127986bf956f0ed8cad04779.zip"
+                          "s3Key": "0f19e51d1e47290d7a33e0b67405e4722942dee4b92b9d29425fccf0d99017c3.zip"
                         },
                         "description": "onEvent handler for EKS kubectl resource provider",
                         "handler": "index.handler",
@@ -2888,6 +2918,16 @@
                                               ]
                                             }
                                           ]
+                                        },
+                                        {
+                                          "Action": "lambda:GetFunctionConfiguration",
+                                          "Effect": "Allow",
+                                          "Resource": {
+                                            "Fn::GetAtt": [
+                                              "Handler886CB40B",
+                                              "Arn"
+                                            ]
+                                          }
                                         }
                                       ],
                                       "Version": "2012-10-17"
@@ -3112,7 +3152,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/3c364d391f151eee1816d80713eb687a1d2894a12246a3d8fdc82d0e6d53895c.json"
+                          "/bcd8b9d818e98d80622da1d228db1f2abce4403ff0e271f9c9721c0322a2c866.json"
                         ]
                       ]
                     }
@@ -3862,6 +3902,16 @@
                                               ]
                                             }
                                           ]
+                                        },
+                                        {
+                                          "Action": "lambda:GetFunctionConfiguration",
+                                          "Effect": "Allow",
+                                          "Resource": {
+                                            "Fn::GetAtt": [
+                                              "IngressPingerFunction54746D9B",
+                                              "Arn"
+                                            ]
+                                          }
                                         }
                                       ],
                                       "Version": "2012-10-17"

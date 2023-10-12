@@ -280,6 +280,16 @@
        ]
       },
       {
+       "Action": "lambda:GetFunctionConfiguration",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "OnEventHandler42BEBAE0",
+         "Arn"
+        ]
+       }
+      },
+      {
        "Action": "states:StartExecution",
        "Effect": "Allow",
        "Resource": {
@@ -422,6 +432,16 @@
          ]
         }
        ]
+      },
+      {
+       "Action": "lambda:GetFunctionConfiguration",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "OnEventHandler42BEBAE0",
+         "Arn"
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -556,6 +576,16 @@
          ]
         }
        ]
+      },
+      {
+       "Action": "lambda:GetFunctionConfiguration",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "OnEventHandler42BEBAE0",
+         "Arn"
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
