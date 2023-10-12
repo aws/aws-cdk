@@ -117,6 +117,5 @@
       "naming/package-matches-directory",
       "assert/assert-dependency"
     ]
-  },
-  "deprecated": "This package has been stabilized in aws-cdk-lib is no longer being updated under the -alpha name. Users should migrate to aws-<module> in aws-cdk-lib."
+  }
 }
