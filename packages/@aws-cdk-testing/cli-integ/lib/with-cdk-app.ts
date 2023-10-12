@@ -318,7 +318,7 @@ export class TestFixture extends ShellHelper {
     this.output.write(`${s}\n`);
   }
 
-  public async cdkDeploy(stackNames: string | string[], options: CdkCliOptions = {}) {
+  public async cdkDeploy(stackNames: string | string[], options: CdkCliOptions = {}, skipStackRename?: boolean) {
     stackNames = typeof stackNames === 'string' ? [stackNames] : stackNames;
 
     const neverRequireApproval = options.neverRequireApproval ?? true;
@@ -328,7 +328,7 @@ export class TestFixture extends ShellHelper {
       ...(options.options ?? []),
       // use events because bar renders bad in tests
       '--progress', 'events',
-      ...this.fullStackName(stackNames)], options);
+      ...(skipStackRename ? stackNames : this.fullStackName(stackNames))], options);
   }
 
   public async cdkSynth(options: CdkCliOptions = {}) {

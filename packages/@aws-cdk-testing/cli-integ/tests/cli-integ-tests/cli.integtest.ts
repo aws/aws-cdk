@@ -578,7 +578,7 @@ integTest('deploy with role', withDefaultFixture(async (fixture) => {
       await fixture.shell(['pip', 'install', '-r', 'requirements.txt']);
     }
 
-    const stackArn = await fixture.cdkDeploy(fixture.stackNamePrefix, { neverRequireApproval: true, verbose: true, captureStderr: false });
+    const stackArn = await fixture.cdkDeploy(fixture.stackNamePrefix, { neverRequireApproval: true, verbose: true, captureStderr: false }, true);
     const response = await fixture.aws.cloudFormation('describeStacks', {
       StackName: stackArn,
     });
