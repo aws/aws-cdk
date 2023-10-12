@@ -1,5 +1,5 @@
 import { APPCONFIG_LAMBDA_LAYER_ARNS, CLOUDWATCH_LAMBDA_INSIGHTS_ARNS } from '../build-tools/fact-tables';
-import { FactName, RegionInfo } from '../lib';
+import { Fact, FactName, RegionInfo } from '../lib';
 import { AWS_REGIONS, AWS_SERVICES } from '../lib/aws-entities';
 
 test('built-in data is correct', () => {
@@ -64,6 +64,18 @@ test('limitedRegionMap only returns information for certain regions', () => {
   const map2 = RegionInfo.limitedRegionMap(FactName.ELBV2_ACCOUNT, ['aws-cn']);
   expect(map2['us-east-1']).not.toBeDefined();
   expect(map2['cn-north-1']).toBeDefined();
+});
+
+test('registering a fact with a new region adds the region', () => {
+  const region = 'us-unreleased-1';
+  const name = FactName.PARTITION;
+  const value = 'nebraska';
+
+  expect(Fact.find(region, name)).not.toBe(value);
+  expect(() => Fact.register({ region, name, value })).not.toThrowError();
+
+  expect(Fact.regions.includes('us-unreleased-1')).toBeTruthy();
+  expect(Fact.find(region, name)).toBe('nebraska');
 });
 
 test.each([
