@@ -112,7 +112,7 @@ describe('ADOT Lambda Layer', () => {
             {
               Ref: 'AWS::Region',
             },
-            'JAVAxSDKx1x28x1xarm64',
+            'JAVAxSDKx1x30x0xarm64',
           ],
         },
       });
