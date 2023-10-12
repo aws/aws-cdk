@@ -231,10 +231,10 @@ export class Provider extends Construct implements ICustomResourceProvider {
 
     fn.addEnvironment(consts.USER_ON_EVENT_FUNCTION_ARN_ENV, this.onEventHandler.functionArn);
     this.onEventHandler.grantInvoke(fn);
-    this.onEventHandler.addToRolePolicy(new iam.PolicyStatement({
+    fn.addToRolePolicy(new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       actions: ['lambda:GetFunctionConfiguration'],
-      resources: [fn.functionArn],
+      resources: [this.onEventHandler.functionArn],
     }));
 
     if (this.isCompleteHandler) {
