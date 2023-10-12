@@ -127,21 +127,19 @@ export class RotationSchedule extends Resource {
     // Prevent secrets deletions when rotation is in place
     props.secret.denyAccountRootDelete();
 
-    if (props.automaticallyAfter && props.automaticallyAfter.toMilliseconds() === 0) {
-      return;
+    if (!props.automaticallyAfter || props.automaticallyAfter.toMilliseconds() !== 0) {
+      const rotationRules = {
+        automaticallyAfterDays: props.automaticallyAfter?.toDays() || 30,
+      };
+
+      new CfnRotationSchedule(this, 'Resource', {
+        secretId: props.secret.secretArn,
+        rotationLambdaArn: props.rotationLambda?.functionArn,
+        hostedRotationLambda: props.hostedRotation?.bind(props.secret, this),
+        rotationRules,
+        rotateImmediatelyOnUpdate: props.rotateImmediatelyOnUpdate,
+      });
     }
-
-    const rotationRules = {
-      automaticallyAfterDays: props.automaticallyAfter?.toDays() || 30,
-    };
-
-    new CfnRotationSchedule(this, 'Resource', {
-      secretId: props.secret.secretArn,
-      rotationLambdaArn: props.rotationLambda?.functionArn,
-      hostedRotationLambda: props.hostedRotation?.bind(props.secret, this),
-      rotationRules,
-      rotateImmediatelyOnUpdate: props.rotateImmediatelyOnUpdate,
-    });
   }
 }
 
