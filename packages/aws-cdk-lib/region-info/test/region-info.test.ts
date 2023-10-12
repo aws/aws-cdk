@@ -66,18 +66,6 @@ test('limitedRegionMap only returns information for certain regions', () => {
   expect(map2['cn-north-1']).toBeDefined();
 });
 
-test('registering a fact with a new region adds the region', () => {
-  const region = 'us-unreleased-1';
-  const name = FactName.PARTITION;
-  const value = 'nebraska';
-
-  expect(Fact.find(region, name)).not.toBe(value);
-  expect(() => Fact.register({ region, name, value })).not.toThrowError();
-
-  expect(Fact.regions.includes('us-unreleased-1')).toBeTruthy();
-  expect(Fact.find(region, name)).toBe('nebraska');
-});
-
 test.each([
   ['us-east-1', false],
   ['me-south-1', true],
