@@ -776,7 +776,7 @@ export class CdkToolkit {
       minimatch(stack.hierarchicalId, pattern) || (stack.id === pattern && semver.major(versionNumber()) < 2),
     ));
     if (notExistPatterns.length > 0) {
-      throw new Error(`Stacks not exist: ${notExistPatterns.join(', ')}`);
+      throw new Error(`Cannot run cdk destroy on stack(s) ${selector.patterns.join(', ')}. ${notExistPatterns.join(', ')} not exist.`);
     }
 
     return stacks;
