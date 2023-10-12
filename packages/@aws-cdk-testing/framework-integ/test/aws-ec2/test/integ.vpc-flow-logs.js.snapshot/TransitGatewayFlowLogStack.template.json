@@ -106,6 +106,16 @@
    }
   }
  },
+ "Outputs": {
+  "ExportsOutputRefFlowLogsCWFlowLog9CED86DABA9FA174": {
+   "Value": {
+    "Ref": "FlowLogsCWFlowLog9CED86DA"
+   },
+   "Export": {
+    "Name": "TransitGatewayFlowLogStack:ExportsOutputRefFlowLogsCWFlowLog9CED86DABA9FA174"
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

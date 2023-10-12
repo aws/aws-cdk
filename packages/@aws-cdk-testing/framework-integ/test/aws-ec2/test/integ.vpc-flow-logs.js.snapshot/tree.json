@@ -1239,6 +1239,668 @@
           "version": "0.0.0"
         }
       },
+      "TransitGatewayFlowLogStack": {
+        "id": "TransitGatewayFlowLogStack",
+        "path": "TransitGatewayFlowLogStack",
+        "children": {
+          "TransitGateway": {
+            "id": "TransitGateway",
+            "path": "TransitGatewayFlowLogStack/TransitGateway",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::EC2::TransitGateway",
+              "aws:cdk:cloudformation:props": {}
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ec2.CfnTransitGateway",
+              "version": "0.0.0"
+            }
+          },
+          "FlowLogsCW": {
+            "id": "FlowLogsCW",
+            "path": "TransitGatewayFlowLogStack/FlowLogsCW",
+            "children": {
+              "IAMRole": {
+                "id": "IAMRole",
+                "path": "TransitGatewayFlowLogStack/FlowLogsCW/IAMRole",
+                "children": {
+                  "ImportIAMRole": {
+                    "id": "ImportIAMRole",
+                    "path": "TransitGatewayFlowLogStack/FlowLogsCW/IAMRole/ImportIAMRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "TransitGatewayFlowLogStack/FlowLogsCW/IAMRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "vpc-flow-logs.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "TransitGatewayFlowLogName"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "TransitGatewayFlowLogStack/FlowLogsCW/IAMRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "TransitGatewayFlowLogStack/FlowLogsCW/IAMRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "logs:CreateLogStream",
+                                    "logs:DescribeLogStreams",
+                                    "logs:PutLogEvents"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "FlowLogsCWLogGroup0398E8F8",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "iam:PassRole",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "FlowLogsCWIAMRole017AD736",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "FlowLogsCWIAMRoleDefaultPolicy943C8A20",
+                            "roles": [
+                              {
+                                "Ref": "FlowLogsCWIAMRole017AD736"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "LogGroup": {
+                "id": "LogGroup",
+                "path": "TransitGatewayFlowLogStack/FlowLogsCW/LogGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "TransitGatewayFlowLogStack/FlowLogsCW/LogGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "retentionInDays": 731,
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "TransitGatewayFlowLogName"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "FlowLog": {
+                "id": "FlowLog",
+                "path": "TransitGatewayFlowLogStack/FlowLogsCW/FlowLog",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::FlowLog",
+                  "aws:cdk:cloudformation:props": {
+                    "deliverLogsPermissionArn": {
+                      "Fn::GetAtt": [
+                        "FlowLogsCWIAMRole017AD736",
+                        "Arn"
+                      ]
+                    },
+                    "logDestinationType": "cloud-watch-logs",
+                    "logGroupName": {
+                      "Ref": "FlowLogsCWLogGroup0398E8F8"
+                    },
+                    "resourceId": {
+                      "Ref": "TransitGateway"
+                    },
+                    "resourceType": "TransitGateway",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "TransitGatewayFlowLogName"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnFlowLog",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ec2.FlowLog",
+              "version": "0.0.0"
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "TransitGatewayFlowLogStack/Exports",
+            "children": {
+              "Output{\"Ref\":\"FlowLogsCWFlowLog9CED86DA\"}": {
+                "id": "Output{\"Ref\":\"FlowLogsCWFlowLog9CED86DA\"}",
+                "path": "TransitGatewayFlowLogStack/Exports/Output{\"Ref\":\"FlowLogsCWFlowLog9CED86DA\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "TransitGatewayFlowLogStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "TransitGatewayFlowLogStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "TransitGatewayAttachmentFlowLogStack": {
+        "id": "TransitGatewayAttachmentFlowLogStack",
+        "path": "TransitGatewayAttachmentFlowLogStack",
+        "children": {
+          "VpcForTransitGateway": {
+            "id": "VpcForTransitGateway",
+            "path": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
+                  "aws:cdk:cloudformation:props": {
+                    "cidrBlock": "10.0.1.0/24",
+                    "enableDnsHostnames": true,
+                    "enableDnsSupport": true,
+                    "instanceTenancy": "default",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPC",
+                  "version": "0.0.0"
+                }
+              },
+              "IsolatedSubnetSubnet1": {
+                "id": "IsolatedSubnetSubnet1",
+                "path": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/IsolatedSubnetSubnet1",
+                "children": {
+                  "Subnet": {
+                    "id": "Subnet",
+                    "path": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/IsolatedSubnetSubnet1/Subnet",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                      "aws:cdk:cloudformation:props": {
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            0,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
+                        "cidrBlock": "10.0.1.0/24",
+                        "mapPublicIpOnLaunch": false,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:subnet-name",
+                            "value": "IsolatedSubnet"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-type",
+                            "value": "Isolated"
+                          },
+                          {
+                            "key": "Name",
+                            "value": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/IsolatedSubnetSubnet1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "VpcForTransitGatewayA63961E4"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Acl": {
+                    "id": "Acl",
+                    "path": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/IsolatedSubnetSubnet1/Acl",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTable": {
+                    "id": "RouteTable",
+                    "path": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/IsolatedSubnetSubnet1/RouteTable",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                      "aws:cdk:cloudformation:props": {
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/IsolatedSubnetSubnet1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "VpcForTransitGatewayA63961E4"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTableAssociation": {
+                    "id": "RouteTableAssociation",
+                    "path": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/IsolatedSubnetSubnet1/RouteTableAssociation",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "VpcForTransitGatewayIsolatedSubnetSubnet1RouteTable485A2AA0"
+                        },
+                        "subnetId": {
+                          "Ref": "VpcForTransitGatewayIsolatedSubnetSubnet1Subnet318BD74B"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
+                  "version": "0.0.0"
+                }
+              },
+              "RestrictDefaultSecurityGroupCustomResource": {
+                "id": "RestrictDefaultSecurityGroupCustomResource",
+                "path": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/RestrictDefaultSecurityGroupCustomResource",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/RestrictDefaultSecurityGroupCustomResource/Default",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CustomResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ec2.Vpc",
+              "version": "0.0.0"
+            }
+          },
+          "Custom::VpcRestrictDefaultSGCustomResourceProvider": {
+            "id": "Custom::VpcRestrictDefaultSGCustomResourceProvider",
+            "path": "TransitGatewayAttachmentFlowLogStack/Custom::VpcRestrictDefaultSGCustomResourceProvider",
+            "children": {
+              "Staging": {
+                "id": "Staging",
+                "path": "TransitGatewayAttachmentFlowLogStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Staging",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.AssetStaging",
+                  "version": "0.0.0"
+                }
+              },
+              "Role": {
+                "id": "Role",
+                "path": "TransitGatewayAttachmentFlowLogStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "0.0.0"
+                }
+              },
+              "Handler": {
+                "id": "Handler",
+                "path": "TransitGatewayAttachmentFlowLogStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CustomResourceProvider",
+              "version": "0.0.0"
+            }
+          },
+          "TransitGateway": {
+            "id": "TransitGateway",
+            "path": "TransitGatewayAttachmentFlowLogStack/TransitGateway",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::EC2::TransitGateway",
+              "aws:cdk:cloudformation:props": {}
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ec2.CfnTransitGateway",
+              "version": "0.0.0"
+            }
+          },
+          "TransitGatewayAttachment": {
+            "id": "TransitGatewayAttachment",
+            "path": "TransitGatewayAttachmentFlowLogStack/TransitGatewayAttachment",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::EC2::TransitGatewayVpcAttachment",
+              "aws:cdk:cloudformation:props": {
+                "subnetIds": [
+                  {
+                    "Ref": "VpcForTransitGatewayIsolatedSubnetSubnet1Subnet318BD74B"
+                  }
+                ],
+                "transitGatewayId": {
+                  "Ref": "TransitGateway"
+                },
+                "vpcId": {
+                  "Ref": "VpcForTransitGatewayA63961E4"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ec2.CfnTransitGatewayVpcAttachment",
+              "version": "0.0.0"
+            }
+          },
+          "FlowLogFromTransitGatewayAttachment": {
+            "id": "FlowLogFromTransitGatewayAttachment",
+            "path": "TransitGatewayAttachmentFlowLogStack/FlowLogFromTransitGatewayAttachment",
+            "children": {
+              "IAMRole": {
+                "id": "IAMRole",
+                "path": "TransitGatewayAttachmentFlowLogStack/FlowLogFromTransitGatewayAttachment/IAMRole",
+                "children": {
+                  "ImportIAMRole": {
+                    "id": "ImportIAMRole",
+                    "path": "TransitGatewayAttachmentFlowLogStack/FlowLogFromTransitGatewayAttachment/IAMRole/ImportIAMRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "TransitGatewayAttachmentFlowLogStack/FlowLogFromTransitGatewayAttachment/IAMRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "vpc-flow-logs.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "TransitGatewayFlowLogName"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "TransitGatewayAttachmentFlowLogStack/FlowLogFromTransitGatewayAttachment/IAMRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "TransitGatewayAttachmentFlowLogStack/FlowLogFromTransitGatewayAttachment/IAMRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "logs:CreateLogStream",
+                                    "logs:DescribeLogStreams",
+                                    "logs:PutLogEvents"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "FlowLogFromTransitGatewayAttachmentLogGroupF6165333",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "iam:PassRole",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "FlowLogFromTransitGatewayAttachmentIAMRole91E330D4",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "FlowLogFromTransitGatewayAttachmentIAMRoleDefaultPolicy8011ACE0",
+                            "roles": [
+                              {
+                                "Ref": "FlowLogFromTransitGatewayAttachmentIAMRole91E330D4"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "LogGroup": {
+                "id": "LogGroup",
+                "path": "TransitGatewayAttachmentFlowLogStack/FlowLogFromTransitGatewayAttachment/LogGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "TransitGatewayAttachmentFlowLogStack/FlowLogFromTransitGatewayAttachment/LogGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "retentionInDays": 731,
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "TransitGatewayFlowLogName"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "FlowLog": {
+                "id": "FlowLog",
+                "path": "TransitGatewayAttachmentFlowLogStack/FlowLogFromTransitGatewayAttachment/FlowLog",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::FlowLog",
+                  "aws:cdk:cloudformation:props": {
+                    "deliverLogsPermissionArn": {
+                      "Fn::GetAtt": [
+                        "FlowLogFromTransitGatewayAttachmentIAMRole91E330D4",
+                        "Arn"
+                      ]
+                    },
+                    "logDestinationType": "cloud-watch-logs",
+                    "logGroupName": {
+                      "Ref": "FlowLogFromTransitGatewayAttachmentLogGroupF6165333"
+                    },
+                    "resourceId": {
+                      "Ref": "TransitGatewayAttachment"
+                    },
+                    "resourceType": "TransitGatewayAttachment",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "TransitGatewayFlowLogName"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnFlowLog",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ec2.FlowLog",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "TransitGatewayAttachmentFlowLogStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "TransitGatewayAttachmentFlowLogStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
       "FlowLogsTestStack": {
         "id": "FlowLogsTestStack",
         "path": "FlowLogsTestStack",
@@ -3472,816 +4134,6 @@
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "DependencyTestStack/CheckBootstrapVersion",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnRule",
-              "version": "0.0.0"
-            }
-          }
-        },
-        "constructInfo": {
-          "fqn": "aws-cdk-lib.Stack",
-          "version": "0.0.0"
-        }
-      },
-      "TransitGatewayFlowLogStack": {
-        "id": "TransitGatewayFlowLogStack",
-        "path": "TransitGatewayFlowLogStack",
-        "children": {
-          "TransitGateway": {
-            "id": "TransitGateway",
-            "path": "TransitGatewayFlowLogStack/TransitGateway",
-            "attributes": {
-              "aws:cdk:cloudformation:type": "AWS::EC2::TransitGateway",
-              "aws:cdk:cloudformation:props": {}
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_ec2.CfnTransitGateway",
-              "version": "0.0.0"
-            }
-          },
-          "FlowLogsCW": {
-            "id": "FlowLogsCW",
-            "path": "TransitGatewayFlowLogStack/FlowLogsCW",
-            "children": {
-              "IAMRole": {
-                "id": "IAMRole",
-                "path": "TransitGatewayFlowLogStack/FlowLogsCW/IAMRole",
-                "children": {
-                  "ImportIAMRole": {
-                    "id": "ImportIAMRole",
-                    "path": "TransitGatewayFlowLogStack/FlowLogsCW/IAMRole/ImportIAMRole",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "TransitGatewayFlowLogStack/FlowLogsCW/IAMRole/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                      "aws:cdk:cloudformation:props": {
-                        "assumeRolePolicyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sts:AssumeRole",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "vpc-flow-logs.amazonaws.com"
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        },
-                        "tags": [
-                          {
-                            "key": "Name",
-                            "value": "TransitGatewayFlowLogName"
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "DefaultPolicy": {
-                    "id": "DefaultPolicy",
-                    "path": "TransitGatewayFlowLogStack/FlowLogsCW/IAMRole/DefaultPolicy",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "TransitGatewayFlowLogStack/FlowLogsCW/IAMRole/DefaultPolicy/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                          "aws:cdk:cloudformation:props": {
-                            "policyDocument": {
-                              "Statement": [
-                                {
-                                  "Action": [
-                                    "logs:CreateLogStream",
-                                    "logs:DescribeLogStreams",
-                                    "logs:PutLogEvents"
-                                  ],
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::GetAtt": [
-                                      "FlowLogsCWLogGroup0398E8F8",
-                                      "Arn"
-                                    ]
-                                  }
-                                },
-                                {
-                                  "Action": "iam:PassRole",
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::GetAtt": [
-                                      "FlowLogsCWIAMRole017AD736",
-                                      "Arn"
-                                    ]
-                                  }
-                                }
-                              ],
-                              "Version": "2012-10-17"
-                            },
-                            "policyName": "FlowLogsCWIAMRoleDefaultPolicy943C8A20",
-                            "roles": [
-                              {
-                                "Ref": "FlowLogsCWIAMRole017AD736"
-                              }
-                            ]
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
-                }
-              },
-              "LogGroup": {
-                "id": "LogGroup",
-                "path": "TransitGatewayFlowLogStack/FlowLogsCW/LogGroup",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "TransitGatewayFlowLogStack/FlowLogsCW/LogGroup/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
-                      "aws:cdk:cloudformation:props": {
-                        "retentionInDays": 731,
-                        "tags": [
-                          {
-                            "key": "Name",
-                            "value": "TransitGatewayFlowLogName"
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_logs.LogGroup",
-                  "version": "0.0.0"
-                }
-              },
-              "FlowLog": {
-                "id": "FlowLog",
-                "path": "TransitGatewayFlowLogStack/FlowLogsCW/FlowLog",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::FlowLog",
-                  "aws:cdk:cloudformation:props": {
-                    "deliverLogsPermissionArn": {
-                      "Fn::GetAtt": [
-                        "FlowLogsCWIAMRole017AD736",
-                        "Arn"
-                      ]
-                    },
-                    "logDestinationType": "cloud-watch-logs",
-                    "logGroupName": {
-                      "Ref": "FlowLogsCWLogGroup0398E8F8"
-                    },
-                    "resourceId": {
-                      "Ref": "TransitGateway"
-                    },
-                    "resourceType": "TransitGateway",
-                    "tags": [
-                      {
-                        "key": "Name",
-                        "value": "TransitGatewayFlowLogName"
-                      }
-                    ]
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnFlowLog",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_ec2.FlowLog",
-              "version": "0.0.0"
-            }
-          },
-          "BootstrapVersion": {
-            "id": "BootstrapVersion",
-            "path": "TransitGatewayFlowLogStack/BootstrapVersion",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnParameter",
-              "version": "0.0.0"
-            }
-          },
-          "CheckBootstrapVersion": {
-            "id": "CheckBootstrapVersion",
-            "path": "TransitGatewayFlowLogStack/CheckBootstrapVersion",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnRule",
-              "version": "0.0.0"
-            }
-          }
-        },
-        "constructInfo": {
-          "fqn": "aws-cdk-lib.Stack",
-          "version": "0.0.0"
-        }
-      },
-      "TransitGatewayAttachmentFlowLogStack": {
-        "id": "TransitGatewayAttachmentFlowLogStack",
-        "path": "TransitGatewayAttachmentFlowLogStack",
-        "children": {
-          "VpcForTransitGateway": {
-            "id": "VpcForTransitGateway",
-            "path": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
-                  "aws:cdk:cloudformation:props": {
-                    "cidrBlock": "10.0.1.0/24",
-                    "enableDnsHostnames": true,
-                    "enableDnsSupport": true,
-                    "instanceTenancy": "default",
-                    "tags": [
-                      {
-                        "key": "Name",
-                        "value": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway"
-                      }
-                    ]
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPC",
-                  "version": "0.0.0"
-                }
-              },
-              "PublicSubnet1": {
-                "id": "PublicSubnet1",
-                "path": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/PublicSubnet1",
-                "children": {
-                  "Subnet": {
-                    "id": "Subnet",
-                    "path": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/PublicSubnet1/Subnet",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
-                      "aws:cdk:cloudformation:props": {
-                        "availabilityZone": {
-                          "Fn::Select": [
-                            0,
-                            {
-                              "Fn::GetAZs": ""
-                            }
-                          ]
-                        },
-                        "cidrBlock": "10.0.1.0/27",
-                        "mapPublicIpOnLaunch": true,
-                        "tags": [
-                          {
-                            "key": "aws-cdk:subnet-name",
-                            "value": "Public"
-                          },
-                          {
-                            "key": "aws-cdk:subnet-type",
-                            "value": "Public"
-                          },
-                          {
-                            "key": "Name",
-                            "value": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/PublicSubnet1"
-                          }
-                        ],
-                        "vpcId": {
-                          "Ref": "VpcForTransitGatewayA63961E4"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Acl": {
-                    "id": "Acl",
-                    "path": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/PublicSubnet1/Acl",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "RouteTable": {
-                    "id": "RouteTable",
-                    "path": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/PublicSubnet1/RouteTable",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
-                      "aws:cdk:cloudformation:props": {
-                        "tags": [
-                          {
-                            "key": "Name",
-                            "value": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/PublicSubnet1"
-                          }
-                        ],
-                        "vpcId": {
-                          "Ref": "VpcForTransitGatewayA63961E4"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "RouteTableAssociation": {
-                    "id": "RouteTableAssociation",
-                    "path": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/PublicSubnet1/RouteTableAssociation",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
-                      "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VpcForTransitGatewayPublicSubnet1RouteTableD54B341F"
-                        },
-                        "subnetId": {
-                          "Ref": "VpcForTransitGatewayPublicSubnet1SubnetB93139C7"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "DefaultRoute": {
-                    "id": "DefaultRoute",
-                    "path": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/PublicSubnet1/DefaultRoute",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
-                      "aws:cdk:cloudformation:props": {
-                        "destinationCidrBlock": "0.0.0.0/0",
-                        "gatewayId": {
-                          "Ref": "VpcForTransitGatewayIGW992ADDC7"
-                        },
-                        "routeTableId": {
-                          "Ref": "VpcForTransitGatewayPublicSubnet1RouteTableD54B341F"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
-                  "version": "0.0.0"
-                }
-              },
-              "IsolatedSubnet1": {
-                "id": "IsolatedSubnet1",
-                "path": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/IsolatedSubnet1",
-                "children": {
-                  "Subnet": {
-                    "id": "Subnet",
-                    "path": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/IsolatedSubnet1/Subnet",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
-                      "aws:cdk:cloudformation:props": {
-                        "availabilityZone": {
-                          "Fn::Select": [
-                            0,
-                            {
-                              "Fn::GetAZs": ""
-                            }
-                          ]
-                        },
-                        "cidrBlock": "10.0.1.32/28",
-                        "mapPublicIpOnLaunch": false,
-                        "tags": [
-                          {
-                            "key": "aws-cdk:subnet-name",
-                            "value": "Isolated"
-                          },
-                          {
-                            "key": "aws-cdk:subnet-type",
-                            "value": "Isolated"
-                          },
-                          {
-                            "key": "Name",
-                            "value": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/IsolatedSubnet1"
-                          }
-                        ],
-                        "vpcId": {
-                          "Ref": "VpcForTransitGatewayA63961E4"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Acl": {
-                    "id": "Acl",
-                    "path": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/IsolatedSubnet1/Acl",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "RouteTable": {
-                    "id": "RouteTable",
-                    "path": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/IsolatedSubnet1/RouteTable",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
-                      "aws:cdk:cloudformation:props": {
-                        "tags": [
-                          {
-                            "key": "Name",
-                            "value": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/IsolatedSubnet1"
-                          }
-                        ],
-                        "vpcId": {
-                          "Ref": "VpcForTransitGatewayA63961E4"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "RouteTableAssociation": {
-                    "id": "RouteTableAssociation",
-                    "path": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/IsolatedSubnet1/RouteTableAssociation",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
-                      "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VpcForTransitGatewayIsolatedSubnet1RouteTable0CC84D19"
-                        },
-                        "subnetId": {
-                          "Ref": "VpcForTransitGatewayIsolatedSubnet1SubnetCD5B52C3"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
-                  "version": "0.0.0"
-                }
-              },
-              "IGW": {
-                "id": "IGW",
-                "path": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/IGW",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
-                  "aws:cdk:cloudformation:props": {
-                    "tags": [
-                      {
-                        "key": "Name",
-                        "value": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway"
-                      }
-                    ]
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnInternetGateway",
-                  "version": "0.0.0"
-                }
-              },
-              "VPCGW": {
-                "id": "VPCGW",
-                "path": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/VPCGW",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
-                  "aws:cdk:cloudformation:props": {
-                    "internetGatewayId": {
-                      "Ref": "VpcForTransitGatewayIGW992ADDC7"
-                    },
-                    "vpcId": {
-                      "Ref": "VpcForTransitGatewayA63961E4"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCGatewayAttachment",
-                  "version": "0.0.0"
-                }
-              },
-              "RestrictDefaultSecurityGroupCustomResource": {
-                "id": "RestrictDefaultSecurityGroupCustomResource",
-                "path": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/RestrictDefaultSecurityGroupCustomResource",
-                "children": {
-                  "Default": {
-                    "id": "Default",
-                    "path": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/RestrictDefaultSecurityGroupCustomResource/Default",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_ec2.Vpc",
-              "version": "0.0.0"
-            }
-          },
-          "Custom::VpcRestrictDefaultSGCustomResourceProvider": {
-            "id": "Custom::VpcRestrictDefaultSGCustomResourceProvider",
-            "path": "TransitGatewayAttachmentFlowLogStack/Custom::VpcRestrictDefaultSGCustomResourceProvider",
-            "children": {
-              "Staging": {
-                "id": "Staging",
-                "path": "TransitGatewayAttachmentFlowLogStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Staging",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.AssetStaging",
-                  "version": "0.0.0"
-                }
-              },
-              "Role": {
-                "id": "Role",
-                "path": "TransitGatewayAttachmentFlowLogStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
-                  "version": "0.0.0"
-                }
-              },
-              "Handler": {
-                "id": "Handler",
-                "path": "TransitGatewayAttachmentFlowLogStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CustomResourceProvider",
-              "version": "0.0.0"
-            }
-          },
-          "TransitGateway": {
-            "id": "TransitGateway",
-            "path": "TransitGatewayAttachmentFlowLogStack/TransitGateway",
-            "attributes": {
-              "aws:cdk:cloudformation:type": "AWS::EC2::TransitGateway",
-              "aws:cdk:cloudformation:props": {}
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_ec2.CfnTransitGateway",
-              "version": "0.0.0"
-            }
-          },
-          "Transit Gateway attachment VPC A": {
-            "id": "Transit Gateway attachment VPC A",
-            "path": "TransitGatewayAttachmentFlowLogStack/Transit Gateway attachment VPC A",
-            "attributes": {
-              "aws:cdk:cloudformation:type": "AWS::EC2::TransitGatewayVpcAttachment",
-              "aws:cdk:cloudformation:props": {
-                "options": {
-                  "DnsSupport": "enable"
-                },
-                "subnetIds": [
-                  {
-                    "Ref": "VpcForTransitGatewayIsolatedSubnet1SubnetCD5B52C3"
-                  }
-                ],
-                "tags": [
-                  {
-                    "key": "Name",
-                    "value": "tgw-attach-vpc-a"
-                  }
-                ],
-                "transitGatewayId": {
-                  "Ref": "TransitGateway"
-                },
-                "vpcId": {
-                  "Ref": "VpcForTransitGatewayA63961E4"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_ec2.CfnTransitGatewayVpcAttachment",
-              "version": "0.0.0"
-            }
-          },
-          "FlowLogFromTransitGatewayAttachment": {
-            "id": "FlowLogFromTransitGatewayAttachment",
-            "path": "TransitGatewayAttachmentFlowLogStack/FlowLogFromTransitGatewayAttachment",
-            "children": {
-              "IAMRole": {
-                "id": "IAMRole",
-                "path": "TransitGatewayAttachmentFlowLogStack/FlowLogFromTransitGatewayAttachment/IAMRole",
-                "children": {
-                  "ImportIAMRole": {
-                    "id": "ImportIAMRole",
-                    "path": "TransitGatewayAttachmentFlowLogStack/FlowLogFromTransitGatewayAttachment/IAMRole/ImportIAMRole",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "TransitGatewayAttachmentFlowLogStack/FlowLogFromTransitGatewayAttachment/IAMRole/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                      "aws:cdk:cloudformation:props": {
-                        "assumeRolePolicyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sts:AssumeRole",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "vpc-flow-logs.amazonaws.com"
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        },
-                        "tags": [
-                          {
-                            "key": "Name",
-                            "value": "TransitGatewayFlowLogName"
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "DefaultPolicy": {
-                    "id": "DefaultPolicy",
-                    "path": "TransitGatewayAttachmentFlowLogStack/FlowLogFromTransitGatewayAttachment/IAMRole/DefaultPolicy",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "TransitGatewayAttachmentFlowLogStack/FlowLogFromTransitGatewayAttachment/IAMRole/DefaultPolicy/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                          "aws:cdk:cloudformation:props": {
-                            "policyDocument": {
-                              "Statement": [
-                                {
-                                  "Action": [
-                                    "logs:CreateLogStream",
-                                    "logs:DescribeLogStreams",
-                                    "logs:PutLogEvents"
-                                  ],
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::GetAtt": [
-                                      "FlowLogFromTransitGatewayAttachmentLogGroupF6165333",
-                                      "Arn"
-                                    ]
-                                  }
-                                },
-                                {
-                                  "Action": "iam:PassRole",
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::GetAtt": [
-                                      "FlowLogFromTransitGatewayAttachmentIAMRole91E330D4",
-                                      "Arn"
-                                    ]
-                                  }
-                                }
-                              ],
-                              "Version": "2012-10-17"
-                            },
-                            "policyName": "FlowLogFromTransitGatewayAttachmentIAMRoleDefaultPolicy8011ACE0",
-                            "roles": [
-                              {
-                                "Ref": "FlowLogFromTransitGatewayAttachmentIAMRole91E330D4"
-                              }
-                            ]
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
-                }
-              },
-              "LogGroup": {
-                "id": "LogGroup",
-                "path": "TransitGatewayAttachmentFlowLogStack/FlowLogFromTransitGatewayAttachment/LogGroup",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "TransitGatewayAttachmentFlowLogStack/FlowLogFromTransitGatewayAttachment/LogGroup/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
-                      "aws:cdk:cloudformation:props": {
-                        "retentionInDays": 731,
-                        "tags": [
-                          {
-                            "key": "Name",
-                            "value": "TransitGatewayFlowLogName"
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_logs.LogGroup",
-                  "version": "0.0.0"
-                }
-              },
-              "FlowLog": {
-                "id": "FlowLog",
-                "path": "TransitGatewayAttachmentFlowLogStack/FlowLogFromTransitGatewayAttachment/FlowLog",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::FlowLog",
-                  "aws:cdk:cloudformation:props": {
-                    "deliverLogsPermissionArn": {
-                      "Fn::GetAtt": [
-                        "FlowLogFromTransitGatewayAttachmentIAMRole91E330D4",
-                        "Arn"
-                      ]
-                    },
-                    "logDestinationType": "cloud-watch-logs",
-                    "logGroupName": {
-                      "Ref": "FlowLogFromTransitGatewayAttachmentLogGroupF6165333"
-                    },
-                    "resourceId": {
-                      "Ref": "TransitGatewayattachmentVPCA"
-                    },
-                    "resourceType": "TransitGatewayAttachment",
-                    "tags": [
-                      {
-                        "key": "Name",
-                        "value": "TransitGatewayFlowLogName"
-                      }
-                    ]
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnFlowLog",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_ec2.FlowLog",
-              "version": "0.0.0"
-            }
-          },
-          "BootstrapVersion": {
-            "id": "BootstrapVersion",
-            "path": "TransitGatewayAttachmentFlowLogStack/BootstrapVersion",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnParameter",
-              "version": "0.0.0"
-            }
-          },
-          "CheckBootstrapVersion": {
-            "id": "CheckBootstrapVersion",
-            "path": "TransitGatewayAttachmentFlowLogStack/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"

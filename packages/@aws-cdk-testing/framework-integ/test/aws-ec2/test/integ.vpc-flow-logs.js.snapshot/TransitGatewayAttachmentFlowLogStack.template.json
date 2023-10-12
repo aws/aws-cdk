@@ -15,7 +15,7 @@
     ]
    }
   },
-  "VpcForTransitGatewayPublicSubnet1SubnetB93139C7": {
+  "VpcForTransitGatewayIsolatedSubnetSubnet1Subnet318BD74B": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
     "AvailabilityZone": {
@@ -26,84 +26,12 @@
       }
      ]
     },
-    "CidrBlock": "10.0.1.0/27",
-    "MapPublicIpOnLaunch": true,
-    "Tags": [
-     {
-      "Key": "aws-cdk:subnet-name",
-      "Value": "Public"
-     },
-     {
-      "Key": "aws-cdk:subnet-type",
-      "Value": "Public"
-     },
-     {
-      "Key": "Name",
-      "Value": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/PublicSubnet1"
-     }
-    ],
-    "VpcId": {
-     "Ref": "VpcForTransitGatewayA63961E4"
-    }
-   }
-  },
-  "VpcForTransitGatewayPublicSubnet1RouteTableD54B341F": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/PublicSubnet1"
-     }
-    ],
-    "VpcId": {
-     "Ref": "VpcForTransitGatewayA63961E4"
-    }
-   }
-  },
-  "VpcForTransitGatewayPublicSubnet1RouteTableAssociationA8DA149E": {
-   "Type": "AWS::EC2::SubnetRouteTableAssociation",
-   "Properties": {
-    "RouteTableId": {
-     "Ref": "VpcForTransitGatewayPublicSubnet1RouteTableD54B341F"
-    },
-    "SubnetId": {
-     "Ref": "VpcForTransitGatewayPublicSubnet1SubnetB93139C7"
-    }
-   }
-  },
-  "VpcForTransitGatewayPublicSubnet1DefaultRoute498B6584": {
-   "Type": "AWS::EC2::Route",
-   "Properties": {
-    "DestinationCidrBlock": "0.0.0.0/0",
-    "GatewayId": {
-     "Ref": "VpcForTransitGatewayIGW992ADDC7"
-    },
-    "RouteTableId": {
-     "Ref": "VpcForTransitGatewayPublicSubnet1RouteTableD54B341F"
-    }
-   },
-   "DependsOn": [
-    "VpcForTransitGatewayVPCGW1EE89D42"
-   ]
-  },
-  "VpcForTransitGatewayIsolatedSubnet1SubnetCD5B52C3": {
-   "Type": "AWS::EC2::Subnet",
-   "Properties": {
-    "AvailabilityZone": {
-     "Fn::Select": [
-      0,
-      {
-       "Fn::GetAZs": ""
-      }
-     ]
-    },
-    "CidrBlock": "10.0.1.32/28",
+    "CidrBlock": "10.0.1.0/24",
     "MapPublicIpOnLaunch": false,
     "Tags": [
      {
       "Key": "aws-cdk:subnet-name",
-      "Value": "Isolated"
+      "Value": "IsolatedSubnet"
      },
      {
       "Key": "aws-cdk:subnet-type",
@@ -111,7 +39,7 @@
      },
      {
       "Key": "Name",
-      "Value": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/IsolatedSubnet1"
+      "Value": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/IsolatedSubnetSubnet1"
      }
     ],
     "VpcId": {
@@ -119,13 +47,13 @@
     }
    }
   },
-  "VpcForTransitGatewayIsolatedSubnet1RouteTable0CC84D19": {
+  "VpcForTransitGatewayIsolatedSubnetSubnet1RouteTable485A2AA0": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
     "Tags": [
      {
       "Key": "Name",
-      "Value": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/IsolatedSubnet1"
+      "Value": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway/IsolatedSubnetSubnet1"
      }
     ],
     "VpcId": {
@@ -133,36 +61,14 @@
     }
    }
   },
-  "VpcForTransitGatewayIsolatedSubnet1RouteTableAssociation9B8C0C5C": {
+  "VpcForTransitGatewayIsolatedSubnetSubnet1RouteTableAssociation02CBE99D": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
-     "Ref": "VpcForTransitGatewayIsolatedSubnet1RouteTable0CC84D19"
+     "Ref": "VpcForTransitGatewayIsolatedSubnetSubnet1RouteTable485A2AA0"
     },
     "SubnetId": {
-     "Ref": "VpcForTransitGatewayIsolatedSubnet1SubnetCD5B52C3"
-    }
-   }
-  },
-  "VpcForTransitGatewayIGW992ADDC7": {
-   "Type": "AWS::EC2::InternetGateway",
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "TransitGatewayAttachmentFlowLogStack/VpcForTransitGateway"
-     }
-    ]
-   }
-  },
-  "VpcForTransitGatewayVPCGW1EE89D42": {
-   "Type": "AWS::EC2::VPCGatewayAttachment",
-   "Properties": {
-    "InternetGatewayId": {
-     "Ref": "VpcForTransitGatewayIGW992ADDC7"
-    },
-    "VpcId": {
-     "Ref": "VpcForTransitGatewayA63961E4"
+     "Ref": "VpcForTransitGatewayIsolatedSubnetSubnet1Subnet318BD74B"
     }
    }
   },
@@ -285,21 +191,12 @@
   "TransitGateway": {
    "Type": "AWS::EC2::TransitGateway"
   },
-  "TransitGatewayattachmentVPCA": {
+  "TransitGatewayAttachment": {
    "Type": "AWS::EC2::TransitGatewayVpcAttachment",
    "Properties": {
-    "Options": {
-     "DnsSupport": "enable"
-    },
     "SubnetIds": [
      {
-      "Ref": "VpcForTransitGatewayIsolatedSubnet1SubnetCD5B52C3"
-     }
-    ],
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "tgw-attach-vpc-a"
+      "Ref": "VpcForTransitGatewayIsolatedSubnetSubnet1Subnet318BD74B"
      }
     ],
     "TransitGatewayId": {
@@ -401,7 +298,7 @@
      "Ref": "FlowLogFromTransitGatewayAttachmentLogGroupF6165333"
     },
     "ResourceId": {
-     "Ref": "TransitGatewayattachmentVPCA"
+     "Ref": "TransitGatewayAttachment"
     },
     "ResourceType": "TransitGatewayAttachment",
     "Tags": [

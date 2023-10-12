@@ -1,7 +1,7 @@
 {
   "version": "34.0.0",
   "files": {
-    "6cd4f2fb2e9ccebf6e628c43a73d2bfd39e3ce0559ce3e1eb89bc47068422002": {
+    "bb5ab186ed9db25c030522a3242c9188822c4181945bda30cf42f2d15522378b": {
       "source": {
         "path": "TransitGatewayFlowLogStack.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "6cd4f2fb2e9ccebf6e628c43a73d2bfd39e3ce0559ce3e1eb89bc47068422002.json",
+          "objectKey": "bb5ab186ed9db25c030522a3242c9188822c4181945bda30cf42f2d15522378b.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

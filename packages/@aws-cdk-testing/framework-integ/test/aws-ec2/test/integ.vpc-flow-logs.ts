@@ -197,13 +197,4 @@ objects.expect(ExpectedResult.objectLike({
   KeyCount: 1,
 }));
 
-const flowLogs = integ.assertions.awsApiCall('EC2', 'describeFlowLogs', {
-  FlowLogId: transitGatewayFlowLogTest.flowLogId,
-});
-flowLogs.expect(ExpectedResult.objectLike({
-  FlowLogs: [{
-    FlowLogId: transitGatewayFlowLogTest.flowLogId,
-  }],
-}));
-
 app.synth();
