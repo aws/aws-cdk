@@ -6,6 +6,7 @@ import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
 import { minimatch } from 'minimatch';
 import * as promptly from 'promptly';
+import * as semver from 'semver';
 import { DeploymentMethod } from './api';
 import { SdkProvider } from './api/aws-auth';
 import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
@@ -28,6 +29,7 @@ import { Concurrency, WorkGraph } from './util/work-graph';
 import { WorkGraphBuilder } from './util/work-graph-builder';
 import { AssetBuildNode, AssetPublishNode, StackNode } from './util/work-graph-types';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../lib/api/cxapp/environments';
+import { versionNumber } from './version';
 
 export interface CdkToolkitProps {
 
@@ -770,7 +772,9 @@ export class CdkToolkit {
       defaultBehavior: DefaultSelection.OnlySingle,
     });
 
-    const notExistPatterns = selector.patterns.filter(p => !stacks.stackArtifacts.find(s => minimatch(s.hierarchicalId, p)));
+    const notExistPatterns = selector.patterns.filter(pattern => !stacks.stackArtifacts.find(stack =>
+      minimatch(stack.hierarchicalId, pattern) || (stack.id === pattern && semver.major(versionNumber()) < 2),
+    ));
     if (notExistPatterns.length > 0) {
       throw new Error(`Stacks not exist: ${notExistPatterns.join(', ')}`);
     }
