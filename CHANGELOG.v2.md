@@ -23,7 +23,6 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Reverts
 
-* "chore(synthetics): delete alpha module" ([#27470](https://github.com/aws/aws-cdk/issues/27470)) ([5fe46d6](https://github.com/aws/aws-cdk/commit/5fe46d6f6ce325caa9a62ee5bb015821068e77ee)), closes [aws/aws-cdk#27441](https://github.com/aws/aws-cdk/issues/27441)
 * "fix(cli): cannot hotswap ECS task definitions containing certain intrinsics" ([#27358](https://github.com/aws/aws-cdk/issues/27358)) ([48d7726](https://github.com/aws/aws-cdk/commit/48d7726421352eb3c032b1293a361a70339b0566)), closes [#27343](https://github.com/aws/aws-cdk/issues/27343) [#27343](https://github.com/aws/aws-cdk/issues/27343)
 
 ## [2.100.0](https://github.com/aws/aws-cdk/compare/v2.99.1...v2.100.0) (2023-10-06)
