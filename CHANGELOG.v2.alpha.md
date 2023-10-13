@@ -2,16 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.101.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.100.0-alpha.0...v2.101.0-alpha.0) (2023-10-13)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **glue-alpha:** `SparkUIProps.prefix` strings in the original `/prefix-name` format will now result in a validation error. To retain the same behavior, prefixes must be changed to the new `prefix-name/` format.
+
+### Features
+
+* **lambda-python-alpha:** add without-urls option for poetry ([#27442](https://github.com/aws/aws-cdk/issues/27442)) ([5893b3f](https://github.com/aws/aws-cdk/commit/5893b3fadb7f54360db6997a98cce8dc74b86cd7)), closes [#27103](https://github.com/aws/aws-cdk/issues/27103)
+* **scheduler-targets:** step function start execution target ([#27424](https://github.com/aws/aws-cdk/issues/27424)) ([3a87141](https://github.com/aws/aws-cdk/commit/3a87141cc56609e063787ce855873a059f9880ab)), closes [40aws-cdk/aws-scheduler-targets-alpha/lib/lambda-invoke.ts#L8](https://github.com/40aws-cdk/aws-scheduler-targets-alpha/lib/lambda-invoke.ts/issues/L8) [#27377](https://github.com/aws/aws-cdk/issues/27377)
+
+
+### Bug Fixes
+
+* **glue-alpha:** prefix validation logic is incorrect ([#27472](https://github.com/aws/aws-cdk/issues/27472)) ([b898d3b](https://github.com/aws/aws-cdk/commit/b898d3b9fe0d5f9ddc46c2deb71d0a95f88677fb)), closes [#27396](https://github.com/aws/aws-cdk/issues/27396)
+* **integ-tests:** cannot make two or more identical assertions ([#27380](https://github.com/aws/aws-cdk/issues/27380)) ([ea06f7d](https://github.com/aws/aws-cdk/commit/ea06f7db4857e12e9b13508c64b5321a841e6dc4)), closes [#22043](https://github.com/aws/aws-cdk/issues/22043) [#23049](https://github.com/aws/aws-cdk/issues/23049)
+
 ## [2.100.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.99.1-alpha.0...v2.100.0-alpha.0) (2023-10-06)
 
 
 ### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
 
 * **redshift:** the behavior of redshift tables has changed. UPDATE action will not be triggered on new table names and instead be triggered on table id changes.
-
-### Features
-
-* **synthetics:** CloudWatch Synthetics NodeJS Pupeteer 6.0 Runtime with NodeJS 18 ([#27339](https://github.com/aws/aws-cdk/issues/27339)) ([e48af04](https://github.com/aws/aws-cdk/commit/e48af04c0b483d705d99c97a1f7bf8c6cd8e71c6)), closes [#27337](https://github.com/aws/aws-cdk/issues/27337)
 
 
 ### Bug Fixes
