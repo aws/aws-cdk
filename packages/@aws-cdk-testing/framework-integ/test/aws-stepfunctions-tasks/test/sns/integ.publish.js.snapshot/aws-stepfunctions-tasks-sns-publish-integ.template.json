@@ -46,19 +46,87 @@
   "showmethemessagesawsstepfunctionstaskssnspublishintegcooltopic8388C976F1D63091": {
    "Type": "AWS::SNS::Subscription",
    "Properties": {
-    "Protocol": "sqs",
-    "TopicArn": {
-     "Ref": "cooltopic4736778A"
-    },
     "Endpoint": {
      "Fn::GetAtt": [
       "showmethemessages8D16BBDB",
       "Arn"
      ]
+    },
+    "Protocol": "sqs",
+    "TopicArn": {
+     "Ref": "cooltopic4736778A"
     }
    },
    "DependsOn": [
     "showmethemessagesPolicyB08B04B0"
+   ]
+  },
+  "fifotopicA6114788": {
+   "Type": "AWS::SNS::Topic",
+   "Properties": {
+    "FifoTopic": true,
+    "TopicName": "awsstepfunctionstaskssnspublishinteg-fifotopic-6FE667F7.fifo"
+   }
+  },
+  "fifoqueue3F2573B3": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "FifoQueue": true
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "fifoqueuePolicyCA528C39": {
+   "Type": "AWS::SQS::QueuePolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sqs:SendMessage",
+       "Condition": {
+        "ArnEquals": {
+         "aws:SourceArn": {
+          "Ref": "fifotopicA6114788"
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "sns.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "fifoqueue3F2573B3",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Queues": [
+     {
+      "Ref": "fifoqueue3F2573B3"
+     }
+    ]
+   }
+  },
+  "fifoqueueawsstepfunctionstaskssnspublishintegfifotopic6FE667F78F3219A7": {
+   "Type": "AWS::SNS::Subscription",
+   "Properties": {
+    "Endpoint": {
+     "Fn::GetAtt": [
+      "fifoqueue3F2573B3",
+      "Arn"
+     ]
+    },
+    "Protocol": "sqs",
+    "TopicArn": {
+     "Ref": "fifotopicA6114788"
+    }
+   },
+   "DependsOn": [
+    "fifoqueuePolicyCA528C39"
    ]
   },
   "StateMachineRoleB840431D": {
@@ -86,9 +154,14 @@
       {
        "Action": "sns:Publish",
        "Effect": "Allow",
-       "Resource": {
-        "Ref": "cooltopic4736778A"
-       }
+       "Resource": [
+        {
+         "Ref": "cooltopic4736778A"
+        },
+        {
+         "Ref": "fifotopicA6114788"
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"
@@ -104,17 +177,11 @@
   "StateMachine2E01A3A5": {
    "Type": "AWS::StepFunctions::StateMachine",
    "Properties": {
-    "RoleArn": {
-     "Fn::GetAtt": [
-      "StateMachineRoleB840431D",
-      "Arn"
-     ]
-    },
     "DefinitionString": {
      "Fn::Join": [
       "",
       [
-       "{\"StartAt\":\"publish to SNS\",\"States\":{\"publish to SNS\":{\"Next\":\"Final step\",\"Type\":\"Task\",\"Resource\":\"arn:",
+       "{\"StartAt\":\"publish to SNS\",\"States\":{\"publish to SNS\":{\"Next\":\"publish to FIFO SNS\",\"Type\":\"Task\",\"Resource\":\"arn:",
        {
         "Ref": "AWS::Partition"
        },
@@ -122,8 +189,22 @@
        {
         "Ref": "cooltopic4736778A"
        },
-       "\",\"Message\":\"sending message over\"}},\"Final step\":{\"Type\":\"Pass\",\"End\":true}},\"TimeoutSeconds\":30}"
+       "\",\"Message\":\"sending message over\"}},\"publish to FIFO SNS\":{\"Next\":\"Final step\",\"Type\":\"Task\",\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::sns:publish\",\"Parameters\":{\"TopicArn\":\"",
+       {
+        "Ref": "fifotopicA6114788"
+       },
+       "\",\"Message\":\"sending message over\",\"MessageDeduplicationId\":\"message-deduplication-id\",\"MessageGroupId\":\"message-group-id\"}},\"Final step\":{\"Type\":\"Pass\",\"End\":true}},\"TimeoutSeconds\":30}"
       ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "StateMachineRoleB840431D",
+      "Arn"
      ]
     }
    },
@@ -144,6 +225,11 @@
   "queueUrl": {
    "Value": {
     "Ref": "showmethemessages8D16BBDB"
+   }
+  },
+  "fifoQueueUrl": {
+   "Value": {
+    "Ref": "fifoqueue3F2573B3"
    }
   }
  },

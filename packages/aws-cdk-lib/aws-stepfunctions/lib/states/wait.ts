@@ -51,6 +51,13 @@ export class WaitTime {
  */
 export interface WaitProps {
   /**
+   * Optional name for this state
+   *
+   * @default - The construct ID will be used as state name
+   */
+  readonly stateName?: string;
+
+  /**
    * An optional description for this state
    *
    * @default No comment

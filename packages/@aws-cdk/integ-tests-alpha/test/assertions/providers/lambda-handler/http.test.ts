@@ -1,6 +1,6 @@
 import { HttpHandler } from '../../../../lib/assertions/providers/lambda-handler/http';
 import * as fetch from 'node-fetch';
-import { HttpRequest, HttpResponseWrapper } from '../../../../lib';
+import { HttpRequest } from '../../../../lib';
 
 let fetchMock = jest.fn();
 jest.mock('node-fetch');
@@ -34,7 +34,6 @@ beforeEach(() => {
 describe('HttpHandler', () => {
   test('default', async () => {
     // GIVEN
-    const handler = httpHandler() as any;
     const request: HttpRequest = {
       parameters: {
         url: 'url',
@@ -42,7 +41,7 @@ describe('HttpHandler', () => {
     };
 
     // WHEN
-    const response: HttpResponseWrapper = await handler.processEvent(request);
+    const response = await processEvent(request);
 
     // THEN
     expect(response.apiCallResponse).toEqual({
@@ -63,7 +62,6 @@ describe('HttpHandler', () => {
 
   test('with fetch options', async () => {
     // GIVEN
-    const handler = httpHandler() as any;
     const request: HttpRequest = {
       parameters: {
         url: 'url',
@@ -79,7 +77,7 @@ describe('HttpHandler', () => {
     };
 
     // WHEN
-    const response: HttpResponseWrapper = await handler.processEvent(request);
+    const response = await processEvent(request);
 
     // THEN
     expect(response.apiCallResponse).toEqual({
@@ -104,4 +102,34 @@ describe('HttpHandler', () => {
       },
     });
   });
+
+  test('JSON is parsed', async () => {
+    // GIVEN
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify({ key: 'value' }), { status: 200, statusText: 'OK', ok: true }),
+    );
+
+    // WHEN
+    const response = await processEvent({ parameters: { url: 'x' } });
+
+    // THEN
+    expect(response.apiCallResponse.body).toEqual({ key: 'value' });
+  });
+
+  test('Non-JSON is not parsed', async () => {
+    // GIVEN
+    fetchMock.mockResolvedValue(
+      new Response('this is a string', { status: 200, statusText: 'OK', ok: true }),
+    );
+
+    // WHEN
+    const response = await processEvent({ parameters: { url: 'x' } });
+
+    // THEN
+    expect(response.apiCallResponse.body).toEqual('this is a string');
+  });
 });
+
+function processEvent(request: HttpRequest): ReturnType<HttpHandler['processEvent']> {
+  return (httpHandler() as any).processEvent(request);
+}

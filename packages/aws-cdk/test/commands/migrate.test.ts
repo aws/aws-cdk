@@ -177,7 +177,7 @@ describe('Migrate Function Tests', () => {
     // Replaced stack file is referenced correctly in app file
     const app = fs.readFileSync(path.join(workDir, 'GoodCSharp', 'src', 'GoodCSharp', 'Program.cs'), 'utf8').split('\n');
     expect(app.map(line => line.match('namespace GoodCSharp')).filter(line => line).length).toEqual(1);
-    expect(app.map(line => line.match(/        new GoodCSharpStack\(app, "GoodCSharp", new StackProps/)).filter(line => line).length).toEqual(1);
+    expect(app.map(line => line.match(/        new GoodCSharpStack\(app, "GoodCSharp", new GoodCSharpStackProps/)).filter(line => line).length).toEqual(1);
 
     // Replaced stack file is correctly generated
     const replacedStack = fs.readFileSync(path.join(workDir, 'GoodCSharp', 'src', 'GoodCSharp', 'GoodCSharpStack.cs'), 'utf8');

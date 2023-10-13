@@ -84,6 +84,50 @@ export function withCdkApp(
   };
 }
 
+export function withCdkMigrateApp<A extends TestContext>(language: string, block: (context: TestFixture) => Promise<void>) {
+  return async (context: A) => {
+    const stackName = `cdk-migrate-${language}-integ-${context.randomString}`;
+    const integTestDir = path.join(os.tmpdir(), `cdk-migrate-${language}-integ-${context.randomString}`);
+
+    context.output.write(` Stack name:   ${stackName}\n`);
+    context.output.write(` Test directory: ${integTestDir}\n`);
+
+    const awsClients = await AwsClients.default(context.output);
+    fs.mkdirSync(integTestDir);
+    const fixture = new TestFixture(
+      integTestDir,
+      stackName,
+      context.output,
+      awsClients,
+      context.randomString,
+    );
+
+    await fixture.cdkMigrate(language, stackName);
+
+    const testFixture = new TestFixture(
+      path.join(integTestDir, stackName),
+      stackName,
+      context.output,
+      awsClients,
+      context.randomString,
+    );
+
+    let success = true;
+    try {
+      await block(testFixture);
+    } catch (e) {
+      success = false;
+      throw e;
+    } finally {
+      if (process.env.INTEG_NO_CLEAN) {
+        context.log(`Left test directory in '${integTestDir}' ($INTEG_NO_CLEAN)`);
+      } else {
+        await fixture.dispose(success);
+      }
+    }
+  };
+}
+
 export function withMonolithicCfnIncludeCdkApp<A extends TestContext>(block: (context: TestFixture) => Promise<void>) {
   return async (context: A) => {
     const uberPackage = process.env.UBERPACKAGE;
@@ -139,6 +183,10 @@ export function withMonolithicCfnIncludeCdkApp<A extends TestContext>(block: (co
  */
 export function withDefaultFixture(block: (context: TestFixture) => Promise<void>) {
   return withAws(withTimeout(DEFAULT_TEST_TIMEOUT_S, withCdkApp(block)));
+}
+
+export function withCDKMigrateFixture(language: string, block: (content: TestFixture) => Promise<void>) {
+  return withAws(withTimeout(DEFAULT_TEST_TIMEOUT_S, withCdkMigrateApp(language, block)));
 }
 
 export interface DisableBootstrapContext {
@@ -270,7 +318,7 @@ export class TestFixture extends ShellHelper {
     this.output.write(`${s}\n`);
   }
 
-  public async cdkDeploy(stackNames: string | string[], options: CdkCliOptions = {}) {
+  public async cdkDeploy(stackNames: string | string[], options: CdkCliOptions = {}, skipStackRename?: boolean) {
     stackNames = typeof stackNames === 'string' ? [stackNames] : stackNames;
 
     const neverRequireApproval = options.neverRequireApproval ?? true;
@@ -280,7 +328,7 @@ export class TestFixture extends ShellHelper {
       ...(options.options ?? []),
       // use events because bar renders bad in tests
       '--progress', 'events',
-      ...this.fullStackName(stackNames)], options);
+      ...(skipStackRename ? stackNames : this.fullStackName(stackNames))], options);
   }
 
   public async cdkSynth(options: CdkCliOptions = {}) {
@@ -377,6 +425,19 @@ export class TestFixture extends ShellHelper {
         CDK_NEW_BOOTSTRAP: '1',
       },
     });
+  }
+
+  public async cdkMigrate(language: string, stackName: string, inputPath?: string, options?: CdkCliOptions) {
+    return this.cdk([
+      'migrate',
+      '--language',
+      language,
+      '--stack-name',
+      stackName,
+      '--from-path',
+      inputPath ?? path.join(__dirname, '..', 'resources', 'templates', 'sqs-template.json').toString(),
+      ...(options?.options ?? []),
+    ], options);
   }
 
   public async cdk(args: string[], options: CdkCliOptions = {}) {

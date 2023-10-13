@@ -180,6 +180,7 @@ Which subnets are selected is evaluated as follows:
   * `onePerAz`: chooses at most one subnet per availability zone
   * `containsIpAddresses`: chooses a subnet which contains *any* of the listed ip addresses
   * `byCidrMask`: chooses subnets that have the provided CIDR netmask
+  * `byCidrRanges`: chooses subnets which are inside any of the specified CIDR ranges
 
 ### Using NAT instances
 
