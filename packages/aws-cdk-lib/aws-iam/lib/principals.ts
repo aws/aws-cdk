@@ -884,7 +884,7 @@ export class CompositePrincipal extends PrincipalBase {
     return `CompositePrincipal[${inner.join(',')}]`;
   }
 
-  public getPrincipals() {
+  public getPrincipals(): IPrincipal[] {
     return this.principals;
   }
 }
