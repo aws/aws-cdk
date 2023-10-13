@@ -460,7 +460,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
   public grantInvokeCompositePrincipal(compositePrincipals: iam.CompositePrincipal): iam.Grant[] {
     let grants: iam.Grant[] = [];
 
-    compositePrincipals.getPrincipals().forEach((principal) => {
+    compositePrincipals.principals.forEach((principal) => {
       grants.push(this.grantInvoke(principal));
     });
 
