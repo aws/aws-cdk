@@ -458,13 +458,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
    * Grant multiple principals the ability to invoke this Lambda via CompositePrincipal
    */
   public grantInvokeCompositePrincipal(compositePrincipals: iam.CompositePrincipal): iam.Grant[] {
-    let grants: iam.Grant[] = [];
-
-    compositePrincipals.principals.forEach((principal) => {
-      grants.push(this.grantInvoke(principal));
-    });
-
-    return grants;
+    return compositePrincipals.principals.map((principal) => this.grantInvoke(principal));
   }
 
   public addEventSource(source: IEventSource) {
