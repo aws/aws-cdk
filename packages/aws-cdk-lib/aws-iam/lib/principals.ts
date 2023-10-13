@@ -825,7 +825,7 @@ export class StarPrincipal extends PrincipalBase {
  */
 export class CompositePrincipal extends PrincipalBase {
   public readonly assumeRoleAction: string;
-  public readonly principals = new Array<IPrincipal>();
+  private readonly principals = new Array<IPrincipal>();
 
   constructor(...principals: IPrincipal[]) {
     super();
@@ -882,6 +882,10 @@ export class CompositePrincipal extends PrincipalBase {
     const inner = this.principals.map(ComparablePrincipal.dedupeStringFor);
     if (inner.some(x => x === undefined)) { return undefined; }
     return `CompositePrincipal[${inner.join(',')}]`;
+  }
+
+  public getPrincipals() {
+    return this.principals;
   }
 }
 
