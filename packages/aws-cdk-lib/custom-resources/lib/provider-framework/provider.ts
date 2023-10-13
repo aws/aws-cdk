@@ -13,6 +13,7 @@ import { Duration } from '../../../core';
 
 const RUNTIME_HANDLER_PATH = path.join(__dirname, 'runtime');
 const FRAMEWORK_HANDLER_TIMEOUT = Duration.minutes(15); // keep it simple for now
+const TOTAL_TIMEOUT_MAX = Duration.hours(1);
 
 /**
  * Initialization properties for the `Provider` construct.
@@ -59,7 +60,7 @@ export interface ProviderProps {
   /**
    * Total timeout for the entire operation.
    *
-   * The maximum timeout is 2 hours (yes, it can exceed the AWS Lambda 15 minutes)
+   * The maximum timeout is 1 hours (yes, it can exceed the AWS Lambda 15 minutes)
    *
    * @default Duration.minutes(30)
    */
@@ -165,6 +166,10 @@ export class Provider extends Construct implements ICustomResourceProvider {
     if (!props.isCompleteHandler && (props.queryInterval || props.totalTimeout)) {
       throw new Error('"queryInterval" and "totalTimeout" can only be configured if "isCompleteHandler" is specified. '
         + 'Otherwise, they have no meaning');
+    }
+
+    if (props.totalTimeout && props.totalTimeout.toMilliseconds() > TOTAL_TIMEOUT_MAX.toMilliseconds()) {
+      throw new Error(`"totalTimeout" cannot exceed the maximum of ${TOTAL_TIMEOUT_MAX.toHumanString()}`);
     }
 
     this.onEventHandler = props.onEventHandler;
