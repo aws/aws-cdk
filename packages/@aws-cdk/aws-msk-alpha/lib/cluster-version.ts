@@ -77,6 +77,11 @@ export class KafkaVersion {
   public static readonly V2_8_1 = KafkaVersion.of('2.8.1');
 
   /**
+   * AWS MSK Kafka version 2.8.2.tiered
+   */
+  public static readonly V2_8_2_tiered = KafkaVersion.of('2.8.2.tiered');
+
+  /**
    * Kafka version 3.1.1
    */
   public static readonly V3_1_1 = KafkaVersion.of('3.1.1');

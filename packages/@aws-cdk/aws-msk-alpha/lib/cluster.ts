@@ -104,6 +104,12 @@ export interface ClusterProps {
    */
   readonly ebsStorageInfo?: EbsStorageInfo;
   /**
+   * Local or Tiered storage configuration for the brokers
+   *
+   * @default - LOCAL
+   */
+  readonly storageMode?: StorageMode;
+  /**
    * The Amazon MSK configuration to use for the cluster.
    *
    * @default - none
@@ -158,6 +164,22 @@ export interface EbsStorageInfo {
    * @default Uses AWS managed CMK (aws/kafka)
    */
   readonly encryptionKey?: kms.IKey;
+}
+
+/**
+ * This controls storage mode for supported storage tiers.
+ *
+ * @see https://docs.aws.amazon.com/msk/latest/developerguide/monitoring.html#metrics-details
+ */
+export enum StorageMode {
+  /**
+   * Local storage mode utilizes local memory and EBS storage.
+   */
+  LOCAL = 'LOCAL',
+  /**
+   * Tiered storage mode utilizes local memory, EBS storage, and S3.
+   */
+  TIERED = 'TIERED',
 }
 
 /**
@@ -480,6 +502,20 @@ export class Cluster extends ClusterBase {
       );
     }
 
+    const storageMode =
+      props.storageMode ?? StorageMode.LOCAL;
+      /*
+      Conditions to satisfy:
+        - instancetype bigger is not t3.small
+        - cluster config log compaction is set to delete
+        - KafkaVersion is x.x.x.teried
+     */
+    if (storageMode == StorageMode.TIERED && props.kafkaVersion != KafkaVersion.V2_8_2_tiered) {
+      throw Error(
+        'To utilize Tiered storage, the MSK cluster Kafka version must be compatiable.',
+      );
+    }
+
     const instanceType = props.instanceType
       ? this.mskInstanceType(props.instanceType)
       : this.mskInstanceType(
@@ -683,6 +719,7 @@ export class Cluster extends ClusterBase {
       configurationInfo: props.configurationInfo,
       enhancedMonitoring: props.monitoring?.clusterMonitoringLevel,
       openMonitoring: openMonitoring,
+      storageMode: storageMode,
       loggingInfo: loggingInfo,
       clientAuthentication: clientAuthentication,
     });
