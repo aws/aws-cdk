@@ -1,5 +1,5 @@
 {
-  "version": "30.0.0",
+  "version": "33.0.0",
   "artifacts": {
     "aws-stepfunctions-tasks-sns-publish-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-stepfunctions-tasks-sns-publish-integ.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fc62bfcd1fd4e167dcd5627971dff21335ad8ca3b09bd7e3c472830c6eef7372.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bc3f4e4d1be0f4a6d23d302efceeae3fb32518ab50986268c5d2519e621ec085.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -57,6 +58,30 @@
             "data": "showmethemessagesawsstepfunctionstaskssnspublishintegcooltopic8388C976F1D63091"
           }
         ],
+        "/aws-stepfunctions-tasks-sns-publish-integ/fifo-topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "fifotopicA6114788"
+          }
+        ],
+        "/aws-stepfunctions-tasks-sns-publish-integ/fifo-queue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "fifoqueue3F2573B3"
+          }
+        ],
+        "/aws-stepfunctions-tasks-sns-publish-integ/fifo-queue/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "fifoqueuePolicyCA528C39"
+          }
+        ],
+        "/aws-stepfunctions-tasks-sns-publish-integ/fifo-queue/awsstepfunctionstaskssnspublishintegfifotopic6FE667F7/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "fifoqueueawsstepfunctionstaskssnspublishintegfifotopic6FE667F78F3219A7"
+          }
+        ],
         "/aws-stepfunctions-tasks-sns-publish-integ/StateMachine/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -85,6 +110,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "queueUrl"
+          }
+        ],
+        "/aws-stepfunctions-tasks-sns-publish-integ/fifoQueueUrl": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "fifoQueueUrl"
           }
         ],
         "/aws-stepfunctions-tasks-sns-publish-integ/BootstrapVersion": [

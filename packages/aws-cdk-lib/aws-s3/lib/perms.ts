@@ -1,6 +1,7 @@
 export const BUCKET_READ_ACTIONS = [
   's3:GetObject*',
   's3:GetBucket*',
+  's3:HeadObject',
   's3:List*',
 ];
 
