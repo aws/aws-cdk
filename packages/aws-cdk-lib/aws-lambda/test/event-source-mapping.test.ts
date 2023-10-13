@@ -1,7 +1,7 @@
 import { Match, Template } from '../../assertions';
 import * as cdk from '../../core';
 import * as lambda from '../lib';
-import { Code, EventSourceMapping, Function, Runtime, Alias, StartingPosition, FilterRule, FilterCriteria } from '../lib';
+import { Code, EventSourceMapping, Function, Alias, StartingPosition, FilterRule, FilterCriteria } from '../lib';
 
 let stack: cdk.Stack;
 let fn: Function;
@@ -414,5 +414,17 @@ describe('event source mapping', () => {
       startingPosition: StartingPosition.LATEST,
       startingPositionTimestamp: 1640995200,
     })).toThrow(/startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP/);
+  });
+
+  test('infinite max record age', () => {
+    new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+      maxRecordAge: -1,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      MaximumRecordAgeInSeconds: -1,
+    });
   });
 });

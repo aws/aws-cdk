@@ -168,13 +168,17 @@ export interface EventSourceMappingOptions {
 
   /**
    * The maximum age of a record that Lambda sends to a function for processing.
+   *
    * Valid Range:
    * * Minimum value of 60 seconds
    * * Maximum value of 7 days
    *
+   * The default value is -1, which sets the maximum age to infinite.
+   * When the value is set to infinite, Lambda never discards old records.
+   *
    * @default - infinite or until the record expires.
    */
-  readonly maxRecordAge?: cdk.Duration;
+  readonly maxRecordAge?: cdk.Duration | -1;
 
   /**
    * The maximum number of times to retry when the function returns an error.
@@ -342,7 +346,11 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       throw new Error('maxConcurrency must be between 2 and 1000 concurrent instances');
     }
 
-    if (props.maxRecordAge && (props.maxRecordAge.toSeconds() < 60 || props.maxRecordAge.toDays({ integral: false }) > 7)) {
+    if (
+      props.maxRecordAge &&
+      props.maxRecordAge !== -1 &&
+      (props.maxRecordAge.toSeconds() < 60 || props.maxRecordAge.toDays({ integral: false }) > 7)
+    ) {
       throw new Error('maxRecordAge must be between 60 seconds and 7 days inclusive');
     }
 
@@ -400,7 +408,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       startingPositionTimestamp: props.startingPositionTimestamp,
       functionResponseTypes: props.reportBatchItemFailures ? ['ReportBatchItemFailures'] : undefined,
       maximumBatchingWindowInSeconds: props.maxBatchingWindow?.toSeconds(),
-      maximumRecordAgeInSeconds: props.maxRecordAge?.toSeconds(),
+      maximumRecordAgeInSeconds: props.maxRecordAge === -1 ? props.maxRecordAge : props.maxRecordAge?.toSeconds(),
       maximumRetryAttempts: props.retryAttempts,
       parallelizationFactor: props.parallelizationFactor,
       topics: props.kafkaTopic !== undefined ? [props.kafkaTopic] : undefined,

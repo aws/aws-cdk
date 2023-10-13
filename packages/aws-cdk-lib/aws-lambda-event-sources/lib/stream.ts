@@ -58,13 +58,16 @@ export interface StreamEventSourceProps extends BaseStreamEventSourceProps {
 
   /**
    * The maximum age of a record that Lambda sends to a function for processing.
+   *
    * Valid Range:
    * * Minimum value of 60 seconds
    * * Maximum value of 7 days
    *
+   * Set to -1 if you want the Lambda function to never discard old records.
+   *
    * @default - the retention period configured on the stream
    */
-  readonly maxRecordAge?: Duration;
+  readonly maxRecordAge?: Duration | -1;
 
   /**
    * Maximum number of retry attempts

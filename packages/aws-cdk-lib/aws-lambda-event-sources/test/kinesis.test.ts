@@ -307,4 +307,23 @@ describe('KinesisEventSource', () => {
       StartingPositionTimestamp: 1640995200,
     });
   });
+
+  test('infinite max record age', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const stream = new kinesis.Stream(stack, 'S');
+    const eventSource = new sources.KinesisEventSource(stream, {
+      maxRecordAge: -1,
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+    });
+
+    // WHEN
+    fn.addEventSource(eventSource);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      MaximumRecordAgeInSeconds: -1,
+    });
+  });
 });
