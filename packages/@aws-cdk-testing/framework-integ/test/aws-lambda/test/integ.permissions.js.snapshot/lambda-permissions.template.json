@@ -77,6 +77,33 @@
     "Principal": "*",
     "PrincipalOrgID": "o-xxxxxxxxxx"
    }
+  },
+  "MyLambdaInvokemcfVL7pJA0SB0Bm8yGhELN3cZ1c8fYqVoNxjNP4pYCE95D85164": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "MyLambdaCCE802FB",
+      "Arn"
+     ]
+    },
+    "Principal": "*",
+    "PrincipalOrgID": "o-zzzzzzzzzz"
+   }
+  },
+  "MyLambdaInvokeFcyXBRX02EWa52GlFECQiCzDt0fdRUDi4mo4foC5aU41318F58": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "MyLambdaCCE802FB",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com"
+   }
   }
  },
  "Parameters": {

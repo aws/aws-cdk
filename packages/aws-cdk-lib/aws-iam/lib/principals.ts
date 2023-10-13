@@ -825,7 +825,7 @@ export class StarPrincipal extends PrincipalBase {
  */
 export class CompositePrincipal extends PrincipalBase {
   public readonly assumeRoleAction: string;
-  private readonly principals = new Array<IPrincipal>();
+  public readonly principals = new Array<IPrincipal>();
 
   constructor(...principals: IPrincipal[]) {
     super();

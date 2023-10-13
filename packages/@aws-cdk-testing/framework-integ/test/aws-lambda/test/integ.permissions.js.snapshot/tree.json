@@ -136,6 +136,49 @@
                   "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
                   "version": "0.0.0"
                 }
+              },
+              "InvokemcfVL7pJA0SB0Bm8yGhELN3cZ1c8fYqVoNxjNP4pYCE=": {
+                "id": "InvokemcfVL7pJA0SB0Bm8yGhELN3cZ1c8fYqVoNxjNP4pYCE=",
+                "path": "lambda-permissions/MyLambda/InvokemcfVL7pJA0SB0Bm8yGhELN3cZ1c8fYqVoNxjNP4pYCE=",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "MyLambdaCCE802FB",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "*",
+                    "principalOrgId": "o-zzzzzzzzzz"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
+              },
+              "InvokeFcyXBRX02EWa52GlF+ECQiCzDt0fdRUDi4mo4foC5aU=": {
+                "id": "InvokeFcyXBRX02EWa52GlF+ECQiCzDt0fdRUDi4mo4foC5aU=",
+                "path": "lambda-permissions/MyLambda/InvokeFcyXBRX02EWa52GlF+ECQiCzDt0fdRUDi4mo4foC5aU=",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "MyLambdaCCE802FB",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "apigateway.amazonaws.com"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
