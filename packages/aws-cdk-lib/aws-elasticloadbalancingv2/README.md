@@ -217,6 +217,10 @@ const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
   // How the load balancer handles requests that might
   // pose a security risk to your application
   desyncMitigationMode: elbv2.DesyncMitigationMode.DEFENSIVE,
+
+  // The type of IP addresses to use.
+  // If the load balancer is an internal load balancer, you must choose IPv4.
+  ipAddressType: elbv2.IPAddressType.IPV4,
 });
 ```
 
@@ -259,6 +263,22 @@ Balancers](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-
 and [Register targets with your Target
 Group](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/target-group-register-targets.html)
 for more information.
+
+### Dualstack Network Load Balancer
+
+You can create a dualstack Network Load Balancer using the `ipAddressType` property:
+
+```ts
+const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
+  vpc,
+  internetFacing: true
+  ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+});
+```
+
+Restrictions for a dualstack Network Load Balancer:
+* It must be internet-facing
+* You cannot add UDP or TCP_UDP listeners to it
 
 ## Targets and Target Groups
 

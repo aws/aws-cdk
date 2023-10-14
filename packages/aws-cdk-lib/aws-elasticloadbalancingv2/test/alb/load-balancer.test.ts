@@ -640,4 +640,41 @@ describe('tests', () => {
       });
     });
   });
+
+  describe('dualstack', () => {
+    test('Can create dualstack ApplicationLoadBalancer', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+        internetFacing: true,
+        ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        Scheme: 'internet-facing',
+        Type: 'application',
+        IpAddressType: 'dualstack',
+      });
+    });
+  });
+
+  test('A dualstack ApplicationLoadBalancer must be internet facing', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN
+    // THEN
+    expect(() => {
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+        ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+      });
+    }).toThrow(/The IP address type of an internal load balancer must be ipv4/);
+  });
 });

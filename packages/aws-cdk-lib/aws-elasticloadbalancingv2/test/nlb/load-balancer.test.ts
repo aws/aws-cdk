@@ -602,7 +602,7 @@ describe('tests', () => {
 
       // WHEN
       loadBalancer.addListener('listener', {
-        protocol: elbv2.Protocol.TCP_UDP,
+        protocol: elbv2.Protocol.TCP,
         port: 3000,
         defaultAction: elbv2.NetworkListenerAction.forward([targetGroup]),
       });
@@ -635,6 +635,78 @@ describe('tests', () => {
       expect(stack.resolve(metric.dimensions)).toEqual({
         LoadBalancer: 'network/my-load-balancer/50dc6c495c0c9188',
       });
+    });
+  });
+
+  describe('dualstack', () => {
+    test('Can create dualstack NetworkLoadBalancer', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      new elbv2.NetworkLoadBalancer(stack, 'LB', {
+        vpc,
+        internetFacing: true,
+        ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        Scheme: 'internet-facing',
+        Type: 'network',
+        IpAddressType: 'dualstack',
+      });
+    });
+
+    test('A dualstack NetworkLoadBalancer must be internet facing', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      // THEN
+      expect(() => {
+        new elbv2.NetworkLoadBalancer(stack, 'LB', {
+          vpc,
+          ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+        });
+      }).toThrow(/The IP address type of an internal load balancer must be ipv4/);
+    });
+
+    test('Cannot add UDP or TCP_UDP listeners to a dualstick network load balancer', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      const loadBalancer = new elbv2.NetworkLoadBalancer(stack, 'LB', {
+        vpc,
+        internetFacing: true,
+        ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+      });
+
+      const targetGroup = new elbv2.NetworkTargetGroup(stack, 'tg', {
+        vpc: loadBalancer.vpc,
+        port: 3000,
+      });
+
+      // THEN
+      expect(() => {
+        loadBalancer.addListener('listener', {
+          protocol: elbv2.Protocol.UDP,
+          port: 3000,
+          defaultAction: elbv2.NetworkListenerAction.forward([targetGroup]),
+        });
+      }).toThrow(/UDP or TCP_UDP listeners cannot be added to a dualstack network load balancer/);
+
+      expect(() => {
+        loadBalancer.addListener('listener', {
+          protocol: elbv2.Protocol.TCP_UDP,
+          port: 3000,
+          defaultAction: elbv2.NetworkListenerAction.forward([targetGroup]),
+        });
+      }).toThrow(/UDP or TCP_UDP listeners cannot be added to a dualstack network load balancer/);
     });
   });
 });

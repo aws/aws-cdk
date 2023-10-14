@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { IpAddressType } from './enums';
 import { Attributes, ifUndefined, mapTagMapToCxschema, renderAttributes } from './util';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
@@ -226,6 +227,10 @@ export abstract class BaseLoadBalancer extends Resource {
     });
     if (internetFacing) {
       resource.node.addDependency(internetConnectivityEstablished);
+    } else {
+      if (additionalProps.ipAddressType && additionalProps.ipAddressType === IpAddressType.DUAL_STACK) {
+        throw new Error(`The IP address type of an internal load balancer must be ${IpAddressType.IPV4}, got ${IpAddressType.DUAL_STACK}`);
+      }
     }
 
     this.setAttribute('deletion_protection.enabled', baseProps.deletionProtection ? 'true' : 'false');

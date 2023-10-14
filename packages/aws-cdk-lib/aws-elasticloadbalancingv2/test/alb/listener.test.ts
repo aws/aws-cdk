@@ -77,7 +77,11 @@ describe('tests', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Stack');
-    const loadBalancer = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc, ipAddressType: elbv2.IpAddressType.DUAL_STACK });
+    const loadBalancer = new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+      vpc,
+      internetFacing: true,
+      ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+    });
 
     // WHEN
     loadBalancer.addListener('MyListener', {
