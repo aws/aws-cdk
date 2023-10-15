@@ -249,15 +249,13 @@ Class `Schedule` provides static methods for accessing all schedules metrics wit
  such as `metricAllErrors` for viewing errors when executing targets.
 
  ```ts
-
- import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-
- new Alarm(this, 'SchedulesErrorAlarm', {
-   metric: Schedule.metricAllErrors(),
-   threshold: 0
- });
+new cloudwatch.Alarm(this, 'SchedulesErrorAlarm', {
+    metric: Schedule.metricAllErrors(),
+    threshold: 0,
+    evaluationPeriods: 1
+});
  ```
- 
+
 ### Metrics for a Group
 
 To view metrics for a specific group you can use methods on class `Group`:
