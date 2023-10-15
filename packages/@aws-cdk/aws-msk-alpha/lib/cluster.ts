@@ -532,7 +532,7 @@ export class Cluster extends ClusterBase {
         see: https://docs.aws.amazon.com/msk/latest/developerguide/msk-tiered-storage.html#msk-tiered-storage-constraints
         see: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/kafka/client/create_cluster.html
      */
-    if (storageMode === StorageMode.TIERED && KafkaVersion.isTieredStorageEnabled(props.kafkaVersion) === false) {
+    if (storageMode === StorageMode.TIERED && KafkaVersion.isTieredStorageCompatible(props.kafkaVersion) === false) {
       throw Error(
         'To utilize Tiered storage mode, the MSK cluster Kafka version must be compatiable',
       );

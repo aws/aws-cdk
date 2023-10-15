@@ -125,7 +125,7 @@ export class KafkaVersion {
    * MSK Kafka versions that support tiered storage.
    * @see https://docs.aws.amazon.com/msk/latest/developerguide/msk-tiered-storage.html#msk-tiered-storage-requirements
    */
-  public static isTieredStorageEnabled(version: KafkaVersion | string) {
+  public static isTieredStorageCompatible(version: KafkaVersion | string) {
     if (version instanceof KafkaVersion) {
       version = version.version
     }

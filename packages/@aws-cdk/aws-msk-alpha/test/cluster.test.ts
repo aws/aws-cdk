@@ -244,7 +244,6 @@ describe('MSK Cluster', () => {
               'arn:aws:kms:us-east-1:111122223333:key/1234abc',
             ),
           },
-          storageMode: msk.StorageMode.LOCAL,
           encryptionInTransit: {
             clientBroker: msk.ClientBrokerEncryption.TLS,
           },
@@ -697,7 +696,6 @@ describe('MSK Cluster', () => {
           'arn:aws:kms:us-east-1:111122223333:key/1234abc',
         ),
       },
-      storageMode: msk.StorageMode.LOCAL,
       encryptionInTransit: {
         clientBroker: msk.ClientBrokerEncryption.TLS,
       },
