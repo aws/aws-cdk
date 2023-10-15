@@ -802,7 +802,7 @@ describe('MSK Cluster', () => {
               storageMode: msk.StorageMode.TIERED,
             }),
         ).toThrow(
-          'To utilize Tiered storage, the MSK cluster Kafka version must be compatiable',
+          'To utilize Tiered storage mode, the MSK cluster Kafka version must be compatiable',
         );
       });
       test('fails if instance type of t3.small', () => {
@@ -816,7 +816,7 @@ describe('MSK Cluster', () => {
               storageMode: msk.StorageMode.TIERED,
             }),
         ).toThrow(
-          'The t3.small instance type does not support Tiered Storage',
+          'The t3.small instance type does not support Tiered storage mode',
         );
       });
       test('create a cluster with tiered storage mode', () => {
@@ -843,6 +843,16 @@ describe('MSK Cluster', () => {
         Template.fromStack(stack).hasResourceProperties('AWS::MSK::Cluster', {
           StorageMode: "LOCAL",
         });
+      });
+    });
+    describe('without setting storage mode', () => {
+      test('create a cluster without setting storage mode', () => {
+        new msk.Cluster(stack, 'Cluster', {
+          clusterName: 'cluster',
+          kafkaVersion: msk.KafkaVersion.V2_6_1,
+          vpc,
+        });
+        Template.fromStack(stack).resourcePropertiesCountIs('AWS::MSK::Cluster', {StorageMode: "LOCAL"}, 0);
       });
     });
   });

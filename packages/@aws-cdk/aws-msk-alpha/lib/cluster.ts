@@ -523,25 +523,25 @@ export class Cluster extends ClusterBase {
     };
 
     const storageMode =
-      props.storageMode ?? StorageMode.LOCAL;
+      props.storageMode ?? undefined;
       /*
       Conditions to satisfy:
-        - instancetype bigger is not t3.small
+        - instancetype is not t3.small
         - cluster config log compaction is set to delete
         - KafkaVersion is x.x.x.teried
         see: https://docs.aws.amazon.com/msk/latest/developerguide/msk-tiered-storage.html#msk-tiered-storage-constraints
         see: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/kafka/client/create_cluster.html
      */
-    if (storageMode === StorageMode.TIERED && KafkaVersion.isTiered(props.kafkaVersion) === false) {
+    if (storageMode === StorageMode.TIERED && KafkaVersion.isTieredStorageEnabled(props.kafkaVersion) === false) {
       throw Error(
-        'To utilize Tiered storage, the MSK cluster Kafka version must be compatiable',
+        'To utilize Tiered storage mode, the MSK cluster Kafka version must be compatiable',
       );
     }
     if (storageMode === StorageMode.TIERED && instanceType === this.mskInstanceType(
       ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL),
     )) {
       throw Error(
-        'The t3.small instance type does not support Tiered Storage',
+        'The t3.small instance type does not support Tiered storage mode',
       );
     }
 

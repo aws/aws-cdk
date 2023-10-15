@@ -123,8 +123,13 @@ export class KafkaVersion {
    * Is a tiered cluster?
    * @param kafkaVersion cluster kafka version
    */
-  public static isTiered(kafkaVersion: KafkaVersion) {
-    return TIERED_STORAGE_ENABLED_KAFKA_VERSIONS.includes(kafkaVersion);
+  public static isTieredStorageEnabled(version: KafkaVersion | string) {
+    if (version instanceof KafkaVersion) {
+      version = version.version
+    }
+    const suffix = 'tiered';
+    return version.indexOf(suffix, version.length - suffix.length) !== -1;
+    // return TIERED_STORAGE_ENABLED_KAFKA_VERSIONS.includes(version);
   };
 
   /**
