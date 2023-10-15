@@ -106,7 +106,7 @@ export interface ClusterProps {
   /**
    * Local or Tiered storage configuration for the brokers
    *
-   * @default - LOCAL
+   * @default - undefined
    */
   readonly storageMode?: StorageMode;
   /**
