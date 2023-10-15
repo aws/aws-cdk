@@ -220,7 +220,7 @@ const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
 
   // The type of IP addresses to use.
   // If the load balancer is an internal load balancer, you must choose IPv4.
-  ipAddressType: elbv2.IPAddressType.IPV4,
+  ipAddressType: elbv2.IpAddressType.IPV4,
 });
 ```
 
@@ -269,9 +269,11 @@ for more information.
 You can create a dualstack Network Load Balancer using the `ipAddressType` property:
 
 ```ts
+declare const vpc: ec2.Vpc;
+
 const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
   vpc,
-  internetFacing: true
+  internetFacing: true,
   ipAddressType: elbv2.IpAddressType.DUAL_STACK,
 });
 ```
