@@ -768,9 +768,7 @@ export class FlowLog extends FlowLogBase {
 
     let trafficType: string | undefined = undefined;
     if (!['TransitGateway', 'TransitGatewayAttachment'].includes(props.resourceType.resourceType)) {
-      trafficType = props.trafficType
-        ? props.trafficType
-        : FlowLogTrafficType.ALL;
+      trafficType = props.trafficType ?? FlowLogTrafficType.ALL;
     }
 
     const flowLog = new CfnFlowLog(this, 'FlowLog', {
