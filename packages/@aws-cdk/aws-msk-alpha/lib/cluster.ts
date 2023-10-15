@@ -523,7 +523,7 @@ export class Cluster extends ClusterBase {
     };
 
     const storageMode =
-      props.storageMode ?? undefined;
+      props.storageMode ?? StorageMode.LOCAL;
       /*
       Conditions to satisfy:
         - instancetype bigger is not t3.small
