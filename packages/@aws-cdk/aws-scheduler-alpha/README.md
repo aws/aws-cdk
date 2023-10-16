@@ -252,7 +252,7 @@ Class `Schedule` provides static methods for accessing all schedules metrics wit
 new cloudwatch.Alarm(this, 'SchedulesErrorAlarm', {
     metric: Schedule.metricAllErrors(),
     threshold: 0,
-    evaluationPeriods: 1
+    evaluationPeriods: 1,
 });
  ```
 
