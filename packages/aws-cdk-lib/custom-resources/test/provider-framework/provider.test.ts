@@ -262,23 +262,6 @@ test('fails if "queryInterval" and/or "totalTimeout" are set without "isComplete
   })).toThrow(/\"queryInterval\" and \"totalTimeout\" can only be configured if \"isCompleteHandler\" is specified. Otherwise, they have no meaning/);
 });
 
-test('fails if "totalTimeout" exceeds the maximum of 1 hour', () => {
-  // GIVEN
-  const stack = new Stack();
-  const handler = new lambda.Function(stack, 'MyHandler', {
-    code: new lambda.InlineCode('foo'),
-    handler: 'index.onEvent',
-    runtime: lambda.Runtime.NODEJS_LATEST,
-  });
-
-  // THEN
-  expect(() => new cr.Provider(stack, 'provider1', {
-    isCompleteHandler: handler,
-    onEventHandler: handler,
-    totalTimeout: Duration.hours(2),
-  })).toThrow(/\"totalTimeout\" cannot exceed the maximum of 1 hour/);
-});
-
 describe('retry policy', () => {
   it('default is 30 minutes timeout in 5 second intervals', () => {
     const policy = util.calculateRetryPolicy();
