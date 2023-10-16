@@ -53,7 +53,7 @@ export class LazyLookupExport implements LookupExport {
 
     for await (const cfnExport of this.listExports()) {
       if (!cfnExport.Name) {
-        throw new LookupExportError(`Unable to handle CloudFormation Export without Name! ${JSON.stringify(cfnExport)}`);
+        continue; // ignore any result that omits a name
       }
       this.cachedExports[cfnExport.Name] = cfnExport;
 

@@ -15,6 +15,24 @@ describe('LazyLookupExport', () => {
     Value: `test-value-${num}`,
   });
 
+  it('skips over any results that omit Name property', async () => {
+    listExports.mockReturnValueOnce({
+      Exports: [
+        createExport(1),
+        createExport(2),
+        {
+          Value: 'value-without-name',
+        },
+        createExport(3),
+      ],
+      NextToken: undefined,
+    });
+    const lookup = new LazyLookupExport(mockSdk);
+
+    const result = await lookup.lookupExport('test-name-3');
+    expect(result?.Value).toEqual('test-value-3');
+  });
+
   describe('three pages of exports', () => {
     let lookup: LazyLookupExport;
     beforeEach(() => {
