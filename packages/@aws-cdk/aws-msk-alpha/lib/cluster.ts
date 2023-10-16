@@ -169,7 +169,7 @@ export interface EbsStorageInfo {
 /**
  * This controls storage mode for supported storage tiers.
  *
- * @see https://docs.aws.amazon.com/msk/latest/developerguide/monitoring.html#metrics-details
+ * @see https://docs.aws.amazon.com/msk/latest/developerguide/msk-tiered-storage.html
  */
 export enum StorageMode {
   /**

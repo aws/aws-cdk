@@ -244,6 +244,7 @@ describe('MSK Cluster', () => {
               'arn:aws:kms:us-east-1:111122223333:key/1234abc',
             ),
           },
+          storageMode: msk.StorageMode.LOCAL,
           encryptionInTransit: {
             clientBroker: msk.ClientBrokerEncryption.TLS,
           },
@@ -696,6 +697,7 @@ describe('MSK Cluster', () => {
           'arn:aws:kms:us-east-1:111122223333:key/1234abc',
         ),
       },
+      storageMode: msk.StorageMode.LOCAL,
       encryptionInTransit: {
         clientBroker: msk.ClientBrokerEncryption.TLS,
       },
@@ -826,7 +828,7 @@ describe('MSK Cluster', () => {
           storageMode: msk.StorageMode.TIERED,
         }),
         Template.fromStack(stack).hasResourceProperties('AWS::MSK::Cluster', {
-          StorageMode: "TIERED",
+          StorageMode: 'TIERED',
         });
       });
     });
@@ -839,18 +841,8 @@ describe('MSK Cluster', () => {
           storageMode: msk.StorageMode.LOCAL,
         });
         Template.fromStack(stack).hasResourceProperties('AWS::MSK::Cluster', {
-          StorageMode: "LOCAL",
+          StorageMode: 'LOCAL',
         });
-      });
-    });
-    describe('without setting storage mode', () => {
-      test('create a cluster without setting storage mode', () => {
-        new msk.Cluster(stack, 'Cluster', {
-          clusterName: 'cluster',
-          kafkaVersion: msk.KafkaVersion.V2_6_1,
-          vpc,
-        });
-        Template.fromStack(stack).resourcePropertiesCountIs('AWS::MSK::Cluster', {StorageMode: "LOCAL"}, 0);
       });
     });
   });

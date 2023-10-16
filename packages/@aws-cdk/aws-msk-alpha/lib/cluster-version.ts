@@ -121,13 +121,13 @@ export class KafkaVersion {
 
   /**
    * Does this Kafka version support tiered storage?
-   * @param kafkaVersion cluster kafka version
+   * @param version cluster kafka version
    * MSK Kafka versions that support tiered storage.
    * @see https://docs.aws.amazon.com/msk/latest/developerguide/msk-tiered-storage.html#msk-tiered-storage-requirements
    */
   public static isTieredStorageCompatible(version: KafkaVersion | string) {
     if (version instanceof KafkaVersion) {
-      version = version.version
+      version = version.version;
     }
     const suffix = 'tiered';
     return version.indexOf(suffix, version.length - suffix.length) !== -1;
