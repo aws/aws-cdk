@@ -1043,16 +1043,16 @@ export class RegularDependenciesMustSatisfyPeerDependencies extends ValidationRu
   public readonly name = 'dependencies/peer-dependencies-satisfied';
 
   public validate(pkg: PackageJson): void {
-    for (const [depName, peerVersion] of Object.entries(pkg.peerDependencies)) {
-      const depVersion = pkg.dependencies[depName];
-      if (depVersion === undefined) { continue; }
+    for (const [depName, peerRange] of Object.entries(pkg.peerDependencies)) {
+      const depRange = pkg.dependencies[depName];
+      if (depRange === undefined) { continue; }
 
       // Make sure that depVersion satisfies peerVersion.
-      if (!semver.intersects(depVersion, peerVersion)) {
+      if (!semver.intersects(depRange, peerRange, { includePrerelease: true })) {
         pkg.report({
           ruleName: this.name,
-          message: `dependency ${depName}: concrete version ${depVersion} does not match peer version '${peerVersion}'`,
-          fix: () => pkg.addPeerDependency(depName, depVersion),
+          message: `dependency ${depName}: concrete version ${depRange} does not match peer version '${peerRange}'`,
+          fix: () => pkg.addPeerDependency(depName, depRange),
         });
       }
     }
@@ -1526,6 +1526,28 @@ export class ConstructsDependency extends ValidationRule {
           message: `"constructs" must have a version requirement ${REQUIRED_VERSION} in peerDependencies`,
           fix: () => {
             pkg.addPeerDependency('constructs', REQUIRED_VERSION);
+          },
+        });
+      }
+    }
+  }
+}
+
+/**
+ * Peer dependencies should be a range, not a point version, to maximize compatibility
+ */
+export class PeerDependencyRange extends ValidationRule {
+  public readonly name = 'peerdependency/range';
+
+  public validate(pkg: PackageJson) {
+    const packages = ['aws-cdk-lib'];
+    for (const [name, version] of Object.entries(pkg.peerDependencies)) {
+      if (packages.includes(name) && version.match(/^[0-9]/)) {
+        pkg.report({
+          ruleName: this.name,
+          message: `peerDependency on" ${name}" should be a range, not a point version: "${version}"`,
+          fix: () => {
+            pkg.addPeerDependency(name, '^' + version);
           },
         });
       }
