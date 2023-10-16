@@ -80,7 +80,7 @@ export async function isHotswappableAppSyncChange(
           delete sdkRequestObject.definitionS3Location;
         }
         if (sdkRequestObject.codeS3Location) {
-          sdkRequestObject.code = await fetchFileFromS3(sdkRequestObject.codeS3Location, sdk);
+          sdkRequestObject.code = (await fetchFileFromS3(sdkRequestObject.codeS3Location, sdk))?.toString('utf8');
           delete sdkRequestObject.codeS3Location;
         }
 
