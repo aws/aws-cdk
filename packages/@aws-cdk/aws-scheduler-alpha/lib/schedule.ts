@@ -149,7 +149,7 @@ export class Schedule extends Resource implements ISchedule {
    * @default - sum over 5 minutes
    */
   public static metricAllFailedToBeSentToDLQ(errorCode?: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    if (!errorCode) {
+    if (errorCode) {
       return this.metricAll(`InvocationsFailedToBeSentToDeadLetterCount_${errorCode}`, props);
     }
 
