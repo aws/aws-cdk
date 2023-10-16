@@ -12,7 +12,7 @@ const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: fal
 const cluster = new Cluster(stack, 'Cluster', {
   vpc,
   clusterName: 'integ-test',
-  kafkaVersion: KafkaVersion.V3_4_0,
+  kafkaVersion: KafkaVersion.V3_5_1,
   removalPolicy: RemovalPolicy.DESTROY,
   clientAuthentication: ClientAuthentication.sasl({ scram: true }),
 });

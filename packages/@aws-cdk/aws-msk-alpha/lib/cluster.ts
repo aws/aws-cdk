@@ -112,7 +112,7 @@ export interface ClusterProps {
   /**
    * The Amazon MSK configuration to use for the cluster.
    *
-   * @default - none
+   * @default - StorageMode.LOCAL
    */
   readonly configurationInfo?: ClusterConfigurationInfo;
   /**
@@ -523,15 +523,7 @@ export class Cluster extends ClusterBase {
     };
 
     const storageMode =
-      props.storageMode ?? undefined;
-      /*
-      Conditions to satisfy:
-        - instancetype is not t3.small
-        - cluster config log compaction is set to delete
-        - KafkaVersion is x.x.x.teried
-        see: https://docs.aws.amazon.com/msk/latest/developerguide/msk-tiered-storage.html#msk-tiered-storage-constraints
-        see: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/kafka/client/create_cluster.html
-     */
+      props.storageMode ?? StorageMode.LOCAL;
     if (storageMode === StorageMode.TIERED && KafkaVersion.isTieredStorageCompatible(props.kafkaVersion) === false) {
       throw Error(
         'To utilize Tiered storage mode, the MSK cluster Kafka version must be compatiable',
