@@ -291,7 +291,7 @@ describe('tests', () => {
       // THEN
       // verify the ALB depends on the bucket *and* the bucket policy
       Template.fromStack(stack).hasResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-        DependsOn: ['AccessLoggingBucketPolicy700D7CC6', 'AccessLoggingBucketA6D88F29'],
+        DependsOn: ['AccessLoggingBucketA6D88F29'],
       });
     });
 

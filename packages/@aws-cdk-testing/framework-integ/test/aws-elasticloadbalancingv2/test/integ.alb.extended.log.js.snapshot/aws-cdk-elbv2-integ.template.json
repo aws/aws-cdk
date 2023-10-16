@@ -434,7 +434,6 @@
     "Type": "application"
    },
    "DependsOn": [
-    "LBALBAccessLogsBucketPolicy1E4EBAFE",
     "LBALBAccessLogsBucket6AE92937",
     "VPCPublicSubnet1DefaultRoute91CEF279",
     "VPCPublicSubnet1RouteTableAssociation0B0896DC",
