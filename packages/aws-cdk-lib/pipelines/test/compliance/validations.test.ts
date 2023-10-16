@@ -504,7 +504,7 @@ behavior('can grant permissions to shell script action', (suite) => {
     Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: Match.arrayWith([Match.objectLike({
-          Action: ['s3:GetObject*', 's3:GetBucket*', 's3:HeadObject', 's3:List*'],
+          Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
           Resource: ['arn:aws:s3:::this-particular-bucket', 'arn:aws:s3:::this-particular-bucket/*'],
         })]),
       },
