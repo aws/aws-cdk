@@ -13,6 +13,7 @@ Any code you submit will be released under that license.
 This document describes how to set up a development environment and submit your changes. Please
 let us know if it's not up-to-date (even better, submit a PR with your  corrections ;-)).
 
+- [Where To Contribute](#where-to-contribute)
 - [Getting Started](#getting-started)
   - [Local setup](#setup)
   - [Dev Container](#dev-container)
@@ -46,6 +47,14 @@ let us know if it's not up-to-date (even better, submit a PR with your  correcti
   - [Run a CDK unit test in the debugger](#run-a-cdk-unit-test-in-the-debugger)
 - [Badges (Pilot Program)](#badges-pilot-program)
 - [Related Repositories](#related-repositories)
+
+## Where to Contribute
+
+Contributions are accepted through a number of channels, including direct pull requests to the aws/aws-cdk repository. However, this may not be the ideal method depending on the circumstances of your proposed additions or changes. The aws-cdk team has limited availability for reviews, which means that sometimes, if making your change available for immediate use by yourself is your goal, it may be better to publish it in your own package or otherwise bypass the CDK team's review and feedback cycle. That being said, if your contribution contains changes that are desired by a large number of cdk users, we absolutely want to make sure those changes are included in the aws-cdk core packages.
+
+### Demonstrating Value
+
+Flow chart diagram of how to create an issue, socialize the idea, 
 
 ## Getting Started
 
