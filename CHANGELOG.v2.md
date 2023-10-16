@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.101.1](https://github.com/aws/aws-cdk/compare/v2.101.0...v2.101.1) (2023-10-16)
+
+
+### Reverts
+
+* "fix(s3): grantRead does not allow s3:HeadObject ([#27416](https://github.com/aws/aws-cdk/issues/27416))" ([#27556](https://github.com/aws/aws-cdk/issues/27556)) ([d013677](https://github.com/aws/aws-cdk/commit/d013677cc181284b6f7444950784b758cb0c7100))
+
 ## [2.101.0](https://github.com/aws/aws-cdk/compare/v2.100.0...v2.101.0) (2023-10-13)
 
 
