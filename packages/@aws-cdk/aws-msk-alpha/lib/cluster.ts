@@ -106,13 +106,13 @@ export interface ClusterProps {
   /**
    * Local or Tiered storage configuration for the brokers
    *
-   * @default - undefined
+   * @default - StorageMode.LOCAL
    */
   readonly storageMode?: StorageMode;
   /**
    * The Amazon MSK configuration to use for the cluster.
    *
-   * @default - StorageMode.LOCAL
+   * @default - none
    */
   readonly configurationInfo?: ClusterConfigurationInfo;
   /**
@@ -173,11 +173,11 @@ export interface EbsStorageInfo {
  */
 export enum StorageMode {
   /**
-   * Local storage mode utilizes local memory and EBS storage.
+   * Local storage mode utilizes network attached EBS storage.
    */
   LOCAL = 'LOCAL',
   /**
-   * Tiered storage mode utilizes local memory, EBS storage, and S3.
+   * Tiered storage mode utilizes EBS storage and S3.
    */
   TIERED = 'TIERED',
 }
@@ -526,14 +526,14 @@ export class Cluster extends ClusterBase {
       props.storageMode ?? StorageMode.LOCAL;
     if (storageMode === StorageMode.TIERED && KafkaVersion.isTieredStorageCompatible(props.kafkaVersion) === false) {
       throw Error(
-        'To utilize Tiered storage mode, the MSK cluster Kafka version must be compatiable',
+        'To utilize Tiered storage mode, the MSK cluster Kafka version must be compatiable.',
       );
     }
     if (storageMode === StorageMode.TIERED && instanceType === this.mskInstanceType(
       ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL),
     )) {
       throw Error(
-        'The t3.small instance type does not support Tiered storage mode',
+        'The t3.small instance type does not support Tiered storage mode.',
       );
     }
 
