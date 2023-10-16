@@ -68,7 +68,6 @@ describe('Job', () => {
       Action: [
         's3:GetObject*',
         's3:GetBucket*',
-        's3:HeadObject',
         's3:List*',
       ],
       Effect: 'Allow',
@@ -485,7 +484,6 @@ describe('Job', () => {
                   Action: [
                     's3:GetObject*',
                     's3:GetBucket*',
-                    's3:HeadObject',
                     's3:List*',
                     's3:DeleteObject*',
                     's3:PutObject',
@@ -575,7 +573,6 @@ describe('Job', () => {
                   Action: [
                     's3:GetObject*',
                     's3:GetBucket*',
-                    's3:HeadObject',
                     's3:List*',
                     's3:DeleteObject*',
                     's3:PutObject',
@@ -675,7 +672,6 @@ describe('Job', () => {
                   Action: [
                     's3:GetObject*',
                     's3:GetBucket*',
-                    's3:HeadObject',
                     's3:List*',
                     's3:DeleteObject*',
                     's3:PutObject',
