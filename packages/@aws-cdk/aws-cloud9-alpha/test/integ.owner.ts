@@ -31,4 +31,4 @@ new integ.IntegTest(app, 'OwnerInteg', {
   testCases: [new Cloud9Env(app, 'cloud9-owner-integ')],
 });
 
-app.synth({ force: true });
+app.synth();
