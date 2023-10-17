@@ -1,0 +1,9 @@
+type thirdTest {
+  version: String!
+}
+type Query {
+  getThirdTests: [thirdTest]!
+}
+type Mutation {
+  addThirdTest(version: String!): thirdTest
+}

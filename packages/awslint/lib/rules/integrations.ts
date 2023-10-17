@@ -2,7 +2,7 @@ import * as reflect from 'jsii-reflect';
 import { memberFqn } from './util';
 import { Linter } from '../linter';
 
-export const integrationLinter = new Linter<IntegrationReflection>(assembly => assembly.interfaces
+export const integrationLinter = new Linter<IntegrationReflection>(assembly => assembly.allInterfaces
   .filter(IntegrationReflection.isIntegrationInterface)
   .map(construct => new IntegrationReflection(construct)));
 

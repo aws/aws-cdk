@@ -14,39 +14,44 @@ const camelCase = require('camelcase');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const decamelize = require('decamelize');
 
+export interface CliInitOptions {
+  readonly type?: string;
+  readonly language?: string;
+  readonly canUseNetwork?: boolean;
+  readonly generateOnly?: boolean;
+  readonly workDir?: string;
+  readonly stackName?: string;
+}
+
 /**
  * Initialize a CDK package in the current directory
  */
-export async function cliInit(
-  type?: string,
-  language?: string,
-  canUseNetwork = true,
-  generateOnly = false,
-  workDir = process.cwd(),
-  stackName?: string,
-) {
-  if (!type && !language) {
+export async function cliInit(options: CliInitOptions) {
+  const canUseNetwork = options.canUseNetwork ?? true;
+  const generateOnly = options.generateOnly ?? false;
+  const workDir = options.workDir ?? process.cwd();
+  if (!options.type && !options.language) {
     await printAvailableTemplates();
     return;
   }
 
-  type = type || 'default'; // "default" is the default type (and maps to "app")
+  const type = options.type || 'default'; // "default" is the default type (and maps to "app")
 
   const template = (await availableInitTemplates()).find(t => t.hasName(type!));
   if (!template) {
-    await printAvailableTemplates(language);
+    await printAvailableTemplates(options.language);
     throw new Error(`Unknown init template: ${type}`);
   }
-  if (!language && template.languages.length === 1) {
-    language = template.languages[0];
+  if (!options.language && template.languages.length === 1) {
+    const language = template.languages[0];
     warning(`No --language was provided, but '${type}' supports only '${language}', so defaulting to --language=${language}`);
   }
-  if (!language) {
+  if (!options.language) {
     print(`Available languages for ${chalk.green(type)}: ${template.languages.map(l => chalk.blue(l)).join(', ')}`);
     throw new Error('No language was selected');
   }
 
-  await initializeProject(template, language, canUseNetwork, generateOnly, workDir, stackName);
+  await initializeProject(template, options.language, canUseNetwork, generateOnly, workDir, options.stackName);
 }
 
 /**
@@ -168,6 +173,8 @@ export class InitTemplate {
     }
     return template.replace(/%name%/g, project.name)
       .replace(/%stackname%/, project.stackName ?? '%name.PascalCased%Stack')
+      .replace(/%PascalNameSpace%/, project.stackName ? camelCase(project.stackName + 'Stack', { pascalCase: true }) : '%name.PascalCased%')
+      .replace(/%PascalStackProps%/, project.stackName ? (camelCase(project.stackName, { pascalCase: true }) + 'StackProps') : 'StackProps')
       .replace(/%name\.camelCased%/g, camelCase(project.name))
       .replace(/%name\.PascalCased%/g, camelCase(project.name, { pascalCase: true }))
       .replace(/%cdk-version%/g, cdkVersion)
