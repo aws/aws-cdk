@@ -493,7 +493,11 @@ export interface OnImageScanCompletedOptions extends events.OnEventOptions {
 
 export interface RepositoryProps {
   /**
-   * Name for this repository
+   * Name for this repository.
+   *
+   * The repository name must start with a letter and can only contain lowercase letters, numbers, hyphens, underscores, and forward slashes.
+   *
+   * > If you specify a name, you cannot perform updates that require replacement of this resource. You can perform updates that require no or some interruption. If you must replace the resource, specify a new name.
    *
    * @default Automatically generated name.
    */
@@ -672,7 +676,7 @@ export class Repository extends RepositoryBase {
     }
     const isPatternMatch = /^(?:[a-z0-9]+(?:[._-][a-z0-9]+)*\/)*[a-z0-9]+(?:[._-][a-z0-9]+)*$/.test(repositoryName);
     if (!isPatternMatch) {
-      errors.push('Repository name must follow the specified pattern: (?:[a-z0-9]+(?:[._-][a-z0-9]+)*/)*[a-z0-9]+(?:[._-][a-z0-9]+)*');
+      errors.push('Repository name must start with a letter and can only contain lowercase letters, numbers, hyphens, underscores, periods and forward slashes');
     }
 
     if (errors.length > 0) {

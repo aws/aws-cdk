@@ -2,7 +2,7 @@ import { Template } from '../../assertions';
 import { InstanceClass, InstanceSize, InstanceType } from '../../aws-ec2';
 import * as ecs from '../../aws-ecs';
 import { Size, Stack } from '../../core';
-import { Compatibility, EcsEc2ContainerDefinition, MultiNodeJobDefinition } from '../lib';
+import { Compatibility, EcsEc2ContainerDefinition, MultiNodeJobDefinition, OptimalInstanceType } from '../lib';
 
 test('MultiNodeJobDefinition respects mainNode', () => {
   // GIVEN
@@ -20,7 +20,6 @@ test('MultiNodeJobDefinition respects mainNode', () => {
       endNode: 9,
     }],
     mainNode: 5,
-    instanceType: InstanceType.of(InstanceClass.R4, InstanceSize.LARGE),
   });
 
   // THEN
@@ -28,9 +27,7 @@ test('MultiNodeJobDefinition respects mainNode', () => {
     NodeProperties: {
       MainNode: 5,
       NodeRangeProperties: [{
-        Container: {
-          InstanceType: 'r4.large',
-        },
+        Container: { },
         TargetNodes: '0:9',
       }],
       NumNodes: 10,
@@ -56,12 +53,43 @@ test('EcsJobDefinition respects propagateTags', () => {
       endNode: 9,
     }],
     mainNode: 0,
-    instanceType: InstanceType.of(InstanceClass.R4, InstanceSize.LARGE),
   });
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
     PropagateTags: true,
+  });
+});
+
+test('MultiNodeJobDefinition respects instanceType', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new MultiNodeJobDefinition(stack, 'ECSJobDefn', {
+    containers: [{
+      container: new EcsEc2ContainerDefinition(stack, 'MultinodeContainer', {
+        cpu: 256,
+        memory: Size.mebibytes(2048),
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      }),
+      startNode: 0,
+      endNode: 9,
+    }],
+    instanceType: InstanceType.of(InstanceClass.R4, InstanceSize.LARGE),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+    NodeProperties: {
+      NodeRangeProperties: [{
+        Container: {
+        },
+        TargetNodes: '0:9',
+      }],
+      NumNodes: 10,
+    },
+    PlatformCapabilities: [Compatibility.EC2],
   });
 });
 
@@ -81,7 +109,6 @@ test('MultiNodeJobDefinition one container', () => {
       endNode: 9,
     }],
     mainNode: 0,
-    instanceType: InstanceType.of(InstanceClass.R4, InstanceSize.LARGE),
   });
 
   // THEN
@@ -90,7 +117,6 @@ test('MultiNodeJobDefinition one container', () => {
       MainNode: 0,
       NodeRangeProperties: [{
         Container: {
-          InstanceType: 'r4.large',
         },
         TargetNodes: '0:9',
       }],
@@ -159,10 +185,19 @@ test('multinode job requires at least one container', () => {
   const stack = new Stack();
 
   // WHEN
-  new MultiNodeJobDefinition(stack, 'ECSJobDefn', {
-    instanceType: InstanceType.of(InstanceClass.C4, InstanceSize.LARGE),
-  });
+  new MultiNodeJobDefinition(stack, 'ECSJobDefn');
 
   // THEN
   expect(() => Template.fromStack(stack)).toThrow(/multinode job has no containers!/);
+});
+
+test('multinode job returns a dummy instance type when accessing `instanceType`', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  const jobDef = new MultiNodeJobDefinition(stack, 'ECSJobDefn');
+
+  // THEN
+  expect(jobDef.instanceType).toBeInstanceOf(OptimalInstanceType);
 });
