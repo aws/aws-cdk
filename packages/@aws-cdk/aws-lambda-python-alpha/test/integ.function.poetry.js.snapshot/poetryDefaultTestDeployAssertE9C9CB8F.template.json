@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "LambdaInvoke81c9998b1b428b309c8501e21b919d3d": {
+  "LambdaInvoke44e1de01644c103ef7d2634fbb7979b2": {
    "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
@@ -14,21 +14,30 @@
     "expected": "{\"$ObjectLike\":{\"Payload\":\"200\"}}",
     "parameters": {
      "FunctionName": {
-      "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinline53D120C7B0898676"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinepython37BC8B334F06029F9C"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "false",
-    "salt": "1676321196191"
+    "salt": "1696884110724"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "LambdaInvoke81c9998b1b428b309c8501e21b919d3dInvokeEBA46CA4": {
+  "LambdaInvoke44e1de01644c103ef7d2634fbb7979b2Invoke3431F3D8": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
-     "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinline53D120C7B0898676"
+     "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinepython37BC8B334F06029F9C"
     },
     "Principal": {
      "Fn::GetAtt": [
@@ -97,7 +106,7 @@
              },
              ":function:",
              {
-              "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinline53D120C7B0898676"
+              "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinepython37BC8B334F06029F9C"
              }
             ]
            ]
@@ -137,7 +146,7 @@
              },
              ":function:",
              {
-              "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinewithhashes352ED54DCDE8C1A6"
+              "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinepython38BCA26446CBD4F87B"
              }
             ]
            ]
@@ -177,7 +186,7 @@
              },
              ":function:",
              {
-              "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerpython384D62BBB58AA8B940"
+              "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinepython3914E0D89DAA53377B"
              }
             ]
            ]
@@ -217,7 +226,7 @@
              },
              ":function:",
              {
-              "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerpython38withhashesF2275091B829511A"
+              "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinepython310CCEB365DA798DC08"
              }
             ]
            ]
@@ -257,7 +266,7 @@
              },
              ":function:",
              {
-              "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerpython37C34039A7BB71D94D"
+              "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinepython31130A54F685779D70D"
              }
             ]
            ]
@@ -297,7 +306,7 @@
              },
              ":function:",
              {
-              "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerpython37withhashesE95C48AC15D1F7B4"
+              "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinewithhashespython37B3E12B2B2F3C297A"
              }
             ]
            ]
@@ -337,7 +346,7 @@
              },
              ":function:",
              {
-              "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlineexcludes9ACF1422FA94AAF9"
+              "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinewithhashespython38FD5608984B9A39B3"
              }
             ]
            ]
@@ -377,7 +386,7 @@
              },
              ":function:",
              {
-              "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerpython38excludes1CEDD61508A85D35"
+              "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinewithhashespython3964CAE28415366198"
              }
             ]
            ]
@@ -417,7 +426,7 @@
              },
              ":function:",
              {
-              "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerpython38withhashesexcludes46724D0BA6D5A35D"
+              "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinewithhashespython310BD04F877D52DE581"
              }
             ]
            ]
@@ -457,7 +466,7 @@
              },
              ":function:",
              {
-              "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerpython37excludes977F9CDF40301DA3"
+              "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinewithhashespython311819AD79BA116B6B3"
              }
             ]
            ]
@@ -497,7 +506,567 @@
              },
              ":function:",
              {
-              "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerpython37withhashesexcludes1C88AD136E888C09"
+              "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlineexcludespython377F552F31CE103F4E"
+             }
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "lambda:Invoke"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "lambda:InvokeFunction"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:",
+             {
+              "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlineexcludespython387A43ACE766E3D5DD"
+             }
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "lambda:Invoke"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "lambda:InvokeFunction"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:",
+             {
+              "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlineexcludespython39ABB3DFE9A0059A3D"
+             }
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "lambda:Invoke"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "lambda:InvokeFunction"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:",
+             {
+              "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlineexcludespython310B7555D7A7BA49FC6"
+             }
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "lambda:Invoke"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "lambda:InvokeFunction"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:",
+             {
+              "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlineexcludespython3113F187913B9A340D2"
+             }
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "lambda:Invoke"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "lambda:InvokeFunction"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:",
+             {
+              "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerwithhashesexcludespython374A7F71A816929765"
+             }
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "lambda:Invoke"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "lambda:InvokeFunction"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:",
+             {
+              "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerwithhashesexcludespython38788AC0C672121CA3"
+             }
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "lambda:Invoke"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "lambda:InvokeFunction"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:",
+             {
+              "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerwithhashesexcludespython39134584D9944622EB"
+             }
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "lambda:Invoke"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "lambda:InvokeFunction"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:",
+             {
+              "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerwithhashesexcludespython310E3EB25FB48AA64D9"
+             }
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "lambda:Invoke"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "lambda:InvokeFunction"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:",
+             {
+              "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerwithhashesexcludespython3111047790925870EDE"
+             }
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "lambda:Invoke"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "lambda:InvokeFunction"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:",
+             {
+              "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinewithouturlspython3761FA6BCCADE5F533"
+             }
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "lambda:Invoke"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "lambda:InvokeFunction"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:",
+             {
+              "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinewithouturlspython382CE9570952AE2C3E"
+             }
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "lambda:Invoke"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "lambda:InvokeFunction"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:",
+             {
+              "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinewithouturlspython39B9799E297CE3B777"
+             }
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "lambda:Invoke"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "lambda:InvokeFunction"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:",
+             {
+              "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinewithouturlspython310D1D226E35105656C"
+             }
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "lambda:Invoke"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "lambda:InvokeFunction"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:",
+             {
+              "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinewithouturlspython31174A8D66561F57634"
              }
             ]
            ]
@@ -513,12 +1082,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs18.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "73c20a669c041469f7fc3fc03d574b093b5b97e7c716f76c1e8117e6163e4dc4.zip"
+     "S3Key": "f3de7fa69bbae9bbe9472b98f9b1b3626a9ee748b2fd5895278331be04efa56b.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -530,7 +1099,7 @@
     }
    }
   },
-  "LambdaInvoke82a73e0d5d0fdcb04565e4d81ef342b8": {
+  "LambdaInvoke6dc611c82abe1da0c70b6703161ae8d0": {
    "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
@@ -544,21 +1113,30 @@
     "expected": "{\"$ObjectLike\":{\"Payload\":\"200\"}}",
     "parameters": {
      "FunctionName": {
-      "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinewithhashes352ED54DCDE8C1A6"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinepython38BCA26446CBD4F87B"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "false",
-    "salt": "1676321196192"
+    "salt": "1696884110725"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "LambdaInvoke82a73e0d5d0fdcb04565e4d81ef342b8InvokeEA59DC11": {
+  "LambdaInvoke6dc611c82abe1da0c70b6703161ae8d0InvokeEDF50003": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
-     "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinewithhashes352ED54DCDE8C1A6"
+     "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinepython38BCA26446CBD4F87B"
     },
     "Principal": {
      "Fn::GetAtt": [
@@ -568,7 +1146,7 @@
     }
    }
   },
-  "LambdaInvoke9a0beb4ea6cc38db92e9ff664c085292": {
+  "LambdaInvoke3cad21d621f0d126dadbdb71007e5678": {
    "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
@@ -582,21 +1160,30 @@
     "expected": "{\"$ObjectLike\":{\"Payload\":\"200\"}}",
     "parameters": {
      "FunctionName": {
-      "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerpython384D62BBB58AA8B940"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinepython3914E0D89DAA53377B"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "false",
-    "salt": "1676321196192"
+    "salt": "1696884110725"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "LambdaInvoke9a0beb4ea6cc38db92e9ff664c085292InvokeFD76DE7B": {
+  "LambdaInvoke3cad21d621f0d126dadbdb71007e5678Invoke8A0FE001": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
-     "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerpython384D62BBB58AA8B940"
+     "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinepython3914E0D89DAA53377B"
     },
     "Principal": {
      "Fn::GetAtt": [
@@ -606,7 +1193,7 @@
     }
    }
   },
-  "LambdaInvoke26497bb1c12c14ed3deada8d7d76b39e": {
+  "LambdaInvoke1169f1cd9853adbc01aa3feb2303094f": {
    "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
@@ -620,21 +1207,30 @@
     "expected": "{\"$ObjectLike\":{\"Payload\":\"200\"}}",
     "parameters": {
      "FunctionName": {
-      "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerpython38withhashesF2275091B829511A"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinepython310CCEB365DA798DC08"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "false",
-    "salt": "1676321196192"
+    "salt": "1696884110725"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "LambdaInvoke26497bb1c12c14ed3deada8d7d76b39eInvoke930611A4": {
+  "LambdaInvoke1169f1cd9853adbc01aa3feb2303094fInvoke3DACF8AE": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
-     "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerpython38withhashesF2275091B829511A"
+     "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinepython310CCEB365DA798DC08"
     },
     "Principal": {
      "Fn::GetAtt": [
@@ -644,7 +1240,7 @@
     }
    }
   },
-  "LambdaInvoke631dde0680edf7d2f0eea8d9b9c06c75": {
+  "LambdaInvokeedc778179c8316b7704f58e7d1b26079": {
    "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
@@ -658,21 +1254,30 @@
     "expected": "{\"$ObjectLike\":{\"Payload\":\"200\"}}",
     "parameters": {
      "FunctionName": {
-      "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerpython37C34039A7BB71D94D"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinepython31130A54F685779D70D"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "false",
-    "salt": "1676321196192"
+    "salt": "1696884110725"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "LambdaInvoke631dde0680edf7d2f0eea8d9b9c06c75Invoke11F9A252": {
+  "LambdaInvokeedc778179c8316b7704f58e7d1b26079Invoke233FCD2E": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
-     "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerpython37C34039A7BB71D94D"
+     "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinepython31130A54F685779D70D"
     },
     "Principal": {
      "Fn::GetAtt": [
@@ -682,7 +1287,7 @@
     }
    }
   },
-  "LambdaInvoke8cbaf98b5be6e4f6f81f5f10b5b8dc89": {
+  "LambdaInvoke6704f55d095b2829c2f79592fb0dc7e0": {
    "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
@@ -696,21 +1301,30 @@
     "expected": "{\"$ObjectLike\":{\"Payload\":\"200\"}}",
     "parameters": {
      "FunctionName": {
-      "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerpython37withhashesE95C48AC15D1F7B4"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinewithhashespython37B3E12B2B2F3C297A"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "false",
-    "salt": "1676321196192"
+    "salt": "1696884110725"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "LambdaInvoke8cbaf98b5be6e4f6f81f5f10b5b8dc89Invoke884F6CA8": {
+  "LambdaInvoke6704f55d095b2829c2f79592fb0dc7e0InvokeCAD9B8BA": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
-     "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerpython37withhashesE95C48AC15D1F7B4"
+     "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinewithhashespython37B3E12B2B2F3C297A"
     },
     "Principal": {
      "Fn::GetAtt": [
@@ -720,7 +1334,7 @@
     }
    }
   },
-  "LambdaInvoke6fb5582f0ea96db4d3c0326fb42fe36c": {
+  "LambdaInvoke56c9dc36f176b3cc005fac4aa11894a7": {
    "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
@@ -734,21 +1348,30 @@
     "expected": "{\"$ObjectLike\":{\"Payload\":\"200\"}}",
     "parameters": {
      "FunctionName": {
-      "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlineexcludes9ACF1422FA94AAF9"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinewithhashespython38FD5608984B9A39B3"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "false",
-    "salt": "1676321196193"
+    "salt": "1696884110725"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "LambdaInvoke6fb5582f0ea96db4d3c0326fb42fe36cInvoke7568F400": {
+  "LambdaInvoke56c9dc36f176b3cc005fac4aa11894a7Invoke5DD39EA8": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
-     "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlineexcludes9ACF1422FA94AAF9"
+     "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinewithhashespython38FD5608984B9A39B3"
     },
     "Principal": {
      "Fn::GetAtt": [
@@ -758,7 +1381,7 @@
     }
    }
   },
-  "LambdaInvokefbdb1fc975f2f372fd64335aa07b46b7": {
+  "LambdaInvoke79b1a14eb02906a628f7c4dbbe920695": {
    "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
@@ -772,21 +1395,30 @@
     "expected": "{\"$ObjectLike\":{\"Payload\":\"200\"}}",
     "parameters": {
      "FunctionName": {
-      "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerpython38excludes1CEDD61508A85D35"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinewithhashespython3964CAE28415366198"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "false",
-    "salt": "1676321196193"
+    "salt": "1696884110726"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "LambdaInvokefbdb1fc975f2f372fd64335aa07b46b7Invoke1AF08F67": {
+  "LambdaInvoke79b1a14eb02906a628f7c4dbbe920695InvokeD98138BD": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
-     "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerpython38excludes1CEDD61508A85D35"
+     "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinewithhashespython3964CAE28415366198"
     },
     "Principal": {
      "Fn::GetAtt": [
@@ -796,7 +1428,7 @@
     }
    }
   },
-  "LambdaInvokeead1d1e2cc2d2a843a514ffdc015b2c4": {
+  "LambdaInvoke07f0bf48404b68e262de7d7930dd8205": {
    "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
@@ -810,21 +1442,30 @@
     "expected": "{\"$ObjectLike\":{\"Payload\":\"200\"}}",
     "parameters": {
      "FunctionName": {
-      "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerpython38withhashesexcludes46724D0BA6D5A35D"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinewithhashespython310BD04F877D52DE581"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "false",
-    "salt": "1676321196193"
+    "salt": "1696884110726"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "LambdaInvokeead1d1e2cc2d2a843a514ffdc015b2c4Invoke7F9FE784": {
+  "LambdaInvoke07f0bf48404b68e262de7d7930dd8205Invoke13B8AE32": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
-     "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerpython38withhashesexcludes46724D0BA6D5A35D"
+     "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinewithhashespython310BD04F877D52DE581"
     },
     "Principal": {
      "Fn::GetAtt": [
@@ -834,7 +1475,7 @@
     }
    }
   },
-  "LambdaInvoke26ce5a20d1ffee210d056cd2aa005172": {
+  "LambdaInvokec61a044478d06a105f47fc0d2fe27ff1": {
    "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
@@ -848,21 +1489,30 @@
     "expected": "{\"$ObjectLike\":{\"Payload\":\"200\"}}",
     "parameters": {
      "FunctionName": {
-      "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerpython37excludes977F9CDF40301DA3"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinewithhashespython311819AD79BA116B6B3"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "false",
-    "salt": "1676321196193"
+    "salt": "1696884110726"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "LambdaInvoke26ce5a20d1ffee210d056cd2aa005172Invoke5D442C14": {
+  "LambdaInvokec61a044478d06a105f47fc0d2fe27ff1InvokeCA6FFB87": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
-     "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerpython37excludes977F9CDF40301DA3"
+     "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinewithhashespython311819AD79BA116B6B3"
     },
     "Principal": {
      "Fn::GetAtt": [
@@ -872,7 +1522,7 @@
     }
    }
   },
-  "LambdaInvoke6fd2d93b0d07a2b4220fae7c91786512": {
+  "LambdaInvoke565ee3f93dcc28c81614deb678f7c770": {
    "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
@@ -886,21 +1536,688 @@
     "expected": "{\"$ObjectLike\":{\"Payload\":\"200\"}}",
     "parameters": {
      "FunctionName": {
-      "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerpython37withhashesexcludes1C88AD136E888C09"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlineexcludespython377F552F31CE103F4E"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "false",
-    "salt": "1676321196193"
+    "salt": "1696884110726"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "LambdaInvoke6fd2d93b0d07a2b4220fae7c91786512Invoke20E8DC10": {
+  "LambdaInvoke565ee3f93dcc28c81614deb678f7c770InvokeCF446AD4": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
-     "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerpython37withhashesexcludes1C88AD136E888C09"
+     "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlineexcludespython377F552F31CE103F4E"
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "LambdaInvoke38b6b7fa63b607366a86a6ef75e04d39": {
+   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "invoke",
+    "expected": "{\"$ObjectLike\":{\"Payload\":\"200\"}}",
+    "parameters": {
+     "FunctionName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlineexcludespython387A43ACE766E3D5DD"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1696884110726"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "LambdaInvoke38b6b7fa63b607366a86a6ef75e04d39Invoke2B70FCFD": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlineexcludespython387A43ACE766E3D5DD"
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "LambdaInvoke043e1dedc8f3e3b5d8a05a8aca5a5071": {
+   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "invoke",
+    "expected": "{\"$ObjectLike\":{\"Payload\":\"200\"}}",
+    "parameters": {
+     "FunctionName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlineexcludespython39ABB3DFE9A0059A3D"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1696884110727"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "LambdaInvoke043e1dedc8f3e3b5d8a05a8aca5a5071Invoke885F1D2D": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlineexcludespython39ABB3DFE9A0059A3D"
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "LambdaInvoke4079df0400337907aa2fe7db3d66be48": {
+   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "invoke",
+    "expected": "{\"$ObjectLike\":{\"Payload\":\"200\"}}",
+    "parameters": {
+     "FunctionName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlineexcludespython310B7555D7A7BA49FC6"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1696884110727"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "LambdaInvoke4079df0400337907aa2fe7db3d66be48InvokeBD6050E3": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlineexcludespython310B7555D7A7BA49FC6"
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "LambdaInvoke3250bb32728280619d5b61822c425915": {
+   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "invoke",
+    "expected": "{\"$ObjectLike\":{\"Payload\":\"200\"}}",
+    "parameters": {
+     "FunctionName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlineexcludespython3113F187913B9A340D2"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1696884110727"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "LambdaInvoke3250bb32728280619d5b61822c425915InvokeB7A21067": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlineexcludespython3113F187913B9A340D2"
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "LambdaInvokeeead212f29ccd672c021d6de50e13f3f": {
+   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "invoke",
+    "expected": "{\"$ObjectLike\":{\"Payload\":\"200\"}}",
+    "parameters": {
+     "FunctionName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerwithhashesexcludespython374A7F71A816929765"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1696884110727"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "LambdaInvokeeead212f29ccd672c021d6de50e13f3fInvoke5C0AF4C7": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerwithhashesexcludespython374A7F71A816929765"
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "LambdaInvoke9d2dbb961ebd12f2117807754ecda360": {
+   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "invoke",
+    "expected": "{\"$ObjectLike\":{\"Payload\":\"200\"}}",
+    "parameters": {
+     "FunctionName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerwithhashesexcludespython38788AC0C672121CA3"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1696884110727"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "LambdaInvoke9d2dbb961ebd12f2117807754ecda360InvokeCB3F64F2": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerwithhashesexcludespython38788AC0C672121CA3"
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "LambdaInvoke7a64a8e12c3d6719d8c1335e5dac6954": {
+   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "invoke",
+    "expected": "{\"$ObjectLike\":{\"Payload\":\"200\"}}",
+    "parameters": {
+     "FunctionName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerwithhashesexcludespython39134584D9944622EB"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1696884110727"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "LambdaInvoke7a64a8e12c3d6719d8c1335e5dac6954InvokeE2C5F009": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerwithhashesexcludespython39134584D9944622EB"
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "LambdaInvoke0203cc956eb1c3d944eac2a14877b1e9": {
+   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "invoke",
+    "expected": "{\"$ObjectLike\":{\"Payload\":\"200\"}}",
+    "parameters": {
+     "FunctionName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerwithhashesexcludespython310E3EB25FB48AA64D9"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1696884110727"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "LambdaInvoke0203cc956eb1c3d944eac2a14877b1e9InvokeA06B6C17": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerwithhashesexcludespython310E3EB25FB48AA64D9"
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "LambdaInvoke54f7c2b7bb58bea3a7b16da4c60ad5ac": {
+   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "invoke",
+    "expected": "{\"$ObjectLike\":{\"Payload\":\"200\"}}",
+    "parameters": {
+     "FunctionName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerwithhashesexcludespython3111047790925870EDE"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1696884110727"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "LambdaInvoke54f7c2b7bb58bea3a7b16da4c60ad5acInvokeC3F6FB37": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerwithhashesexcludespython3111047790925870EDE"
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "LambdaInvoke7798499893afa4319eec1593e59d7b6f": {
+   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "invoke",
+    "expected": "{\"$ObjectLike\":{\"Payload\":\"200\"}}",
+    "parameters": {
+     "FunctionName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinewithouturlspython3761FA6BCCADE5F533"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1696884110727"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "LambdaInvoke7798499893afa4319eec1593e59d7b6fInvoke6635EABE": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinewithouturlspython3761FA6BCCADE5F533"
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "LambdaInvoke0aaf85039cb6b23f7857efda9f7a7ff4": {
+   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "invoke",
+    "expected": "{\"$ObjectLike\":{\"Payload\":\"200\"}}",
+    "parameters": {
+     "FunctionName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinewithouturlspython382CE9570952AE2C3E"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1696884110727"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "LambdaInvoke0aaf85039cb6b23f7857efda9f7a7ff4Invoke7C4222F1": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinewithouturlspython382CE9570952AE2C3E"
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "LambdaInvoke35b2bcc0582401faf2507203fefb6341": {
+   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "invoke",
+    "expected": "{\"$ObjectLike\":{\"Payload\":\"200\"}}",
+    "parameters": {
+     "FunctionName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinewithouturlspython39B9799E297CE3B777"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1696884110728"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "LambdaInvoke35b2bcc0582401faf2507203fefb6341InvokeA7439D3B": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinewithouturlspython39B9799E297CE3B777"
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "LambdaInvoke078bd41d77bf51a737ab281515e48550": {
+   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "invoke",
+    "expected": "{\"$ObjectLike\":{\"Payload\":\"200\"}}",
+    "parameters": {
+     "FunctionName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinewithouturlspython310D1D226E35105656C"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1696884110728"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "LambdaInvoke078bd41d77bf51a737ab281515e48550Invoke76128422": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinewithouturlspython310D1D226E35105656C"
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "LambdaInvoke3d2f1798a8ddd4e40bd82d89a6b7b39e": {
+   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "invoke",
+    "expected": "{\"$ObjectLike\":{\"Payload\":\"200\"}}",
+    "parameters": {
+     "FunctionName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinewithouturlspython31174A8D66561F57634"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1696884110728"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "LambdaInvoke3d2f1798a8ddd4e40bd82d89a6b7b39eInvokeFDECD315": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::ImportValue": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinewithouturlspython31174A8D66561F57634"
     },
     "Principal": {
      "Fn::GetAtt": [
@@ -912,90 +2229,202 @@
   }
  },
  "Outputs": {
-  "AssertionResultsLambdaInvoke81c9998b1b428b309c8501e21b919d3d": {
+  "AssertionResultsLambdaInvoke44e1de01644c103ef7d2634fbb7979b2": {
    "Value": {
     "Fn::GetAtt": [
-     "LambdaInvoke81c9998b1b428b309c8501e21b919d3d",
+     "LambdaInvoke44e1de01644c103ef7d2634fbb7979b2",
      "assertion"
     ]
    }
   },
-  "AssertionResultsLambdaInvoke82a73e0d5d0fdcb04565e4d81ef342b8": {
+  "AssertionResultsLambdaInvoke6dc611c82abe1da0c70b6703161ae8d0": {
    "Value": {
     "Fn::GetAtt": [
-     "LambdaInvoke82a73e0d5d0fdcb04565e4d81ef342b8",
+     "LambdaInvoke6dc611c82abe1da0c70b6703161ae8d0",
      "assertion"
     ]
    }
   },
-  "AssertionResultsLambdaInvoke9a0beb4ea6cc38db92e9ff664c085292": {
+  "AssertionResultsLambdaInvoke3cad21d621f0d126dadbdb71007e5678": {
    "Value": {
     "Fn::GetAtt": [
-     "LambdaInvoke9a0beb4ea6cc38db92e9ff664c085292",
+     "LambdaInvoke3cad21d621f0d126dadbdb71007e5678",
      "assertion"
     ]
    }
   },
-  "AssertionResultsLambdaInvoke26497bb1c12c14ed3deada8d7d76b39e": {
+  "AssertionResultsLambdaInvoke1169f1cd9853adbc01aa3feb2303094f": {
    "Value": {
     "Fn::GetAtt": [
-     "LambdaInvoke26497bb1c12c14ed3deada8d7d76b39e",
+     "LambdaInvoke1169f1cd9853adbc01aa3feb2303094f",
      "assertion"
     ]
    }
   },
-  "AssertionResultsLambdaInvoke631dde0680edf7d2f0eea8d9b9c06c75": {
+  "AssertionResultsLambdaInvokeedc778179c8316b7704f58e7d1b26079": {
    "Value": {
     "Fn::GetAtt": [
-     "LambdaInvoke631dde0680edf7d2f0eea8d9b9c06c75",
+     "LambdaInvokeedc778179c8316b7704f58e7d1b26079",
      "assertion"
     ]
    }
   },
-  "AssertionResultsLambdaInvoke8cbaf98b5be6e4f6f81f5f10b5b8dc89": {
+  "AssertionResultsLambdaInvoke6704f55d095b2829c2f79592fb0dc7e0": {
    "Value": {
     "Fn::GetAtt": [
-     "LambdaInvoke8cbaf98b5be6e4f6f81f5f10b5b8dc89",
+     "LambdaInvoke6704f55d095b2829c2f79592fb0dc7e0",
      "assertion"
     ]
    }
   },
-  "AssertionResultsLambdaInvoke6fb5582f0ea96db4d3c0326fb42fe36c": {
+  "AssertionResultsLambdaInvoke56c9dc36f176b3cc005fac4aa11894a7": {
    "Value": {
     "Fn::GetAtt": [
-     "LambdaInvoke6fb5582f0ea96db4d3c0326fb42fe36c",
+     "LambdaInvoke56c9dc36f176b3cc005fac4aa11894a7",
      "assertion"
     ]
    }
   },
-  "AssertionResultsLambdaInvokefbdb1fc975f2f372fd64335aa07b46b7": {
+  "AssertionResultsLambdaInvoke79b1a14eb02906a628f7c4dbbe920695": {
    "Value": {
     "Fn::GetAtt": [
-     "LambdaInvokefbdb1fc975f2f372fd64335aa07b46b7",
+     "LambdaInvoke79b1a14eb02906a628f7c4dbbe920695",
      "assertion"
     ]
    }
   },
-  "AssertionResultsLambdaInvokeead1d1e2cc2d2a843a514ffdc015b2c4": {
+  "AssertionResultsLambdaInvoke07f0bf48404b68e262de7d7930dd8205": {
    "Value": {
     "Fn::GetAtt": [
-     "LambdaInvokeead1d1e2cc2d2a843a514ffdc015b2c4",
+     "LambdaInvoke07f0bf48404b68e262de7d7930dd8205",
      "assertion"
     ]
    }
   },
-  "AssertionResultsLambdaInvoke26ce5a20d1ffee210d056cd2aa005172": {
+  "AssertionResultsLambdaInvokec61a044478d06a105f47fc0d2fe27ff1": {
    "Value": {
     "Fn::GetAtt": [
-     "LambdaInvoke26ce5a20d1ffee210d056cd2aa005172",
+     "LambdaInvokec61a044478d06a105f47fc0d2fe27ff1",
      "assertion"
     ]
    }
   },
-  "AssertionResultsLambdaInvoke6fd2d93b0d07a2b4220fae7c91786512": {
+  "AssertionResultsLambdaInvoke565ee3f93dcc28c81614deb678f7c770": {
    "Value": {
     "Fn::GetAtt": [
-     "LambdaInvoke6fd2d93b0d07a2b4220fae7c91786512",
+     "LambdaInvoke565ee3f93dcc28c81614deb678f7c770",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsLambdaInvoke38b6b7fa63b607366a86a6ef75e04d39": {
+   "Value": {
+    "Fn::GetAtt": [
+     "LambdaInvoke38b6b7fa63b607366a86a6ef75e04d39",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsLambdaInvoke043e1dedc8f3e3b5d8a05a8aca5a5071": {
+   "Value": {
+    "Fn::GetAtt": [
+     "LambdaInvoke043e1dedc8f3e3b5d8a05a8aca5a5071",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsLambdaInvoke4079df0400337907aa2fe7db3d66be48": {
+   "Value": {
+    "Fn::GetAtt": [
+     "LambdaInvoke4079df0400337907aa2fe7db3d66be48",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsLambdaInvoke3250bb32728280619d5b61822c425915": {
+   "Value": {
+    "Fn::GetAtt": [
+     "LambdaInvoke3250bb32728280619d5b61822c425915",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsLambdaInvokeeead212f29ccd672c021d6de50e13f3f": {
+   "Value": {
+    "Fn::GetAtt": [
+     "LambdaInvokeeead212f29ccd672c021d6de50e13f3f",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsLambdaInvoke9d2dbb961ebd12f2117807754ecda360": {
+   "Value": {
+    "Fn::GetAtt": [
+     "LambdaInvoke9d2dbb961ebd12f2117807754ecda360",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsLambdaInvoke7a64a8e12c3d6719d8c1335e5dac6954": {
+   "Value": {
+    "Fn::GetAtt": [
+     "LambdaInvoke7a64a8e12c3d6719d8c1335e5dac6954",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsLambdaInvoke0203cc956eb1c3d944eac2a14877b1e9": {
+   "Value": {
+    "Fn::GetAtt": [
+     "LambdaInvoke0203cc956eb1c3d944eac2a14877b1e9",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsLambdaInvoke54f7c2b7bb58bea3a7b16da4c60ad5ac": {
+   "Value": {
+    "Fn::GetAtt": [
+     "LambdaInvoke54f7c2b7bb58bea3a7b16da4c60ad5ac",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsLambdaInvoke7798499893afa4319eec1593e59d7b6f": {
+   "Value": {
+    "Fn::GetAtt": [
+     "LambdaInvoke7798499893afa4319eec1593e59d7b6f",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsLambdaInvoke0aaf85039cb6b23f7857efda9f7a7ff4": {
+   "Value": {
+    "Fn::GetAtt": [
+     "LambdaInvoke0aaf85039cb6b23f7857efda9f7a7ff4",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsLambdaInvoke35b2bcc0582401faf2507203fefb6341": {
+   "Value": {
+    "Fn::GetAtt": [
+     "LambdaInvoke35b2bcc0582401faf2507203fefb6341",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsLambdaInvoke078bd41d77bf51a737ab281515e48550": {
+   "Value": {
+    "Fn::GetAtt": [
+     "LambdaInvoke078bd41d77bf51a737ab281515e48550",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsLambdaInvoke3d2f1798a8ddd4e40bd82d89a6b7b39e": {
+   "Value": {
+    "Fn::GetAtt": [
+     "LambdaInvoke3d2f1798a8ddd4e40bd82d89a6b7b39e",
      "assertion"
     ]
    }
