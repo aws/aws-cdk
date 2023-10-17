@@ -106,7 +106,7 @@ export interface ClusterProps {
   /**
    * Local or Tiered storage configuration for the brokers
    *
-   * @default - StorageMode.LOCAL
+   * @default - undefined
    */
   readonly storageMode?: StorageMode;
   /**
@@ -177,7 +177,7 @@ export enum StorageMode {
    */
   LOCAL = 'LOCAL',
   /**
-   * Tiered storage mode utilizes EBS storage and S3.
+   * Tiered storage mode utilizes EBS storage and Tiered storage.
    */
   TIERED = 'TIERED',
 }
@@ -523,7 +523,7 @@ export class Cluster extends ClusterBase {
     };
 
     const storageMode =
-      props.storageMode ?? StorageMode.LOCAL;
+      props.storageMode ?? undefined;
     if (storageMode === StorageMode.TIERED && KafkaVersion.isTieredStorageCompatible(props.kafkaVersion) === false) {
       throw Error(
         'To utilize Tiered storage mode, the MSK cluster Kafka version must be compatiable.',
