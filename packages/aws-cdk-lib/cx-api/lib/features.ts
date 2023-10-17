@@ -96,6 +96,7 @@ export const LAMBDA_NODEJS_USE_LATEST_RUNTIME = '@aws-cdk/aws-lambda-nodejs:useL
 export const RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS = '@aws-cdk/aws-rds:preventRenderingDeprecatedCredentials';
 export const AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS = '@aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters';
 export const APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION = '@aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier';
+export const EVENTS_TARGET_DISABLE_LOG_GROUP_RESOURCE_POLICY = '@aws-cdk/aws-events:eventsTargetDisableLogGroupResourcePolicy';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -960,6 +961,22 @@ export const FLAGS: Record<string, FlagInfo> = {
       database cluster from a snapshot.
     `,
     introducedIn: { v2: '2.98.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [EVENTS_TARGET_DISABLE_LOG_GROUP_RESOURCE_POLICY]: {
+    type: FlagType.BugFix,
+    summary: 'Make default Events Target Log Group behavior safe for multiple Log Groups in one environment',
+    detailsMd: `
+      Enable this feature flag to change the default behavior for aws-events-targets.CloudWatchLogGroup
+      to _not_ create a CloudWatch Log Group Resource Policy. There is a limit of 10 CloudWatch Log Group Resource
+      Policies in an AWS environment which means environments utilizing Rules targeting Log Groups will quickly hit
+      this limit.
+
+      When this flag is enabled you should create a CloudWatch Log Group Resource Policy separately.
+    `,
+    introducedIn: { v2: 'V2 NEXT' },
     recommendedValue: true,
   },
 };

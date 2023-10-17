@@ -5,7 +5,8 @@ import { RuleTargetInputProperties, RuleTargetInput, EventField, IRule } from '.
 import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as cdk from '../../core';
-import { ArnFormat, Stack } from '../../core';
+import { ArnFormat, Stack, FeatureFlags} from '../../core';
+import { EVENTS_TARGET_DISABLE_LOG_GROUP_RESOURCE_POLICY } from '../../cx-api';
 
 /**
  * Options used when creating a target input template
@@ -78,6 +79,14 @@ export interface LogGroupProps extends TargetBaseProps {
    * @default - the entire EventBridge event
    */
   readonly logEvent?: LogGroupTargetInput;
+
+  /**
+   * Automatically configure an AWS CloudWatch Log Group Resource Policy for Events Target.
+   *
+   * @default true
+   * @default - false if `@aws-cdk/aws-events:eventsTargetDisableLogGroupResourcePolicy` is enabled, true otherwise
+   */
+  readonly logGroupResourcePolicy?: boolean;
 }
 
 /**
@@ -91,9 +100,6 @@ export class CloudWatchLogGroup implements events.IRuleTarget {
    * Returns a RuleTarget that can be used to log an event into a CloudWatch LogGroup
    */
   public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
-    // Use a custom resource to set the log group resource policy since it is not supported by CDK and cfn.
-    const resourcePolicyId = `EventsLogGroupPolicy${cdk.Names.nodeUniqueId(_rule.node)}`;
-
     const logGroupStack = cdk.Stack.of(this.logGroup);
 
     if (this.props.event && this.props.logEvent) {
@@ -107,15 +113,10 @@ export class CloudWatchLogGroup implements events.IRuleTarget {
 
     _rule.node.addValidation({ validate: () => this.validateInputTemplate() });
 
-    if (!this.logGroup.node.tryFindChild(resourcePolicyId)) {
-      new LogGroupResourcePolicy(logGroupStack, resourcePolicyId, {
-        policyStatements: [new iam.PolicyStatement({
-          effect: iam.Effect.ALLOW,
-          actions: ['logs:PutLogEvents', 'logs:CreateLogStream'],
-          resources: [this.logGroup.logGroupArn],
-          principals: [new iam.ServicePrincipal('events.amazonaws.com')],
-        })],
-      });
+    const logGroupResourcePolicyDefault = FeatureFlags.of(this.logGroup).isEnabled(EVENTS_TARGET_DISABLE_LOG_GROUP_RESOURCE_POLICY) ? false : true;
+    const logGroupResourcePolicy = this.props.logGroupResourcePolicy ?? logGroupResourcePolicyDefault;
+    if (logGroupResourcePolicy) {
+      this._configureLogGroupResourcePolicy(_rule, logGroupStack);
     }
 
     return {
@@ -129,6 +130,25 @@ export class CloudWatchLogGroup implements events.IRuleTarget {
       input: this.props.event ?? this.props.logEvent,
       targetResource: this.logGroup,
     };
+  }
+
+  /**
+   * Creates a CloudWatch Log Group Resource Policy to allow RuleTarget to log an event into a CloudWatch LogGroup
+   */
+  private _configureLogGroupResourcePolicy(_rule: events.IRule, logGroupStack: cdk.Stack): void {
+    // Use a custom resource to set the log group resource policy since it is not supported by CDK and cfn.
+    const resourcePolicyId = `EventsLogGroupPolicy${cdk.Names.nodeUniqueId(_rule.node)}`;
+
+    if (!this.logGroup.node.tryFindChild(resourcePolicyId)) {
+      new LogGroupResourcePolicy(logGroupStack, resourcePolicyId, {
+        policyStatements: [new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          actions: ['logs:PutLogEvents', 'logs:CreateLogStream'],
+          resources: [this.logGroup.logGroupArn],
+          principals: [new iam.ServicePrincipal('events.amazonaws.com')],
+        })],
+      });
+    }
   }
 
   /**
