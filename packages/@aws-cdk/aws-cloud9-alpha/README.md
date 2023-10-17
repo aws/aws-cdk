@@ -105,7 +105,7 @@ Every Cloud9 Environment has an **owner**. An owner has full control over the en
 
 By default, the owner will be the identity that creates the Environment, which is most likely your CloudFormation Execution Role when the Environment is created using CloudFormation. Provider a value for the `owner` property to assign a different owner, either a specific IAM User or the AWS Account Root User.
 
-`Owner` is an IAM entity that owns a Cloud9 environment . `Owner` has their own access permissions, resources. You can specify an `Owner`in an Ec2 environment which could be of the following types:
+`Owner` is an IAM entity that owns a Cloud9 environment. `Owner` has their own access permissions, and resources. You can specify an `Owner`in an EC2 environment which could be of the following types:
 
 1. Account Root
 2. IAM User

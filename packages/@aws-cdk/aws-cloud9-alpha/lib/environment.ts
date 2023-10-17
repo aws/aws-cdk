@@ -260,7 +260,7 @@ export class Owner {
   /**
    * Make an IAM assumed role the environment owner
    *
-   * @param accountId The AccountId of the target account
+   * @param accountId The account id of the target account
    * @param roleName The name of the assumed role
    */
   public static assumedRole(accountId: string, roleName: string): Owner {
