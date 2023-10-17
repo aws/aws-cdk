@@ -172,7 +172,7 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
       cluster: props.cluster.clusterName,
       taskDefinition: props.taskDefinition.taskDefinitionArn,
       placementConstraints: Lazy.anyValue({ produce: () => this.constraints }),
-      placementStrategies: Lazy.anyValue({ produce: () => this.strategies }),
+      placementStrategies: Lazy.anyValue({ produce: () => this.strategies }, { omitEmptyArray: true }),
       schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',
     }, props.taskDefinition);
 
