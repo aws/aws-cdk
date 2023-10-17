@@ -340,7 +340,7 @@ export class HttpApi extends HttpApiBase {
 
   private readonly _apiEndpoint: string;
 
-  private readonly defaultAuthorizer?: IHttpRouteAuthorizer;
+  public readonly defaultAuthorizer?: IHttpRouteAuthorizer;
   private readonly defaultAuthorizationScopes?: string[];
 
   constructor(scope: Construct, id: string, props?: HttpApiProps) {

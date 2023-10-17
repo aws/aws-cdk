@@ -1,7 +1,7 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Aws, Resource } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
-import { IHttpApi } from './api';
+import { HttpApi, IHttpApi } from './api';
 import { HttpRouteAuthorizerConfig, IHttpRouteAuthorizer } from './authorizer';
 import { HttpRouteIntegration } from './integration';
 import { CfnRoute, CfnRouteProps } from 'aws-cdk-lib/aws-apigatewayv2';
@@ -193,10 +193,18 @@ export class HttpRoute extends Resource implements IHttpRoute {
       scope: this,
     });
 
-    this.authBindResult = props.authorizer?.bind({
-      route: this,
-      scope: this.httpApi instanceof Construct ? this.httpApi : this, // scope under the API if it's not imported
-    });
+    this.authBindResult = props.authorizer
+      ? props.authorizer.bind({
+        route: this,
+        scope: this.httpApi instanceof Construct ? this.httpApi : this, // scope under the API if it's not imported
+      })
+      : this.httpApi instanceof HttpApi
+        ? this.httpApi.defaultAuthorizer?.bind({
+          route: this,
+          scope: this.httpApi,
+        })
+        : undefined;
+    ;
 
     if (this.authBindResult && !(this.authBindResult.authorizationType in HttpRouteAuthorizationType)) {
       throw new Error(`authorizationType should either be AWS_IAM, JWT, CUSTOM, or NONE but was '${this.authBindResult.authorizationType}'`);
