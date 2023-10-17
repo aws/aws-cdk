@@ -52,7 +52,7 @@
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
     "type": "git",
-    "directory": "packages/custom-resource-handlers"
+    "directory": "packages/@aws-cdk/custom-resource-handlers"
   },
   "keywords": [
     "aws",

@@ -111,7 +111,7 @@ Packaging is executed using the `Packaging` class, which:
 
 **Excluding source files**
 
-You can exclude files from being copied using the optional bundling string array parameter `assetExcludes`
+You can exclude files from being copied using the optional bundling string array parameter `assetExcludes`:
 
 ```ts
 new python.PythonFunction(this, 'function', {
@@ -124,6 +124,33 @@ new python.PythonFunction(this, 'function', {
 });
 ```
 
+**Including hashes**
+
+You can include hashes in `poetry` using the optional boolean parameter `poetryIncludeHashes`:
+
+```ts
+new python.PythonFunction(this, 'function', {
+  entry: '/path/to/poetry-function',
+  runtime: Runtime.PYTHON_3_8,
+  bundling: {
+    poetryIncludeHashes: true,
+  },
+});
+```
+
+**Excluding URLs**
+
+You can exclude URLs in `poetry` using the optional boolean parameter `poetryWithoutUrls`:
+
+```ts
+new python.PythonFunction(this, 'function', {
+  entry: '/path/to/poetry-function',
+  runtime: Runtime.PYTHON_3_8,
+  bundling: {
+    poetryWithoutUrls: true,
+  },
+});
+```
 
 ## Custom Bundling
 

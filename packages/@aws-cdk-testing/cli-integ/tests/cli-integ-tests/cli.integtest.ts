@@ -1,7 +1,7 @@
 import { promises as fs, existsSync } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { integTest, cloneDirectory, shell, withDefaultFixture, retry, sleep, randomInteger, withSamIntegrationFixture, RESOURCES_DIR } from '../../lib';
+import { integTest, cloneDirectory, shell, withDefaultFixture, retry, sleep, randomInteger, withSamIntegrationFixture, RESOURCES_DIR, withCDKMigrateFixture } from '../../lib';
 
 jest.setTimeout(2 * 60 * 60_000); // Includes the time to acquire locks, worst-case single-threaded runtime
 
@@ -570,6 +570,23 @@ integTest('deploy with role', withDefaultFixture(async (fixture) => {
     }
   }
 }));
+
+// TODO add go back in when template synths properly
+['typescript', 'python', 'csharp', 'java'].forEach(language => {
+  integTest(`cdk migrate ${language}`, withCDKMigrateFixture(language, async (fixture) => {
+    if (language === 'python') {
+      await fixture.shell(['pip', 'install', '-r', 'requirements.txt']);
+    }
+
+    const stackArn = await fixture.cdkDeploy(fixture.stackNamePrefix, { neverRequireApproval: true, verbose: true, captureStderr: false }, true);
+    const response = await fixture.aws.cloudFormation('describeStacks', {
+      StackName: stackArn,
+    });
+
+    expect(response.Stacks?.[0].StackStatus).toEqual('CREATE_COMPLETE');
+    await fixture.cdkDestroy(fixture.stackNamePrefix);
+  }));
+});
 
 integTest('cdk diff', withDefaultFixture(async (fixture) => {
   const diff1 = await fixture.cdk(['diff', fixture.fullStackName('test-1')]);
