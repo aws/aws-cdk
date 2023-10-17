@@ -1738,6 +1738,27 @@ new ec2.FlowLog(this, 'FlowLogsCW', {
 });
 ```
 
+You can create from a transit gateway attachment.
+
+```ts
+const transitGateway = new ec2.CfnTransitGateway(this, 'TransitGateway', {});
+const transitGatewayAttachment = new ec2.CfnTransitGatewayVpcAttachment(
+  this,
+  'TransitGatewayAttachment',
+  {
+    subnetIds: vpc.selectSubnets({
+      subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
+    }).subnetIds,
+    transitGatewayId: transitGateway.ref,
+    vpcId: vpc.vpcId,
+  },
+);
+new ec2.FlowLog(this, 'FlowLogFromTransitGatewayAttachment', {
+  resourceType: ec2.FlowLogResourceType.fromTransitGatewayAttachmentId(transitGatewayAttachment.ref),
+  flowLogName: 'TransitGatewayFlowLogName',
+});
+```
+
 ## User Data
 
 User data enables you to run a script when your instances start up.  In order to configure these scripts you can add commands directly to the script
