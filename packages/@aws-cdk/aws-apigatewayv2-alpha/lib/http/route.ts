@@ -193,18 +193,17 @@ export class HttpRoute extends Resource implements IHttpRoute {
       scope: this,
     });
 
-    this.authBindResult = props.authorizer
-      ? props.authorizer.bind({
+    if (props.authorizer) {
+      this.authBindResult = props.authorizer.bind({
         route: this,
         scope: this.httpApi instanceof Construct ? this.httpApi : this, // scope under the API if it's not imported
-      })
-      : this.httpApi instanceof HttpApi
-        ? this.httpApi.defaultAuthorizer?.bind({
-          route: this,
-          scope: this.httpApi,
-        })
-        : undefined;
-    ;
+      });
+    } else if (this.httpApi instanceof HttpApi) {
+      this.authBindResult = this.httpApi.defaultAuthorizer?.bind({
+        route: this,
+        scope: this.httpApi,
+      });
+    }
 
     if (this.authBindResult && !(this.authBindResult.authorizationType in HttpRouteAuthorizationType)) {
       throw new Error(`authorizationType should either be AWS_IAM, JWT, CUSTOM, or NONE but was '${this.authBindResult.authorizationType}'`);
