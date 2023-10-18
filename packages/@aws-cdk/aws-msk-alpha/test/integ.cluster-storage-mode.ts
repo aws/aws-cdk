@@ -29,7 +29,7 @@ class KafkaStorageModeTest extends Stack {
 }
 
 const app = new App();
-new IntegTest(app, 'KafkaStorageModeTest', {
+new IntegTest(app, 'KafkaStorageModeIntegTest', {
   enableLookups: true,
   testCases: [
     new KafkaStorageModeTest(app, 'KafkaStorageModeTestStack'),
