@@ -141,10 +141,10 @@ new Schedule(this, 'Schedule', {
 
 ## Scheduler Targets
 
-The `@aws-cdk/aws-schedule-targets-alpha` module includes classes that implement the `IScheduleTarget` interface for
+The `@aws-cdk/aws-scheduler-targets-alpha` module includes classes that implement the `IScheduleTarget` interface for
 various AWS services. EventBridge Scheduler supports two types of targets: templated targets invoke common API
 operations across a core groups of services, and customizeable universal targets that you can use to call more
-than 6,000 operations across over 270 services. A list of supported targets can be found at `@aws-cdk/aws-schedule-targets-alpha`. 
+than 6,000 operations across over 270 services. A list of supported targets can be found at `@aws-cdk/aws-scheduler-targets-alpha`. 
 
 ### Input 
 
@@ -245,7 +245,16 @@ EventBridge Scheduler publishes additional metrics when your schedule exhausts i
 
 ### Metrics for all schedules
 
-TODO: Not yet implemented. See section in [L2 Event Bridge Scheduler RFC](https://github.com/aws/aws-cdk-rfcs/blob/master/text/0474-event-bridge-scheduler-l2.md)
+Class `Schedule` provides static methods for accessing all schedules metrics with default configuration,
+ such as `metricAllErrors` for viewing errors when executing targets.
+
+ ```ts
+new cloudwatch.Alarm(this, 'SchedulesErrorAlarm', {
+    metric: Schedule.metricAllErrors(),
+    threshold: 0,
+    evaluationPeriods: 1,
+});
+ ```
 
 ### Metrics for a Group
 

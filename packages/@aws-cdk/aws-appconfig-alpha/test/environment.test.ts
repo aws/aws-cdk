@@ -147,7 +147,7 @@ describe('environment', () => {
           },
           AlarmRoleArn: {
             'Fn::GetAtt': [
-              'MyEnvironmentRoleC08961D3',
+              'MyEnvironmentRole01C8C013F',
               'Arn',
             ],
           },
@@ -172,6 +172,80 @@ describe('environment', () => {
             ],
           },
           PolicyName: 'AllowAppConfigMonitorAlarmPolicy',
+        },
+      ],
+    });
+  });
+
+  test('environment with monitors with two alarms', () => {
+    const stack = new cdk.Stack();
+    const app = new Application(stack, 'MyAppConfig');
+    new Environment(stack, 'MyEnvironment', {
+      name: 'TestEnv',
+      application: app,
+      monitors: [
+        {
+          alarm: new Alarm(stack, 'Alarm1', {
+            threshold: 5,
+            evaluationPeriods: 5,
+            metric: new Metric(
+              {
+                namespace: 'aws',
+                metricName: 'myMetric',
+              },
+            ),
+          }),
+        },
+        {
+          alarm: new Alarm(stack, 'Alarm2', {
+            threshold: 5,
+            evaluationPeriods: 5,
+            metric: new Metric(
+              {
+                namespace: 'aws',
+                metricName: 'myMetric',
+              },
+            ),
+          }),
+        },
+      ],
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::CloudWatch::Alarm', 2);
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 2);
+    Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::Environment', {
+      Name: 'TestEnv',
+      ApplicationId: {
+        Ref: 'MyAppConfigB4B63E75',
+      },
+      Monitors: [
+        {
+          AlarmArn: {
+            'Fn::GetAtt': [
+              'Alarm1F9009D71',
+              'Arn',
+            ],
+          },
+          AlarmRoleArn: {
+            'Fn::GetAtt': [
+              'MyEnvironmentRole01C8C013F',
+              'Arn',
+            ],
+          },
+        },
+        {
+          AlarmArn: {
+            'Fn::GetAtt': [
+              'Alarm2A7122E13',
+              'Arn',
+            ],
+          },
+          AlarmRoleArn: {
+            'Fn::GetAtt': [
+              'MyEnvironmentRole135A2CEE4',
+              'Arn',
+            ],
+          },
         },
       ],
     });

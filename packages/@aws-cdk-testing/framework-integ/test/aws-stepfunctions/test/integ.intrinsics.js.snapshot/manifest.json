@@ -1,5 +1,5 @@
 {
-  "version": "30.0.0",
+  "version": "34.0.0",
   "artifacts": {
     "aws-stepfunctions-intrinsics-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-stepfunctions-intrinsics-integ.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/42975297f0892e305164a43522eb407ff7ceb350e368297a92ed38378afea8f8.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/98bdf0d783e1db58b46a8e3c0d462a5d12d602c418518a4aefdcd8deade19378.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -79,10 +80,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "StateMachineIntrinsicsTestDefaultTestDeployAssert1C1E1D7E.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f81416da6059e09abfc9d1c6eb1682be54395552f78beaccbbca52d03c19e9fb.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9315fb39d41817cba076bffa1bb951934098dbd1217b42740464f7202dc8483d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -99,16 +101,16 @@
         "StateMachineIntrinsicsTestDefaultTestDeployAssert1C1E1D7E.assets"
       ],
       "metadata": {
-        "/StateMachineIntrinsicsTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachine/Default/Default": [
+        "/StateMachineIntrinsicsTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallStepFunctionsdescribeStateMachine"
+            "data": "AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa"
           }
         ],
-        "/StateMachineIntrinsicsTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachine/AssertionResults": [
+        "/StateMachineIntrinsicsTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallStepFunctionsdescribeStateMachine"
+            "data": "AssertionResultsAwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa"
           }
         ],
         "/StateMachineIntrinsicsTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [

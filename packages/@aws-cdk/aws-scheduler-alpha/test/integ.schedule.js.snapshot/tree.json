@@ -156,6 +156,7 @@
                       "mode": "OFF"
                     },
                     "scheduleExpression": "rate(12 hours)",
+                    "scheduleExpressionTimezone": "Etc/UTC",
                     "state": "ENABLED",
                     "target": {
                       "arn": {
@@ -180,7 +181,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-scheduler-alpha.Schedule",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
@@ -198,6 +199,7 @@
                       "mode": "OFF"
                     },
                     "scheduleExpression": "rate(12 hours)",
+                    "scheduleExpressionTimezone": "Etc/UTC",
                     "state": "DISABLED",
                     "target": {
                       "arn": {
@@ -222,7 +224,37 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-scheduler-alpha.Schedule",
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "AllSchedulerErrorsAlarm": {
+            "id": "AllSchedulerErrorsAlarm",
+            "path": "aws-cdk-scheduler-schedule/AllSchedulerErrorsAlarm",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-scheduler-schedule/AllSchedulerErrorsAlarm/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                  "aws:cdk:cloudformation:props": {
+                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                    "evaluationPeriods": 1,
+                    "metricName": "TargetErrorCount",
+                    "namespace": "AWS/Scheduler",
+                    "period": 300,
+                    "statistic": "Sum",
+                    "threshold": 1
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
               "version": "0.0.0"
             }
           },

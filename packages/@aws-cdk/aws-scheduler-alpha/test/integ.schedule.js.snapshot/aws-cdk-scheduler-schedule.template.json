@@ -74,6 +74,7 @@
      "Mode": "OFF"
     },
     "ScheduleExpression": "rate(12 hours)",
+    "ScheduleExpressionTimezone": "Etc/UTC",
     "State": "ENABLED",
     "Target": {
      "Arn": {
@@ -98,6 +99,7 @@
      "Mode": "OFF"
     },
     "ScheduleExpression": "rate(12 hours)",
+    "ScheduleExpressionTimezone": "Etc/UTC",
     "State": "DISABLED",
     "Target": {
      "Arn": {
@@ -113,6 +115,18 @@
       ]
      }
     }
+   }
+  },
+  "AllSchedulerErrorsAlarmA3246F8C": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 1,
+    "MetricName": "TargetErrorCount",
+    "Namespace": "AWS/Scheduler",
+    "Period": 300,
+    "Statistic": "Sum",
+    "Threshold": 1
    }
   }
  },
