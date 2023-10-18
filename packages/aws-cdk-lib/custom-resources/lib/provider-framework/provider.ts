@@ -59,7 +59,7 @@ export interface ProviderProps {
   /**
    * Total timeout for the entire operation.
    *
-   * The maximum timeout is 2 hours (yes, it can exceed the AWS Lambda 15 minutes)
+   * The maximum timeout is 1 hour (yes, it can exceed the AWS Lambda 15 minutes)
    *
    * @default Duration.minutes(30)
    */
