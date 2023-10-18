@@ -37,8 +37,6 @@ export interface RotationScheduleOptions {
    * Specifies the number of days after the previous rotation before
    * Secrets Manager triggers the next automatic rotation.
    *
-   * The maximum value is 1000 days.
-   *
    * A value of zero (`Duration.days(0)`) will not create RotationRules.
    *
    * @default Duration.days(30)
