@@ -150,7 +150,7 @@ const deploymentGroup = new codedeploy.ServerDeploymentGroup(this, 'DeploymentGr
 });
 ```
 
-To provide multiple Elastic Load Balancers as target groups use the `loadBalancers` parameter:
+The `loadBalancer` property has been deprecated. To provide multiple Elastic Load Balancers as target groups use the `loadBalancers` parameter:
 
 ```ts
 import * as elb from 'aws-cdk-lib/aws-elasticloadbalancing';

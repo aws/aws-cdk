@@ -879,6 +879,36 @@
      }
     ],
     "DeploymentConfigName": "CodeDeployDefault.AllAtOnce",
+    "DeploymentStyle": {
+     "DeploymentOption": "WITH_TRAFFIC_CONTROL"
+    },
+    "LoadBalancerInfo": {
+     "ElbInfoList": [
+      {
+       "Name": {
+        "Ref": "ELBF276B85D"
+       }
+      }
+     ],
+     "TargetGroupInfoList": [
+      {
+       "Name": {
+        "Fn::GetAtt": [
+         "ALBListenerFleetGroup008CEEE4",
+         "TargetGroupName"
+        ]
+       }
+      },
+      {
+       "Name": {
+        "Fn::GetAtt": [
+         "NLBListenerFleetGroupB882EC86",
+         "TargetGroupName"
+        ]
+       }
+      }
+     ]
+    },
     "ServiceRoleArn": {
      "Fn::GetAtt": [
       "CodeDeployGroupMultipleLoadBalancersRole1C8C12D4",

@@ -168,7 +168,7 @@ export interface ServerDeploymentGroupProps {
    * or an Application Load Balancer / Network Load Balancer Target Group.
    *
    * @default - Deployment Group will not have a load balancer defined.
-   * @deprecated - Deprecated in favor of loadBalancers.
+   * @deprecated - Use `loadBalancers` instead.
    */
   readonly loadBalancer?: LoadBalancer;
 
@@ -276,7 +276,7 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
     this.loadBalancers = props.loadBalancers || (props.loadBalancer ? [props.loadBalancer]: undefined);
 
     if (this.loadBalancers && this.loadBalancers.length === 0) {
-      throw new Error('Cannot set empty loadBalancers array');
+      throw new Error('loadBalancers must be a non-empty array');
     }
 
     for (const asg of this._autoScalingGroups) {
@@ -388,12 +388,7 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
 
   private loadBalancersInfo(loadBalancers?: LoadBalancer[]):
   CfnDeploymentGroup.LoadBalancerInfoProperty | undefined {
-
-    if (!loadBalancers) {
-      return undefined;
-    }
-
-    return loadBalancers.reduce((accumulator : {
+    return loadBalancers?.reduce((accumulator : {
       elbInfoList?: {name: string}[],
       targetGroupInfoList?: {name: string}[]
     }, loadBalancer: LoadBalancer) => {
