@@ -1,0 +1,14 @@
+{
+  "version": "34.0.0",
+  "testCases": {
+    "integ.create-transform-job": {
+      "stacks": [
+        "aws-cdk-step-functions-task-create-transform-job-integ"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

@@ -1,0 +1,83 @@
+{
+  "version": "34.0.0",
+  "artifacts": {
+    "aws-cdk-step-functions-task-create-transform-job-integ.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-step-functions-task-create-transform-job-integ.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-step-functions-task-create-transform-job-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-step-functions-task-create-transform-job-integ.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/34fdbc6938f2c844dbfd3eb989f2d5e7ad99670c46ded8781d52bc9513a9a8a9.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-step-functions-task-create-transform-job-integ.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-step-functions-task-create-transform-job-integ.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-step-functions-task-create-transform-job-integ/Batch Inference/SagemakerTransformRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BatchInferenceSagemakerTransformRoleB1C48C9A"
+          }
+        ],
+        "/aws-cdk-step-functions-task-create-transform-job-integ/SimpleStateMachine/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SimpleStateMachineRole0CBC135A"
+          }
+        ],
+        "/aws-cdk-step-functions-task-create-transform-job-integ/SimpleStateMachine/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SimpleStateMachineRoleDefaultPolicyF5E1CB8E"
+          }
+        ],
+        "/aws-cdk-step-functions-task-create-transform-job-integ/SimpleStateMachine/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SimpleStateMachineE8E2CF40"
+          }
+        ],
+        "/aws-cdk-step-functions-task-create-transform-job-integ/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-step-functions-task-create-transform-job-integ/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-step-functions-task-create-transform-job-integ"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
