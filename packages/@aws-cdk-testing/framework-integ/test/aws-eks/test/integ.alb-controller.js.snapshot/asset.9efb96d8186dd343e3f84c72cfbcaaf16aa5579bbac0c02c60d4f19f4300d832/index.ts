@@ -19,7 +19,7 @@ const awsConfig = {
   requestHandler: new NodeHttpHandler({
     httpAgent: proxyAgent,
     httpsAgent: proxyAgent,
-  }),
+  }) as any,
 };
 
 let eks: EKS | undefined;

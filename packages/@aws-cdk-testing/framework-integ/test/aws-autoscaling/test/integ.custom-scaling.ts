@@ -27,6 +27,16 @@ asg.scaleOnSchedule('ScaleDownAtNight', {
   maxCapacity: 2,
 });
 
+asg.scaleOnSchedule('ScaleUpInTheDay', {
+  schedule: autoscaling.Schedule.cron({ minute: '0/10', day: '1' }),
+  minCapacity: 5,
+});
+
+asg.scaleOnSchedule('ScaleUpInTheWeekDay', {
+  schedule: autoscaling.Schedule.cron({ minute: '0/10', weekDay: 'MON-SUN' }),
+  minCapacity: 5,
+});
+
 asg.scaleOnCpuUtilization('KeepCPUReasonable', {
   targetUtilizationPercent: 50,
 });
