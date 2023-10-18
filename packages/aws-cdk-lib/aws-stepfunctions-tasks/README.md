@@ -257,6 +257,7 @@ const startQueryExecutionJob = new tasks.AthenaStartQueryExecution(this, 'Start 
       objectKey: 'folder',
     },
   },
+  executionParameters: ['param1', 'param2'],
 });
 ```
 

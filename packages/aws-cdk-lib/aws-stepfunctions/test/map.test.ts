@@ -8,6 +8,7 @@ describe('Map State', () => {
 
     // WHEN
     const map = new stepfunctions.Map(stack, 'Map State', {
+      stateName: 'My-Map-State',
       maxConcurrency: 1,
       itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
       parameters: {
@@ -19,9 +20,9 @@ describe('Map State', () => {
 
     // THEN
     expect(render(map)).toStrictEqual({
-      StartAt: 'Map State',
+      StartAt: 'My-Map-State',
       States: {
-        'Map State': {
+        'My-Map-State': {
           Type: 'Map',
           End: true,
           Parameters: {
