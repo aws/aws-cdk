@@ -661,7 +661,6 @@ test('lambda execution role gets permissions to read from the source bucket and 
           Action: [
             's3:GetObject*',
             's3:GetBucket*',
-            's3:HeadObject',
             's3:List*',
           ],
           Effect: 'Allow',
@@ -692,7 +691,6 @@ test('lambda execution role gets permissions to read from the source bucket and 
           Action: [
             's3:GetObject*',
             's3:GetBucket*',
-            's3:HeadObject',
             's3:List*',
             's3:DeleteObject*',
             's3:PutObject',
