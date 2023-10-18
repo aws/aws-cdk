@@ -667,5 +667,5 @@ test('automaticallyAfter must not be greater than 1000 days', () => {
     secret,
     rotationLambda,
     automaticallyAfter: Duration.days(1001),
-  })).toThrow(/automaticallyAfter must not greater than 1000 days, got 1001 days/);
+  })).toThrow(/automaticallyAfter must not be greater than 1000 days, got 1001 days/);
 });
