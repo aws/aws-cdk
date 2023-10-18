@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "34.0.0",
   "artifacts": {
     "aws-cdk-autoscaling-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-autoscaling-integ.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0cb946e4b3e2979f177cb049c4977a5348fa520ad7d61cddd74603bb2b06373f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/16290299640e9e894410b38903232b2dc97bf7a58293d69991f5518f59025aee.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -213,6 +214,18 @@
             "data": "FleetScheduledActionScaleDownAtNight11A03803"
           }
         ],
+        "/aws-cdk-autoscaling-integ/Fleet/ScheduledActionScaleUpInTheDay/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FleetScheduledActionScaleUpInTheDay57AE2B79"
+          }
+        ],
+        "/aws-cdk-autoscaling-integ/Fleet/ScheduledActionScaleUpInTheWeekDay/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FleetScheduledActionScaleUpInTheWeekDay73B6B91B"
+          }
+        ],
         "/aws-cdk-autoscaling-integ/Fleet/ScalingPolicyKeepCPUReasonable/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -235,15 +248,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "FleetLaunchTemplateProfileB169EB6D": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FleetLaunchTemplateProfileB169EB6D",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },
