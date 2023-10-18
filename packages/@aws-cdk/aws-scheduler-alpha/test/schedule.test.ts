@@ -1,4 +1,4 @@
-import { App, Stack } from 'aws-cdk-lib';
+import { App, Stack, Duration } from 'aws-cdk-lib';
 
 import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -61,5 +61,44 @@ describe('Schedule', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Scheduler::Schedule', {
       State: 'DISABLED',
     });
+  });
+
+  test('returns metric for delivery of failed invocations to DLQ', () => {
+    // WHEN
+    const metric = Schedule.metricAllFailedToBeSentToDLQ();
+
+    // THEN
+    expect(metric.namespace).toEqual('AWS/Scheduler');
+    expect(metric.metricName).toEqual('InvocationsFailedToBeSentToDeadLetterCount');
+    expect(metric.dimensions).toBeUndefined();
+    expect(metric.statistic).toEqual('Sum');
+    expect(metric.period).toEqual(Duration.minutes(5));
+  });
+
+  test('returns metric for delivery of failed invocations to DLQ for specific error code', () => {
+    // WHEN
+    const metric = Schedule.metricAllFailedToBeSentToDLQ('test_error_code');
+
+    // THEN
+    expect(metric.namespace).toEqual('AWS/Scheduler');
+    expect(metric.metricName).toEqual('InvocationsFailedToBeSentToDeadLetterCount_test_error_code');
+    expect(metric.dimensions).toBeUndefined();
+    expect(metric.statistic).toEqual('Sum');
+    expect(metric.period).toEqual(Duration.minutes(5));
+  });
+
+  test('returns metric for all errors with provided statistic and period', () => {
+    // WHEN
+    const metric = Schedule.metricAllErrors({
+      statistic: 'Maximum',
+      period: Duration.minutes(1),
+    });
+
+    // THEN
+    expect(metric.namespace).toEqual('AWS/Scheduler');
+    expect(metric.metricName).toEqual('TargetErrorCount');
+    expect(metric.dimensions).toBeUndefined();
+    expect(metric.statistic).toEqual('Maximum');
+    expect(metric.period).toEqual(Duration.minutes(1));
   });
 });
