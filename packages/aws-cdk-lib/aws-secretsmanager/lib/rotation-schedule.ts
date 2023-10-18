@@ -125,6 +125,9 @@ export class RotationSchedule extends Resource {
     }
 
     let automaticallyAfterDays: number | undefined = undefined;
+    if (props.automaticallyAfter && props.automaticallyAfter.toDays() > 1000) {
+      throw new Error(`automaticallyAfter must not be greater than 1000 days, got ${props.automaticallyAfter.toDays()} days`);
+    }
     if (props.automaticallyAfter?.toMilliseconds() !== 0) {
       automaticallyAfterDays = props.automaticallyAfter?.toDays() || 30;
     }
