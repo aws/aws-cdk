@@ -39,7 +39,7 @@ export interface RotationScheduleOptions {
    *
    * The maximum value is 1000 days.
    *
-   * A value of zero will disable automatic rotation - `Duration.days(0)`.
+   * A value of zero (`Duration.days(0)`) will not create RotationRules.
    *
    * @default Duration.days(30)
    */

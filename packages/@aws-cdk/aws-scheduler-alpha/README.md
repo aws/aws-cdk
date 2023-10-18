@@ -245,7 +245,16 @@ EventBridge Scheduler publishes additional metrics when your schedule exhausts i
 
 ### Metrics for all schedules
 
-TODO: Not yet implemented. See section in [L2 Event Bridge Scheduler RFC](https://github.com/aws/aws-cdk-rfcs/blob/master/text/0474-event-bridge-scheduler-l2.md)
+Class `Schedule` provides static methods for accessing all schedules metrics with default configuration,
+ such as `metricAllErrors` for viewing errors when executing targets.
+
+ ```ts
+new cloudwatch.Alarm(this, 'SchedulesErrorAlarm', {
+    metric: Schedule.metricAllErrors(),
+    threshold: 0,
+    evaluationPeriods: 1,
+});
+ ```
 
 ### Metrics for a Group
 
