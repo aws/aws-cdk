@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.102.0](https://github.com/aws/aws-cdk/compare/v2.101.1...v2.102.0) (2023-10-18)
+
+
+### Features
+
+* update AWS Service Spec ([#27557](https://github.com/aws/aws-cdk/issues/27557)) ([af63162](https://github.com/aws/aws-cdk/commit/af63162198551a4e7d25b565cd749d863ce594b1))
+
+
+### Bug Fixes
+
+* **custom-resources:** custom resource provider can't exceed 1 hour ([#27533](https://github.com/aws/aws-cdk/issues/27533)) ([b655b08](https://github.com/aws/aws-cdk/commit/b655b08b0e71d4d345b0ae5a1ca137c7c84c8473)), closes [#24974](https://github.com/aws/aws-cdk/issues/24974)
+* **eks:** partition is hardcoded in ALB controller IAM policies ([#27541](https://github.com/aws/aws-cdk/issues/27541)) ([75e56ea](https://github.com/aws/aws-cdk/commit/75e56ea980590fcf8860f5a7a6fba5347e0ace2d)), closes [#22520](https://github.com/aws/aws-cdk/issues/22520)
+
+
+### Reverts
+
+* "fix(s3): grantRead does not allow s3:HeadObject ([#27416](https://github.com/aws/aws-cdk/issues/27416))" ([#27556](https://github.com/aws/aws-cdk/issues/27556)) ([8dc1c18](https://github.com/aws/aws-cdk/commit/8dc1c18a6bf033d28dcca6052923170eaeb143ac))
+
 ## [2.101.1](https://github.com/aws/aws-cdk/compare/v2.101.0...v2.101.1) (2023-10-16)
 
 
