@@ -652,7 +652,7 @@ test('rotation schedule should have a dependency on lambda permissions', () => {
   });
 });
 
-test('automaticallyAfter must not greater than 1000 days', () => {
+test('automaticallyAfter must not be greater than 1000 days', () => {
   // GIVEN
   const secret = new secretsmanager.Secret(stack, 'Secret');
   const rotationLambda = new lambda.Function(stack, 'Lambda', {
