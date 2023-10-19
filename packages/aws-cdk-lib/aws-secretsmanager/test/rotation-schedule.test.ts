@@ -651,3 +651,21 @@ test('rotation schedule should have a dependency on lambda permissions', () => {
     ],
   });
 });
+
+test('automaticallyAfter must not be greater than 1000 days', () => {
+  // GIVEN
+  const secret = new secretsmanager.Secret(stack, 'Secret');
+  const rotationLambda = new lambda.Function(stack, 'Lambda', {
+    runtime: lambda.Runtime.NODEJS_LATEST,
+    code: lambda.Code.fromInline('export.handler = event => event;'),
+    handler: 'index.handler',
+  });
+
+  // WHEN
+  // THEN
+  expect(() => new secretsmanager.RotationSchedule(stack, 'RotationSchedule', {
+    secret,
+    rotationLambda,
+    automaticallyAfter: Duration.days(1001),
+  })).toThrow(/automaticallyAfter must not be greater than 1000 days, got 1001 days/);
+});
