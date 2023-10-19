@@ -91,10 +91,6 @@ describe('vpc flow logs', () => {
       resourceType: FlowLogResourceType.fromNetworkInterfaceId('eni-123456'),
       destination: FlowLogDestination.toKinesisDataFirehose(
         deliveryStreamArn,
-        new iam.Role(stack, 'TestRole', {
-          roleName: 'TestName',
-          assumedBy: new iam.ServicePrincipal('vpc-flow-logs.amazonaws.com'),
-        }),
       ),
     });
 

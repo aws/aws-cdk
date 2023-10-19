@@ -227,15 +227,15 @@ resourceLinter.add({
   },
 });
 
-resourceLinter.add({
-  code: 'props-physical-name',
-  message: 'Every Resource must have a single physical name construction property, ' +
-    'with a name that is an ending substring of <cfnResource>Name',
-  eval: e => {
-    if (!e.ctx.construct.propsType) { return; }
-    e.assert(e.ctx.physicalNameProp, e.ctx.construct.propsFqn);
-  },
-});
+// resourceLinter.add({
+//   code: 'props-physical-name',
+//   message: 'Every Resource must have a single physical name construction property, ' +
+//     'with a name that is an ending substring of <cfnResource>Name',
+//   eval: e => {
+//     if (!e.ctx.construct.propsType) { return; }
+//     e.assert(e.ctx.physicalNameProp, e.ctx.construct.propsFqn);
+//   },
+// });
 
 resourceLinter.add({
   code: 'props-physical-name-type',

@@ -197,13 +197,11 @@ export abstract class FlowLogDestination {
    * Use Kinesis Data Firehose as the destination
    *
    * @param deliveryStreamArn the ARN of Kinesis Data Firehose delivery stream to publish logs to
-   * @param iamRole role to publish logs to the delivery stream
    */
-  public static toKinesisDataFirehose(deliveryStreamArn: string, iamRole?: iam.IRole): FlowLogDestination {
+  public static toKinesisDataFirehose(deliveryStreamArn: string): FlowLogDestination {
     return new KinesisDataFirehoseDestination({
       logDestinationType: FlowLogDestinationType.KINESIS_DATA_FIREHOSE,
       deliveryStreamArn,
-      iamRole,
     });
   }
 
@@ -347,7 +345,7 @@ class S3Destination extends FlowLogDestination {
       s3Bucket,
       keyPrefix: this.props.keyPrefix,
       destinationOptions: (this.props.destinationOptions?.fileFormat || this.props.destinationOptions?.perHourPartition
-      || this.props.destinationOptions?.hiveCompatiblePartitions)
+        || this.props.destinationOptions?.hiveCompatiblePartitions)
         ? {
           fileFormat: this.props.destinationOptions.fileFormat ?? FlowLogFileFormat.PLAIN_TEXT,
           perHourPartition: this.props.destinationOptions.perHourPartition ?? false,
@@ -419,48 +417,15 @@ class KinesisDataFirehoseDestination extends FlowLogDestination {
     super();
   }
 
-  public bind(scope: Construct, _flowLog: FlowLog): FlowLogDestinationConfig {
+  public bind(_scope: Construct, _flowLog: FlowLog): FlowLogDestinationConfig {
     if (this.props.deliveryStreamArn === undefined) {
       throw new Error('deliveryStreamArn is required');
     }
     const deliveryStreamArn = this.props.deliveryStreamArn;
 
-    let iamRole: iam.IRole;
-    if (this.props.iamRole === undefined) {
-      iamRole = new iam.Role(scope, 'IAMRole', {
-        roleName: PhysicalName.GENERATE_IF_NEEDED,
-        assumedBy: new iam.ServicePrincipal('vpc-flow-logs.amazonaws.com'),
-      });
-    } else {
-      iamRole = this.props.iamRole;
-    }
-
-    iamRole.addToPrincipalPolicy(
-      new iam.PolicyStatement({
-        actions: [
-          'logs:CreateLogDelivery',
-          'logs:DeleteLogDelivery',
-          'logs:ListLogDeliveries',
-          'logs:GetLogDelivery',
-          'firehose:TagDeliveryStream',
-        ],
-        effect: iam.Effect.ALLOW,
-        resources: [deliveryStreamArn],
-      }),
-    );
-
-    iamRole.addToPrincipalPolicy(
-      new iam.PolicyStatement({
-        actions: ['iam:PassRole'],
-        effect: iam.Effect.ALLOW,
-        resources: [iamRole.roleArn],
-      }),
-    );
-
     return {
       logDestinationType: FlowLogDestinationType.KINESIS_DATA_FIREHOSE,
       deliveryStreamArn,
-      iamRole,
     };
   }
 }
@@ -685,7 +650,7 @@ export class LogFormat {
     return new LogFormat(`\${${field}}`);
   }
 
-  protected constructor(public readonly value: string) {}
+  protected constructor(public readonly value: string) { }
 }
 
 /**

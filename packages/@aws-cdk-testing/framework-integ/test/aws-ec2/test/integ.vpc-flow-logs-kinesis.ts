@@ -2,7 +2,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { FlowLog, FlowLogDestination, FlowLogResourceType, Vpc, Instance, InstanceType, InstanceClass, InstanceSize, MachineImage, AmazonLinuxGeneration } from 'aws-cdk-lib/aws-ec2';
+import { FlowLog, FlowLogDestination, FlowLogResourceType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 
 const app = new App();
@@ -51,7 +51,7 @@ class TestStack extends Stack {
   }
 }
 
-const integ = new IntegTest(app, 'FlowLogs', {
+new IntegTest(app, 'FlowLogs', {
   testCases: [
     new TestStack(app, 'FlowLogsTestStack'),
   ],
