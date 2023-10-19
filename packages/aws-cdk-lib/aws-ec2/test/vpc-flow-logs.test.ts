@@ -77,6 +77,39 @@ describe('vpc flow logs', () => {
     });
 
   });
+  test('with kinesis data firehose as the destination, allows use of existing resources', () => {
+    const stack = getTestStack();
+
+    const deliveryStreamArn = Stack.of(stack).formatArn({
+      resource: 'deliverystream',
+      region: '',
+      service: 'firehose',
+      account: '',
+      resourceName: 'testdeliverystream',
+    });
+    new FlowLog(stack, 'FlowLogs', {
+      resourceType: FlowLogResourceType.fromNetworkInterfaceId('eni-123456'),
+      destination: FlowLogDestination.toKinesisDataFirehose(
+        deliveryStreamArn,
+        new iam.Role(stack, 'TestRole', {
+          roleName: 'TestName',
+          assumedBy: new iam.ServicePrincipal('vpc-flow-logs.amazonaws.com'),
+        }),
+      ),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::FlowLog', {
+      DestinationOptions: Match.absent(),
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::FlowLog', {
+      LogDestinationType: 'kinesis-data-firehose',
+    });
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 0);
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      RoleName: 'TestName',
+    });
+  });
 
   test('with flowLogName, adds Name tag with the name', () => {
     const stack = getTestStack();
@@ -611,10 +644,10 @@ test('log format for built-in types is correct', () => {
 
   template.hasResourceProperties('AWS::EC2::FlowLog', {
     LogFormat: ('${version} ${account-id} ${interface-id} ${srcaddr} ${dstaddr} ${srcport} '
-                + '${dstport} ${protocol} ${packets} ${bytes} ${start} ${end} ${action} ${log-status} '
-                + '${vpc-id} ${subnet-id} ${instance-id} ${tcp-flags} ${type} ${pkt-srcaddr} '
-                + '${pkt-dstaddr} ${region} ${az-id} ${sublocation-type} ${sublocation-id} '
-                + '${pkt-src-aws-service} ${pkt-dst-aws-service} ${flow-direction} ${traffic-path}'),
+      + '${dstport} ${protocol} ${packets} ${bytes} ${start} ${end} ${action} ${log-status} '
+      + '${vpc-id} ${subnet-id} ${instance-id} ${tcp-flags} ${type} ${pkt-srcaddr} '
+      + '${pkt-dstaddr} ${region} ${az-id} ${sublocation-type} ${sublocation-id} '
+      + '${pkt-src-aws-service} ${pkt-dst-aws-service} ${flow-direction} ${traffic-path}'),
   });
 });
 

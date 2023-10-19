@@ -56,7 +56,12 @@ export enum FlowLogDestinationType {
   /**
    * Send flow logs to S3 Bucket
    */
-  S3 = 's3'
+  S3 = 's3',
+
+  /**
+   * Send flow logs to Kinesis Data Firehose
+   */
+  KINESIS_DATA_FIREHOSE = 'kinesis-data-firehose',
 }
 
 /**
@@ -189,6 +194,20 @@ export abstract class FlowLogDestination {
   }
 
   /**
+   * Use Kinesis Data Firehose as the destination
+   *
+   * @param deliveryStreamArn the ARN of Kinesis Data Firehose delivery stream to publish logs to
+   * @param iamRole role to publish logs to the delivery stream
+   */
+  public static toKinesisDataFirehose(deliveryStreamArn: string, iamRole?: iam.IRole): FlowLogDestination {
+    return new KinesisDataFirehoseDestination({
+      logDestinationType: FlowLogDestinationType.KINESIS_DATA_FIREHOSE,
+      deliveryStreamArn,
+      iamRole,
+    });
+  }
+
+  /**
    * Generates a flow log destination configuration
    */
   public abstract bind(scope: Construct, flowLog: FlowLog): FlowLogDestinationConfig;
@@ -232,6 +251,13 @@ export interface FlowLogDestinationConfig {
    * @default - undefined
    */
   readonly keyPrefix?: string;
+
+  /**
+   * the ARN of Kinesis Data Firehose delivery stream to publish the flow logs to
+   *
+   * @default - undefined
+   */
+  readonly deliveryStreamArn?: string;
 
   /**
    * Options for writing flow logs to a supported destination
@@ -380,6 +406,60 @@ class CloudWatchLogsDestination extends FlowLogDestination {
     return {
       logDestinationType: FlowLogDestinationType.CLOUD_WATCH_LOGS,
       logGroup,
+      iamRole,
+    };
+  }
+}
+
+/**
+ *
+ */
+class KinesisDataFirehoseDestination extends FlowLogDestination {
+  constructor(private readonly props: FlowLogDestinationConfig) {
+    super();
+  }
+
+  public bind(scope: Construct, _flowLog: FlowLog): FlowLogDestinationConfig {
+    if (this.props.deliveryStreamArn === undefined) {
+      throw new Error('deliveryStreamArn is required');
+    }
+    const deliveryStreamArn = this.props.deliveryStreamArn;
+
+    let iamRole: iam.IRole;
+    if (this.props.iamRole === undefined) {
+      iamRole = new iam.Role(scope, 'IAMRole', {
+        roleName: PhysicalName.GENERATE_IF_NEEDED,
+        assumedBy: new iam.ServicePrincipal('vpc-flow-logs.amazonaws.com'),
+      });
+    } else {
+      iamRole = this.props.iamRole;
+    }
+
+    iamRole.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: [
+          'logs:CreateLogDelivery',
+          'logs:DeleteLogDelivery',
+          'logs:ListLogDeliveries',
+          'logs:GetLogDelivery',
+          'firehose:TagDeliveryStream',
+        ],
+        effect: iam.Effect.ALLOW,
+        resources: [deliveryStreamArn],
+      }),
+    );
+
+    iamRole.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: ['iam:PassRole'],
+        effect: iam.Effect.ALLOW,
+        resources: [iamRole.roleArn],
+      }),
+    );
+
+    return {
+      logDestinationType: FlowLogDestinationType.KINESIS_DATA_FIREHOSE,
+      deliveryStreamArn,
       iamRole,
     };
   }
@@ -722,6 +802,11 @@ export class FlowLog extends FlowLogBase {
    */
   public readonly logGroup?: logs.ILogGroup;
 
+  /**
+   * The ARN of the Kinesis Data Firehose delivery stream to publish flow logs to
+   */
+  public readonly deliveryStreamArn?: string;
+
   constructor(scope: Construct, id: string, props: FlowLogProps) {
     super(scope, id);
 
@@ -732,12 +817,16 @@ export class FlowLog extends FlowLogBase {
     this.bucket = destinationConfig.s3Bucket;
     this.iamRole = destinationConfig.iamRole;
     this.keyPrefix = destinationConfig.keyPrefix;
+    this.deliveryStreamArn = destinationConfig.deliveryStreamArn;
 
     Tags.of(this).add(NAME_TAG, props.flowLogName || this.node.path);
 
     let logDestination: string | undefined = undefined;
     if (this.bucket) {
       logDestination = this.keyPrefix ? this.bucket.arnForObjects(this.keyPrefix) : this.bucket.bucketArn;
+    }
+    if (this.deliveryStreamArn) {
+      logDestination = this.deliveryStreamArn;
     }
     let customLogFormat: string | undefined = undefined;
     if (props.logFormat) {
