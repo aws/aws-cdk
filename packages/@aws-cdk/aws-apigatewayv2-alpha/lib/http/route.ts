@@ -198,8 +198,8 @@ export class HttpRoute extends Resource implements IHttpRoute {
         route: this,
         scope: this.httpApi instanceof Construct ? this.httpApi : this, // scope under the API if it's not imported
       });
-    } else if (this.httpApi instanceof HttpApi) { // IHttpApi as it is, because it does not have a defaultAuthorizer
-      this.authBindResult = this.httpApi.defaultAuthorizer?.bind({
+    } else if (this.httpApi instanceof HttpApi && this.httpApi.defaultAuthorizer) { // IHttpApi as it is, because it does not have a defaultAuthorizer
+      this.authBindResult = this.httpApi.defaultAuthorizer.bind({
         route: this,
         scope: this.httpApi, // this.httpApi is also a Construct because it is an HttpApi
       });
@@ -211,11 +211,18 @@ export class HttpRoute extends Resource implements IHttpRoute {
 
     let authorizationScopes = this.authBindResult?.authorizationScopes;
 
-    if (this.authBindResult && props.authorizationScopes) {
-      authorizationScopes = Array.from(new Set([
-        ...authorizationScopes ?? [],
-        ...props.authorizationScopes,
-      ]));
+    if (this.authBindResult) {
+      if (props.authorizationScopes) {
+        authorizationScopes = Array.from(new Set([
+          ...authorizationScopes ?? [],
+          ...props.authorizationScopes,
+        ]));
+      } else if (this.httpApi instanceof HttpApi && this.httpApi.defaultAuthorizationScopes) {
+        authorizationScopes = Array.from(new Set([
+          ...authorizationScopes ?? [],
+          ...this.httpApi.defaultAuthorizationScopes,
+        ]));
+      }
     }
 
     if (authorizationScopes?.length === 0) {

@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/236a8b2e66349c60aa771b746f0eead0549d99ffd0abdd92b221fb396e416e89.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dbb0d80d060a31823643a6f0aa7a3f4bcdb95c4001f57195acc099cf076b2a1e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -44,18 +44,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "authfunction96361832"
-          }
-        ],
-        "/AuthorizerInteg/lambda/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "lambdaServiceRole494E4CA6"
-          }
-        ],
-        "/AuthorizerInteg/lambda/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "lambda8B5974B5"
           }
         ],
         "/AuthorizerInteg/MyHttpApi/Resource": [
@@ -122,6 +110,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyHttpApiWithDefaultAuthorizerAuthorizerIntegMyHttpApiWithDefaultAuthorizerLambdaDefaultAuthorizer1BC6EA35Permission700DB59D"
+          }
+        ],
+        "/AuthorizerInteg/lambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambdaServiceRole494E4CA6"
+          }
+        ],
+        "/AuthorizerInteg/lambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambda8B5974B5"
           }
         ],
         "/AuthorizerInteg/Route/RootIntegration/Resource": [

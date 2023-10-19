@@ -335,6 +335,7 @@ describe('HttpRoute', () => {
     const authorizer = new DummyAuthorizer();
     const httpApi = new HttpApi(stack, 'HttpApi', {
       defaultAuthorizer: authorizer,
+      defaultAuthorizationScopes: ['read:books'],
     });
 
     const route = new HttpRoute(stack, 'HttpRoute', {
@@ -351,10 +352,40 @@ describe('HttpRoute', () => {
     });
 
     Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::Authorizer', 1);
-
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
       AuthorizerId: stack.resolve(authorizer.bind({ scope: stack, route: route }).authorizerId),
       AuthorizationType: 'JWT',
+      AuthorizationScopes: ['read:books'],
+    });
+  });
+
+  test('authorizationScopes can be applied to route without authorizer but with defaultAuthorizer', () => {
+    const stack = new Stack();
+
+    const authorizer = new DummyAuthorizer();
+    const httpApi = new HttpApi(stack, 'HttpApi', {
+      defaultAuthorizer: authorizer,
+    });
+
+    const route = new HttpRoute(stack, 'HttpRoute', {
+      httpApi,
+      integration: new DummyIntegration(),
+      routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
+      authorizationScopes: ['read:books'],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
+      ApiId: stack.resolve(httpApi.apiId),
+      IntegrationType: 'HTTP_PROXY',
+      PayloadFormatVersion: '2.0',
+      IntegrationUri: 'some-uri',
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::Authorizer', 1);
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
+      AuthorizerId: stack.resolve(authorizer.bind({ scope: stack, route: route }).authorizerId),
+      AuthorizationType: 'JWT',
+      AuthorizationScopes: ['read:books'],
     });
   });
 
