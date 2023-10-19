@@ -345,7 +345,7 @@ class S3Destination extends FlowLogDestination {
       s3Bucket,
       keyPrefix: this.props.keyPrefix,
       destinationOptions: (this.props.destinationOptions?.fileFormat || this.props.destinationOptions?.perHourPartition
-        || this.props.destinationOptions?.hiveCompatiblePartitions)
+      || this.props.destinationOptions?.hiveCompatiblePartitions)
         ? {
           fileFormat: this.props.destinationOptions.fileFormat ?? FlowLogFileFormat.PLAIN_TEXT,
           perHourPartition: this.props.destinationOptions.perHourPartition ?? false,
@@ -650,7 +650,7 @@ export class LogFormat {
     return new LogFormat(`\${${field}}`);
   }
 
-  protected constructor(public readonly value: string) { }
+  protected constructor(public readonly value: string) {}
 }
 
 /**
