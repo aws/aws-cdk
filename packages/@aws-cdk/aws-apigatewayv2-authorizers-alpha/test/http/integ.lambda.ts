@@ -61,5 +61,5 @@ new CfnOutput(stack, 'URL', {
   value: httpApi.url!,
 });
 new CfnOutput(stack, 'URLWithDefaultAuthorizer', {
-  value: httpApi.url!,
+  value: httpApiWithDefaultAuthorizer.url!,
 });
