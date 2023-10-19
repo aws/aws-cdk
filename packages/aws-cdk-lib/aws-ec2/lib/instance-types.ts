@@ -327,6 +327,16 @@ export enum InstanceClass {
   R7GD = 'r7gd',
 
   /**
+   * Memory optimized instances based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation
+   */
+  MEMORY7_INTEL = 'memory7-intel',
+
+  /**
+   * Memory optimized instances based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation
+   */
+  R7IZ = 'r7iz',
+
+  /**
    * Compute optimized instances, 3rd generation
    */
   COMPUTE3 = 'compute3',
@@ -505,6 +515,16 @@ export enum InstanceClass {
    * and high network bandwidth capabilities
    */
   C7GN = 'c7gn',
+
+  /**
+   * Compute optimized instances based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation
+   */
+  COMPUTE7_INTEL = 'compute7-intel',
+
+  /**
+   * Compute optimized instances based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation
+   */
+  C7I = 'c7i',
 
   /**
    * Storage-optimized instances, 2nd generation
@@ -1221,6 +1241,8 @@ export class InstanceType {
       [InstanceClass.R7G]: 'r7g',
       [InstanceClass.MEMORY7_GRAVITON3_NVME_DRIVE]: 'r7gd',
       [InstanceClass.R7GD]: 'r7gd',
+      [InstanceClass.MEMORY7_INTEL]: 'r7iz',
+      [InstanceClass.R7IZ]: 'r7iz',
       [InstanceClass.COMPUTE3]: 'c3',
       [InstanceClass.C3]: 'c3',
       [InstanceClass.COMPUTE4]: 'c4',
@@ -1255,6 +1277,8 @@ export class InstanceType {
       [InstanceClass.C7GD]: 'c7gd',
       [InstanceClass.COMPUTE7_GRAVITON3_HIGH_NETWORK_BANDWIDTH]: 'c7gn',
       [InstanceClass.C7GN]: 'c7gn',
+      [InstanceClass.COMPUTE7_INTEL]: 'c7i',
+      [InstanceClass.C7I]: 'c7i',
       [InstanceClass.STORAGE2]: 'd2',
       [InstanceClass.D2]: 'd2',
       [InstanceClass.STORAGE3]: 'd3',
