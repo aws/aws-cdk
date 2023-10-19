@@ -257,8 +257,8 @@ export class Schedule extends Resource implements ISchedule {
   }
 
   private validateRetryPolicy(maximumEventAgeInSeconds: number | undefined, maximumRetryAttempts: number | undefined) {
-    if (maximumEventAgeInSeconds && (maximumEventAgeInSeconds < 60 || maximumEventAgeInSeconds > 900)) {
-      throw new Error(`maximumEventAgeInSeconds must be between 60 and 900, got ${maximumEventAgeInSeconds}`);
+    if (maximumEventAgeInSeconds && (maximumEventAgeInSeconds < 60 || maximumEventAgeInSeconds > 86400)) {
+      throw new Error(`maximumEventAgeInSeconds must be between 60 and 86400, got ${maximumEventAgeInSeconds}`);
     }
     if (maximumRetryAttempts && (maximumRetryAttempts < 0 || maximumRetryAttempts > 185)) {
       throw new Error(`maximumRetryAttempts must be between 0 and 185, got ${maximumRetryAttempts}`);

@@ -91,7 +91,7 @@ describe('schedule target retry policy', () => {
         },
         enabled: false,
       });
-    }).toThrow(/maximumEventAgeInSeconds must be between 60 and 900, got 50/);
+    }).toThrow(/maximumEventAgeInSeconds must be between 60 and 86400, got 50/);
   });
 
   test('apply maximumEventAge max value validation', () => {
@@ -100,12 +100,12 @@ describe('schedule target retry policy', () => {
         schedule: expr,
         target: new SomeLambdaTarget(func),
         targetOverrides: {
-          maximumEventAge: Duration.seconds(1000),
+          maximumEventAge: Duration.seconds(100000),
           maximumRetryAttempts: 5,
         },
         enabled: false,
       });
-    }).toThrow(/maximumEventAgeInSeconds must be between 60 and 900, got 1000/);
+    }).toThrow(/maximumEventAgeInSeconds must be between 60 and 86400, got 100000/);
   });
 
   test('apply maximumRetryAttempts min value validation', () => {
