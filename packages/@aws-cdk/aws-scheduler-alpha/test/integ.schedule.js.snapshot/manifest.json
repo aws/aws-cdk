@@ -70,6 +70,12 @@
             "data": "TargetOverrideScheduleFF8CB184"
           }
         ],
+        "/aws-cdk-scheduler-schedule/AllSchedulerErrorsAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AllSchedulerErrorsAlarmA3246F8C"
+          }
+        ],
         "/aws-cdk-scheduler-schedule/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
