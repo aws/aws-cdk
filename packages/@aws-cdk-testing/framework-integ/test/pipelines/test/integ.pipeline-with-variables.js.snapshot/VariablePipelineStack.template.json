@@ -335,7 +335,7 @@
         },
         "OutputArtifacts": [
          {
-          "Name": "c8afb86a650460a8cc607cf72a0827e7c93d0d6d5c_Source"
+          "Name": "c8afb86a650460a8cc607cf72a0827e7c93d0d6d5c_key_Source"
          }
         ],
         "RoleArn": {
@@ -365,7 +365,7 @@
         },
         "InputArtifacts": [
          {
-          "Name": "c8afb86a650460a8cc607cf72a0827e7c93d0d6d5c_Source"
+          "Name": "c8afb86a650460a8cc607cf72a0827e7c93d0d6d5c_key_Source"
          }
         ],
         "Name": "Synth",
@@ -401,7 +401,7 @@
         },
         "InputArtifacts": [
          {
-          "Name": "c8afb86a650460a8cc607cf72a0827e7c93d0d6d5c_Source"
+          "Name": "c8afb86a650460a8cc607cf72a0827e7c93d0d6d5c_key_Source"
          }
         ],
         "Name": "Produce",
@@ -429,7 +429,7 @@
         },
         "InputArtifacts": [
          {
-          "Name": "c8afb86a650460a8cc607cf72a0827e7c93d0d6d5c_Source"
+          "Name": "c8afb86a650460a8cc607cf72a0827e7c93d0d6d5c_key_Source"
          }
         ],
         "Name": "Consume",
