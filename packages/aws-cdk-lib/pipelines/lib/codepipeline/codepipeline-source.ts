@@ -253,7 +253,7 @@ class GitHubSource extends CodePipelineSource {
   private readonly authentication: SecretValue;
 
   constructor(repoString: string, readonly branch: string, readonly props: GitHubSourceOptions) {
-    super(`${repoString}-${branch}`);
+    super(repoString);
 
     const parts = repoString.split('/');
     if (Token.isUnresolved(repoString) || parts.length !== 2) {
