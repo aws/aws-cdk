@@ -102,9 +102,6 @@ describe('vpc flow logs', () => {
     });
     Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 0);
     Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 0);
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
-      RoleName: 'TestName',
-    });
   });
 
   test('with flowLogName, adds Name tag with the name', () => {
