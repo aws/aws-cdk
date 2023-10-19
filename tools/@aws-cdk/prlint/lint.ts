@@ -508,6 +508,9 @@ export class PullRequestLinter {
     validationCollector.validateRuleSet({
       testRuleSet: [{ test: validateTitleScope }],
     });
+    validationCollector.validateRuleSet({
+      testRuleSet: [{ test: validateBranch }],
+    })
 
     validationCollector.validateRuleSet({
       exemption: shouldExemptBreakingChange,
@@ -684,6 +687,22 @@ function validateTitleScope(pr: GitHubPr): TestResult {
       `The title of the pull request should omit 'aws-' from the name of modified packages. Use '${m[3]}' instead of '${m[2]}'.`,
     );
   }
+  return result;
+}
+
+/**
+ * Check that the PR is not opened from main branch of author's fork
+ * 
+ * @param pr github pr
+ * @returns test result
+ */
+function validateBranch(pr: GitHubPr): TestResult {
+  const result = new TestResult();
+  
+  if (pr.head && pr.head.ref) {
+    result.assessFailure(pr.head.ref === 'main', 'Pull requests from `main` branch of a fork cannot be accepted. Please reopen this contribution from another branch on your fork. For more information, see https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#step-4-pull-request.')
+  }
+
   return result;
 }
 
