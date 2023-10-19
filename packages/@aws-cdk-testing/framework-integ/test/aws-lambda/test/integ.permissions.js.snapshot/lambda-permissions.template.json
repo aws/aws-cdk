@@ -77,6 +77,88 @@
     "Principal": "*",
     "PrincipalOrgID": "o-xxxxxxxxxx"
    }
+  },
+  "MyLambdaFunctionUrlC2055677": {
+   "Type": "AWS::Lambda::Url",
+   "Properties": {
+    "AuthType": "AWS_IAM",
+    "TargetFunctionArn": {
+     "Fn::GetAtt": [
+      "MyLambdaCCE802FB",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "MyLambdaInvokeSz2P2C4jOiX4AmIs1ANCq2qfq8PhgVeKtRAVyAkFmM7C8BE4B5": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "MyLambdaCCE802FB",
+      "Arn"
+     ]
+    },
+    "Principal": "*",
+    "PrincipalOrgID": "o-mmmmmmmmmm"
+   }
+  },
+  "MyLambdaInvokeFcyXBRX02EWa52GlFECQiCzDt0fdRUDi4mo4foC5aU41318F58": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "MyLambdaCCE802FB",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com"
+   }
+  },
+  "MyRoleF48FFE04": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MyRoleDefaultPolicyA36BE1DD": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunctionUrl",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "MyLambdaCCE802FB",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyRoleDefaultPolicyA36BE1DD",
+    "Roles": [
+     {
+      "Ref": "MyRoleF48FFE04"
+     }
+    ]
+   }
   }
  },
  "Parameters": {
