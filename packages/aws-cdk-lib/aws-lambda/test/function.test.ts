@@ -1525,6 +1525,111 @@ describe('function', () => {
     });
   });
 
+  describe('grantInvokeCompositePrincipal', () => {
+    test('adds iam:InvokeFunction for a CompositePrincipal (two accounts)', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const compositePrincipal = new iam.CompositePrincipal(
+        new iam.AccountPrincipal('1234'),
+        new iam.AccountPrincipal('5678'),
+      );
+
+      const fn = new lambda.Function(stack, 'Function', {
+        code: lambda.Code.fromInline('xxx'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+
+      // WHEN
+      fn.grantInvokeCompositePrincipal(compositePrincipal);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+        Action: 'lambda:InvokeFunction',
+        FunctionName: {
+          'Fn::GetAtt': [
+            'Function76856677',
+            'Arn',
+          ],
+        },
+        Principal: '1234',
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+        Action: 'lambda:InvokeFunction',
+        FunctionName: {
+          'Fn::GetAtt': [
+            'Function76856677',
+            'Arn',
+          ],
+        },
+        Principal: '5678',
+      });
+    });
+
+    test('adds iam:InvokeFunction for a CompositePrincipal (multiple types)', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const compositePrincipal = new iam.CompositePrincipal(
+        new iam.AccountPrincipal('1234'),
+        new iam.ServicePrincipal('apigateway.amazonaws.com'),
+        new iam.ArnPrincipal('arn:aws:iam::123456789012:role/someRole'),
+        new iam.OrganizationPrincipal('my-org-id'),
+      );
+
+      const fn = new lambda.Function(stack, 'Function', {
+        code: lambda.Code.fromInline('xxx'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+
+      // WHEN
+      fn.grantInvokeCompositePrincipal(compositePrincipal);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+        Action: 'lambda:InvokeFunction',
+        FunctionName: {
+          'Fn::GetAtt': [
+            'Function76856677',
+            'Arn',
+          ],
+        },
+        Principal: '1234',
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+        Action: 'lambda:InvokeFunction',
+        FunctionName: {
+          'Fn::GetAtt': [
+            'Function76856677',
+            'Arn',
+          ],
+        },
+        Principal: 'apigateway.amazonaws.com',
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+        Action: 'lambda:InvokeFunction',
+        FunctionName: {
+          'Fn::GetAtt': [
+            'Function76856677',
+            'Arn',
+          ],
+        },
+        Principal: 'arn:aws:iam::123456789012:role/someRole',
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+        Action: 'lambda:InvokeFunction',
+        FunctionName: {
+          'Fn::GetAtt': [
+            'Function76856677',
+            'Arn',
+          ],
+        },
+        Principal: '*',
+        PrincipalOrgID: 'my-org-id',
+      });
+    });
+  });
+
   test('Can use metricErrors on a lambda Function', () => {
     // GIVEN
     const stack = new cdk.Stack();
