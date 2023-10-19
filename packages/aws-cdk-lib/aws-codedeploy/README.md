@@ -156,19 +156,21 @@ The `loadBalancer` property has been deprecated. To provide multiple Elastic Loa
 import * as elb from 'aws-cdk-lib/aws-elasticloadbalancing';
 import * as elb2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 
-declare const lb: elb.LoadBalancer;
-lb.addListener({
-  externalPort: 80,
-});
-
+declare const clb: elb.LoadBalancer;
 declare const alb: elb2.ApplicationLoadBalancer;
-const listener = alb.addListener('Listener', { port: 80 });
-const targetGroup = listener.addTargets('Fleet', { port: 80 });
+declare const nlb: elb2.NetworkLoadBalancer;
+
+const albListener = alb.addListener('ALBListener', { port: 80 });
+const albTargetGroup = albListener.addTargets('ALBFleet', { port: 80 });
+
+const nlbListener = nlb.addListener('NLBListener', { port: 80 });
+const nlbTargetGroup = nlbListener.addTargets('NLBFleet', { port: 80 });
 
 const deploymentGroup = new codedeploy.ServerDeploymentGroup(this, 'DeploymentGroup', {
   loadBalancers: [
-    codedeploy.LoadBalancer.classic(lb),
-    codedeploy.LoadBalancer.application(targetGroup),
+    codedeploy.LoadBalancer.classic(clb),
+    codedeploy.LoadBalancer.application(albTargetGroup),
+    codedeploy.LoadBalancer.network(nlbTargetGroup),
   ]
 });
 ```
