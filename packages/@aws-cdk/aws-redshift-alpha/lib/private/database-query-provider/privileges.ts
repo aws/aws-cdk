@@ -1,9 +1,9 @@
 /* eslint-disable-next-line import/no-unresolved */
 import * as AWSLambda from 'aws-lambda';
+import { TablePrivilege, UserTablePrivilegesHandlerProps } from '../handler-props';
 import { executeStatement } from './redshift-data';
 import { ClusterProps } from './types';
 import { makePhysicalId } from './util';
-import { TablePrivilege, UserTablePrivilegesHandlerProps } from '../handler-props';
 
 export async function handler(props: UserTablePrivilegesHandlerProps & ClusterProps, event: AWSLambda.CloudFormationCustomResourceEvent) {
   const username = props.username;
@@ -62,10 +62,26 @@ async function updatePrivileges(
   }
 
   const oldTablePrivileges = oldResourceProperties.tablePrivileges;
-  if (oldTablePrivileges !== tablePrivileges) {
-    await revokePrivileges(username, oldTablePrivileges, clusterProps);
-    await grantPrivileges(username, tablePrivileges, clusterProps);
-    return { replace: false };
+  const tablesToRevoke = oldTablePrivileges.filter(({ tableId, actions }) => (
+    tablePrivileges.find(({ tableId: otherTableId, actions: otherActions }) => (
+      tableId === otherTableId && actions.some(action => !otherActions.includes(action))
+    ))
+  ));
+  if (tablesToRevoke.length > 0) {
+    await revokePrivileges(username, tablesToRevoke, clusterProps);
+  }
+
+  const tablesToGrant = tablePrivileges.filter(({ tableId, tableName, actions }) => {
+    const tableAdded = !oldTablePrivileges.find(({ tableId: otherTableId, tableName: otherTableName }) => (
+      tableId === otherTableId && tableName === otherTableName
+    ));
+    const actionsAdded = oldTablePrivileges.find(({ tableId: otherTableId, actions: otherActions }) => (
+      tableId === otherTableId && otherActions.some(action => !actions.includes(action))
+    ));
+    return tableAdded || actionsAdded;
+  });
+  if (tablesToGrant.length > 0) {
+    await grantPrivileges(username, tablesToGrant, clusterProps);
   }
 
   return { replace: false };

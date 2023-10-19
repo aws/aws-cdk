@@ -1,5 +1,6 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as scheduler from '../lib';
@@ -40,6 +41,12 @@ new scheduler.Schedule(stack, 'DisabledSchedule', {
   schedule: expression,
   target: target,
   enabled: false,
+});
+
+new cloudwatch.Alarm(stack, 'AllSchedulerErrorsAlarm', {
+  metric: scheduler.Schedule.metricAllErrors(),
+  threshold: 1,
+  evaluationPeriods: 1,
 });
 
 new IntegTest(app, 'integtest-schedule', {

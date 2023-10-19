@@ -60,6 +60,8 @@ export function transformFileContents(filename: string, contents: string, progre
   for (const [stmt, binding, moduleName] of topLevelRequires) {
     const result = ts.transform(file, [(ctx: ts.TransformationContext): ts.Transformer<ts.SourceFile> => {
       const factory = ctx.factory;
+      const gen = new ExpressionGenerator(factory);
+
       const visit: ts.Visitor = node => {
         // If this is the statement, replace it with a function definition
 
@@ -82,7 +84,7 @@ export function transformFileContents(filename: string, contents: string, progre
                 createVariable(factory, 'tmp', factory.createCallExpression(factory.createIdentifier('require'), [], [factory.createStringLiteral(moduleName)])),
 
                 // <this_fn> = () => tmp
-                createAssignment(factory, binding.text,
+                gen.assignmentStatement(binding.text,
                   factory.createArrowFunction(undefined, undefined, [], undefined, undefined, factory.createIdentifier('tmp'))),
 
                 // return tmp
@@ -139,6 +141,8 @@ export function transformFileContents(filename: string, contents: string, progre
 
   file = ts.transform(file, [(ctx: ts.TransformationContext): ts.Transformer<ts.SourceFile> => {
     const factory = ctx.factory;
+    const gen = new ExpressionGenerator(factory);
+
     const visit: ts.Visitor = node => {
       if (node.parent && ts.isSourceFile(node.parent)
         && ts.isExpressionStatement(node)
@@ -159,8 +163,8 @@ export function transformFileContents(filename: string, contents: string, progre
         const module = require(file);
         const entries = Object.keys(module);
 
-        return entries.map((entry) =>
-          createModuleGetter(factory, entry, requiredModule, (mod) =>
+        return entries.flatMap((entry) =>
+          gen.moduleGetterOnce(entry, requiredModule, (mod) =>
             factory.createPropertyAccessExpression(mod, entry))
           );
       }
@@ -180,7 +184,7 @@ export function transformFileContents(filename: string, contents: string, progre
 
         const exportName = node.expression.left.name.text;
         const moduleName = node.expression.right.arguments[0].text;
-        return createModuleGetter(factory, exportName, moduleName, (x) => x);
+        return gen.moduleGetterOnce(exportName, moduleName, (x) => x);
       }
 
       return ts.visitEachChild(node, child => visit(child), ctx);
@@ -204,33 +208,135 @@ function createVariable(factory: ts.NodeFactory, name: string | ts.BindingName, 
     ]));
 }
 
-function createAssignment(factory: ts.NodeFactory, name: string, expression: ts.Expression) {
-  return factory.createExpressionStatement(
-    factory.createBinaryExpression(
-      factory.createIdentifier(name),
-      ts.SyntaxKind.EqualsToken,
-      expression));
-}
+class ExpressionGenerator {
+  private alreadyEmittedExports = new Set<string>();
+  private emittedNoFold = false;
 
-function createModuleGetter(
-  factory: ts.NodeFactory,
-  exportName: string,
-  moduleName: string,
-  moduleFormatter: (x: ts.Expression) => ts.Expression,
-) {
-  return factory.createExpressionStatement(factory.createCallExpression(
-    factory.createPropertyAccessExpression(factory.createIdentifier('Object'), factory.createIdentifier('defineProperty')),
-    undefined,
-    [
-      factory.createIdentifier('exports'),
-      factory.createStringLiteral(exportName),
-      factory.createObjectLiteralExpression([
-        factory.createPropertyAssignment('configurable', factory.createTrue()),
-        factory.createPropertyAssignment('get',
-          factory.createArrowFunction(undefined, undefined, [], undefined, undefined,
-            moduleFormatter(
-              factory.createCallExpression(factory.createIdentifier('require'), undefined, [factory.createStringLiteral(moduleName)])))),
-      ]),
-    ]
-  ));
+  constructor(private readonly factory: ts.NodeFactory) {
+  }
+
+  /**
+   * Create an lazy getter for a particular value at the module level
+   *
+   * Since Node statically analyzes CommonJS modules to determine its exports
+   * (using the `cjs-module-lexer` module), we need to trick it into recognizing
+   * these exports as legitimate.
+   *
+   * We do that by generating one form it will recognize that doesn't do anything,
+   * in combination with a form that actually works, that doesn't disqualify the
+   * export name, and that doesn't get collapsed by esbuild.
+   *
+   * If we do:
+   *
+   * ```
+   * exports.myExport = void 0;
+   * Object.defineProperty(exports, 'myExport', { ... });
+   * ```
+   *
+   * Then the lexer detects conflicting definitions of `myExport`, one of which is
+   * not supported, and it disqualifies the name for being exported.
+   *
+   * If we do:
+   *
+   * ```
+   * exports.myExport = void 0;
+   * Object.defineProperty(exports', 'm' + 'yExport', { ... });
+   * ```
+   *
+   * Then the code passes the lexer: it detects `myExport` as an export, and it
+   * doesn't detect the disqualifying export.
+   *
+   * However, that last syntax is detected and constant-folded by `esbuild` (which
+   * we run to minify all files)! So esbuild turns `'m' + 'yExport'` back into
+   * `'myExport'`, and then the lexer detects it again as a disqualifying export!
+   *
+   * So we need to find an expression that won't be constant-folded by esbuild, and
+   * won't be detected by the lexer.
+   *
+   * This is what we'll be generating:
+   *
+   * ```
+   * let _noFold;
+   * exports.myExport = void 0;
+   * Object.defineProperty(exports', _noFold = 'myExport', { ... });
+   * ```
+   *
+   * This takes advantage of the fact that the return value of an `<x> = <y>` expression
+   * returns `<y>`, but has a side effect so cannot be safely optimized away.
+   */
+  public moduleGetter(
+    exportName: string,
+    moduleName: string,
+    moduleFormatter: (x: ts.Expression) => ts.Expression,
+  ) {
+    const factory = this.factory;
+
+    const ret = [];
+    if (!this.emittedNoFold) {
+      ret.push(
+        factory.createVariableStatement([],
+          factory.createVariableDeclarationList([
+            factory.createVariableDeclaration('_noFold'),
+          ])));
+
+      this.emittedNoFold = true;
+    }
+
+    ret.push(
+      // exports.<name> = void 0;
+      factory.createExpressionStatement(factory.createBinaryExpression(
+        factory.createPropertyAccessExpression(
+          factory.createIdentifier('exports'),
+          factory.createIdentifier(exportName)),
+        ts.SyntaxKind.EqualsToken,
+        factory.createVoidZero())),
+      // Object.defineProperty(exports, _noFold = "<name>", { get: () => ... });
+      factory.createExpressionStatement(factory.createCallExpression(
+        factory.createPropertyAccessExpression(factory.createIdentifier('Object'), factory.createIdentifier('defineProperty')),
+        undefined,
+        [
+          factory.createIdentifier('exports'),
+          this.assignment('_noFold', factory.createStringLiteral(exportName)),
+          factory.createObjectLiteralExpression([
+            factory.createPropertyAssignment('enumerable', factory.createTrue()),
+            factory.createPropertyAssignment('configurable', factory.createTrue()),
+            factory.createPropertyAssignment('get',
+              factory.createArrowFunction(undefined, undefined, [], undefined, undefined,
+                moduleFormatter(
+                  factory.createCallExpression(factory.createIdentifier('require'), undefined, [factory.createStringLiteral(moduleName)])))),
+          ]),
+        ]
+      )
+    ));
+    return ret;
+  }
+
+  /**
+   * Prevent emitting an export if it has already been emitted before
+   *
+   * This assumes that the symbols have the same definition, and are only duplicated because of
+   * accidental multiple `export *`s.
+   */
+  public moduleGetterOnce(
+    exportName: string,
+    moduleName: string,
+    moduleFormatter: (x: ts.Expression) => ts.Expression,
+  ): ReturnType<ExpressionGenerator['moduleGetter']> {
+    if (this.alreadyEmittedExports.has(exportName)) {
+      return [];
+    }
+    this.alreadyEmittedExports.add(exportName);
+    return this.moduleGetter(exportName, moduleName, moduleFormatter);
+  }
+
+  public assignment(name: string, expression: ts.Expression) {
+    return this.factory.createBinaryExpression(
+      this.factory.createIdentifier(name),
+      ts.SyntaxKind.EqualsToken,
+      expression);
+  }
+
+  public assignmentStatement(name: string, expression: ts.Expression) {
+    return this.factory.createExpressionStatement(this.assignment(name, expression));
+  }
 }
