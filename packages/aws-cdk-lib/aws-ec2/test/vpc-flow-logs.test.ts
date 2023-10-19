@@ -644,10 +644,10 @@ test('log format for built-in types is correct', () => {
 
   template.hasResourceProperties('AWS::EC2::FlowLog', {
     LogFormat: ('${version} ${account-id} ${interface-id} ${srcaddr} ${dstaddr} ${srcport} '
-      + '${dstport} ${protocol} ${packets} ${bytes} ${start} ${end} ${action} ${log-status} '
-      + '${vpc-id} ${subnet-id} ${instance-id} ${tcp-flags} ${type} ${pkt-srcaddr} '
-      + '${pkt-dstaddr} ${region} ${az-id} ${sublocation-type} ${sublocation-id} '
-      + '${pkt-src-aws-service} ${pkt-dst-aws-service} ${flow-direction} ${traffic-path}'),
+                + '${dstport} ${protocol} ${packets} ${bytes} ${start} ${end} ${action} ${log-status} '
+                + '${vpc-id} ${subnet-id} ${instance-id} ${tcp-flags} ${type} ${pkt-srcaddr} '
+                + '${pkt-dstaddr} ${region} ${az-id} ${sublocation-type} ${sublocation-id} '
+                + '${pkt-src-aws-service} ${pkt-dst-aws-service} ${flow-direction} ${traffic-path}'),
   });
 });
 
