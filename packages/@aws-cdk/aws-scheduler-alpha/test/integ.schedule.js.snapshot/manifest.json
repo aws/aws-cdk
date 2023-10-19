@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "33.0.0",
   "artifacts": {
     "aws-cdk-scheduler-schedule.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8e518d2f0d7b4fcf41623a37d5a30fa0a49f5185d9301205cad6e72cc59b84a8.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/70a4ff6207a6b7ce2e7a4354be513e0143bb5f5c671d6826cfb30c010875e4bd.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -62,6 +62,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "DisabledScheduleA1DF7F0F"
+          }
+        ],
+        "/aws-cdk-scheduler-schedule/TargetOverrideSchedule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TargetOverrideScheduleFF8CB184"
           }
         ],
         "/aws-cdk-scheduler-schedule/BootstrapVersion": [

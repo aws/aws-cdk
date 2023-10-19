@@ -1,3 +1,4 @@
+/// !cdk-integ aws-cdk-scheduler-schedule
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -12,6 +13,11 @@ class SomeLambdaTarget implements scheduler.IScheduleTarget {
     return {
       arn: this.fn.functionArn,
       role: this.role,
+      input: scheduler.ScheduleTargetInput.fromText('Input Text'),
+      retryPolicy: {
+        maximumEventAgeInSeconds: 180,
+        maximumRetryAttempts: 3,
+      },
     };
   }
 }
@@ -42,6 +48,18 @@ new scheduler.Schedule(stack, 'DisabledSchedule', {
   enabled: false,
 });
 
+new scheduler.Schedule(stack, 'TargetOverrideSchedule', {
+  schedule: expression,
+  target: target,
+  targetOverrides: {
+    input: scheduler.ScheduleTargetInput.fromText('Changed Text'),
+    maximumEventAge: cdk.Duration.seconds(360),
+    maximumRetryAttempts: 5,
+  },
+});
+
 new IntegTest(app, 'integtest-schedule', {
   testCases: [stack],
 });
+
+app.synth();
