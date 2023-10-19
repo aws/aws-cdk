@@ -679,6 +679,15 @@ test('sameInstanceClassAs compares identical InstanceTypes correctly', () => {
   expect(sameInstanceType.sameInstanceClassAs(comparitor)).toBeTruthy();
 });
 
+test('sameInstanceClassAs compares identical InstanceTypes correctly', () => {
+  // GIVEN
+  const comparitor = InstanceType.of(InstanceClass.M7I_FLEX, InstanceSize.LARGE);
+  //WHEN
+  const instanceType = new InstanceType('m7i-flex.large');
+  //THEN
+  expect(instanceType.sameInstanceClassAs(comparitor)).toBeTruthy();
+});
+
 test('sameInstanceClassAs compares InstanceTypes correctly regardless of size', () => {
   // GIVEN
   const comparitor = InstanceType.of(InstanceClass.T3, InstanceSize.LARGE);

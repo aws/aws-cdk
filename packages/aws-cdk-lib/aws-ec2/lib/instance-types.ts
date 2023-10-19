@@ -1390,7 +1390,7 @@ export class InstanceType {
   }
 
   public sameInstanceClassAs(other: InstanceType): boolean {
-    const instanceClass: RegExp = /^([a-z]+\d{1,2}[a-z]*)\.([a-z0-9]+)$/;
+    const instanceClass: RegExp = /^([a-z-]+\d{1,2}[a-z-]*)\.([a-z0-9-]+)$/;
     const instanceClassId = this.instanceTypeIdentifier.match(instanceClass);
     const otherInstanceClassId = other.instanceTypeIdentifier.match(instanceClass);
     if (instanceClassId == null || otherInstanceClassId == null) {
