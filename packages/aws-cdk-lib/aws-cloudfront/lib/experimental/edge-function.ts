@@ -124,8 +124,8 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
   public grantInvokeUrl(identity: iam.IGrantable): iam.Grant {
     return this.lambda.grantInvokeUrl(identity);
   }
-  public grantInvokeCompositePrincipal(compositePrincipals: iam.CompositePrincipal): iam.Grant[] {
-    return this.lambda.grantInvokeCompositePrincipal(compositePrincipals);
+  public grantInvokeCompositePrincipal(compositePrincipal: iam.CompositePrincipal): iam.Grant[] {
+    return this.lambda.grantInvokeCompositePrincipal(compositePrincipal);
   }
   public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.lambda.metric(metricName, { ...props, region: EdgeFunction.EDGE_REGION });

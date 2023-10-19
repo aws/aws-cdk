@@ -105,7 +105,7 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
   /**
    * Grant multiple principals the ability to invoke this Lambda via CompositePrincipal
    */
-  grantInvokeCompositePrincipal(principals: iam.CompositePrincipal): iam.Grant[];
+  grantInvokeCompositePrincipal(compositePrincipal: iam.CompositePrincipal): iam.Grant[];
 
   /**
    * Return the given named metric for this Lambda
@@ -457,8 +457,8 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
   /**
    * Grant multiple principals the ability to invoke this Lambda via CompositePrincipal
    */
-  public grantInvokeCompositePrincipal(compositePrincipals: iam.CompositePrincipal): iam.Grant[] {
-    return compositePrincipals.principals.map((principal) => this.grantInvoke(principal));
+  public grantInvokeCompositePrincipal(compositePrincipal: iam.CompositePrincipal): iam.Grant[] {
+    return compositePrincipal.principals.map((principal) => this.grantInvoke(principal));
   }
 
   public addEventSource(source: IEventSource) {

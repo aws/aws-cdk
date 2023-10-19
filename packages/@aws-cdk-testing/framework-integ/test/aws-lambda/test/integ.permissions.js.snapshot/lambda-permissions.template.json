@@ -90,7 +90,7 @@
     }
    }
   },
-  "MyLambdaInvokemcfVL7pJA0SB0Bm8yGhELN3cZ1c8fYqVoNxjNP4pYCE95D85164": {
+  "MyLambdaInvokeSz2P2C4jOiX4AmIs1ANCq2qfq8PhgVeKtRAVyAkFmM7C8BE4B5": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -101,7 +101,7 @@
      ]
     },
     "Principal": "*",
-    "PrincipalOrgID": "o-zzzzzzzzzz"
+    "PrincipalOrgID": "o-mmmmmmmmmm"
    }
   },
   "MyLambdaInvokeFcyXBRX02EWa52GlFECQiCzDt0fdRUDi4mo4foC5aU41318F58": {

@@ -24,6 +24,6 @@ const role = new iam.Role(stack, 'MyRole', {
 fnUrl.grantInvokeUrl(role);
 
 fn.grantInvokeCompositePrincipal(new iam.CompositePrincipal(
-  new iam.OrganizationPrincipal('o-zzzzzzzzzz'),
+  new iam.OrganizationPrincipal('o-mmmmmmmmmm'),
   new iam.ServicePrincipal('apigateway.amazonaws.com'),
 ));
