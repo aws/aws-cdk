@@ -911,6 +911,8 @@ function configureMock(pr: Subset<linter.GitHubPr>, prFiles?: linter.GitHubFile[
     listReviews: mockListReviews,
 
     dismissReview() {},
+
+    update() {},
   };
 
   const issuesClient = {
