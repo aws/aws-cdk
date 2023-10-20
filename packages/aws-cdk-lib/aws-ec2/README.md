@@ -2,7 +2,7 @@
 
 
 
-The `@aws-cdk/aws-ec2` package contains primitives for setting up networking and
+The `aws-cdk-lib/aws-ec2` package contains primitives for setting up networking and
 instances.
 
 ```ts nofixture
@@ -180,6 +180,7 @@ Which subnets are selected is evaluated as follows:
   * `onePerAz`: chooses at most one subnet per availability zone
   * `containsIpAddresses`: chooses a subnet which contains *any* of the listed ip addresses
   * `byCidrMask`: chooses subnets that have the provided CIDR netmask
+  * `byCidrRanges`: chooses subnets which are inside any of the specified CIDR ranges
 
 ### Using NAT instances
 
@@ -878,7 +879,7 @@ By default, routes will be propagated on the route tables associated with the pr
 private subnets exist, isolated subnets are used. If no isolated subnets exist, public subnets are
 used. Use the `Vpc` property `vpnRoutePropagation` to customize this behavior.
 
-VPN connections expose [metrics (cloudwatch.Metric)](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-cloudwatch/README.md) across all tunnels in the account/region and per connection:
+VPN connections expose [metrics (cloudwatch.Metric)](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-cloudwatch/README.md) across all tunnels in the account/region and per connection:
 
 ```ts fixture=with-vpc
 // Across all tunnels in the account/region
@@ -963,7 +964,7 @@ Alternatively, existing security groups can be used by specifying the `securityG
 
 ### VPC endpoint services
 
-A VPC endpoint service enables you to expose a Network Load Balancer(s) as a provider service to consumers, who connect to your service over a VPC endpoint. You can restrict access to your service via allowed principals (anything that extends ArnPrincipal), and require that new connections be manually accepted.
+A VPC endpoint service enables you to expose a Network Load Balancer(s) as a provider service to consumers, who connect to your service over a VPC endpoint. You can restrict access to your service via allowed principals (anything that extends ArnPrincipal), and require that new connections be manually accepted. You can also enable Contributor Insight rules.
 
 ```ts
 declare const networkLoadBalancer1: elbv2.NetworkLoadBalancer;
@@ -972,7 +973,8 @@ declare const networkLoadBalancer2: elbv2.NetworkLoadBalancer;
 new ec2.VpcEndpointService(this, 'EndpointService', {
   vpcEndpointServiceLoadBalancers: [networkLoadBalancer1, networkLoadBalancer2],
   acceptanceRequired: true,
-  allowedPrincipals: [new iam.ArnPrincipal('arn:aws:iam::123456789012:root')]
+  allowedPrincipals: [new iam.ArnPrincipal('arn:aws:iam::123456789012:root')],
+  contributorInsights: true
 });
 ```
 
@@ -980,8 +982,8 @@ Endpoint services support private DNS, which makes it easier for clients to conn
 You can enable private DNS on an endpoint service like so:
 
 ```ts
-import { HostedZone, VpcEndpointServiceDomainName } from 'aws-cdk-lib/aws-route53';
-declare const zone: HostedZone;
+import { PublicHostedZone, VpcEndpointServiceDomainName } from 'aws-cdk-lib/aws-route53';
+declare const zone: PublicHostedZone;
 declare const vpces: ec2.VpcEndpointService;
 
 new VpcEndpointServiceDomainName(this, 'EndpointDomain', {
@@ -1086,18 +1088,18 @@ new ec2.Instance(this, 'Instance3', {
   }),
 });
 
-// AWS Linux 2022
+// Amazon Linux 2023
 new ec2.Instance(this, 'Instance4', {
   vpc,
   instanceType,
-  machineImage: ec2.MachineImage.latestAmazonLinux2022(),
+  machineImage: ec2.MachineImage.latestAmazonLinux2023(),
 });
 
 // Graviton 3 Processor
 new ec2.Instance(this, 'Instance5', {
   vpc,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.C7G, ec2.InstanceSize.LARGE),
-  machineImage: ec2.MachineImage.latestAmazonLinux2022({
+  machineImage: ec2.MachineImage.latestAmazonLinux2023({
     cpuType: ec2.AmazonLinuxCpuType.ARM_64,
   }),
 });
@@ -1301,7 +1303,7 @@ declare const instanceType: ec2.InstanceType;
 new ec2.Instance(this, 'Instance', {
   vpc,
   instanceType,
-  machineImage: ec2.MachineImage.latestAmazonLinux2022(),
+  machineImage: ec2.MachineImage.latestAmazonLinux2023(),
 
   init: ec2.CloudFormationInit.fromElements(
     // Create a simple config file that runs a Python web server
@@ -1872,7 +1874,7 @@ const instanceProfile = new iam.InstanceProfile(this, 'InstanceProfile', {
 });
 
 const template = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
-  machineImage: ec2.MachineImage.latestAmazonLinux2022(),
+  machineImage: ec2.MachineImage.latestAmazonLinux2023(),
   securityGroup: new ec2.SecurityGroup(this, 'LaunchTemplateSG', {
     vpc: vpc,
   }),
@@ -1905,7 +1907,7 @@ const sg2 = new ec2.SecurityGroup(this, 'sg2', {
 });
 
 const launchTemplate = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
-  machineImage: ec2.MachineImage.latestAmazonLinux2022(),
+  machineImage: ec2.MachineImage.latestAmazonLinux2023(),
   securityGroup: sg1,
 });
 
@@ -1931,7 +1933,7 @@ declare const instanceType: ec2.InstanceType;
 new ec2.Instance(this, 'Instance1', {
   vpc,
   instanceType,
-  machineImage: ec2.MachineImage.latestAmazonLinux2022(),
+  machineImage: ec2.MachineImage.latestAmazonLinux2023(),
   detailedMonitoring: true,
 });
 ```
@@ -1961,8 +1963,8 @@ new ec2.Instance(this, 'Instance1', {
   vpc,
   instanceType,
 
-  // Amazon Linux 2 comes with SSM Agent by default
-  machineImage: ec2.MachineImage.latestAmazonLinux2022(),
+  // Amazon Linux 2023 comes with SSM Agent by default
+  machineImage: ec2.MachineImage.latestAmazonLinux2023(),
 
   // Turn on SSM
   ssmSessionPermissions: true,

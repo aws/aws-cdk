@@ -11,7 +11,7 @@ describe('architecture', () => {
     const testLambda = new lambda.Function(stack, 'testLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     },
     );
 

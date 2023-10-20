@@ -172,11 +172,6 @@ export class FactName {
   public static readonly FIREHOSE_CIDR_BLOCK = 'firehoseCidrBlock';
 
   /**
-   * The default NodeJS version used for custom resource function runtimes
-   */
-  public static readonly DEFAULT_CR_NODE_VERSION = 'defaultCrNodeVersion';
-
-  /**
    * The ARN of CloudWatch Lambda Insights for a version (e.g. 1.0.98.0)
    */
   public static cloudwatchLambdaInsightsVersion(version: string, arch?: string) {
@@ -184,6 +179,16 @@ export class FactName {
     // default to x86_64 for backwards compatibility
     const suffix = version.split('.').join('_') + `_${arch ?? 'x86_64'}`;
     return `cloudwatch-lambda-insights-version:${suffix}`;
+  }
+
+  /**
+   * The ARN of AppConfig Lambda Layer for a given version (e.g. 2.0.181)
+   * @param version The layer version.
+   * @param arch The architecture (optional), defaults to x86_64.
+   */
+  public static appConfigLambdaLayerVersion(version: string, arch?: string) {
+    const suffix = version.split('.').join('_') + `_${arch ?? 'x86_64'}`;
+    return `appconfig-lambda-layer:${suffix}`;
   }
 
   /**

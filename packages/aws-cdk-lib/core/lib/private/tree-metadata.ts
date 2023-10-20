@@ -10,7 +10,9 @@ import { ISynthesisSession } from '../stack-synthesizers';
 import { IInspectable, TreeInspector } from '../tree';
 
 const FILE_PATH = 'tree.json';
-
+type Mutable<T> = {
+  -readonly [P in keyof T]: Mutable<T[P]>;
+};
 /**
  * Construct that is automatically attached to the top-level `App`.
  * This generates, as part of synthesis, a file containing the construct tree and the metadata for each node in the tree.
@@ -35,7 +37,7 @@ export class TreeMetadata extends Construct {
         try {
           return visit(c);
         } catch (e) {
-          Annotations.of(this).addWarning(`Failed to render tree metadata for node [${c.node.id}]. Reason: ${e}`);
+          Annotations.of(this).addWarningV2(`@aws-cdk/core:failedToRenderTreeMetadata-${c.node.id}`, `Failed to render tree metadata for node [${c.node.id}]. Reason: ${e}`);
           return undefined;
         }
       });
@@ -109,21 +111,34 @@ export class TreeMetadata extends Construct {
    * tree that leads to a specific construct so drop any nodes not in that path
    *
    * @param node Node the current tree node
-   * @param child Node the previous tree node and the current node's child node
-   * @returns Node the new tree
+   * @returns Node the root node of the new tree
    */
-  private renderTreeWithChildren(node: Node, child?: Node): Node {
-    if (node.parent) {
-      return this.renderTreeWithChildren(node.parent, node);
-    } else if (child) {
-      return {
-        ...node,
-        children: {
-          [child.id]: child,
-        },
+  private renderTreeWithChildren(node: Node): Node {
+    /**
+     * @param currentNode - The current node being evaluated
+     * @param currentNodeChild - The previous node which should be the only child of the current node
+     * @returns The node with all children removed except for the path to the current node
+     */
+    function renderTreeWithSingleChild(currentNode: Mutable<Node>, currentNodeChild: Mutable<Node>) {
+      currentNode.children = {
+        [currentNodeChild.id]: currentNodeChild,
       };
+      if (currentNode.parent) {
+        currentNode.parent = renderTreeWithSingleChild(currentNode.parent, currentNode);
+      }
+      return currentNode;
     }
-    return node;
+
+    const currentNode = node.parent ? renderTreeWithSingleChild(node.parent, node) : node;
+    // now that we have the new tree we need to return the root node
+    let root = currentNode;
+    do {
+      if (root.parent) {
+        root = root.parent;
+      }
+    } while (root.parent);
+
+    return root;
   }
 
   /**

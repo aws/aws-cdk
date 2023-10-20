@@ -15,7 +15,16 @@
     "actualPath": "Clusters.0.ClusterParameterGroups.0.ParameterApplyStatus",
     "parameters": {
      "ClusterIdentifier": {
-      "Fn::ImportValue": "aws-cdk-redshift-cluster-reboot-integ:ExportsOutputRefClusterEB0386A796A0E3FE"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-redshift-cluster-reboot-integ:ExportsOutputRefClusterEB0386A796A0E3FE"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "true",
@@ -23,7 +32,7 @@
      "Clusters.0.ClusterParameterGroups.0.ParameterGroupName",
      "Clusters.0.ClusterParameterGroups.0.ParameterApplyStatus"
     ],
-    "salt": "1689616490389"
+    "salt": "1697143555526"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -95,7 +104,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4b68460f3e95ba7666544bc5b3abded22c08631b615ecf4d805872c16b9d5a9b.zip"
+     "S3Key": "211bd8c514e07e047addb5c06afe6f8e85ce4e0b19b64ad78b28e84fc09aafe7.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -121,13 +130,21 @@
     "expected": "{\"$ObjectLike\":{\"Parameters\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"ParameterName\":\"enable_user_activity_logging\",\"ParameterValue\":\"false\"}},{\"$ObjectLike\":{\"ParameterName\":\"use_fips_ssl\",\"ParameterValue\":\"true\"}}]}}}",
     "parameters": {
      "ParameterGroupName": {
-      "Fn::ImportValue": "aws-cdk-redshift-cluster-reboot-integ:ExportsOutputRefParameterGroup5E32DECBB33EA140"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-redshift-cluster-reboot-integ:ExportsOutputRefParameterGroup5E32DECBB33EA140"
+        },
+        "\""
+       ]
+      ]
      },
-     "Source": "user"
+     "Source": "\"user\""
     },
     "flattenResponse": "false",
-    "outputPaths": [],
-    "salt": "1689616490390"
+    "salt": "1697143555526"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -146,13 +163,21 @@
     "expected": "{\"$ObjectLike\":{\"Parameters\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"ParameterName\":\"auto_analyze\",\"ParameterValue\":\"true\"}},{\"$ObjectLike\":{\"ParameterName\":\"auto_mv\",\"ParameterValue\":\"true\"}},{\"$ObjectLike\":{\"ParameterName\":\"datestyle\",\"ParameterValue\":\"ISO, MDY\"}},{\"$ObjectLike\":{\"ParameterName\":\"enable_case_sensitive_identifier\",\"ParameterValue\":\"false\"}},{\"$ObjectLike\":{\"ParameterName\":\"extra_float_digits\",\"ParameterValue\":\"0\"}},{\"$ObjectLike\":{\"ParameterName\":\"max_concurrency_scaling_clusters\",\"ParameterValue\":\"1\"}},{\"$ObjectLike\":{\"ParameterName\":\"max_cursor_result_set_size\",\"ParameterValue\":\"default\"}},{\"$ObjectLike\":{\"ParameterName\":\"query_group\",\"ParameterValue\":\"default\"}},{\"$ObjectLike\":{\"ParameterName\":\"require_ssl\",\"ParameterValue\":\"false\"}},{\"$ObjectLike\":{\"ParameterName\":\"search_path\",\"ParameterValue\":\"$user, public\"}},{\"$ObjectLike\":{\"ParameterName\":\"statement_timeout\",\"ParameterValue\":\"0\"}},{\"$ObjectLike\":{\"ParameterName\":\"wlm_json_configuration\",\"ParameterValue\":\"[{\\\"auto_wlm\\\":true}]\"}}]}}}",
     "parameters": {
      "ParameterGroupName": {
-      "Fn::ImportValue": "aws-cdk-redshift-cluster-reboot-integ:ExportsOutputRefParameterGroup5E32DECBB33EA140"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-redshift-cluster-reboot-integ:ExportsOutputRefParameterGroup5E32DECBB33EA140"
+        },
+        "\""
+       ]
+      ]
      },
-     "Source": "engine-default"
+     "Source": "\"engine-default\""
     },
     "flattenResponse": "false",
-    "outputPaths": [],
-    "salt": "1689616490390"
+    "salt": "1697143555527"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

@@ -6,6 +6,17 @@ import * as logs from 'aws-cdk-lib/aws-logs';
 import * as cdk from 'aws-cdk-lib';
 import { RemovalPolicy } from 'aws-cdk-lib';
 import * as rds from 'aws-cdk-lib/aws-rds';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
+
+/**********************************************************************************************************************
+ *
+ *    Warning! This test case can not be deployed!
+ *
+ *    Save yourself some time and move on.
+ *    The latest given reason is:
+ *    - 2023-08-30: `rds.LicenseModel.BRING_YOUR_OWN_LICENSE` is not allowed on our dev accounts, @mrgrain
+ *
+ *********************************************************************************************************************/
 
 const app = new cdk.App();
 
@@ -86,7 +97,7 @@ class DatabaseInstanceStack extends cdk.Stack {
     const fn = new lambda.Function(this, 'Function', {
       code: lambda.Code.fromInline('exports.handler = (event) => console.log(event);'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
     });
 
     const availabilityRule = instance.onEvent('Availability', { target: new targets.LambdaFunction(fn) });

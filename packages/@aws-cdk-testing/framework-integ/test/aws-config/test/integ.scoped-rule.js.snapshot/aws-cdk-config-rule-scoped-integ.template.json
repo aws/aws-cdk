@@ -49,14 +49,14 @@
     "Code": {
      "ZipFile": "exports.handler = (event) => console.log(event);"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "CustomFunctionServiceRoleD3F73B79",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "CustomFunctionServiceRoleD3F73B79"
@@ -81,6 +81,11 @@
   "Custom8166710A": {
    "Type": "AWS::Config::ConfigRule",
    "Properties": {
+    "Scope": {
+     "ComplianceResourceTypes": [
+      "AWS::EC2::Instance"
+     ]
+    },
     "Source": {
      "Owner": "CUSTOM_LAMBDA",
      "SourceDetails": [
@@ -95,11 +100,6 @@
        "Arn"
       ]
      }
-    },
-    "Scope": {
-     "ComplianceResourceTypes": [
-      "AWS::EC2::Instance"
-     ]
     }
    },
    "DependsOn": [

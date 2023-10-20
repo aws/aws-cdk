@@ -7,6 +7,17 @@ import { App, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 import * as targets from 'aws-cdk-lib/aws-route53-targets';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
+
+/**********************************************************************************************************************
+ *
+ *    Warning! This test case can not be deployed!
+ *
+ *    Save yourself some time and move on.
+ *    The latest given reason is:
+ *    - 2023-08-30: With hardcoded domain name and ARNs this will never work, @mrgrain
+ *
+ *********************************************************************************************************************/
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string) {
@@ -23,7 +34,7 @@ class TestStack extends Stack {
           body: 'hello, world!'
         };
       };`),
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
       handler: 'index.handler',
     });
 

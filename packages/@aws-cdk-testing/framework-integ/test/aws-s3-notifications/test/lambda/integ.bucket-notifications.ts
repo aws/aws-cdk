@@ -2,6 +2,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
 import * as s3n from 'aws-cdk-lib/aws-s3-notifications';
+import { STANDARD_NODEJS_RUNTIME } from '../../../config';
 
 const app = new cdk.App();
 
@@ -12,7 +13,7 @@ const bucketA = new s3.Bucket(stack, 'MyBucket', {
 });
 
 const fn = new lambda.Function(stack, 'MyFunction', {
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`),
 });

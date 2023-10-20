@@ -43,15 +43,7 @@ describe('log retention', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       Handler: 'index.handler',
-      Runtime: {
-        'Fn::FindInMap': [
-          'DefaultCrNodeVersionMap',
-          {
-            'Ref': 'AWS::Region',
-          },
-          'value',
-        ],
-      },
+      Runtime: 'nodejs18.x',
     });
 
     Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
@@ -540,6 +532,22 @@ describe('log retention', () => {
         'aws:asset:is-bundled': false,
         'aws:asset:property': 'Code',
       },
+    });
+  });
+
+  test('function timeout is 15 minutes', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new LogRetention(stack, 'MyLambda', {
+      logGroupName: 'group',
+      retention: RetentionDays.ONE_DAY,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Timeout: 900,
     });
   });
 });

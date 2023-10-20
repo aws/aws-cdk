@@ -77,6 +77,25 @@ describe('State Machine Resources', () => {
     });
   }),
 
+  test('Fail should render ErrorPath / CausePath correctly', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fail = new stepfunctions.Fail(stack, 'Fail', {
+      errorPath: stepfunctions.JsonPath.stringAt('$.error'),
+      causePath: stepfunctions.JsonPath.stringAt('$.cause'),
+    });
+
+    // WHEN
+    const failState = stack.resolve(fail.toStateJson());
+
+    // THEN
+    expect(failState).toStrictEqual({
+      CausePath: '$.cause',
+      ErrorPath: '$.error',
+      Type: 'Fail',
+    });
+  }),
+
   testDeprecated('Task should render InputPath / Parameters / OutputPath correctly', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -623,6 +642,7 @@ describe('State Machine Resources', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const task = new stepfunctions.Pass(stack, 'Pass', {
+      stateName: 'my-pass-state',
       inputPath: '$',
       outputPath: '$.state',
       parameters: {

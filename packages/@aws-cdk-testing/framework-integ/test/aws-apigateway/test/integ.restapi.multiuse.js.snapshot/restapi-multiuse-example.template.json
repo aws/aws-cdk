@@ -37,14 +37,14 @@
     "Code": {
      "ZipFile": "exports.handler = function helloCode(_event, _context, callback) {\n    return callback(undefined, {\n        statusCode: 200,\n        body: 'hello, world!',\n    });\n}"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "HelloServiceRole1E55EA16",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "HelloServiceRole1E55EA16"
@@ -108,10 +108,10 @@
   "helloapiDeploymentFA89AEEC3622d8c965f356a33fd95586d24bf138": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
+    "Description": "Automatically created by the RestApi construct",
     "RestApiId": {
      "Ref": "helloapi4446A35B"
-    },
-    "Description": "Automatically created by the RestApi construct"
+    }
    },
    "DependsOn": [
     "helloapihelloGETE6A58337",
@@ -121,11 +121,11 @@
   "helloapiDeploymentStageprod677E2C4F": {
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
-    "RestApiId": {
-     "Ref": "helloapi4446A35B"
-    },
     "DeploymentId": {
      "Ref": "helloapiDeploymentFA89AEEC3622d8c965f356a33fd95586d24bf138"
+    },
+    "RestApiId": {
+     "Ref": "helloapi4446A35B"
     },
     "StageName": "prod"
    },
@@ -229,14 +229,8 @@
   "helloapihelloGETE6A58337": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "HttpMethod": "GET",
-    "ResourceId": {
-     "Ref": "helloapihello4AA00177"
-    },
-    "RestApiId": {
-     "Ref": "helloapi4446A35B"
-    },
     "AuthorizationType": "NONE",
+    "HttpMethod": "GET",
     "Integration": {
      "IntegrationHttpMethod": "POST",
      "Type": "AWS_PROXY",
@@ -263,6 +257,12 @@
        ]
       ]
      }
+    },
+    "ResourceId": {
+     "Ref": "helloapihello4AA00177"
+    },
+    "RestApiId": {
+     "Ref": "helloapi4446A35B"
     }
    }
   },
@@ -324,10 +324,10 @@
   "secondapiDeployment20F2C70088fa5a027620045bea3e5043c6d31f5a": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
+    "Description": "Automatically created by the RestApi construct",
     "RestApiId": {
      "Ref": "secondapi730EF3C7"
-    },
-    "Description": "Automatically created by the RestApi construct"
+    }
    },
    "DependsOn": [
     "secondapihelloGETDC5BBB18",
@@ -337,11 +337,11 @@
   "secondapiDeploymentStageprod40491DF0": {
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
-    "RestApiId": {
-     "Ref": "secondapi730EF3C7"
-    },
     "DeploymentId": {
      "Ref": "secondapiDeployment20F2C70088fa5a027620045bea3e5043c6d31f5a"
+    },
+    "RestApiId": {
+     "Ref": "secondapi730EF3C7"
     },
     "StageName": "prod"
    },
@@ -445,14 +445,8 @@
   "secondapihelloGETDC5BBB18": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "HttpMethod": "GET",
-    "ResourceId": {
-     "Ref": "secondapihello7264EB69"
-    },
-    "RestApiId": {
-     "Ref": "secondapi730EF3C7"
-    },
     "AuthorizationType": "NONE",
+    "HttpMethod": "GET",
     "Integration": {
      "IntegrationHttpMethod": "POST",
      "Type": "AWS_PROXY",
@@ -479,6 +473,12 @@
        ]
       ]
      }
+    },
+    "ResourceId": {
+     "Ref": "secondapihello7264EB69"
+    },
+    "RestApiId": {
+     "Ref": "secondapi730EF3C7"
     }
    }
   }

@@ -1235,7 +1235,7 @@ describe('auto scaling group', () => {
     });
 
     // THEN
-    Annotations.fromStack(stack).hasWarning('/Default/MyStack', 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+    Annotations.fromStack(stack).hasWarning('/Default/MyStack', 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1 [ack: @aws-cdk/aws-autoscaling:iopsIgnored]');
   });
 
   test('warning if iops and volumeType !== IO1', () => {
@@ -1259,7 +1259,7 @@ describe('auto scaling group', () => {
     });
 
     // THEN
-    Annotations.fromStack(stack).hasWarning('/Default/MyStack', 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+    Annotations.fromStack(stack).hasWarning('/Default/MyStack', 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1 [ack: @aws-cdk/aws-autoscaling:iopsIgnored]');
   });
 
   test('step scaling on metric', () => {
@@ -2286,6 +2286,83 @@ test('ssm permissions adds right managed policy', () => {
     vpc: mockVpc(stack),
     machineImage: new AmazonLinuxImage(),
     instanceType: InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.LARGE),
+    ssmSessionPermissions: true,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+    ManagedPolicyArns: [
+      {
+        'Fn::Join': ['', [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':iam::aws:policy/AmazonSSMManagedInstanceCore',
+        ]],
+      },
+    ],
+  });
+});
+
+test('ssm permissions adds right managed policy with launch template', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  const role = new iam.Role(stack, 'role', {
+    assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+  });
+
+  const lt = new LaunchTemplate(stack, 'launch-template', {
+    machineImage: ec2.MachineImage.latestAmazonLinux2(),
+    instanceType: InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.LARGE),
+    role: role,
+  });
+
+  new autoscaling.AutoScalingGroup(stack, 'mip-asg', {
+    vpc: mockVpc(stack),
+    launchTemplate: lt,
+    ssmSessionPermissions: true,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+    ManagedPolicyArns: [
+      {
+        'Fn::Join': ['', [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':iam::aws:policy/AmazonSSMManagedInstanceCore',
+        ]],
+      },
+    ],
+  });
+});
+
+test('ssm permissions adds right managed policy with mixed instance policy', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  const role = new iam.Role(stack, 'role', {
+    assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+  });
+
+  const lt = new LaunchTemplate(stack, 'launch-template', {
+    machineImage: ec2.MachineImage.latestAmazonLinux2(),
+    instanceType: InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.LARGE),
+    role: role,
+  });
+
+  new autoscaling.AutoScalingGroup(stack, 'mip-asg', {
+    vpc: mockVpc(stack),
+    mixedInstancesPolicy: {
+      instancesDistribution: {
+        onDemandPercentageAboveBaseCapacity: 50,
+      },
+      launchTemplate: lt,
+      launchTemplateOverrides: [
+        { instanceType: new ec2.InstanceType('t3.micro') },
+        { instanceType: new ec2.InstanceType('t3a.micro') },
+      ],
+    },
     ssmSessionPermissions: true,
   });
 

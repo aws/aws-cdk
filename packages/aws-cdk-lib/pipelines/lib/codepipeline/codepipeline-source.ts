@@ -101,7 +101,7 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    * If you need access to symlinks or the repository history, be sure to set
    * `codeBuildCloneOutput`.
    *
-   * @param repoString A string that encodes owner and repository separated by a slash (e.g. 'owner/repo').
+   * @param repoString A string that encodes owner and repository separated by a slash (e.g. 'owner/repo'). The provided string must be resolvable at runtime.
    * @param branch The branch to use.
    * @param props The source properties, including the connection ARN.
    *
@@ -312,7 +312,7 @@ export interface S3SourceOptions {
 
 class S3Source extends CodePipelineSource {
   constructor(readonly bucket: IBucket, private readonly objectKey: string, readonly props: S3SourceOptions) {
-    super(Node.of(bucket).addr);
+    super(`${Node.of(bucket).addr}-${objectKey}`);
 
     this.configurePrimaryOutput(new FileSet('Source', this));
   }
@@ -422,7 +422,7 @@ class CodeStarConnectionSource extends CodePipelineSource {
   private readonly repo: string;
 
   constructor(repoString: string, readonly branch: string, readonly props: ConnectionSourceOptions) {
-    super(repoString);
+    super(`${repoString}-${branch}`);
 
     const parts = repoString.split('/');
     if (Token.isUnresolved(repoString) || parts.length !== 2) {
@@ -492,8 +492,8 @@ export interface CodeCommitSourceOptions {
 class CodeCommitSource extends CodePipelineSource {
   constructor(private readonly repository: codecommit.IRepository, private readonly branch: string, private readonly props: CodeCommitSourceOptions) {
     super(Token.isUnresolved(repository.repositoryName)
-      ? Node.of(repository).addr
-      : repository.repositoryName);
+      ? `${Node.of(repository).addr}-${branch}`
+      : `${repository.repositoryName}-${branch}`);
 
     this.configurePrimaryOutput(new FileSet('Source', this));
   }

@@ -115,13 +115,13 @@
                       },
                       "s3Key": "deploy-time/68539effc3f7ad46fff9765606c2a01b7f7965833643ab37e62799f19a37f650.zip"
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "lambdas3ServiceRoleC9EDE33A",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
                     "runtime": "python3.10"
                   }
                 },
@@ -234,13 +234,13 @@
                         "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/default-resourcesmax/ecr-asset/1:16624c2a162b07c5cc0e2c59c484f638bac238ca558ccbdc2aa0e0535df3e622"
                       }
                     },
+                    "packageType": "Image",
                     "role": {
                       "Fn::GetAtt": [
                         "lambdaecr1copyServiceRole2A9FAF5F",
                         "Arn"
                       ]
-                    },
-                    "packageType": "Image"
+                    }
                   }
                 },
                 "constructInfo": {
@@ -352,13 +352,13 @@
                         "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/default-resourcesmax/ecr-asset-2:16624c2a162b07c5cc0e2c59c484f638bac238ca558ccbdc2aa0e0535df3e622"
                       }
                     },
+                    "packageType": "Image",
                     "role": {
                       "Fn::GetAtt": [
                         "lambdaecrtwoServiceRole13E37F90",
                         "Arn"
                       ]
-                    },
-                    "packageType": "Image"
+                    }
                   }
                 },
                 "constructInfo": {
@@ -781,7 +781,8 @@
                               "Action": [
                                 "s3:DeleteObject*",
                                 "s3:GetBucket*",
-                                "s3:List*"
+                                "s3:List*",
+                                "s3:PutBucketPolicy"
                               ],
                               "Effect": "Allow",
                               "Principal": {
@@ -1082,6 +1083,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECR::Repository",
                   "aws:cdk:cloudformation:props": {
+                    "imageTagMutability": "IMMUTABLE",
                     "lifecyclePolicy": {
                       "lifecyclePolicyText": "{\"rules\":[{\"rulePriority\":1,\"description\":\"Garbage collect old image versions\",\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":3},\"action\":{\"type\":\"expire\"}}]}"
                     },
@@ -1159,6 +1161,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECR::Repository",
                   "aws:cdk:cloudformation:props": {
+                    "imageTagMutability": "IMMUTABLE",
                     "lifecyclePolicy": {
                       "lifecyclePolicyText": "{\"rules\":[{\"rulePriority\":1,\"description\":\"Garbage collect old image versions\",\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":3},\"action\":{\"type\":\"expire\"}}]}"
                     },
@@ -1219,7 +1222,7 @@
                 "path": "integ-tests/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
@@ -1265,7 +1268,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.55"
+          "version": "10.2.70"
         }
       }
     },

@@ -290,7 +290,15 @@ describe('cors', () => {
               'method.response.header.Access-Control-Allow-Methods': "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
             },
             ResponseTemplates: {
-              'application/json': '#set($origin = $input.params().header.get("Origin"))\n#if($origin == "") #set($origin = $input.params().header.get("origin")) #end\n#if($origin.matches("https://amazon.com") || $origin.matches("https://aws.amazon.com"))\n  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)\n#end',
+              'application/json': [
+                '#set($origin = $input.params().header.get("Origin"))',
+                '#if($origin == "")',
+                '  #set($origin = $input.params().header.get("origin"))',
+                '#end',
+                '#if($origin == "https://amazon.com" || $origin == "https://aws.amazon.com")',
+                '  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)',
+                '#end',
+              ].join('\n'),
             },
             StatusCode: '204',
           },
@@ -634,7 +642,7 @@ describe('cors', () => {
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
       code: lambda.Code.fromInline('boom'),
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
     // WHEN
@@ -660,6 +668,51 @@ describe('cors', () => {
       HttpMethod: 'OPTIONS',
       ResourceId: {
         Ref: 'lambdarestapiproxyE3AE07E3',
+      },
+    });
+  });
+
+  test('defaultCorsPreflightOptions can be used to specify multiple origins', () => {
+    // GIVEN
+    const stack = new Stack();
+    const api = new apigw.RestApi(stack, 'api');
+
+    // WHEN
+    api.root.addResource('MyResource', {
+      defaultCorsPreflightOptions: {
+        allowOrigins: ['https://amazon.com', 'https://twitch.tv'],
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+      Integration: {
+        IntegrationResponses: [
+          {
+            ResponseParameters: {
+              'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+              'method.response.header.Access-Control-Allow-Origin': "'https://amazon.com'",
+              'method.response.header.Vary': "'Origin'",
+              'method.response.header.Access-Control-Allow-Methods': "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
+            },
+            ResponseTemplates: {
+              'application/json': [
+                '#set($origin = $input.params().header.get("Origin"))',
+                '#if($origin == "")',
+                '  #set($origin = $input.params().header.get("origin"))',
+                '#end',
+                '#if($origin == "https://twitch.tv")',
+                '  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)',
+                '#end',
+              ].join('\n'),
+            },
+            StatusCode: '204',
+          },
+        ],
+        RequestTemplates: {
+          'application/json': '{ statusCode: 200 }',
+        },
+        Type: 'MOCK',
       },
     });
   });

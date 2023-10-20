@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "34.0.0",
   "artifacts": {
     "aws-cdk-firehose-delivery-stream-source-stream.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/10e54a44cd2b6f73e19dab6bb92ac8ecc3e61ee0afe895acc57cd610ac5e1120.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/64eae3903c3ecdce5113c92844e63dfd0056464ecf7d1351e86180364d20c1c0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -87,6 +87,12 @@
             "data": "awscdkawskinesisfirehoseCidrBlocks"
           }
         ],
+        "/aws-cdk-firehose-delivery-stream-source-stream/Delivery Stream No Source Or Encryption Key/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeliveryStreamNoSourceOrEncryptionKey0E4AAB82"
+          }
+        ],
         "/aws-cdk-firehose-delivery-stream-source-stream/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -97,6 +103,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "DeliveryStreamNoSourceorEncryptionKey49457027": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeliveryStreamNoSourceorEncryptionKey49457027",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

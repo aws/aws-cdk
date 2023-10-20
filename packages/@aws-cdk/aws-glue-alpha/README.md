@@ -105,6 +105,26 @@ new glue.Job(this, 'RayJob', {
 });
 ```
 
+### Enable Spark UI
+
+Enable Spark UI setting the `sparkUI` property.
+
+```ts
+new glue.Job(this, 'EnableSparkUI', {
+  jobName: 'EtlJobWithSparkUIPrefix',
+  sparkUI: {
+    enabled: true,
+  },
+  executable: glue.JobExecutable.pythonEtl({
+    glueVersion: glue.GlueVersion.V3_0,
+    pythonVersion: glue.PythonVersion.THREE,
+    script: glue.Code.fromAsset(path.join(__dirname, 'job-script/hello_world.py')),
+  }),
+});
+```
+
+The `sparkUI` property also allows the specification of an s3 bucket and a bucket prefix.
+
 See [documentation](https://docs.aws.amazon.com/glue/latest/dg/add-job.html) for more information on adding jobs in Glue.
 
 ## Connection
@@ -191,7 +211,7 @@ A Glue table describes a table of data in S3: its structure (column names and ty
 
 ```ts
 declare const myDatabase: glue.Database;
-new glue.Table(this, 'MyTable', {
+new glue.S3Table(this, 'MyTable', {
   database: myDatabase,
   columns: [{
     name: 'col1',
@@ -210,7 +230,7 @@ By default, a S3 bucket will be created to store the table's data but you can ma
 ```ts
 declare const myBucket: s3.Bucket;
 declare const myDatabase: glue.Database;
-new glue.Table(this, 'MyTable', {
+new glue.S3Table(this, 'MyTable', {
   bucket: myBucket,
   s3Prefix: 'my-table/',
   // ...
@@ -223,7 +243,25 @@ new glue.Table(this, 'MyTable', {
 });
 ```
 
-By default, an S3 bucket will be created to store the table's data and stored in the bucket root. You can also manually pass the `bucket` and `s3Prefix`:
+Glue tables can be configured to contain user-defined properties, to describe the physical storage of table data, through the `storageParameters` property:
+
+```ts
+declare const myDatabase: glue.Database;
+new glue.S3Table(this, 'MyTable', {
+  storageParameters: [
+    glue.StorageParameter.skipHeaderLineCount(1),
+    glue.StorageParameter.compressionType(glue.CompressionType.GZIP),
+    glue.StorageParameter.custom('separatorChar', ',')
+  ],
+  // ...
+  database: myDatabase,
+  columns: [{
+    name: 'col1',
+    type: glue.Schema.STRING,
+  }],
+  dataFormat: glue.DataFormat.JSON,
+});
+```
 
 ### Partition Keys
 
@@ -231,7 +269,7 @@ To improve query performance, a table can specify `partitionKeys` on which data 
 
 ```ts
 declare const myDatabase: glue.Database;
-new glue.Table(this, 'MyTable', {
+new glue.S3Table(this, 'MyTable', {
   database: myDatabase,
   columns: [{
     name: 'col1',
@@ -262,7 +300,7 @@ property:
 
 ```ts
 declare const myDatabase: glue.Database;
-new glue.Table(this, 'MyTable', {
+new glue.S3Table(this, 'MyTable', {
   database: myDatabase,
   columns: [{
     name: 'col1',
@@ -299,7 +337,7 @@ If you have a table with a large number of partitions that grows over time, cons
 
 ```ts
 declare const myDatabase: glue.Database;
-new glue.Table(this, 'MyTable', {
+new glue.S3Table(this, 'MyTable', {
     database: myDatabase,
     columns: [{
         name: 'col1',
@@ -317,6 +355,28 @@ new glue.Table(this, 'MyTable', {
 });
 ```
 
+### Glue Connections
+
+Glue connections allow external data connections to third party databases and data warehouses. However, these connections can also be assigned to Glue Tables, allowing you to query external data sources using the Glue Data Catalog.
+
+Whereas `S3Table` will point to (and if needed, create) a bucket to store the tables' data, `ExternalTable` will point to an existing table in a data source. For example, to create a table in Glue that points to a table in Redshift:
+
+```ts
+declare const myConnection: glue.Connection;
+declare const myDatabase: glue.Database;
+new glue.ExternalTable(this, 'MyTable', {
+  connection: myConnection,
+  externalDataLocation: 'default_db_public_example', // A table in Redshift
+  // ...
+  database: myDatabase,
+  columns: [{
+    name: 'col1',
+    type: glue.Schema.STRING,
+  }],
+  dataFormat: glue.DataFormat.JSON,
+});
+```
+
 ## [Encryption](https://docs.aws.amazon.com/athena/latest/ug/encryption.html)
 
 You can enable encryption on a Table's data:
@@ -325,7 +385,7 @@ You can enable encryption on a Table's data:
 
 ```ts
 declare const myDatabase: glue.Database;
-new glue.Table(this, 'MyTable', {
+new glue.S3Table(this, 'MyTable', {
   encryption: glue.TableEncryption.S3_MANAGED,
   // ...
   database: myDatabase,
@@ -342,7 +402,7 @@ new glue.Table(this, 'MyTable', {
 ```ts
 declare const myDatabase: glue.Database;
 // KMS key is created automatically
-new glue.Table(this, 'MyTable', {
+new glue.S3Table(this, 'MyTable', {
   encryption: glue.TableEncryption.KMS,
   // ...
   database: myDatabase,
@@ -354,7 +414,7 @@ new glue.Table(this, 'MyTable', {
 });
 
 // with an explicit KMS key
-new glue.Table(this, 'MyTable', {
+new glue.S3Table(this, 'MyTable', {
   encryption: glue.TableEncryption.KMS,
   encryptionKey: new kms.Key(this, 'MyKey'),
   // ...
@@ -371,7 +431,7 @@ new glue.Table(this, 'MyTable', {
 
 ```ts
 declare const myDatabase: glue.Database;
-new glue.Table(this, 'MyTable', {
+new glue.S3Table(this, 'MyTable', {
   encryption: glue.TableEncryption.KMS_MANAGED,
   // ...
   database: myDatabase,
@@ -388,7 +448,7 @@ new glue.Table(this, 'MyTable', {
 ```ts
 declare const myDatabase: glue.Database;
 // KMS key is created automatically
-new glue.Table(this, 'MyTable', {
+new glue.S3Table(this, 'MyTable', {
   encryption: glue.TableEncryption.CLIENT_SIDE_KMS, 
   // ...
   database: myDatabase,
@@ -400,7 +460,7 @@ new glue.Table(this, 'MyTable', {
 });
 
 // with an explicit KMS key
-new glue.Table(this, 'MyTable', {
+new glue.S3Table(this, 'MyTable', {
   encryption: glue.TableEncryption.CLIENT_SIDE_KMS,
   encryptionKey: new kms.Key(this, 'MyKey'),
   // ...
@@ -413,7 +473,7 @@ new glue.Table(this, 'MyTable', {
 });
 ```
 
-*Note: you cannot provide a `Bucket` when creating the `Table` if you wish to use server-side encryption (`KMS`, `KMS_MANAGED` or `S3_MANAGED`)*.
+*Note: you cannot provide a `Bucket` when creating the `S3Table` if you wish to use server-side encryption (`KMS`, `KMS_MANAGED` or `S3_MANAGED`)*.
 
 ## Types
 
@@ -421,7 +481,7 @@ A table's schema is a collection of columns, each of which have a `name` and a `
 
 ```ts
 declare const myDatabase: glue.Database;
-new glue.Table(this, 'MyTable', {
+new glue.S3Table(this, 'MyTable', {
   columns: [{
     name: 'primitive_column',
     type: glue.Schema.STRING,

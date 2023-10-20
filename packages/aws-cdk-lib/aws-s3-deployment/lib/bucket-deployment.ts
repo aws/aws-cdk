@@ -87,7 +87,7 @@ export interface BucketDeploymentProps {
    * NOTICE: Configuring this to "false" might have operational implications. Please
    * visit to the package documentation referred below to make sure you fully understand those implications.
    *
-   * @see https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-s3-deployment#retain-on-delete
+   * @see https://github.com/aws/aws-cdk/tree/main/packages/aws-cdk-lib/aws-s3-deployment#retain-on-delete
    * @default true - when resource is deleted/updated, files are retained
    */
   readonly retainOnDelete?: boolean;
@@ -519,7 +519,10 @@ export class BucketDeployment extends Construct {
    * deployment.addSource(s3deploy.Source.asset('./another-asset'));
    */
   public addSource(source: ISource): void {
-    this.sources.push(source.bind(this, { handlerRole: this.handlerRole }));
+    const config = source.bind(this, { handlerRole: this.handlerRole });
+    if (!this.sources.some((c) => sourceConfigEqual(cdk.Stack.of(this), c, config))) {
+      this.sources.push(config);
+    }
   }
 
   private renderUniqueId(memoryLimit?: number, ephemeralStorageSize?: cdk.Size, vpc?: ec2.IVpc) {
@@ -598,6 +601,13 @@ export interface DeployTimeSubstitutedFileProps {
    * substitution.
    */
   readonly substitutions: { [key: string]: string };
+
+  /**
+   * Execution role associated with this function
+   *
+   * @default - A role is automatically created
+   */
+  readonly role?: iam.IRole;
 }
 
 /**
@@ -625,6 +635,7 @@ export class DeployTimeSubstitutedFile extends BucketDeployment {
       extract: true,
       ...props,
       sources: [fileSource],
+      role: props.role,
     };
     super(scope, id, fullBucketDeploymentProps);
     // sets the object key
@@ -868,4 +879,11 @@ export interface UserDefinedObjectMetadata {
    * @jsii ignore
    */
   readonly [key: string]: string;
+}
+
+function sourceConfigEqual(stack: cdk.Stack, a: SourceConfig, b: SourceConfig) {
+  return (
+    JSON.stringify(stack.resolve(a.bucket.bucketName)) === JSON.stringify(stack.resolve(b.bucket.bucketName))
+    && a.zipObjectKey === b.zipObjectKey
+    && a.markers === undefined && b.markers === undefined);
 }

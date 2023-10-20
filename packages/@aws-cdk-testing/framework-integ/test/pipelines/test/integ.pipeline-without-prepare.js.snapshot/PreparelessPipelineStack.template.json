@@ -25,7 +25,8 @@
        "Action": [
         "s3:DeleteObject*",
         "s3:GetBucket*",
-        "s3:List*"
+        "s3:List*",
+        "s3:PutBucketPolicy"
        ],
        "Effect": "Allow",
        "Principal": {
@@ -112,7 +113,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "89c643a8a6c919d906e0b1cb079b0c5e131cf3cc19c05126f90fc118647fb08c.zip"
+     "S3Key": "2ec8ad9e91dcd6e7ad6a5c84ffc6c9c05c408aca3b26ceb2816d81043e6c4dc3.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -379,6 +380,13 @@
   "Pipeline9850B417": {
    "Type": "AWS::CodePipeline::Pipeline",
    "Properties": {
+    "ArtifactStore": {
+     "Location": {
+      "Ref": "PipelineArtifactsBucketAEA9A052"
+     },
+     "Type": "S3"
+    },
+    "RestartExecutionOnUpdate": true,
     "RoleArn": {
      "Fn::GetAtt": [
       "PipelineRoleB27FAA37",
@@ -406,7 +414,7 @@
         },
         "OutputArtifacts": [
          {
-          "Name": "c8506b445957b8105ede7b68ebe35e9406d642cd0c_Source"
+          "Name": "c8506b445957b8105ede7b68ebe35e9406d642cd0c_key_Source"
          }
         ],
         "RoleArn": {
@@ -436,7 +444,7 @@
         },
         "InputArtifacts": [
          {
-          "Name": "c8506b445957b8105ede7b68ebe35e9406d642cd0c_Source"
+          "Name": "c8506b445957b8105ede7b68ebe35e9406d642cd0c_key_Source"
          }
         ],
         "Name": "Synth",
@@ -528,14 +536,7 @@
       ],
       "Name": "MyStage"
      }
-    ],
-    "ArtifactStore": {
-     "Location": {
-      "Ref": "PipelineArtifactsBucketAEA9A052"
-     },
-     "Type": "S3"
-    },
-    "RestartExecutionOnUpdate": true
+    ]
    },
    "DependsOn": [
     "PipelineRoleDefaultPolicy7BDC1ABB",
@@ -821,9 +822,14 @@
     "Artifacts": {
      "Type": "CODEPIPELINE"
     },
+    "Cache": {
+     "Type": "NO_CACHE"
+    },
+    "Description": "Pipeline step PreparelessPipelineStack/Pipeline/Build/Synth",
+    "EncryptionKey": "alias/aws/s3",
     "Environment": {
      "ComputeType": "BUILD_GENERAL1_SMALL",
-     "Image": "aws/codebuild/standard:6.0",
+     "Image": "aws/codebuild/standard:7.0",
      "ImagePullCredentialsType": "CODEBUILD",
      "PrivilegedMode": false,
      "Type": "LINUX_CONTAINER"
@@ -837,12 +843,7 @@
     "Source": {
      "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"build\": {\n      \"commands\": [\n        \"mkdir cdk.out\",\n        \"touch cdk.out/dummy\"\n      ]\n    }\n  },\n  \"artifacts\": {\n    \"base-directory\": \"cdk.out\",\n    \"files\": \"**/*\"\n  }\n}",
      "Type": "CODEPIPELINE"
-    },
-    "Cache": {
-     "Type": "NO_CACHE"
-    },
-    "Description": "Pipeline step PreparelessPipelineStack/Pipeline/Build/Synth",
-    "EncryptionKey": "alias/aws/s3"
+    }
    }
   },
   "PipelineCodeBuildActionRole226DB0CB": {

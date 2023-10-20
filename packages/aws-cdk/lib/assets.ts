@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
+import { EnvironmentResources } from './api/environment-resources';
 import { ToolkitInfo } from './api/toolkit-info';
 import { debug } from './logging';
 import { AssetManifestBuilder } from './util/asset-manifest-builder';
@@ -14,7 +15,7 @@ import { AssetManifestBuilder } from './util/asset-manifest-builder';
  * pass Asset coordinates.
  */
 // eslint-disable-next-line max-len
-export async function addMetadataAssetsToManifest(stack: cxapi.CloudFormationStackArtifact, assetManifest: AssetManifestBuilder, toolkitInfo: ToolkitInfo, reuse?: string[]): Promise<Record<string, string>> {
+export async function addMetadataAssetsToManifest(stack: cxapi.CloudFormationStackArtifact, assetManifest: AssetManifestBuilder, envResources: EnvironmentResources, reuse?: string[]): Promise<Record<string, string>> {
   reuse = reuse || [];
   const assets = stack.assets;
 
@@ -22,6 +23,7 @@ export async function addMetadataAssetsToManifest(stack: cxapi.CloudFormationSta
     return {};
   }
 
+  const toolkitInfo = await envResources.lookupToolkit();
   if (!toolkitInfo.found) {
     // eslint-disable-next-line max-len
     throw new Error(`This stack uses assets, so the toolkit stack must be deployed to the environment (Run "${chalk.blue('cdk bootstrap ' + stack.environment!.name)}")`);
@@ -44,14 +46,14 @@ export async function addMetadataAssetsToManifest(stack: cxapi.CloudFormationSta
       throw new Error('Unexpected: stack assembly is required in order to find assets in assembly directory');
     }
 
-    Object.assign(params, await prepareAsset(asset, assetManifest, toolkitInfo));
+    Object.assign(params, await prepareAsset(asset, assetManifest, envResources, toolkitInfo));
   }
 
   return params;
 }
 
 // eslint-disable-next-line max-len
-async function prepareAsset(asset: cxschema.AssetMetadataEntry, assetManifest: AssetManifestBuilder, toolkitInfo: ToolkitInfo): Promise<Record<string, string>> {
+async function prepareAsset(asset: cxschema.AssetMetadataEntry, assetManifest: AssetManifestBuilder, envResources: EnvironmentResources, toolkitInfo: ToolkitInfo): Promise<Record<string, string>> {
   switch (asset.packaging) {
     case 'zip':
     case 'file':
@@ -61,7 +63,7 @@ async function prepareAsset(asset: cxschema.AssetMetadataEntry, assetManifest: A
         toolkitInfo,
         asset.packaging === 'zip' ? cxschema.FileAssetPackaging.ZIP_DIRECTORY : cxschema.FileAssetPackaging.FILE);
     case 'container-image':
-      return prepareDockerImageAsset(asset, assetManifest, toolkitInfo);
+      return prepareDockerImageAsset(asset, assetManifest, envResources);
     default:
       // eslint-disable-next-line max-len
       throw new Error(`Unsupported packaging type: ${(asset as any).packaging}. You might need to upgrade your aws-cdk toolkit to support this asset type.`);
@@ -101,7 +103,7 @@ function prepareFileAsset(
 async function prepareDockerImageAsset(
   asset: cxschema.ContainerImageAssetMetadataEntry,
   assetManifest: AssetManifestBuilder,
-  toolkitInfo: ToolkitInfo): Promise<Record<string, string>> {
+  envResources: EnvironmentResources): Promise<Record<string, string>> {
 
   // Pre-1.21.0, repositoryName can be specified by the user or can be left out, in which case we make
   // a per-asset repository which will get adopted and cleaned up along with the stack.
@@ -114,12 +116,13 @@ async function prepareDockerImageAsset(
   const repositoryName = asset.repositoryName ?? 'cdk/' + asset.id.replace(/[:/]/g, '-').toLowerCase();
 
   // Make sure the repository exists, since the 'cdk-assets' tool will not create it for us.
-  const { repositoryUri } = await toolkitInfo.prepareEcrRepository(repositoryName);
+  const { repositoryUri } = await envResources.prepareEcrRepository(repositoryName);
   const imageTag = asset.imageTag ?? asset.sourceHash;
 
   assetManifest.addDockerImageAsset(asset.sourceHash, {
     directory: asset.path,
     dockerBuildArgs: asset.buildArgs,
+    dockerBuildSsh: asset.buildSsh,
     dockerBuildTarget: asset.target,
     dockerFile: asset.file,
     networkMode: asset.networkMode,

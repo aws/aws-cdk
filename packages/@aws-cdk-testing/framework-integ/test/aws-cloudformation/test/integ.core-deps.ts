@@ -15,6 +15,7 @@ import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { App, Stack, CfnResource, NestedStack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string) {
@@ -22,7 +23,7 @@ class TestStack extends Stack {
     new lambda.Function(this, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
       logRetention: RetentionDays.ONE_DAY,
     });
     const logRetentionFunction = this.node.tryFindChild('LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a')!;
@@ -47,12 +48,12 @@ class TestNestedStack extends Stack {
     const resource1 = new lambda.Function(stack1, 'Lambda1', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
     }).node.defaultChild! as CfnResource;
     const resource2 = new lambda.Function(stack2, 'Lambda2', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
     }).node.defaultChild! as CfnResource;
 
     // The following two statements should cancel each other out

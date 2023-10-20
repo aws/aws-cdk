@@ -313,6 +313,30 @@ export enum InstanceClass {
   R7G = 'r7g',
 
   /**
+   * Memory optimized instances, 7th generation with Graviton3 processors and local NVME drive
+   *
+   * This instance class is currently only available in US East (Ohio), US East (N. Virginia), US West (Oregon), and Europe (Ireland).
+   */
+  MEMORY7_GRAVITON3_NVME_DRIVE = 'memory7-graviton3-nvme-drive',
+
+  /**
+   * Memory optimized instances, 7th generation with Graviton3 processors and local NVME drive
+   *
+   * This instance class is currently only available in US East (Ohio), US East (N. Virginia), US West (Oregon), and Europe (Ireland).
+   */
+  R7GD = 'r7gd',
+
+  /**
+   * Memory optimized instances based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation
+   */
+  MEMORY7_INTEL = 'memory7-intel',
+
+  /**
+   * Memory optimized instances based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation
+   */
+  R7IZ = 'r7iz',
+
+  /**
    * Compute optimized instances, 3rd generation
    */
   COMPUTE3 = 'compute3',
@@ -455,6 +479,20 @@ export enum InstanceClass {
   C6GD = 'c6gd',
 
   /**
+   * Compute optimized instances for high performance computing, 7th generation with Graviton3 processors and local NVME drive
+   *
+   * This instance class is currently only available in US East (Ohio), US East (N. Virginia), US West (Oregon), and Europe (Ireland).
+   */
+  COMPUTE7_GRAVITON3_NVME_DRIVE = 'compute7-graviton3-nvme-drive',
+
+  /**
+   * Compute optimized instances for high performance computing, 7th generation with Graviton3 processors and local NVME drive
+   *
+   * This instance class is currently only available in US East (Ohio), US East (N. Virginia), US West (Oregon), and Europe (Ireland).
+   */
+  C7GD = 'c7gd',
+
+  /**
    * Compute optimized instances for high performance computing, 6th generation with Graviton2 processors
    * and high network bandwidth capabilities
    */
@@ -465,6 +503,28 @@ export enum InstanceClass {
    * and high network bandwidth capabilities
    */
   C6GN = 'c6gn',
+
+  /**
+   * Compute optimized instances for high performance computing, 7th generation with Graviton3 processors
+   * and high network bandwidth capabilities
+   */
+  COMPUTE7_GRAVITON3_HIGH_NETWORK_BANDWIDTH = 'compute7-graviton3-high-network-bandwidth',
+
+  /**
+   * Compute optimized instances for high performance computing, 7th generation with Graviton3 processors
+   * and high network bandwidth capabilities
+   */
+  C7GN = 'c7gn',
+
+  /**
+   * Compute optimized instances based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation
+   */
+  COMPUTE7_INTEL = 'compute7-intel',
+
+  /**
+   * Compute optimized instances based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation
+   */
+  C7I = 'c7i',
 
   /**
    * Storage-optimized instances, 2nd generation
@@ -865,6 +925,42 @@ export enum InstanceClass {
   M7G = 'm7g',
 
   /**
+   * Standard instances, 7th generation with Graviton3 processors and local NVME drive
+   *
+   * This instance class is currently only available in US East (Ohio), US East (N. Virginia), US West (Oregon), and Europe (Ireland).
+   */
+  STANDARD7_GRAVITON3_NVME_DRIVE = 'standard7-graviton3-nvme-drive',
+
+  /**
+   * Standard instances, 7th generation with Graviton3 processors and local NVME drive
+   *
+   * This instance class is currently only available in US East (Ohio), US East (N. Virginia), US West (Oregon), and Europe (Ireland).
+   */
+  M7GD = 'm7gd',
+
+  /**
+   * Standard instances with high memory and compute capacity based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation
+   */
+  STANDARD7_INTEL = 'standard7-intel',
+
+  /**
+   * Standard instances with high memory and compute capacity based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation
+   */
+  M7I = 'm7i',
+
+  /**
+   * Flexible instances with high memory and compute capacity based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation
+   * The M7i-Flex instances deliver a baseline of 40% CPU performance, and can scale up to full CPU performance 95% of the time
+   */
+  STANDARD7_INTEL_FLEX = 'standard7-intel-flex',
+
+  /**
+   * Flexible instances with high memory and compute capacity based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation
+   * The M7i-Flex instances deliver a baseline of 40% CPU performance, and can scale up to full CPU performance 95% of the time
+   */
+  M7I_FLEX = 'm7i-flex',
+
+  /**
    * High memory and compute capacity instances, 1st generation
    */
   HIGH_COMPUTE_MEMORY1 = 'high-compute-memory1',
@@ -1143,6 +1239,10 @@ export class InstanceType {
       [InstanceClass.R6GD]: 'r6gd',
       [InstanceClass.MEMORY7_GRAVITON]: 'r7g',
       [InstanceClass.R7G]: 'r7g',
+      [InstanceClass.MEMORY7_GRAVITON3_NVME_DRIVE]: 'r7gd',
+      [InstanceClass.R7GD]: 'r7gd',
+      [InstanceClass.MEMORY7_INTEL]: 'r7iz',
+      [InstanceClass.R7IZ]: 'r7iz',
       [InstanceClass.COMPUTE3]: 'c3',
       [InstanceClass.C3]: 'c3',
       [InstanceClass.COMPUTE4]: 'c4',
@@ -1173,6 +1273,12 @@ export class InstanceType {
       [InstanceClass.C6GN]: 'c6gn',
       [InstanceClass.COMPUTE7_GRAVITON3]: 'c7g',
       [InstanceClass.C7G]: 'c7g',
+      [InstanceClass.COMPUTE7_GRAVITON3_NVME_DRIVE]: 'c7gd',
+      [InstanceClass.C7GD]: 'c7gd',
+      [InstanceClass.COMPUTE7_GRAVITON3_HIGH_NETWORK_BANDWIDTH]: 'c7gn',
+      [InstanceClass.C7GN]: 'c7gn',
+      [InstanceClass.COMPUTE7_INTEL]: 'c7i',
+      [InstanceClass.C7I]: 'c7i',
       [InstanceClass.STORAGE2]: 'd2',
       [InstanceClass.D2]: 'd2',
       [InstanceClass.STORAGE3]: 'd3',
@@ -1243,6 +1349,12 @@ export class InstanceType {
       [InstanceClass.M6GD]: 'm6gd',
       [InstanceClass.STANDARD7_GRAVITON]: 'm7g',
       [InstanceClass.M7G]: 'm7g',
+      [InstanceClass.STANDARD7_GRAVITON3_NVME_DRIVE]: 'm7gd',
+      [InstanceClass.M7GD]: 'm7gd',
+      [InstanceClass.STANDARD7_INTEL]: 'm7i',
+      [InstanceClass.M7I]: 'm7i',
+      [InstanceClass.STANDARD7_INTEL_FLEX]: 'm7i-flex',
+      [InstanceClass.M7I_FLEX]: 'm7i-flex',
       [InstanceClass.HIGH_COMPUTE_MEMORY1]: 'z1d',
       [InstanceClass.Z1D]: 'z1d',
       [InstanceClass.INFERENCE1]: 'inf1',

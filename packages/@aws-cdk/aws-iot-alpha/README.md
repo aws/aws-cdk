@@ -25,7 +25,7 @@ You can create a topic rule with an action that invoke the Lambda action as foll
 
 ```ts
 const func = new lambda.Function(this, 'MyFunction', {
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`
     exports.handler = (event) => {
@@ -76,4 +76,4 @@ new iot.TopicRule(this, 'TopicRule', {
 });
 ```
 
-See also [@aws-cdk/aws-iot-actions](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-iot-actions-readme.html) for other actions.
+See also [@aws-cdk/aws-iot-actions-alpha](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-iot-actions-alpha-readme.html) for other actions.

@@ -1,7 +1,8 @@
-import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Code, Function } from 'aws-cdk-lib/aws-lambda';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import * as cdk from 'aws-cdk-lib';
 import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
+import { STANDARD_NODEJS_RUNTIME } from '../../../config';
 
 /*
  * Stack verification steps:
@@ -21,7 +22,7 @@ const submitJobLambda = new Function(stack, 'submitJobLambda', {
           body: 'hello, world!'
         };
       };`),
-  runtime: Runtime.NODEJS_14_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   handler: 'index.handler',
 });
 
@@ -36,7 +37,7 @@ const checkJobStateLambda = new Function(stack, 'checkJobStateLambda', {
           status: event.statusCode === '200' ? 'SUCCEEDED' : 'FAILED'
         };
   };`),
-  runtime: Runtime.NODEJS_14_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   handler: 'index.handler',
 });
 

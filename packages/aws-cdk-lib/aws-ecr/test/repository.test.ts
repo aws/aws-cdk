@@ -396,7 +396,7 @@ describe('repository', () => {
     }));
 
     // THEN
-    Annotations.fromStack(stack).hasWarning('*', 'ECR resource policy does not allow resource statements.');
+    Annotations.fromStack(stack).hasWarning('*', 'ECR resource policy does not allow resource statements. [ack: @aws-cdk/aws-ecr:noResourceStatements]');
   });
 
   test('does not warn if repository policy does not have resources', () => {
@@ -412,7 +412,7 @@ describe('repository', () => {
     }));
 
     // THEN
-    Annotations.fromStack(stack).hasNoWarning('*', 'ECR resource policy does not allow resource statements.');
+    Annotations.fromStack(stack).hasNoWarning('*', 'ECR resource policy does not allow resource statements. [ack: @aws-cdk/aws-ecr:noResourceStatements]');
   });
 
   test('default encryption configuration', () => {
@@ -898,7 +898,7 @@ describe('repository', () => {
       const expectedErrors = [
         `Invalid ECR repository name (value: ${repositoryName})`,
         'Repository name must be at least 2 and no more than 256 characters',
-        'Repository name must follow the specified pattern: (?:[a-z0-9]+(?:[._-][a-z0-9]+)*/)*[a-z0-9]+(?:[._-][a-z0-9]+)*',
+        'Repository name must start with a letter and can only contain lowercase letters, numbers, hyphens, underscores, periods and forward slashes',
       ].join(EOL);
 
       expect(() => new ecr.Repository(stack, 'Repo', {
@@ -923,19 +923,19 @@ describe('repository', () => {
 
       expect(() => new ecr.Repository(stack, 'Repo1', {
         repositoryName: 'aAa',
-      })).toThrow(/must follow the specified pattern/);
+      })).toThrow('Repository name must start with a letter and can only contain lowercase letters, numbers, hyphens, underscores, periods and forward slashes');
 
       expect(() => new ecr.Repository(stack, 'Repo2', {
         repositoryName: 'a--a',
-      })).toThrow(/must follow the specified pattern/);
+      })).toThrow('Repository name must start with a letter and can only contain lowercase letters, numbers, hyphens, underscores, periods and forward slashes');
 
       expect(() => new ecr.Repository(stack, 'Repo3', {
         repositoryName: 'a./a-a',
-      })).toThrow(/must follow the specified pattern/);
+      })).toThrow('Repository name must start with a letter and can only contain lowercase letters, numbers, hyphens, underscores, periods and forward slashes');
 
       expect(() => new ecr.Repository(stack, 'Repo4', {
         repositoryName: 'a//a-a',
-      })).toThrow(/must follow the specified pattern/);
+      })).toThrow('Repository name must start with a letter and can only contain lowercase letters, numbers, hyphens, underscores, periods and forward slashes');
     });
 
     test('return value addToResourcePolicy', () => {
@@ -1006,18 +1006,22 @@ describe('repository', () => {
                   ],
                   Resource: [
                     {
-                      'Fn::GetAtt': [
-                        'Repo1DBD717D9',
-                        'Arn',
-                      ],
-                    },
-                    {
-                      'Fn::GetAtt': [
-                        'Repo2730A8200',
-                        'Arn',
-                      ],
+                      'Fn::Join': ['', [
+                        'arn:',
+                        { Ref: 'AWS::Partition' },
+                        ':ecr:',
+                        { Ref: 'AWS::Region' },
+                        ':',
+                        { Ref: 'AWS::AccountId' },
+                        ':repository/*',
+                      ]],
                     },
                   ],
+                  Condition: {
+                    StringEquals: {
+                      'ecr:ResourceTag/aws-cdk:auto-delete-images': 'true',
+                    },
+                  },
                 },
               ],
             },
@@ -1034,6 +1038,24 @@ describe('repository', () => {
           removalPolicy: cdk.RemovalPolicy.RETAIN,
         });
       }).toThrowError('Cannot use \'autoDeleteImages\' property on a repository without setting removal policy to \'DESTROY\'.');
+    });
+  });
+
+  test('repo name is embedded in CustomResourceProvider description', () => {
+    const stack = new cdk.Stack();
+    new ecr.Repository(stack, 'Repo', {
+      autoDeleteImages: true,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Description: {
+        'Fn::Join': ['', [
+          'Lambda function for auto-deleting images in ',
+          { Ref: 'Repo02AC86CF' },
+          ' repository.',
+        ]],
+      },
     });
   });
 });

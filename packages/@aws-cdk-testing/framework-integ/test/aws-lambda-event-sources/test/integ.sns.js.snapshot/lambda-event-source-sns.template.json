@@ -37,14 +37,14 @@
     "Code": {
      "ZipFile": "exports.handler = async function handler(event) {\n    console.log('event:', JSON.stringify(event, undefined, 2));\n    return { event };\n}"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "FServiceRole3AC82EE1",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "FServiceRole3AC82EE1"
@@ -69,15 +69,15 @@
   "FTA788EE87": {
    "Type": "AWS::SNS::Subscription",
    "Properties": {
-    "Protocol": "lambda",
-    "TopicArn": {
-     "Ref": "TD925BC7E"
-    },
     "Endpoint": {
      "Fn::GetAtt": [
       "FC4345940",
       "Arn"
      ]
+    },
+    "Protocol": "lambda",
+    "TopicArn": {
+     "Ref": "TD925BC7E"
     }
    }
   },

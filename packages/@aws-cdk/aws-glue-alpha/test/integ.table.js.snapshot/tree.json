@@ -20,13 +20,13 @@
                   "aws:cdk:cloudformation:props": {}
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-s3.CfnBucket",
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-s3.Bucket",
+              "fqn": "aws-cdk-lib.aws_s3.Bucket",
               "version": "0.0.0"
             }
           },
@@ -49,13 +49,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-glue.CfnDatabase",
+                  "fqn": "aws-cdk-lib.aws_glue.CfnDatabase",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-glue.Database",
+              "fqn": "@aws-cdk/aws-glue-alpha.Database",
               "version": "0.0.0"
             }
           },
@@ -137,13 +137,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-glue.CfnTable",
+                  "fqn": "aws-cdk-lib.aws_glue.CfnTable",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-glue.Table",
+              "fqn": "@aws-cdk/aws-glue-alpha.S3Table",
               "version": "0.0.0"
             }
           },
@@ -225,13 +225,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-glue.CfnTable",
+                  "fqn": "aws-cdk-lib.aws_glue.CfnTable",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-glue.Table",
+              "fqn": "@aws-cdk/aws-glue-alpha.S3Table",
               "version": "0.0.0"
             }
           },
@@ -313,13 +313,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-glue.CfnTable",
+                  "fqn": "aws-cdk-lib.aws_glue.CfnTable",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-glue.Table",
+              "fqn": "@aws-cdk/aws-glue-alpha.S3Table",
               "version": "0.0.0"
             }
           },
@@ -401,13 +401,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-glue.CfnTable",
+                  "fqn": "aws-cdk-lib.aws_glue.CfnTable",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-glue.Table",
+              "fqn": "@aws-cdk/aws-glue-alpha.S3Table",
               "version": "0.0.0"
             }
           },
@@ -452,13 +452,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-kms.CfnKey",
+                  "fqn": "aws-cdk-lib.aws_kms.CfnKey",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-kms.Key",
+              "fqn": "aws-cdk-lib.aws_kms.Key",
               "version": "0.0.0"
             }
           },
@@ -494,13 +494,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-s3.CfnBucket",
+                      "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-s3.Bucket",
+                  "fqn": "aws-cdk-lib.aws_s3.Bucket",
                   "version": "0.0.0"
                 }
               },
@@ -578,13 +578,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-glue.CfnTable",
+                  "fqn": "aws-cdk-lib.aws_glue.CfnTable",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-glue.Table",
+              "fqn": "@aws-cdk/aws-glue-alpha.S3Table",
               "version": "0.0.0"
             }
           },
@@ -592,38 +592,6 @@
             "id": "MyPartitionFilteredTable",
             "path": "aws-cdk-glue/MyPartitionFilteredTable",
             "children": {
-              "Bucket": {
-                "id": "Bucket",
-                "path": "aws-cdk-glue/MyPartitionFilteredTable/Bucket",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-glue/MyPartitionFilteredTable/Bucket/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
-                      "aws:cdk:cloudformation:props": {
-                        "bucketEncryption": {
-                          "serverSideEncryptionConfiguration": [
-                            {
-                              "serverSideEncryptionByDefault": {
-                                "sseAlgorithm": "AES256"
-                              }
-                            }
-                          ]
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-s3.CfnBucket",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-s3.Bucket",
-                  "version": "0.0.0"
-                }
-              },
               "Table": {
                 "id": "Table",
                 "path": "aws-cdk-glue/MyPartitionFilteredTable/Table",
@@ -651,7 +619,7 @@
                             [
                               "s3://",
                               {
-                                "Ref": "MyPartitionFilteredTableBucket6ACAA137"
+                                "Ref": "DataBucketE3889A50"
                               },
                               "/"
                             ]
@@ -693,13 +661,266 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-glue.CfnTable",
+                  "fqn": "aws-cdk-lib.aws_glue.CfnTable",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-glue.Table",
+              "fqn": "@aws-cdk/aws-glue-alpha.S3Table",
+              "version": "0.0.0"
+            }
+          },
+          "MyTableWithConnection": {
+            "id": "MyTableWithConnection",
+            "path": "aws-cdk-glue/MyTableWithConnection",
+            "children": {
+              "Table": {
+                "id": "Table",
+                "path": "aws-cdk-glue/MyTableWithConnection/Table",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Glue::Table",
+                  "aws:cdk:cloudformation:props": {
+                    "catalogId": {
+                      "Ref": "AWS::AccountId"
+                    },
+                    "databaseName": {
+                      "Ref": "MyDatabase1E2517DB"
+                    },
+                    "tableInput": {
+                      "name": "connection_table",
+                      "description": "connection_table generated by CDK",
+                      "parameters": {
+                        "classification": "json",
+                        "has_encrypted_data": true
+                      },
+                      "storageDescriptor": {
+                        "location": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "s3://",
+                              {
+                                "Ref": "DataBucketE3889A50"
+                              },
+                              "/"
+                            ]
+                          ]
+                        },
+                        "compressed": false,
+                        "storedAsSubDirectories": false,
+                        "columns": [
+                          {
+                            "name": "col1",
+                            "type": "string"
+                          },
+                          {
+                            "name": "col2",
+                            "type": "string",
+                            "comment": "col2 comment"
+                          },
+                          {
+                            "name": "col3",
+                            "type": "array<string>"
+                          },
+                          {
+                            "name": "col4",
+                            "type": "map<string,string>"
+                          },
+                          {
+                            "name": "col5",
+                            "type": "struct<col1:string>"
+                          }
+                        ],
+                        "inputFormat": "org.apache.hadoop.mapred.TextInputFormat",
+                        "outputFormat": "org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat",
+                        "serdeInfo": {
+                          "serializationLibrary": "org.openx.data.jsonserde.JsonSerDe"
+                        }
+                      },
+                      "tableType": "EXTERNAL_TABLE"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_glue.CfnTable",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-glue-alpha.S3Table",
+              "version": "0.0.0"
+            }
+          },
+          "MyTableWithStorageDescriptorParameters": {
+            "id": "MyTableWithStorageDescriptorParameters",
+            "path": "aws-cdk-glue/MyTableWithStorageDescriptorParameters",
+            "children": {
+              "Table": {
+                "id": "Table",
+                "path": "aws-cdk-glue/MyTableWithStorageDescriptorParameters/Table",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Glue::Table",
+                  "aws:cdk:cloudformation:props": {
+                    "catalogId": {
+                      "Ref": "AWS::AccountId"
+                    },
+                    "databaseName": {
+                      "Ref": "MyDatabase1E2517DB"
+                    },
+                    "tableInput": {
+                      "name": "table_with_storage_descriptor_parameters",
+                      "description": "table_with_storage_descriptor_parameters generated by CDK",
+                      "parameters": {
+                        "classification": "json",
+                        "has_encrypted_data": true
+                      },
+                      "storageDescriptor": {
+                        "location": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "s3://",
+                              {
+                                "Ref": "DataBucketE3889A50"
+                              },
+                              "/"
+                            ]
+                          ]
+                        },
+                        "compressed": false,
+                        "storedAsSubDirectories": false,
+                        "columns": [
+                          {
+                            "name": "col1",
+                            "type": "string"
+                          },
+                          {
+                            "name": "col2",
+                            "type": "string",
+                            "comment": "col2 comment"
+                          },
+                          {
+                            "name": "col3",
+                            "type": "array<string>"
+                          },
+                          {
+                            "name": "col4",
+                            "type": "map<string,string>"
+                          },
+                          {
+                            "name": "col5",
+                            "type": "struct<col1:string>"
+                          }
+                        ],
+                        "inputFormat": "org.apache.hadoop.mapred.TextInputFormat",
+                        "outputFormat": "org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat",
+                        "serdeInfo": {
+                          "serializationLibrary": "org.openx.data.jsonserde.JsonSerDe"
+                        },
+                        "parameters": {
+                          "skip.header.line.count": "1",
+                          "compression_type": "gzip",
+                          "foo": "bar",
+                          "separatorChar": ",",
+                          "write.parallel": "off"
+                        }
+                      },
+                      "tableType": "EXTERNAL_TABLE"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_glue.CfnTable",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-glue-alpha.S3Table",
+              "version": "0.0.0"
+            }
+          },
+          "MyDeprecatedTable": {
+            "id": "MyDeprecatedTable",
+            "path": "aws-cdk-glue/MyDeprecatedTable",
+            "children": {
+              "Table": {
+                "id": "Table",
+                "path": "aws-cdk-glue/MyDeprecatedTable/Table",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Glue::Table",
+                  "aws:cdk:cloudformation:props": {
+                    "catalogId": {
+                      "Ref": "AWS::AccountId"
+                    },
+                    "databaseName": {
+                      "Ref": "MyDatabase1E2517DB"
+                    },
+                    "tableInput": {
+                      "name": "deprecated_table",
+                      "description": "deprecated_table generated by CDK",
+                      "parameters": {
+                        "classification": "json",
+                        "has_encrypted_data": true
+                      },
+                      "storageDescriptor": {
+                        "location": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "s3://",
+                              {
+                                "Ref": "DataBucketE3889A50"
+                              },
+                              "/"
+                            ]
+                          ]
+                        },
+                        "compressed": false,
+                        "storedAsSubDirectories": false,
+                        "columns": [
+                          {
+                            "name": "col1",
+                            "type": "string"
+                          },
+                          {
+                            "name": "col2",
+                            "type": "string",
+                            "comment": "col2 comment"
+                          },
+                          {
+                            "name": "col3",
+                            "type": "array<string>"
+                          },
+                          {
+                            "name": "col4",
+                            "type": "map<string,string>"
+                          },
+                          {
+                            "name": "col5",
+                            "type": "struct<col1:string>"
+                          }
+                        ],
+                        "inputFormat": "org.apache.hadoop.mapred.TextInputFormat",
+                        "outputFormat": "org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat",
+                        "serdeInfo": {
+                          "serializationLibrary": "org.openx.data.jsonserde.JsonSerDe"
+                        }
+                      },
+                      "tableType": "EXTERNAL_TABLE"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_glue.CfnTable",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-glue-alpha.Table",
               "version": "0.0.0"
             }
           },
@@ -715,7 +936,7 @@
                   "aws:cdk:cloudformation:props": {}
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.CfnUser",
+                  "fqn": "aws-cdk-lib.aws_iam.CfnUser",
                   "version": "0.0.0"
                 }
               },
@@ -889,19 +1110,19 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Policy",
+                  "fqn": "aws-cdk-lib.aws_iam.Policy",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-iam.User",
+              "fqn": "aws-cdk-lib.aws_iam.User",
               "version": "0.0.0"
             }
           },
@@ -917,7 +1138,7 @@
                   "aws:cdk:cloudformation:props": {}
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.CfnUser",
+                  "fqn": "aws-cdk-lib.aws_iam.CfnUser",
                   "version": "0.0.0"
                 }
               },
@@ -1082,19 +1303,19 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Policy",
+                  "fqn": "aws-cdk-lib.aws_iam.Policy",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-iam.User",
+              "fqn": "aws-cdk-lib.aws_iam.User",
               "version": "0.0.0"
             }
           },
@@ -1102,22 +1323,76 @@
             "id": "BootstrapVersion",
             "path": "aws-cdk-glue/BootstrapVersion",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.270"
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "aws-cdk-glue/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.270"
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "aws-cdk-glue-table-integ": {
+        "id": "aws-cdk-glue-table-integ",
+        "path": "aws-cdk-glue-table-integ",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "aws-cdk-glue-table-integ/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "aws-cdk-glue-table-integ/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "aws-cdk-glue-table-integ/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "aws-cdk-glue-table-integ/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "aws-cdk-glue-table-integ/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
         }
       },
       "Tree": {
@@ -1125,13 +1400,13 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.2.70"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.270"
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
     }
   }
 }

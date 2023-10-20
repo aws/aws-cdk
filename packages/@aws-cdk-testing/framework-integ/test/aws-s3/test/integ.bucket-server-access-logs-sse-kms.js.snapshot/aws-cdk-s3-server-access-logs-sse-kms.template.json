@@ -3,6 +3,7 @@
   "ServerAccessLogsBucketKey95B7E326": {
    "Type": "AWS::KMS::Key",
    "Properties": {
+    "Description": "Created by aws-cdk-s3-server-access-logs-sse-kms/ServerAccessLogsBucket",
     "KeyPolicy": {
      "Statement": [
       {
@@ -43,8 +44,7 @@
       }
      ],
      "Version": "2012-10-17"
-    },
-    "Description": "Created by aws-cdk-s3-server-access-logs-sse-kms/ServerAccessLogsBucket"
+    }
    },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
@@ -89,7 +89,8 @@
        "Action": [
         "s3:DeleteObject*",
         "s3:GetBucket*",
-        "s3:List*"
+        "s3:List*",
+        "s3:PutBucketPolicy"
        ],
        "Effect": "Allow",
        "Principal": {
@@ -212,7 +213,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "89c643a8a6c919d906e0b1cb079b0c5e131cf3cc19c05126f90fc118647fb08c.zip"
+     "S3Key": "2ec8ad9e91dcd6e7ad6a5c84ffc6c9c05c408aca3b26ceb2816d81043e6c4dc3.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,

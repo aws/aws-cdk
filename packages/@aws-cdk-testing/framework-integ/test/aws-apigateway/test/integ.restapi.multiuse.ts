@@ -2,13 +2,14 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as apigw from 'aws-cdk-lib/aws-apigateway';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 class MultiStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
     super(scope, id);
 
     const hello = new apigw.LambdaIntegration(new lambda.Function(this, 'Hello', {
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`exports.handler = ${helloCode}`),
     }));

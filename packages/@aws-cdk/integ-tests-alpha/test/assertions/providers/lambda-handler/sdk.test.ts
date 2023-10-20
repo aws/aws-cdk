@@ -1,5 +1,5 @@
 // Copyright 2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-import { S3Client, ListObjectsOutput, ListObjectsCommand } from '@aws-sdk/client-s3';
+import { S3Client, ListObjectsOutput, ListObjectsCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import { DescribeInstancesCommand, EC2Client } from '@aws-sdk/client-ec2';
 import { mockClient } from 'aws-sdk-client-mock';
 import { AwsApiCallRequest, AwsApiCallResult } from '../../../../lib/assertions';
@@ -49,7 +49,7 @@ describe('SdkHandler', () => {
       service: 'S3',
       api: 'listObjects',
       parameters: {
-        Bucket: 'myBucket',
+        Bucket: '"myBucket"',
       },
     };
 
@@ -70,7 +70,7 @@ describe('SdkHandler', () => {
         service: 'EC2',
         api: 'describeInstances',
         parameters: {
-          DryRun: 'TRUE:BOOLEAN',
+          DryRun: 'true',
         },
       };
 
@@ -89,7 +89,7 @@ describe('SdkHandler', () => {
         service: 'EC2',
         api: 'describeInstances',
         parameters: {
-          DryRun: 'FALSE:BOOLEAN',
+          DryRun: 'false',
         },
       };
 
@@ -98,6 +98,89 @@ describe('SdkHandler', () => {
 
       // THEN
       expect(ec2Mock).toHaveReceivedCommandWith(DescribeInstancesCommand, { DryRun: false });
+    });
+
+    test('numbers', async () => {
+      // GIVEN
+      ec2Mock.on(DescribeInstancesCommand).resolves({});
+      const handler = sdkHandler() as any;
+      const request: AwsApiCallRequest = {
+        service: 'EC2',
+        api: 'describeInstances',
+        parameters: {
+          MaxResults: 1,
+        },
+      };
+
+      // WHEN
+      await handler.processEvent(request);
+
+      // THEN
+      expect(ec2Mock).toHaveReceivedCommandWith(DescribeInstancesCommand, { MaxResults: 1 });
+    });
+
+    test('strings', async () => {
+      // GIVEN
+      ec2Mock.on(DescribeInstancesCommand).resolves({});
+      const handler = sdkHandler() as any;
+      const request: AwsApiCallRequest = {
+        service: 'EC2',
+        api: 'describeInstances',
+        parameters: {
+          NextToken: '"TOKEN"',
+          InstanceIds: '["foo","bar"]',
+        },
+      };
+
+      // WHEN
+      await handler.processEvent(request);
+
+      // THEN
+      expect(ec2Mock).toHaveReceivedCommandWith(DescribeInstancesCommand, { NextToken: 'TOKEN', InstanceIds: ['foo', 'bar'] });
+    });
+
+    test('unparsable values are unchanged', async () => {
+      // GIVEN
+      ec2Mock.on(DescribeInstancesCommand).resolves({});
+      const handler = sdkHandler() as any;
+      const request: AwsApiCallRequest = {
+        service: 'EC2',
+        api: 'describeInstances',
+        parameters: {
+          NextToken: 'To"ken',
+        },
+      };
+
+      // WHEN
+      await handler.processEvent(request);
+
+      // THEN
+      expect(ec2Mock).toHaveReceivedCommandWith(DescribeInstancesCommand, { NextToken: 'To"ken' });
+    });
+
+    test('byte array coercion', async () => {
+      // GIVEN
+      s3Mock.on(PutObjectCommand).resolves({ });
+      const handler = sdkHandler() as any;
+      const request: AwsApiCallRequest = {
+        service: 'S3',
+        api: 'putObject',
+        parameters: {
+          Bucket: '"myBucket"',
+          Key: '"foo"',
+          Body: '"abc"',
+        },
+      };
+
+      // WHEN
+      await handler.processEvent(request);
+
+      // THEN
+      expect(s3Mock).toHaveReceivedCommandWith(PutObjectCommand, {
+        Bucket: 'myBucket',
+        Key: 'foo',
+        Body: Uint8Array.from([97, 98, 99]),
+      });
     });
   });
 
@@ -122,7 +205,7 @@ describe('SdkHandler', () => {
       service: 'S3',
       api: 'listObjects',
       parameters: {
-        Bucket: 'myBucket',
+        Bucket: '"myBucket"',
       },
       outputPaths: ['Name', 'Contents.0.Key'],
     };

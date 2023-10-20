@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "34.0.0",
   "artifacts": {
     "cors-twitch-test.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "cors-twitch-test.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/eec545187c8ac2e517efd9fbf2f13eb327409c8aea5ab3f76dd09184a47a37f6.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3b86b43c1a293038e6b507b773f348d699167e46c088fe6ed4b1ae400ce17192.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -54,7 +55,7 @@
         "/cors-twitch-test/cors-api-test/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "corsapitestDeployment2BF1633Aec735238f184cf252b8c47cd8212eacb"
+            "data": "corsapitestDeployment2BF1633A72d0197fd6797ee251232efbdce56b8a"
           }
         ],
         "/cors-twitch-test/cors-api-test/DeploymentStage.prod/Resource": [
@@ -159,10 +160,10 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "corsapitestDeployment2BF1633A51392cbce1ac2785bd0e53063423e203": [
+        "corsapitestDeployment2BF1633Adc24ac182461aecc920a8724663ce2a1": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "corsapitestDeployment2BF1633A51392cbce1ac2785bd0e53063423e203",
+            "data": "corsapitestDeployment2BF1633Adc24ac182461aecc920a8724663ce2a1",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
@@ -184,6 +185,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "corsDefaultTestDeployAssert5CF8F851.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",

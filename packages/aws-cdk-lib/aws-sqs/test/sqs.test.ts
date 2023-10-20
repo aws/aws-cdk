@@ -182,6 +182,15 @@ describe('export and import', () => {
     expect(fifoQueue.fifo).toEqual(true);
   });
 
+  test('importing with keyArn and encryptionType is set correctly', () => {
+    const stack = new Stack();
+    const queue = sqs.Queue.fromQueueAttributes(stack, 'Queue', {
+      queueArn: 'arn:aws:sqs:us-east-1:123456789012:queue1',
+      keyArn: 'arn:aws:kms:us-east-1:123456789012:key/1234abcd-12ab-34cd-56ef-1234567890ab',
+    });
+    expect(queue.encryptionType).toEqual(sqs.QueueEncryption.KMS);
+  });
+
   test('import queueArn from token, fifo and standard queues can be defined', () => {
     // GIVEN
     const stack = new Stack();
@@ -349,6 +358,7 @@ describe('queue encryption', () => {
     const queue = new sqs.Queue(stack, 'Queue', { encryptionMasterKey: key });
 
     expect(queue.encryptionMasterKey).toEqual(key);
+    expect(queue.encryptionType).toEqual(sqs.QueueEncryption.KMS);
     Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
       'KmsMasterKeyId': { 'Fn::GetAtt': ['CustomKey1E6D0D07', 'Arn'] },
     });
@@ -357,7 +367,7 @@ describe('queue encryption', () => {
   test('a kms key will be allocated if encryption = kms but a master key is not specified', () => {
     const stack = new Stack();
 
-    new sqs.Queue(stack, 'Queue', { encryption: sqs.QueueEncryption.KMS });
+    const queue = new sqs.Queue(stack, 'Queue', { encryption: sqs.QueueEncryption.KMS });
 
     Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', Match.anyValue());
     Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
@@ -368,12 +378,14 @@ describe('queue encryption', () => {
         ],
       },
     });
+    expect(queue.encryptionType).toEqual(sqs.QueueEncryption.KMS);
   });
 
   test('it is possible to use a managed kms key', () => {
     const stack = new Stack();
 
-    new sqs.Queue(stack, 'Queue', { encryption: sqs.QueueEncryption.KMS_MANAGED });
+    const queue = new sqs.Queue(stack, 'Queue', { encryption: sqs.QueueEncryption.KMS_MANAGED });
+
     Template.fromStack(stack).templateMatches({
       'Resources': {
         'Queue4A7E3555': {
@@ -386,6 +398,7 @@ describe('queue encryption', () => {
         },
       },
     });
+    expect(queue.encryptionType).toEqual(sqs.QueueEncryption.KMS_MANAGED);
   });
 
   test('grant also affects key on encrypted queue', () => {
@@ -433,7 +446,8 @@ describe('queue encryption', () => {
   test('it is possible to use sqs managed server side encryption', () => {
     const stack = new Stack();
 
-    new sqs.Queue(stack, 'Queue', { encryption: sqs.QueueEncryption.SQS_MANAGED });
+    const queue = new sqs.Queue(stack, 'Queue', { encryption: sqs.QueueEncryption.SQS_MANAGED });
+
     Template.fromStack(stack).templateMatches({
       'Resources': {
         'Queue4A7E3555': {
@@ -446,12 +460,13 @@ describe('queue encryption', () => {
         },
       },
     });
+    expect(queue.encryptionType).toEqual(sqs.QueueEncryption.SQS_MANAGED);
   });
 
   test('it is possible to disable encryption (unencrypted)', () => {
     const stack = new Stack();
 
-    new sqs.Queue(stack, 'Queue', { encryption: sqs.QueueEncryption.UNENCRYPTED });
+    const queue = new sqs.Queue(stack, 'Queue', { encryption: sqs.QueueEncryption.UNENCRYPTED });
     Template.fromStack(stack).templateMatches({
       'Resources': {
         'Queue4A7E3555': {
@@ -464,6 +479,7 @@ describe('queue encryption', () => {
         },
       },
     });
+    expect(queue.encryptionType).toEqual(sqs.QueueEncryption.UNENCRYPTED);
   });
 
   test('encryptionMasterKey is not supported if encryption type SQS_MANAGED is used', () => {
@@ -476,6 +492,19 @@ describe('queue encryption', () => {
       encryption: sqs.QueueEncryption.SQS_MANAGED,
       encryptionMasterKey: key,
     })).toThrow(/'encryptionMasterKey' is not supported if encryption type 'SQS_MANAGED' is used/);
+  });
+
+  test('encryptionType is always KMS, when an encryptionMasterKey is provided', () => {
+    // GIVEN
+    const stack = new Stack();
+    const key = new kms.Key(stack, 'CustomKey');
+    const queue = new sqs.Queue(stack, 'Queue', {
+      encryption: sqs.QueueEncryption.KMS_MANAGED,
+      encryptionMasterKey: key,
+    });
+
+    // THEN
+    expect(queue.encryptionType).toBe(sqs.QueueEncryption.KMS);
   });
 });
 

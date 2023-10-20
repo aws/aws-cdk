@@ -61,6 +61,7 @@ export class ResourceClass extends ClassType {
       docs: {
         ...splitDocumentation(resource.documentation),
         stability: Stability.External,
+        docTags: { cloudformationResource: resource.cloudFormationType },
         see: cloudFormationDocLink({
           resourceType: resource.cloudFormationType,
         }),
@@ -97,7 +98,7 @@ export class ResourceClass extends ClassType {
    */
   public build() {
     // Build the props type
-    const cfnMapping = new CloudFormationMapping(this.module);
+    const cfnMapping = new CloudFormationMapping(this.module, this.converter);
 
     for (const prop of this.decider.propsProperties) {
       this.propsType.addProperty(prop.propertySpec);

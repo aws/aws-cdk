@@ -74,12 +74,10 @@ async function removeTags(ssm: SSM, parameters: string[], keyName: string): Prom
         ResourceId: name,
       });
     } catch (e: any) {
-      switch (e.code) {
-        // if the parameter doesn't exist then there is nothing to release
-        case 'InvalidResourceId':
-          return;
-        default:
-          throw new Error(`Error releasing import ${name}: ${e}`);
+      if (e.name === 'InvalidResourceId') {
+        return;
+      } else {
+        throw new Error(`Error releasing import ${name}: ${e}`);
       }
     }
   }));

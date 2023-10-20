@@ -50,12 +50,27 @@ describe('DeployAssert', () => {
         service: 'Lambda',
         api: 'invoke',
         parameters: {
-          FunctionName: 'my-func',
-          InvocationType: 'Event',
-          LogType: 'Tail',
-          Payload: '{"key":"val"}',
+          FunctionName: '"my-func"',
+          InvocationType: '"Event"',
+          LogType: '"Tail"',
+          Payload: '"{\\"key\\":\\"val\\"}"',
         },
       });
+    });
+
+    test('multiple identical calls can be configured', () => {
+      // GIVEN
+      const app = new App();
+
+      // WHEN
+      const deployAssert = new DeployAssert(app);
+      deployAssert.invokeFunction({ functionName: 'my-func' });
+      deployAssert.invokeFunction({ functionName: 'my-func' });
+
+      // THEN
+      const template = Template.fromStack(deployAssert.scope);
+      template.resourceCountIs('AWS::Lambda::Function', 1);
+      template.resourceCountIs('Custom::DeployAssert@SdkCallLambdainvoke', 2);
     });
   });
 
@@ -145,6 +160,21 @@ describe('DeployAssert', () => {
       template.resourceCountIs('Custom::DeployAssert@SdkCallMyServiceMyApi2', 1);
     });
 
+    test('multiple identical calls can be configured', () => {
+      // GIVEN
+      const app = new App();
+
+      // WHEN
+      const deployAssert = new DeployAssert(app);
+      deployAssert.awsApiCall('MyService', 'MyApi');
+      deployAssert.awsApiCall('MyService', 'MyApi');
+
+      // THEN
+      const template = Template.fromStack(deployAssert.scope);
+      template.resourceCountIs('AWS::Lambda::Function', 1);
+      template.resourceCountIs('Custom::DeployAssert@SdkCallMyServiceMyApi', 2);
+    });
+
     test('custom resource type length is truncated when greater than 60 characters', () => {
       // GIVEN
       const app = new App();
@@ -201,6 +231,21 @@ describe('DeployAssert', () => {
       template.resourceCountIs('AWS::Lambda::Function', 1);
       template.resourceCountIs('Custom::DeployAssert@HttpCallexamplecomtest123', 1);
       template.resourceCountIs('Custom::DeployAssert@HttpCallexamplecomtest789', 1);
+    });
+
+    test('multiple identical calls can be configured', () => {
+      // GIVEN
+      const app = new App();
+
+      // WHEN
+      const deployAssert = new DeployAssert(app);
+      deployAssert.httpApiCall('https://example.com/test');
+      deployAssert.httpApiCall('https://example.com/test');
+
+      // THEN
+      const template = Template.fromStack(deployAssert.scope);
+      template.resourceCountIs('AWS::Lambda::Function', 1);
+      template.resourceCountIs('Custom::DeployAssert@HttpCallexamplecomtest', 2);
     });
 
     test('call with fetch options', () => {

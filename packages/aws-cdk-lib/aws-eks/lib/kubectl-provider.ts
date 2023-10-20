@@ -135,7 +135,7 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
 
     const handler = new lambda.Function(this, 'Handler', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'kubectl-handler')),
-      runtime: lambda.Runtime.PYTHON_3_7,
+      runtime: lambda.Runtime.PYTHON_3_10,
       handler: 'index.handler',
       timeout: Duration.minutes(15),
       description: 'onEvent handler for EKS kubectl resource provider',
@@ -145,7 +145,7 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
 
       // defined only when using private access
       vpc: cluster.kubectlPrivateSubnets ? cluster.vpc : undefined,
-      securityGroups: cluster.kubectlSecurityGroup ? [cluster.kubectlSecurityGroup] : undefined,
+      securityGroups: cluster.kubectlPrivateSubnets && cluster.kubectlSecurityGroup ? [cluster.kubectlSecurityGroup] : undefined,
       vpcSubnets: cluster.kubectlPrivateSubnets ? { subnets: cluster.kubectlPrivateSubnets } : undefined,
     });
 
@@ -194,7 +194,7 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
       onEventHandler: handler,
       vpc: cluster.kubectlPrivateSubnets ? cluster.vpc : undefined,
       vpcSubnets: cluster.kubectlPrivateSubnets ? { subnets: cluster.kubectlPrivateSubnets } : undefined,
-      securityGroups: cluster.kubectlSecurityGroup ? [cluster.kubectlSecurityGroup] : undefined,
+      securityGroups: cluster.kubectlPrivateSubnets && cluster.kubectlSecurityGroup ? [cluster.kubectlSecurityGroup] : undefined,
     });
 
     this.serviceToken = provider.serviceToken;

@@ -1,5 +1,5 @@
-import * as linter from '../lint';
 import * as path from 'path';
+import * as linter from '../lint';
 
 let mockRemoveLabel = jest.fn();
 let mockAddLabel = jest.fn();
@@ -12,9 +12,9 @@ beforeAll(() => {
   process.env.REPO_ROOT = path.join(__dirname, '..', '..', '..', '..');
 });
 
-afterEach(() => { 
+afterEach(() => {
   jest.clearAllMocks();
-})
+});
 
 afterAll(() => {
   process.env.REPO_ROOT = undefined;
@@ -25,11 +25,11 @@ let mockCreateReview: (errorMessage: string) => Promise<any>;
 const SHA = 'ABC';
 
 type Subset<K> = {
-    [attr in keyof K]?: K[attr] extends object
-        ? Subset<K[attr]>
-        : K[attr] extends object | null
-        ? Subset<K[attr]> | null
-        : K[attr] extends object | null | undefined
+  [attr in keyof K]?: K[attr] extends object
+    ? Subset<K[attr]>
+    : K[attr] extends object | null
+      ? Subset<K[attr]> | null
+      : K[attr] extends object | null | undefined
         ? Subset<K[attr]> | null | undefined
         : K[attr];
 };
@@ -91,6 +91,24 @@ describe('breaking changes format', () => {
     const prLinter = configureMock(issue, undefined);
     expect(await prLinter.validatePullRequestTarget(SHA)).resolves; // not throw
   });
+});
+
+test('disallow PRs from main branch of fork', async () => {
+  const issue: Subset<linter.GitHubPr> = {
+    number: 1,
+    title: 'chore: some title',
+    body: 'making a pr from main of my fork',
+    labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }],
+    user: {
+      login: 'author',
+    },
+    head: {
+      label: 'author:main',
+      ref: 'main'
+    }
+  };
+  const prLinter = configureMock(issue, undefined);
+  await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow(/Pull requests from `main` branch of a fork cannot be accepted. Please reopen this contribution from another branch on your fork./);
 });
 
 describe('commit message format', () => {
@@ -176,7 +194,7 @@ describe('commit message format', () => {
     };
     const prLinter = configureMock(issue, undefined);
     expect(await prLinter.validatePullRequestTarget(SHA)).resolves;
-  })
+  });
 });
 
 describe('ban breaking changes in stable modules', () => {
@@ -267,14 +285,14 @@ describe('integration tests required on features', () => {
     };
     const files = [
       {
-        filename: 'integ.some-integ-test.ts'
+        filename: 'integ.some-integ-test.ts',
       },
       {
-        filename: 'test/some-integ-test.integ.snapshot/integ.some-test.expected.json'
+        filename: 'test/some-integ-test.integ.snapshot/integ.some-test.expected.json',
       },
       {
-        filename: 'README.md'
-      }
+        filename: 'README.md',
+      },
     ];
     const prLinter = configureMock(issue, files);
     expect(await prLinter.validatePullRequestTarget(SHA)).resolves;
@@ -296,14 +314,14 @@ describe('integration tests required on features', () => {
     };
     const files = [
       {
-        filename: 'some-test.test.ts'
+        filename: 'some-test.test.ts',
       },
       {
-        filename: 'test/some-integ-test.integ.snapshot/integ.some-test.expected.json'
+        filename: 'test/some-integ-test.integ.snapshot/integ.some-test.expected.json',
       },
       {
-        filename: 'README.md'
-      }
+        filename: 'README.md',
+      },
     ];
     const prLinter = configureMock(issue, files);
     await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow(
@@ -311,8 +329,8 @@ describe('integration tests required on features', () => {
       '\n\n\t❌ Features must contain a change to an integration test file and the resulting snapshot.' +
       '\n\n<b>PRs must pass status checks before we can provide a meaningful review.</b>\n\n' +
       'If you would like to request an exemption from the status checks or clarification on feedback,' +
-      ' please leave a comment on this PR containing `Exemption Request` and/or `Clarification Request`.'
-      );
+      ' please leave a comment on this PR containing `Exemption Request` and/or `Clarification Request`.',
+    );
   });
 
   test('integ snapshots not changed in feat', async () => {
@@ -331,14 +349,14 @@ describe('integration tests required on features', () => {
     };
     const files = [
       {
-        filename: 'some-test.test.ts'
+        filename: 'some-test.test.ts',
       },
       {
-        filename: 'integ.some-test.ts'
+        filename: 'integ.some-test.ts',
       },
       {
-        filename: 'README.md'
-      }
+        filename: 'README.md',
+      },
     ];
     const prLinter = configureMock(issue, files);
     await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow(
@@ -346,8 +364,8 @@ describe('integration tests required on features', () => {
       '\n\n\t❌ Features must contain a change to an integration test file and the resulting snapshot.' +
       '\n\n<b>PRs must pass status checks before we can provide a meaningful review.</b>\n\n' +
       'If you would like to request an exemption from the status checks or clarification on feedback,' +
-      ' please leave a comment on this PR containing `Exemption Request` and/or `Clarification Request`.'
-      );
+      ' please leave a comment on this PR containing `Exemption Request` and/or `Clarification Request`.',
+    );
   });
 
   test('integ files not changed in fix', async () => {
@@ -366,14 +384,14 @@ describe('integration tests required on features', () => {
     };
     const files = [
       {
-        filename: 'some-test.test.ts'
+        filename: 'some-test.test.ts',
       },
       {
-        filename: 'test/some-integ-test.integ.snapshot/integ.some-test.expected.json'
+        filename: 'test/some-integ-test.integ.snapshot/integ.some-test.expected.json',
       },
       {
-        filename: 'README.md'
-      }
+        filename: 'README.md',
+      },
     ];
     const prLinter = configureMock(issue, files);
     await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow(
@@ -381,8 +399,8 @@ describe('integration tests required on features', () => {
       '\n\n\t❌ Fixes must contain a change to an integration test file and the resulting snapshot.' +
       '\n\n<b>PRs must pass status checks before we can provide a meaningful review.</b>\n\n' +
       'If you would like to request an exemption from the status checks or clarification on feedback,' +
-      ' please leave a comment on this PR containing `Exemption Request` and/or `Clarification Request`.'
-      );
+      ' please leave a comment on this PR containing `Exemption Request` and/or `Clarification Request`.',
+    );
   });
 
   test('integ snapshots not changed in fix', async () => {
@@ -401,14 +419,14 @@ describe('integration tests required on features', () => {
     };
     const files = [
       {
-        filename: 'some-test.test.ts'
+        filename: 'some-test.test.ts',
       },
       {
-        filename: 'integ.some-test.ts'
+        filename: 'integ.some-test.ts',
       },
       {
-        filename: 'README.md'
-      }
+        filename: 'README.md',
+      },
     ];
     const prLinter = configureMock(issue, files);
     await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow(
@@ -416,8 +434,8 @@ describe('integration tests required on features', () => {
       '\n\n\t❌ Fixes must contain a change to an integration test file and the resulting snapshot.' +
       '\n\n<b>PRs must pass status checks before we can provide a meaningful review.</b>\n\n' +
       'If you would like to request an exemption from the status checks or clarification on feedback,' +
-      ' please leave a comment on this PR containing `Exemption Request` and/or `Clarification Request`.'
-      );
+      ' please leave a comment on this PR containing `Exemption Request` and/or `Clarification Request`.',
+    );
   });
 
   test('integ files not changed, pr exempt', async () => {
@@ -436,11 +454,11 @@ describe('integration tests required on features', () => {
     };
     const files = [
       {
-        filename: 'some-test.test.ts'
+        filename: 'some-test.test.ts',
       },
       {
-        filename: 'README.md'
-      }
+        filename: 'README.md',
+      },
     ];
     const prLinter = configureMock(issue, files);
     expect(await prLinter.validatePullRequestTarget(SHA)).resolves;
@@ -462,11 +480,11 @@ describe('integration tests required on features', () => {
     };
     const files = [
       {
-        filename: 'some-test.test.ts'
+        filename: 'some-test.test.ts',
       },
       {
-        filename: 'readme.md'
-      }
+        filename: 'readme.md',
+      },
     ];
     const prlinter = configureMock(issue, files);
     expect(await prlinter.validatePullRequestTarget(SHA)).resolves;
@@ -486,7 +504,7 @@ describe('integration tests required on features', () => {
         login: 'author',
       },
     };
-    const files = [ { filename: 'packages/aws-cdk/lib/cdk-toolkit.ts' } ];
+    const files = [{ filename: 'packages/aws-cdk/lib/cdk-toolkit.ts' }];
 
     test('no label throws error', async () => {
       const prLinter = configureMock(issue, files);
@@ -511,23 +529,23 @@ describe('integration tests required on features', () => {
       const prLinter = configureMock(issue, files);
       await prLinter.validatePullRequestTarget(SHA);
       // THEN: no exception
-    })
+    });
   });
 
-  describe('assess needs review from status event', () => { 
+  describe('assess needs review from status event', () => {
     const pr = {
       draft: false,
       mergeable_state: 'behind',
       number: 1234,
-      labels: [{ name: 'p2'}],
+      labels: [{ name: 'p2' }],
     };
-    beforeEach(() => { 
+    beforeEach(() => {
       mockListReviews.mockImplementation(() => {
         return {
           data: [{ id: 1111122222, user: { login: 'aws-cdk-automation' }, state: 'DISMISSED' }],
-        }
+        };
       });
-    })
+    });
 
     test('needs a review', async () => {
       // WHEN
@@ -540,10 +558,10 @@ describe('integration tests required on features', () => {
 
       // THEN
       expect(mockAddLabel.mock.calls[0][0]).toEqual({
-        "issue_number": 1234,
-        "labels": ["pr/needs-review"],
-        "owner": "aws",
-        "repo": "aws-cdk",
+        issue_number: 1234,
+        labels: ['pr/needs-community-review'],
+        owner: 'aws',
+        repo: 'aws-cdk',
       });
       expect(mockRemoveLabel.mock.calls).toEqual([]);
     });
@@ -560,10 +578,10 @@ describe('integration tests required on features', () => {
 
       // THEN
       expect(mockAddLabel.mock.calls[0][0]).toEqual({
-        "issue_number": 1234,
-        "labels": ["pr/needs-maintainer-review"],
-        "owner": "aws",
-        "repo": "aws-cdk",
+        issue_number: 1234,
+        labels: ['pr/needs-maintainer-review'],
+        owner: 'aws',
+        repo: 'aws-cdk',
       });
       expect(mockRemoveLabel.mock.calls).toEqual([]);
     });
@@ -573,12 +591,12 @@ describe('integration tests required on features', () => {
       mockListReviews.mockImplementation(() => {
         return {
           data: [{ id: 1111122222, user: { login: 'aws-cdk-automation' }, state: 'CHANGES_REQUESTED' }],
-        }
+        };
       });
       (pr as any).labels = [
         {
-          name: 'pr/needs-review',
-        }
+          name: 'pr/needs-community-review',
+        },
       ];
 
       // WHEN
@@ -591,10 +609,10 @@ describe('integration tests required on features', () => {
 
       // THEN
       expect(mockRemoveLabel.mock.calls[0][0]).toEqual({
-        "issue_number": 1234,
-        "name": "pr/needs-review",
-        "owner": "aws",
-        "repo": "aws-cdk",
+        issue_number: 1234,
+        name: 'pr/needs-community-review',
+        owner: 'aws',
+        repo: 'aws-cdk',
       });
       expect(mockAddLabel.mock.calls).toEqual([]);
     });
@@ -604,12 +622,12 @@ describe('integration tests required on features', () => {
       mockListReviews.mockImplementation(() => {
         return {
           data: [{ id: 1111122222, user: { login: 'aws-cdk-automation' }, state: 'CHANGES_REQUESTED' }],
-        }
+        };
       });
       (pr as any).labels = [
         {
           name: 'pr-linter/exemption-requested',
-        }
+        },
       ];
 
       // WHEN
@@ -622,10 +640,10 @@ describe('integration tests required on features', () => {
 
       // THEN
       expect(mockAddLabel.mock.calls[0][0]).toEqual({
-        "issue_number": 1234,
-        "labels": ["pr/needs-review"],
-        "owner": "aws",
-        "repo": "aws-cdk",
+        issue_number: 1234,
+        labels: ['pr/needs-community-review'],
+        owner: 'aws',
+        repo: 'aws-cdk',
       });
       expect(mockRemoveLabel.mock.calls).toEqual([]);
     });
@@ -638,14 +656,14 @@ describe('integration tests required on features', () => {
             { id: 1111122222, user: { login: 'aws-cdk-automation' }, state: 'CHANGES_REQUESTED' },
             { id: 1111122223, user: { login: 'someuser' }, author_association: 'MEMBER', state: 'CHANGES_REQUESTED' },
           ],
-        }
+        };
       });
       (pr as any).labels = [
         {
           name: 'pr-linter/exemption-requested',
         },
         {
-          name: 'pr/needs-review',
+          name: 'pr/needs-community-review',
         },
       ];
 
@@ -659,10 +677,10 @@ describe('integration tests required on features', () => {
 
       // THEN
       expect(mockRemoveLabel.mock.calls[0][0]).toEqual({
-        "issue_number": 1234,
-        "name": "pr/needs-review",
-        "owner": "aws",
-        "repo": "aws-cdk",
+        issue_number: 1234,
+        name: 'pr/needs-community-review',
+        owner: 'aws',
+        repo: 'aws-cdk',
       });
       expect(mockAddLabel.mock.calls).toEqual([]);
     });
@@ -674,12 +692,12 @@ describe('integration tests required on features', () => {
           data: [
             { id: 1111122223, user: { login: 'someuser' }, author_association: 'MEMBER', state: 'APPROVED' },
           ],
-        }
+        };
       });
       (pr as any).labels = [
         {
-          name: 'pr/needs-review',
-        }
+          name: 'pr/needs-community-review',
+        },
       ];
 
       // WHEN
@@ -692,10 +710,10 @@ describe('integration tests required on features', () => {
 
       // THEN
       expect(mockRemoveLabel.mock.calls[0][0]).toEqual({
-        "issue_number": 1234,
-        "name": "pr/needs-review",
-        "owner": "aws",
-        "repo": "aws-cdk",
+        issue_number: 1234,
+        name: 'pr/needs-community-review',
+        owner: 'aws',
+        repo: 'aws-cdk',
       });
       expect(mockAddLabel.mock.calls).toEqual([]);
     });
@@ -707,12 +725,12 @@ describe('integration tests required on features', () => {
           data: [
             { id: 1111122223, user: { login: 'pahud' }, state: 'APPROVED' },
           ],
-        }
+        };
       });
       (pr as any).labels = [
         {
-          name: 'pr/needs-review',
-        }
+          name: 'pr/needs-community-review',
+        },
       ];
 
       // WHEN
@@ -725,16 +743,55 @@ describe('integration tests required on features', () => {
 
       // THEN
       expect(mockRemoveLabel.mock.calls[0][0]).toEqual({
-        "issue_number": 1234,
-        "name": "pr/needs-review",
-        "owner": "aws",
-        "repo": "aws-cdk",
+        issue_number: 1234,
+        name: 'pr/needs-community-review',
+        owner: 'aws',
+        repo: 'aws-cdk',
       });
       expect(mockAddLabel.mock.calls[0][0]).toEqual({
-        "issue_number": 1234,
-        "labels": ["pr/needs-maintainer-review"],
-        "owner": "aws",
-        "repo": "aws-cdk",
+        issue_number: 1234,
+        labels: ['pr/needs-maintainer-review'],
+        owner: 'aws',
+        repo: 'aws-cdk',
+      });
+    });
+
+    test('needs a maintainer review if a community member has approved p2, regardless of other community reviews', async () => {
+      // GIVEN
+      mockListReviews.mockImplementation(() => {
+        return {
+          data: [
+            { id: 1111122223, user: { login: 'pahud' }, state: 'COMMENTED' },
+            { id: 1111122223, user: { login: 'pahud' }, state: 'APPROVED' },
+          ],
+        };
+      });
+      (pr as any).labels = [
+        {
+          name: 'pr/needs-community-review',
+        },
+      ];
+
+      // WHEN
+      const prLinter = configureMock(pr);
+      await prLinter.validateStatusEvent(pr as any, {
+        sha: SHA,
+        context: linter.CODE_BUILD_CONTEXT,
+        state: 'success',
+      } as any);
+
+      // THEN
+      expect(mockRemoveLabel.mock.calls[0][0]).toEqual({
+        issue_number: 1234,
+        name: 'pr/needs-community-review',
+        owner: 'aws',
+        repo: 'aws-cdk',
+      });
+      expect(mockAddLabel.mock.calls[0][0]).toEqual({
+        issue_number: 1234,
+        labels: ['pr/needs-maintainer-review'],
+        owner: 'aws',
+        repo: 'aws-cdk',
       });
     });
 
@@ -743,14 +800,14 @@ describe('integration tests required on features', () => {
       mockListReviews.mockImplementation(() => {
         return {
           data: [
-            { id: 1111122223, user: { login: 'pahud' }, state: 'COMMENT' },
+            { id: 1111122223, user: { login: 'pahud' }, state: 'COMMENTED' },
           ],
-        }
+        };
       });
       (pr as any).labels = [
         {
-          name: 'pr/needs-review',
-        }
+          name: 'pr/needs-community-review',
+        },
       ];
 
       // WHEN
@@ -763,10 +820,10 @@ describe('integration tests required on features', () => {
 
       // THEN
       expect(mockRemoveLabel.mock.calls[0][0]).toEqual({
-        "issue_number": 1234,
-        "name": "pr/needs-review",
-        "owner": "aws",
-        "repo": "aws-cdk",
+        issue_number: 1234,
+        name: 'pr/needs-community-review',
+        owner: 'aws',
+        repo: 'aws-cdk',
       });
       expect(mockAddLabel.mock.calls).toEqual([]);
     });
@@ -778,12 +835,12 @@ describe('integration tests required on features', () => {
           data: [
             { id: 1111122223, user: { login: 'untrusted' }, state: 'APPROVED' },
           ],
-        }
+        };
       });
       (pr as any).labels = [
         {
-          name: 'pr/needs-review',
-        }
+          name: 'pr/needs-community-review',
+        },
       ];
 
       // WHEN
@@ -806,8 +863,8 @@ describe('integration tests required on features', () => {
           data: [
             { id: 1111122222, user: { login: 'aws-cdk-automation' }, state: 'CHANGES_REQUESTED' },
             { id: 1111122223, user: { login: 'someuser' }, author_association: 'MEMBER', state: 'CHANGES_REQUESTED' },
-          ]
-        }
+          ],
+        };
       });
       (pr as any).title = 'blah';
       (pr as any).labels = [
@@ -815,8 +872,8 @@ describe('integration tests required on features', () => {
           name: 'pr-linter/exemption-requested',
         },
         {
-          name: 'pr/needs-review',
-        }
+          name: 'pr/needs-community-review',
+        },
       ];
 
       // WHEN
@@ -825,10 +882,10 @@ describe('integration tests required on features', () => {
 
       // THEN
       expect(mockRemoveLabel.mock.calls[0][0]).toEqual({
-        "issue_number": 1234,
-        "name": "pr/needs-review",
-        "owner": "aws",
-        "repo": "aws-cdk",
+        issue_number: 1234,
+        name: 'pr/needs-community-review',
+        owner: 'aws',
+        repo: 'aws-cdk',
       });
       expect(mockAddLabel.mock.calls).toEqual([]);
     });
@@ -848,12 +905,14 @@ function configureMock(pr: Subset<linter.GitHubPr>, prFiles?: linter.GitHubFile[
     createReview(errorMessage: string) {
       return {
         promise: () => mockCreateReview(errorMessage),
-      }
+      };
     },
 
     listReviews: mockListReviews,
 
     dismissReview() {},
+
+    update() {},
   };
 
   const issuesClient = {
@@ -862,7 +921,7 @@ function configureMock(pr: Subset<linter.GitHubPr>, prFiles?: linter.GitHubFile[
     deleteComment() {},
 
     listComments() {
-      return { data: [{ id: 1212121212, user: { login: 'aws-cdk-automation' }, body: 'The pull request linter fails with the following errors:' }] }
+      return { data: [{ id: 1212121212, user: { login: 'aws-cdk-automation' }, body: 'The pull request linter fails with the following errors:' }] };
     },
 
     removeLabel: mockRemoveLabel,
@@ -876,7 +935,7 @@ function configureMock(pr: Subset<linter.GitHubPr>, prFiles?: linter.GitHubFile[
           context: linter.CODE_BUILD_CONTEXT,
           state: 'success',
         }],
-      }
+      };
     },
   };
 
@@ -894,7 +953,7 @@ function configureMock(pr: Subset<linter.GitHubPr>, prFiles?: linter.GitHubFile[
       issues: issuesClient as any,
       search: searchClient as any,
       repos: reposClient as any,
-      paginate: (method: any, args: any) => { return method(args).data },
+      paginate: (method: any, args: any) => { return method(args).data; },
     } as any,
-  })
+  });
 }

@@ -2173,7 +2173,7 @@ describe('cluster', () => {
         },
       });
     });
-    test('inference instances are supported', () => {
+    test('inf1 instances are supported', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();
       const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
@@ -2181,6 +2181,24 @@ describe('cluster', () => {
       // WHEN
       cluster.addAutoScalingGroupCapacity('InferenceInstances', {
         instanceType: new ec2.InstanceType('inf1.2xlarge'),
+        minCapacity: 1,
+      });
+      const fileContents = fs.readFileSync(path.join(__dirname, '../lib', 'addons/neuron-device-plugin.yaml'), 'utf8');
+      const sanitized = YAML.parse(fileContents);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
+        Manifest: JSON.stringify([sanitized]),
+      });
+    });
+    test('inf2 instances are supported', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+      const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
+
+      // WHEN
+      cluster.addAutoScalingGroupCapacity('InferenceInstances', {
+        instanceType: new ec2.InstanceType('inf2.xlarge'),
         minCapacity: 1,
       });
       const fileContents = fs.readFileSync(path.join(__dirname, '../lib', 'addons/neuron-device-plugin.yaml'), 'utf8');
@@ -3066,7 +3084,7 @@ describe('cluster', () => {
       return [
         `You created a cluster with Kubernetes Version 1.${version} without specifying the kubectlLayer property.`,
         'This may cause failures as the kubectl version provided with aws-cdk-lib is 1.20, which is only guaranteed to be compatible with Kubernetes versions 1.19-1.21.',
-        `Please provide a kubectlLayer from @aws-cdk/lambda-layer-kubectl-v${version}.`,
+        `Please provide a kubectlLayer from @aws-cdk/lambda-layer-kubectl-v${version}. [ack: @aws-cdk/aws-eks:clusterKubectlLayerNotSpecified]`,
       ].join(' ');
     }
 

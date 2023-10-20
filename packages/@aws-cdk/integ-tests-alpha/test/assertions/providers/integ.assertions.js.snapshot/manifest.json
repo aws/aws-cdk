@@ -1,5 +1,5 @@
 {
-  "version": "30.1.0",
+  "version": "34.0.0",
   "artifacts": {
     "Assertions.assets": {
       "type": "cdk:asset-manifest",
@@ -14,6 +14,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "Assertions.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -73,10 +74,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "AssertionsTestDefaultTestDeployAssertDC0672BB.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d368a027f6944d4ebf8f88e67236867c5b721d43e9e9cb1d4dcb16106dceff3d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4e01d7d1d71b079819d9e433311d9475a6aaece447884c16b6b41f29619e0920.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -93,16 +95,16 @@
         "AssertionsTestDefaultTestDeployAssertDC0672BB.assets"
       ],
       "metadata": {
-        "/AssertionsTest/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter/Default/Default": [
+        "/AssertionsTest/DefaultTest/DeployAssert/AwsApiCallSSMgetParametere2d1ba6ca5f8b296a8dfc6b4036a90f2/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSSMgetParameter"
+            "data": "AwsApiCallSSMgetParametere2d1ba6ca5f8b296a8dfc6b4036a90f2"
           }
         ],
-        "/AssertionsTest/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter/AssertionResults": [
+        "/AssertionsTest/DefaultTest/DeployAssert/AwsApiCallSSMgetParametere2d1ba6ca5f8b296a8dfc6b4036a90f2/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallSSMgetParameter"
+            "data": "AssertionResultsAwsApiCallSSMgetParametere2d1ba6ca5f8b296a8dfc6b4036a90f2"
           }
         ],
         "/AssertionsTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
@@ -115,6 +117,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/AssertionsTest/DefaultTest/DeployAssert/AwsApiCallSSMgetParametere2d1ba6ca5f8b296a8dfc6b4036a90f21/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSSMgetParametere2d1ba6ca5f8b296a8dfc6b4036a90f21"
+          }
+        ],
+        "/AssertionsTest/DefaultTest/DeployAssert/AwsApiCallSSMgetParametere2d1ba6ca5f8b296a8dfc6b4036a90f21/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallSSMgetParametere2d1ba6ca5f8b296a8dfc6b4036a90f21"
           }
         ],
         "/AssertionsTest/DefaultTest/DeployAssert/BootstrapVersion": [

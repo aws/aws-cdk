@@ -1,6 +1,7 @@
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { HttpApi } from '@aws-cdk/aws-apigatewayv2-alpha';
-import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Code, Function } from 'aws-cdk-lib/aws-lambda';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Duration, Stack } from 'aws-cdk-lib';
 import { DummyRouteIntegration } from './integration';
 import { HttpLambdaAuthorizer, HttpLambdaResponseType } from '../../lib';
@@ -13,7 +14,7 @@ describe('HttpLambdaAuthorizer', () => {
     const api = new HttpApi(stack, 'HttpApi');
 
     const handler = new Function(stack, 'auth-function', {
-      runtime: Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       code: Code.fromInline('exports.handler = () => {return true}'),
       handler: 'index.handler',
     });
@@ -49,7 +50,7 @@ describe('HttpLambdaAuthorizer', () => {
     const api = new HttpApi(stack, 'HttpApi');
 
     const handler = new Function(stack, 'auth-function', {
-      runtime: Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       code: Code.fromInline('exports.handler = () => {return true}'),
       handler: 'index.handler',
     });
@@ -78,7 +79,7 @@ describe('HttpLambdaAuthorizer', () => {
     const api = new HttpApi(stack, 'HttpApi');
 
     const handler = new Function(stack, 'auth-function', {
-      runtime: Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       code: Code.fromInline('exports.handler = () => {return true}'),
       handler: 'index.handler',
     });
@@ -107,7 +108,7 @@ describe('HttpLambdaAuthorizer', () => {
     const api = new HttpApi(stack, 'HttpApi');
 
     const handler = new Function(stack, 'auth-function', {
-      runtime: Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       code: Code.fromInline('exports.handler = () => {return true}'),
       handler: 'index.handler',
     });
@@ -136,7 +137,7 @@ describe('HttpLambdaAuthorizer', () => {
     const api = new HttpApi(stack, 'HttpApi');
 
     const handler = new Function(stack, 'auth-functon', {
-      runtime: Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       code: Code.fromInline('exports.handler = () => {return true}'),
       handler: 'index.handler',
     });

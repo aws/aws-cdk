@@ -40,8 +40,8 @@ export interface CfnMappingProps {
 export class CfnMapping extends CfnRefElement {
   private mapping: Mapping;
   private readonly lazy?: boolean;
-  private lazyRender = false;
-  private lazyInformed = false;
+  private lazyRender = false; // prescribes `_toCloudFormation()` to pass nothing if value from map is returned lazily.
+  private lazyInformed = false; // keeps track if user has been sent a message informing them of the possibility to use lazy synthesis.
 
   constructor(scope: Construct, id: string, props: CfnMappingProps = {}) {
     super(scope, id);
@@ -53,6 +53,10 @@ export class CfnMapping extends CfnRefElement {
    * Sets a value in the map based on the two keys.
    */
   public setValue(key1: string, key2: string, value: any) {
+    if ([key1, key2].some(k => ['__proto__', 'constructor'].includes(k))) {
+      throw new Error('Cannot use \'__proto__\' or \'constructor\' as keys');
+    }
+
     this.validateAlphanumeric(key2);
 
     if (!(key1 in this.mapping)) {
@@ -64,29 +68,41 @@ export class CfnMapping extends CfnRefElement {
 
   /**
    * @returns A reference to a value in the map based on the two keys.
+   *          If mapping is lazy, the value from the map or default value is returned instead of the reference and the mapping is not rendered in the template.
    */
-  public findInMap(key1: string, key2: string): string {
+  public findInMap(key1: string, key2: string, defaultValue?: string): string {
     let fullyResolved = false;
+    let notInMap = false;
     if (!Token.isUnresolved(key1)) {
       if (!(key1 in this.mapping)) {
-        throw new Error(`Mapping doesn't contain top-level key '${key1}'`);
-      }
-      if (!Token.isUnresolved(key2)) {
+        if (defaultValue === undefined) {
+          throw new Error(`Mapping doesn't contain top-level key '${key1}'`);
+        } else {
+          notInMap = true;
+        }
+      } else if (!Token.isUnresolved(key2)) {
         if (!(key2 in this.mapping[key1])) {
-          throw new Error(`Mapping doesn't contain second-level key '${key2}'`);
+          if (defaultValue === undefined) {
+            throw new Error(`Mapping doesn't contain second-level key '${key2}'`);
+          } else {
+            notInMap = true;
+          }
         }
         fullyResolved = true;
       }
     }
-    if (fullyResolved) {
-      if (this.lazy) {
+
+    if (this.lazy) {
+      if (notInMap && defaultValue !== undefined) {
+        return defaultValue;
+      } else if (fullyResolved) {
         return this.mapping[key1][key2];
       }
-    } else {
-      this.lazyRender = true;
     }
 
-    return new CfnMappingEmbedder(this, this.mapping, key1, key2).toString();
+    this.lazyRender = !fullyResolved;
+
+    return new CfnMappingEmbedder(this, this.mapping, key1, key2, defaultValue).toString();
   }
 
   /**
@@ -130,12 +146,16 @@ export class CfnMapping extends CfnRefElement {
 class CfnMappingEmbedder implements IResolvable {
   readonly creationStack: string[] = [];
 
-  constructor(private readonly cfnMapping: CfnMapping, readonly mapping: Mapping, private readonly key1: string, private readonly key2: string) { }
+  constructor(private readonly cfnMapping: CfnMapping,
+    readonly mapping: Mapping,
+    private readonly key1: string,
+    private readonly key2: string,
+    private readonly defaultValue?: string) { }
 
   public resolve(context: IResolveContext): string {
     const consumingStack = Stack.of(context.scope);
     if (consumingStack === Stack.of(this.cfnMapping)) {
-      return Fn.findInMap(this.cfnMapping.logicalId, this.key1, this.key2);
+      return Fn.findInMap(this.cfnMapping.logicalId, this.key1, this.key2, this.defaultValue);
     }
 
     const constructScope = consumingStack;
@@ -148,7 +168,7 @@ class CfnMappingEmbedder implements IResolvable {
       });
     }
 
-    return Fn.findInMap(mappingCopy.logicalId, this.key1, this.key2);
+    return Fn.findInMap(mappingCopy.logicalId, this.key1, this.key2, this.defaultValue);
   }
 
   public toString() {

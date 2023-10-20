@@ -15,6 +15,7 @@ import {
   Runtime,
   AdotLayerVersion,
 } from 'aws-cdk-lib/aws-lambda';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 const app = new cdk.App();
 
@@ -27,12 +28,12 @@ class StackUnderTest extends Stack {
     super(scope, id, props);
 
     new Function(this, 'MyFunc1', {
-      runtime: Runtime.NODEJS_14_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
       handler: 'index.handler',
       code: Code.fromInline(`exports.handler = ${handler.toString()}`),
       architecture: props.architecture,
       adotInstrumentation: {
-        layerVersion: AdotLayerVersion.fromJavaScriptSdkLayerVersion(AdotLambdaLayerJavaScriptSdkVersion.LATEST),
+        layerVersion: AdotLayerVersion.fromJavaScriptSdkLayerVersion(AdotLambdaLayerJavaScriptSdkVersion.V1_16_0),
         execWrapper: AdotLambdaExecWrapper.REGULAR_HANDLER,
       },
     });
@@ -42,7 +43,7 @@ class StackUnderTest extends Stack {
       handler: 'index.handler',
       code: Code.fromInline('def handler(event, context): pass'),
       adotInstrumentation: {
-        layerVersion: AdotLayerVersion.fromPythonSdkLayerVersion(AdotLambdaLayerPythonSdkVersion.LATEST),
+        layerVersion: AdotLayerVersion.fromPythonSdkLayerVersion(AdotLambdaLayerPythonSdkVersion.V1_20_0),
         execWrapper: AdotLambdaExecWrapper.INSTRUMENT_HANDLER,
       },
     });
@@ -52,7 +53,7 @@ class StackUnderTest extends Stack {
       handler: 'index.handler',
       code: Code.fromInline('def handler(event, context): pass'),
       adotInstrumentation: {
-        layerVersion: AdotLayerVersion.fromJavaSdkLayerVersion(AdotLambdaLayerJavaSdkVersion.LATEST),
+        layerVersion: AdotLayerVersion.fromJavaSdkLayerVersion(AdotLambdaLayerJavaSdkVersion.V1_30_0),
         execWrapper: AdotLambdaExecWrapper.INSTRUMENT_HANDLER,
       },
     });
@@ -62,7 +63,7 @@ class StackUnderTest extends Stack {
       handler: 'index.handler',
       code: Code.fromInline('def handler(event, context): pass'),
       adotInstrumentation: {
-        layerVersion: AdotLayerVersion.fromJavaAutoInstrumentationLayerVersion(AdotLambdaLayerJavaAutoInstrumentationVersion.LATEST),
+        layerVersion: AdotLayerVersion.fromJavaAutoInstrumentationLayerVersion(AdotLambdaLayerJavaAutoInstrumentationVersion.V1_30_0),
         execWrapper: AdotLambdaExecWrapper.INSTRUMENT_HANDLER,
       },
     });
@@ -72,7 +73,7 @@ class StackUnderTest extends Stack {
       handler: 'index.handler',
       code: Code.fromInline('def handler(event, context): pass'),
       adotInstrumentation: {
-        layerVersion: AdotLayerVersion.fromGenericLayerVersion(AdotLambdaLayerGenericVersion.LATEST),
+        layerVersion: AdotLayerVersion.fromGenericLayerVersion(AdotLambdaLayerGenericVersion.V0_84_0),
         execWrapper: AdotLambdaExecWrapper.INSTRUMENT_HANDLER,
       },
     });

@@ -3,6 +3,7 @@ import { App, CfnOutput, Stack, StackProps } from 'aws-cdk-lib';
 import { IntegTest, ExpectedResult, InvocationType, Match } from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 import * as destinations from 'aws-cdk-lib/aws-lambda-destinations';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 // Test success case with:
 // 1. Invoke first function in the chain
@@ -23,7 +24,7 @@ class TestStack extends Stack {
     super(scope, id, props);
 
     const lambdaProps: lambda.FunctionProps = {
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`exports.handler = async (event) => {
         console.log('Event: %j', event);

@@ -2,6 +2,7 @@ import * as kms from 'aws-cdk-lib/aws-kms';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { App, CfnOutput, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 /*
  * Stack verification steps
@@ -12,7 +13,7 @@ const app = new App();
 const stack = new Stack(app, 'integ-user-pool-custom-sender');
 
 const customSenderLambda = new lambda.Function(stack, 'emailLambda', {
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   handler: 'index.handler',
   code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { console.log("Mocked custom email send");return cb(null, "success"); }'),
 });

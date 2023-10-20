@@ -37,14 +37,14 @@
     "Code": {
      "ZipFile": "foo"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "myfnServiceRole7822DC24",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "myfnServiceRole7822DC24"
@@ -108,10 +108,10 @@
   "lambdarestapiDeployment2E401BD8b6af71d9ba27b2c75a61008a85fc6b38": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
+    "Description": "Automatically created by the RestApi construct",
     "RestApiId": {
      "Ref": "lambdarestapiF559E4F2"
-    },
-    "Description": "Automatically created by the RestApi construct"
+    }
    },
    "DependsOn": [
     "lambdarestapiproxyANYC900233F",
@@ -122,11 +122,11 @@
   "lambdarestapiDeploymentStageprodA05F84EA": {
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
-    "RestApiId": {
-     "Ref": "lambdarestapiF559E4F2"
-    },
     "DeploymentId": {
      "Ref": "lambdarestapiDeployment2E401BD8b6af71d9ba27b2c75a61008a85fc6b38"
+    },
+    "RestApiId": {
+     "Ref": "lambdarestapiF559E4F2"
     },
     "StageName": "prod"
    },
@@ -230,14 +230,8 @@
   "lambdarestapiproxyANYC900233F": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "HttpMethod": "ANY",
-    "ResourceId": {
-     "Ref": "lambdarestapiproxyB0E963B7"
-    },
-    "RestApiId": {
-     "Ref": "lambdarestapiF559E4F2"
-    },
     "AuthorizationType": "NONE",
+    "HttpMethod": "ANY",
     "Integration": {
      "IntegrationHttpMethod": "POST",
      "IntegrationResponses": [
@@ -273,6 +267,12 @@
        ]
       ]
      }
+    },
+    "ResourceId": {
+     "Ref": "lambdarestapiproxyB0E963B7"
+    },
+    "RestApiId": {
+     "Ref": "lambdarestapiF559E4F2"
     }
    }
   },
@@ -357,17 +357,8 @@
   "lambdarestapiANYB9BB3FB2": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "HttpMethod": "ANY",
-    "ResourceId": {
-     "Fn::GetAtt": [
-      "lambdarestapiF559E4F2",
-      "RootResourceId"
-     ]
-    },
-    "RestApiId": {
-     "Ref": "lambdarestapiF559E4F2"
-    },
     "AuthorizationType": "NONE",
+    "HttpMethod": "ANY",
     "Integration": {
      "IntegrationHttpMethod": "POST",
      "IntegrationResponses": [
@@ -403,6 +394,15 @@
        ]
       ]
      }
+    },
+    "ResourceId": {
+     "Fn::GetAtt": [
+      "lambdarestapiF559E4F2",
+      "RootResourceId"
+     ]
+    },
+    "RestApiId": {
+     "Ref": "lambdarestapiF559E4F2"
     }
    }
   }

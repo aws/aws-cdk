@@ -117,18 +117,12 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
-                    "code": {
-                      "zipFile": "exports.handler = function handler(event, _context, callback) {\n    console.log(JSON.stringify(event, undefined, 2));\n    return callback();\n}"
-                    },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "MyFunc1ServiceRoleF96C5B5C",
-                        "Arn"
-                      ]
-                    },
                     "architectures": [
                       "arm64"
                     ],
+                    "code": {
+                      "zipFile": "exports.handler = function handler(event, _context, callback) {\n    console.log(JSON.stringify(event, undefined, 2));\n    return callback();\n}"
+                    },
                     "environment": {
                       "variables": {
                         "AWS_LAMBDA_EXEC_WRAPPER": "/opt/otel-handler"
@@ -142,11 +136,17 @@
                           {
                             "Ref": "AWS::Region"
                           },
-                          "JAVASCRIPTxSDKx1x7x0xarm64"
+                          "JAVASCRIPTxSDKx1x16x0xarm64"
                         ]
                       }
                     ],
-                    "runtime": "nodejs14.x",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "MyFunc1ServiceRoleF96C5B5C",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs18.x",
                     "tracingConfig": {
                       "mode": "Active"
                     }
@@ -167,7 +167,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_lambda.FunctionBase",
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
               "version": "0.0.0"
             }
           },
@@ -291,12 +291,6 @@
                     "code": {
                       "zipFile": "def handler(event, context): pass"
                     },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "MyFunc2ServiceRole68E50443",
-                        "Arn"
-                      ]
-                    },
                     "environment": {
                       "variables": {
                         "AWS_LAMBDA_EXEC_WRAPPER": "/opt/otel-instrument"
@@ -305,18 +299,21 @@
                     "handler": "index.handler",
                     "layers": [
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:lambda:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":901920570463:layer:aws-otel-python-amd64-ver-1-13-0:1"
-                          ]
+                        "Fn::FindInMap": [
+                          "AdotlambdalayerMap",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          "PYTHONxSDKx1x20x0xx86x64"
                         ]
                       }
                     ],
+                    "role": {
+                      "Fn::GetAtt": [
+                        "MyFunc2ServiceRole68E50443",
+                        "Arn"
+                      ]
+                    },
                     "runtime": "python3.9",
                     "tracingConfig": {
                       "mode": "Active"
@@ -338,7 +335,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_lambda.FunctionBase",
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
               "version": "0.0.0"
             }
           },
@@ -454,12 +451,6 @@
                     "code": {
                       "zipFile": "def handler(event, context): pass"
                     },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "MyFunc3ServiceRoleA69795ED",
-                        "Arn"
-                      ]
-                    },
                     "environment": {
                       "variables": {
                         "AWS_LAMBDA_EXEC_WRAPPER": "/opt/otel-instrument"
@@ -468,18 +459,21 @@
                     "handler": "index.handler",
                     "layers": [
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:lambda:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-19-0:1"
-                          ]
+                        "Fn::FindInMap": [
+                          "AdotlambdalayerMap",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          "JAVAxSDKx1x30x0xx86x64"
                         ]
                       }
                     ],
+                    "role": {
+                      "Fn::GetAtt": [
+                        "MyFunc3ServiceRoleA69795ED",
+                        "Arn"
+                      ]
+                    },
                     "runtime": "python3.9",
                     "tracingConfig": {
                       "mode": "Active"
@@ -501,7 +495,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_lambda.FunctionBase",
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
               "version": "0.0.0"
             }
           },
@@ -617,12 +611,6 @@
                     "code": {
                       "zipFile": "def handler(event, context): pass"
                     },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "MyFunc4ServiceRole93C4DEFF",
-                        "Arn"
-                      ]
-                    },
                     "environment": {
                       "variables": {
                         "AWS_LAMBDA_EXEC_WRAPPER": "/opt/otel-instrument"
@@ -631,18 +619,21 @@
                     "handler": "index.handler",
                     "layers": [
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:lambda:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":901920570463:layer:aws-otel-java-agent-amd64-ver-1-19-2:1"
-                          ]
+                        "Fn::FindInMap": [
+                          "AdotlambdalayerMap",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          "JAVAxAUTOxINSTRUMENTATIONx1x30x0xx86x64"
                         ]
                       }
                     ],
+                    "role": {
+                      "Fn::GetAtt": [
+                        "MyFunc4ServiceRole93C4DEFF",
+                        "Arn"
+                      ]
+                    },
                     "runtime": "python3.9",
                     "tracingConfig": {
                       "mode": "Active"
@@ -664,7 +655,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_lambda.FunctionBase",
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
               "version": "0.0.0"
             }
           },
@@ -780,12 +771,6 @@
                     "code": {
                       "zipFile": "def handler(event, context): pass"
                     },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "MyFunc5ServiceRoleFE4CE92B",
-                        "Arn"
-                      ]
-                    },
                     "environment": {
                       "variables": {
                         "AWS_LAMBDA_EXEC_WRAPPER": "/opt/otel-instrument"
@@ -794,18 +779,21 @@
                     "handler": "index.handler",
                     "layers": [
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:lambda:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":901920570463:layer:aws-otel-collector-amd64-ver-0-62-1:1"
-                          ]
+                        "Fn::FindInMap": [
+                          "AdotlambdalayerMap",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          "GENERICx0x84x0xx86x64"
                         ]
                       }
                     ],
+                    "role": {
+                      "Fn::GetAtt": [
+                        "MyFunc5ServiceRoleFE4CE92B",
+                        "Arn"
+                      ]
+                    },
                     "runtime": "python3.9",
                     "tracingConfig": {
                       "mode": "Active"
@@ -827,7 +815,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_lambda.FunctionBase",
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
               "version": "0.0.0"
             }
           },
@@ -966,18 +954,12 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
-                    "code": {
-                      "zipFile": "exports.handler = function handler(event, _context, callback) {\n    console.log(JSON.stringify(event, undefined, 2));\n    return callback();\n}"
-                    },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "MyFunc1ServiceRoleF96C5B5C",
-                        "Arn"
-                      ]
-                    },
                     "architectures": [
                       "x86_64"
                     ],
+                    "code": {
+                      "zipFile": "exports.handler = function handler(event, _context, callback) {\n    console.log(JSON.stringify(event, undefined, 2));\n    return callback();\n}"
+                    },
                     "environment": {
                       "variables": {
                         "AWS_LAMBDA_EXEC_WRAPPER": "/opt/otel-handler"
@@ -986,19 +968,22 @@
                     "handler": "index.handler",
                     "layers": [
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:lambda:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":901920570463:layer:aws-otel-nodejs-amd64-ver-1-7-0:2"
-                          ]
+                        "Fn::FindInMap": [
+                          "AdotlambdalayerMap",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          "JAVASCRIPTxSDKx1x16x0xx86x64"
                         ]
                       }
                     ],
-                    "runtime": "nodejs14.x",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "MyFunc1ServiceRoleF96C5B5C",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs18.x",
                     "tracingConfig": {
                       "mode": "Active"
                     }
@@ -1019,7 +1004,15 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_lambda.FunctionBase",
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "Adot-lambda-layerMap": {
+            "id": "Adot-lambda-layerMap",
+            "path": "Stack2/Adot-lambda-layerMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
               "version": "0.0.0"
             }
           },
@@ -1135,12 +1128,6 @@
                     "code": {
                       "zipFile": "def handler(event, context): pass"
                     },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "MyFunc2ServiceRole68E50443",
-                        "Arn"
-                      ]
-                    },
                     "environment": {
                       "variables": {
                         "AWS_LAMBDA_EXEC_WRAPPER": "/opt/otel-instrument"
@@ -1149,18 +1136,21 @@
                     "handler": "index.handler",
                     "layers": [
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:lambda:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":901920570463:layer:aws-otel-python-amd64-ver-1-13-0:1"
-                          ]
+                        "Fn::FindInMap": [
+                          "AdotlambdalayerMap",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          "PYTHONxSDKx1x20x0xx86x64"
                         ]
                       }
                     ],
+                    "role": {
+                      "Fn::GetAtt": [
+                        "MyFunc2ServiceRole68E50443",
+                        "Arn"
+                      ]
+                    },
                     "runtime": "python3.9",
                     "tracingConfig": {
                       "mode": "Active"
@@ -1182,7 +1172,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_lambda.FunctionBase",
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
               "version": "0.0.0"
             }
           },
@@ -1298,12 +1288,6 @@
                     "code": {
                       "zipFile": "def handler(event, context): pass"
                     },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "MyFunc3ServiceRoleA69795ED",
-                        "Arn"
-                      ]
-                    },
                     "environment": {
                       "variables": {
                         "AWS_LAMBDA_EXEC_WRAPPER": "/opt/otel-instrument"
@@ -1312,18 +1296,21 @@
                     "handler": "index.handler",
                     "layers": [
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:lambda:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-19-0:1"
-                          ]
+                        "Fn::FindInMap": [
+                          "AdotlambdalayerMap",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          "JAVAxSDKx1x30x0xx86x64"
                         ]
                       }
                     ],
+                    "role": {
+                      "Fn::GetAtt": [
+                        "MyFunc3ServiceRoleA69795ED",
+                        "Arn"
+                      ]
+                    },
                     "runtime": "python3.9",
                     "tracingConfig": {
                       "mode": "Active"
@@ -1345,7 +1332,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_lambda.FunctionBase",
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
               "version": "0.0.0"
             }
           },
@@ -1461,12 +1448,6 @@
                     "code": {
                       "zipFile": "def handler(event, context): pass"
                     },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "MyFunc4ServiceRole93C4DEFF",
-                        "Arn"
-                      ]
-                    },
                     "environment": {
                       "variables": {
                         "AWS_LAMBDA_EXEC_WRAPPER": "/opt/otel-instrument"
@@ -1475,18 +1456,21 @@
                     "handler": "index.handler",
                     "layers": [
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:lambda:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":901920570463:layer:aws-otel-java-agent-amd64-ver-1-19-2:1"
-                          ]
+                        "Fn::FindInMap": [
+                          "AdotlambdalayerMap",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          "JAVAxAUTOxINSTRUMENTATIONx1x30x0xx86x64"
                         ]
                       }
                     ],
+                    "role": {
+                      "Fn::GetAtt": [
+                        "MyFunc4ServiceRole93C4DEFF",
+                        "Arn"
+                      ]
+                    },
                     "runtime": "python3.9",
                     "tracingConfig": {
                       "mode": "Active"
@@ -1508,7 +1492,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_lambda.FunctionBase",
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
               "version": "0.0.0"
             }
           },
@@ -1624,12 +1608,6 @@
                     "code": {
                       "zipFile": "def handler(event, context): pass"
                     },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "MyFunc5ServiceRoleFE4CE92B",
-                        "Arn"
-                      ]
-                    },
                     "environment": {
                       "variables": {
                         "AWS_LAMBDA_EXEC_WRAPPER": "/opt/otel-instrument"
@@ -1638,18 +1616,21 @@
                     "handler": "index.handler",
                     "layers": [
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:lambda:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":901920570463:layer:aws-otel-collector-amd64-ver-0-62-1:1"
-                          ]
+                        "Fn::FindInMap": [
+                          "AdotlambdalayerMap",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          "GENERICx0x84x0xx86x64"
                         ]
                       }
                     ],
+                    "role": {
+                      "Fn::GetAtt": [
+                        "MyFunc5ServiceRoleFE4CE92B",
+                        "Arn"
+                      ]
+                    },
                     "runtime": "python3.9",
                     "tracingConfig": {
                       "mode": "Active"
@@ -1671,7 +1652,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_lambda.FunctionBase",
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
               "version": "0.0.0"
             }
           },
@@ -1710,7 +1691,7 @@
                 "path": "IntegTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
@@ -1756,7 +1737,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.55"
+          "version": "10.2.70"
         }
       }
     },

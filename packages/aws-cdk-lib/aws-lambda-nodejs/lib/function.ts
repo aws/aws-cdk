@@ -7,6 +7,8 @@ import { BundlingOptions } from './types';
 import { callsites, findUpMultiple } from './util';
 import { Architecture } from '../../aws-lambda';
 import * as lambda from '../../aws-lambda';
+import { FeatureFlags } from '../../core';
+import { LAMBDA_NODEJS_USE_LATEST_RUNTIME } from '../../cx-api';
 
 /**
  * Properties for a NodejsFunction
@@ -36,7 +38,7 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
    * The runtime environment. Only runtimes of the Node.js family are
    * supported.
    *
-   * @default Runtime.NODEJS_14_X
+   * @default Runtime.NODEJS_18_X
    */
   readonly runtime?: lambda.Runtime;
 
@@ -98,14 +100,15 @@ export class NodejsFunction extends lambda.Function {
     const architecture = props.architecture ?? Architecture.X86_64;
     const depsLockFilePath = findLockFile(props.depsLockFilePath);
     const projectRoot = props.projectRoot ?? path.dirname(depsLockFilePath);
+    const runtime = getRuntime(scope, props);
 
     super(scope, id, {
       ...props,
-      runtime: props.runtime ?? lambda.Runtime.NODEJS_18_X,
-      code: Bundling.bundle({
+      runtime,
+      code: Bundling.bundle(scope, {
         ...props.bundling ?? {},
         entry,
-        runtime: props.runtime,
+        runtime,
         architecture,
         depsLockFilePath,
         projectRoot,
@@ -118,6 +121,18 @@ export class NodejsFunction extends lambda.Function {
       this.addEnvironment('AWS_NODEJS_CONNECTION_REUSE_ENABLED', '1', { removeInEdge: true });
     }
   }
+
+}
+
+/**
+ * Check if the feature flag is enabled and default to NODEJS_LATEST if so.
+ * Otherwise default to NODEJS_16_X.
+ */
+function getRuntime(scope: Construct, props: NodejsFunctionProps): lambda.Runtime {
+  const defaultRuntime = FeatureFlags.of(scope).isEnabled(LAMBDA_NODEJS_USE_LATEST_RUNTIME)
+    ? lambda.Runtime.NODEJS_LATEST
+    : lambda.Runtime.NODEJS_16_X;
+  return props.runtime ?? defaultRuntime;
 }
 
 /**

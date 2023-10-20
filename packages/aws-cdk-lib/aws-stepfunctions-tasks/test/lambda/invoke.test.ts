@@ -17,7 +17,7 @@ describe('LambdaInvoke', () => {
     lambdaFunction = new lambda.Function(stack, 'Fn', {
       code: lambda.Code.fromInline('foo'),
       handler: 'handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
   });
 
@@ -55,6 +55,7 @@ describe('LambdaInvoke', () => {
       Retry: [
         {
           ErrorEquals: [
+            'Lambda.ClientExecutionTimeoutException',
             'Lambda.ServiceException',
             'Lambda.AWSLambdaException',
             'Lambda.SdkClientException',
@@ -152,6 +153,7 @@ describe('LambdaInvoke', () => {
       Retry: [
         {
           ErrorEquals: [
+            'Lambda.ClientExecutionTimeoutException',
             'Lambda.ServiceException',
             'Lambda.AWSLambdaException',
             'Lambda.SdkClientException',

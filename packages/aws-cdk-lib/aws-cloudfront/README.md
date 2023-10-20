@@ -16,7 +16,7 @@ for more complex use cases.
 ### Creating a distribution
 
 CloudFront distributions deliver your content from one or more origins; an origin is the location where you store the original version of your
-content. Origins can be created from S3 buckets or a custom origin (HTTP server). Constructs to define origins are in the `@aws-cdk/aws-cloudfront-origins` module.
+content. Origins can be created from S3 buckets or a custom origin (HTTP server). Constructs to define origins are in the `aws-cdk-lib/aws-cloudfront-origins` module.
 
 Each distribution has a default behavior which applies to all requests to that distribution, and routes requests to a primary origin.
 Additional behaviors may be specified for an origin with a given URL path pattern. Behaviors allow routing with multiple origins,
@@ -394,7 +394,7 @@ on every request:
 // A Lambda@Edge function added to default behavior of a Distribution
 // and triggered on every request
 const myFunc = new cloudfront.experimental.EdgeFunction(this, 'MyFunction', {
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
 });
@@ -425,7 +425,7 @@ If the stack is in `us-east-1`, a "normal" `lambda.Function` can be used instead
 ```ts
 // Using a lambda Function instead of an EdgeFunction for stacks in `us-east-`.
 const myFunc = new lambda.Function(this, 'MyFunction', {
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
 });
@@ -438,14 +438,14 @@ you can also set a specific stack ID for each Lambda@Edge.
 // Setting stackIds for EdgeFunctions that can be referenced from different applications
 // on the same account.
 const myFunc1 = new cloudfront.experimental.EdgeFunction(this, 'MyFunction1', {
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler1')),
   stackId: 'edge-lambda-stack-id-1',
 });
 
 const myFunc2 = new cloudfront.experimental.EdgeFunction(this, 'MyFunction2', {
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler2')),
   stackId: 'edge-lambda-stack-id-2',
@@ -601,6 +601,42 @@ distribution.grant(lambdaFn, 'cloudfront:ListInvalidations', 'cloudfront:GetInva
 distribution.grantCreateInvalidation(lambdaFn);
 ```
 
+### Realtime Log Config
+
+CloudFront supports realtime log delivery from your distribution to a Kinesis stream.
+
+See [Real-time logs](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/real-time-logs.html) in the CloudFront User Guide.
+
+Example:
+
+```ts
+// Adding realtime logs config to a Cloudfront Distribution on default behavior.
+import * as kinesis from 'aws-cdk-lib/aws-kinesis';
+
+declare const stream: kinesis.Stream;
+
+const realTimeConfig = new cloudfront.RealtimeLogConfig(this, 'realtimeLog', {
+  endPoints: [
+    cloudfront.Endpoint.fromKinesisStream(stream),
+  ],
+  fields: [
+    'timestamp',
+    'c-ip',
+    'time-to-first-byte',
+    'sc-status',
+  ],
+  realtimeLogConfigName: 'my-delivery-stream',
+  samplingRate: 100,
+});
+
+new cloudfront.Distribution(this, 'myCdn', {
+  defaultBehavior: {
+    origin: new origins.HttpOrigin('www.example.com'),
+    realtimeLogConfig: realTimeConfig,
+  },
+});
+```
+
 ## Migrating from the original CloudFrontWebDistribution to the newer Distribution construct
 
 It's possible to migrate a distribution from the original to the modern API.
@@ -611,13 +647,13 @@ The changes necessary are the following:
 Replace `new CloudFrontWebDistribution` with `new Distribution`. Some
 configuration properties have been changed:
 
-| Old API                        | New API                                                                                        |
-|--------------------------------|------------------------------------------------------------------------------------------------|
-| `originConfigs`                | `defaultBehavior`; use `additionalBehaviors` if necessary                                      |
-| `viewerCertificate`            | `certificate`; use `domainNames` for aliases                                                   |
-| `errorConfigurations`          | `errorResponses`                                                                               |
-| `loggingConfig`                | `enableLogging`; configure with `logBucket` `logFilePrefix` and `logIncludesCookies`           |
-| `viewerProtocolPolicy`         | removed; set on each behavior instead. default changed from `REDIRECT_TO_HTTPS` to `ALLOW_ALL` |
+| Old API                | New API                                                                                        |
+| ---------------------- | ---------------------------------------------------------------------------------------------- |
+| `originConfigs`        | `defaultBehavior`; use `additionalBehaviors` if necessary                                      |
+| `viewerCertificate`    | `certificate`; use `domainNames` for aliases                                                   |
+| `errorConfigurations`  | `errorResponses`                                                                               |
+| `loggingConfig`        | `enableLogging`; configure with `logBucket` `logFilePrefix` and `logIncludesCookies`           |
+| `viewerProtocolPolicy` | removed; set on each behavior instead. default changed from `REDIRECT_TO_HTTPS` to `ALLOW_ALL` |
 
 After switching constructs, you need to maintain the same logical ID for the underlying [CfnDistribution](https://docs.aws.amazon.com/cdk/api/v1/docs/@aws-cdk_aws-cloudfront.CfnDistribution.html) if you wish to avoid the deletion and recreation of your distribution.
 To do this, use [escape hatches](https://docs.aws.amazon.com/cdk/v2/guide/cfn_layer.html) to override the logical ID created by the new Distribution construct with the logical ID created by the old construct.

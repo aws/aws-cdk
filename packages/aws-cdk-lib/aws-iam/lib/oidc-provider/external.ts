@@ -1,21 +1,13 @@
 /* istanbul ignore file */
-// the X509 certificate API is available only in node16.
-// since we compile the repo against node 14, typechecking it will fail.
-// its currently too complex to configure node16 only on this
-// file (jsii doesn't support custom tsconfig)
-// so we disable typechecking. don't worry, we have sufficient integ tests that
-// validate this code doesn't break.
-// @ts-nocheck
 import { X509Certificate } from 'node:crypto';
 import * as tls from 'tls';
 import * as url from 'url';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import * as aws from 'aws-sdk';
+import * as sdk from '@aws-sdk/client-iam';
 
-let client: aws.IAM;
-
-function iam() {
-  if (!client) { client = new aws.IAM(); }
+let client: sdk.IAM;
+function iam(): sdk.IAM {
+  if (!client) { client = new sdk.IAM({}); }
   return client;
 }
 
@@ -95,7 +87,7 @@ function printCertificate(cert: X509Certificate) {
  * @param certDate The valid to date for the certificate
  * @returns The number of days the certificate is valid wrt current date
  */
-function getCertificateValidity(certDate: Date): Number {
+function getCertificateValidity(certDate: Date): number {
   const millisecondsInDay = 24 * 60 * 60 * 1000;
   const currentDate = new Date();
 
@@ -109,9 +101,9 @@ function getCertificateValidity(certDate: Date): Number {
 export const external = {
   downloadThumbprint,
   log: defaultLogger,
-  createOpenIDConnectProvider: (req: aws.IAM.CreateOpenIDConnectProviderRequest) => iam().createOpenIDConnectProvider(req).promise(),
-  deleteOpenIDConnectProvider: (req: aws.IAM.DeleteOpenIDConnectProviderRequest) => iam().deleteOpenIDConnectProvider(req).promise(),
-  updateOpenIDConnectProviderThumbprint: (req: aws.IAM.UpdateOpenIDConnectProviderThumbprintRequest) => iam().updateOpenIDConnectProviderThumbprint(req).promise(),
-  addClientIDToOpenIDConnectProvider: (req: aws.IAM.AddClientIDToOpenIDConnectProviderRequest) => iam().addClientIDToOpenIDConnectProvider(req).promise(),
-  removeClientIDFromOpenIDConnectProvider: (req: aws.IAM.RemoveClientIDFromOpenIDConnectProviderRequest) => iam().removeClientIDFromOpenIDConnectProvider(req).promise(),
+  createOpenIDConnectProvider: (req: sdk.CreateOpenIDConnectProviderCommandInput) => iam().createOpenIDConnectProvider(req),
+  deleteOpenIDConnectProvider: (req: sdk.DeleteOpenIDConnectProviderCommandInput) => iam().deleteOpenIDConnectProvider(req),
+  updateOpenIDConnectProviderThumbprint: (req: sdk.UpdateOpenIDConnectProviderThumbprintCommandInput) => iam().updateOpenIDConnectProviderThumbprint(req),
+  addClientIDToOpenIDConnectProvider: (req: sdk.AddClientIDToOpenIDConnectProviderCommandInput) => iam().addClientIDToOpenIDConnectProvider(req),
+  removeClientIDFromOpenIDConnectProvider: (req: sdk.RemoveClientIDFromOpenIDConnectProviderCommandInput) => iam().removeClientIDFromOpenIDConnectProvider(req),
 };

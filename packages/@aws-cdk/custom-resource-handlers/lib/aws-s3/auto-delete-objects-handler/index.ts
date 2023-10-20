@@ -1,8 +1,10 @@
+/* eslint-disable no-console */
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { S3 } from '@aws-sdk/client-s3';
 import { makeHandler } from '../../nodejs-entrypoint';
 
 const AUTO_DELETE_OBJECTS_TAG = 'aws-cdk:auto-delete-objects';
+const S3_POLICY_STUB = JSON.stringify({ Version: '2012-10-17', Statement: [] });
 
 const s3 = new S3({});
 
@@ -34,6 +36,39 @@ async function onUpdate(event: AWSLambda.CloudFormationCustomResourceEvent) {
 }
 
 /**
+ * Set a write deny policy to prevent new object creation while we're emptying the bucket.
+ *
+ * @param bucketName the bucket name
+ */
+async function denyWrites(bucketName: string) {
+  try {
+    const prevPolicyJson = (await s3.getBucketPolicy({ Bucket: bucketName }))?.Policy ?? S3_POLICY_STUB;
+    const policy = JSON.parse(prevPolicyJson);
+    policy.Statement.push(
+      // Prevent any more objects from being created in the bucket
+      {
+        Principal: '*',
+        Effect: 'Deny',
+        Action: ['s3:PutObject'],
+        Resource: [`arn:aws:s3:::${bucketName}/*`]
+      }
+    );
+
+    await s3.putBucketPolicy({ Bucket: bucketName, Policy: JSON.stringify(policy) });
+  } catch (error: any) {
+    if (error.name === 'NoSuchBucket') {
+      throw error; // Rethrow for further logging/handling up the stack
+    }
+
+    // The putBucketPolicy call may fail, but the bucket deletion should still proceed
+    // (and likely will succeed). The object and bucket deletion are most important,
+    // not this policy assignment, which only acts as extra insurance against object
+    // writing race conditions. This error is non-fatal, but should be logged.
+    console.log(`Could not set new object deny policy on bucket '${bucketName}' prior to deletion.`);
+  }
+}
+
+/**
  * Recursively delete all items in the bucket
  *
  * @param bucketName the bucket name
@@ -57,25 +92,28 @@ async function onDelete(bucketName?: string) {
   if (!bucketName) {
     throw new Error('No BucketName was provided.');
   }
-  if (!await isBucketTaggedForDeletion(bucketName)) {
-    process.stdout.write(`Bucket does not have '${AUTO_DELETE_OBJECTS_TAG}' tag, skipping cleaning.\n`);
-    return;
-  }
   try {
-    await emptyBucket(bucketName);
-  } catch (e: any) {
-    if (e.code !== 'NoSuchBucket') {
-      throw e;
+    if (!await isBucketTaggedForDeletion(bucketName)) {
+      console.log(`Bucket does not have '${AUTO_DELETE_OBJECTS_TAG}' tag, skipping cleaning.`);
+      return;
     }
-    // Bucket doesn't exist. Ignoring
+    await denyWrites(bucketName);
+    await emptyBucket(bucketName);
+  } catch (error: any) {
+    // Bucket doesn't exist, all is well
+    if (error.name === 'NoSuchBucket') {
+      console.log(`Bucket '${bucketName}' does not exist.`);
+      return;
+    }
+    throw error;
   }
 }
 
 /**
- * The bucket will only be tagged for deletion if it's being deleted in the same
+ * The bucket will only be tagged for deletion if it is being deleted in the same
  * deployment as this Custom Resource.
  *
- * If the Custom Resource is every deleted before the bucket, it must be because
+ * If the Custom Resource is ever deleted before the bucket, it must be because
  * `autoDeleteObjects` has been switched to false, in which case the tag would have
  * been removed before we get to this Delete event.
  */

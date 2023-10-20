@@ -1,7 +1,8 @@
 import { Template } from 'aws-cdk-lib/assertions';
 import { WebSocketApi } from '@aws-cdk/aws-apigatewayv2-alpha';
 import { WebSocketLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
-import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Code, Function } from 'aws-cdk-lib/aws-lambda';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Stack } from 'aws-cdk-lib';
 import { WebSocketLambdaAuthorizer } from '../../lib';
 
@@ -11,7 +12,7 @@ describe('WebSocketLambdaAuthorizer', () => {
     const stack = new Stack();
 
     const handler = new Function(stack, 'auth-function', {
-      runtime: Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       code: Code.fromInline('exports.handler = () => {return true}'),
       handler: 'index.handler',
     });

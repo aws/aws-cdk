@@ -37,7 +37,7 @@ beforeEach(() => {
     },
   });
 
-  ToolkitInfo.lookup = mockToolkitInfoLookup = jest.fn().mockResolvedValue(ToolkitInfo.bootstrapStackNotFoundInfo(sdkProvider.sdk));
+  ToolkitInfo.lookup = mockToolkitInfoLookup = jest.fn().mockResolvedValue(ToolkitInfo.bootstrapStackNotFoundInfo('TestBootstrapStack'));
 });
 
 function mockSuccessfulBootstrapStackLookup(props?: Record<string, any>) {
@@ -55,7 +55,7 @@ function mockSuccessfulBootstrapStackLookup(props?: Record<string, any>) {
     })),
   });
 
-  mockToolkitInfoLookup.mockResolvedValue(ToolkitInfo.fromStack(fakeStack, sdkProvider.sdk));
+  mockToolkitInfoLookup.mockResolvedValue(ToolkitInfo.fromStack(fakeStack));
 }
 
 test('passes through hotswap=true to deployStack()', async () => {
@@ -134,12 +134,12 @@ test('deployment fails if bootstrap stack is too old', async () => {
   })).rejects.toThrow(/requires bootstrap stack version '99', found '5'/);
 });
 
-test('if toolkit stack cannot be found but SSM parameter name is present deployment succeeds', async () => {
-  // FIXME: Mocking a successful bootstrap stack lookup here should not be necessary.
-  // This should fail and return a placeholder failure object.
-  mockSuccessfulBootstrapStackLookup({
-    BootstrapVersion: 2,
-  });
+test.each([false, true])('if toolkit stack be found: %p but SSM parameter name is present deployment succeeds', async (canLookup) => {
+  if (canLookup) {
+    mockSuccessfulBootstrapStackLookup({
+      BootstrapVersion: 2,
+    });
+  }
 
   let requestedParameterName: string;
   sdkProvider.stubSSM({
@@ -246,9 +246,11 @@ test('readCurrentTemplateWithNestedStacks() can handle non-Resources in the temp
   );
 
   // WHEN
-  const deployedTemplate = await deployments.readCurrentTemplateWithNestedStacks(rootStack);
+  const nestedStackCount = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).nestedStackCount;
+  const deployedTemplate = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).deployedTemplate;
 
   // THEN
+  expect(nestedStackCount).toEqual(1);
   expect(deployedTemplate).toEqual({
     Resources: {
       NestedStack: {
@@ -451,9 +453,11 @@ test('readCurrentTemplateWithNestedStacks() with a 3-level nested + sibling stru
   );
 
   // WHEN
-  const deployedTemplate = await deployments.readCurrentTemplateWithNestedStacks(rootStack);
+  const nestedStackCount = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).nestedStackCount;
+  const deployedTemplate = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).deployedTemplate;
 
   // THEN
+  expect(nestedStackCount).toEqual(3);
   expect(deployedTemplate).toEqual({
     Resources: {
       NestedStack: {
@@ -608,9 +612,11 @@ test('readCurrentTemplateWithNestedStacks() on an undeployed parent stack with a
   });
 
   // WHEN
-  const deployedTemplate = await deployments.readCurrentTemplateWithNestedStacks(rootStack);
+  const nestedStackCount = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).nestedStackCount;
+  const deployedTemplate = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).deployedTemplate;
 
   // THEN
+  expect(nestedStackCount).toEqual(2);
   expect(deployedTemplate).toEqual({
     Resources: {
       NestedStack: {
@@ -781,9 +787,11 @@ test('readCurrentTemplateWithNestedStacks() succesfully ignores stacks without m
   ));
 
   // WHEN
-  const deployedTemplate = await deployments.readCurrentTemplateWithNestedStacks(rootStack);
+  const nestedStackCount = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).nestedStackCount;
+  const deployedTemplate = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).deployedTemplate;
 
   // THEN
+  expect(nestedStackCount).toEqual(1);
   expect(deployedTemplate).toEqual({
     Resources: {
       WithMetadata: {

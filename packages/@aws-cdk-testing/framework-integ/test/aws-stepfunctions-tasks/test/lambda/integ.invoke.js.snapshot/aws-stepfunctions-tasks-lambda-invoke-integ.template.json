@@ -37,14 +37,14 @@
     "Code": {
      "ZipFile": "exports.handler = async (event, context) => {\n        return {\n          statusCode: '200',\n          body: 'hello, world!',\n          ...event,\n        };\n      };"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "submitJobLambdaServiceRole4D897ABD",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "submitJobLambdaServiceRole4D897ABD"
@@ -87,14 +87,14 @@
     "Code": {
      "ZipFile": "exports.handler = async function(event, context) {\n        const expectedFields = [\n          'execId', 'execInput', 'execName', 'execRoleArn',\n          'execStartTime', 'stateEnteredTime', 'stateName',\n          'stateRetryCount', 'stateMachineId', 'stateMachineName',\n        ];\n        const fieldsAreSet = expectedFields.every(field => event[field] !== undefined);\n        return {\n          status: event.statusCode === '200' && fieldsAreSet ? 'SUCCEEDED' : 'FAILED'\n        };\n  };"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "checkJobStateLambdaServiceRoleB8B57B65",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "checkJobStateLambdaServiceRoleB8B57B65"
@@ -182,17 +182,11 @@
   "StateMachine2E01A3A5": {
    "Type": "AWS::StepFunctions::StateMachine",
    "Properties": {
-    "RoleArn": {
-     "Fn::GetAtt": [
-      "StateMachineRoleB840431D",
-      "Arn"
-     ]
-    },
     "DefinitionString": {
      "Fn::Join": [
       "",
       [
-       "{\"StartAt\":\"Invoke Handler\",\"States\":{\"Invoke Handler\":{\"Next\":\"Check the job state\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"OutputPath\":\"$.Payload\",\"Resource\":\"arn:",
+       "{\"StartAt\":\"Invoke Handler\",\"States\":{\"Invoke Handler\":{\"Next\":\"Check the job state\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ClientExecutionTimeoutException\",\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"OutputPath\":\"$.Payload\",\"Resource\":\"arn:",
        {
         "Ref": "AWS::Partition"
        },
@@ -203,7 +197,7 @@
          "Arn"
         ]
        },
-       "\",\"Payload\":{\"execId.$\":\"$$.Execution.Id\",\"execInput.$\":\"$$.Execution.Input\",\"execName.$\":\"$$.Execution.Name\",\"execRoleArn.$\":\"$$.Execution.RoleArn\",\"execStartTime.$\":\"$$.Execution.StartTime\",\"stateEnteredTime.$\":\"$$.State.EnteredTime\",\"stateName.$\":\"$$.State.Name\",\"stateRetryCount.$\":\"$$.State.RetryCount\",\"stateMachineId.$\":\"$$.StateMachine.Id\",\"stateMachineName.$\":\"$$.StateMachine.Name\"}}},\"Check the job state\":{\"Next\":\"Job Complete?\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"ResultSelector\":{\"status.$\":\"$.Payload.status\"},\"Resource\":\"arn:",
+       "\",\"Payload\":{\"execId.$\":\"$$.Execution.Id\",\"execInput.$\":\"$$.Execution.Input\",\"execName.$\":\"$$.Execution.Name\",\"execRoleArn.$\":\"$$.Execution.RoleArn\",\"execStartTime.$\":\"$$.Execution.StartTime\",\"stateEnteredTime.$\":\"$$.State.EnteredTime\",\"stateName.$\":\"$$.State.Name\",\"stateRetryCount.$\":\"$$.State.RetryCount\",\"stateMachineId.$\":\"$$.StateMachine.Id\",\"stateMachineName.$\":\"$$.StateMachine.Name\"}}},\"Check the job state\":{\"Next\":\"Job Complete?\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ClientExecutionTimeoutException\",\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"ResultSelector\":{\"status.$\":\"$.Payload.status\"},\"Resource\":\"arn:",
        {
         "Ref": "AWS::Partition"
        },
@@ -216,6 +210,12 @@
        },
        "\",\"Payload.$\":\"$\"}},\"Job Complete?\":{\"Type\":\"Choice\",\"Choices\":[{\"Variable\":\"$.status\",\"StringEquals\":\"FAILED\",\"Next\":\"Job Failed\"},{\"Variable\":\"$.status\",\"StringEquals\":\"SUCCEEDED\",\"Next\":\"Final step\"}]},\"Job Failed\":{\"Type\":\"Fail\",\"Error\":\"Received a status that was not 200\",\"Cause\":\"Job Failed\"},\"Final step\":{\"Type\":\"Pass\",\"End\":true}},\"TimeoutSeconds\":30}"
       ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "StateMachineRoleB840431D",
+      "Arn"
      ]
     }
    },

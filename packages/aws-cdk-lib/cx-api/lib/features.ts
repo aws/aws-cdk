@@ -88,8 +88,14 @@ export const EC2_RESTRICT_DEFAULT_SECURITY_GROUP = '@aws-cdk/aws-ec2:restrictDef
 export const APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID = '@aws-cdk/aws-apigateway:requestValidatorUniqueId';
 export const INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION = '@aws-cdk/core:includePrefixInUniqueNameGeneration';
 export const KMS_ALIAS_NAME_REF = '@aws-cdk/aws-kms:aliasNameRef';
+export const EFS_DENY_ANONYMOUS_ACCESS = '@aws-cdk/aws-efs:denyAnonymousAccess';
+export const EFS_MOUNTTARGET_ORDERINSENSITIVE_LOGICAL_ID = '@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId';
 export const AUTOSCALING_GENERATE_LAUNCH_TEMPLATE = '@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig';
 export const ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY = '@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby';
+export const LAMBDA_NODEJS_USE_LATEST_RUNTIME = '@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion';
+export const RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS = '@aws-cdk/aws-rds:preventRenderingDeprecatedCredentials';
+export const AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS = '@aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters';
+export const APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION = '@aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -816,12 +822,12 @@ export const FLAGS: Record<string, FlagInfo> = {
       Enable this flag to allow AutoScalingGroups to generate a launch template when being created.
       Launch configurations have been deprecated and cannot be created in AWS Accounts created after
       December 31, 2023. Existing 'AutoScalingGroup' properties used for creating a launch configuration
-      will now create an equivalent 'launchTemplate'. Alternatively, users can provide an explicit 
-      'launchTemplate' or 'mixedInstancesPolicy'. When this flag is enabled a 'launchTemplate' will 
+      will now create an equivalent 'launchTemplate'. Alternatively, users can provide an explicit
+      'launchTemplate' or 'mixedInstancesPolicy'. When this flag is enabled a 'launchTemplate' will
       attempt to set user data according to the OS of the machine image if explicit user data is not
       provided.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.88.0' },
     compatibilityWithOldBehaviorMd: `
       If backwards compatibility needs to be maintained due to an existing autoscaling group
       using a launch config, set this flag to false.
@@ -848,16 +854,113 @@ export const FLAGS: Record<string, FlagInfo> = {
   },
 
   //////////////////////////////////////////////////////////////////////
+  [EFS_DENY_ANONYMOUS_ACCESS]: {
+    type: FlagType.ApiDefault,
+    summary: 'EFS denies anonymous clients accesses',
+    detailsMd: `
+      This flag adds the file system policy that denies anonymous clients
+      access to \`efs.FileSystem\`.
+
+      If this flag is not set, \`efs.FileSystem\` will allow all anonymous clients
+      that can access over the network.`,
+    introducedIn: { v2: '2.93.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'You can pass `allowAnonymousAccess: true` so allow anonymous clients access.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
   [ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY]: {
     type: FlagType.ApiDefault,
     summary: 'Enables support for Multi-AZ with Standby deployment for opensearch domains',
     detailsMd: `
-      If this is set, an opensearch domain will automatically be created with 
+      If this is set, an opensearch domain will automatically be created with
       multi-az with standby enabled.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.88.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Pass `capacity.multiAzWithStandbyEnabled: false` to `Domain` construct to restore the old behavior.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [LAMBDA_NODEJS_USE_LATEST_RUNTIME]: {
+    type: FlagType.ApiDefault,
+    summary: 'Enables aws-lambda-nodejs.Function to use the latest available NodeJs runtime as the default',
+    detailsMd: `
+      If this is set, and a \`runtime\` prop is not passed to, Lambda NodeJs
+      functions will us the latest version of the runtime provided by the Lambda
+      service. Do not use this if you your lambda function is reliant on dependencies
+      shipped as part of the runtime environment.
+    `,
+    introducedIn: { v2: '2.93.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Pass `runtime: lambda.Runtime.NODEJS_16_X` to `Function` construct to restore the previous behavior.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [EFS_MOUNTTARGET_ORDERINSENSITIVE_LOGICAL_ID]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, mount targets will have a stable logicalId that is linked to the associated subnet.',
+    detailsMd: `
+      When this feature flag is enabled, each mount target will have a stable
+      logicalId that is linked to the associated subnet. If the flag is set to
+      false then the logicalIds of the mount targets can change if the number of
+      subnets changes.
+
+      Set this flag to false for existing mount targets.
+    `,
+    introducedIn: { v2: '2.93.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, a scope of InstanceParameterGroup for AuroraClusterInstance with each parameters will change.',
+    detailsMd: `
+      When this feature flag is enabled, a scope of \`InstanceParameterGroup\` for
+      \`AuroraClusterInstance\` with each parameters will change to AuroraClusterInstance
+      from AuroraCluster.
+
+      If the flag is set to false then it can only make one \`AuroraClusterInstance\`
+      with each \`InstanceParameterGroup\` in the AuroraCluster.
+    `,
+    introducedIn: { v2: '2.97.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, will always use the arn for identifiers for CfnSourceApiAssociation in the GraphqlApi construct rather than id.',
+    detailsMd: `
+      When this feature flag is enabled, we use the IGraphqlApi ARN rather than ID when creating or updating CfnSourceApiAssociation in 
+      the GraphqlApi construct. Using the ARN allows the association to support an association with a source api or merged api in another account.
+      Note that for existing source api associations created with this flag disabled, enabling the flag will lead to a resource replacement. 
+    `,
+    introducedIn: { v2: '2.97.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, creating an RDS database cluster from a snapshot will only render credentials for snapshot credentials.',
+    detailsMd: `
+      The \`credentials\` property on the \`DatabaseClusterFromSnapshotProps\`
+      interface was deprecated with the new \`snapshotCredentials\` property being
+      recommended. Before deprecating \`credentials\`, a secret would be generated
+      while rendering credentials if the \`credentials\` property was undefined or
+      if a secret wasn't provided via the \`credentials\` property. This behavior
+      is replicated with the new \`snapshotCredentials\` property, but the original
+      \`credentials\` secret can still be created resulting in an extra database
+      secret.
+      
+      Set this flag to prevent rendering deprecated \`credentials\` and creating an
+      extra database secret when only using \`snapshotCredentials\` to create an RDS
+      database cluster from a snapshot.
+    `,
+    introducedIn: { v2: '2.98.0' },
+    recommendedValue: true,
   },
 };
 

@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "34.0.0",
   "artifacts": {
     "AppSyncJsResolverTestStack.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/adfc8884e4696d3a232b75a5ab048eabde442e5d8423bfdce883546a8b969111.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0351d32f030d2f7023c76f5a073f44cdcf81c0ddc63dae64a49d9d33269539ee.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -105,12 +105,6 @@
             "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A"
           }
         ],
-        "/AppSyncJsResolverTestStack/DefaultCrNodeVersionMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DefaultCrNodeVersionMap"
-          }
-        ],
         "/AppSyncJsResolverTestStack/DynamoTable/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -190,7 +184,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/daf12686caaab929a8b80cea94594eae0b51e35083cbf2fb72fd74197b9afd81.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/763d169d10d22f0a01c5cab6482fd43062c1c41461ccb9546f484d0d8a4239bd.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -237,16 +231,16 @@
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
           }
         ],
-        "/JsResolverIntegTest/DefaultTest/DeployAssert/AwsApiCallDynamoDBgetItem/Default/Default": [
+        "/JsResolverIntegTest/DefaultTest/DeployAssert/AwsApiCallDynamoDBgetItem3bcce89c3400f7c98ac0aa1a95192cda/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallDynamoDBgetItem"
+            "data": "AwsApiCallDynamoDBgetItem3bcce89c3400f7c98ac0aa1a95192cda"
           }
         ],
-        "/JsResolverIntegTest/DefaultTest/DeployAssert/AwsApiCallDynamoDBgetItem/AssertionResults": [
+        "/JsResolverIntegTest/DefaultTest/DeployAssert/AwsApiCallDynamoDBgetItem3bcce89c3400f7c98ac0aa1a95192cda/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallDynamoDBgetItem"
+            "data": "AssertionResultsAwsApiCallDynamoDBgetItem3bcce89c3400f7c98ac0aa1a95192cda"
           }
         ],
         "/JsResolverIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [

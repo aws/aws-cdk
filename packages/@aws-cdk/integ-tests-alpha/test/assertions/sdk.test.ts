@@ -40,8 +40,8 @@ describe('AwsApiCall', () => {
       service: 'MyService',
       api: 'MyApi',
       parameters: {
-        param1: 'val1',
-        param2: 2,
+        param1: '"val1"',
+        param2: '2',
       },
     });
 
@@ -65,8 +65,8 @@ describe('AwsApiCall', () => {
       service: 'MyService',
       api: 'MyApi',
       parameters: {
-        param1: 'val1',
-        param2: 2,
+        param1: '"val1"',
+        param2: '2',
       },
       outputPaths: [
         'path1',
@@ -93,8 +93,8 @@ describe('AwsApiCall', () => {
       service: 'MyService',
       api: 'MyApi',
       parameters: {
-        param1: 'val1',
-        param2: 2,
+        param1: '"val1"',
+        param2: '2',
       },
       flattenResponse: 'true',
       outputPaths: [
@@ -175,8 +175,8 @@ describe('AwsApiCall', () => {
       service: 'MyService',
       api: 'MyApi',
       parameters: {
-        param1: 'val1',
-        param2: 2,
+        param1: '"val1"',
+        param2: '2',
       },
       expected: JSON.stringify({ $ObjectLike: { Key: 'Value' } }),
     });
@@ -396,10 +396,10 @@ describe('AwsApiCall', () => {
         service: 'Lambda',
         api: 'invoke',
         parameters: {
-          FunctionName: 'my-func',
-          InvocationType: 'Event',
-          LogType: 'Tail',
-          Payload: '{"key":"val"}',
+          FunctionName: '"my-func"',
+          InvocationType: '"Event"',
+          LogType: '"Tail"',
+          Payload: '"{\\"key\\":\\"val\\"}"',
         },
       });
       template.hasResourceProperties('AWS::Lambda::Permission', {

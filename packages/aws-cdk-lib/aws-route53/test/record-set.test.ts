@@ -579,6 +579,183 @@ describe('record set', () => {
     });
   });
 
+  test('A record, GeoLocation routing for continent', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    // WHEN
+    new route53.ARecord(stack, 'A', {
+      zone,
+      recordName: 'www',
+      target: route53.RecordTarget.fromIpAddresses('1.2.3.4', '5.6.7.8'),
+      geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: 'www.myzone.',
+      Type: 'A',
+      HostedZoneId: {
+        Ref: 'HostedZoneDB99F866',
+      },
+      ResourceRecords: [
+        '1.2.3.4',
+        '5.6.7.8',
+      ],
+      TTL: '1800',
+      GeoLocation: {
+        ContinentCode: 'EU',
+      },
+      SetIdentifier: 'GEO_CONTINENT_EU',
+    });
+  });
+
+  test('A record, GeoLocation routing for country', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    // WHEN
+    new route53.ARecord(stack, 'A', {
+      zone,
+      recordName: 'www',
+      target: route53.RecordTarget.fromIpAddresses('1.2.3.4', '5.6.7.8'),
+      geoLocation: route53.GeoLocation.country('DE'),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: 'www.myzone.',
+      Type: 'A',
+      HostedZoneId: {
+        Ref: 'HostedZoneDB99F866',
+      },
+      ResourceRecords: [
+        '1.2.3.4',
+        '5.6.7.8',
+      ],
+      TTL: '1800',
+      GeoLocation: {
+        CountryCode: 'DE',
+      },
+      SetIdentifier: 'GEO_COUNTRY_DE',
+    });
+  });
+
+  test('A record, GeoLocation routing for subdivision', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    // WHEN
+    new route53.ARecord(stack, 'A', {
+      zone,
+      recordName: 'www',
+      target: route53.RecordTarget.fromIpAddresses('1.2.3.4', '5.6.7.8'),
+      geoLocation: route53.GeoLocation.subdivision('WA'),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: 'www.myzone.',
+      Type: 'A',
+      HostedZoneId: {
+        Ref: 'HostedZoneDB99F866',
+      },
+      ResourceRecords: [
+        '1.2.3.4',
+        '5.6.7.8',
+      ],
+      TTL: '1800',
+      GeoLocation: {
+        CountryCode: 'US',
+        SubdivisionCode: 'WA',
+      },
+      SetIdentifier: 'GEO_COUNTRY_US_SUBDIVISION_WA',
+    });
+  });
+
+  test('A record, GeoLocation routing for subdivision with country attribute', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    // WHEN
+    new route53.ARecord(stack, 'A', {
+      zone,
+      recordName: 'www',
+      target: route53.RecordTarget.fromIpAddresses('1.2.3.4', '5.6.7.8'),
+      geoLocation: route53.GeoLocation.subdivision('05', 'UA'),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: 'www.myzone.',
+      Type: 'A',
+      HostedZoneId: {
+        Ref: 'HostedZoneDB99F866',
+      },
+      ResourceRecords: [
+        '1.2.3.4',
+        '5.6.7.8',
+      ],
+      TTL: '1800',
+      GeoLocation: {
+        CountryCode: 'UA',
+        SubdivisionCode: '05',
+      },
+      SetIdentifier: 'GEO_COUNTRY_UA_SUBDIVISION_05',
+    });
+  });
+
+  test('A record, GeoLocation default record', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    // WHEN
+    new route53.ARecord(stack, 'A', {
+      zone,
+      recordName: 'www',
+      target: route53.RecordTarget.fromIpAddresses('1.2.3.4', '5.6.7.8'),
+      geoLocation: route53.GeoLocation.default(),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: 'www.myzone.',
+      Type: 'A',
+      HostedZoneId: {
+        Ref: 'HostedZoneDB99F866',
+      },
+      ResourceRecords: [
+        '1.2.3.4',
+        '5.6.7.8',
+      ],
+      TTL: '1800',
+      GeoLocation: {
+        CountryCode: '*',
+      },
+      SetIdentifier: 'GEO_COUNTRY_*',
+    });
+  });
+
   testDeprecated('Cross account zone delegation record with parentHostedZoneId', () => {
     // GIVEN
     const stack = new Stack();
@@ -844,32 +1021,6 @@ describe('record set', () => {
         ],
       });
     }
-  });
-
-  testDeprecated('Cross account zone context flag', () => {
-    // GIVEN
-    const stack = new Stack();
-    stack.node.setContext('@aws-cdk/aws-route53:useRegionalStsEndpoint', true);
-    const parentZone = new route53.PublicHostedZone(stack, 'ParentHostedZone', {
-      zoneName: 'myzone.com',
-      crossAccountZoneDelegationPrincipal: new iam.AccountPrincipal('123456789012'),
-    });
-
-    // WHEN
-    const childZone = new route53.PublicHostedZone(stack, 'ChildHostedZone', {
-      zoneName: 'sub.myzone.com',
-    });
-    new route53.CrossAccountZoneDelegationRecord(stack, 'Delegation', {
-      delegatedZone: childZone,
-      parentHostedZoneName: 'myzone.com',
-      delegationRole: parentZone.crossAccountZoneDelegationRole!,
-      ttl: Duration.seconds(60),
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('Custom::CrossAccountZoneDelegation', {
-      UseRegionalStsEndpoint: 'true',
-    });
   });
 
   test('Delete existing record', () => {

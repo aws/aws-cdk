@@ -14,12 +14,20 @@
     "expected": "{\"$ObjectLike\":{\"Payload\":\"\\\"Authenticated\\\"\"}}",
     "parameters": {
      "FunctionName": {
-      "Fn::ImportValue": "integ-cognito:ExportsOutputRefSignin352C80E64BA58F71"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-cognito:ExportsOutputRefSignin352C80E64BA58F71"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "false",
-    "outputPaths": [],
-    "salt": "1688681225175"
+    "salt": "1696409797152"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -119,7 +127,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "032b2e4fece97305307a8662e267281db7bec3b05398ddda60963270175e6664.zip"
+     "S3Key": "179eeca719a9f09faf1a812e2037454351e324e06a91f4c8d09a21df62cead80.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",

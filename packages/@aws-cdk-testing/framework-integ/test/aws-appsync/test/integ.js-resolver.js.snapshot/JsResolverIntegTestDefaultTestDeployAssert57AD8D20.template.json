@@ -15,30 +15,41 @@
     "actualPath": "Payload.data.addTest.id",
     "parameters": {
      "FunctionName": {
-      "Fn::ImportValue": "AppSyncJsResolverTestStack:ExportsOutputRefInvokeApi313C8B4949AC2AFC"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "AppSyncJsResolverTestStack:ExportsOutputRefInvokeApi313C8B4949AC2AFC"
+        },
+        "\""
+       ]
+      ]
      },
      "Payload": {
       "Fn::Join": [
        "",
        [
-        "{\"hostname\":\"",
+        "\"{\\\"hostname\\\":\\\"",
         {
          "Fn::ImportValue": "AppSyncJsResolverTestStack:ExportsOutputFnGetAttJsResolverApi612CD442GraphQLUrl15495788"
         },
-        "\",\"apiKey\":\"",
+        "\\\",\\\"apiKey\\\":\\\"",
         {
          "Fn::ImportValue": "AppSyncJsResolverTestStack:ExportsOutputFnGetAttJsResolverApiDefaultApiKeyBD458F31ApiKey4D429933"
         },
-        "\"}"
+        "\\\"}\""
        ]
       ]
      }
     },
     "flattenResponse": "true",
     "outputPaths": [
+     "Payload.data.addTest.name",
+     "Payload.data.addTest.id",
      "Payload.data.addTest.id"
     ],
-    "salt": "1682378119561"
+    "salt": "1693924790471"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -142,12 +153,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs18.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "ae370e1010629b78f494346f49ceef3ab2875718f20e6c808114e6aa770c7bf3.zip"
+     "S3Key": "c7f4a8ca56d10961cf5e40d181faddf14f2ea8b39c5d65c7b61a366b17c7a2ce.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -159,7 +170,7 @@
     }
    }
   },
-  "AwsApiCallDynamoDBgetItem": {
+  "AwsApiCallDynamoDBgetItem3bcce89c3400f7c98ac0aa1a95192cda": {
    "Type": "Custom::DeployAssert@SdkCallDynamoDBgetItem",
    "Properties": {
     "ServiceToken": {
@@ -187,21 +198,35 @@
     },
     "parameters": {
      "TableName": {
-      "Fn::ImportValue": "AppSyncJsResolverTestStack:ExportsOutputRefDynamoTableB2B22E1592AFC2EE"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "AppSyncJsResolverTestStack:ExportsOutputRefDynamoTableB2B22E1592AFC2EE"
+        },
+        "\""
+       ]
+      ]
      },
      "Key": {
-      "id": {
-       "S": {
-        "Fn::GetAtt": [
-         "LambdaInvokeb55e453397dded0a19101717f7183064",
-         "apiCallResponse.Payload.data.addTest.id"
-        ]
-       }
-      }
+      "Fn::Join": [
+       "",
+       [
+        "{\"id\":{\"S\":\"",
+        {
+         "Fn::GetAtt": [
+          "LambdaInvokeb55e453397dded0a19101717f7183064",
+          "apiCallResponse.Payload.data.addTest.id"
+         ]
+        },
+        "\"}}"
+       ]
+      ]
      }
     },
     "flattenResponse": "false",
-    "salt": "1682378119561"
+    "salt": "1693924790503"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -216,10 +241,10 @@
     ]
    }
   },
-  "AssertionResultsAwsApiCallDynamoDBgetItem": {
+  "AssertionResultsAwsApiCallDynamoDBgetItem3bcce89c3400f7c98ac0aa1a95192cda": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallDynamoDBgetItem",
+     "AwsApiCallDynamoDBgetItem3bcce89c3400f7c98ac0aa1a95192cda",
      "assertion"
     ]
    }

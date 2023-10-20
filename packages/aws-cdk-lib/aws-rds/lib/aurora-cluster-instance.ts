@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { CaCertificate } from './ca-certificate';
 import { DatabaseCluster } from './cluster';
 import { IDatabaseCluster } from './cluster-ref';
 import { IParameterGroup, ParameterGroup } from './parameter-group';
@@ -9,7 +10,8 @@ import { ISubnetGroup } from './subnet-group';
 import * as ec2 from '../../aws-ec2';
 import { IRole } from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { IResource, Resource, Duration, RemovalPolicy, ArnFormat } from '../../core';
+import { IResource, Resource, Duration, RemovalPolicy, ArnFormat, FeatureFlags } from '../../core';
+import { AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS } from '../../cx-api';
 
 /**
  * Options for binding the instance to the cluster
@@ -128,53 +130,6 @@ export interface ProvisionedClusterInstanceProps extends ClusterInstanceOptions 
    * @default 2
    */
   readonly promotionTier?: number;
-
-  /**
-   * Only used for migrating existing clusters from using `instanceProps` to `writer` and `readers`
-   *
-   * @example
-   * // existing cluster
-   * declare const vpc: ec2.Vpc;
-   * const cluster = new rds.DatabaseCluster(this, 'Database', {
-   *   engine: rds.DatabaseClusterEngine.auroraMysql({
-   *     version: rds.AuroraMysqlEngineVersion.VER_3_03_0,
-   *   }),
-   *   instances: 2,
-   *   instanceProps: {
-   *     instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
-   *     vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
-   *     vpc,
-   *   },
-   * });
-   *
-   * // migration
-   *
-   * const instanceProps = {
-   *   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
-   *   isFromLegacyInstanceProps: true,
-   * };
-   *
-   * const myCluster = new rds.DatabaseCluster(this, 'Database', {
-   *   engine: rds.DatabaseClusterEngine.auroraMysql({
-   *     version: rds.AuroraMysqlEngineVersion.VER_3_03_0,
-   *   }),
-   *   vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
-   *   vpc,
-   *   writer: rds.ClusterInstance.provisioned('Instance1', {
-   *     instanceType: instanceProps.instanceType,
-   *     isFromLegacyInstanceProps: instanceProps.isFromLegacyInstanceProps,
-   *   }),
-   *   readers: [
-   *     rds.ClusterInstance.provisioned('Instance2', {
-   *       instanceType: instanceProps.instanceType,
-   *       isFromLegacyInstanceProps: instanceProps.isFromLegacyInstanceProps,
-   *     }),
-   *   ],
-   * });
-   *
-   * @default false
-   */
-  readonly isFromLegacyInstanceProps?: boolean;
 }
 
 /**
@@ -199,7 +154,7 @@ export interface ServerlessV2ClusterInstanceProps extends ClusterInstanceOptions
 /**
  * Common options for creating cluster instances (both serverless and provisioned)
  */
-export interface ClusterInstanceProps extends ClusterInstanceOptions{
+export interface ClusterInstanceProps extends ClusterInstanceOptions {
   /**
    * The type of cluster instance to create. Can be either
    * provisioned or serverless v2
@@ -218,13 +173,6 @@ export interface ClusterInstanceProps extends ClusterInstanceOptions{
    * @default 2
    */
   readonly promotionTier?: number;
-
-  /**
-   * Only used for migrating existing clusters from using `instanceProps` to `writer` and `readers`
-   *
-   * @default false
-   */
-  readonly isFromLegacyInstanceProps?: boolean;
 }
 
 /**
@@ -299,6 +247,67 @@ export interface ClusterInstanceOptions {
    * @default the cluster parameter group is used
    */
   readonly parameterGroup?: IParameterGroup;
+
+  /**
+   * Only used for migrating existing clusters from using `instanceProps` to `writer` and `readers`
+   *
+   * @example
+   * // existing cluster
+   * declare const vpc: ec2.Vpc;
+   * const cluster = new rds.DatabaseCluster(this, 'Database', {
+   *   engine: rds.DatabaseClusterEngine.auroraMysql({
+   *     version: rds.AuroraMysqlEngineVersion.VER_3_03_0,
+   *   }),
+   *   instances: 2,
+   *   instanceProps: {
+   *     instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+   *     vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+   *     vpc,
+   *   },
+   * });
+   *
+   * // migration
+   *
+   * const instanceProps = {
+   *   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+   *   isFromLegacyInstanceProps: true,
+   * };
+   *
+   * const myCluster = new rds.DatabaseCluster(this, 'Database', {
+   *   engine: rds.DatabaseClusterEngine.auroraMysql({
+   *     version: rds.AuroraMysqlEngineVersion.VER_3_03_0,
+   *   }),
+   *   vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+   *   vpc,
+   *   writer: rds.ClusterInstance.provisioned('Instance1', {
+   *     instanceType: instanceProps.instanceType,
+   *     isFromLegacyInstanceProps: instanceProps.isFromLegacyInstanceProps,
+   *   }),
+   *   readers: [
+   *     rds.ClusterInstance.provisioned('Instance2', {
+   *       instanceType: instanceProps.instanceType,
+   *       isFromLegacyInstanceProps: instanceProps.isFromLegacyInstanceProps,
+   *     }),
+   *   ],
+   * });
+   *
+   * @default false
+   */
+  readonly isFromLegacyInstanceProps?: boolean;
+
+  /**
+   * The identifier of the CA certificate for this DB cluster's instances.
+   *
+   * Specifying or updating this property triggers a reboot.
+   *
+   * For RDS DB engines:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL-certificate-rotation.html
+   * For Aurora DB engines:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/UsingWithRDS.SSL-certificate-rotation.html
+   *
+   * @default - RDS will choose a certificate authority
+   */
+  readonly caCertificate?: CaCertificate;
 }
 
 /**
@@ -463,10 +472,15 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
 
     const instanceParameterGroup = props.parameterGroup ?? (
       props.parameters
-        ? new ParameterGroup(props.cluster, 'InstanceParameterGroup', {
-          engine: engine,
-          parameters: props.parameters,
-        })
+        ? FeatureFlags.of(this).isEnabled(AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS)
+          ? new ParameterGroup(this, 'InstanceParameterGroup', {
+            engine: engine,
+            parameters: props.parameters,
+          })
+          : new ParameterGroup(props.cluster, 'InstanceParameterGroup', {
+            engine: engine,
+            parameters: props.parameters,
+          })
         : undefined
     );
     const instanceParameterGroupConfig = instanceParameterGroup?.bindToInstance({});
@@ -496,6 +510,7 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
         monitoringRoleArn: props.monitoringRole && props.monitoringRole.roleArn,
         autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
         allowMajorVersionUpgrade: props.allowMajorVersionUpgrade,
+        caCertificateIdentifier: props.caCertificate && props.caCertificate.toString(),
       });
     // For instances that are part of a cluster:
     //

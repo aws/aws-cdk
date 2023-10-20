@@ -18,13 +18,13 @@ triggered *during* deployment:
 import * as triggers from 'aws-cdk-lib/triggers';
 
 new triggers.TriggerFunction(this, 'MyTrigger', {
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: lambda.Runtime.NODEJS_18_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(__dirname + '/my-trigger'),
 });
 ```
 
-In the above example, the AWS Lambda function defined in `myLambdaFunction` will
+In the above example, the AWS Lambda function defined in `MyTrigger` will
 be invoked when the stack is deployed.
 
 It is also possible to trigger a predefined Lambda function by using the `Trigger` construct:
@@ -34,7 +34,7 @@ import * as triggers from 'aws-cdk-lib/triggers';
 
 const func = new lambda.Function(this, 'MyFunction', {
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: lambda.Runtime.NODEJS_18_X,
   code: lambda.Code.fromInline('foo'),
 });
 
@@ -56,6 +56,9 @@ If the trigger handler fails (e.g. an exception is raised), the CloudFormation
 deployment will fail, as if a resource failed to provision. This makes it easy
 to implement "self tests" via triggers by simply making a set of assertions on
 some provisioned infrastructure.
+
+Note that this behavior is only applied when invocationType is `REQUEST_RESPONSE`. When invocationType is `EVENT`, Lambda function is invoked asynchronously.
+In that case, if Lambda function is invoked successfully, the trigger will success regardless of the result for the function execution.
 
 ## Order of Execution
 

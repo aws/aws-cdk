@@ -1585,6 +1585,17 @@ export interface BucketProps {
    * @default No Intelligent Tiiering Configurations.
    */
   readonly intelligentTieringConfigurations?: IntelligentTieringConfiguration[];
+
+  /**
+  * Enforces minimum TLS version for requests.
+  *
+  * Requires `enforceSSL` to be enabled.
+  *
+  * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/amazon-s3-policy-keys.html#example-object-tls-version
+  *
+  * @default No minimum TLS version is enforced.
+  */
+  readonly minimumTLSVersion?: number;
 }
 
 /**
@@ -1879,6 +1890,9 @@ export class Bucket extends BucketBase {
     // Enforce AWS Foundational Security Best Practice
     if (props.enforceSSL) {
       this.enforceSSLStatement();
+      this.minimumTLSVersionStatement(props.minimumTLSVersion);
+    } else if (props.minimumTLSVersion) {
+      throw new Error('\'enforceSSL\' must be enabled for \'minimumTLSVersion\' to be applied');
     }
 
     if (props.serverAccessLogsBucket instanceof Bucket) {
@@ -1893,7 +1907,7 @@ export class Bucket extends BucketBase {
     } else if (props.serverAccessLogsBucket) {
       // A `serverAccessLogsBucket` was provided but it is not a concrete `Bucket` and it
       // may not be possible to configure the ACLs or bucket policy as required.
-      Annotations.of(this).addWarning(
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-s3:accessLogsPolicyNotAdded',
         `Unable to add necessary logging permissions to imported target bucket: ${props.serverAccessLogsBucket}`,
       );
     }
@@ -1971,6 +1985,27 @@ export class Bucket extends BucketBase {
       actions: ['s3:*'],
       conditions: {
         Bool: { 'aws:SecureTransport': 'false' },
+      },
+      effect: iam.Effect.DENY,
+      resources: [
+        this.bucketArn,
+        this.arnForObjects('*'),
+      ],
+      principals: [new iam.AnyPrincipal()],
+    });
+    this.addToResourcePolicy(statement);
+  }
+
+  /**
+   * Adds an iam statement to allow requests with a minimum TLS
+   * version only.
+   */
+  private minimumTLSVersionStatement(minimumTLSVersion?: number) {
+    if (!minimumTLSVersion) return;
+    const statement = new iam.PolicyStatement({
+      actions: ['s3:*'],
+      conditions: {
+        NumericLessThan: { 's3:TlsVersion': minimumTLSVersion },
       },
       effect: iam.Effect.DENY,
       resources: [
@@ -2437,6 +2472,8 @@ export class Bucket extends BucketBase {
     // objects in the bucket
     this.addToResourcePolicy(new iam.PolicyStatement({
       actions: [
+        // prevent further PutObject calls
+        ...perms.BUCKET_PUT_POLICY_ACTIONS,
         // list objects
         ...perms.BUCKET_READ_METADATA_ACTIONS,
         ...perms.BUCKET_DELETE_ACTIONS, // and then delete them
