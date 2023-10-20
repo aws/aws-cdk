@@ -272,6 +272,14 @@ export class PullRequestLinter {
 
     // Closing the PR if it is opened from main branch of author's fork
     if (failureMessages.includes(PR_FROM_MAIN_ERROR)) {
+
+      const errorMessageBody = 'We are unable to accept contributions from `main` branch of a fork. This pull request would be automatically closed now. Please open a new pull request from another branch on your fork. For more information, see https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#step-4-pull-request.'
+
+      await this.client.issues.createComment({
+        ...this.issueParams,
+        body: errorMessageBody,
+      });
+
       await this.client.pulls.update({
         ...this.prParams,
         state: 'closed',
