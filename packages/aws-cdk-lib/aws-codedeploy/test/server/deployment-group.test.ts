@@ -226,7 +226,7 @@ describe('CodeDeploy Server Deployment Group', () => {
     const loadBalancerInfo: { TargetGroupInfoList?: any[]; ElbInfoList?: any[] } = {};
 
     if (withCLB) {
-      loadBalancers.push(codedeploy.LoadBalancer.classic(new lbv1.LoadBalancer(stack, `CLB-${i}`, {
+      loadBalancers.push(codedeploy.LoadBalancer.classic(new lbv1.LoadBalancer(stack, 'CLB', {
         vpc: defaultVpc,
         listeners: [{
           externalPort: 8080,
