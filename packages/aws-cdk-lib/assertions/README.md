@@ -595,3 +595,37 @@ Annotations.fromStack(stack).hasError(
   Match.stringLikeRegexp('.*Foo::Bar.*'),
 );
 ```
+
+## Asserting Stack tags
+
+Tags applied to a `Stack` are not part of the rendered template: instead, they
+are included as properties in the Cloud Assembly Manifest. To test that stacks
+are tagged as expected, simple assertions can be written.
+
+Given the following setup:
+
+```ts nofixture
+import { App, Stack } from 'aws-cdk-lib';
+import { Tags } from 'aws-cdk-lib/assertions';
+
+const app = new App();
+const stack = new Stack(app, 'MyStack', {
+  tags: {
+    'tag-name': 'tag-value'
+  }
+});
+```
+
+It is possible to test against these values:
+
+```ts
+// using a default 'objectLike' Matcher
+Tags.fromStack(stack).hasValues({
+  'tag-name': 'tag-value'
+});
+
+// or another Matcher
+Tags.fromStack(stack).hasValues({
+  'tag-name': Match.anyValue()
+});
+```
