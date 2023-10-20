@@ -1,5 +1,6 @@
 import { IResource, Resource } from 'aws-cdk-lib';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+import * as kms from 'aws-cdk-lib/aws-kms';
 import { CfnSchedule } from 'aws-cdk-lib/aws-scheduler';
 import { Construct } from 'constructs';
 import { IGroup } from './group';
@@ -22,6 +23,11 @@ export interface ISchedule extends IResource {
    * The arn of the schedule.
    */
   readonly scheduleArn: string;
+
+  /**
+   * The customer managed KMS key that EventBridge Scheduler will use to encrypt and decrypt your data.
+   */
+  readonly key?: kms.IKey;
 }
 
 /**
@@ -67,6 +73,13 @@ export interface ScheduleProps {
    * @default true
    */
   readonly enabled?: boolean;
+
+  /**
+   * The customer managed KMS key that EventBridge Scheduler will use to encrypt and decrypt your data.
+   *
+   * @default - All events in Scheduler are encrypted with a key that AWS owns and manages.
+   */
+  readonly key?: kms.IKey;
 }
 
 /**
@@ -179,6 +192,11 @@ export class Schedule extends Resource implements ISchedule {
    */
   public readonly scheduleName: string;
 
+  /**
+   * The customer managed KMS key that EventBridge Scheduler will use to encrypt and decrypt your data.
+   */
+  readonly key?: kms.IKey;
+
   constructor(scope: Construct, id: string, props: ScheduleProps) {
     super(scope, id, {
       physicalName: props.scheduleName,
@@ -188,6 +206,11 @@ export class Schedule extends Resource implements ISchedule {
 
     const targetConfig = props.target.bind(this);
 
+    this.key = props.key;
+    if (this.key) {
+      this.key.grantEncryptDecrypt(targetConfig.role);
+    }
+
     const resource = new CfnSchedule(this, 'Resource', {
       name: this.physicalName,
       flexibleTimeWindow: { mode: 'OFF' },
@@ -195,6 +218,7 @@ export class Schedule extends Resource implements ISchedule {
       scheduleExpressionTimezone: props.schedule.timeZone?.timezoneName,
       groupName: this.group?.groupName,
       state: (props.enabled ?? true) ? 'ENABLED' : 'DISABLED',
+      kmsKeyArn: this.key?.keyArn,
       target: {
         arn: targetConfig.arn,
         roleArn: targetConfig.role.roleArn,
