@@ -209,14 +209,19 @@ If you wish you can also provide a customer managed key to encrypt and decrypt t
 Target classes will automatically add AWS KMS Decrypt permission to your schedule's execution role permissions policy.
 
 ```ts
-import * as kms from '@aws-cdk/aws-kms';
+declare const key: kms.Key;
+declare const fn: lambda.Function;
 
-declare const encryptionKey: kms.Key;
+const target = new targets.LambdaInvoke(fn, {
+    input: ScheduleTargetInput.fromObject({
+        "payload": "useful",
+    }),
+});
 
 const schedule = new Schedule(this, 'Schedule', {
-    scheduleExpression: ScheduleExpression.rate(Duration.minutes(10)),
+    schedule: ScheduleExpression.rate(Duration.minutes(10)),
     target,
-    key: encryptionKey,
+    key,
 });
 ```
 
