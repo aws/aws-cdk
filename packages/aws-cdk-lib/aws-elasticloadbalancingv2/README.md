@@ -219,7 +219,6 @@ const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
   desyncMitigationMode: elbv2.DesyncMitigationMode.DEFENSIVE,
 
   // The type of IP addresses to use.
-  // If the load balancer is an internal load balancer, you must choose IPv4.
   ipAddressType: elbv2.IpAddressType.IPV4,
 });
 ```
@@ -273,14 +272,11 @@ declare const vpc: ec2.Vpc;
 
 const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
   vpc,
-  internetFacing: true,
   ipAddressType: elbv2.IpAddressType.DUAL_STACK,
 });
 ```
 
-Restrictions for a dualstack Network Load Balancer:
-* It must be internet-facing
-* You cannot add UDP or TCP_UDP listeners to it
+You cannot add UDP or TCP_UDP listeners to a dualstack Network Load Balancer.
 
 ## Targets and Target Groups
 

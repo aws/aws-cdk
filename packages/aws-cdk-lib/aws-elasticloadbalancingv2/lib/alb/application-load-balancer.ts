@@ -25,8 +25,6 @@ export interface ApplicationLoadBalancerProps extends BaseLoadBalancerProps {
   /**
    * The type of IP addresses to use
    *
-   * If the load balancer is an internal load balancer, you must choose IPv4.
-   *
    * @default IpAddressType.IPV4
    */
   readonly ipAddressType?: IpAddressType;

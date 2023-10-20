@@ -11,7 +11,7 @@ const valueOrDie = <T, C extends T = T>(value: T | undefined, err: Error): C => 
 };
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-nlb-dualstack');
+const stack = new cdk.Stack(app, 'aws-cdk-nlb-dualstack-internet-facing');
 
 const vpc = new ec2.Vpc(stack, 'VPC', {
   restrictDefaultSecurityGroup: false,
@@ -92,7 +92,7 @@ vpc.publicSubnets.forEach((subnet, idx) => {
 
 // The target's security group must allow being routed by the LB and the clients.
 
-new integ.IntegTest(app, 'NlbDualstackInteg', {
+new integ.IntegTest(app, 'NlbDualstackInternetFacingInteg', {
   testCases: [stack],
 });
 

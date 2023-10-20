@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-nlb-dualstack/VPC"
+      "Value": "aws-cdk-nlb-dualstack-internet-facing/VPC"
      }
     ]
    }
@@ -61,7 +61,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-nlb-dualstack/VPC/PublicSubnet1"
+      "Value": "aws-cdk-nlb-dualstack-internet-facing/VPC/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -78,7 +78,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-nlb-dualstack/VPC/PublicSubnet1"
+      "Value": "aws-cdk-nlb-dualstack-internet-facing/VPC/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -119,7 +119,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-nlb-dualstack/VPC/PublicSubnet1"
+      "Value": "aws-cdk-nlb-dualstack-internet-facing/VPC/PublicSubnet1"
      }
     ]
    }
@@ -139,7 +139,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-nlb-dualstack/VPC/PublicSubnet1"
+      "Value": "aws-cdk-nlb-dualstack-internet-facing/VPC/PublicSubnet1"
      }
     ]
    },
@@ -206,7 +206,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-nlb-dualstack/VPC/PublicSubnet2"
+      "Value": "aws-cdk-nlb-dualstack-internet-facing/VPC/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -223,7 +223,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-nlb-dualstack/VPC/PublicSubnet2"
+      "Value": "aws-cdk-nlb-dualstack-internet-facing/VPC/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -264,7 +264,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-nlb-dualstack/VPC/PublicSubnet2"
+      "Value": "aws-cdk-nlb-dualstack-internet-facing/VPC/PublicSubnet2"
      }
     ]
    }
@@ -284,7 +284,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-nlb-dualstack/VPC/PublicSubnet2"
+      "Value": "aws-cdk-nlb-dualstack-internet-facing/VPC/PublicSubnet2"
      }
     ]
    },
@@ -329,7 +329,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-nlb-dualstack/VPC/PrivateSubnet1"
+      "Value": "aws-cdk-nlb-dualstack-internet-facing/VPC/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -343,7 +343,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-nlb-dualstack/VPC/PrivateSubnet1"
+      "Value": "aws-cdk-nlb-dualstack-internet-facing/VPC/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -398,7 +398,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-nlb-dualstack/VPC/PrivateSubnet2"
+      "Value": "aws-cdk-nlb-dualstack-internet-facing/VPC/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -412,7 +412,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-nlb-dualstack/VPC/PrivateSubnet2"
+      "Value": "aws-cdk-nlb-dualstack-internet-facing/VPC/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -449,7 +449,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-nlb-dualstack/VPC"
+      "Value": "aws-cdk-nlb-dualstack-internet-facing/VPC"
      }
     ]
    }

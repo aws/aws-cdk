@@ -41,7 +41,7 @@ const ipv6Block = new ec2.CfnVPCCidrBlock(
 // public subnets.
 const internetGateway = valueOrDie<IConstruct, ec2.CfnInternetGateway>(
   vpc.node.children.find(c => c instanceof ec2.CfnInternetGateway),
-  new Error('Couldnt find an internet gateway'),
+  new Error('Couldn\'t find an internet gateway'),
 );
 
 const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', {

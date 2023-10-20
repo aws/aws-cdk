@@ -639,7 +639,7 @@ describe('tests', () => {
   });
 
   describe('dualstack', () => {
-    test('Can create dualstack NetworkLoadBalancer', () => {
+    test('Can create internet-facing dualstack NetworkLoadBalancer', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'Stack');
@@ -659,22 +659,26 @@ describe('tests', () => {
       });
     });
 
-    test('A dualstack NetworkLoadBalancer must be internet facing', () => {
+    test('Can create internal dualstack NetworkLoadBalancer', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'Stack');
 
       // WHEN
+      new elbv2.NetworkLoadBalancer(stack, 'LB', {
+        vpc,
+        ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+      });
+
       // THEN
-      expect(() => {
-        new elbv2.NetworkLoadBalancer(stack, 'LB', {
-          vpc,
-          ipAddressType: elbv2.IpAddressType.DUAL_STACK,
-        });
-      }).toThrow(/The IP address type of an internal load balancer must be ipv4/);
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        Scheme: 'internal',
+        Type: 'network',
+        IpAddressType: 'dualstack',
+      });
     });
 
-    test('Cannot add UDP or TCP_UDP listeners to a dualstick network load balancer', () => {
+    test('Cannot add UDP or TCP_UDP listeners to a dualstack network load balancer', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'Stack');

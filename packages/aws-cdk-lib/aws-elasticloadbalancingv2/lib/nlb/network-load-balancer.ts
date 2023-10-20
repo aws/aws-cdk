@@ -24,8 +24,8 @@ export interface NetworkLoadBalancerProps extends BaseLoadBalancerProps {
   /**
    * The type of IP addresses to use
    *
-   * If the load balancer is an internal load balancer,
-   * or if you add a UDP or TCP_UDP listener, you must choose IPv4.
+   * If you want to add a UDP or TCP_UDP listener to the load balancer,
+   * you must choose IPv4.
    *
    * @default IpAddressType.IPV4
    */
