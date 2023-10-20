@@ -273,7 +273,12 @@ export class PullRequestLinter {
     // Closing the PR if it is opened from main branch of author's fork
     if (failureMessages.includes(PR_FROM_MAIN_ERROR)) {
 
-      const errorMessageBody = 'We are unable to accept contributions from `main` branch of a fork. This pull request would be automatically closed now. Please open a new pull request from another branch on your fork. For more information, see https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#step-4-pull-request.'
+      const errorMessageBody = 'Your pull request must be based off of a branch in a personal account '
+      + '(not an organization owned account, and not the main branch). You must also have the setting '
+      + 'enabled that <a href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/allowing-changes-to-a-pull-request-branch-created-from-a-fork">allows the CDK team to push changes to your branch</a> '
+      + '(this setting is enabled by default for personal accounts, and cannot be enabled for organization owned accounts). '
+      + 'The reason for this is that our automation needs to synchronize your branch with our main after it has been approved, '
+      + 'and we cannot do that if we cannot push to your branch.'
 
       await this.client.issues.createComment({
         ...this.issueParams,
