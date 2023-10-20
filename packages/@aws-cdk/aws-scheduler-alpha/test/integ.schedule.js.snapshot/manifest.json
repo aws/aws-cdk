@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bbcd00ec8f22ebae1e8018bdae1226dbbdf643fd8c5453daf208abedd325db6c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ea2b130e655c0c74a4099d37ab0b44701887641ac2253eec676e8048f199737e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -62,6 +62,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "DisabledScheduleA1DF7F0F"
+          }
+        ],
+        "/aws-cdk-scheduler-schedule/AllSchedulerErrorsAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AllSchedulerErrorsAlarmA3246F8C"
           }
         ],
         "/aws-cdk-scheduler-schedule/BootstrapVersion": [

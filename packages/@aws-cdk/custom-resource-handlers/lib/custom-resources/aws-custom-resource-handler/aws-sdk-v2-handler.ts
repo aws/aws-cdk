@@ -9,7 +9,9 @@ import { join } from 'path';
 /* eslint-disable-next-line import/no-extraneous-dependencies,import/no-unresolved */
 import * as AWSLambda from 'aws-lambda';
 import { AwsSdkCall } from './construct-types';
-import { decodeCall, decodeSpecialValues, filterKeys, flatten, respond, startsWithOneOf } from './shared';
+import { decodeCall, decodeSpecialValues, filterKeys, respond, startsWithOneOf } from './shared';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { flatten } from '@aws-cdk/sdk-v2-to-v3-adapter';
 
 let latestSdkInstalled = false;
 
