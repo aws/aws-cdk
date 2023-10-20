@@ -82,7 +82,7 @@ const zipAsset = new Canary(stack, 'ZipAsset', {
   cleanup: Cleanup.LAMBDA,
 });
 
-const kebabToPascal = (text :string )=> text.replace(/(^\w|-\w)/g, (v) => v.replace(/-/, '').toUpperCase());
+const kebabToPascal = (text:string) => text.replace(/(^\w|-\w)/g, (v) => v.replace(/-/, '').toUpperCase());
 const createCanaryByRuntimes = (runtime: Runtime) =>
   new Canary(stack, kebabToPascal(runtime.name).replace('.', ''), {
     test: Test.custom({
