@@ -10,7 +10,6 @@ const storageModeArray: msk.StorageMode[] = [
   msk.StorageMode.LOCAL,
 ];
 
-
 class KafkaStorageModeTest extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
