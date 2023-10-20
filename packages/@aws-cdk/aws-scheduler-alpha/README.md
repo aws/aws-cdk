@@ -214,7 +214,7 @@ declare const fn: lambda.Function;
 
 const target = new targets.LambdaInvoke(fn, {
     input: ScheduleTargetInput.fromObject({
-        "payload": "useful",
+        payload: 'useful',
     }),
 });
 
