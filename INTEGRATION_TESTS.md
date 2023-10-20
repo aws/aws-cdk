@@ -240,6 +240,8 @@ want to validate that the _integration_ connecting `StepFunctions` to the `Event
 way to do that is to actually trigger the `StateMachine` and validate that it was successful.
 
 ```ts
+import * as integ from '@aws-cdk/integ-tests-alpha';
+
 declare const app: App;
 declare const sm: sfn.StateMachine;
 declare const stack: Stack;
@@ -267,6 +269,10 @@ describe.expect(integ.ExpectedResult.objectLike({
 If we want to pick out certain values from the api call response, we can use the `assertAtPath()` method, as in the [integ.pipeline-with-additional-inputs.ts](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk-testing/framework-integ/test/pipelines/test/integ.pipeline-with-additional-inputs.ts) integ test. Note that using the `outputPaths` optional parameter on the `awsApiCall()` function often interacts poorly with the `expect()` function. 
 
 ```ts
+import * as integ from '@aws-cdk/integ-tests-alpha';
+
+declare const app: App;
+declare const stack: Stack;
 declare const pipelineName: string;
 declare const expectedString: string;
 
@@ -282,17 +288,19 @@ const source = testCase.assertions.awsApiCall('CodePipeline', 'GetPipeline', {
 // the numbers index arryas in the json response object
 source.assertAtPath('pipeline.stages.0.actions.0.name', integ.ExpectedResult.stringLikeRegexp(expectedString));
 ```
-A helpful trick is to deploy the integ test with `--no-clean` and then make the api call locally. We can then trace the path to specific values easily.
+A helpful trick is to deploy the integ test with `--no-clean` and then make the api call locally. We can then trace the path to specific values easily. For example, `> aws codepipeline get-pipeline --name MyFirstPipeline`.
 
 Adding assertions is prefered on all new integ tests; however, it is not strictly required. We typically do not need to assert CloudFormation behavior. For example, if we create an S3 Bucket
 with Encryption, we do not need to assert that Encryption is set on the bucket. We can trust that the CloudFormation behavior works.
 Some things you should look for in deciding if the test needs an assertion:
 
-- Integrations between services (i.e. integration libraries like `aws-cdk-lib/aws-lambda-destinations`, `aws-cdk-lib/aws-stepfunctions-tasks`, etc)
-- Anything that bundles or deploys custom code (i.e. does a Lambda function bundled with `aws-cdk-lib/aws-lambda-nodejs` still invoke or did we break bundling behavior)
+- Integrations between services (i.e. integration libraries like `aws-cdk-lib/aws-lambda-destinations`, `aws-cdk-lib/aws-stepfunctions-tasks`, etc).
+- All custom resources. Must assert the expected behavior of the lambda is correct.
+- Anything that bundles or deploys custom code (i.e. does a Lambda function bundled with `aws-cdk-lib/aws-lambda-nodejs` still invoke or did we break bundling behavior).
 - IAM/Networking connections.
   - This one is a bit of a judgement call. Most things do not need assertions, but sometimes we handle complicated configurations involving IAM permissions or
     Networking access.
+
 
 ## Running Integration Tests
 
