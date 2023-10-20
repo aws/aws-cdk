@@ -1,4 +1,4 @@
-import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import * as msk from '../lib/index';
 import { KafkaVersion } from '../lib/index';
 import { Construct } from 'constructs';
@@ -29,8 +29,8 @@ const versions: KafkaVersion[] = [
 ];
 
 class KafkaVersionTest extends Stack {
-  constructor(scope: Construct, id: string) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props?: StackProps) {
+    super(scope, id, props);
     const vpc = new Vpc(this, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
     versions.forEach(version => {

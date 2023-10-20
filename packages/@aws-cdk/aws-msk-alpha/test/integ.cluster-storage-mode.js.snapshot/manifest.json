@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/06e2ed9fb3f5042b8cdc18561b2d429a508a381c65c3e3d5436fcfab13c77cf3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/74c577aa04ac95ab00d45704bdb862b7d2762219f4e54f9d3882db5a42c3abb3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -211,19 +211,19 @@
       },
       "displayName": "KafkaStorageModeTestStack"
     },
-    "KafkaVersionIntegTestDefaultTestDeployAssertD6628743.assets": {
+    "KafkaStorageModeIntegTestDefaultTestDeployAssertE4141594.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "KafkaVersionIntegTestDefaultTestDeployAssertD6628743.assets.json",
+        "file": "KafkaStorageModeIntegTestDefaultTestDeployAssertE4141594.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "KafkaVersionIntegTestDefaultTestDeployAssertD6628743": {
+    "KafkaStorageModeIntegTestDefaultTestDeployAssertE4141594": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "KafkaVersionIntegTestDefaultTestDeployAssertD6628743.template.json",
+        "templateFile": "KafkaStorageModeIntegTestDefaultTestDeployAssertE4141594.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -232,7 +232,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "KafkaVersionIntegTestDefaultTestDeployAssertD6628743.assets"
+          "KafkaStorageModeIntegTestDefaultTestDeployAssertE4141594.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -241,23 +241,23 @@
         }
       },
       "dependencies": [
-        "KafkaVersionIntegTestDefaultTestDeployAssertD6628743.assets"
+        "KafkaStorageModeIntegTestDefaultTestDeployAssertE4141594.assets"
       ],
       "metadata": {
-        "/KafkaVersionIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/KafkaStorageModeIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/KafkaVersionIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/KafkaStorageModeIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "KafkaVersionIntegTest/DefaultTest/DeployAssert"
+      "displayName": "KafkaStorageModeIntegTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

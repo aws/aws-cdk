@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "34.0.0",
   "artifacts": {
     "KafkaVersionTestStack.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "KafkaVersionTestStack.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/60dae11a2659444f952ba2b102ea25cba4d75ba7229c89d74c55973e2c5c5b35.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/17094a380561572466f9dbcbbbcaca7ec3ca262d3308a1c0a1eae6529f016ac0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -327,6 +328,18 @@
             "data": "ClusterVersion281E912F3B9"
           }
         ],
+        "/KafkaVersionTestStack/ClusterVersion2-8-2-tiered/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion282tieredSecurityGroup3FA6200D"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion2-8-2-tiered/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion282tiered485A19BE"
+          }
+        ],
         "/KafkaVersionTestStack/ClusterVersion3-1-1/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -387,6 +400,18 @@
             "data": "ClusterVersion340D193688A"
           }
         ],
+        "/KafkaVersionTestStack/ClusterVersion3-5-1/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion351SecurityGroup866E7223"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion3-5-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion3515E181C3E"
+          }
+        ],
         "/KafkaVersionTestStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -415,6 +440,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "KafkaVersionIntegTestDefaultTestDeployAssertD6628743.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",

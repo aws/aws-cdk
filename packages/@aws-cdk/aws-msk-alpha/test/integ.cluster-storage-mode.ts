@@ -1,4 +1,4 @@
-import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import * as msk from '../lib/index';
 import { KafkaVersion } from '../lib/index';
 import { Construct } from 'constructs';
@@ -10,9 +10,10 @@ const storageModeArray: msk.StorageMode[] = [
   msk.StorageMode.LOCAL,
 ];
 
+
 class KafkaStorageModeTest extends Stack {
-  constructor(scope: Construct, id: string) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props?: StackProps) {
+    super(scope, id, props);
     const vpc = new Vpc(this, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
     storageModeArray.forEach(sMode => {
@@ -29,10 +30,6 @@ class KafkaStorageModeTest extends Stack {
 }
 
 const app = new App();
-new IntegTest(app, 'KafkaStorageModeIntegTest', {
-  enableLookups: true,
-  testCases: [
-    new KafkaStorageModeTest(app, 'KafkaStorageModeTestStack'),
-  ],
-});
+const testCase = new KafkaStorageModeTest(app, 'KafkaStorageModeTestStack');
+new IntegTest(app, 'KafkaStorageModeIntegTest', { testCases: [testCase] });
 app.synth();

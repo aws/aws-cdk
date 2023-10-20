@@ -45,7 +45,14 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "availabilityZone": "test-region-1a",
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            0,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
                         "cidrBlock": "10.0.0.0/18",
                         "mapPublicIpOnLaunch": true,
                         "tags": [
@@ -205,7 +212,14 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "availabilityZone": "test-region-1b",
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            1,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
                         "cidrBlock": "10.0.64.0/18",
                         "mapPublicIpOnLaunch": true,
                         "tags": [
@@ -365,7 +379,14 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "availabilityZone": "test-region-1a",
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            0,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
                         "cidrBlock": "10.0.128.0/18",
                         "mapPublicIpOnLaunch": false,
                         "tags": [
@@ -477,7 +498,14 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "availabilityZone": "test-region-1b",
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            1,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
                         "cidrBlock": "10.0.192.0/18",
                         "mapPublicIpOnLaunch": false,
                         "tags": [
@@ -853,17 +881,17 @@
           "version": "0.0.0"
         }
       },
-      "KafkaVersionIntegTest": {
-        "id": "KafkaVersionIntegTest",
-        "path": "KafkaVersionIntegTest",
+      "KafkaStorageModeIntegTest": {
+        "id": "KafkaStorageModeIntegTest",
+        "path": "KafkaStorageModeIntegTest",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "KafkaVersionIntegTest/DefaultTest",
+            "path": "KafkaStorageModeIntegTest/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "KafkaVersionIntegTest/DefaultTest/Default",
+                "path": "KafkaStorageModeIntegTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.2.70"
@@ -871,11 +899,11 @@
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "KafkaVersionIntegTest/DefaultTest/DeployAssert",
+                "path": "KafkaStorageModeIntegTest/DefaultTest/DeployAssert",
                 "children": {
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "KafkaVersionIntegTest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "KafkaStorageModeIntegTest/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
@@ -883,7 +911,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "KafkaVersionIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "KafkaStorageModeIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"
