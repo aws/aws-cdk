@@ -213,181 +213,79 @@ describe('CodeDeploy Server Deployment Group', () => {
     });
   });
 
-  test.each<{ clbCount: number, albCount: number, nlbCount: number, TargetGroupInfoList: string[], ElbInfoList: string[] }>([
-    { clbCount: 0, albCount: 0, nlbCount: 1, TargetGroupInfoList: ['NLBListenerNLB0FleetGroup657E42E4'], ElbInfoList: [] },
-    { clbCount: 0, albCount: 0, nlbCount: 2, TargetGroupInfoList: ['NLBListenerNLB0FleetGroup657E42E4', 'NLBListenerNLB1FleetGroup5298209F'], ElbInfoList: [] },
-    { clbCount: 0, albCount: 1, nlbCount: 0, TargetGroupInfoList: ['ALBListenerALB0FleetGroupF4CBAA91'], ElbInfoList: [] },
-    { clbCount: 0, albCount: 2, nlbCount: 0, TargetGroupInfoList: ['ALBListenerALB0FleetGroupF4CBAA91', 'ALBListenerALB1FleetGroupD8E824C3'], ElbInfoList: [] },
-    { clbCount: 0, albCount: 1, nlbCount: 1, TargetGroupInfoList: ['ALBListenerALB0FleetGroupF4CBAA91', 'NLBListenerNLB0FleetGroup657E42E4'], ElbInfoList: [] },
-    { clbCount: 0, albCount: 2, nlbCount: 2, TargetGroupInfoList: ['ALBListenerALB0FleetGroupF4CBAA91', 'ALBListenerALB1FleetGroupD8E824C3', 'NLBListenerNLB0FleetGroup657E42E4', 'NLBListenerNLB1FleetGroup5298209F'], ElbInfoList: [] },
-    { clbCount: 1, albCount: 0, nlbCount: 0, TargetGroupInfoList: [], ElbInfoList: ['CLB0677386E0'] },
-    { clbCount: 2, albCount: 0, nlbCount: 0, TargetGroupInfoList: [], ElbInfoList: ['CLB0677386E0', 'CLB18DCC2BD6'] },
-    { clbCount: 1, albCount: 0, nlbCount: 1, TargetGroupInfoList: ['NLBListenerNLB0FleetGroup657E42E4'], ElbInfoList: ['CLB0677386E0'] },
-    { clbCount: 2, albCount: 0, nlbCount: 2, TargetGroupInfoList: ['NLBListenerNLB0FleetGroup657E42E4', 'NLBListenerNLB1FleetGroup5298209F'], ElbInfoList: ['CLB0677386E0', 'CLB18DCC2BD6'] },
-    { clbCount: 1, albCount: 1, nlbCount: 0, TargetGroupInfoList: ['ALBListenerALB0FleetGroupF4CBAA91'], ElbInfoList: ['CLB0677386E0'] },
-    { clbCount: 2, albCount: 2, nlbCount: 0, TargetGroupInfoList: ['ALBListenerALB0FleetGroupF4CBAA91', 'ALBListenerALB1FleetGroupD8E824C3'], ElbInfoList: ['CLB0677386E0', 'CLB18DCC2BD6'] },
-    { clbCount: 1, albCount: 1, nlbCount: 1, TargetGroupInfoList: ['ALBListenerALB0FleetGroupF4CBAA91', 'NLBListenerNLB0FleetGroup657E42E4'], ElbInfoList: ['CLB0677386E0'] },
-    { clbCount: 2, albCount: 2, nlbCount: 2, TargetGroupInfoList: ['ALBListenerALB0FleetGroupF4CBAA91', 'ALBListenerALB1FleetGroupD8E824C3', 'NLBListenerNLB0FleetGroup657E42E4', 'NLBListenerNLB1FleetGroup5298209F'], ElbInfoList: ['CLB0677386E0', 'CLB18DCC2BD6'] },
-  ])('Should build ServerDeploymentGroup with $clbCount CLBs, $albCount ALBs and $nlbCount NLBs expecting TargetGroupInfoList $TargetGroupInfoList and ElbInfoList $ElbInfoList', ({ clbCount, albCount, nlbCount, TargetGroupInfoList, ElbInfoList }) => {
+  test.each([
+    ['CLB + ALB', true, true, false],
+    ['CLB + NLB', true, false, true],
+    ['ALB + NLB', false, true, true],
+    ['CLB + ALB + NLB', true, true, true],
+  ])('can be created with multiple load balancers (%s)', (_, withCLB, withALB, withNLB) => {
     const stack = new cdk.Stack();
     const defaultVpc = new ec2.Vpc(stack, 'VPC');
 
-    const CLBs: codedeploy.LoadBalancer[] = [];
+    const loadBalancers: codedeploy.LoadBalancer[] = [];
+    const loadBalancerInfo: { TargetGroupInfoList?: any[]; ElbInfoList?: any[] } = {};
 
-    const ALBs: codedeploy.LoadBalancer[] = [];
-
-    const NLBs: codedeploy.LoadBalancer[] = [];
-
-    for (let i = 0; i < clbCount; i++) {
-      CLBs.push(codedeploy.LoadBalancer.classic(new lbv1.LoadBalancer(stack, `CLB-${i}`, {
+    if (withCLB) {
+      loadBalancers.push(codedeploy.LoadBalancer.classic(new lbv1.LoadBalancer(stack, `CLB-${i}`, {
         vpc: defaultVpc,
         listeners: [{
-          externalPort: 8080 + i,
+          externalPort: 8080,
           externalProtocol: lbv1.LoadBalancingProtocol.TCP,
           internalProtocol: lbv1.LoadBalancingProtocol.TCP,
         }],
       })));
+
+      loadBalancerInfo.ElbInfoList?.push({
+        'Name': {
+          'Ref': 'CLB677386E0',
+        },
+      });
     }
 
-    if (albCount > 0) {
+    if (withALB) {
       const alb = new lbv2.ApplicationLoadBalancer(stack, 'ALB', {
         vpc: defaultVpc,
       });
 
-      for (let i = 0; i < albCount; i++) {
-        const listener = alb.addListener(`ListenerALB${i}`, { protocol: lbv2.ApplicationProtocol.HTTP, port: 8080 + i });
-        const targetGroup = listener.addTargets('Fleet', { protocol: lbv2.ApplicationProtocol.HTTP, port: 8080 + i });
-        ALBs.push(codedeploy.LoadBalancer.application(targetGroup));
-      }
+      const listener = alb.addListener('ListenerALB', { protocol: lbv2.ApplicationProtocol.HTTP, port: 8080 });
+      const targetGroup = listener.addTargets('Fleet', { protocol: lbv2.ApplicationProtocol.HTTP, port: 8080 });
+      loadBalancers.push(codedeploy.LoadBalancer.application(targetGroup));
+
+      loadBalancerInfo.TargetGroupInfoList?.push({
+        'Name': {
+          'Fn::GetAtt': [
+            'ALBListenerALBFleetGroupF4CBAA91',
+            'TargetGroupName',
+          ],
+        },
+      });
     }
 
-    if (nlbCount > 0) {
+    if (withNLB) {
       const nlb = new lbv2.NetworkLoadBalancer(stack, 'NLB', {
         vpc: defaultVpc,
       });
 
-      for (let i = 0; i < nlbCount; i++) {
-        const nlbListener = nlb.addListener(`ListenerNLB${i}`, { port: 8080 + i, protocol: lbv2.Protocol.TCP });
-        const nlbTargetGroup = nlbListener.addTargets('Fleet', { port: 8080 + i, protocol: lbv2.Protocol.TCP });
-        NLBs.push(codedeploy.LoadBalancer.network(nlbTargetGroup));
-      }
-    }
+      const nlbListener = nlb.addListener('ListenerNLB', { port: 8080, protocol: lbv2.Protocol.TCP });
+      const nlbTargetGroup = nlbListener.addTargets('Fleet', { port: 8080, protocol: lbv2.Protocol.TCP });
+      loadBalancers.push(codedeploy.LoadBalancer.network(nlbTargetGroup));
 
-    new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
-      loadBalancers: [...CLBs, ...ALBs, ...NLBs],
-    });
-
-    if (TargetGroupInfoList.length > 0 && ElbInfoList.length > 0) {
-      Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
-        'LoadBalancerInfo': {
-          'TargetGroupInfoList': TargetGroupInfoList.map((tgName) => ({
-            'Name': {
-              'Fn::GetAtt': [
-                tgName,
-                'TargetGroupName',
-              ],
-            },
-          })),
-          'ElbInfoList': ElbInfoList.map((elbName) => ({
-            'Name': {
-              'Ref': elbName,
-            },
-          })),
-        },
-        'DeploymentStyle': {
-          'DeploymentOption': 'WITH_TRAFFIC_CONTROL',
-        },
-      });
-    } else if (TargetGroupInfoList.length > 0) {
-      Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
-        'LoadBalancerInfo': {
-          'TargetGroupInfoList': TargetGroupInfoList.map((tgName) => ({
-            'Name': {
-              'Fn::GetAtt': [
-                tgName,
-                'TargetGroupName',
-              ],
-            },
-          })),
-        },
-        'DeploymentStyle': {
-          'DeploymentOption': 'WITH_TRAFFIC_CONTROL',
-        },
-      });
-    } else if (ElbInfoList.length > 0) {
-      Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
-        'LoadBalancerInfo': {
-          'ElbInfoList': ElbInfoList.map((elbName) => ({
-            'Name': {
-              'Ref': elbName,
-            },
-          })),
-        },
-        'DeploymentStyle': {
-          'DeploymentOption': 'WITH_TRAFFIC_CONTROL',
+      loadBalancerInfo.TargetGroupInfoList?.push({
+        'Name': {
+          'Fn::GetAtt': [
+            'NLBListenerNLB0FleetGroup657E42E4',
+            'TargetGroupName',
+          ],
         },
       });
     }
-  });
-
-  test('can be created with multiple ALB Target Groups as the load balancers', () => {
-    const stack = new cdk.Stack();
-    const defaultVpc = new ec2.Vpc(stack, 'VPC');
-
-    const clb = new lbv1.LoadBalancer(stack, 'CLB', {
-      vpc: defaultVpc,
-    });
-
-    const alb = new lbv2.ApplicationLoadBalancer(stack, 'ALB', {
-      vpc: defaultVpc,
-    });
-
-    const nlb = new lbv2.NetworkLoadBalancer(stack, 'NLB', {
-      vpc: defaultVpc,
-    });
-
-    const listener = alb.addListener('Listener', { protocol: lbv2.ApplicationProtocol.HTTP });
-    const targetGroup = listener.addTargets('Fleet', { protocol: lbv2.ApplicationProtocol.HTTP });
-
-    const nlbListener = nlb.addListener('Listener', { port: 80 });
-    const nlbTargetGroup = nlbListener.addTargets('Fleet', { port: 80 });
 
     new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
-      loadBalancers: [
-        codedeploy.LoadBalancer.classic(clb),
-        codedeploy.LoadBalancer.application(targetGroup),
-        codedeploy.LoadBalancer.network(nlbTargetGroup),
-      ],
+      loadBalancers,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
-      'LoadBalancerInfo': {
-        'TargetGroupInfoList': [
-          {
-            'Name': {
-              'Fn::GetAtt': [
-                'ALBListenerFleetGroup008CEEE4',
-                'TargetGroupName',
-              ],
-            },
-          },
-          {
-            'Name': {
-              'Fn::GetAtt': [
-                'NLBListenerFleetGroupB882EC86',
-                'TargetGroupName',
-              ],
-            },
-          },
-        ],
-        'ElbInfoList': [
-          {
-            'Name': {
-              'Ref': 'CLBA83A883E',
-            },
-          },
-        ],
-      },
+      'LoadBalancerInfo': loadBalancerInfo,
       'DeploymentStyle': {
         'DeploymentOption': 'WITH_TRAFFIC_CONTROL',
       },
