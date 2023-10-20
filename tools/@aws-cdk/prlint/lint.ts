@@ -6,6 +6,8 @@ import { StatusEvent } from '@octokit/webhooks-definitions/schema';
 import { findModulePath, moduleStability } from './module';
 import { breakingModules } from './parser';
 
+// I am just a comment to test linter. Please ignore me and not approve the PR :)
+
 export type GitHubPr =
   Endpoints['GET /repos/{owner}/{repo}/pulls/{pull_number}']['response']['data'];
 
