@@ -1,5 +1,6 @@
 import { Template } from '../../../assertions';
 import * as iam from '../../../aws-iam';
+import { LogGroup } from '../../../aws-logs';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
 import * as tasks from '../../lib';
@@ -223,6 +224,41 @@ test('IAM policy for sfn', () => {
           Action: 'states:sendTaskSuccess',
           Effect: 'Allow',
           Resource: '*',
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
+test('IAM policy for cloudwatchlogs', () => {
+  // WHEN
+  const myLogGroup = new LogGroup(stack, 'MyLogGroup');
+  const task = new tasks.CallAwsService(stack, 'SendTaskSuccess', {
+    service: 'cloudwatchlogs',
+    action: 'createLogStream',
+    parameters: {
+      LogGroupName: myLogGroup.logGroupName,
+      LogStreamName: sfn.JsonPath.stringAt('$$.Execution.Name'),
+    },
+    resultPath: sfn.JsonPath.DISCARD,
+    iamResources: [myLogGroup.logGroupArn],
+  });
+
+  new sfn.StateMachine(stack, 'StateMachine', {
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'logs:createLogStream',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::GetAtt': ['MyLogGroup5C0DAD85', 'Arn'],
+          },
         },
       ],
       Version: '2012-10-17',
