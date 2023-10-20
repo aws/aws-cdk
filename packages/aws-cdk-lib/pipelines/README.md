@@ -54,18 +54,18 @@ example creates a CodePipeline that deploys an application from GitHub:
   * to this table in its properties.
   */
 class DatabaseStack extends Stack {
-  public readonly table: dynamodb.Table;
+  public readonly table: dynamodb.TableV2;
 
   constructor(scope: Construct, id: string) {
     super(scope, id);
-    this.table = new dynamodb.Table(this, 'Table', {
+    this.table = new dynamodb.TableV2(this, 'Table', {
       partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING }
     });
   }
 }
 
 interface ComputeProps {
-  readonly table: dynamodb.Table;
+  readonly table: dynamodb.TableV2;
 }
 
 class ComputeStack extends Stack {
@@ -214,7 +214,7 @@ engine, read the section
 ### Synth and sources
 
 To define a pipeline, instantiate a `CodePipeline` construct from the
-`@aws-cdk/pipelines` module. It takes one argument, a `synth` step, which is
+`aws-cdk-lib/pipelines` module. It takes one argument, a `synth` step, which is
 expected to produce the CDK Cloud Assembly as its single output (the contents of
 the `cdk.out` directory after running `cdk synth`). "Steps" are arbitrary
 actions in the pipeline, typically used to run scripts or commands.
@@ -1546,7 +1546,7 @@ following:
 ```json
 {
   "context": {
-    "@aws-cdk/aws-iam:minimizePolicies": true
+    "aws-cdk-lib/aws-iam:minimizePolicies": true
   }
 }
 ```
