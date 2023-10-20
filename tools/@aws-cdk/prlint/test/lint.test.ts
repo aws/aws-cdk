@@ -93,6 +93,24 @@ describe('breaking changes format', () => {
   });
 });
 
+test('disallow PRs from main branch of fork', async () => {
+  const issue: Subset<linter.GitHubPr> = {
+    number: 1,
+    title: 'chore: some title',
+    body: 'making a pr from main of my fork',
+    labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }],
+    user: {
+      login: 'author',
+    },
+    head: {
+      label: 'author:main',
+      ref: 'main'
+    }
+  };
+  const prLinter = configureMock(issue, undefined);
+  await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow(/Pull requests from `main` branch of a fork cannot be accepted. Please reopen this contribution from another branch on your fork./);
+});
+
 describe('commit message format', () => {
   test('valid scope', async () => {
     const issue = {
@@ -893,6 +911,8 @@ function configureMock(pr: Subset<linter.GitHubPr>, prFiles?: linter.GitHubFile[
     listReviews: mockListReviews,
 
     dismissReview() {},
+
+    update() {},
   };
 
   const issuesClient = {

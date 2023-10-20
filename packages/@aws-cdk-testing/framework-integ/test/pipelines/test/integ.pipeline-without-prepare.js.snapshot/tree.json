@@ -50,7 +50,8 @@
                               "Action": [
                                 "s3:DeleteObject*",
                                 "s3:GetBucket*",
-                                "s3:List*"
+                                "s3:List*",
+                                "s3:PutBucketPolicy"
                               ],
                               "Effect": "Allow",
                               "Principal": {
@@ -508,7 +509,7 @@
                                 },
                                 "outputArtifacts": [
                                   {
-                                    "name": "c8506b445957b8105ede7b68ebe35e9406d642cd0c_Source"
+                                    "name": "c8506b445957b8105ede7b68ebe35e9406d642cd0c_key_Source"
                                   }
                                 ],
                                 "actionTypeId": {
@@ -540,7 +541,7 @@
                                 "name": "Synth",
                                 "inputArtifacts": [
                                   {
-                                    "name": "c8506b445957b8105ede7b68ebe35e9406d642cd0c_Source"
+                                    "name": "c8506b445957b8105ede7b68ebe35e9406d642cd0c_key_Source"
                                   }
                                 ],
                                 "outputArtifacts": [

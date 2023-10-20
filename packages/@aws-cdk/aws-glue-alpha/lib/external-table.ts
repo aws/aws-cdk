@@ -25,6 +25,7 @@ export interface ExternalTableProps extends TableBaseProps {
 
 /**
  * A Glue table that targets an external data location (e.g. A table in a Redshift Cluster).
+ * @resource AWS::Glue::Table
  */
 export class ExternalTable extends TableBase {
   /**
