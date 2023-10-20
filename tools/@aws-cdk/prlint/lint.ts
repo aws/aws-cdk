@@ -272,15 +272,26 @@ export class PullRequestLinter {
       body,
     });
 
-    // Commenting this code to first test that linter rule works
-    // since this can lead to other PRs closing if not setup correctly
-    // // Closing the PR if it is opened from main branch of author's fork
-    // if (failureMessages.includes(PR_FROM_MAIN_ERROR)) {
-    //   await this.client.pulls.update({
-    //     ...this.prParams,
-    //     state: 'closed',
-    //   });
-    // }
+    // Closing the PR if it is opened from main branch of author's fork
+    if (failureMessages.includes(PR_FROM_MAIN_ERROR)) {
+
+      const errorMessageBody = 'Your pull request must be based off of a branch in a personal account '
+      + '(not an organization owned account, and not the main branch). You must also have the setting '
+      + 'enabled that <a href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/allowing-changes-to-a-pull-request-branch-created-from-a-fork">allows the CDK team to push changes to your branch</a> '
+      + '(this setting is enabled by default for personal accounts, and cannot be enabled for organization owned accounts). '
+      + 'The reason for this is that our automation needs to synchronize your branch with our main after it has been approved, '
+      + 'and we cannot do that if we cannot push to your branch.'
+
+      await this.client.issues.createComment({
+        ...this.issueParams,
+        body: errorMessageBody,
+      });
+
+      await this.client.pulls.update({
+        ...this.prParams,
+        state: 'closed',
+      });
+    }
 
     throw new LinterError(body);
   }
