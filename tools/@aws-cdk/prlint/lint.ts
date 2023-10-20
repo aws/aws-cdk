@@ -270,15 +270,13 @@ export class PullRequestLinter {
       body,
     });
 
-    // Commenting this code to first test that linter rule works
-    // since this can lead to other PRs closing if not setup correctly
-    // // Closing the PR if it is opened from main branch of author's fork
-    // if (failureMessages.includes(PR_FROM_MAIN_ERROR)) {
-    //   await this.client.pulls.update({
-    //     ...this.prParams,
-    //     state: 'closed',
-    //   });
-    // }
+    // Closing the PR if it is opened from main branch of author's fork
+    if (failureMessages.includes(PR_FROM_MAIN_ERROR)) {
+      await this.client.pulls.update({
+        ...this.prParams,
+        state: 'closed',
+      });
+    }
 
     throw new LinterError(body);
   }
