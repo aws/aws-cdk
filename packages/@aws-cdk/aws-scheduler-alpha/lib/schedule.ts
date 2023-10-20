@@ -23,6 +23,7 @@ export interface ISchedule extends IResource {
    * The arn of the schedule.
    */
   readonly scheduleArn: string;
+
   /**
    * The customer managed KMS key that EventBridge Scheduler will use to encrypt and decrypt your data.
    */
@@ -190,6 +191,7 @@ export class Schedule extends Resource implements ISchedule {
    * The name of the schedule.
    */
   public readonly scheduleName: string;
+
   /**
    * The customer managed KMS key that EventBridge Scheduler will use to encrypt and decrypt your data.
    */
