@@ -161,6 +161,30 @@ test('throws with invalid integration pattern', () => {
   })).toThrow(/The RUN_JOB integration pattern is not supported for CallAwsService/);
 });
 
+test('throws if action is not CamelCase', () => {
+  expect(() => new tasks.CallAwsService(stack, 'GetObject', {
+    service: 's3',
+    action: 'GetObject',
+    parameters: {
+      Bucket: 'my-bucket',
+      Key: sfn.JsonPath.stringAt('$.key'),
+    },
+    iamResources: ['*'],
+  })).toThrow(/action must be CamelCase, got: GetObject/);
+});
+
+test('throws if parameter names has keys as not PascalCase', () => {
+  expect(() => new tasks.CallAwsService(stack, 'GetObject', {
+    service: 's3',
+    action: 'getObject',
+    parameters: {
+      bucket: 'my-bucket',
+      key: sfn.JsonPath.stringAt('$.key'),
+    },
+    iamResources: ['*'],
+  })).toThrow(/parameter names must be PascalCase, got: bucket, key/);
+});
+
 test('can pass additional IAM statements', () => {
   // WHEN
   const task = new tasks.CallAwsService(stack, 'DetectLabels', {
