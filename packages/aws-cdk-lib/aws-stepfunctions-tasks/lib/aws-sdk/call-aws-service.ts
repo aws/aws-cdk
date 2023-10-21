@@ -86,7 +86,7 @@ export class CallAwsService extends sfn.TaskStateBase {
     }
     if (this.props.parameters) {
       const invalidKeys = Object.keys(this.props.parameters).filter(key =>
-        !Token.isUnresolved(this.props.parameters) && !key.startsWith(key[0]?.toUpperCase()));
+        !Token.isUnresolved(key) && !key.startsWith(key[0]?.toUpperCase()));
       if (invalidKeys.length) {
         throw new Error(`parameter names must be PascalCase, got: ${invalidKeys.join(', ')}`);
       }
