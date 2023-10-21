@@ -173,7 +173,7 @@ test('throws if action is not CamelCase', () => {
   })).toThrow(/action must be CamelCase, got: GetObject/);
 });
 
-test('throws if parameter names has keys as not PascalCase', () => {
+test('throws if parameters has keys as not PascalCase', () => {
   expect(() => new tasks.CallAwsService(stack, 'GetObject', {
     service: 's3',
     action: 'getObject',
