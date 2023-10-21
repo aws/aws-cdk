@@ -33,7 +33,7 @@ const mockS3Destination: firehose.IDestination = {
 
 const sourceStream = new kinesis.Stream(stack, 'Source Stream');
 
-new firehose.DeliveryStream(stack, 'Delivery Stream', {
+new firehose.DeliveryStream(stack, 'Delivery Stream - Issue 27518', {
   destinations: [mockS3Destination],
   sourceStream,
 });

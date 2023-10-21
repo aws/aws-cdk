@@ -35,7 +35,7 @@ const key = new kms.Key(stack, 'Key', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
-new firehose.DeliveryStream(stack, 'Delivery Stream', {
+new firehose.DeliveryStream(stack, 'Delivery Stream - Issue 27518', {
   destinations: [mockS3Destination],
   encryptionKey: key,
 });

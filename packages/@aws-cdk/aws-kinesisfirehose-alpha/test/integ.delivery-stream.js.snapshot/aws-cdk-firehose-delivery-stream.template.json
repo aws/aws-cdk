@@ -110,7 +110,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "DeliveryStreamServiceRole964EEBCC": {
+  "DeliveryStreamIssue27518ServiceRole4535FA31": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -127,7 +127,7 @@
     }
    }
   },
-  "DeliveryStreamServiceRoleDefaultPolicyB87D9ACF": {
+  "DeliveryStreamIssue27518ServiceRoleDefaultPolicyE94F5B75": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -150,15 +150,15 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "DeliveryStreamServiceRoleDefaultPolicyB87D9ACF",
+    "PolicyName": "DeliveryStreamIssue27518ServiceRoleDefaultPolicyE94F5B75",
     "Roles": [
      {
-      "Ref": "DeliveryStreamServiceRole964EEBCC"
+      "Ref": "DeliveryStreamIssue27518ServiceRole4535FA31"
      }
     ]
    }
   },
-  "DeliveryStreamF6D5572D": {
+  "DeliveryStreamIssue27518C6085410": {
    "Type": "AWS::KinesisFirehose::DeliveryStream",
    "Properties": {
     "DeliveryStreamEncryptionConfigurationInput": {

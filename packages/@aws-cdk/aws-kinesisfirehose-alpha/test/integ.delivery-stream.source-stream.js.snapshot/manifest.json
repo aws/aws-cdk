@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-firehose-delivery-stream-source-stream.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/64eae3903c3ecdce5113c92844e63dfd0056464ecf7d1351e86180364d20c1c0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/213156bbc496a9117b947dd115d0ddc15b43261022cea172ea1113e088b8a006.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -63,22 +64,22 @@
             "data": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions"
           }
         ],
-        "/aws-cdk-firehose-delivery-stream-source-stream/Delivery Stream/Service Role/Resource": [
+        "/aws-cdk-firehose-delivery-stream-source-stream/Delivery Stream - Issue 27518/Service Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeliveryStreamServiceRole964EEBCC"
+            "data": "DeliveryStreamIssue27518ServiceRole4535FA31"
           }
         ],
-        "/aws-cdk-firehose-delivery-stream-source-stream/Delivery Stream/Service Role/DefaultPolicy/Resource": [
+        "/aws-cdk-firehose-delivery-stream-source-stream/Delivery Stream - Issue 27518/Service Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeliveryStreamServiceRoleDefaultPolicyB87D9ACF"
+            "data": "DeliveryStreamIssue27518ServiceRoleDefaultPolicyE94F5B75"
           }
         ],
-        "/aws-cdk-firehose-delivery-stream-source-stream/Delivery Stream/Resource": [
+        "/aws-cdk-firehose-delivery-stream-source-stream/Delivery Stream - Issue 27518/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeliveryStreamF6D5572D"
+            "data": "DeliveryStreamIssue27518C6085410"
           }
         ],
         "/aws-cdk-firehose-delivery-stream-source-stream/@aws-cdk--aws-kinesisfirehose.CidrBlocks": [
@@ -105,10 +106,28 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "DeliveryStreamNoSourceorEncryptionKey49457027": [
+        "DeliveryStreamServiceRole964EEBCC": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeliveryStreamNoSourceorEncryptionKey49457027",
+            "data": "DeliveryStreamServiceRole964EEBCC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "DeliveryStreamServiceRoleDefaultPolicyB87D9ACF": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeliveryStreamServiceRoleDefaultPolicyB87D9ACF",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "DeliveryStreamF6D5572D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeliveryStreamF6D5572D",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
