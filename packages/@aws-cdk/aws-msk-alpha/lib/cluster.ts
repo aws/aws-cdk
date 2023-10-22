@@ -104,9 +104,10 @@ export interface ClusterProps {
    */
   readonly ebsStorageInfo?: EbsStorageInfo;
   /**
-   * Local or Tiered storage configuration for the brokers
+   * This controls storage mode for supported storage tiers.
    *
    * @default - none
+   * @see https://docs.aws.amazon.com/msk/latest/developerguide/msk-tiered-storage.html
    */
   readonly storageMode?: StorageMode;
   /**
