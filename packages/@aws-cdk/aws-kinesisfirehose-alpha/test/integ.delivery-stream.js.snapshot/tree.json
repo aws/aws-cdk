@@ -195,17 +195,17 @@
               "version": "10.2.70"
             }
           },
-          "Delivery Stream - Issue 27518": {
-            "id": "Delivery Stream - Issue 27518",
-            "path": "aws-cdk-firehose-delivery-stream/Delivery Stream - Issue 27518",
+          "DeliveryStream": {
+            "id": "DeliveryStream",
+            "path": "aws-cdk-firehose-delivery-stream/DeliveryStream",
             "children": {
               "Service Role": {
                 "id": "Service Role",
-                "path": "aws-cdk-firehose-delivery-stream/Delivery Stream - Issue 27518/Service Role",
+                "path": "aws-cdk-firehose-delivery-stream/DeliveryStream/Service Role",
                 "children": {
                   "ImportService Role": {
                     "id": "ImportService Role",
-                    "path": "aws-cdk-firehose-delivery-stream/Delivery Stream - Issue 27518/Service Role/ImportService Role",
+                    "path": "aws-cdk-firehose-delivery-stream/DeliveryStream/Service Role/ImportService Role",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.2.70"
@@ -213,7 +213,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-firehose-delivery-stream/Delivery Stream - Issue 27518/Service Role/Resource",
+                    "path": "aws-cdk-firehose-delivery-stream/DeliveryStream/Service Role/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -238,11 +238,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "aws-cdk-firehose-delivery-stream/Delivery Stream - Issue 27518/Service Role/DefaultPolicy",
+                    "path": "aws-cdk-firehose-delivery-stream/DeliveryStream/Service Role/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-firehose-delivery-stream/Delivery Stream - Issue 27518/Service Role/DefaultPolicy/Resource",
+                        "path": "aws-cdk-firehose-delivery-stream/DeliveryStream/Service Role/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -266,10 +266,10 @@
                               ],
                               "Version": "2012-10-17"
                             },
-                            "policyName": "DeliveryStreamIssue27518ServiceRoleDefaultPolicyE94F5B75",
+                            "policyName": "DeliveryStreamServiceRoleDefaultPolicy25EA98BF",
                             "roles": [
                               {
-                                "Ref": "DeliveryStreamIssue27518ServiceRole4535FA31"
+                                "Ref": "DeliveryStreamServiceRole0CF4E414"
                               }
                             ]
                           }
@@ -293,7 +293,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-firehose-delivery-stream/Delivery Stream - Issue 27518/Resource",
+                "path": "aws-cdk-firehose-delivery-stream/DeliveryStream/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::KinesisFirehose::DeliveryStream",
                   "aws:cdk:cloudformation:props": {
@@ -342,13 +342,13 @@
               "version": "10.2.70"
             }
           },
-          "Delivery Stream No Source Or Encryption Key": {
-            "id": "Delivery Stream No Source Or Encryption Key",
-            "path": "aws-cdk-firehose-delivery-stream/Delivery Stream No Source Or Encryption Key",
+          "DeliveryStreamOnlyDestination": {
+            "id": "DeliveryStreamOnlyDestination",
+            "path": "aws-cdk-firehose-delivery-stream/DeliveryStreamOnlyDestination",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-firehose-delivery-stream/Delivery Stream No Source Or Encryption Key/Resource",
+                "path": "aws-cdk-firehose-delivery-stream/DeliveryStreamOnlyDestination/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::KinesisFirehose::DeliveryStream",
                   "aws:cdk:cloudformation:props": {

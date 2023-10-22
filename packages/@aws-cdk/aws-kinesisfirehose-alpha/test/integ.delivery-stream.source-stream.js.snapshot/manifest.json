@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/213156bbc496a9117b947dd115d0ddc15b43261022cea172ea1113e088b8a006.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4642ab70e096b507ea334f501ffbe9dac9b5ef6750298beeeae63f2dfd9bd7bd.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -64,22 +64,22 @@
             "data": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions"
           }
         ],
-        "/aws-cdk-firehose-delivery-stream-source-stream/Delivery Stream - Issue 27518/Service Role/Resource": [
+        "/aws-cdk-firehose-delivery-stream-source-stream/DeliveryStream/Service Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeliveryStreamIssue27518ServiceRole4535FA31"
+            "data": "DeliveryStreamServiceRole0CF4E414"
           }
         ],
-        "/aws-cdk-firehose-delivery-stream-source-stream/Delivery Stream - Issue 27518/Service Role/DefaultPolicy/Resource": [
+        "/aws-cdk-firehose-delivery-stream-source-stream/DeliveryStream/Service Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeliveryStreamIssue27518ServiceRoleDefaultPolicyE94F5B75"
+            "data": "DeliveryStreamServiceRoleDefaultPolicy25EA98BF"
           }
         ],
-        "/aws-cdk-firehose-delivery-stream-source-stream/Delivery Stream - Issue 27518/Resource": [
+        "/aws-cdk-firehose-delivery-stream-source-stream/DeliveryStream/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeliveryStreamIssue27518C6085410"
+            "data": "DeliveryStream58CF96DB"
           }
         ],
         "/aws-cdk-firehose-delivery-stream-source-stream/@aws-cdk--aws-kinesisfirehose.CidrBlocks": [
@@ -88,10 +88,10 @@
             "data": "awscdkawskinesisfirehoseCidrBlocks"
           }
         ],
-        "/aws-cdk-firehose-delivery-stream-source-stream/Delivery Stream No Source Or Encryption Key/Resource": [
+        "/aws-cdk-firehose-delivery-stream-source-stream/DeliveryStreamOnlyDestination/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeliveryStreamNoSourceOrEncryptionKey0E4AAB82"
+            "data": "DeliveryStreamOnlyDestinationE8F293BC"
           }
         ],
         "/aws-cdk-firehose-delivery-stream-source-stream/BootstrapVersion": [
@@ -104,6 +104,42 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "DeliveryStreamIssue27518ServiceRole05703B1A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeliveryStreamIssue27518ServiceRole05703B1A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "DeliveryStreamIssue27518ServiceRoleDefaultPolicyB6496780": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeliveryStreamIssue27518ServiceRoleDefaultPolicyB6496780",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "DeliveryStreamIssue2751856A01EA5": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeliveryStreamIssue2751856A01EA5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "DeliveryStreamOnlyDestIssue27518DFE93ABD": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeliveryStreamOnlyDestIssue27518DFE93ABD",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

@@ -94,7 +94,7 @@
     }
    }
   },
-  "DeliveryStreamIssue27518ServiceRole4535FA31": {
+  "DeliveryStreamServiceRole0CF4E414": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -111,7 +111,7 @@
     }
    }
   },
-  "DeliveryStreamIssue27518ServiceRoleDefaultPolicyE94F5B75": {
+  "DeliveryStreamServiceRoleDefaultPolicy25EA98BF": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -138,15 +138,15 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "DeliveryStreamIssue27518ServiceRoleDefaultPolicyE94F5B75",
+    "PolicyName": "DeliveryStreamServiceRoleDefaultPolicy25EA98BF",
     "Roles": [
      {
-      "Ref": "DeliveryStreamIssue27518ServiceRole4535FA31"
+      "Ref": "DeliveryStreamServiceRole0CF4E414"
      }
     ]
    }
   },
-  "DeliveryStreamIssue27518C6085410": {
+  "DeliveryStream58CF96DB": {
    "Type": "AWS::KinesisFirehose::DeliveryStream",
    "Properties": {
     "DeliveryStreamType": "KinesisStreamAsSource",
@@ -173,18 +173,18 @@
      },
      "RoleARN": {
       "Fn::GetAtt": [
-       "DeliveryStreamIssue27518ServiceRole4535FA31",
+       "DeliveryStreamServiceRole0CF4E414",
        "Arn"
       ]
      }
     }
    },
    "DependsOn": [
-    "DeliveryStreamIssue27518ServiceRoleDefaultPolicyE94F5B75",
+    "DeliveryStreamServiceRoleDefaultPolicy25EA98BF",
     "RoleDefaultPolicy5FFB7DAB"
    ]
   },
-  "DeliveryStreamNoSourceOrEncryptionKey0E4AAB82": {
+  "DeliveryStreamOnlyDestinationE8F293BC": {
    "Type": "AWS::KinesisFirehose::DeliveryStream",
    "Properties": {
     "DeliveryStreamType": "DirectPut",
