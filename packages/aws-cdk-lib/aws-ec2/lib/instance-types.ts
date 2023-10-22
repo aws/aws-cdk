@@ -597,6 +597,16 @@ export enum InstanceClass {
   I4I = 'i4i',
 
   /**
+   * I/O-optimized instances powered by Graviton2 processor, 4th generation
+   */
+  IO4_GRAVITON = 'io4_graviton',
+
+  /**
+   * I/O-optimized instances powered by Graviton2 processor, 4th generation
+   */
+  I4G = 'i4g',
+
+  /**
    * Storage optimized instances powered by Graviton2 processor, 4th generation
    */
   STORAGE4_GRAVITON_NETWORK_OPTIMIZED = 'storage4-graviton-network-optimized',
@@ -1291,6 +1301,8 @@ export class InstanceType {
       [InstanceClass.I3]: 'i3',
       [InstanceClass.IO3_DENSE_NVME_DRIVE]: 'i3en',
       [InstanceClass.I3EN]: 'i3en',
+      [InstanceClass.IO4_GRAVITON]: 'i4g',
+      [InstanceClass.I4G]: 'i4g',
       [InstanceClass.STORAGE4_GRAVITON_NETWORK_OPTIMIZED]: 'im4gn',
       [InstanceClass.IM4GN]: 'im4gn',
       [InstanceClass.STORAGE4_GRAVITON_NETWORK_STORAGE_OPTIMIZED]: 'is4gen',
