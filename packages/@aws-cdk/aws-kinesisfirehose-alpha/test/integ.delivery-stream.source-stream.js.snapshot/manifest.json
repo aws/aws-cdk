@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4642ab70e096b507ea334f501ffbe9dac9b5ef6750298beeeae63f2dfd9bd7bd.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/492506dfe22cdef7729ede32f14ec3d88ac05d290a3d109fbf0180366a281f6a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -64,22 +64,22 @@
             "data": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions"
           }
         ],
-        "/aws-cdk-firehose-delivery-stream-source-stream/DeliveryStream/Service Role/Resource": [
+        "/aws-cdk-firehose-delivery-stream-source-stream/Delivery Stream/Service Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeliveryStreamServiceRole0CF4E414"
+            "data": "DeliveryStreamServiceRole964EEBCC"
           }
         ],
-        "/aws-cdk-firehose-delivery-stream-source-stream/DeliveryStream/Service Role/DefaultPolicy/Resource": [
+        "/aws-cdk-firehose-delivery-stream-source-stream/Delivery Stream/Service Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeliveryStreamServiceRoleDefaultPolicy25EA98BF"
+            "data": "DeliveryStreamServiceRoleDefaultPolicyB87D9ACF"
           }
         ],
-        "/aws-cdk-firehose-delivery-stream-source-stream/DeliveryStream/Resource": [
+        "/aws-cdk-firehose-delivery-stream-source-stream/Delivery Stream/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeliveryStream58CF96DB"
+            "data": "DeliveryStreamF6D5572D"
           }
         ],
         "/aws-cdk-firehose-delivery-stream-source-stream/@aws-cdk--aws-kinesisfirehose.CidrBlocks": [
@@ -88,10 +88,10 @@
             "data": "awscdkawskinesisfirehoseCidrBlocks"
           }
         ],
-        "/aws-cdk-firehose-delivery-stream-source-stream/DeliveryStreamOnlyDestination/Resource": [
+        "/aws-cdk-firehose-delivery-stream-source-stream/Delivery Stream No Source Or Encryption Key/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeliveryStreamOnlyDestinationE8F293BC"
+            "data": "DeliveryStreamNoSourceOrEncryptionKey0E4AAB82"
           }
         ],
         "/aws-cdk-firehose-delivery-stream-source-stream/BootstrapVersion": [
@@ -104,6 +104,42 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "DeliveryStreamServiceRole0CF4E414": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeliveryStreamServiceRole0CF4E414",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "DeliveryStreamServiceRoleDefaultPolicy25EA98BF": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeliveryStreamServiceRoleDefaultPolicy25EA98BF",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "DeliveryStream58CF96DB": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeliveryStream58CF96DB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "DeliveryStreamOnlyDestinationE8F293BC": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeliveryStreamOnlyDestinationE8F293BC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
