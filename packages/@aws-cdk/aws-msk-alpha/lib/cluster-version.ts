@@ -126,8 +126,8 @@ export class KafkaVersion {
   private constructor(public readonly version: string) {}
 
   /**
-	   * Checks if the cluster version supports tiered storage mode.
-	   */
+   * Checks if the cluster version supports tiered storage mode.
+   */
   public isTieredStorageCompatible() {
     return this.version.endsWith('.tiered');
   };

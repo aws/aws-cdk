@@ -106,7 +106,7 @@ export interface ClusterProps {
   /**
    * This controls storage mode for supported storage tiers.
    *
-   * @default - none
+   * @default - StorageMode.LOCAL
    * @see https://docs.aws.amazon.com/msk/latest/developerguide/msk-tiered-storage.html
    */
   readonly storageMode?: StorageMode;
@@ -521,18 +521,12 @@ export class Cluster extends ClusterBase {
       inCluster: props.encryptionInTransit?.enableInCluster ?? true,
     };
 
-    if (props.storageMode) {
-      if (props.storageMode === StorageMode.TIERED && props.kafkaVersion.isTieredStorageCompatible() === false) {
-        throw Error(
-          'To utilize Tiered storage mode, the MSK cluster Kafka version must be compatiable.',
-        );
+    if (props.storageMode && props.storageMode === StorageMode.TIERED) {
+      if (!props.kafkaVersion.isTieredStorageCompatible()) {
+        throw Error(`To deploy a tiered cluster you must select a compatible Kafka version, got ${props.kafkaVersion.version}`);
       }
-      if (props.storageMode === StorageMode.TIERED && instanceType === this.mskInstanceType(
-        ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL),
-      )) {
-        throw Error(
-          'The t3.small instance type does not support Tiered storage mode.',
-        );
+      if (props.instanceType === ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL)) {
+        throw Error('Tiered storage doesn’t support broker type t3.small');
       }
     }
 
