@@ -105,33 +105,6 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "DeliveryStreamServiceRole964EEBCC": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DeliveryStreamServiceRole964EEBCC",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "DeliveryStreamServiceRoleDefaultPolicyB87D9ACF": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DeliveryStreamServiceRoleDefaultPolicyB87D9ACF",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "DeliveryStreamF6D5572D": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DeliveryStreamF6D5572D",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "aws-cdk-firehose-delivery-stream-source-stream"

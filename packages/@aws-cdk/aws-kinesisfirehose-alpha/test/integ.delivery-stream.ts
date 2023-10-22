@@ -40,7 +40,7 @@ new firehose.DeliveryStream(stack, 'Delivery Stream - Issue 27518', {
   encryptionKey: key,
 });
 
-new firehose.DeliveryStream(stack, 'Delivery Stream No Source Or Encryption Key', {
+new firehose.DeliveryStream(stack, 'Delivery Stream No Source Or Encryption Key - Issue 27518', {
   destinations: [mockS3Destination],
 });
 
