@@ -167,9 +167,7 @@ export interface EbsStorageInfo {
 }
 
 /**
- * This controls storage mode for supported storage tiers.
- *
- * @see https://docs.aws.amazon.com/msk/latest/developerguide/msk-tiered-storage.html
+ * The storage mode for the cluster brokers.
  */
 export enum StorageMode {
   /**
@@ -720,7 +718,7 @@ export class Cluster extends ClusterBase {
       configurationInfo: props.configurationInfo,
       enhancedMonitoring: props.monitoring?.clusterMonitoringLevel,
       openMonitoring: openMonitoring,
-      storageMode: storageMode,
+      storageMode: props.storageMode,
       loggingInfo: loggingInfo,
       clientAuthentication: clientAuthentication,
     });

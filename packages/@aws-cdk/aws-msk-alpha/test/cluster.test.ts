@@ -790,7 +790,7 @@ describe('MSK Cluster', () => {
 
   describe('created with storage mode', () => {
     describe('with tiered storage mode', () => {
-      test('fails if incompatiable Kafka version', () => {
+      test('fails if incompatible Kafka version', () => {
         expect(
           () =>
             new msk.Cluster(stack, 'Cluster', {
@@ -803,7 +803,8 @@ describe('MSK Cluster', () => {
           'To utilize Tiered storage mode, the MSK cluster Kafka version must be compatiable.',
         );
       });
-      test('fails if instance type of t3.small', () => {
+
+      test('fails if instance type is t3.small', () => {
         expect(
           () =>
             new msk.Cluster(stack, 'Cluster', {
@@ -817,6 +818,7 @@ describe('MSK Cluster', () => {
           'The t3.small instance type does not support Tiered storage mode.',
         );
       });
+
       test('create a cluster with tiered storage mode', () => {
         new msk.Cluster(stack, 'Cluster', {
           clusterName: 'cluster',
@@ -830,6 +832,7 @@ describe('MSK Cluster', () => {
         });
       });
     });
+
     describe('with local storage mode', () => {
       test('create a cluster with local storage mode', () => {
         new msk.Cluster(stack, 'Cluster', {

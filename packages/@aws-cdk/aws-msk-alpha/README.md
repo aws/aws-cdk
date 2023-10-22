@@ -212,11 +212,15 @@ in the `cdk.json` file.
 
 ## Storage Mode
 
-AWS MSK supports the use of [tiered storage](https://docs.aws.amazon.com/msk/latest/developerguide/msk-tiered-storage.html) on Kafka versions suffixed with `.tiered`. On compatiable Kafka versions, the storage mode of the cluster needs to be set to `TIERED` to enable the feature.
+AWS MSK supports the use of [tiered storage](https://docs.aws.amazon.com/msk/latest/developerguide/msk-tiered-storage.html) on Kafka versions suffixed with `.tiered`. 
+On compatible Kafka versions, the storage mode of the cluster needs to be set to `StorageMode.TIERED` to enable the feature.
+
+To change the storage mode of a Kafka cluster, use the `storageMode` property:
 
 ```ts
 declare const vpc: ec2.Vpc;
 declare const bucket: s3.IBucket;
+
 const cluster = new msk.Cluster(this, 'cluster', {
   clusterName: 'myCluster',
   kafkaVersion: msk.KafkaVersion.V2_8_2_TIERED,
