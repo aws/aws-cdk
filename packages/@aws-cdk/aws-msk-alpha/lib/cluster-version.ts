@@ -120,22 +120,15 @@ export class KafkaVersion {
   }
 
   /**
-   * Does this Kafka version support tiered storage?
-   * @param version cluster kafka version
-   * MSK Kafka versions that support tiered storage.
-   * @see https://docs.aws.amazon.com/msk/latest/developerguide/msk-tiered-storage.html#msk-tiered-storage-requirements
-   */
-  public static isTieredStorageCompatible(version: KafkaVersion | string) {
-    if (version instanceof KafkaVersion) {
-      version = version.version;
-    }
-    const suffix = 'tiered';
-    return version.indexOf(suffix, version.length - suffix.length) !== -1;
-  };
-
-  /**
    *
    * @param version cluster version number
    */
   private constructor(public readonly version: string) {}
+
+  /**
+	   * Checks if the cluster version supports tiered storage mode.
+	   */
+  public isTieredStorageCompatible() {
+    return this.version.endsWith('.tiered');
+  };
 }

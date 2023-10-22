@@ -106,7 +106,7 @@ export interface ClusterProps {
   /**
    * Local or Tiered storage configuration for the brokers
    *
-   * @default - undefined
+   * @default - none
    */
   readonly storageMode?: StorageMode;
   /**
@@ -520,19 +520,19 @@ export class Cluster extends ClusterBase {
       inCluster: props.encryptionInTransit?.enableInCluster ?? true,
     };
 
-    const storageMode =
-      props.storageMode ?? undefined;
-    if (storageMode === StorageMode.TIERED && KafkaVersion.isTieredStorageCompatible(props.kafkaVersion) === false) {
-      throw Error(
-        'To utilize Tiered storage mode, the MSK cluster Kafka version must be compatiable.',
-      );
-    }
-    if (storageMode === StorageMode.TIERED && instanceType === this.mskInstanceType(
-      ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL),
-    )) {
-      throw Error(
-        'The t3.small instance type does not support Tiered storage mode.',
-      );
+    if (props.storageMode) {
+      if (props.storageMode === StorageMode.TIERED && props.kafkaVersion.isTieredStorageCompatible() === false) {
+        throw Error(
+          'To utilize Tiered storage mode, the MSK cluster Kafka version must be compatiable.',
+        );
+      }
+      if (props.storageMode === StorageMode.TIERED && instanceType === this.mskInstanceType(
+        ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL),
+      )) {
+        throw Error(
+          'The t3.small instance type does not support Tiered storage mode.',
+        );
+      }
     }
 
     const openMonitoring =
