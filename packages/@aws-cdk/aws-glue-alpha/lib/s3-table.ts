@@ -141,6 +141,7 @@ export class S3Table extends TableBase {
           'classification': props.dataFormat.classificationString?.value,
           'has_encrypted_data': true,
           'partition_filtering.enabled': props.enablePartitionFiltering,
+          ...this.parameters,
         },
         storageDescriptor: {
           location: `s3://${this.bucket.bucketName}/${this.s3Prefix}`,
