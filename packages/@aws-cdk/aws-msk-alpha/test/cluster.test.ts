@@ -828,7 +828,7 @@ describe('MSK Cluster', () => {
               storageMode: msk.StorageMode.TIERED,
             }),
         ).toThrow(
-          "Tiered storage doesn't support broker type t3.small",
+          'Tiered storage doesn\'t support broker type t3.small',
         );
       });
     });
