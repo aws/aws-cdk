@@ -1301,6 +1301,24 @@ export class NoStarDeps extends ValidationRule {
   }
 }
 
+export class NoMixedDeps extends ValidationRule {
+  public readonly name = 'dependencies/no-mixed-deps';
+
+  public validate(pkg: PackageJson) {
+    const deps = Object.keys(pkg.json.dependencies ?? {});
+    const devDeps = Object.keys(pkg.json.devDependencies ?? {});
+
+    const shared = deps.filter((dep) => devDeps.includes(dep));
+    for (const dep of shared) {
+      pkg.report({
+        ruleName: this.name,
+        message: `dependency may not be both in dependencies and devDependencies: ${dep}`,
+        fix: () => pkg.removeDevDependency(dep),
+      });
+    }
+  }
+}
+
 interface VersionCount {
   version: string;
   count: number;
