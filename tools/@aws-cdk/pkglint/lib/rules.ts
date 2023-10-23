@@ -1258,6 +1258,11 @@ export class PkgLintAsScript extends ValidationRule {
   public readonly name = 'package-info/scripts/pkglint';
 
   public validate(pkg: PackageJson): void {
+    if (pkg.packageName === '@aws-cdk/cfn2ts') {
+      // cfn2ts uses pkglint as a real dependency, and it can't be both.
+      return;
+    }
+
     const script = 'pkglint -f';
 
     expectDevDependency(this.name, pkg, '@aws-cdk/pkglint', `${PKGLINT_VERSION}`); // eslint-disable-line @typescript-eslint/no-require-imports
@@ -1854,6 +1859,7 @@ function shouldUseCDKBuildTools(pkg: PackageJson) {
   const exclude = [
     '@aws-cdk/cdk-build-tools',
     '@aws-cdk/script-tests',
+    '@aws-cdk/cfn2ts',
     'awslint',
   ];
 
