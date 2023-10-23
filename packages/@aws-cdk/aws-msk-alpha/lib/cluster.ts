@@ -509,7 +509,9 @@ export class Cluster extends ClusterBase {
       if (!props.kafkaVersion.isTieredStorageCompatible()) {
         throw Error(`To deploy a tiered cluster you must select a compatible Kafka version, got ${props.kafkaVersion.version}`);
       }
-      if (instanceType === ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL)) {
+      if (this.mskInstanceType(instanceType) === this.mskInstanceType(
+        ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL),
+      )) {
         throw Error('Tiered storage doesn\'t support broker type t3.small');
       }
     }
