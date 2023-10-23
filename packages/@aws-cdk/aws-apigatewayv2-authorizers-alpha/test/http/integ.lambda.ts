@@ -1,9 +1,10 @@
 import * as path from 'path';
 import { HttpApi, HttpMethod, HttpRoute, HttpRouteKey } from '@aws-cdk/aws-apigatewayv2-alpha';
 import { HttpLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
+import { UserPool } from 'aws-cdk-lib/aws-cognito';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { App, Stack, CfnOutput } from 'aws-cdk-lib';
-import { HttpLambdaAuthorizer, HttpLambdaResponseType } from '../../lib';
+import { HttpLambdaAuthorizer, HttpLambdaResponseType, HttpUserPoolAuthorizer } from '../../lib';
 
 /*
  * Stack verification steps:
@@ -27,15 +28,13 @@ const authorizer = new HttpLambdaAuthorizer('LambdaAuthorizer', authHandler, {
   responseTypes: [HttpLambdaResponseType.SIMPLE],
 });
 
-const defaultAuthorizer = new HttpLambdaAuthorizer('LambdaDefaultAuthorizer', authHandler, {
-  authorizerName: 'my-simple-authorizer',
-  identitySource: ['$request.header.X-API-Key'],
-  responseTypes: [HttpLambdaResponseType.SIMPLE],
-});
+const userPool = new UserPool(stack, 'userpool');
+const userPoolAuthorizer = new HttpUserPoolAuthorizer('UserPoolAuthorizer', userPool);
 
 const httpApi = new HttpApi(stack, 'MyHttpApi');
 const httpApiWithDefaultAuthorizer = new HttpApi(stack, 'MyHttpApiWithDefaultAuthorizer', {
-  defaultAuthorizer,
+  defaultAuthorizer: userPoolAuthorizer,
+  defaultAuthorizationScopes: ['scope1', 'scope2'],
 });
 
 const handler = new lambda.Function(stack, 'lambda', {

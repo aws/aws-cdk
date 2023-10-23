@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1392f7df97b60ac420a8ba97f1d6ac2f6e984a168d85bb763108846d396c6553.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/df9c1daf74e067d8b106415f862de186581b3d0f32399c7049ef6d51736ad929.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -44,6 +44,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "authfunction96361832"
+          }
+        ],
+        "/AuthorizerInteg/userpool/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "userpool0AC4AA96"
+          }
+        ],
+        "/AuthorizerInteg/userpool/UserPoolAuthorizerClient/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "userpoolUserPoolAuthorizerClient6A7486E8"
           }
         ],
         "/AuthorizerInteg/MyHttpApi/Resource": [
@@ -100,16 +112,10 @@
             "data": "MyHttpApiWithDefaultAuthorizerDefaultStage7A9EE9B6"
           }
         ],
-        "/AuthorizerInteg/MyHttpApiWithDefaultAuthorizer/LambdaDefaultAuthorizer/Resource": [
+        "/AuthorizerInteg/MyHttpApiWithDefaultAuthorizer/UserPoolAuthorizer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyHttpApiWithDefaultAuthorizerLambdaDefaultAuthorizer9D407E65"
-          }
-        ],
-        "/AuthorizerInteg/MyHttpApiWithDefaultAuthorizer/AuthorizerIntegMyHttpApiWithDefaultAuthorizerLambdaDefaultAuthorizer1BC6EA35-Permission": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyHttpApiWithDefaultAuthorizerAuthorizerIntegMyHttpApiWithDefaultAuthorizerLambdaDefaultAuthorizer1BC6EA35Permission700DB59D"
+            "data": "MyHttpApiWithDefaultAuthorizerUserPoolAuthorizer825DB9A4"
           }
         ],
         "/AuthorizerInteg/lambda/ServiceRole/Resource": [

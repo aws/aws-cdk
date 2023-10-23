@@ -53,6 +53,63 @@
     "authfunctionServiceRoleFCB72198"
    ]
   },
+  "userpool0AC4AA96": {
+   "Type": "AWS::Cognito::UserPool",
+   "Properties": {
+    "AccountRecoverySetting": {
+     "RecoveryMechanisms": [
+      {
+       "Name": "verified_phone_number",
+       "Priority": 1
+      },
+      {
+       "Name": "verified_email",
+       "Priority": 2
+      }
+     ]
+    },
+    "AdminCreateUserConfig": {
+     "AllowAdminCreateUserOnly": true
+    },
+    "EmailVerificationMessage": "The verification code to your new account is {####}",
+    "EmailVerificationSubject": "Verify your new account",
+    "SmsVerificationMessage": "The verification code to your new account is {####}",
+    "VerificationMessageTemplate": {
+     "DefaultEmailOption": "CONFIRM_WITH_CODE",
+     "EmailMessage": "The verification code to your new account is {####}",
+     "EmailSubject": "Verify your new account",
+     "SmsMessage": "The verification code to your new account is {####}"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "userpoolUserPoolAuthorizerClient6A7486E8": {
+   "Type": "AWS::Cognito::UserPoolClient",
+   "Properties": {
+    "AllowedOAuthFlows": [
+     "implicit",
+     "code"
+    ],
+    "AllowedOAuthFlowsUserPoolClient": true,
+    "AllowedOAuthScopes": [
+     "profile",
+     "phone",
+     "email",
+     "openid",
+     "aws.cognito.signin.user.admin"
+    ],
+    "CallbackURLs": [
+     "https://example.com"
+    ],
+    "SupportedIdentityProviders": [
+     "COGNITO"
+    ],
+    "UserPoolId": {
+     "Ref": "userpool0AC4AA96"
+    }
+   }
+  },
   "MyHttpApi8AEAAC21": {
    "Type": "AWS::ApiGatewayV2::Api",
    "Properties": {
@@ -243,83 +300,39 @@
     "StageName": "$default"
    }
   },
-  "MyHttpApiWithDefaultAuthorizerLambdaDefaultAuthorizer9D407E65": {
+  "MyHttpApiWithDefaultAuthorizerUserPoolAuthorizer825DB9A4": {
    "Type": "AWS::ApiGatewayV2::Authorizer",
    "Properties": {
     "ApiId": {
      "Ref": "MyHttpApiWithDefaultAuthorizerE08800A1"
     },
-    "AuthorizerPayloadFormatVersion": "2.0",
-    "AuthorizerResultTtlInSeconds": 300,
-    "AuthorizerType": "REQUEST",
-    "AuthorizerUri": {
-     "Fn::Join": [
-      "",
-      [
-       "arn:",
-       {
-        "Ref": "AWS::Partition"
-       },
-       ":apigateway:",
-       {
-        "Ref": "AWS::Region"
-       },
-       ":lambda:path/2015-03-31/functions/",
-       {
-        "Fn::GetAtt": [
-         "authfunction96361832",
-         "Arn"
-        ]
-       },
-       "/invocations"
-      ]
-     ]
-    },
-    "EnableSimpleResponses": true,
+    "AuthorizerType": "JWT",
     "IdentitySource": [
-     "$request.header.X-API-Key"
+     "$request.header.Authorization"
     ],
-    "Name": "my-simple-authorizer"
-   }
-  },
-  "MyHttpApiWithDefaultAuthorizerAuthorizerIntegMyHttpApiWithDefaultAuthorizerLambdaDefaultAuthorizer1BC6EA35Permission700DB59D": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Fn::GetAtt": [
-      "authfunction96361832",
-      "Arn"
-     ]
-    },
-    "Principal": "apigateway.amazonaws.com",
-    "SourceArn": {
-     "Fn::Join": [
-      "",
-      [
-       "arn:",
-       {
-        "Ref": "AWS::Partition"
-       },
-       ":execute-api:",
-       {
-        "Ref": "AWS::Region"
-       },
-       ":",
-       {
-        "Ref": "AWS::AccountId"
-       },
-       ":",
-       {
-        "Ref": "MyHttpApiWithDefaultAuthorizerE08800A1"
-       },
-       "/authorizers/",
-       {
-        "Ref": "MyHttpApiWithDefaultAuthorizerLambdaDefaultAuthorizer9D407E65"
-       }
+    "JwtConfiguration": {
+     "Audience": [
+      {
+       "Ref": "userpoolUserPoolAuthorizerClient6A7486E8"
+      }
+     ],
+     "Issuer": {
+      "Fn::Join": [
+       "",
+       [
+        "https://cognito-idp.",
+        {
+         "Ref": "AWS::Region"
+        },
+        ".amazonaws.com/",
+        {
+         "Ref": "userpool0AC4AA96"
+        }
+       ]
       ]
-     ]
-    }
+     }
+    },
+    "Name": "UserPoolAuthorizer"
    }
   },
   "lambdaServiceRole494E4CA6": {
@@ -434,9 +447,13 @@
     "ApiId": {
      "Ref": "MyHttpApiWithDefaultAuthorizerE08800A1"
     },
-    "AuthorizationType": "CUSTOM",
+    "AuthorizationScopes": [
+     "scope1",
+     "scope2"
+    ],
+    "AuthorizationType": "JWT",
     "AuthorizerId": {
-     "Ref": "MyHttpApiWithDefaultAuthorizerLambdaDefaultAuthorizer9D407E65"
+     "Ref": "MyHttpApiWithDefaultAuthorizerUserPoolAuthorizer825DB9A4"
     },
     "RouteKey": "ANY /v1/mything/{proxy+}",
     "Target": {
