@@ -20,11 +20,11 @@ const userPool = new cognito.UserPool(stack, 'userpool');
 const userPoolForDefaultAuthorizer = new cognito.UserPool(stack, 'userpoolForDefaultAuthorizer');
 
 const authorizer = new HttpUserPoolAuthorizer('UserPoolAuthorizer', userPool);
-const authorizerWithDefaultAuthorizer = new HttpUserPoolAuthorizer('UserPoolAuthorizerWithDefaultAuthorizer', userPoolForDefaultAuthorizer);
+const defaultAuthorizer = new HttpUserPoolAuthorizer('UserPoolDefaultAuthorizer', userPoolForDefaultAuthorizer);
 
 const httpApi = new HttpApi(stack, 'MyHttpApi');
 const httpApiWithDefaultAuthorizer = new HttpApi(stack, 'MyHttpApiWithDefaultAuthorizer', {
-  defaultAuthorizer: authorizerWithDefaultAuthorizer,
+  defaultAuthorizer,
   defaultAuthorizationScopes: ['scope1', 'scope2'],
 });
 
