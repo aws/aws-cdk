@@ -2386,7 +2386,7 @@ test('requires imdsv2 when @aws-cdk/aws-autoscaling:generateLaunchTemplateInstea
   const vpc = mockVpc(stack);
 
   // WHEN
-  const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+  new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
     vpc,
     instanceType: new ec2.InstanceType('t2.micro'),
     machineImage: ec2.MachineImage.latestAmazonLinux2(),
