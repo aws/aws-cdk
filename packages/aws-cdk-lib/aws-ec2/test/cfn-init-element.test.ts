@@ -330,6 +330,63 @@ describe('InitFile', () => {
     });
   });
 
+  test('does not have naming collision when multiple EC2 instances are defined in the same stack with using InitFile.fromAsset with the same targetFileName', () => {
+    // GIVEN
+    const myApp = new App();
+    const myStack = new Stack(myApp, 'myStack');
+    const vpc = new ec2.Vpc(myStack, 'vpc');
+
+    // WHEN
+    new ec2.Instance(myStack, 'FirstInstance', {
+      vpc,
+      instanceType:
+        ec2.InstanceType.of(ec2.InstanceClass.T3A, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage({
+        generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
+      }),
+      init: ec2.CloudFormationInit.fromConfigSets({
+        configSets: {
+          default: ['default'],
+        },
+        configs: {
+          default: new ec2.InitConfig([
+            ec2.InitFile.fromAsset(
+              '/target/path/config.json',
+              path.join(__dirname, 'init-configs/configFileForFirstInstance.json'),
+            ),
+          ]),
+        },
+      }),
+    });
+
+    // THEN
+    expect(() => {
+
+      new ec2.Instance(myStack, 'SecondInstance', {
+        vpc,
+        instanceType:
+        ec2.InstanceType.of(ec2.InstanceClass.T3A, ec2.InstanceSize.MICRO),
+        machineImage: new ec2.AmazonLinuxImage({
+          generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
+        }),
+        init: ec2.CloudFormationInit.fromConfigSets({
+          configSets: {
+            default: ['default'],
+          },
+          configs: {
+            default: new ec2.InitConfig([
+              ec2.InitFile.fromAsset(
+                '/target/path/config.json',
+                path.join(__dirname, 'init-configs/configFileForSecondInstance.json'),
+              ),
+            ]),
+          },
+        }),
+      });
+
+    }).not.toThrow();
+  });
+
 });
 
 describe('InitGroup', () => {
