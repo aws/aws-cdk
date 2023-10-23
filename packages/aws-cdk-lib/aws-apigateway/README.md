@@ -244,6 +244,17 @@ AWS Step Functions will receive the following execution input:
 }
 ```
 
+And in `StepFunctionsRestApi`, method response models (`methodResponses`) with 200, 400 and 500 status codes are added by default.
+
+If you want not to add default method response models, you can set `useDefaultMethodResponses` to `false` as follows:
+
+```ts fixture=stepfunctions
+new apigateway.StepFunctionsRestApi(this, 'StepFunctionsRestApi', {
+  stateMachine: machine,
+  useDefaultMethodResponses: false,
+});
+```
+
 ### Breaking up Methods and Resources across Stacks
 
 It is fairly common for REST APIs with a large number of Resources and Methods to hit the [CloudFormation
