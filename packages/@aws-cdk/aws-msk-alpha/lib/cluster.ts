@@ -503,7 +503,7 @@ export class Cluster extends ClusterBase {
 
     const instanceType = props.instanceType
       ? props.instanceType
-      : ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.SMALL);
+      : ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE);
 
     if (props.storageMode && props.storageMode === StorageMode.TIERED) {
       if (!props.kafkaVersion.isTieredStorageCompatible()) {
