@@ -14,7 +14,6 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "AuthorizerInteg.template.json",
-        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -116,78 +115,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "userpool0AC4AA96": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "userpool0AC4AA96",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "userpoolUserPoolAuthorizerClient6A7486E8": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "userpoolUserPoolAuthorizerClient6A7486E8",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "MyHttpApiWithDefaultAuthorizerE08800A1": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyHttpApiWithDefaultAuthorizerE08800A1",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "MyHttpApiWithDefaultAuthorizerDefaultStage7A9EE9B6": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyHttpApiWithDefaultAuthorizerDefaultStage7A9EE9B6",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "MyHttpApiWithDefaultAuthorizerUserPoolAuthorizer825DB9A4": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyHttpApiWithDefaultAuthorizerUserPoolAuthorizer825DB9A4",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "RouteRootIntegration1CF58575": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "RouteRootIntegration1CF58575",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "RouteRootIntegrationPermissionC2C15701": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "RouteRootIntegrationPermissionC2C15701",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "RouteA67450D2": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "RouteA67450D2",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },
