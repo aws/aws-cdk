@@ -1,7 +1,7 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Aws, Resource } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
-import { HttpApi, IHttpApi } from './api';
+import { IHttpApi } from './api';
 import { HttpRouteAuthorizerConfig, IHttpRouteAuthorizer } from './authorizer';
 import { HttpRouteIntegration } from './integration';
 import { CfnRoute, CfnRouteProps } from 'aws-cdk-lib/aws-apigatewayv2';
@@ -193,17 +193,11 @@ export class HttpRoute extends Resource implements IHttpRoute {
       scope: this,
     });
 
-    if (props.authorizer) {
-      this.authBindResult = props.authorizer.bind({
-        route: this,
-        scope: this.httpApi instanceof Construct ? this.httpApi : this, // scope under the API if it's not imported
-      });
-    } else if (this.httpApi instanceof HttpApi && this.httpApi.defaultAuthorizer) { // because IHttpApi as it is does not have a defaultAuthorizer
-      this.authBindResult = this.httpApi.defaultAuthorizer.bind({
-        route: this,
-        scope: this.httpApi, // this.httpApi is also a Construct because it is an HttpApi
-      });
-    }
+    const authorizer = props.authorizer ?? this.httpApi.defaultAuthorizer;
+    this.authBindResult = authorizer?.bind({
+      route: this,
+      scope: this.httpApi instanceof Construct ? this.httpApi : this, // scope under the API if it's not imported
+    });
 
     if (this.authBindResult && !(this.authBindResult.authorizationType in HttpRouteAuthorizationType)) {
       throw new Error(`authorizationType should either be AWS_IAM, JWT, CUSTOM, or NONE but was '${this.authBindResult.authorizationType}'`);
@@ -211,18 +205,11 @@ export class HttpRoute extends Resource implements IHttpRoute {
 
     let authorizationScopes = this.authBindResult?.authorizationScopes;
 
-    if (this.authBindResult) {
-      if (props.authorizationScopes) {
-        authorizationScopes = Array.from(new Set([
-          ...authorizationScopes ?? [],
-          ...props.authorizationScopes,
-        ]));
-      } else if (this.httpApi instanceof HttpApi && this.httpApi.defaultAuthorizationScopes) {// because IHttpApi as it is does not have a defaultAuthorizationScopes
-        authorizationScopes = Array.from(new Set([
-          ...authorizationScopes ?? [],
-          ...this.httpApi.defaultAuthorizationScopes,
-        ]));
-      }
+    if (this.authBindResult && (props.authorizationScopes || this.httpApi.defaultAuthorizationScopes)) {
+      authorizationScopes = Array.from(new Set([
+        ...authorizationScopes ?? [],
+        ...props.authorizationScopes ?? this.httpApi.defaultAuthorizationScopes ?? [],
+      ]));
     }
 
     if (authorizationScopes?.length === 0) {

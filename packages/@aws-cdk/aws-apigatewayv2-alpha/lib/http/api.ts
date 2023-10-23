@@ -23,6 +23,20 @@ export interface IHttpApi extends IApi {
   readonly httpApiId: string;
 
   /**
+   * Default Authorizer to applied to all routes in the gateway
+   * @attribute
+   * @default - No authorizer
+   */
+  readonly defaultAuthorizer?: IHttpRouteAuthorizer;
+
+  /**
+   * Default OIDC scopes attached to all routes in the gateway, unless explicitly configured on the route.
+   * @attribute
+   * @default - no default authorization scopes
+   */
+  readonly defaultAuthorizationScopes?: string[];
+
+  /**
    * Metric for the number of client-side errors captured in a given period.
    *
    * @default - sum over 5 minutes
