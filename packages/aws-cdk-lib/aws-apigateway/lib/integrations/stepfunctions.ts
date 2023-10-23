@@ -85,7 +85,7 @@ export interface StepFunctionsExecutionIntegrationOptions extends IntegrationOpt
   readonly authorizer?: boolean;
 
   /**
-   * Enable to add default method response model for each HTTP code response
+   * Enable to add default method response models with 200, 400 and 500 status codes.
    *
    * @default true
    */
