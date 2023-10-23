@@ -52,6 +52,12 @@
             "data": "Role1ABCC5F0"
           }
         ],
+        "/aws-cdk-scheduler-schedule/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RoleDefaultPolicy5FFB7DAB"
+          }
+        ],
         "/aws-cdk-scheduler-schedule/DefaultSchedule/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -74,6 +80,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AllSchedulerErrorsAlarmA3246F8C"
+          }
+        ],
+        "/aws-cdk-scheduler-schedule/ScheduleKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScheduleKey7E6B3A92"
+          }
+        ],
+        "/aws-cdk-scheduler-schedule/CustomerKmsSchedule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomerKmsSchedule12B1FEFE"
           }
         ],
         "/aws-cdk-scheduler-schedule/BootstrapVersion": [
