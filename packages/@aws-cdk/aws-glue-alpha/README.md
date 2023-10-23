@@ -267,7 +267,7 @@ Glue tables can also be configured to contain user-defined table properties thro
 
 ```ts
 declare const myDatabase: glue.Database;
-new glue.S3Table(stack, 'MyTable', {
+new glue.S3Table(this, 'MyTable', {
   parameters: {
     key1: 'val1',
     key2: 'val2',
