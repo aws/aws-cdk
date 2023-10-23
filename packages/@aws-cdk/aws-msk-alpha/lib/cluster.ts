@@ -502,14 +502,16 @@ export class Cluster extends ClusterBase {
     }
 
     const instanceType = props.instanceType
-      ? props.instanceType
-      : ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE);
+      ? this.mskInstanceType(props.instanceType)
+      : this.mskInstanceType(
+        ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
+      );
 
     if (props.storageMode && props.storageMode === StorageMode.TIERED) {
       if (!props.kafkaVersion.isTieredStorageCompatible()) {
         throw Error(`To deploy a tiered cluster you must select a compatible Kafka version, got ${props.kafkaVersion.version}`);
       }
-      if (this.mskInstanceType(instanceType) === this.mskInstanceType(
+      if (instanceType === this.mskInstanceType(
         ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL),
       )) {
         throw Error('Tiered storage doesn\'t support broker type t3.small');
@@ -695,7 +697,7 @@ export class Cluster extends ClusterBase {
         props.numberOfBrokerNodes !== undefined ?
           subnetSelection.availabilityZones.length * props.numberOfBrokerNodes : subnetSelection.availabilityZones.length,
       brokerNodeGroupInfo: {
-        instanceType: this.mskInstanceType(instanceType),
+        instanceType: instanceType,
         clientSubnets: subnetSelection.subnetIds,
         securityGroups: this.connections.securityGroups.map(
           (group) => group.securityGroupId,
