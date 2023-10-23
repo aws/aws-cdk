@@ -35,6 +35,7 @@ class StepFunctionsRestApiDeploymentStack extends cdk.Stack {
         accountId: true,
         userArn: true,
       },
+      useDefaultMethodResponses: true,
     });
 
     api.deploymentStage = new apigw.Stage(this, 'stage', {
