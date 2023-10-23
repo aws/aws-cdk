@@ -790,6 +790,19 @@ describe('MSK Cluster', () => {
 
   describe('created with storage mode', () => {
     describe('with tiered storage mode', () => {
+      test('create a cluster with tiered storage mode', () => {
+        new msk.Cluster(stack, 'Cluster', {
+          clusterName: 'cluster',
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
+          kafkaVersion: msk.KafkaVersion.V2_8_2_TIERED,
+          vpc,
+          storageMode: msk.StorageMode.TIERED,
+        }),
+        Template.fromStack(stack).hasResourceProperties('AWS::MSK::Cluster', {
+          StorageMode: 'TIERED',
+        });
+      });
+
       test('fails if incompatible Kafka version', () => {
         expect(
           () =>
@@ -800,7 +813,7 @@ describe('MSK Cluster', () => {
               storageMode: msk.StorageMode.TIERED,
             }),
         ).toThrow(
-          'To utilize Tiered storage mode, the MSK cluster Kafka version must be compatiable.',
+          `To deploy a tiered cluster you must select a compatible Kafka version, got 2.6.1`,
         );
       });
 
@@ -815,21 +828,8 @@ describe('MSK Cluster', () => {
               storageMode: msk.StorageMode.TIERED,
             }),
         ).toThrow(
-          'The t3.small instance type does not support Tiered storage mode.',
+          "Tiered storage doesn't support broker type t3.small",
         );
-      });
-
-      test('create a cluster with tiered storage mode', () => {
-        new msk.Cluster(stack, 'Cluster', {
-          clusterName: 'cluster',
-          instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
-          kafkaVersion: msk.KafkaVersion.V2_8_2_TIERED,
-          vpc,
-          storageMode: msk.StorageMode.TIERED,
-        }),
-        Template.fromStack(stack).hasResourceProperties('AWS::MSK::Cluster', {
-          StorageMode: 'TIERED',
-        });
       });
     });
 
