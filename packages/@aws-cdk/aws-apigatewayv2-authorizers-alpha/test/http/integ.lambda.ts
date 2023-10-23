@@ -1,10 +1,9 @@
 import * as path from 'path';
-import { HttpApi, HttpMethod, HttpRoute, HttpRouteKey } from '@aws-cdk/aws-apigatewayv2-alpha';
+import { HttpApi, HttpMethod } from '@aws-cdk/aws-apigatewayv2-alpha';
 import { HttpLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
-import { UserPool } from 'aws-cdk-lib/aws-cognito';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { App, Stack, CfnOutput } from 'aws-cdk-lib';
-import { HttpLambdaAuthorizer, HttpLambdaResponseType, HttpUserPoolAuthorizer } from '../../lib';
+import { HttpLambdaAuthorizer, HttpLambdaResponseType } from '../../lib';
 
 /*
  * Stack verification steps:
@@ -16,6 +15,8 @@ import { HttpLambdaAuthorizer, HttpLambdaResponseType, HttpUserPoolAuthorizer } 
 const app = new App();
 const stack = new Stack(app, 'AuthorizerInteg');
 
+const httpApi = new HttpApi(stack, 'MyHttpApi');
+
 const authHandler = new lambda.Function(stack, 'auth-function', {
   runtime: lambda.Runtime.NODEJS_18_X,
   handler: 'index.handler',
@@ -26,15 +27,6 @@ const authorizer = new HttpLambdaAuthorizer('LambdaAuthorizer', authHandler, {
   authorizerName: 'my-simple-authorizer',
   identitySource: ['$request.header.X-API-Key'],
   responseTypes: [HttpLambdaResponseType.SIMPLE],
-});
-
-const userPool = new UserPool(stack, 'userpool');
-const userPoolAuthorizer = new HttpUserPoolAuthorizer('UserPoolAuthorizer', userPool);
-
-const httpApi = new HttpApi(stack, 'MyHttpApi');
-const httpApiWithDefaultAuthorizer = new HttpApi(stack, 'MyHttpApiWithDefaultAuthorizer', {
-  defaultAuthorizer: userPoolAuthorizer,
-  defaultAuthorizationScopes: ['scope1', 'scope2'],
 });
 
 const handler = new lambda.Function(stack, 'lambda', {
@@ -50,15 +42,6 @@ httpApi.addRoutes({
   authorizer,
 });
 
-new HttpRoute(stack, 'Route', {
-  httpApi: httpApiWithDefaultAuthorizer,
-  routeKey: HttpRouteKey.with('/v1/mything/{proxy+}', HttpMethod.ANY),
-  integration: new HttpLambdaIntegration('RootIntegration', handler),
-});
-
 new CfnOutput(stack, 'URL', {
   value: httpApi.url!,
-});
-new CfnOutput(stack, 'URLWithDefaultAuthorizer', {
-  value: httpApiWithDefaultAuthorizer.url!,
 });
