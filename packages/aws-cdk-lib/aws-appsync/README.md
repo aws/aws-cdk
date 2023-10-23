@@ -428,6 +428,11 @@ new appsync.SourceApiAssociation(this, 'SourceApiAssociation2', {
 });
 ```
 
+## Merge Source API Update Within CDK Deployment
+
+The SourceApiAssociationMergeOperation construct available in the [awscdk-appsync-utils](https://github.com/cdklabs/awscdk-appsync-utils) package provides the ability to merge a source API to a Merged API via a custom
+resource. If the merge operation fails with a conflict, the stack update will fail and rollback the changes to the source API in the stack in order to prevent merge conflicts and ensure the source API changes are always propagated to the Merged API.
+
 ## Custom Domain Names
 
 For many use cases you may want to associate a custom domain name with your

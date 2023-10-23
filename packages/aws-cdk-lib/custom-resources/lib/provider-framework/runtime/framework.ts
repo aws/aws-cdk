@@ -19,7 +19,7 @@ export = {
  * Any lifecycle event changes to the custom resources will invoke this handler, which will, in turn,
  * interact with the user-defined `onEvent` and `isComplete` handlers.
  *
- * This function will always succeed. If an error occurs
+ * This function will always succeed. If an error occurs, it is logged but an error is not thrown.
  *
  * @param cfnRequest The cloudformation custom resource event.
  */
