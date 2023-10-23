@@ -638,8 +638,8 @@
      "Parameters": {
       "classification": "json",
       "has_encrypted_data": true,
-      "foo": "bar",
-      "baz": "quux"
+      "key1": "val1",
+      "key2": "val2"
      },
      "StorageDescriptor": {
       "Columns": [
