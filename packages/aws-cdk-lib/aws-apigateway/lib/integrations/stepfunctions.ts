@@ -83,6 +83,13 @@ export interface StepFunctionsExecutionIntegrationOptions extends IntegrationOpt
    * @default false
    */
   readonly authorizer?: boolean;
+
+  /**
+   * Enable to add default method response model for each HTTP code response
+   *
+   * @default true
+   */
+  readonly useDefaultMethodResponses?: boolean;
 }
 
 /**
@@ -111,6 +118,7 @@ export class StepFunctionsIntegration {
 
 class StepFunctionsExecutionIntegration extends AwsIntegration {
   private readonly stateMachine: sfn.IStateMachine;
+  private readonly useDefaultMethodResponses: boolean;
   constructor(stateMachine: sfn.IStateMachine, options: StepFunctionsExecutionIntegrationOptions = {}) {
     super({
       service: 'states',
@@ -125,6 +133,7 @@ class StepFunctionsExecutionIntegration extends AwsIntegration {
     });
 
     this.stateMachine = stateMachine;
+    this.useDefaultMethodResponses = options.useDefaultMethodResponses ?? true;
   }
 
   public bind(method: Method): IntegrationConfig {
@@ -157,8 +166,10 @@ class StepFunctionsExecutionIntegration extends AwsIntegration {
       deploymentToken = JSON.stringify({ stateMachineName });
     }
 
-    for (const methodResponse of METHOD_RESPONSES) {
-      method.addMethodResponse(methodResponse);
+    if (this.useDefaultMethodResponses) {
+      for (const methodResponse of METHOD_RESPONSES) {
+        method.addMethodResponse(methodResponse);
+      }
     }
 
     return {
