@@ -813,7 +813,7 @@ describe('MSK Cluster', () => {
               storageMode: msk.StorageMode.TIERED,
             }),
         ).toThrow(
-          `To deploy a tiered cluster you must select a compatible Kafka version, got 2.6.1`,
+          'To deploy a tiered cluster you must select a compatible Kafka version, got 2.6.1',
         );
       });
 
