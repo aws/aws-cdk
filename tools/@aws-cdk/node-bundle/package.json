@@ -13,12 +13,12 @@
     "watch": "tsc --build -w tsconfig.dev.json"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.4",
+    "@types/jest": "^29.5.5",
     "@types/license-checker": "^25.0.4",
-    "@types/madge": "^5.0.0",
+    "@types/madge": "^5.0.1",
     "@types/node": "^16",
-    "@typescript-eslint/eslint-plugin": "^6.6.0",
-    "@typescript-eslint/parser": "^6.6.0",
+    "@typescript-eslint/eslint-plugin": "^6.7.3",
+    "@typescript-eslint/parser": "^6.7.3",
     "eslint": "^8",
     "eslint-import-resolver-node": "^0.3.9",
     "eslint-import-resolver-typescript": "^2.7.1",
@@ -31,7 +31,7 @@
     "typescript": "^4.5.5"
   },
   "dependencies": {
-    "esbuild": "^0.19.2",
+    "esbuild": "^0.19.4",
     "fs-extra": "^10.1.0",
     "license-checker": "^25.0.1",
     "madge": "^5.0.2",

@@ -1,0 +1,12 @@
+{
+  "version": "34.0.0",
+  "testCases": {
+    "integtest-schedule/DefaultTest": {
+      "stacks": [
+        "aws-cdk-scheduler-schedule"
+      ],
+      "assertionStack": "integtest-schedule/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestscheduleDefaultTestDeployAssert24CB3896"
+    }
+  }
+}

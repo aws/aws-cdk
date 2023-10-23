@@ -704,7 +704,7 @@ test('invalid v2 service name throws explicit error', async () => {
 
   const request = createRequest(body =>
     body.Status === 'FAILED' &&
-    body.Reason!.startsWith('Client \'thisisnotarealservice\' is either deprecated or newly added. Please consider using the v3 package format (@aws-sdk/client-xxx).'),
+    body.Reason!.startsWith('Package @aws-sdk/client-thisisnotarealservice does not exist.'),
   );
 
   await handler(event, {} as AWSLambda.Context);
