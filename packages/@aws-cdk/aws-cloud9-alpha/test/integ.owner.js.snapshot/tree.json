@@ -603,6 +603,51 @@
               "version": "0.0.0"
             }
           },
+          "Cloud9OwnerRole": {
+            "id": "Cloud9OwnerRole",
+            "path": "cloud9-owner-integ/Cloud9OwnerRole",
+            "children": {
+              "ImportCloud9OwnerRole": {
+                "id": "ImportCloud9OwnerRole",
+                "path": "cloud9-owner-integ/Cloud9OwnerRole/ImportCloud9OwnerRole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "cloud9-owner-integ/Cloud9OwnerRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": "*"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "description": "Created as part of the integration tests for the Cloud9 CDK construct",
+                    "roleName": "Cloud9OwnerRole"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "0.0.0"
+            }
+          },
           "C9Env": {
             "id": "C9Env",
             "path": "cloud9-owner-integ/C9Env",
@@ -624,7 +669,15 @@
                           {
                             "Ref": "AWS::Partition"
                           },
-                          ":sts::807336301584:assumed-role/Admin/test"
+                          ":sts::",
+                          {
+                            "Ref": "AWS::AccountId"
+                          },
+                          ":assumed-role/",
+                          {
+                            "Ref": "Cloud9OwnerRole72D8750E"
+                          },
+                          "/a-test-session"
                         ]
                       ]
                     },

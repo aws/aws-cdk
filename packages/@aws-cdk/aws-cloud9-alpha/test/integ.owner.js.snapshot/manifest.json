@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/10f5bc22fa3b6654a026bafcc6e5a3a3eb90426c46b0e29c2328145ed4752e2d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d0bd32fadb21b986ec5baf0ba579723a391e4dc1e08beec36608a11de484bcc6.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -159,10 +159,19 @@
             "data": "VPCVPCGW99B986DC"
           }
         ],
+        "/cloud9-owner-integ/Cloud9OwnerRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Cloud9OwnerRole72D8750E"
+          }
+        ],
         "/cloud9-owner-integ/C9Env/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "C9EnvF05FC3BE"
+            "data": "C9EnvF05FC3BE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/cloud9-owner-integ/URL": [

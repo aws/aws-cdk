@@ -355,6 +355,25 @@
     }
    }
   },
+  "Cloud9OwnerRole72D8750E": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": "*"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Created as part of the integration tests for the Cloud9 CDK construct",
+    "RoleName": "Cloud9OwnerRole"
+   }
+  },
   "C9EnvF05FC3BE": {
    "Type": "AWS::Cloud9::EnvironmentEC2",
    "Properties": {
@@ -369,7 +388,15 @@
        {
         "Ref": "AWS::Partition"
        },
-       ":sts::807336301584:assumed-role/Admin/test"
+       ":sts::",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":assumed-role/",
+       {
+        "Ref": "Cloud9OwnerRole72D8750E"
+       },
+       "/a-test-session"
       ]
      ]
     },
