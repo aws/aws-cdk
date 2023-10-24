@@ -91,6 +91,7 @@ export class CallAwsService extends sfn.TaskStateBase {
 
     const iamServiceMap: Record<string, string> = {
       sfn: 'states',
+      cloudwatchlogs: 'logs',
     };
     const iamService = iamServiceMap[props.service] ?? props.service;
 
