@@ -77,7 +77,7 @@ behavior('action has right settings for same-env deployment', (suite) => {
     Template.fromStack(pipelineStack).hasResourceProperties('AWS::S3::BucketPolicy', {
       PolicyDocument: {
         Statement: Match.arrayWith([Match.objectLike({
-          Action: ['s3:GetObject*', 's3:GetBucket*', 's3:HeadObject', 's3:List*'],
+          Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
           Principal: {
             AWS: roleArn('deploy-role'),
           },
@@ -156,7 +156,7 @@ behavior('action has right settings for cross-account deployment', (suite) => {
     Template.fromStack(pipelineStack).hasResourceProperties('AWS::S3::BucketPolicy', {
       PolicyDocument: {
         Statement: Match.arrayWith([Match.objectLike({
-          Action: ['s3:GetObject*', 's3:GetBucket*', 's3:HeadObject', 's3:List*'],
+          Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
           Principal: {
             AWS: {
               'Fn::Join': ['', [
@@ -332,7 +332,7 @@ behavior('action has right settings for cross-account/cross-region deployment', 
     Template.fromStack(supportStack!).hasResourceProperties('AWS::S3::BucketPolicy', {
       PolicyDocument: {
         Statement: Match.arrayWith([Match.objectLike({
-          Action: Match.arrayWith(['s3:GetObject*', 's3:GetBucket*', 's3:HeadObject', 's3:List*']),
+          Action: Match.arrayWith(['s3:GetObject*', 's3:GetBucket*', 's3:List*']),
           Principal: {
             AWS: {
               'Fn::Join': ['', [

@@ -601,7 +601,6 @@
        "Action": [
         "s3:GetBucket*",
         "s3:GetObject*",
-        "s3:HeadObject",
         "s3:List*"
        ],
        "Effect": "Allow",
@@ -686,7 +685,6 @@
         "s3:DeleteObject*",
         "s3:GetBucket*",
         "s3:GetObject*",
-        "s3:HeadObject",
         "s3:List*",
         "s3:PutObject",
         "s3:PutObjectLegalHold",
@@ -807,7 +805,7 @@
         },
         "OutputArtifacts": [
          {
-          "Name": "c81125c577cddc5477d274144695873cfd8965e6a0_Source"
+          "Name": "c81125c577cddc5477d274144695873cfd8965e6a0_key_Source"
          }
         ],
         "RoleArn": {
@@ -837,7 +835,7 @@
         },
         "InputArtifacts": [
          {
-          "Name": "c81125c577cddc5477d274144695873cfd8965e6a0_Source"
+          "Name": "c81125c577cddc5477d274144695873cfd8965e6a0_key_Source"
          }
         ],
         "Name": "Synth",
@@ -1008,7 +1006,6 @@
        "Action": [
         "s3:GetBucket*",
         "s3:GetObject*",
-        "s3:HeadObject",
         "s3:List*"
        ],
        "Effect": "Allow",
@@ -1276,7 +1273,6 @@
         "s3:DeleteObject*",
         "s3:GetBucket*",
         "s3:GetObject*",
-        "s3:HeadObject",
         "s3:List*",
         "s3:PutObject",
         "s3:PutObjectLegalHold",
@@ -1691,7 +1687,6 @@
        "Action": [
         "s3:GetBucket*",
         "s3:GetObject*",
-        "s3:HeadObject",
         "s3:List*"
        ],
        "Effect": "Allow",
