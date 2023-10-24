@@ -33,7 +33,7 @@ export interface IHttpApi extends IApi {
 
   /**
    * Default OIDC scopes attached to all routes in the gateway, unless explicitly configured on the route.
-   * The scopes are used with a COGNITO_USER_POOLS authorizer or a JWT authorizer to authorize
+   * The scopes are used with a COGNITO_USER_POOLS authorizer to authorize
    * the method invocation.
    *
    * @attribute
@@ -152,7 +152,7 @@ export interface HttpApiProps {
 
   /**
    * Default OIDC scopes attached to all routes in the gateway, unless explicitly configured on the route.
-   * The scopes are used with a COGNITO_USER_POOLS authorizer or a JWT authorizer to authorize
+   * The scopes are used with a COGNITO_USER_POOLS authorizer to authorize
    * the method invocation.
    *
    * @default - no default authorization scopes
