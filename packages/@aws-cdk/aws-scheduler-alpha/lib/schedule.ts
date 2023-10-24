@@ -217,10 +217,12 @@ export class Schedule extends Resource implements ISchedule {
    * The schedule group associated with this schedule.
    */
   public readonly group?: IGroup;
+
   /**
    * The arn of the schedule.
    */
   public readonly scheduleArn: string;
+
   /**
    * The name of the schedule.
    */
@@ -230,6 +232,11 @@ export class Schedule extends Resource implements ISchedule {
    * The customer managed KMS key that EventBridge Scheduler will use to encrypt and decrypt your data.
    */
   readonly key?: kms.IKey;
+
+  /**
+   * A `RetryPolicy` object that includes information about the retry policy settings.
+   */
+  private readonly retryPolicy?: CfnSchedule.RetryPolicyProperty;
 
   constructor(scope: Construct, id: string, props: ScheduleProps) {
     super(scope, id, {
@@ -245,12 +252,7 @@ export class Schedule extends Resource implements ISchedule {
       this.key.grantEncryptDecrypt(targetConfig.role);
     }
 
-    const retryPolicy = {
-      maximumEventAgeInSeconds: props.targetOverrides?.maxEventAge?.toSeconds() ?? targetConfig.retryPolicy?.maximumEventAgeInSeconds,
-      maximumRetryAttempts: props.targetOverrides?.retryAttempts ?? targetConfig.retryPolicy?.maximumRetryAttempts,
-    };
-
-    this.validateRetryPolicy(retryPolicy.maximumEventAgeInSeconds, retryPolicy.maximumRetryAttempts);
+    this.retryPolicy = targetConfig.retryPolicy;
 
     const resource = new CfnSchedule(this, 'Resource', {
       name: this.physicalName,
@@ -267,7 +269,7 @@ export class Schedule extends Resource implements ISchedule {
           props.targetOverrides?.input?.bind(this) :
           targetConfig.input?.bind(this),
         deadLetterConfig: targetConfig.deadLetterConfig,
-        retryPolicy: retryPolicy.maximumEventAgeInSeconds || retryPolicy.maximumRetryAttempts ? retryPolicy : undefined,
+        retryPolicy: this.renderRetryPolicy(props.targetOverrides?.maxEventAge?.toSeconds(), props.targetOverrides?.retryAttempts),
         ecsParameters: targetConfig.ecsParameters,
         kinesisParameters: targetConfig.kinesisParameters,
         eventBridgeParameters: targetConfig.eventBridgeParameters,
@@ -284,12 +286,24 @@ export class Schedule extends Resource implements ISchedule {
     });
   }
 
-  private validateRetryPolicy(maximumEventAgeInSeconds: number | undefined, maximumRetryAttempts: number | undefined) {
-    if (maximumEventAgeInSeconds && (maximumEventAgeInSeconds < 60 || maximumEventAgeInSeconds > 86400)) {
-      throw new Error(`maximumEventAgeInSeconds must be between 60 and 86400, got ${maximumEventAgeInSeconds}`);
+  private renderRetryPolicy(
+    maximumEventAgeInSeconds?: number,
+    maximumRetryAttempts?: number,
+  ): CfnSchedule.RetryPolicyProperty | undefined {
+    const policy = {
+      ...this.retryPolicy,
+      maximumEventAgeInSeconds: maximumEventAgeInSeconds ?? this.retryPolicy?.maximumEventAgeInSeconds,
+      maximumRetryAttempts: maximumRetryAttempts ?? this.retryPolicy?.maximumRetryAttempts,
+    };
+
+    if (policy.maximumEventAgeInSeconds && (policy.maximumEventAgeInSeconds < 60 || policy.maximumEventAgeInSeconds > 86400)) {
+      throw new Error(`maximumEventAgeInSeconds must be between 60 and 86400, got ${policy.maximumEventAgeInSeconds}`);
     }
-    if (maximumRetryAttempts && (maximumRetryAttempts < 0 || maximumRetryAttempts > 185)) {
-      throw new Error(`maximumRetryAttempts must be between 0 and 185, got ${maximumRetryAttempts}`);
+    if (policy.maximumRetryAttempts && (policy.maximumRetryAttempts < 0 || policy.maximumRetryAttempts > 185)) {
+      throw new Error(`maximumRetryAttempts must be between 0 and 185, got ${policy.maximumRetryAttempts}`);
     }
+
+    const isEmptyPolicy = Object.values(policy).every(value => value === undefined);
+    return !isEmptyPolicy ? policy : undefined;
   }
 }

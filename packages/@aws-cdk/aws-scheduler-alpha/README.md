@@ -257,7 +257,7 @@ const target = new targets.LambdaInvoke(fn, {
 ## Overriding Target Properties 
 
 If you wish to reuse the same target in multiple schedules, you can override target properties like `input`, 
-`maximumRetryAttempts` and `maximumEventAgeInSeconds` when creating a Schedule using the `targetOverrides` parameter:
+`retryAttempts` and `maxEventAge` when creating a Schedule using the `targetOverrides` parameter:
 
 ```ts
 declare const target: targets.LambdaInvoke;
@@ -266,7 +266,7 @@ const oneTimeSchedule = new Schedule(this, 'Schedule', {
     schedule: ScheduleExpression.rate(cdk.Duration.hours(12)),
     target,
     targetOverrides: {
-        input: ScheduleTargetInput.fromText("Overriding Target Input"),
+        input: ScheduleTargetInput.fromText('Overriding Target Input'),
         maxEventAge: Duration.seconds(180),
         retryAttempts: 5,
     },
