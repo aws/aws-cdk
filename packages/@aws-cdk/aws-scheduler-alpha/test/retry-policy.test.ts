@@ -61,8 +61,8 @@ describe('schedule target retry policy', () => {
       schedule: expr,
       target: new SomeLambdaTarget(func),
       targetOverrides: {
-        maximumEventAge: Duration.seconds(120),
-        maximumRetryAttempts: 5,
+        maxEventAge: Duration.seconds(120),
+        retryAttempts: 5,
       },
       enabled: false,
     });
@@ -86,8 +86,8 @@ describe('schedule target retry policy', () => {
         schedule: expr,
         target: new SomeLambdaTarget(func),
         targetOverrides: {
-          maximumEventAge: Duration.seconds(50),
-          maximumRetryAttempts: 5,
+          maxEventAge: Duration.seconds(50),
+          retryAttempts: 5,
         },
         enabled: false,
       });
@@ -100,8 +100,8 @@ describe('schedule target retry policy', () => {
         schedule: expr,
         target: new SomeLambdaTarget(func),
         targetOverrides: {
-          maximumEventAge: Duration.seconds(100000),
-          maximumRetryAttempts: 5,
+          maxEventAge: Duration.seconds(100000),
+          retryAttempts: 5,
         },
         enabled: false,
       });
@@ -114,8 +114,8 @@ describe('schedule target retry policy', () => {
         schedule: expr,
         target: new SomeLambdaTarget(func),
         targetOverrides: {
-          maximumEventAge: Duration.seconds(120),
-          maximumRetryAttempts: -1,
+          maxEventAge: Duration.seconds(120),
+          retryAttempts: -1,
         },
         enabled: false,
       });
@@ -128,8 +128,8 @@ describe('schedule target retry policy', () => {
         schedule: expr,
         target: new SomeLambdaTarget(func),
         targetOverrides: {
-          maximumEventAge: Duration.seconds(120),
-          maximumRetryAttempts: 200,
+          maxEventAge: Duration.seconds(120),
+          retryAttempts: 200,
         },
         enabled: false,
       });

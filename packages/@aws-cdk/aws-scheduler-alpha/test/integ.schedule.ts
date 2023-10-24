@@ -55,8 +55,8 @@ new scheduler.Schedule(stack, 'TargetOverrideSchedule', {
   target: target,
   targetOverrides: {
     input: scheduler.ScheduleTargetInput.fromText('Changed Text'),
-    maximumEventAge: cdk.Duration.seconds(360),
-    maximumRetryAttempts: 5,
+    maxEventAge: cdk.Duration.seconds(360),
+    retryAttempts: 5,
   },
 });
 

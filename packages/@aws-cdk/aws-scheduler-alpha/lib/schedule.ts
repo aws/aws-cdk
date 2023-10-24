@@ -43,42 +43,20 @@ export interface ScheduleTargetProps {
    * @default - The target's input is used.
    */
   readonly input?: ScheduleTargetInput;
-  /**
-   * The maximum amount of time, in seconds, to continue to make retry attempts.
-   *
-   * @default - The target's maximumEventAgeInSeconds is used.
-   */
-  readonly maximumEventAge?: Duration;
-  /**
-   * The maximum number of retry attempts to make before the request fails.
-   *
-   * @default - The target's maximumRetryAttempts is used.
-   */
-  readonly maximumRetryAttempts?: number;
-}
 
-export interface ScheduleTargetProps {
-  /**
-   * The text, or well-formed JSON, passed to the target.
-   *
-   * If you are configuring a templated Lambda, AWS Step Functions, or Amazon EventBridge target,
-   * the input must be a well-formed JSON. For all other target types, a JSON is not required.
-   *
-   * @default - The target's input is used.
-   */
-  readonly input?: ScheduleTargetInput;
   /**
    * The maximum amount of time, in seconds, to continue to make retry attempts.
    *
    * @default - The target's maximumEventAgeInSeconds is used.
    */
-  readonly maximumEventAge?: Duration;
+  readonly maxEventAge?: Duration;
+
   /**
    * The maximum number of retry attempts to make before the request fails.
    *
    * @default - The target's maximumRetryAttempts is used.
    */
-  readonly maximumRetryAttempts?: number;
+  readonly retryAttempts?: number;
 }
 
 /**
@@ -268,8 +246,8 @@ export class Schedule extends Resource implements ISchedule {
     }
 
     const retryPolicy = {
-      maximumEventAgeInSeconds: props.targetOverrides?.maximumEventAge?.toSeconds() ?? targetConfig.retryPolicy?.maximumEventAgeInSeconds,
-      maximumRetryAttempts: props.targetOverrides?.maximumRetryAttempts ?? targetConfig.retryPolicy?.maximumRetryAttempts,
+      maximumEventAgeInSeconds: props.targetOverrides?.maxEventAge?.toSeconds() ?? targetConfig.retryPolicy?.maximumEventAgeInSeconds,
+      maximumRetryAttempts: props.targetOverrides?.retryAttempts ?? targetConfig.retryPolicy?.maximumRetryAttempts,
     };
 
     this.validateRetryPolicy(retryPolicy.maximumEventAgeInSeconds, retryPolicy.maximumRetryAttempts);
