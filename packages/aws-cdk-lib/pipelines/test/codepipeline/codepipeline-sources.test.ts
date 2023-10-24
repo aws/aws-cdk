@@ -193,6 +193,25 @@ test('Dashes in repo names are removed from artifact names', () => {
   });
 });
 
+test('Nested repo names are allowed', () => {
+  new ModernTestGitHubNpmPipeline(pipelineStack, 'Pipeline', {
+    input: cdkp.CodePipelineSource.gitHub('owner/group1/group2/groupN/repo', 'main'),
+  });
+
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: Match.arrayWith([{
+      Name: 'Source',
+      Actions: [
+        Match.objectLike({
+          OutputArtifacts: [
+            { Name: 'owner_group1_group2_groupN_repo_Source' },
+          ],
+        }),
+      ],
+    }]),
+  });
+});
+
 test('artifact names are never longer than 128 characters', () => {
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Pipeline', {
     input: cdkp.CodePipelineSource.gitHub('owner/' + 'my-repo'.repeat(100), 'main'),

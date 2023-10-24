@@ -256,11 +256,11 @@ class GitHubSource extends CodePipelineSource {
     super(repoString);
 
     const parts = repoString.split('/');
-    if (Token.isUnresolved(repoString) || parts.length !== 2) {
+    if (Token.isUnresolved(repoString) || parts.length < 2) {
       throw new Error(`GitHub repository name should be a resolved string like '<owner>/<repo>', got '${repoString}'`);
     }
     this.owner = parts[0];
-    this.repo = parts[1];
+    this.repo = parts.slice(1).join('/');
     this.authentication = props.authentication ?? SecretValue.secretsManager('github-token');
     this.configurePrimaryOutput(new FileSet('Source', this));
   }
@@ -425,11 +425,11 @@ class CodeStarConnectionSource extends CodePipelineSource {
     super(`${repoString}-${branch}`);
 
     const parts = repoString.split('/');
-    if (Token.isUnresolved(repoString) || parts.length !== 2) {
+    if (Token.isUnresolved(repoString) || parts.length < 2) {
       throw new Error(`CodeStar repository name should be a resolved string like '<owner>/<repo>', got '${repoString}'`);
     }
     this.owner = parts[0];
-    this.repo = parts[1];
+    this.repo = parts.slice(1).join('/');
     this.configurePrimaryOutput(new FileSet('Source', this));
   }
 
