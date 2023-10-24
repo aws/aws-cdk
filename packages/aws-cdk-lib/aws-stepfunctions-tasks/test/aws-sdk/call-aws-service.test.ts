@@ -161,7 +161,7 @@ test('throws with invalid integration pattern', () => {
   })).toThrow(/The RUN_JOB integration pattern is not supported for CallAwsService/);
 });
 
-test('throws if action is not CamelCase', () => {
+test('throws if action is not camelCase', () => {
   expect(() => new tasks.CallAwsService(stack, 'GetObject', {
     service: 's3',
     action: 'GetObject',
