@@ -170,7 +170,7 @@ test('throws if action is not camelCase', () => {
       Key: sfn.JsonPath.stringAt('$.key'),
     },
     iamResources: ['*'],
-  })).toThrow(/action must be CamelCase, got: GetObject/);
+  })).toThrow(/action must be camelCase, got: GetObject/);
 });
 
 test('throws if parameters has keys as not PascalCase', () => {
