@@ -8,7 +8,7 @@ import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'aws-cdk-aws-apigatewayv2-websockets');
+const stack = new cdk.Stack(app, 'integ-apigwv2-lambda-connect-integration');
 const webSocketTableName = 'WebSocketConnections';
 
 const connectFunction = new lambda.Function(stack, 'Connect Function', {
@@ -36,7 +36,7 @@ const disconnectFunction = new lambda.Function(
     environment: {
       TABLE_NAME: webSocketTableName,
     },
-  }
+  },
 );
 
 const webSocketLogTable = new dynamodb.Table(stack, 'WebSocket Log Table', {
@@ -66,7 +66,6 @@ const webSocketApi = new WebSocketApi(stack, 'WebSocket API', {
   disconnectRouteOptions: { integration: webSocketDisconnectIntegration },
 });
 
-// const webSocketStage =
 new WebSocketStage(
   stack,
   'Production Stage',
@@ -76,12 +75,6 @@ new WebSocketStage(
     autoDeploy: true,
   },
 );
-
-// const api = new WebSocketApi(stack, 'MyWebsocketApi');
-// api.addRoute('test', {
-//   integration: new WebSocketMockIntegration('SendMessageIntegration'),
-//   returnResponse: true,
-// });
 
 // const integ =
 new IntegTest(app, 'Integ', { testCases: [stack] });
