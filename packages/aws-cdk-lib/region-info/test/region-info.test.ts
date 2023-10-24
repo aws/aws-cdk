@@ -1,5 +1,5 @@
 import { APPCONFIG_LAMBDA_LAYER_ARNS, CLOUDWATCH_LAMBDA_INSIGHTS_ARNS } from '../build-tools/fact-tables';
-import { Fact, FactName, RegionInfo } from '../lib';
+import { FactName, RegionInfo } from '../lib';
 import { AWS_REGIONS, AWS_SERVICES } from '../lib/aws-entities';
 
 test('built-in data is correct', () => {
