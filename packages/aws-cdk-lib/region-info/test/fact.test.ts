@@ -92,7 +92,7 @@ describe('register', () => {
 
   test('registering a fact with a new region adds the region', () => {
     // GIVEN
-    const region = 'us-unreleased-1';
+    const region = 'my-custom-region';
     const name = FactName.PARTITION;
     const value = 'nebraska';
 
@@ -101,7 +101,7 @@ describe('register', () => {
     expect(() => Fact.register({ region, name, value })).not.toThrowError();
 
     // THEN
-    expect(Fact.regions.includes('us-unreleased-1')).toBeTruthy();
+    expect(Fact.regions.includes('my-custom-region')).toBeTruthy();
     expect(Fact.find(region, name)).toBe('nebraska');
   });
 });
