@@ -1,0 +1,19 @@
+{
+  "version": "34.0.0",
+  "files": {
+    "6839d578ee9cee82c9fec983c3198141863ad9751bc03fcd46df50e40188bbf2": {
+      "source": {
+        "path": "aws-stepfunctions-tasks-call-aws-service-logs-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "6839d578ee9cee82c9fec983c3198141863ad9751bc03fcd46df50e40188bbf2.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
