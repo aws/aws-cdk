@@ -80,7 +80,7 @@ export class CallAwsService extends sfn.TaskStateBase {
       throw new Error('The RUN_JOB integration pattern is not supported for CallAwsService');
     }
     if (!Token.isUnresolved(this.props.action) && !this.props.action.startsWith(this.props.action[0]?.toLowerCase())) {
-      throw new Error(`action must be CamelCase, got: ${this.props.action}`);
+      throw new Error(`action must be camelCase, got: ${this.props.action}`);
     }
     if (this.props.parameters) {
       const invalidKeys = Object.keys(this.props.parameters).filter(key => !key.startsWith(key[0]?.toUpperCase()));
