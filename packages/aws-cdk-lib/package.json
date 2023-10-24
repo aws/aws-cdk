@@ -108,7 +108,7 @@
     "organization": true
   },
   "license": "Apache-2.0",
-  "bundledDependencies": [
+  "bundleDependencies": [
     "@balena/dockerignore",
     "case",
     "fs-extra",
@@ -176,7 +176,6 @@
     "delay": "5.0.0",
     "esbuild": "^0.19.4",
     "fast-check": "^3.13.1",
-    "fs-extra": "^11.1.1",
     "jest": "^29.7.0",
     "jest-each": "^29.7.0",
     "lambda-tester": "^4.0.1",
