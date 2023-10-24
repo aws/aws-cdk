@@ -5,7 +5,7 @@ import { AWS_REGIONS } from './aws-entities';
  */
 export class Fact {
   /**
-   * @returns the list of names of AWS regions for which there is at least one registered fact. This
+   * @returns the list of names of AWS Regions for which there is at least one registered fact. This
    *          includes Regions defined in AWS_REGIONS plus custom defined regions.
    */
   public static get regions(): string[] {
