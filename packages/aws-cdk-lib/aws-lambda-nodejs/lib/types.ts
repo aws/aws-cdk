@@ -374,6 +374,10 @@ export interface ICommandHooks {
  */
 export enum LogLevel {
   /** Show everything */
+  VERBOSE = 'verbose',
+  /** Show everything from info and some additional messages for debugging */
+  DEBUG = 'debug',
+  /** Show warnings, errors, and an output file summary */
   INFO = 'info',
   /** Show warnings and errors */
   WARNING = 'warning',
