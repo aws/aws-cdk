@@ -17,20 +17,25 @@ import { DomainMappingOptions } from '../common/stage';
 export interface IHttpApi extends IApi {
   /**
    * The identifier of this API Gateway HTTP API.
+   *
    * @attribute
    * @deprecated - use apiId instead
    */
   readonly httpApiId: string;
 
   /**
-   * Default Authorizer to applied to all routes in the gateway
+   * Default Authorizer applied to all routes in the gateway.
+   *
    * @attribute
-   * @default - No authorizer
+   * @default - no default authorizer
    */
   readonly defaultAuthorizer?: IHttpRouteAuthorizer;
 
   /**
    * Default OIDC scopes attached to all routes in the gateway, unless explicitly configured on the route.
+   * The scopes are used with a COGNITO_USER_POOLS authorizer or a JWT authorizer to authorize
+   * the method invocation.
+   *
    * @attribute
    * @default - no default authorization scopes
    */
@@ -139,14 +144,16 @@ export interface HttpApiProps {
   readonly disableExecuteApiEndpoint?: boolean;
 
   /**
-   * Default Authorizer to applied to all routes in the gateway
+   * Default Authorizer applied to all routes in the gateway.
    *
-   * @default - No authorizer
+   * @default - no default authorizer
    */
   readonly defaultAuthorizer?: IHttpRouteAuthorizer;
 
   /**
    * Default OIDC scopes attached to all routes in the gateway, unless explicitly configured on the route.
+   * The scopes are used with a COGNITO_USER_POOLS authorizer or a JWT authorizer to authorize
+   * the method invocation.
    *
    * @default - no default authorization scopes
    */
