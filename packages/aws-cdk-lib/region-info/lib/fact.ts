@@ -9,8 +9,8 @@ export class Fact {
    *          includes Regions defined in AWS_REGIONS plus custom defined regions.
    */
   public static get regions(): string[] {
-    // Return by copy to ensure no modifications can be made to the undelying constant.
-    return Array.from(AWS_REGIONS.concat(Object.keys(this.database)));
+    // Return the union of regions in AWS_REGIONS and custom defined regions.
+    return [...new Set([...AWS_REGIONS, ...Object.keys(this.database)])];
   }
 
   /**

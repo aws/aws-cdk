@@ -104,4 +104,8 @@ describe('register', () => {
     expect(Fact.regions.includes('my-custom-region')).toBeTruthy();
     expect(Fact.find(region, name)).toBe('nebraska');
   });
+
+  test('regions does not return duplicate regions', () => {
+    expect(new Set(Fact.regions).size == Fact.regions.length).toBeTruthy();
+  });
 });
