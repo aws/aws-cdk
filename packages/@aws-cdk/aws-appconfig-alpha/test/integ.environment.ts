@@ -1,6 +1,6 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { App, Stack } from 'aws-cdk-lib';
-import { Application, Environment } from '../lib';
+import { Application, Environment, Monitor } from '../lib';
 import { Alarm, Metric } from 'aws-cdk-lib/aws-cloudwatch';
 
 const app = new App();
@@ -24,11 +24,7 @@ const alarm = new Alarm(stack, 'MyAlarm', {
 new Environment(stack, 'MyEnvironment', {
   application: appForEnv,
   description: 'This is the environment for integ testing',
-  monitors: [
-    {
-      alarm,
-    },
-  ],
+  monitors: [Monitor.fromCloudWatchAlarm(alarm)],
 });
 
 new IntegTest(app, 'appconfig-environment', {
