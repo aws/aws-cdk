@@ -1,6 +1,6 @@
 import { WebSocketApi, WebSocketStage } from '@aws-cdk/aws-apigatewayv2-alpha';
 import * as cdk from 'aws-cdk-lib';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 import { WebSocketLambdaIntegration } from '../../lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as path from 'path';
@@ -76,8 +76,21 @@ new WebSocketStage(
   },
 );
 
-// const integ =
-new IntegTest(app, 'Integ', { testCases: [stack] });
+const integ = new IntegTest(app, 'Integ', { testCases: [stack] });
+
+const apiCall = integ.assertions.awsApiCall('ApiGatewayV2', 'getRoute', {
+  ApiId: `${webSocketApi.apiId}`, /* required */
+  RouteId: '$connect-Route', /* required */
+  // RouteResponseId: 'body', /* required */
+});
+
+apiCall.provider.addToRolePolicy({
+  Effect: 'Allow',
+  Action: ['apigateway:GET'],
+  Resource: ['*'],
+});
+
+apiCall.assertAtPath('Body', ExpectedResult.stringLikeRegexp('Connected.'));
 
 // const assertion = integ.
 
