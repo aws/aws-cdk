@@ -40,7 +40,6 @@
   },
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^9.0.13",
     "@types/jest": "^29.5.5",
     "@types/yargs": "^15.0.16",
