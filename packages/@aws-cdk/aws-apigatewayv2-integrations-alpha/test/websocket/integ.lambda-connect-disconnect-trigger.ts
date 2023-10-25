@@ -78,11 +78,14 @@ new WebSocketStage(
 
 const integ = new IntegTest(app, 'Integ', { testCases: [stack] });
 
-const apiCall = integ.assertions.awsApiCall('ApiGatewayV2', 'getRoute', {
+const apiCall = integ.assertions.awsApiCall('ApiGatewayV2', 'getRoutes', {
   ApiId: `${webSocketApi.apiId}`, /* required */
-  RouteId: '$connect-Route', /* required */
+  // RouteId: '$connect-Route', /* required */
   // RouteResponseId: 'body', /* required */
 });
+// .next(
+//   integ.assertions.awsApiCall('Response', 'send'),
+// );
 
 apiCall.provider.addToRolePolicy({
   Effect: 'Allow',
@@ -90,7 +93,13 @@ apiCall.provider.addToRolePolicy({
   Resource: ['*'],
 });
 
-apiCall.assertAtPath('Body', ExpectedResult.stringLikeRegexp('Connected.'));
+// const nextCall = integ.assertions.awsApiCall('AWS', 'send')
+
+// apiCall.next(
+//   integ.assertions.awsApiCall('AWS', 'Request.Send'),
+// );
+
+apiCall.assertAtPath('AWS.Response.send()', ExpectedResult.stringLikeRegexp('Connected.'));
 
 // const assertion = integ.
 
