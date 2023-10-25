@@ -6,6 +6,7 @@ import { HotswapMode } from '../../../lib/api/hotswap/common';
 let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
 let mockUpdateResolver: (params: AppSync.UpdateResolverRequest) => AppSync.UpdateResolverResponse;
 let mockUpdateFunction: (params: AppSync.UpdateFunctionRequest) => AppSync.UpdateFunctionResponse;
+let mockUpdateApiKey: (params: AppSync.UpdateApiKeyRequest) => AppSync.UpdateApiKeyResponse;
 let mockStartSchemaCreation: (params: AppSync.StartSchemaCreationRequest) => AppSync.StartSchemaCreationResponse;
 let mockS3GetObject: (params: S3.GetObjectRequest) => S3.GetObjectOutput;
 
@@ -13,10 +14,12 @@ beforeEach(() => {
   hotswapMockSdkProvider = setup.setupHotswapTests();
   mockUpdateResolver = jest.fn();
   mockUpdateFunction = jest.fn();
+  mockUpdateApiKey = jest.fn();
   mockStartSchemaCreation = jest.fn();
   hotswapMockSdkProvider.stubAppSync({
     updateResolver: mockUpdateResolver,
     updateFunction: mockUpdateFunction,
+    updateApiKey: mockUpdateApiKey,
     startSchemaCreation: mockStartSchemaCreation,
   });
 
@@ -568,6 +571,127 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
+  test('calls the updateFunction() API with function version when it receives both function version and runtime with a mapping template in a Function', async () => {
+    // GIVEN
+    const mockListFunctions = jest.fn().mockReturnValue({ functions: [{ name: 'my-function', functionId: 'functionId' }] });
+    hotswapMockSdkProvider.stubAppSync({ listFunctions: mockListFunctions, updateFunction: mockUpdateFunction });
+
+    setup.setCurrentCfnStackTemplate({
+      Resources: {
+        AppSyncFunction: {
+          Type: 'AWS::AppSync::FunctionConfiguration',
+          Properties: {
+            Name: 'my-function',
+            ApiId: 'apiId',
+            DataSourceName: 'my-datasource',
+            FunctionVersion: '2018-05-29',
+            Runtime: 'APPSYNC_JS',
+            RequestMappingTemplate: '## original request template',
+            ResponseMappingTemplate: '## original response template',
+          },
+          Metadata: {
+            'aws:asset:path': 'old-path',
+          },
+        },
+      },
+    });
+    const cdkStackArtifact = setup.cdkStackArtifactOf({
+      template: {
+        Resources: {
+          AppSyncFunction: {
+            Type: 'AWS::AppSync::FunctionConfiguration',
+            Properties: {
+              Name: 'my-function',
+              ApiId: 'apiId',
+              DataSourceName: 'my-datasource',
+              FunctionVersion: '2018-05-29',
+              Runtime: 'APPSYNC_JS',
+              RequestMappingTemplate: '## original request template',
+              ResponseMappingTemplate: '## new response template',
+            },
+            Metadata: {
+              'aws:asset:path': 'new-path',
+            },
+          },
+        },
+      },
+    });
+
+    // WHEN
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+
+    // THEN
+    expect(deployStackResult).not.toBeUndefined();
+    expect(mockUpdateFunction).toHaveBeenCalledWith({
+      apiId: 'apiId',
+      dataSourceName: 'my-datasource',
+      functionId: 'functionId',
+      functionVersion: '2018-05-29',
+      name: 'my-function',
+      requestMappingTemplate: '## original request template',
+      responseMappingTemplate: '## new response template',
+    });
+  });
+
+  test('calls the updateFunction() API with runtime when it receives both function version and runtime with code in a Function', async () => {
+    // GIVEN
+    const mockListFunctions = jest.fn().mockReturnValue({ functions: [{ name: 'my-function', functionId: 'functionId' }] });
+    hotswapMockSdkProvider.stubAppSync({ listFunctions: mockListFunctions, updateFunction: mockUpdateFunction });
+
+    setup.setCurrentCfnStackTemplate({
+      Resources: {
+        AppSyncFunction: {
+          Type: 'AWS::AppSync::FunctionConfiguration',
+          Properties: {
+            Name: 'my-function',
+            ApiId: 'apiId',
+            DataSourceName: 'my-datasource',
+            FunctionVersion: '2018-05-29',
+            Runtime: 'APPSYNC_JS',
+            Code: 'old test code',
+          },
+          Metadata: {
+            'aws:asset:path': 'old-path',
+          },
+        },
+      },
+    });
+    const cdkStackArtifact = setup.cdkStackArtifactOf({
+      template: {
+        Resources: {
+          AppSyncFunction: {
+            Type: 'AWS::AppSync::FunctionConfiguration',
+            Properties: {
+              Name: 'my-function',
+              ApiId: 'apiId',
+              DataSourceName: 'my-datasource',
+              FunctionVersion: '2018-05-29',
+              Runtime: 'APPSYNC_JS',
+              Code: 'new test code',
+            },
+            Metadata: {
+              'aws:asset:path': 'new-path',
+            },
+          },
+        },
+      },
+    });
+
+    // WHEN
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+
+    // THEN
+    expect(deployStackResult).not.toBeUndefined();
+    expect(mockUpdateFunction).toHaveBeenCalledWith({
+      apiId: 'apiId',
+      dataSourceName: 'my-datasource',
+      functionId: 'functionId',
+      runtime: 'APPSYNC_JS',
+      name: 'my-function',
+      code: 'new test code',
+    });
+  });
+
   test('calls the updateFunction() API when it receives only a mapping template s3 location difference in a Function', async () => {
     // GIVEN
     mockS3GetObject = jest.fn().mockImplementation(async () => {
@@ -1030,6 +1154,112 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
     expect(mockGetSchemaCreation).toHaveBeenCalledWith({
       apiId: 'apiId',
+    });
+  });
+
+  test('calls the updateApiKey() API when it receives only a expires property difference in an AppSync ApiKey', async () => {
+    // GIVEN
+    setup.setCurrentCfnStackTemplate({
+      Resources: {
+        AppSyncApiKey: {
+          Type: 'AWS::AppSync::ApiKey',
+          Properties: {
+            ApiId: 'apiId',
+            Expires: 1000,
+            Id: 'key-id',
+          },
+          Metadata: {
+            'aws:asset:path': 'old-path',
+          },
+        },
+      },
+    });
+    setup.pushStackResourceSummaries(
+      setup.stackSummaryOf(
+        'AppSyncApiKey',
+        'AWS::AppSync::ApiKey',
+        'arn:aws:appsync:us-east-1:111111111111:apis/apiId/apikeys/api-key-id',
+      ),
+    );
+    const cdkStackArtifact = setup.cdkStackArtifactOf({
+      template: {
+        Resources: {
+          AppSyncApiKey: {
+            Type: 'AWS::AppSync::ApiKey',
+            Properties: {
+              ApiId: 'apiId',
+              Expires: 1001,
+              Id: 'key-id',
+            },
+            Metadata: {
+              'aws:asset:path': 'new-path',
+            },
+          },
+        },
+      },
+    });
+
+    // WHEN
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+
+    // THEN
+    expect(deployStackResult).not.toBeUndefined();
+    expect(mockUpdateApiKey).toHaveBeenCalledWith({
+      apiId: 'apiId',
+      expires: 1001,
+      id: 'key-id',
+    });
+  });
+
+  test('calls the updateApiKey() API when it receives only a expires property difference and no api-key-id in an AppSync ApiKey', async () => {
+    // GIVEN
+    setup.setCurrentCfnStackTemplate({
+      Resources: {
+        AppSyncApiKey: {
+          Type: 'AWS::AppSync::ApiKey',
+          Properties: {
+            ApiId: 'apiId',
+            Expires: 1000,
+          },
+          Metadata: {
+            'aws:asset:path': 'old-path',
+          },
+        },
+      },
+    });
+    setup.pushStackResourceSummaries(
+      setup.stackSummaryOf(
+        'AppSyncApiKey',
+        'AWS::AppSync::ApiKey',
+        'arn:aws:appsync:us-east-1:111111111111:apis/apiId/apikeys/api-key-id',
+      ),
+    );
+    const cdkStackArtifact = setup.cdkStackArtifactOf({
+      template: {
+        Resources: {
+          AppSyncApiKey: {
+            Type: 'AWS::AppSync::ApiKey',
+            Properties: {
+              ApiId: 'apiId',
+              Expires: 1001,
+            },
+            Metadata: {
+              'aws:asset:path': 'new-path',
+            },
+          },
+        },
+      },
+    });
+
+    // WHEN
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+
+    // THEN
+    expect(deployStackResult).not.toBeUndefined();
+    expect(mockUpdateApiKey).toHaveBeenCalledWith({
+      apiId: 'apiId',
+      expires: 1001,
+      id: 'api-key-id',
     });
   });
 });
