@@ -143,6 +143,8 @@ If the execution fails, an HTTP `500` response is returned with the `error` and 
 To disable default response models generation use the `useDefaultMethodResponses` property:
 
 ```ts
+declare const machine: stepfunctions.IStateMachine;
+
 new apigateway.StepFunctionsRestApi(this, 'StepFunctionsRestApi', {
   stateMachine: machine,
   useDefaultMethodResponses: false,
