@@ -53,7 +53,9 @@ export async function generateCdkApp(stackName: string, stack: string, language:
       case 'csharp':
         stackFileName = `${resolvedOutputPath}/src/${camelCase(formattedStackName, { pascalCase: true })}/${camelCase(formattedStackName, { pascalCase: true })}Stack.cs`;
         break;
-      // TODO: Add Go support
+      case 'go':
+        stackFileName = `${resolvedOutputPath}/${formattedStackName}.go`;
+        break;
       default:
         throw new Error(`${language} is not supported by CDK Migrate. Please choose from: ${MIGRATE_SUPPORTED_LANGUAGES.join(', ')}`);
     }

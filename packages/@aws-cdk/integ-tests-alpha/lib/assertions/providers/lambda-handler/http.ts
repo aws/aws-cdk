@@ -15,11 +15,12 @@ export class HttpHandler extends CustomResourceHandler<HttpRequest, HttpResponse
       statusText: response.statusText,
       headers: response.headers.raw(),
     };
+
+    result.body = await response.text();
     try {
-      const jsonResponse = await response.json();
-      result.body = jsonResponse;
+      result.body = JSON.parse(result.body);
     } catch (e) {
-      result.body = {};
+      // Okay
     }
     return {
       apiCallResponse: result,

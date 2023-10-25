@@ -33,7 +33,7 @@ export class SqsSubscription implements sns.ITopicSubscription {
   public bind(topic: sns.ITopic): sns.TopicSubscriptionConfig {
     // Create subscription under *consuming* construct to make sure it ends up
     // in the correct stack in cases of cross-stack subscriptions.
-    if (!(this.queue instanceof Construct)) {
+    if (!Construct.isConstruct(this.queue)) {
       throw new Error('The supplied Queue object must be an instance of Construct');
     }
     const snsServicePrincipal = new iam.ServicePrincipal('sns.amazonaws.com');
