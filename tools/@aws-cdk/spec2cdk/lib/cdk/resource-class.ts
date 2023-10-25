@@ -33,6 +33,7 @@ import {
   cfnProducerNameFromType,
   propStructNameFromResource,
   staticRequiredTransform,
+  interfaceNameFromResource,
 } from '../naming';
 import { splitDocumentation } from '../util';
 
@@ -45,6 +46,7 @@ const $this = $E(expr.this_());
 
 export class ResourceClass extends ClassType {
   private readonly propsType: StructType;
+  private readonly interface: StructType;
   private readonly decider: ResourceDecider;
   private readonly converter: TypeConverter;
   private readonly module: Module;
@@ -71,6 +73,15 @@ export class ResourceClass extends ClassType {
     });
 
     this.module = Module.of(this);
+
+    this.interface = new StructType(this.scope, {
+      export: true,
+      name: interfaceNameFromResource(this.resource, this.suffix),
+      docs: {
+        summary: `Shared attributes for both \`${classNameFromResource(this.resource)}\` and \`${this.resource.name}\`.`,
+        stability: Stability.External,
+      },
+    });
 
     this.propsType = new StructType(this.scope, {
       export: true,
@@ -103,6 +114,12 @@ export class ResourceClass extends ClassType {
     for (const prop of this.decider.propsProperties) {
       this.propsType.addProperty(prop.propertySpec);
       cfnMapping.add(prop.cfnMapping);
+    }
+
+    // Build the shared interface
+    for (const identifier of this.decider.primaryIdentifier ?? []) {
+      this.interface.addProperty(identifier);
+      // cfnMapping.add(identifier.cfnMapping); // might not be needed because it duplicates the same line of propsProperties
     }
 
     // Build the members of this class

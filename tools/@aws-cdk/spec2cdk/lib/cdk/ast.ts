@@ -57,7 +57,7 @@ export class AstBuilder<T extends Module> {
   }
 
   /**
-   * Build an module for a single resource
+   * Build a module for a single resource
    */
   public static forResource(resource: Resource, props: AstBuilderProps): AstBuilder<ResourceModule> {
     const parts = resource.cloudFormationType.toLowerCase().split('::');
