@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.102.1](https://github.com/aws/aws-cdk/compare/v2.102.0...v2.102.1) (2023-10-25)
+
+### Bug Fixes
+
+* **region-info:** adding missing regions for kinesisfirehose ([#27672](https://github.com/aws/aws-cdk/pull/27672)) ([46372e0](https://github.com/aws/aws-cdk/commit/46372e040cbb713174c3a92ae627eb1fd2d4e836)), closes [#27656](https://github.com/aws/aws-cdk/issues/27656)
+
 ## [2.102.0](https://github.com/aws/aws-cdk/compare/v2.101.1...v2.102.0) (2023-10-18)
 
 
