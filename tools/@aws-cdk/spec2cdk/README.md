@@ -37,6 +37,11 @@ Path patterns can use the following variables:
 
 ```
 
+## Temporary Schemas
+
+You can import additional, temporary CloudFormation Registry Schemas to test new functionality that is not yet published in `@aws-cdk/aws-service-spec`.
+To do this, drop the schema file into `temporary-schemas/us-east-1` and it will be imported on top of the default model.
+
 ## Use as @aws-cdk/cfn2ts replacement
 
 You can use the `cfn2ts` binary as a drop-in replacement for the existing `@aws-cdk/cfn2ts` command.

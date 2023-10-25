@@ -1,5 +1,6 @@
 import * as path from 'path';
 import { loadAwsServiceSpec } from '@aws-cdk/aws-service-spec';
+import { DatabaseBuilder } from '@aws-cdk/service-spec-importers';
 import { SpecDatabase } from '@aws-cdk/service-spec-types';
 import { TypeScriptRenderer } from '@cdklabs/typewriter';
 import * as fs from 'fs-extra';
@@ -118,6 +119,12 @@ export interface GenerateOutput {
 export async function generate(modules: GenerateModuleMap, options: GenerateOptions) {
   enableDebug(options);
   const db = await loadAwsServiceSpec();
+
+  // Load additional schema files
+  await new DatabaseBuilder(db as any, { validate: false })
+    .importCloudFormationRegistryResources(path.join(__dirname, '..', 'temporary-schemas'))
+    .build();
+
   return generator(db, modules, options);
 }
 
