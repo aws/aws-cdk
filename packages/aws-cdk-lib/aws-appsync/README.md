@@ -378,18 +378,10 @@ const firstApi = new appsync.GraphqlApi(this, 'FirstSourceAPI', {
   definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.merged-api-1.graphql')),
 });
 
-firstApi.addNoneDataSource('FirstSourceDS', {
-  name: 'FirstSourceDS',
-});
-
 // second source API
 const secondApi = new appsync.GraphqlApi(this, 'SecondSourceAPI', {
   name: 'SecondSourceAPI',
   definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.merged-api-2.graphql')),
-});
-
-secondApi.addNoneDataSource('SecondSourceDS', {
-  name: 'SecondSourceDS',
 });
 
 // Merged API
