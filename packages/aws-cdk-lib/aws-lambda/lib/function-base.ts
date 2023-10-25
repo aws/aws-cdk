@@ -103,6 +103,11 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
   grantInvokeUrl(identity: iam.IGrantable): iam.Grant;
 
   /**
+   * Grant multiple principals the ability to invoke this Lambda via CompositePrincipal
+   */
+  grantInvokeCompositePrincipal(compositePrincipal: iam.CompositePrincipal): iam.Grant[];
+
+  /**
    * Return the given named metric for this Lambda
    */
   metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
@@ -447,6 +452,13 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       this._functionUrlInvocationGrants[identifier] = grant;
     }
     return grant;
+  }
+
+  /**
+   * Grant multiple principals the ability to invoke this Lambda via CompositePrincipal
+   */
+  public grantInvokeCompositePrincipal(compositePrincipal: iam.CompositePrincipal): iam.Grant[] {
+    return compositePrincipal.principals.map((principal) => this.grantInvoke(principal));
   }
 
   public addEventSource(source: IEventSource) {
