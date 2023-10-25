@@ -290,21 +290,29 @@ export interface ExtensionAttributes {
 
   /**
    * The Amazon Resource Name (ARN) of the extension.
+   *
+   * @default - The ARN is generated.
    */
   readonly extensionArn?: string;
 
   /**
    * The actions of the extension.
+   *
+   * @default - None.
    */
   readonly actions?: Action[];
 
   /**
    * The name of the extension.
+   *
+   * @default - None.
    */
   readonly name?: string;
 
   /**
    * The description of the extension.
+   *
+   * @default - None.
    */
   readonly description?: string;
 }

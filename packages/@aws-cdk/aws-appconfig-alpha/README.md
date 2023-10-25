@@ -330,8 +330,8 @@ declare const alarm: cloudwatch.Alarm;
 new appconfig.Environment(this, 'MyEnvironment', {
   application,
   monitors: [
-    {alarm},
-  ]
+    appconfig.Monitor.fromCloudWatchAlarm(alarm),
+  ],
 });
 ```
 

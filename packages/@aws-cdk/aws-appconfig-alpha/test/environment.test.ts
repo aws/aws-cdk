@@ -208,7 +208,7 @@ describe('environment', () => {
       monitors: [
         Monitor.fromCfnMonitorsProperty({
           alarmArn: 'thisismyalarm',
-          alarmRoleArn: 'thisismyalarmrolearn'
+          alarmRoleArn: 'thisismyalarmrolearn',
         }),
       ],
     });
