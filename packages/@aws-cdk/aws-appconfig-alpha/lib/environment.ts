@@ -327,14 +327,14 @@ export abstract class Monitor {
   public abstract readonly alarmArn: string;
 
   /**
-   * The IAM role ARN for AWS AppConfig to view the alarm state.
-   */
-  public abstract readonly alarmRoleArn?: string;
-
-  /**
    * The type of monitor.
    */
   public abstract readonly monitorType: MonitorType;
+
+  /**
+   * The IAM role ARN for AWS AppConfig to view the alarm state.
+   */
+  public abstract readonly alarmRoleArn?: string;
 }
 
 export interface IEnvironment extends IResource {

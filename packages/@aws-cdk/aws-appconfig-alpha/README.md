@@ -335,6 +335,8 @@ new appconfig.Environment(this, 'MyEnvironment', {
 });
 ```
 
+Environment monitors also support L1 CfnEnvironment.MonitorsProperty constructs. However, this is not the recommended approach for CloudWatch alarms because a role will not be auto-generated if not provided.
+
 ## Extension
 
 An extension augments your ability to inject logic or behavior at different points during the AWS AppConfig workflow of creating or deploying a configuration.
