@@ -295,8 +295,8 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
       alarmConfiguration: cdk.Lazy.any({
         produce: () => renderAlarmConfiguration(
           this.alarms, props.ignorePollAlarmsFailure,
-          removeAlarmsFromDeploymentGroup,
           props.ignoreAlarmConfiguration,
+          removeAlarmsFromDeploymentGroup,
         ),
       }),
       autoRollbackConfiguration: cdk.Lazy.any({ produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback) }),

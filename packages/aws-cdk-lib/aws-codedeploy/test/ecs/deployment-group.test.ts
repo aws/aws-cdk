@@ -913,4 +913,35 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
       },
     });
   });
+
+  test('alarms not enabled when removeAlarms is passed with ignoreAlarmConfiguration', () => {
+    const stack = new cdk.Stack();
+    stack.node.setContext('@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup', true);
+
+    new codedeploy.EcsDeploymentGroup(stack, 'MyDG', {
+      ignoreAlarmConfiguration: true,
+      alarms: [
+        new cloudwatch.Alarm(stack, 'BlueTGUnHealthyHosts', {
+          metric: new cloudwatch.Metric({
+            namespace: 'AWS/ApplicationELB',
+            metricName: 'UnHealthyHostCount',
+          }),
+          threshold: 1,
+          evaluationPeriods: 1,
+        }),
+      ],
+      service: mockEcsService(stack),
+      blueGreenDeploymentConfig: {
+        blueTargetGroup: mockTargetGroup(stack, 'blue'),
+        greenTargetGroup: mockTargetGroup(stack, 'green'),
+        listener: mockListener(stack, 'prod'),
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
+      AlarmConfiguration: {
+        Enabled: false,
+      },
+    });
+  });
 });

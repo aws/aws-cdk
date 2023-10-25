@@ -271,8 +271,8 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
         produce: () => renderAlarmConfiguration(
           this.alarms,
           props.ignorePollAlarmsFailure,
-          removeAlarmsFromDeploymentGroup,
           props.ignoreAlarmConfiguration,
+          removeAlarmsFromDeploymentGroup,
         ),
       }),
       autoRollbackConfiguration: cdk.Lazy.any({ produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback) }),
