@@ -377,17 +377,11 @@ const firstApi = new appsync.GraphqlApi(this, 'FirstSourceAPI', {
   name: 'FirstSourceAPI',
   definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.merged-api-1.graphql')),
 });
-firstApi.addNoneDataSource('FirstSourceDS', {
-  name: cdk.Lazy.string({ produce(): string { return 'FirstSourceDS'; } }),
-});
 
 // second source API
 const secondApi = new appsync.GraphqlApi(this, 'SecondSourceAPI', {
   name: 'SecondSourceAPI',
   definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.merged-api-2.graphql')),
-});
-secondApi.addNoneDataSource('SecondSourceDS', {
-  name: cdk.Lazy.string({ produce(): string { return 'SecondSourceDS'; } }),
 });
 
 // Merged API
@@ -399,6 +393,10 @@ const mergedApi = new appsync.GraphqlApi(this, 'MergedAPI', {
         sourceApi: firstApi,
         mergeType: appsync.MergeType.MANUAL_MERGE,
       },
+      {
+        sourceApi: secondApi,
+        mergeType: appsync.MergeType.AUTO_MERGE,
+      }
     ],
   }),
 });
