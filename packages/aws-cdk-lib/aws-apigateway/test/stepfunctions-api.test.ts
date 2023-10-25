@@ -1,4 +1,4 @@
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import * as sfn from '../../aws-stepfunctions';
 import { StateMachine, DefinitionBody } from '../../aws-stepfunctions';
 import * as cdk from '../../core';
@@ -154,6 +154,75 @@ describe('Step Functions api', () => {
           Ref: 'ApisfnPOSTStartSyncExecutionRole8E8879B0',
         },
       ],
+    });
+  });
+
+  test('default method responses are not created when useDefaultMethodResponses is false', () => {
+    //GIVEN
+    const { stack, stateMachine } = givenSetup();
+
+    //WHEN
+    new apigw.StepFunctionsRestApi(stack, 'StepFunctionsRestApi', {
+      stateMachine: stateMachine,
+      useDefaultMethodResponses: false,
+    });
+
+    //THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+      HttpMethod: 'ANY',
+      MethodResponses: Match.absent(),
+      AuthorizationType: 'NONE',
+      RestApiId: {
+        Ref: 'StepFunctionsRestApiC6E3E883',
+      },
+      ResourceId: {
+        'Fn::GetAtt': [
+          'StepFunctionsRestApiC6E3E883',
+          'RootResourceId',
+        ],
+      },
+      Integration: {
+        Credentials: {
+          'Fn::GetAtt': [
+            'StepFunctionsRestApiANYStartSyncExecutionRole425C03BB',
+            'Arn',
+          ],
+        },
+        IntegrationHttpMethod: 'POST',
+        IntegrationResponses: getIntegrationResponse(),
+        RequestTemplates: {
+          'application/json': {
+            'Fn::Join': [
+              '',
+              [
+                "## Velocity Template used for API Gateway request mapping template\n##\n## This template forwards the request body, header, path, and querystring\n## to the execution input of the state machine.\n##\n## \"@@\" is used here as a placeholder for '\"' to avoid using escape characters.\n\n#set($inputString = '')\n#set($includeHeaders = false)\n#set($includeQueryString = true)\n#set($includePath = true)\n#set($includeAuthorizer = false)\n#set($allParams = $input.params())\n{\n    \"stateMachineArn\": \"",
+                {
+                  Ref: 'StateMachine2E01A3A5',
+                },
+                "\",\n\n    #set($inputString = \"$inputString,@@body@@: $input.body\")\n\n    #if ($includeHeaders)\n        #set($inputString = \"$inputString, @@header@@:{\")\n        #foreach($paramName in $allParams.header.keySet())\n            #set($inputString = \"$inputString @@$paramName@@: @@$util.escapeJavaScript($allParams.header.get($paramName))@@\")\n            #if($foreach.hasNext)\n                #set($inputString = \"$inputString,\")\n            #end\n        #end\n        #set($inputString = \"$inputString }\")\n        \n    #end\n\n    #if ($includeQueryString)\n        #set($inputString = \"$inputString, @@querystring@@:{\")\n        #foreach($paramName in $allParams.querystring.keySet())\n            #set($inputString = \"$inputString @@$paramName@@: @@$util.escapeJavaScript($allParams.querystring.get($paramName))@@\")\n            #if($foreach.hasNext)\n                #set($inputString = \"$inputString,\")\n            #end\n        #end\n        #set($inputString = \"$inputString }\")\n    #end\n\n    #if ($includePath)\n        #set($inputString = \"$inputString, @@path@@:{\")\n        #foreach($paramName in $allParams.path.keySet())\n            #set($inputString = \"$inputString @@$paramName@@: @@$util.escapeJavaScript($allParams.path.get($paramName))@@\")\n            #if($foreach.hasNext)\n                #set($inputString = \"$inputString,\")\n            #end\n        #end\n        #set($inputString = \"$inputString }\")\n    #end\n    \n    #if ($includeAuthorizer)\n        #set($inputString = \"$inputString, @@authorizer@@:{\")\n        #foreach($paramName in $context.authorizer.keySet())\n            #set($inputString = \"$inputString @@$paramName@@: @@$util.escapeJavaScript($context.authorizer.get($paramName))@@\")\n            #if($foreach.hasNext)\n                #set($inputString = \"$inputString,\")\n            #end\n        #end\n        #set($inputString = \"$inputString }\")\n    #end\n\n    #set($requestContext = \"\")\n    ## Check if the request context should be included as part of the execution input\n    #if($requestContext && !$requestContext.empty)\n        #set($inputString = \"$inputString,\")\n        #set($inputString = \"$inputString @@requestContext@@: $requestContext\")\n    #end\n\n    #set($inputString = \"$inputString}\")\n    #set($inputString = $inputString.replaceAll(\"@@\",'\"'))\n    #set($len = $inputString.length() - 1)\n    \"input\": \"{$util.escapeJavaScript($inputString.substring(1,$len)).replaceAll(\"\\\\'\",\"'\")}\"\n}\n",
+              ],
+            ],
+          },
+        },
+        Type: 'AWS',
+        Uri: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':apigateway:',
+              {
+                Ref: 'AWS::Region',
+              },
+              ':states:action/StartSyncExecution',
+            ],
+          ],
+        },
+        PassthroughBehavior: 'NEVER',
+      },
     });
   });
 

@@ -85,7 +85,7 @@ export interface StepFunctionsExecutionIntegrationOptions extends IntegrationOpt
   readonly authorizer?: boolean;
 
   /**
-   * Enable to add default method response models with 200, 400 and 500 status codes.
+   * Whether to add default response models with 200, 400, and 500 status codes to the method.
    *
    * @default true
    */
@@ -119,6 +119,7 @@ export class StepFunctionsIntegration {
 class StepFunctionsExecutionIntegration extends AwsIntegration {
   private readonly stateMachine: sfn.IStateMachine;
   private readonly useDefaultMethodResponses: boolean;
+
   constructor(stateMachine: sfn.IStateMachine, options: StepFunctionsExecutionIntegrationOptions = {}) {
     super({
       service: 'states',

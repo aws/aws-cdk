@@ -98,7 +98,7 @@ export interface StepFunctionsRestApiProps extends RestApiProps {
   readonly role?: iam.IRole;
 
   /**
-   * Enable to add default method response models with 200, 400 and 500 status codes.
+   * Whether to add default response models with 200, 400, and 500 status codes to the method.
    *
    * @default true
    */
