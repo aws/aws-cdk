@@ -119,7 +119,9 @@ export class ResourceClass extends ClassType {
     // Build the shared interface
     for (const identifier of this.decider.primaryIdentifier ?? []) {
       this.interface.addProperty(identifier);
-      // cfnMapping.add(identifier.cfnMapping); // might not be needed because it duplicates the same line of propsProperties
+    }
+    if (this.decider.arn) {
+      this.interface.addProperty(this.decider.arn);
     }
 
     // Build the members of this class

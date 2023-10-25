@@ -128,3 +128,44 @@ test('resource interface with multiple primaryIdentifiers', () => {
     // '}',
   ].join('\n'));
 });
+
+test('resource interface with "Arn"', () => {
+  const service = db.lookup('service', 'name', 'equals', 'aws-s3').only();
+
+  const ast = AstBuilder.forService(service, { db });
+
+  const rendered = renderer.render(ast.module);
+
+  expect(rendered).toContain([
+    '/**',
+    ' * Shared attributes for both `CfnBucket` and `Bucket`.',
+    ' *',
+    ' * @struct',
+    ' * @stability external',
+    ' */',
+    'export interface ICfnBucket {',
+    '  /**',
+    '   * A name for the bucket.',
+    '   *',
+    '   * If you don\'t specify a name, AWS CloudFormation generates a unique ID and uses that ID for the bucket name. The bucket name must contain only lowercase letters, numbers, periods (.), and dashes (-) and must follow [Amazon S3 bucket restrictions and limitations](https://docs.aws.amazon.com/AmazonS3/latest/dev/BucketRestrictions.html) . For more information, see [Rules for naming Amazon S3 buckets](https://docs.aws.amazon.com/AmazonS3/latest/dev/BucketRestrictions.html#bucketnamingrules) in the *Amazon S3 User Guide* .',
+    '   *',
+    '   * > If you specify a name, you can\'t perform updates that require replacement of this resource. You can perform updates that require no or some interruption. If you need to replace the resource, specify a new name.',
+    '   *',
+    '   * @cloudformationRef bucketName',
+    '   *',
+    '   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-s3-bucket.html#cfn-s3-bucket-bucketname',
+    '   */',
+    '  readonly attrBucketName?: string;',
+    // '  /**',
+    // '   * Returns the Amazon Resource Name (ARN) of the specified bucket.',
+    // '   *',
+    // '   * Example: `arn:aws:s3:::DOC-EXAMPLE-BUCKET`',
+    // '   *',
+    // '   * @cloudformationAttribute Arn',
+    // '   */',
+    // '   readonly attrArn: string;',
+    // '}',
+  ].join('\n'));
+});
+
+// TODO: test with ResourceArn and <Resource>Arn too

@@ -28,6 +28,10 @@ export class ResourceDecider {
 
   private readonly taggability?: TaggabilityStyle;
 
+  /**
+   * The arn returned by the resource, if applicable.
+   */
+  public readonly arn?: PropertySpec;
   public readonly primaryIdentifier = new Array<PropertySpec>();
   public readonly propsProperties = new Array<PropsProperty>();
   public readonly classProperties = new Array<ClassProperty>();
@@ -38,11 +42,28 @@ export class ResourceDecider {
 
     this.convertProperties();
     this.convertAttributes();
-    this.convertPrimaryIdentifier(); // must be called after convertProperties and convertAttributes
+
+    // must be called after convertProperties and convertAttributes
+    this.convertPrimaryIdentifier();
+    this.arn = this.findArn();
 
     this.propsProperties.sort((p1, p2) => p1.propertySpec.name.localeCompare(p2.propertySpec.name));
     this.classProperties.sort((p1, p2) => p1.propertySpec.name.localeCompare(p2.propertySpec.name));
     this.classAttributeProperties.sort((p1, p2) => p1.propertySpec.name.localeCompare(p2.propertySpec.name));
+  }
+
+  // TODO: uh, make this not a loop of loops haha
+  private findArn() {
+    // a list of possible names for the arn, in order of most likely to least likely
+    const possibleArnNames = ['Arn', 'ResourceArn', `${this.resource.name}Arn`];
+    for (const arn of possibleArnNames) {
+      const att = this.classAttributeProperties.filter((a) => a.propertySpec.name == attributePropertyName(arn));
+      const prop = this.propsProperties.filter((p) => p.propertySpec.name === propertyNameFromCloudFormation(arn));
+      if (att.length > 0 || prop.length > 0) {
+        return att[0] ? att[0].propertySpec : prop[0].propertySpec;
+      }
+    }
+    return;
   }
 
   private convertPrimaryIdentifier() {
