@@ -588,6 +588,31 @@ const table = new dynamodb.TableV2(this, 'Table', {
 Further reading:
 https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.TableClasses.html
 
+## Tags
+
+You can add tags to a `TableV2` in several ways. By adding the tags to the construct itself it will apply the tags to the 
+primary table.
+```ts
+const table = new dynamodb.TableV2(this, 'Table', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  tags: [{key: 'primaryTableTagKey', value: 'primaryTableTagValue'}],
+});
+```
+
+You can also add tags to replica tables by specifying them within the replica table properties.
+
+```ts
+const table = new dynamodb.TableV2(this, 'Table', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  replicas: [
+    {
+      region: 'us-west-1',
+      tags: [{key: 'replicaTableTagKey', value: 'replicaTableTagValue'}]
+    }
+  ]
+});
+```
+
 ## Referencing Existing Global Tables
 
 To reference an existing DynamoDB table in your CDK application, use the `TableV2.fromTableName`, `TableV2.fromTableArn`, or `TableV2.fromTableAttributes`
