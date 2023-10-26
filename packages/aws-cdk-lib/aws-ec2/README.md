@@ -1741,6 +1741,8 @@ new ec2.FlowLog(this, 'FlowLogsCW', {
 You can create from a transit gateway attachment.
 
 ```ts
+declare const vpc: ec2.Vpc;
+
 const transitGateway = new ec2.CfnTransitGateway(this, 'TransitGateway', {});
 const transitGatewayAttachment = new ec2.CfnTransitGatewayVpcAttachment(
   this,
