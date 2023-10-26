@@ -101,6 +101,128 @@ describe('cloudformation stack', () => {
     });
   });
 
+  test('drift detection check with tag ruleScope', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new config.CloudFormationStackDriftDetectionCheck(stack, 'Drift', {
+      ruleScope: config.RuleScope.fromTag('mytag', 'myvalue'),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Config::ConfigRule', {
+      Source: {
+        Owner: 'AWS',
+        SourceIdentifier: 'CLOUDFORMATION_STACK_DRIFT_DETECTION_CHECK',
+      },
+      InputParameters: {
+        cloudformationRoleArn: {
+          'Fn::GetAtt': [
+            'DriftRole8A5FB833',
+            'Arn',
+          ],
+        },
+      },
+      Scope: {
+        TagKey: 'mytag',
+        TagValue: 'myvalue',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'config.amazonaws.com',
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      ManagedPolicyArns: [
+        {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':iam::aws:policy/ReadOnlyAccess',
+            ],
+          ],
+        },
+      ],
+    });
+  });
+
+  test('drift detection check with ownStackOnly', () => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'MyStack');
+
+    // WHEN
+    new config.CloudFormationStackDriftDetectionCheck(stack, 'Drift', {
+      ownStackOnly: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Config::ConfigRule', {
+      Source: {
+        Owner: 'AWS',
+        SourceIdentifier: 'CLOUDFORMATION_STACK_DRIFT_DETECTION_CHECK',
+      },
+      InputParameters: {
+        cloudformationRoleArn: {
+          'Fn::GetAtt': [
+            'DriftRole8A5FB833',
+            'Arn',
+          ],
+        },
+      },
+      Scope: {
+        ComplianceResourceTypes: [
+          'AWS::CloudFormation::Stack',
+        ],
+        ComplianceResourceId: {
+          Ref: 'AWS::StackId',
+        },
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'config.amazonaws.com',
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      ManagedPolicyArns: [
+        {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':iam::aws:policy/ReadOnlyAccess',
+            ],
+          ],
+        },
+      ],
+    });
+  });
+
   test('notification check', () => {
     // GIVEN
     const stack = new cdk.Stack();

@@ -82,8 +82,14 @@ export class CloudFormationStackDriftDetectionCheck extends ManagedRule {
       },
     });
 
-    this.ruleScope = RuleScope.fromResource( ResourceType.CLOUDFORMATION_STACK, props.ownStackOnly ? Stack.of(this).stackId : undefined );
+    if (props.ownStackOnly) {
+      this.ruleScope = RuleScope.fromResource(ResourceType.CLOUDFORMATION_STACK, Stack.of(this).stackId);
+    }
 
+    if (!this.ruleScope) {
+      this.ruleScope = RuleScope.fromResources([ResourceType.CLOUDFORMATION_STACK]);
+    }
+    
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('config.amazonaws.com'),
       managedPolicies: [
