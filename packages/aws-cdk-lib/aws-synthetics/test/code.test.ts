@@ -75,7 +75,7 @@ describe(synthetics.Code.fromAsset, () => {
         handler: 'canary.handler',
         code: directoryAsset,
       }),
-      runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_1_3,
+      runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_2_0,
     });
 
     // THEN

@@ -239,7 +239,6 @@
         "s3:DeleteObject*",
         "s3:GetBucket*",
         "s3:GetObject*",
-        "s3:HeadObject",
         "s3:List*",
         "s3:PutObject",
         "s3:PutObjectLegalHold",
@@ -337,7 +336,7 @@
         },
         "OutputArtifacts": [
          {
-          "Name": "c8afb86a650460a8cc607cf72a0827e7c93d0d6d5c_Source"
+          "Name": "c8afb86a650460a8cc607cf72a0827e7c93d0d6d5c_key_Source"
          }
         ],
         "RoleArn": {
@@ -367,7 +366,7 @@
         },
         "InputArtifacts": [
          {
-          "Name": "c8afb86a650460a8cc607cf72a0827e7c93d0d6d5c_Source"
+          "Name": "c8afb86a650460a8cc607cf72a0827e7c93d0d6d5c_key_Source"
          }
         ],
         "Name": "Synth",
@@ -403,7 +402,7 @@
         },
         "InputArtifacts": [
          {
-          "Name": "c8afb86a650460a8cc607cf72a0827e7c93d0d6d5c_Source"
+          "Name": "c8afb86a650460a8cc607cf72a0827e7c93d0d6d5c_key_Source"
          }
         ],
         "Name": "Produce",
@@ -431,7 +430,7 @@
         },
         "InputArtifacts": [
          {
-          "Name": "c8afb86a650460a8cc607cf72a0827e7c93d0d6d5c_Source"
+          "Name": "c8afb86a650460a8cc607cf72a0827e7c93d0d6d5c_key_Source"
          }
         ],
         "Name": "Consume",
@@ -494,7 +493,6 @@
        "Action": [
         "s3:GetBucket*",
         "s3:GetObject*",
-        "s3:HeadObject",
         "s3:List*"
        ],
        "Effect": "Allow",
@@ -685,7 +683,6 @@
         "s3:DeleteObject*",
         "s3:GetBucket*",
         "s3:GetObject*",
-        "s3:HeadObject",
         "s3:List*",
         "s3:PutObject",
         "s3:PutObjectLegalHold",
@@ -786,7 +783,6 @@
         "s3:DeleteObject*",
         "s3:GetBucket*",
         "s3:GetObject*",
-        "s3:HeadObject",
         "s3:List*",
         "s3:PutObject",
         "s3:PutObjectLegalHold",
@@ -913,7 +909,6 @@
        "Action": [
         "s3:GetBucket*",
         "s3:GetObject*",
-        "s3:HeadObject",
         "s3:List*"
        ],
        "Effect": "Allow",
@@ -1022,7 +1017,6 @@
         "s3:DeleteObject*",
         "s3:GetBucket*",
         "s3:GetObject*",
-        "s3:HeadObject",
         "s3:List*",
         "s3:PutObject",
         "s3:PutObjectLegalHold",
@@ -1149,7 +1143,6 @@
        "Action": [
         "s3:GetBucket*",
         "s3:GetObject*",
-        "s3:HeadObject",
         "s3:List*"
        ],
        "Effect": "Allow",
