@@ -70,6 +70,21 @@ test('throws when a policy is not defined for a custom version', () => {
   })).toThrowError("'albControllerOptions.policy' is required when using a custom controller version");
 });
 
+test.each(['us-gov-west-1', 'cn-north-1'])('stack does not include hard-coded partition', (region) => {
+  const { stack } = testFixture(region);
+  const cluster = new Cluster(stack, 'Cluster', {
+    version: KubernetesVersion.V1_25,
+  });
+
+  AlbController.create(stack, {
+    cluster,
+    version: AlbControllerVersion.V2_5_1,
+  });
+
+  const template = Template.fromStack(stack);
+  expect(JSON.stringify(template)).not.toContain('arn:aws');
+});
+
 test('correct helm chart version is set for selected alb controller version', () => {
   const { stack } = testFixture();
 
