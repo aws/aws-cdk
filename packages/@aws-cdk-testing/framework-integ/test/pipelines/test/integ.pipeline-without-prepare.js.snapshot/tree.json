@@ -509,7 +509,7 @@
                                 },
                                 "outputArtifacts": [
                                   {
-                                    "name": "c8506b445957b8105ede7b68ebe35e9406d642cd0c_key_Source"
+                                    "name": "c8506b445957b8105ede7b68ebe35e9406d642cd0c_Source"
                                   }
                                 ],
                                 "actionTypeId": {
@@ -541,7 +541,7 @@
                                 "name": "Synth",
                                 "inputArtifacts": [
                                   {
-                                    "name": "c8506b445957b8105ede7b68ebe35e9406d642cd0c_key_Source"
+                                    "name": "c8506b445957b8105ede7b68ebe35e9406d642cd0c_Source"
                                   }
                                 ],
                                 "outputArtifacts": [

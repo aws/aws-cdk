@@ -7,7 +7,7 @@ digraph G {
 "BEGIN Build" [shape="cds", style="filled", fillcolor="#b7deff"];
 "END Build" [shape="cds", style="filled", fillcolor="#b7deff"];
 "Build.Synth";
-"Source.c81125c577cddc5477d274144695873cfd8965e6a0-key" -> "Build.Synth";
+"Source.c81125c577cddc5477d274144695873cfd8965e6a0" -> "Build.Synth";
 "BEGIN Build" -> "Build.Synth";
 "Build.Synth" -> "END Build";
 "BEGIN Assets" [shape="cds", style="filled", fillcolor="#b7deff"];
@@ -30,7 +30,7 @@ digraph G {
 "END Beta.Stack1" -> "END Beta";
 "BEGIN Source" [shape="cds", style="filled", fillcolor="#b7deff"];
 "END Source" [shape="cds", style="filled", fillcolor="#b7deff"];
-"Source.c81125c577cddc5477d274144695873cfd8965e6a0-key";
-"BEGIN Source" -> "Source.c81125c577cddc5477d274144695873cfd8965e6a0-key";
-"Source.c81125c577cddc5477d274144695873cfd8965e6a0-key" -> "END Source";
+"Source.c81125c577cddc5477d274144695873cfd8965e6a0";
+"BEGIN Source" -> "Source.c81125c577cddc5477d274144695873cfd8965e6a0";
+"Source.c81125c577cddc5477d274144695873cfd8965e6a0" -> "END Source";
 }
