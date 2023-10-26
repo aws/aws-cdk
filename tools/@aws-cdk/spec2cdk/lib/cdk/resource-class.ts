@@ -20,6 +20,7 @@ import {
   Stability,
   ObjectLiteral,
   Module,
+  InterfaceType,
 } from '@cdklabs/typewriter';
 import { CDK_CORE, CONSTRUCTS } from './cdk';
 import { CloudFormationMapping } from './cloudformation-mapping';
@@ -46,7 +47,7 @@ const $this = $E(expr.this_());
 
 export class ResourceClass extends ClassType {
   private readonly propsType: StructType;
-  private readonly interface: StructType;
+  private readonly interface: InterfaceType;
   private readonly decider: ResourceDecider;
   private readonly converter: TypeConverter;
   private readonly module: Module;
@@ -74,7 +75,7 @@ export class ResourceClass extends ClassType {
 
     this.module = Module.of(this);
 
-    this.interface = new StructType(this.scope, {
+    this.interface = new InterfaceType(this.scope, {
       export: true,
       name: interfaceNameFromResource(this.resource, this.suffix),
       docs: {
@@ -118,10 +119,16 @@ export class ResourceClass extends ClassType {
 
     // Build the shared interface
     for (const identifier of this.decider.primaryIdentifier ?? []) {
-      this.interface.addProperty(identifier);
+      this.interface.addProperty({
+        ...identifier,
+        immutable: true,
+      });
     }
     if (this.decider.arn) {
-      this.interface.addProperty(this.decider.arn);
+      this.interface.addProperty({
+        ...this.decider.arn,
+        immutable: true,
+      });
     }
 
     // Build the members of this class
