@@ -146,4 +146,24 @@ describe('schedule target input', () => {
       },
     });
   });
+
+  test('can override target input', () => {
+    // WHEN
+    const input = ScheduleTargetInput.fromText('Original Input');
+    new Schedule(stack, 'TestSchedule', {
+      schedule: expr,
+      target: new SomeLambdaTarget(func, input),
+      targetOverrides: {
+        input: ScheduleTargetInput.fromText('Overridden Input'),
+      },
+      enabled: false,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Scheduler::Schedule', {
+      Target: {
+        Input: '"Overridden Input"',
+      },
+    });
+  });
 });
