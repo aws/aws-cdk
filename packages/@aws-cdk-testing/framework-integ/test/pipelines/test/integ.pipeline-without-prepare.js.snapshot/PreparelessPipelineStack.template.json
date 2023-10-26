@@ -414,7 +414,7 @@
         },
         "OutputArtifacts": [
          {
-          "Name": "c8506b445957b8105ede7b68ebe35e9406d642cd0c_key_Source"
+          "Name": "c8506b445957b8105ede7b68ebe35e9406d642cd0c_Source"
          }
         ],
         "RoleArn": {
@@ -444,7 +444,7 @@
         },
         "InputArtifacts": [
          {
-          "Name": "c8506b445957b8105ede7b68ebe35e9406d642cd0c_key_Source"
+          "Name": "c8506b445957b8105ede7b68ebe35e9406d642cd0c_Source"
          }
         ],
         "Name": "Synth",
