@@ -66,30 +66,33 @@ export abstract class FlowLogResourceType {
   /**
    * The subnet to attach the Flow Log to
    */
-  public static fromSubnet(subnet: ISubnet): FlowLogResourceType {
+  public static fromSubnet(subnet: ISubnet, trafficType?: FlowLogTrafficType): FlowLogResourceType {
     return {
       resourceType: 'Subnet',
       resourceId: subnet.subnetId,
+      trafficType,
     };
   }
 
   /**
    * The VPC to attach the Flow Log to
    */
-  public static fromVpc(vpc: IVpc): FlowLogResourceType {
+  public static fromVpc(vpc: IVpc, trafficType?: FlowLogTrafficType): FlowLogResourceType {
     return {
       resourceType: 'VPC',
       resourceId: vpc.vpcId,
+      trafficType,
     };
   }
 
   /**
    * The Network Interface to attach the Flow Log to
    */
-  public static fromNetworkInterfaceId(id: string): FlowLogResourceType {
+  public static fromNetworkInterfaceId(id: string, trafficType?: FlowLogTrafficType): FlowLogResourceType {
     return {
       resourceType: 'NetworkInterface',
       resourceId: id,
+      trafficType,
     };
   }
 
@@ -122,6 +125,11 @@ export abstract class FlowLogResourceType {
    * The Id of the resource that the flow log should be attached to.
    */
   public abstract resourceId: string;
+
+  /**
+   * The type of traffic to log.
+   */
+  public abstract trafficType?: FlowLogTrafficType;
 }
 
 /**
@@ -636,6 +644,7 @@ export interface FlowLogOptions {
    * The type of traffic to log. You can log traffic that the resource accepts or rejects, or all traffic.
    *
    * @default ALL
+   * @deprecated Use `resourceType.trafficType` instead
    */
   readonly trafficType?: FlowLogTrafficType;
 
@@ -766,11 +775,6 @@ export class FlowLog extends FlowLogBase {
       }).join(' ');
     }
 
-    let trafficType: string | undefined = undefined;
-    if (!['TransitGateway', 'TransitGatewayAttachment'].includes(props.resourceType.resourceType)) {
-      trafficType = props.trafficType ?? FlowLogTrafficType.ALL;
-    }
-
     const flowLog = new CfnFlowLog(this, 'FlowLog', {
       destinationOptions: destinationConfig.destinationOptions,
       deliverLogsPermissionArn: this.iamRole ? this.iamRole.roleArn : undefined,
@@ -779,7 +783,7 @@ export class FlowLog extends FlowLogBase {
       maxAggregationInterval: props.maxAggregationInterval,
       resourceId: props.resourceType.resourceId,
       resourceType: props.resourceType.resourceType,
-      trafficType,
+      trafficType: props.trafficType ?? props.resourceType.trafficType,
       logFormat: customLogFormat,
       logDestination,
     });
