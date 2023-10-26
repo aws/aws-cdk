@@ -561,8 +561,8 @@ function validateResourcePathPart(part: string) {
     }
   }
 
-  if (!/^[a-zA-Z0-9:\.\_\-]+$/.test(part)) {
-    throw new Error(`Resource's path part only allow [a-zA-Z0-9:._-], an optional trailing '+'
+  if (!/^[a-zA-Z0-9:\.\_\-\$]+$/.test(part)) {
+    throw new Error(`Resource's path part only allow [a-zA-Z0-9:._-$], an optional trailing '+'
       and curly braces at the beginning and the end: ${part}`);
   }
 }
