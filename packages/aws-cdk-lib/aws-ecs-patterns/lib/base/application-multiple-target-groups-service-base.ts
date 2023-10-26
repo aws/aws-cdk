@@ -585,7 +585,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
   private validateLbProps(props: ApplicationLoadBalancerProps[]) {
     for (let prop of props) {
       if (prop.idleTimeout) {
-        const idleTimeout = props.idleTimeout.toSeconds();
+        const idleTimeout = prop.idleTimeout.toSeconds();
         if (idleTimeout > Duration.seconds(4000).toSeconds() || idleTimeout < Duration.seconds(1).toSeconds()) {
           throw new Error('Load balancer idle timeout must be between 1 and 4000 seconds.');
         }
