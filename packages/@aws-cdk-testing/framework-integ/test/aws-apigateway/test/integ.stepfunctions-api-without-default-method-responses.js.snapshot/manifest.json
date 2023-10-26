@@ -1,28 +1,28 @@
 {
   "version": "34.0.0",
   "artifacts": {
-    "aws-appconfig-environment.assets": {
+    "SfnRestApiWithoutDefaultMethodResponses.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-appconfig-environment.assets.json",
+        "file": "SfnRestApiWithoutDefaultMethodResponses.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-appconfig-environment": {
+    "SfnRestApiWithoutDefaultMethodResponses": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-appconfig-environment.template.json",
+        "templateFile": "SfnRestApiWithoutDefaultMethodResponses.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ea755ac1ccc8e2c8816cf7e0a2b3789e472a166174037cb50eb45ec4ed621ba4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c620c2b41560455e78429a8f5815c6e31bfc885931c79997531b8eaefcb3a767.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-appconfig-environment.assets"
+          "SfnRestApiWithoutDefaultMethodResponses.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,67 +31,97 @@
         }
       },
       "dependencies": [
-        "aws-appconfig-environment.assets"
+        "SfnRestApiWithoutDefaultMethodResponses.assets"
       ],
       "metadata": {
-        "/aws-appconfig-environment/MyApplicationForEnv/Resource": [
+        "/SfnRestApiWithoutDefaultMethodResponses/StateMachine/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyApplicationForEnv1F597ED9"
+            "data": "StateMachineRoleB840431D"
           }
         ],
-        "/aws-appconfig-environment/MyAlarm/Resource": [
+        "/SfnRestApiWithoutDefaultMethodResponses/StateMachine/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyAlarm696658B6"
+            "data": "StateMachine2E01A3A5"
           }
         ],
-        "/aws-appconfig-environment/MyRole/Resource": [
+        "/SfnRestApiWithoutDefaultMethodResponses/StepFunctionsRestApi/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyRoleF48FFE04"
+            "data": "StepFunctionsRestApiC6E3E883"
           }
         ],
-        "/aws-appconfig-environment/MyEnvironment/Role0/Resource": [
+        "/SfnRestApiWithoutDefaultMethodResponses/StepFunctionsRestApi/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyEnvironmentRole01C8C013F"
+            "data": "StepFunctionsRestApiDeployment8FF8D52A481e2c6fad35132b46721c49969398fb"
           }
         ],
-        "/aws-appconfig-environment/MyEnvironment/Resource": [
+        "/SfnRestApiWithoutDefaultMethodResponses/StepFunctionsRestApi/DeploymentStage.prod/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyEnvironment465E4DEA"
+            "data": "StepFunctionsRestApiDeploymentStageprodE1E3545E"
           }
         ],
-        "/aws-appconfig-environment/BootstrapVersion": [
+        "/SfnRestApiWithoutDefaultMethodResponses/StepFunctionsRestApi/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StepFunctionsRestApiEndpoint0DD66FCB"
+          }
+        ],
+        "/SfnRestApiWithoutDefaultMethodResponses/StepFunctionsRestApi/Default/ANY/StartSyncExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StepFunctionsRestApiANYStartSyncExecutionRole425C03BB"
+          }
+        ],
+        "/SfnRestApiWithoutDefaultMethodResponses/StepFunctionsRestApi/Default/ANY/StartSyncExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StepFunctionsRestApiANYStartSyncExecutionRoleDefaultPolicy7B6D0CED"
+          }
+        ],
+        "/SfnRestApiWithoutDefaultMethodResponses/StepFunctionsRestApi/Default/ANY/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StepFunctionsRestApiANY7699CA92"
+          }
+        ],
+        "/SfnRestApiWithoutDefaultMethodResponses/ApiEndpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiEndpoint"
+          }
+        ],
+        "/SfnRestApiWithoutDefaultMethodResponses/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-appconfig-environment/CheckBootstrapVersion": [
+        "/SfnRestApiWithoutDefaultMethodResponses/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-appconfig-environment"
+      "displayName": "SfnRestApiWithoutDefaultMethodResponses"
     },
-    "appconfigenvironmentDefaultTestDeployAssert75BD28E7.assets": {
+    "sfnrestapiwithoutdefaultmethodresponsesDefaultTestDeployAssert7E2275C8.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "appconfigenvironmentDefaultTestDeployAssert75BD28E7.assets.json",
+        "file": "sfnrestapiwithoutdefaultmethodresponsesDefaultTestDeployAssert7E2275C8.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "appconfigenvironmentDefaultTestDeployAssert75BD28E7": {
+    "sfnrestapiwithoutdefaultmethodresponsesDefaultTestDeployAssert7E2275C8": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "appconfigenvironmentDefaultTestDeployAssert75BD28E7.template.json",
+        "templateFile": "sfnrestapiwithoutdefaultmethodresponsesDefaultTestDeployAssert7E2275C8.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -100,7 +130,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "appconfigenvironmentDefaultTestDeployAssert75BD28E7.assets"
+          "sfnrestapiwithoutdefaultmethodresponsesDefaultTestDeployAssert7E2275C8.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -109,23 +139,23 @@
         }
       },
       "dependencies": [
-        "appconfigenvironmentDefaultTestDeployAssert75BD28E7.assets"
+        "sfnrestapiwithoutdefaultmethodresponsesDefaultTestDeployAssert7E2275C8.assets"
       ],
       "metadata": {
-        "/appconfig-environment/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/sfn-restapi-without-default-method-responses/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/appconfig-environment/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/sfn-restapi-without-default-method-responses/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "appconfig-environment/DefaultTest/DeployAssert"
+      "displayName": "sfn-restapi-without-default-method-responses/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
