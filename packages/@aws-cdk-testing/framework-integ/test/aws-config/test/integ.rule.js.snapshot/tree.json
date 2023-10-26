@@ -200,11 +200,6 @@
                         ]
                       }
                     },
-                    "scope": {
-                      "complianceResourceTypes": [
-                        "AWS::CloudFormation::Stack"
-                      ]
-                    },
                     "source": {
                       "owner": "AWS",
                       "sourceIdentifier": "CLOUDFORMATION_STACK_DRIFT_DETECTION_CHECK"
@@ -322,7 +317,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_config.CloudFormationStackDriftDetectionCheck",
+              "fqn": "aws-cdk-lib.aws_config.ManagedRule",
               "version": "0.0.0"
             }
           },

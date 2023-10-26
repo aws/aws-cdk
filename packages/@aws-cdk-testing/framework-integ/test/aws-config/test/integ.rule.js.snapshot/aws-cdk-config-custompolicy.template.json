@@ -123,11 +123,6 @@
       ]
      }
     },
-    "Scope": {
-     "ComplianceResourceTypes": [
-      "AWS::CloudFormation::Stack"
-     ]
-    },
     "Source": {
      "Owner": "AWS",
      "SourceIdentifier": "CLOUDFORMATION_STACK_DRIFT_DETECTION_CHECK"

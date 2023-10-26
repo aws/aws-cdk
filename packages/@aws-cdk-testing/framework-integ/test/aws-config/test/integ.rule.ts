@@ -33,7 +33,7 @@ new config.CustomRule(stack, 'Custom', {
   ruleScope: config.RuleScope.fromResources([config.ResourceType.EC2_INSTANCE]),
 });
 
-// A rule to detect stacks drifts
+// A rule to detect stack drifts
 const driftRule = new config.CloudFormationStackDriftDetectionCheck(stack, 'Drift');
 
 // Topic for compliance events
@@ -42,6 +42,16 @@ const complianceTopic = new sns.Topic(stack, 'ComplianceTopic');
 // Send notification on compliance change
 driftRule.onComplianceChange('ComplianceChange', {
   target: new targets.SnsTopic(complianceTopic),
+});
+
+// A rule to detect stack drifts filtered by tags
+new config.CloudFormationStackDriftDetectionCheck(stack, 'TagDrift', {
+  ruleScope: config.RuleScope.fromTag('tagKey', 'tagValue'),
+});
+
+// A rule to detect stack drifts limited to the stack where the rule is deployed
+new config.CloudFormationStackDriftDetectionCheck(stack, 'OwnDrift', {
+  ownStackOnly: true,
 });
 
 new integ.IntegTest(app, 'aws-cdk-config-rule-integ', {
