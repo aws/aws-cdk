@@ -7,7 +7,7 @@ digraph G {
 "BEGIN Build" [shape="cds", style="filled", fillcolor="#b7deff"];
 "END Build" [shape="cds", style="filled", fillcolor="#b7deff"];
 "Build.Synth";
-"Source.c8506b445957b8105ede7b68ebe35e9406d642cd0c-key" -> "Build.Synth";
+"Source.c8506b445957b8105ede7b68ebe35e9406d642cd0c" -> "Build.Synth";
 "BEGIN Build" -> "Build.Synth";
 "Build.Synth" -> "END Build";
 "BEGIN MyStage" [shape="cds", style="filled", fillcolor="#b7deff"];
@@ -23,7 +23,7 @@ digraph G {
 "END MyStage.Stack" -> "END MyStage";
 "BEGIN Source" [shape="cds", style="filled", fillcolor="#b7deff"];
 "END Source" [shape="cds", style="filled", fillcolor="#b7deff"];
-"Source.c8506b445957b8105ede7b68ebe35e9406d642cd0c-key";
-"BEGIN Source" -> "Source.c8506b445957b8105ede7b68ebe35e9406d642cd0c-key";
-"Source.c8506b445957b8105ede7b68ebe35e9406d642cd0c-key" -> "END Source";
+"Source.c8506b445957b8105ede7b68ebe35e9406d642cd0c";
+"BEGIN Source" -> "Source.c8506b445957b8105ede7b68ebe35e9406d642cd0c";
+"Source.c8506b445957b8105ede7b68ebe35e9406d642cd0c" -> "END Source";
 }
