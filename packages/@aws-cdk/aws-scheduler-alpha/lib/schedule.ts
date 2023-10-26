@@ -1,4 +1,6 @@
 import { IResource, Resource } from 'aws-cdk-lib';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+import * as kms from 'aws-cdk-lib/aws-kms';
 import { CfnSchedule } from 'aws-cdk-lib/aws-scheduler';
 import { Construct } from 'constructs';
 import { IGroup } from './group';
@@ -21,6 +23,11 @@ export interface ISchedule extends IResource {
    * The arn of the schedule.
    */
   readonly scheduleArn: string;
+
+  /**
+   * The customer managed KMS key that EventBridge Scheduler will use to encrypt and decrypt your data.
+   */
+  readonly key?: kms.IKey;
 }
 
 /**
@@ -66,12 +73,112 @@ export interface ScheduleProps {
    * @default true
    */
   readonly enabled?: boolean;
+
+  /**
+   * The customer managed KMS key that EventBridge Scheduler will use to encrypt and decrypt your data.
+   *
+   * @default - All events in Scheduler are encrypted with a key that AWS owns and manages.
+   */
+  readonly key?: kms.IKey;
 }
 
 /**
  * An EventBridge Schedule
  */
 export class Schedule extends Resource implements ISchedule {
+  /**
+   * Return the given named metric for all schedules.
+   *
+   * @default - sum over 5 minutes
+   */
+  public static metricAll(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      namespace: 'AWS/Scheduler',
+      metricName,
+      statistic: 'sum',
+      ...props,
+    });
+  }
+
+  /**
+   * Metric for the number of invocations that were throttled across all schedules.
+   *
+   * @see https://docs.aws.amazon.com/scheduler/latest/UserGuide/scheduler-quotas.html
+   *
+   * @default - sum over 5 minutes
+   */
+  public static metricAllThrottled(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metricAll('InvocationThrottleCount', props);
+  }
+
+  /**
+   * Metric for all invocation attempts across all schedules.
+   *
+   * @default - sum over 5 minutes
+   */
+  public static metricAllAttempts(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metricAll('InvocationAttemptCount', props);
+  }
+  /**
+   * Emitted when the target returns an exception after EventBridge Scheduler calls the target API across all schedules.
+   *
+   * @default - sum over 5 minutes
+   */
+  public static metricAllErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metricAll('TargetErrorCount', props);
+  }
+
+  /**
+   * Metric for invocation failures due to API throttling by the target across all schedules.
+   *
+   * @default - sum over 5 minutes
+   */
+  public static metricAllTargetThrottled(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metricAll('TargetErrorThrottledCount', props);
+  }
+
+  /**
+   * Metric for dropped invocations when EventBridge Scheduler stops attempting to invoke the target after a schedule's retry policy has been exhausted.
+   * Metric is calculated for all schedules.
+   *
+   * @default - sum over 5 minutes
+   */
+  public static metricAllDropped(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metricAll('InvocationDroppedCount', props);
+  }
+
+  /**
+   * Metric for invocations delivered to the DLQ across all schedules.
+   *
+   * @default - sum over 5 minutes
+   */
+  public static metricAllSentToDLQ(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metricAll('InvocationsSentToDeadLetterCount', props);
+  }
+
+  /**
+   * Metric for failed invocations that also failed to deliver to DLQ across all schedules.
+   *
+   * @default - sum over 5 minutes
+   */
+  public static metricAllFailedToBeSentToDLQ(errorCode?: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    if (errorCode) {
+      return this.metricAll(`InvocationsFailedToBeSentToDeadLetterCount_${errorCode}`, props);
+    }
+
+    return this.metricAll('InvocationsFailedToBeSentToDeadLetterCount', props);
+  }
+
+  /**
+   * Metric for delivery of failed invocations to DLQ when the payload of the event sent to the DLQ exceeds the maximum size allowed by Amazon SQS.
+   * Metric is calculated for all schedules.
+   *
+   * @default - sum over 5 minutes
+   */
+  public static metricAllSentToDLQTrunacted(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metricAll('InvocationsSentToDeadLetterCount_Truncated_MessageSizeExceeded', props);
+  }
+
   /**
    * The schedule group associated with this schedule.
    */
@@ -85,6 +192,11 @@ export class Schedule extends Resource implements ISchedule {
    */
   public readonly scheduleName: string;
 
+  /**
+   * The customer managed KMS key that EventBridge Scheduler will use to encrypt and decrypt your data.
+   */
+  readonly key?: kms.IKey;
+
   constructor(scope: Construct, id: string, props: ScheduleProps) {
     super(scope, id, {
       physicalName: props.scheduleName,
@@ -94,6 +206,11 @@ export class Schedule extends Resource implements ISchedule {
 
     const targetConfig = props.target.bind(this);
 
+    this.key = props.key;
+    if (this.key) {
+      this.key.grantEncryptDecrypt(targetConfig.role);
+    }
+
     const resource = new CfnSchedule(this, 'Resource', {
       name: this.physicalName,
       flexibleTimeWindow: { mode: 'OFF' },
@@ -101,6 +218,7 @@ export class Schedule extends Resource implements ISchedule {
       scheduleExpressionTimezone: props.schedule.timeZone?.timezoneName,
       groupName: this.group?.groupName,
       state: (props.enabled ?? true) ? 'ENABLED' : 'DISABLED',
+      kmsKeyArn: this.key?.keyArn,
       target: {
         arn: targetConfig.arn,
         roleArn: targetConfig.role.roleArn,
