@@ -7,7 +7,7 @@ digraph G {
 "BEGIN Build" [shape="cds", style="filled", fillcolor="#b7deff"];
 "END Build" [shape="cds", style="filled", fillcolor="#b7deff"];
 "Build.Synth";
-"Source.c82506a27b454f271b71bfc81dcc633cd314f52071-key" -> "Build.Synth";
+"Source.c82506a27b454f271b71bfc81dcc633cd314f52071" -> "Build.Synth";
 "BEGIN Build" -> "Build.Synth";
 "Build.Synth" -> "END Build";
 "BEGIN UpdatePipeline" [shape="cds", style="filled", fillcolor="#b7deff"];
@@ -18,7 +18,7 @@ digraph G {
 "UpdatePipeline.SelfMutate" -> "END UpdatePipeline";
 "BEGIN Source" [shape="cds", style="filled", fillcolor="#b7deff"];
 "END Source" [shape="cds", style="filled", fillcolor="#b7deff"];
-"Source.c82506a27b454f271b71bfc81dcc633cd314f52071-key";
-"BEGIN Source" -> "Source.c82506a27b454f271b71bfc81dcc633cd314f52071-key";
-"Source.c82506a27b454f271b71bfc81dcc633cd314f52071-key" -> "END Source";
+"Source.c82506a27b454f271b71bfc81dcc633cd314f52071";
+"BEGIN Source" -> "Source.c82506a27b454f271b71bfc81dcc633cd314f52071";
+"Source.c82506a27b454f271b71bfc81dcc633cd314f52071" -> "END Source";
 }
