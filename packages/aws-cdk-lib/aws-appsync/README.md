@@ -377,17 +377,11 @@ const firstApi = new appsync.GraphqlApi(this, 'FirstSourceAPI', {
   name: 'FirstSourceAPI',
   definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.merged-api-1.graphql')),
 });
-firstApi.addNoneDataSource('FirstSourceDS', {
-  name: cdk.Lazy.string({ produce(): string { return 'FirstSourceDS'; } }),
-});
 
 // second source API
 const secondApi = new appsync.GraphqlApi(this, 'SecondSourceAPI', {
   name: 'SecondSourceAPI',
   definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.merged-api-2.graphql')),
-});
-secondApi.addNoneDataSource('SecondSourceDS', {
-  name: cdk.Lazy.string({ produce(): string { return 'SecondSourceDS'; } }),
 });
 
 // Merged API
@@ -399,6 +393,10 @@ const mergedApi = new appsync.GraphqlApi(this, 'MergedAPI', {
         sourceApi: firstApi,
         mergeType: appsync.MergeType.MANUAL_MERGE,
       },
+      {
+        sourceApi: secondApi,
+        mergeType: appsync.MergeType.AUTO_MERGE,
+      }
     ],
   }),
 });
@@ -427,6 +425,11 @@ new appsync.SourceApiAssociation(this, 'SourceApiAssociation2', {
    mergedApiExecutionRole: importedExecutionRole,
 });
 ```
+
+## Merge Source API Update Within CDK Deployment
+
+The SourceApiAssociationMergeOperation construct available in the [awscdk-appsync-utils](https://github.com/cdklabs/awscdk-appsync-utils) package provides the ability to merge a source API to a Merged API via a custom
+resource. If the merge operation fails with a conflict, the stack update will fail and rollback the changes to the source API in the stack in order to prevent merge conflicts and ensure the source API changes are always propagated to the Merged API.
 
 ## Custom Domain Names
 

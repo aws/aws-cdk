@@ -327,6 +327,16 @@ export enum InstanceClass {
   R7GD = 'r7gd',
 
   /**
+   * Memory optimized instances based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation
+   */
+  MEMORY7_INTEL = 'memory7-intel',
+
+  /**
+   * Memory optimized instances based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation
+   */
+  R7IZ = 'r7iz',
+
+  /**
    * Compute optimized instances, 3rd generation
    */
   COMPUTE3 = 'compute3',
@@ -507,6 +517,16 @@ export enum InstanceClass {
   C7GN = 'c7gn',
 
   /**
+   * Compute optimized instances based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation
+   */
+  COMPUTE7_INTEL = 'compute7-intel',
+
+  /**
+   * Compute optimized instances based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation
+   */
+  C7I = 'c7i',
+
+  /**
    * Storage-optimized instances, 2nd generation
    */
   STORAGE2 = 'storage2',
@@ -575,6 +595,16 @@ export enum InstanceClass {
    * I/O-optimized instances with local NVME drive powered by Intel Xeon Scalable processors (code named Ice Lake), 4th generation
    */
   I4I = 'i4i',
+
+  /**
+   * Storage optimized instances powered by Graviton2 processor, 4th generation
+   */
+  STORAGE4_GRAVITON = 'storage4_graviton',
+
+  /**
+   * Storage optimized instances powered by Graviton2 processor, 4th generation
+   */
+  I4G = 'i4g',
 
   /**
    * Storage optimized instances powered by Graviton2 processor, 4th generation
@@ -1221,6 +1251,8 @@ export class InstanceType {
       [InstanceClass.R7G]: 'r7g',
       [InstanceClass.MEMORY7_GRAVITON3_NVME_DRIVE]: 'r7gd',
       [InstanceClass.R7GD]: 'r7gd',
+      [InstanceClass.MEMORY7_INTEL]: 'r7iz',
+      [InstanceClass.R7IZ]: 'r7iz',
       [InstanceClass.COMPUTE3]: 'c3',
       [InstanceClass.C3]: 'c3',
       [InstanceClass.COMPUTE4]: 'c4',
@@ -1255,6 +1287,8 @@ export class InstanceType {
       [InstanceClass.C7GD]: 'c7gd',
       [InstanceClass.COMPUTE7_GRAVITON3_HIGH_NETWORK_BANDWIDTH]: 'c7gn',
       [InstanceClass.C7GN]: 'c7gn',
+      [InstanceClass.COMPUTE7_INTEL]: 'c7i',
+      [InstanceClass.C7I]: 'c7i',
       [InstanceClass.STORAGE2]: 'd2',
       [InstanceClass.D2]: 'd2',
       [InstanceClass.STORAGE3]: 'd3',
@@ -1267,6 +1301,8 @@ export class InstanceType {
       [InstanceClass.I3]: 'i3',
       [InstanceClass.IO3_DENSE_NVME_DRIVE]: 'i3en',
       [InstanceClass.I3EN]: 'i3en',
+      [InstanceClass.STORAGE4_GRAVITON]: 'i4g',
+      [InstanceClass.I4G]: 'i4g',
       [InstanceClass.STORAGE4_GRAVITON_NETWORK_OPTIMIZED]: 'im4gn',
       [InstanceClass.IM4GN]: 'im4gn',
       [InstanceClass.STORAGE4_GRAVITON_NETWORK_STORAGE_OPTIMIZED]: 'is4gen',

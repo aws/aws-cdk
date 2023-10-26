@@ -485,16 +485,14 @@ CDK integration tests.
 
 ### Step 4: Pull Request
 
-* Create a commit with your changes and push them to a
-  [fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo).
+* Create a [fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo) of the CDK repository.
+* Create a new branch for your change, and push the change commits on it.
   > [!IMPORTANT]
-  > We will not be able to accept your contribution if you do not allow commits to your PR branch, as it introduces
-  > friction in our review process and breaks our automation that syncs with the main branch. In these scenarios, we will close
-  > your pull request and ask that you recreate it with the necessary permissions.
-  > This means that you must contribute from a fork within your personal account (as opposed to an organization owned account) and also develop
-  > your contribution on a branch other than `main`. See
-  > [Allowing changes to a pull request branch created from a fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/allowing-changes-to-a-pull-request-branch-created-from-a-fork)
-  > for more information.
+  > Your pull request must be based off of a branch in a personal account (not an organization owned account, and not the `main` branch).
+  > You must also have the setting enabled that [allows the CDK team to push changes to your branch](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/allowing-changes-to-a-pull-request-branch-created-from-a-fork) (this setting is enabled by default for personal accounts,
+  > and cannot be enabled for organization owned accounts).
+  > The reason for this is that our automation needs to synchronize your branch with our `main` after it has been approved, and
+  > we cannot do that if we cannot push to your branch.
   
   > [!NOTE]
   > CDK core members can push to a branch on the AWS CDK repo (naming convention: `<user>/<feature-bug-name>`).

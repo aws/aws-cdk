@@ -249,6 +249,20 @@ const servicePrincipalWithConditions = servicePrincipal.withConditions({
 fn.grantInvoke(servicePrincipalWithConditions);
 ```
 
+### Grant function access to a CompositePrincipal
+
+To grant invoke permissions to a `CompositePrincipal` use the `grantInvokeCompositePrincipal` method:
+
+```ts
+declare const fn: lambda.Function;
+const compositePrincipal = new iam.CompositePrincipal(
+  new iam.OrganizationPrincipal('o-zzzzzzzzzz'),
+  new iam.ServicePrincipal('apigateway.amazonaws.com'),
+);
+
+fn.grantInvokeCompositePrincipal(compositePrincipal);
+```
+
 ## Versions
 
 You can use

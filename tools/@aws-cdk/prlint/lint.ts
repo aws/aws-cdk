@@ -11,6 +11,8 @@ export type GitHubPr =
 
 export const CODE_BUILD_CONTEXT = 'AWS CodeBuild us-east-1 (AutoBuildv2Project1C6BFA3F-wQm2hXv2jqQv)';
 
+const PR_FROM_MAIN_ERROR = 'Pull requests from `main` branch of a fork cannot be accepted. Please reopen this contribution from another branch on your fork. For more information, see https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#step-4-pull-request.';
+
 /**
  * Types of exemption labels in aws-cdk project.
  */
@@ -268,6 +270,27 @@ export class PullRequestLinter {
       body,
     });
 
+    // Closing the PR if it is opened from main branch of author's fork
+    if (failureMessages.includes(PR_FROM_MAIN_ERROR)) {
+
+      const errorMessageBody = 'Your pull request must be based off of a branch in a personal account '
+      + '(not an organization owned account, and not the main branch). You must also have the setting '
+      + 'enabled that <a href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/allowing-changes-to-a-pull-request-branch-created-from-a-fork">allows the CDK team to push changes to your branch</a> '
+      + '(this setting is enabled by default for personal accounts, and cannot be enabled for organization owned accounts). '
+      + 'The reason for this is that our automation needs to synchronize your branch with our main after it has been approved, '
+      + 'and we cannot do that if we cannot push to your branch.'
+
+      await this.client.issues.createComment({
+        ...this.issueParams,
+        body: errorMessageBody,
+      });
+
+      await this.client.pulls.update({
+        ...this.prParams,
+        state: 'closed',
+      });
+    }
+
     throw new LinterError(body);
   }
 
@@ -508,6 +531,9 @@ export class PullRequestLinter {
     validationCollector.validateRuleSet({
       testRuleSet: [{ test: validateTitleScope }],
     });
+    validationCollector.validateRuleSet({
+      testRuleSet: [{ test: validateBranch }],
+    })
 
     validationCollector.validateRuleSet({
       exemption: shouldExemptBreakingChange,
@@ -684,6 +710,22 @@ function validateTitleScope(pr: GitHubPr): TestResult {
       `The title of the pull request should omit 'aws-' from the name of modified packages. Use '${m[3]}' instead of '${m[2]}'.`,
     );
   }
+  return result;
+}
+
+/**
+ * Check that the PR is not opened from main branch of author's fork
+ * 
+ * @param pr github pr
+ * @returns test result
+ */
+function validateBranch(pr: GitHubPr): TestResult {
+  const result = new TestResult();
+  
+  if (pr.head && pr.head.ref) {
+    result.assessFailure(pr.head.ref === 'main', PR_FROM_MAIN_ERROR);
+  }
+
   return result;
 }
 

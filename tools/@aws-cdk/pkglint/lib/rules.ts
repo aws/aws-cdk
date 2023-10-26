@@ -1258,6 +1258,11 @@ export class PkgLintAsScript extends ValidationRule {
   public readonly name = 'package-info/scripts/pkglint';
 
   public validate(pkg: PackageJson): void {
+    if (pkg.packageName === '@aws-cdk/cfn2ts') {
+      // cfn2ts uses pkglint as a real dependency, and it can't be both.
+      return;
+    }
+
     const script = 'pkglint -f';
 
     expectDevDependency(this.name, pkg, '@aws-cdk/pkglint', `${PKGLINT_VERSION}`); // eslint-disable-line @typescript-eslint/no-require-imports
@@ -1296,6 +1301,24 @@ export class NoStarDeps extends ValidationRule {
             message: `star dependency not allowed for ${d}`,
           });
         }
+      });
+    }
+  }
+}
+
+export class NoMixedDeps extends ValidationRule {
+  public readonly name = 'dependencies/no-mixed-deps';
+
+  public validate(pkg: PackageJson) {
+    const deps = Object.keys(pkg.json.dependencies ?? {});
+    const devDeps = Object.keys(pkg.json.devDependencies ?? {});
+
+    const shared = deps.filter((dep) => devDeps.includes(dep));
+    for (const dep of shared) {
+      pkg.report({
+        ruleName: this.name,
+        message: `dependency may not be both in dependencies and devDependencies: ${dep}`,
+        fix: () => pkg.removeDevDependency(dep),
       });
     }
   }
@@ -1836,6 +1859,7 @@ function shouldUseCDKBuildTools(pkg: PackageJson) {
   const exclude = [
     '@aws-cdk/cdk-build-tools',
     '@aws-cdk/script-tests',
+    '@aws-cdk/cfn2ts',
     'awslint',
   ];
 
