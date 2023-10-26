@@ -70,14 +70,6 @@ new HostedConfiguration(stack, 'MyHostedConfigFromJson', {
   deploymentStrategy,
 });
 
-const hostedEnvFromYaml = appConfigApp.addEnvironment('HostedEnvFromYaml');
-new HostedConfiguration(stack, 'MyHostedConfigFromYaml', {
-  application: appConfigApp,
-  content: ConfigurationContent.fromInlineYaml('This is the configuration content'),
-  deployTo: [hostedEnvFromYaml],
-  deploymentStrategy,
-});
-
 // ssm paramter as configuration source
 const func = new Function(stack, 'MyValidatorFunction', {
   runtime: Runtime.PYTHON_3_8,
