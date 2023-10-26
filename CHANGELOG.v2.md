@@ -2,6 +2,83 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.103.0](https://github.com/aws/aws-cdk/compare/v2.102.1...v2.103.0) (2023-10-25)
+
+
+### Features
+
+* update AWS Service Spec ([#27650](https://github.com/aws/aws-cdk/issues/27650)) ([d1c36c6](https://github.com/aws/aws-cdk/commit/d1c36c6433aadc7394aa00847c1b8131b6a74346))
+* **cli:** support `Fn::ImportValue` intrinsic function for hotswap deployments ([#27292](https://github.com/aws/aws-cdk/issues/27292)) ([a54ea0f](https://github.com/aws/aws-cdk/commit/a54ea0f2dd4c6525ac3fd264b6d0f085414d3a37))
+* **ec2:** support for c7i and r7iz instance types in aws-ec2 ([#27611](https://github.com/aws/aws-cdk/issues/27611)) ([382a0ed](https://github.com/aws/aws-cdk/commit/382a0edadfdb4f1e505f920cad05e3321bd5c017)), closes [/docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance.html#cfn-ec2](https://github.com/aws//docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance.html/issues/cfn-ec2)
+* **ec2:** support for i4g instance types in aws-ec2 ([#27639](https://github.com/aws/aws-cdk/issues/27639)) ([039071d](https://github.com/aws/aws-cdk/commit/039071dde0fe3bc40978e6f967a58ac63cbdda8f)), closes [/docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-instance.html#cfn-ec2](https://github.com/aws//docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-instance.html/issues/cfn-ec2) [#27631](https://github.com/aws/aws-cdk/issues/27631)
+* **lambda:** add grantInvokeCompositePrincipal method ([#27529](https://github.com/aws/aws-cdk/issues/27529)) ([447b63c](https://github.com/aws/aws-cdk/commit/447b63ce636884c9c86e36e783aee73a3b489d90)), closes [#27503](https://github.com/aws/aws-cdk/issues/27503)
+* **opensearch:** OpenSearch 2.9 engine version ([#27612](https://github.com/aws/aws-cdk/issues/27612)) ([1f7075f](https://github.com/aws/aws-cdk/commit/1f7075f8bd6bd3c1d760cb9e899a7cba52e2993a)), closes [#27574](https://github.com/aws/aws-cdk/issues/27574)
+* **secretsmanager:** validate maximum value of automaticallyAfter in RotationSchedule ([#27592](https://github.com/aws/aws-cdk/issues/27592)) ([99740b3](https://github.com/aws/aws-cdk/commit/99740b3211d09e573e7b30e0e0baa7e3e5669447)), closes [/github.com/aws/aws-cdk/pull/27570#pullrequestreview-1682163803](https://github.com/aws//github.com/aws/aws-cdk/pull/27570/issues/pullrequestreview-1682163803) [/github.com/aws/aws-cdk/pull/27570#pullrequestreview-1684311044](https://github.com/aws//github.com/aws/aws-cdk/pull/27570/issues/pullrequestreview-1684311044)
+* **synthetics:** syn-python-selenium-2.0 runtime ([#27565](https://github.com/aws/aws-cdk/issues/27565)) ([1a89ef9](https://github.com/aws/aws-cdk/commit/1a89ef9632d89094486fab26b7cc930c0c83aab0)), closes [#27566](https://github.com/aws/aws-cdk/issues/27566)
+
+
+### Bug Fixes
+
+* **cdk:** Add AppSync:Api_Key as hot swappable and fix a bug with AppSync.function ([#27559](https://github.com/aws/aws-cdk/issues/27559)) ([12ff023](https://github.com/aws/aws-cdk/commit/12ff0235e5b6909691f656da1707c039f7000dbe))
+* **ec2:** naming collisions when using `ec2.InitFile.fromAsset()` on multiple instances in the same stack ([#27468](https://github.com/aws/aws-cdk/issues/27468)) ([fc3be31](https://github.com/aws/aws-cdk/commit/fc3be313daf40bbf12b55f0b3ed3027505ca3a87)), closes [#16891](https://github.com/aws/aws-cdk/issues/16891) [/github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-ec2/lib/cfn-init-elements.ts#L427](https://github.com/aws//github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-ec2/lib/cfn-init-elements.ts/issues/L427)
+* **pipelines:** using the same source (s3, connection, or codecommit) in a pipeline causes duplicate id error ([#27602](https://github.com/aws/aws-cdk/issues/27602)) ([70acc84](https://github.com/aws/aws-cdk/commit/70acc844e2a652aea4f1328e4e758c3c5030d501)), closes [#23916](https://github.com/aws/aws-cdk/issues/23916) [#19875](https://github.com/aws/aws-cdk/issues/19875)
+* **region-info:** facts only returned from constant region list ([#27506](https://github.com/aws/aws-cdk/issues/27506)) ([7121c7e](https://github.com/aws/aws-cdk/commit/7121c7ee9eed595acfed1fb09f55b8bd966c01e3)), closes [#27260](https://github.com/aws/aws-cdk/issues/27260)
+* **stepfunctions-tasks:** cloudwatchlogs service generates wrong action in role policy ([#27623](https://github.com/aws/aws-cdk/issues/27623)) ([de7fb04](https://github.com/aws/aws-cdk/commit/de7fb043c37569d39776623fe137860e279b9fbf)), closes [#27573](https://github.com/aws/aws-cdk/issues/27573)
+
+## [2.102.1](https://github.com/aws/aws-cdk/compare/v2.102.0...v2.102.1) (2023-10-25)
+
+### Bug Fixes
+
+* **region-info:** adding missing regions for kinesisfirehose ([#27672](https://github.com/aws/aws-cdk/pull/27672)) ([46372e0](https://github.com/aws/aws-cdk/commit/46372e040cbb713174c3a92ae627eb1fd2d4e836)), closes [#27656](https://github.com/aws/aws-cdk/issues/27656)
+
+## [2.102.0](https://github.com/aws/aws-cdk/compare/v2.101.1...v2.102.0) (2023-10-18)
+
+
+### Features
+
+* update AWS Service Spec ([#27557](https://github.com/aws/aws-cdk/issues/27557)) ([af63162](https://github.com/aws/aws-cdk/commit/af63162198551a4e7d25b565cd749d863ce594b1))
+
+
+### Bug Fixes
+
+* **custom-resources:** custom resource provider can't exceed 1 hour ([#27533](https://github.com/aws/aws-cdk/issues/27533)) ([b655b08](https://github.com/aws/aws-cdk/commit/b655b08b0e71d4d345b0ae5a1ca137c7c84c8473)), closes [#24974](https://github.com/aws/aws-cdk/issues/24974)
+* **eks:** partition is hardcoded in ALB controller IAM policies ([#27541](https://github.com/aws/aws-cdk/issues/27541)) ([75e56ea](https://github.com/aws/aws-cdk/commit/75e56ea980590fcf8860f5a7a6fba5347e0ace2d)), closes [#22520](https://github.com/aws/aws-cdk/issues/22520)
+
+
+### Reverts
+
+* "fix(s3): grantRead does not allow s3:HeadObject ([#27416](https://github.com/aws/aws-cdk/issues/27416))" ([#27556](https://github.com/aws/aws-cdk/issues/27556)) ([8dc1c18](https://github.com/aws/aws-cdk/commit/8dc1c18a6bf033d28dcca6052923170eaeb143ac))
+
+## [2.101.1](https://github.com/aws/aws-cdk/compare/v2.101.0...v2.101.1) (2023-10-16)
+
+
+### Reverts
+
+* "fix(s3): grantRead does not allow s3:HeadObject ([#27416](https://github.com/aws/aws-cdk/issues/27416))" ([#27556](https://github.com/aws/aws-cdk/issues/27556)) ([d013677](https://github.com/aws/aws-cdk/commit/d013677cc181284b6f7444950784b758cb0c7100))
+
+## [2.101.0](https://github.com/aws/aws-cdk/compare/v2.100.0...v2.101.0) (2023-10-13)
+
+
+### Features
+
+* **ec2:** Add SubnetFilter for CIDR Range ([#27425](https://github.com/aws/aws-cdk/issues/27425)) ([b1ce47b](https://github.com/aws/aws-cdk/commit/b1ce47b894c973ad1b6ccae29940b7b277bde3d2)), closes [#27421](https://github.com/aws/aws-cdk/issues/27421)
+* **init-templates:** update init templates to use the current LTS version of Java ([#27422](https://github.com/aws/aws-cdk/issues/27422)) ([6c34c9a](https://github.com/aws/aws-cdk/commit/6c34c9a75c513d629595fd30c3a2be3b64d69d68))
+* **stepfunctions:** adding custom state name prop ([#27306](https://github.com/aws/aws-cdk/issues/27306)) ([61be7a6](https://github.com/aws/aws-cdk/commit/61be7a659f22e7ff3df255fc9542214135d07d5e))
+* **stepfunctions-tasks:** add `ExecutionParameters` to `AthenaStartQueryExecution` ([#27287](https://github.com/aws/aws-cdk/issues/27287)) ([3fc86ca](https://github.com/aws/aws-cdk/commit/3fc86ca5a80b4788141ff7b06f2f129fb4d90d5f)), closes [#27286](https://github.com/aws/aws-cdk/issues/27286)
+* update AWS Service Spec ([#27464](https://github.com/aws/aws-cdk/issues/27464)) ([3899f15](https://github.com/aws/aws-cdk/commit/3899f158173d01565bb7c7204295d8ba573d55dc))
+
+
+### Bug Fixes
+
+* **assertions:** cannot use HTTP apis that do not return JSON ([#27463](https://github.com/aws/aws-cdk/issues/27463)) ([cae9db6](https://github.com/aws/aws-cdk/commit/cae9db6b4f4855c0e30b0db3de54cec52e09a7a8))
+* **s3:** grantRead does not allow s3:HeadObject ([#27416](https://github.com/aws/aws-cdk/issues/27416)) ([beac675](https://github.com/aws/aws-cdk/commit/beac6753021138ee56abdbf02eef0318f7098dde)), closes [#27389](https://github.com/aws/aws-cdk/issues/27389)
+* **stepfunctions-tasks:** SNS FIFO tasks does not support messageGroupId and messageDeduplicationId ([#27369](https://github.com/aws/aws-cdk/issues/27369)) ([9cb9fb8](https://github.com/aws/aws-cdk/commit/9cb9fb879a95c77b4f0048ac6a1d714bb9889efb)), closes [#27341](https://github.com/aws/aws-cdk/issues/27341)
+
+
+### Reverts
+
+* "fix(cli): cannot hotswap ECS task definitions containing certain intrinsics" ([#27358](https://github.com/aws/aws-cdk/issues/27358)) ([48d7726](https://github.com/aws/aws-cdk/commit/48d7726421352eb3c032b1293a361a70339b0566)), closes [#27343](https://github.com/aws/aws-cdk/issues/27343) [#27343](https://github.com/aws/aws-cdk/issues/27343)
+
 ## [2.100.0](https://github.com/aws/aws-cdk/compare/v2.99.1...v2.100.0) (2023-10-06)
 
 

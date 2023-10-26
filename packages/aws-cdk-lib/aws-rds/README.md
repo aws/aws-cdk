@@ -18,7 +18,7 @@ of readers (up to 15).
 ```ts
 declare const vpc: ec2.Vpc;
 const cluster = new rds.DatabaseCluster(this, 'Database', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_08_1 }),
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_01_0 }),
   credentials: rds.Credentials.fromGeneratedSecret('clusteradmin'), // Optional - will default to 'admin' username and generated password
   writer: rds.ClusterInstance.provisioned('writer', {
     publiclyAccessible: false,
@@ -34,19 +34,24 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
 });
 ```
 
-To adopt Aurora I/O-Optimized. Specify `DBClusterStorageType.AURORA_IOPT1` on the `storageType` property.
+To adopt Aurora I/O-Optimized, specify `DBClusterStorageType.AURORA_IOPT1` on the `storageType` property.
 
 ```ts
 declare const vpc: ec2.Vpc;
 const cluster = new rds.DatabaseCluster(this, 'Database', {
   engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.VER_15_2 }),
   credentials: rds.Credentials.fromUsername('adminuser', { password: SecretValue.unsafePlainText('7959866cacc02c2d243ecfe177464fe6') }),
-  instanceProps: {
-    instanceType: ec2.InstanceType.of(ec2.InstanceClass.X2G, ec2.InstanceSize.XLARGE),
-    vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
-    vpc,
-  },
+  writer: rds.ClusterInstance.provisioned('writer', {
+    publiclyAccessible: false,
+  }),
+  readers: [
+    rds.ClusterInstance.provisioned('reader')
+  ],
   storageType: rds.DBClusterStorageType.AURORA_IOPT1,
+  vpcSubnets: {
+    subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
+  },
+  vpc,
 });
 ```
 
@@ -220,7 +225,7 @@ scaled to handle the write load.
 ```ts
 declare const vpc: ec2.Vpc;
 const cluster = new rds.DatabaseCluster(this, 'Database', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_08_1 }),
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_01_0 }),
   writer: rds.ClusterInstance.serverlessV2('writer'),
   readers: [
     // will be put in promotion tier 1 and will scale with the writer
@@ -269,7 +274,7 @@ a higher minimum capacity.
 ```ts
 declare const vpc: ec2.Vpc;
 const cluster = new rds.DatabaseCluster(this, 'Database', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_08_1 }),
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_01_0 }),
   writer: rds.ClusterInstance.provisioned('writer', {
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.R6G, ec2.InstanceSize.XLARGE4),
   }),

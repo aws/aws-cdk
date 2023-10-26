@@ -136,7 +136,7 @@
                           {
                             "Ref": "AWS::Region"
                           },
-                          "JAVASCRIPTxSDKx1x15x0x1xarm64"
+                          "JAVASCRIPTxSDKx1x16x0xarm64"
                         ]
                       }
                     ],
@@ -304,7 +304,7 @@
                           {
                             "Ref": "AWS::Region"
                           },
-                          "PYTHONxSDKx1x19x0x1xx86x64"
+                          "PYTHONxSDKx1x20x0xx86x64"
                         ]
                       }
                     ],
@@ -464,7 +464,7 @@
                           {
                             "Ref": "AWS::Region"
                           },
-                          "JAVAxSDKx1x28x1xx86x64"
+                          "JAVAxSDKx1x30x0xx86x64"
                         ]
                       }
                     ],
@@ -624,7 +624,7 @@
                           {
                             "Ref": "AWS::Region"
                           },
-                          "JAVAxAUTOxINSTRUMENTATIONx1x28x1xx86x64"
+                          "JAVAxAUTOxINSTRUMENTATIONx1x30x0xx86x64"
                         ]
                       }
                     ],
@@ -784,7 +784,7 @@
                           {
                             "Ref": "AWS::Region"
                           },
-                          "GENERICx0x82x0xx86x64"
+                          "GENERICx0x84x0xx86x64"
                         ]
                       }
                     ],
@@ -973,7 +973,7 @@
                           {
                             "Ref": "AWS::Region"
                           },
-                          "JAVASCRIPTxSDKx1x15x0x1xx86x64"
+                          "JAVASCRIPTxSDKx1x16x0xx86x64"
                         ]
                       }
                     ],
@@ -1141,7 +1141,7 @@
                           {
                             "Ref": "AWS::Region"
                           },
-                          "PYTHONxSDKx1x19x0x1xx86x64"
+                          "PYTHONxSDKx1x20x0xx86x64"
                         ]
                       }
                     ],
@@ -1301,7 +1301,7 @@
                           {
                             "Ref": "AWS::Region"
                           },
-                          "JAVAxSDKx1x28x1xx86x64"
+                          "JAVAxSDKx1x30x0xx86x64"
                         ]
                       }
                     ],
@@ -1461,7 +1461,7 @@
                           {
                             "Ref": "AWS::Region"
                           },
-                          "JAVAxAUTOxINSTRUMENTATIONx1x28x1xx86x64"
+                          "JAVAxAUTOxINSTRUMENTATIONx1x30x0xx86x64"
                         ]
                       }
                     ],
@@ -1621,7 +1621,7 @@
                           {
                             "Ref": "AWS::Region"
                           },
-                          "GENERICx0x82x0xx86x64"
+                          "GENERICx0x84x0xx86x64"
                         ]
                       }
                     ],
