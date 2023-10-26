@@ -101,13 +101,6 @@
   "Pipeline9850B417": {
    "Type": "AWS::CodePipeline::Pipeline",
    "Properties": {
-    "ArtifactStore": {
-     "Location": {
-      "Ref": "CustomArtifact20BDCF79"
-     },
-     "Type": "S3"
-    },
-    "RestartExecutionOnUpdate": true,
     "RoleArn": {
      "Fn::GetAtt": [
       "PipelineRoleB27FAA37",
@@ -135,7 +128,7 @@
         },
         "OutputArtifacts": [
          {
-          "Name": "c82506a27b454f271b71bfc81dcc633cd314f52071_key_Source"
+          "Name": "c82506a27b454f271b71bfc81dcc633cd314f52071_Source"
          }
         ],
         "RoleArn": {
@@ -166,7 +159,7 @@
         },
         "InputArtifacts": [
          {
-          "Name": "c82506a27b454f271b71bfc81dcc633cd314f52071_key_Source"
+          "Name": "c82506a27b454f271b71bfc81dcc633cd314f52071_Source"
          }
         ],
         "Name": "Synth",
@@ -218,7 +211,14 @@
       ],
       "Name": "UpdatePipeline"
      }
-    ]
+    ],
+    "ArtifactStore": {
+     "Location": {
+      "Ref": "CustomArtifact20BDCF79"
+     },
+     "Type": "S3"
+    },
+    "RestartExecutionOnUpdate": true
    },
    "DependsOn": [
     "PipelineRoleDefaultPolicy7BDC1ABB",
@@ -504,11 +504,6 @@
     "Artifacts": {
      "Type": "CODEPIPELINE"
     },
-    "Cache": {
-     "Type": "NO_CACHE"
-    },
-    "Description": "Pipeline step PipelineStack/Pipeline/Build/Synth",
-    "EncryptionKey": "alias/aws/s3",
     "Environment": {
      "ComputeType": "BUILD_GENERAL1_SMALL",
      "Image": "aws/codebuild/standard:7.0",
@@ -525,7 +520,12 @@
     "Source": {
      "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"build\": {\n      \"commands\": [\n        \"npm ci\",\n        \"npm run build\",\n        \"npx cdk synth\"\n      ]\n    }\n  },\n  \"artifacts\": {\n    \"base-directory\": \"cdk.out\",\n    \"files\": \"**/*\"\n  }\n}",
      "Type": "CODEPIPELINE"
-    }
+    },
+    "Cache": {
+     "Type": "NO_CACHE"
+    },
+    "Description": "Pipeline step PipelineStack/Pipeline/Build/Synth",
+    "EncryptionKey": "alias/aws/s3"
    }
   },
   "PipelineCodeBuildActionRole226DB0CB": {
@@ -781,11 +781,6 @@
     "Artifacts": {
      "Type": "CODEPIPELINE"
     },
-    "Cache": {
-     "Type": "NO_CACHE"
-    },
-    "Description": "Pipeline step PipelineStack/Pipeline/UpdatePipeline/SelfMutate",
-    "EncryptionKey": "alias/aws/s3",
     "Environment": {
      "ComputeType": "BUILD_GENERAL1_SMALL",
      "Image": "aws/codebuild/standard:7.0",
@@ -802,7 +797,12 @@
     "Source": {
      "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"install\": {\n      \"commands\": [\n        \"npm install -g aws-cdk@2\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"cdk -a . deploy PipelineStack --require-approval=never --verbose\"\n      ]\n    }\n  }\n}",
      "Type": "CODEPIPELINE"
-    }
+    },
+    "Cache": {
+     "Type": "NO_CACHE"
+    },
+    "Description": "Pipeline step PipelineStack/Pipeline/UpdatePipeline/SelfMutate",
+    "EncryptionKey": "alias/aws/s3"
    }
   }
  },

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.103.1](https://github.com/aws/aws-cdk/compare/v2.103.0...v2.103.1) (2023-10-26)
+
+
+### Reverts
+
+* "fix(pipelines): using the same source (s3, connection, or codecommit) in a pipeline causes duplicate id error" ([#27700](https://github.com/aws/aws-cdk/issues/27700)) ([47db081](https://github.com/aws/aws-cdk/commit/47db081f610707d570dfafb1a7962c227c14426c)), closes [aws/aws-cdk#27602](https://github.com/aws/aws-cdk/issues/27602)
+
 ## [2.103.0](https://github.com/aws/aws-cdk/compare/v2.102.1...v2.103.0) (2023-10-25)
 
 
