@@ -1,0 +1,12 @@
+{
+  "version": "34.0.0",
+  "testCases": {
+    "sfn-restapi-without-default-method-responses/DefaultTest": {
+      "stacks": [
+        "SfnRestApiWithoutDefaultMethodResponses"
+      ],
+      "assertionStack": "sfn-restapi-without-default-method-responses/DefaultTest/DeployAssert",
+      "assertionStackName": "sfnrestapiwithoutdefaultmethodresponsesDefaultTestDeployAssert7E2275C8"
+    }
+  }
+}
