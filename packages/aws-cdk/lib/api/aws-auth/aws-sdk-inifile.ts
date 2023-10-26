@@ -1,5 +1,8 @@
 import * as AWS from 'aws-sdk';
 
+import { fromContainerMetadata, fromEnv, fromInstanceMetadata, fromSSO } from "@aws-sdk/credential-providers";
+import { AssumeRoleCommandInput, STS } from "@aws-sdk/client-sts";
+
 /**
  * Hack-fix
  *
@@ -75,13 +78,17 @@ export class PatchedSharedIniFileCredentials extends AWS.SharedIniFileCredential
     const stsCreds = sourceProfile ? this.sourceProfileCredentials(sourceProfile, creds) : this.credentialSourceCredentials(credentialSource);
 
     this.roleArn = roleArn;
-    var sts = new AWS.STS({
+    var sts = new STS({
       credentials: stsCreds,
       region,
-      httpOptions: this.httpOptions,
+
+      // The transformation for httpOptions is not implemented.
+      // Refer to UPGRADING.md on aws-sdk-js-v3 for changes needed.
+      // Please create/upvote feature request on aws-sdk-js-codemod for httpOptions.
+      httpOptions: this.httpOptions
     });
 
-    var roleParams: AWS.STS.AssumeRoleRequest = {
+    var roleParams: AssumeRoleCommandInput = {
       RoleArn: roleArn,
       RoleSessionName: roleSessionName || 'aws-sdk-js-' + Date.now(),
     };
@@ -140,7 +147,12 @@ export class PatchedSharedIniFileCredentials extends AWS.SharedIniFileCredential
     // section, or put half of it in an `[sso-session]` block), but in both cases
     // the primary profile block must have the `sso_account_id` key
     if (sourceProfileExistanceTest.sso_account_id) {
-      return new AWS.SsoCredentials({ profile: sourceProfile });
+      return (
+        // JS SDK v3 switched credential providers from classes to functions.
+        // This is the closest approximation from codemod of what your application needs.
+        // Reference: https://www.npmjs.com/package/@aws-sdk/credential-providers
+        (fromSSO({ profile: sourceProfile }))
+      );
     }
 
     return new PatchedSharedIniFileCredentials(
@@ -158,13 +170,28 @@ export class PatchedSharedIniFileCredentials extends AWS.SharedIniFileCredential
     // see https://docs.aws.amazon.com/credref/latest/refdocs/setting-global-credential_source.html
     switch (sourceCredential) {
       case 'Environment': {
-        return new AWS.EnvironmentCredentials('AWS');
+        return (
+          // JS SDK v3 switched credential providers from classes to functions.
+          // This is the closest approximation from codemod of what your application needs.
+          // Reference: https://www.npmjs.com/package/@aws-sdk/credential-providers
+          (fromEnv('AWS'))
+        );
       }
       case 'Ec2InstanceMetadata': {
-        return new AWS.EC2MetadataCredentials();
+        return (
+          // JS SDK v3 switched credential providers from classes to functions.
+          // This is the closest approximation from codemod of what your application needs.
+          // Reference: https://www.npmjs.com/package/@aws-sdk/credential-providers
+          (fromInstanceMetadata())
+        );
       }
       case 'EcsContainer': {
-        return new AWS.ECSCredentials();
+        return (
+          // JS SDK v3 switched credential providers from classes to functions.
+          // This is the closest approximation from codemod of what your application needs.
+          // Reference: https://www.npmjs.com/package/@aws-sdk/credential-providers
+          (fromContainerMetadata())
+        );
       }
       default: {
         throw new Error(`credential_source ${sourceCredential} in profile ${this.profile} is unsupported. choose one of [Environment, Ec2InstanceMetadata, EcsContainer]`);

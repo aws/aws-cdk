@@ -1,5 +1,12 @@
 import { Writable } from 'stream';
 import * as AWS from 'aws-sdk';
+
+import {
+  Lambda,
+  UpdateFunctionConfigurationCommandInput,
+  UpdateFunctionConfigurationCommandOutput,
+} from "@aws-sdk/client-lambda";
+
 import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, PropDiffs } from './common';
 import { flatMap } from '../../util';
 import { ISDK } from '../aws-auth';
@@ -51,9 +58,9 @@ export async function isHotswappableLambdaFunctionChange(
       resourceNames: [
         `Lambda Function '${functionName}'`,
         // add Version here if we're publishing a new one
-        ...await renderVersions(logicalId, evaluateCfnTemplate, [`Lambda Version for Function '${functionName}'`]),
+        ...(await renderVersions(logicalId, evaluateCfnTemplate, [`Lambda Version for Function '${functionName}'`])),
         // add any Aliases that we are hotswapping here
-        ...await renderAliases(logicalId, evaluateCfnTemplate, async (alias) => `Lambda Alias '${alias}' for Function '${functionName}'`),
+        ...(await renderAliases(logicalId, evaluateCfnTemplate, async (alias) => `Lambda Alias '${alias}' for Function '${functionName}'`)),
       ],
       apply: async (sdk: ISDK) => {
         const lambdaCodeChange = await evaluateLambdaFunctionProps(
@@ -80,13 +87,13 @@ export async function isHotswappableLambdaFunctionChange(
               ImageUri: lambdaCodeChange.code.imageUri,
               ZipFile: lambdaCodeChange.code.functionCodeZip,
               S3ObjectVersion: lambdaCodeChange.code.s3ObjectVersion,
-            }).promise();
+            });
 
             await waitForLambdasPropertiesUpdateToFinish(updateFunctionCodeResponse, lambda, functionName);
           }
 
           if (lambdaCodeChange.configurations !== undefined) {
-            const updateRequest: AWS.Lambda.UpdateFunctionConfigurationRequest = {
+            const updateRequest: UpdateFunctionConfigurationCommandInput = {
               FunctionName: functionName,
             };
             if (lambdaCodeChange.configurations.description !== undefined) {
@@ -95,7 +102,7 @@ export async function isHotswappableLambdaFunctionChange(
             if (lambdaCodeChange.configurations.environment !== undefined) {
               updateRequest.Environment = lambdaCodeChange.configurations.environment;
             }
-            const updateFunctionCodeResponse = await lambda.updateFunctionConfiguration(updateRequest).promise();
+            const updateFunctionCodeResponse = await lambda.updateFunctionConfiguration(updateRequest);
             await waitForLambdasPropertiesUpdateToFinish(updateFunctionCodeResponse, lambda, functionName);
           }
 
@@ -103,7 +110,7 @@ export async function isHotswappableLambdaFunctionChange(
           if (versionsReferencingFunction.length > 0) {
             const publishVersionPromise = lambda.publishVersion({
               FunctionName: functionName,
-            }).promise();
+            });
 
             if (aliasesNames.length > 0) {
               // we need to wait for the Version to finish publishing
@@ -113,7 +120,7 @@ export async function isHotswappableLambdaFunctionChange(
                   FunctionName: functionName,
                   Name: alias,
                   FunctionVersion: versionUpdate.Version,
-                }).promise());
+                }));
               }
             } else {
               operations.push(publishVersionPromise);
@@ -297,7 +304,7 @@ function zipString(fileName: string, rawString: string): Promise<Buffer> {
   * or Container functions can take ~25 seconds (and 'idle' VPC functions can take minutes).
   */
 async function waitForLambdasPropertiesUpdateToFinish(
-  currentFunctionConfiguration: AWS.Lambda.FunctionConfiguration, lambda: AWS.Lambda, functionName: string,
+  currentFunctionConfiguration: UpdateFunctionConfigurationCommandOutput, lambda: Lambda, functionName: string,
 ): Promise<void> {
   const functionIsInVpcOrUsesDockerForCode = currentFunctionConfiguration.VpcConfig?.VpcId ||
       currentFunctionConfiguration.PackageType === 'Image';

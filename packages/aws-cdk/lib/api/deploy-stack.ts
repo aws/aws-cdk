@@ -1,5 +1,11 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import type { CloudFormation } from 'aws-sdk';
+import {
+  CreateChangeSetCommandInput,
+  CreateStackCommandInput,
+  DescribeChangeSetCommandOutput,
+  ExecuteChangeSetCommandInput,
+  UpdateStackCommandInput,
+} from "@aws-sdk/client-cloudformation";
 import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import * as uuid from 'uuid';
@@ -330,13 +336,13 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
 }
 
 type CommonPrepareOptions =
-  & keyof CloudFormation.CreateStackInput
-  & keyof CloudFormation.UpdateStackInput
-  & keyof CloudFormation.CreateChangeSetInput;
+  & keyof CreateStackCommandInput
+  & keyof UpdateStackCommandInput
+  & keyof CreateChangeSetCommandInput;
 type CommonExecuteOptions =
-  & keyof CloudFormation.CreateStackInput
-  & keyof CloudFormation.UpdateStackInput
-  & keyof CloudFormation.ExecuteChangeSetInput;
+  & keyof CreateStackCommandInput
+  & keyof UpdateStackCommandInput
+  & keyof ExecuteChangeSetCommandInput;
 
 /**
  * This class shares state and functionality between the different full deployment modes
@@ -422,7 +428,7 @@ class FullCloudFormationDeployment {
     return waitForChangeSet(this.cfn, this.stackName, changeSetName, { fetchAll: willExecute });
   }
 
-  private async executeChangeSet(changeSet: CloudFormation.DescribeChangeSetOutput): Promise<DeployStackResult> {
+  private async executeChangeSet(changeSet: DescribeChangeSetCommandOutput): Promise<DeployStackResult> {
     debug('Initiating execution of changeset %s on stack %s', changeSet.ChangeSetId, this.stackName);
 
     await this.cfn.executeChangeSet({
@@ -484,7 +490,7 @@ class FullCloudFormationDeployment {
       await this.cfn.createStack({
         StackName: this.stackName,
         ClientRequestToken: `create${this.uuid}`,
-        ...terminationProtection ? { EnableTerminationProtection: true } : undefined,
+        ...(terminationProtection ? { EnableTerminationProtection: true } : undefined),
         ...this.commonPrepareOptions(),
         ...this.commonExecuteOptions(),
       }).promise();
@@ -520,7 +526,7 @@ class FullCloudFormationDeployment {
   /**
    * Return the options that are shared between CreateStack, UpdateStack and CreateChangeSet
    */
-  private commonPrepareOptions(): Partial<Pick<CloudFormation.UpdateStackInput, CommonPrepareOptions>> {
+  private commonPrepareOptions(): Partial<Pick<UpdateStackCommandInput, CommonPrepareOptions>> {
     return {
       Capabilities: ['CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
       NotificationARNs: this.options.notificationArns,
@@ -538,12 +544,12 @@ class FullCloudFormationDeployment {
    * Be careful not to add in keys for options that aren't used, as the features may not have been
    * deployed everywhere yet.
    */
-  private commonExecuteOptions(): Partial<Pick<CloudFormation.UpdateStackInput, CommonExecuteOptions>> {
+  private commonExecuteOptions(): Partial<Pick<UpdateStackCommandInput, CommonExecuteOptions>> {
     const shouldDisableRollback = this.options.rollback === false;
 
     return {
       StackName: this.stackName,
-      ...shouldDisableRollback ? { DisableRollback: true } : undefined,
+      ...(shouldDisableRollback ? { DisableRollback: true } : undefined),
     };
   }
 }

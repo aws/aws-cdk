@@ -1,26 +1,27 @@
 import * as AWS from 'aws-sdk';
+import { Export, ListExportsCommandOutput, StackResourceSummary } from "@aws-sdk/client-cloudformation";
 import { PromiseResult } from 'aws-sdk/lib/request';
 import { ISDK } from './aws-auth';
 import { NestedStackNames } from './nested-stack-helpers';
 
 export interface ListStackResources {
-  listStackResources(): Promise<AWS.CloudFormation.StackResourceSummary[]>;
+  listStackResources(): Promise<StackResourceSummary[]>;
 }
 
 export class LazyListStackResources implements ListStackResources {
-  private stackResources: Promise<AWS.CloudFormation.StackResourceSummary[]> | undefined;
+  private stackResources: Promise<StackResourceSummary[]> | undefined;
 
   constructor(private readonly sdk: ISDK, private readonly stackName: string) {
   }
 
-  public async listStackResources(): Promise<AWS.CloudFormation.StackResourceSummary[]> {
+  public async listStackResources(): Promise<StackResourceSummary[]> {
     if (this.stackResources === undefined) {
       this.stackResources = this.getStackResources(undefined);
     }
     return this.stackResources;
   }
 
-  private async getStackResources(nextToken: string | undefined): Promise<AWS.CloudFormation.StackResourceSummary[]> {
+  private async getStackResources(nextToken: string | undefined): Promise<StackResourceSummary[]> {
     const ret = new Array<AWS.CloudFormation.StackResourceSummary>();
     return this.sdk.cloudFormation().listStackResources({
       StackName: this.stackName,
@@ -28,7 +29,7 @@ export class LazyListStackResources implements ListStackResources {
     }).promise().then(async stackResourcesResponse => {
       ret.push(...(stackResourcesResponse.StackResourceSummaries ?? []));
       if (stackResourcesResponse.NextToken) {
-        ret.push(...await this.getStackResources(stackResourcesResponse.NextToken));
+        ret.push(...(await this.getStackResources(stackResourcesResponse.NextToken)));
       }
       return ret;
     });
@@ -36,17 +37,17 @@ export class LazyListStackResources implements ListStackResources {
 }
 
 export interface LookupExport {
-  lookupExport(name: string): Promise<AWS.CloudFormation.Export | undefined>;
+  lookupExport(name: string): Promise<Export | undefined>;
 }
 
 export class LookupExportError extends Error { }
 
 export class LazyLookupExport implements LookupExport {
-  private cachedExports: { [name: string]: AWS.CloudFormation.Export } = {}
+  private cachedExports: { [name: string]: Export } = {}
 
   constructor(private readonly sdk: ISDK) { }
 
-  async lookupExport(name: string): Promise<AWS.CloudFormation.Export | undefined> {
+  async lookupExport(name: string): Promise<Export | undefined> {
     if (this.cachedExports[name]) {
       return this.cachedExports[name];
     }
@@ -69,7 +70,7 @@ export class LazyLookupExport implements LookupExport {
   private async * listExports() {
     let nextToken: string | undefined = undefined;
     while (true) {
-      const response: PromiseResult<AWS.CloudFormation.ListExportsOutput, AWS.AWSError> = await this.sdk.cloudFormation().listExports({
+      const response: PromiseResult<ListExportsCommandOutput, AWS.AWSError> = await this.sdk.cloudFormation().listExports({
         NextToken: nextToken,
       }).promise();
 
@@ -406,7 +407,7 @@ export class EvaluateCloudFormationTemplate {
     return this.formatResourceAttribute(foundResource, attribute);
   }
 
-  private formatResourceAttribute(resource: AWS.CloudFormation.StackResourceSummary, attribute: string | undefined): string | undefined {
+  private formatResourceAttribute(resource: StackResourceSummary, attribute: string | undefined): string | undefined {
     const physicalId = resource.PhysicalResourceId;
 
     // no attribute means Ref expression, for which we use the physical ID directly
@@ -436,11 +437,11 @@ export class EvaluateCloudFormationTemplate {
     });
   }
 
-  private getServiceOfResource(resource: AWS.CloudFormation.StackResourceSummary): string {
+  private getServiceOfResource(resource: StackResourceSummary): string {
     return resource.ResourceType.split('::')[1].toLowerCase();
   }
 
-  private getResourceTypeArnPartOfResource(resource: AWS.CloudFormation.StackResourceSummary): string {
+  private getResourceTypeArnPartOfResource(resource: StackResourceSummary): string {
     const resourceType = resource.ResourceType;
     const specialCaseResourceType = RESOURCE_TYPE_SPECIAL_NAMES[resourceType]?.resourceType;
     return specialCaseResourceType

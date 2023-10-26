@@ -48,7 +48,7 @@ export class SharedIniFile {
       return;
     }
 
-    if (!await fs.pathExists(this.filename)) {
+    if (!(await fs.pathExists(this.filename))) {
       this.parsedContents = {};
       return;
     }

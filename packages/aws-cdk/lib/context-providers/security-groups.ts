@@ -1,6 +1,6 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as AWS from 'aws-sdk';
+import { Filter, SecurityGroup } from "@aws-sdk/client-ec2";
 import { Mode } from '../api/aws-auth/credentials';
 import { SdkProvider } from '../api/aws-auth/sdk-provider';
 import { ContextProviderPlugin } from '../api/plugin';
@@ -24,7 +24,7 @@ export class SecurityGroupContextProviderPlugin implements ContextProviderPlugin
     const options = { assumeRoleArn: args.lookupRoleArn };
     const ec2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, options)).sdk.ec2();
 
-    const filters: AWS.EC2.FilterList = [];
+    const filters: Array<Filter> = [];
     if (args.vpcId) {
       filters.push({
         Name: 'vpc-id',
@@ -64,7 +64,7 @@ export class SecurityGroupContextProviderPlugin implements ContextProviderPlugin
 /**
  * @internal
  */
-export function hasAllTrafficEgress(securityGroup: AWS.EC2.SecurityGroup) {
+export function hasAllTrafficEgress(securityGroup: SecurityGroup) {
   let hasAllTrafficCidrV4 = false;
   let hasAllTrafficCidrV6 = false;
 

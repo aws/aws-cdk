@@ -1,13 +1,13 @@
 import * as util from 'util';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as aws from 'aws-sdk';
+import { CloudFormation, StackEvent } from "@aws-sdk/client-cloudformation";
 import * as chalk from 'chalk';
 import { error, logLevel, LogLevel, setLogLevel } from '../../../logging';
 import { RewritableBlock } from '../display';
 
 export interface StackActivity {
-  readonly event: aws.CloudFormation.StackEvent;
+  readonly event: StackEvent;
   readonly metadata?: ResourceMetadata;
 }
 
@@ -89,7 +89,7 @@ export class StackActivityMonitor {
    * Create a Stack Activity Monitor using a default printer, based on context clues
    */
   public static withDefaultPrinter(
-    cfn: aws.CloudFormation,
+    cfn: CloudFormation,
     stackName: string,
     stackArtifact: cxapi.CloudFormationStackArtifact, options: WithDefaultPrinterProps = {}) {
     const stream = options.ci ? process.stdout : process.stderr;
@@ -139,7 +139,7 @@ export class StackActivityMonitor {
   private readPromise?: Promise<any>;
 
   constructor(
-    private readonly cfn: aws.CloudFormation,
+    private readonly cfn: CloudFormation,
     private readonly stackName: string,
     private readonly printer: IActivityPrinter,
     private readonly stack?: cxapi.CloudFormationStackArtifact,

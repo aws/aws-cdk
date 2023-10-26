@@ -1,5 +1,7 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import * as AWS from 'aws-sdk';
+import { ECR } from "@aws-sdk/client-ecr";
+import { S3 } from "@aws-sdk/client-s3";
+import { SecretsManager } from "@aws-sdk/client-secrets-manager";
 import * as cdk_assets from 'cdk-assets';
 import { Mode } from '../api/aws-auth/credentials';
 import { ISDK } from '../api/aws-auth/sdk';
@@ -145,15 +147,15 @@ export class PublishingAws implements cdk_assets.IAws {
     return (await this.sdk(options)).currentAccount();
   }
 
-  public async s3Client(options: cdk_assets.ClientOptions): Promise<AWS.S3> {
+  public async s3Client(options: cdk_assets.ClientOptions): Promise<S3> {
     return (await this.sdk(options)).s3();
   }
 
-  public async ecrClient(options: cdk_assets.ClientOptions): Promise<AWS.ECR> {
+  public async ecrClient(options: cdk_assets.ClientOptions): Promise<ECR> {
     return (await this.sdk(options)).ecr();
   }
 
-  public async secretsManagerClient(options: cdk_assets.ClientOptions): Promise<AWS.SecretsManager> {
+  public async secretsManagerClient(options: cdk_assets.ClientOptions): Promise<SecretsManager> {
     return (await this.sdk(options)).secretsManager();
   }
 

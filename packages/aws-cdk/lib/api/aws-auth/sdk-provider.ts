@@ -2,6 +2,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
+import { fromTemporaryCredentials } from "@aws-sdk/credential-providers";
 import type { ConfigurationOptions } from 'aws-sdk/lib/config-base';
 import * as fs from 'fs-extra';
 import { debug, warning } from './_env';
@@ -363,10 +364,13 @@ export class SdkProvider {
 
     region = region ?? this.defaultRegion;
 
-    const creds = new AWS.ChainableTemporaryCredentials({
+    const creds = // JS SDK v3 switched credential providers from classes to functions.
+    // This is the closest approximation from codemod of what your application needs.
+    // Reference: https://www.npmjs.com/package/@aws-sdk/credential-providers
+    fromTemporaryCredentials({
       params: {
         RoleArn: roleArn,
-        ...externalId ? { ExternalId: externalId } : {},
+        ...(externalId ? { ExternalId: externalId } : {}),
         RoleSessionName: `aws-cdk-${safeUsername()}`,
       },
       stsConfig: {

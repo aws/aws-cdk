@@ -196,10 +196,10 @@ async function prepareTaskDefinitionChange(
     : familyNameOrArn;
   // then, let's evaluate the body of the remainder of the TaskDef (without the Family property)
   return {
-    ...await evaluateCfnTemplate.evaluateCfnExpression({
+    ...(await evaluateCfnTemplate.evaluateCfnExpression({
       ...(taskDefinitionResource ?? {}),
       Family: undefined,
-    }),
+    })),
     Family: family,
   };
 }

@@ -3,6 +3,17 @@ import * as os from 'os';
 import * as path from 'path';
 import * as util from 'util';
 import * as AWS from 'aws-sdk';
+
+import {
+  fromContainerMetadata,
+  fromEnv,
+  fromInstanceMetadata,
+  fromProcess,
+  fromSSO,
+  fromTokenFile,
+} from "@aws-sdk/credential-providers";
+
+import { chain as providerChain } from "@smithy/property-provider";
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
 import { debug } from './_env';
@@ -41,30 +52,55 @@ export class AwsCliCompatible {
     // we use that to the exclusion of everything else (note: this does not apply
     // to AWS_PROFILE, environment credentials still take precedence over AWS_PROFILE)
     if (options.profile) {
-      return new AWS.CredentialProviderChain(iniFileCredentialFactories(options.profile, options.httpOptions));
+      return (
+        // JS SDK v3 switched credential providers from classes to functions.
+        // The CredentialProviderChain is now a chain of providers.
+        // Reference: https://www.npmjs.com/package/@aws-sdk/credential-providers
+        providerChain(iniFileCredentialFactories(options.profile, options.httpOptions))
+      );
     }
 
     const implicitProfile = process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE || 'default';
 
     const sources = [
-      () => new AWS.EnvironmentCredentials('AWS'),
-      () => new AWS.EnvironmentCredentials('AMAZON'),
+      () => // JS SDK v3 switched credential providers from classes to functions.
+      // This is the closest approximation from codemod of what your application needs.
+      // Reference: https://www.npmjs.com/package/@aws-sdk/credential-providers
+      fromEnv('AWS'),
+      () => // JS SDK v3 switched credential providers from classes to functions.
+      // This is the closest approximation from codemod of what your application needs.
+      // Reference: https://www.npmjs.com/package/@aws-sdk/credential-providers
+      fromEnv('AMAZON'),
       ...iniFileCredentialFactories(implicitProfile, options.httpOptions),
     ];
 
     if (options.containerCreds ?? hasEcsCredentials()) {
-      sources.push(() => new AWS.ECSCredentials());
+      sources.push(() => // JS SDK v3 switched credential providers from classes to functions.
+      // This is the closest approximation from codemod of what your application needs.
+      // Reference: https://www.npmjs.com/package/@aws-sdk/credential-providers
+      fromContainerMetadata());
     } else if (hasWebIdentityCredentials()) {
       // else if: we have found WebIdentityCredentials as provided by EKS ServiceAccounts
-      sources.push(() => new AWS.TokenFileWebIdentityCredentials());
-    } else if (options.ec2instance ?? await isEc2Instance()) {
+      sources.push(() => // JS SDK v3 switched credential providers from classes to functions.
+      // This is the closest approximation from codemod of what your application needs.
+      // Reference: https://www.npmjs.com/package/@aws-sdk/credential-providers
+      fromTokenFile());
+    } else if (options.ec2instance ?? (await isEc2Instance())) {
       // else if: don't get EC2 creds if we should have gotten ECS or EKS creds
       // ECS and EKS instances also run on EC2 boxes but the creds represent something different.
       // Same behavior as upstream code.
-      sources.push(() => new AWS.EC2MetadataCredentials());
+      sources.push(() => // JS SDK v3 switched credential providers from classes to functions.
+      // This is the closest approximation from codemod of what your application needs.
+      // Reference: https://www.npmjs.com/package/@aws-sdk/credential-providers
+      fromInstanceMetadata());
     }
 
-    return new AWS.CredentialProviderChain(sources);
+    return (
+      // JS SDK v3 switched credential providers from classes to functions.
+      // The CredentialProviderChain is now a chain of providers.
+      // Reference: https://www.npmjs.com/package/@aws-sdk/credential-providers
+      providerChain(sources)
+    );
 
     function profileCredentials(profileName: string) {
       return new PatchedSharedIniFileCredentials({
@@ -78,11 +114,17 @@ export class AwsCliCompatible {
     function iniFileCredentialFactories(theProfile: string, theHttpOptions?: AWS.HTTPOptions) {
       return [
         () => profileCredentials(theProfile),
-        () => new AWS.SsoCredentials({
+        () => // JS SDK v3 switched credential providers from classes to functions.
+        // This is the closest approximation from codemod of what your application needs.
+        // Reference: https://www.npmjs.com/package/@aws-sdk/credential-providers
+        fromSSO({
           profile: theProfile,
           httpOptions: theHttpOptions,
         }),
-        () => new AWS.ProcessCredentials({ profile: theProfile }),
+        () => // JS SDK v3 switched credential providers from classes to functions.
+        // This is the closest approximation from codemod of what your application needs.
+        // Reference: https://www.npmjs.com/package/@aws-sdk/credential-providers
+        fromProcess({ profile: theProfile }),
       ];
     }
   }
@@ -122,7 +164,7 @@ export class AwsCliCompatible {
       }
     }
 
-    if (!region && (options.ec2instance ?? await isEc2Instance())) {
+    if (!region && (options.ec2instance ?? (await isEc2Instance()))) {
       debug('Looking up AWS region in the EC2 Instance Metadata Service (IMDS).');
       const imdsOptions = {
         httpOptions: { timeout: 1000, connectTimeout: 1000 }, maxRetries: 2,

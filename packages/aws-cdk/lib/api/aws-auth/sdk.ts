@@ -1,3 +1,71 @@
+const {
+  AppSync
+} = require("@aws-sdk/client-appsync");
+
+const {
+  CloudFormation
+} = require("@aws-sdk/client-cloudformation");
+
+const {
+  CloudWatchLogs
+} = require("@aws-sdk/client-cloudwatch-logs");
+
+const {
+  CodeBuild
+} = require("@aws-sdk/client-codebuild");
+
+const {
+  EC2
+} = require("@aws-sdk/client-ec2");
+
+const {
+  ECR
+} = require("@aws-sdk/client-ecr");
+
+const {
+  ECS
+} = require("@aws-sdk/client-ecs");
+
+const {
+  ElasticLoadBalancingV2
+} = require("@aws-sdk/client-elastic-load-balancing-v2");
+
+const {
+  IAM
+} = require("@aws-sdk/client-iam");
+
+const {
+  KMS
+} = require("@aws-sdk/client-kms");
+
+const {
+  Lambda
+} = require("@aws-sdk/client-lambda");
+
+const {
+  Route53
+} = require("@aws-sdk/client-route-53");
+
+const {
+  S3
+} = require("@aws-sdk/client-s3");
+
+const {
+  SecretsManager
+} = require("@aws-sdk/client-secrets-manager");
+
+const {
+  SFN
+} = require("@aws-sdk/client-sfn");
+
+const {
+  SSM
+} = require("@aws-sdk/client-ssm");
+
+const {
+  STS
+} = require("@aws-sdk/client-sts");
+
 import * as AWS from 'aws-sdk';
 import type { ConfigurationOptions } from 'aws-sdk/lib/config-base';
 import { debug, trace } from './_env';
@@ -51,22 +119,22 @@ export interface ISDK {
    */
   removeCustomUserAgent(userAgentData: string): void;
 
-  lambda(): AWS.Lambda;
-  cloudFormation(): AWS.CloudFormation;
-  ec2(): AWS.EC2;
-  iam(): AWS.IAM;
-  ssm(): AWS.SSM;
-  s3(): AWS.S3;
-  route53(): AWS.Route53;
-  ecr(): AWS.ECR;
-  ecs(): AWS.ECS;
-  elbv2(): AWS.ELBv2;
-  secretsManager(): AWS.SecretsManager;
-  kms(): AWS.KMS;
-  stepFunctions(): AWS.StepFunctions;
-  codeBuild(): AWS.CodeBuild
-  cloudWatchLogs(): AWS.CloudWatchLogs;
-  appsync(): AWS.AppSync;
+  lambda(): Lambda;
+  cloudFormation(): CloudFormation;
+  ec2(): EC2;
+  iam(): IAM;
+  ssm(): SSM;
+  s3(): S3;
+  route53(): Route53;
+  ecr(): ECR;
+  ecs(): ECS;
+  elbv2(): ElasticLoadBalancingV2;
+  secretsManager(): SecretsManager;
+  kms(): KMS;
+  stepFunctions(): SFN;
+  codeBuild(): CodeBuild
+  cloudWatchLogs(): CloudWatchLogs;
+  appsync(): AppSync;
 }
 
 /**
@@ -150,71 +218,71 @@ export class SDK implements ISDK {
     this.config.customUserAgent = this.config.customUserAgent?.replace(userAgentData, '');
   }
 
-  public lambda(): AWS.Lambda {
-    return this.wrapServiceErrorHandling(new AWS.Lambda(this.config));
+  public lambda(): Lambda {
+    return this.wrapServiceErrorHandling(new Lambda(this.config));
   }
 
-  public cloudFormation(): AWS.CloudFormation {
-    return this.wrapServiceErrorHandling(new AWS.CloudFormation({
+  public cloudFormation(): CloudFormation {
+    return this.wrapServiceErrorHandling(new CloudFormation({
       ...this.config,
-      ...this.cloudFormationRetryOptions,
+      ...this.cloudFormationRetryOptions
     }));
   }
 
-  public ec2(): AWS.EC2 {
-    return this.wrapServiceErrorHandling(new AWS.EC2(this.config));
+  public ec2(): EC2 {
+    return this.wrapServiceErrorHandling(new EC2(this.config));
   }
 
-  public iam(): AWS.IAM {
-    return this.wrapServiceErrorHandling(new AWS.IAM(this.config));
+  public iam(): IAM {
+    return this.wrapServiceErrorHandling(new IAM(this.config));
   }
 
-  public ssm(): AWS.SSM {
-    return this.wrapServiceErrorHandling(new AWS.SSM(this.config));
+  public ssm(): SSM {
+    return this.wrapServiceErrorHandling(new SSM(this.config));
   }
 
-  public s3(): AWS.S3 {
-    return this.wrapServiceErrorHandling(new AWS.S3(this.config));
+  public s3(): S3 {
+    return this.wrapServiceErrorHandling(new S3(this.config));
   }
 
-  public route53(): AWS.Route53 {
-    return this.wrapServiceErrorHandling(new AWS.Route53(this.config));
+  public route53(): Route53 {
+    return this.wrapServiceErrorHandling(new Route53(this.config));
   }
 
-  public ecr(): AWS.ECR {
-    return this.wrapServiceErrorHandling(new AWS.ECR(this.config));
+  public ecr(): ECR {
+    return this.wrapServiceErrorHandling(new ECR(this.config));
   }
 
-  public ecs(): AWS.ECS {
-    return this.wrapServiceErrorHandling(new AWS.ECS(this.config));
+  public ecs(): ECS {
+    return this.wrapServiceErrorHandling(new ECS(this.config));
   }
 
-  public elbv2(): AWS.ELBv2 {
-    return this.wrapServiceErrorHandling(new AWS.ELBv2(this.config));
+  public elbv2(): ElasticLoadBalancingV2 {
+    return this.wrapServiceErrorHandling(new ElasticLoadBalancingV2(this.config));
   }
 
-  public secretsManager(): AWS.SecretsManager {
-    return this.wrapServiceErrorHandling(new AWS.SecretsManager(this.config));
+  public secretsManager(): SecretsManager {
+    return this.wrapServiceErrorHandling(new SecretsManager(this.config));
   }
 
-  public kms(): AWS.KMS {
-    return this.wrapServiceErrorHandling(new AWS.KMS(this.config));
+  public kms(): KMS {
+    return this.wrapServiceErrorHandling(new KMS(this.config));
   }
 
-  public stepFunctions(): AWS.StepFunctions {
-    return this.wrapServiceErrorHandling(new AWS.StepFunctions(this.config));
+  public stepFunctions(): SFN {
+    return this.wrapServiceErrorHandling(new SFN(this.config));
   }
 
-  public codeBuild(): AWS.CodeBuild {
-    return this.wrapServiceErrorHandling(new AWS.CodeBuild(this.config));
+  public codeBuild(): CodeBuild {
+    return this.wrapServiceErrorHandling(new CodeBuild(this.config));
   }
 
-  public cloudWatchLogs(): AWS.CloudWatchLogs {
-    return this.wrapServiceErrorHandling(new AWS.CloudWatchLogs(this.config));
+  public cloudWatchLogs(): CloudWatchLogs {
+    return this.wrapServiceErrorHandling(new CloudWatchLogs(this.config));
   }
 
-  public appsync(): AWS.AppSync {
-    return this.wrapServiceErrorHandling(new AWS.AppSync(this.config));
+  public appsync(): AppSync {
+    return this.wrapServiceErrorHandling(new AppSync(this.config));
   }
 
   public async currentAccount(): Promise<Account> {
@@ -224,7 +292,10 @@ export class SDK implements ISDK {
     return cached(this, CURRENT_ACCOUNT_KEY, () => SDK.accountCache.fetch(this._credentials.accessKeyId, async () => {
       // if we don't have one, resolve from STS and store in cache.
       debug('Looking up default account ID from STS');
-      const result = await new AWS.STS({ ...this.config, ...this.stsRetryOptions }).getCallerIdentity().promise();
+      const result = await new STS({
+        ...this.config,
+        ...this.stsRetryOptions
+      }).getCallerIdentity().promise();
       const accountId = result.Account;
       const partition = result.Arn!.split(':')[1];
       if (!accountId) {
@@ -268,9 +339,7 @@ export class SDK implements ISDK {
       debug(`Assuming role failed: ${e.message}`);
       throw new Error([
         'Could not assume role in target account',
-        ...this.sdkOptions.assumeRoleCredentialsSourceDescription
-          ? [`using ${this.sdkOptions.assumeRoleCredentialsSourceDescription}`]
-          : [],
+        ...(this.sdkOptions.assumeRoleCredentialsSourceDescription ? [`using ${this.sdkOptions.assumeRoleCredentialsSourceDescription}`] : []),
         e.message,
         '. Please make sure that this role exists in the account. If it doesn\'t exist, (re)-bootstrap the environment ' +
         'with the right \'--trust\', using the latest version of the CDK CLI.',
@@ -286,7 +355,10 @@ export class SDK implements ISDK {
       return;
     }
 
-    await new AWS.STS({ ...this.config, ...this.stsRetryOptions }).getCallerIdentity().promise();
+    await new STS({
+      ...this.config,
+      ...this.stsRetryOptions
+    }).getCallerIdentity().promise();
     this._credentialsValidated = true;
   }
 
@@ -384,9 +456,7 @@ export class SDK implements ISDK {
     if (e.message === 'Could not load credentials from ChainableTemporaryCredentials') {
       e.message = [
         'Could not assume role in target account',
-        ...this.sdkOptions.assumeRoleCredentialsSourceDescription
-          ? [`using ${this.sdkOptions.assumeRoleCredentialsSourceDescription}`]
-          : [],
+        ...(this.sdkOptions.assumeRoleCredentialsSourceDescription ? [`using ${this.sdkOptions.assumeRoleCredentialsSourceDescription}`] : []),
         '(did you bootstrap the environment with the right \'--trust\'s?)',
       ].join(' ');
     }

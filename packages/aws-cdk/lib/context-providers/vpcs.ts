@@ -1,6 +1,6 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as AWS from 'aws-sdk';
+import { EC2, Filter, RouteTable, Tag, Vpc } from "@aws-sdk/client-ec2";
 import { Mode } from '../api/aws-auth/credentials';
 import { SdkProvider } from '../api/aws-auth/sdk-provider';
 import { ContextProviderPlugin } from '../api/plugin';
@@ -23,12 +23,12 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
     return this.readVpcProps(ec2, vpcId, args);
   }
 
-  private async findVpc(ec2: AWS.EC2, args: cxschema.VpcContextQuery): Promise<AWS.EC2.Vpc> {
+  private async findVpc(ec2: EC2, args: cxschema.VpcContextQuery): Promise<Vpc> {
     // Build request filter (map { Name -> Value } to list of [{ Name, Values }])
-    const filters: AWS.EC2.Filter[] = Object.entries(args.filter).map(([tag, value]) => ({ Name: tag, Values: [value] }));
+    const filters: Filter[] = Object.entries(args.filter).map(([tag, value]) => ({ Name: tag, Values: [value] }));
 
     debug(`Listing VPCs in ${args.account}:${args.region}`);
-    const response = await ec2.describeVpcs({ Filters: filters }).promise();
+    const response = await ec2.describeVpcs({ Filters: filters });
 
     const vpcs = response.Vpcs || [];
     if (vpcs.length === 0) {
@@ -41,17 +41,17 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
     return vpcs[0];
   }
 
-  private async readVpcProps(ec2: AWS.EC2, vpc: AWS.EC2.Vpc, args: cxschema.VpcContextQuery): Promise<cxapi.VpcContextResponse> {
+  private async readVpcProps(ec2: EC2, vpc: Vpc, args: cxschema.VpcContextQuery): Promise<cxapi.VpcContextResponse> {
     const vpcId = vpc.VpcId!;
 
     debug(`Describing VPC ${vpcId}`);
 
     const filters = { Filters: [{ Name: 'vpc-id', Values: [vpcId] }] };
 
-    const subnetsResponse = await ec2.describeSubnets(filters).promise();
+    const subnetsResponse = await ec2.describeSubnets(filters);
     const listedSubnets = subnetsResponse.Subnets || [];
 
-    const routeTablesResponse = await ec2.describeRouteTables(filters).promise();
+    const routeTablesResponse = await ec2.describeRouteTables(filters);
     const routeTables = new RouteTables(routeTablesResponse.RouteTables || []);
 
     // Now comes our job to separate these subnets out into AZs and subnet groups (Public, Private, Isolated)
@@ -130,7 +130,7 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
             Values: ['available'],
           },
         ],
-      }).promise()
+      })
       : undefined;
     const vpnGatewayId = vpnGatewayResponse?.VpnGateways?.length === 1
       ? vpnGatewayResponse.VpnGateways[0].VpnGatewayId
@@ -157,9 +157,9 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
 }
 
 class RouteTables {
-  public readonly mainRouteTable?: AWS.EC2.RouteTable;
+  public readonly mainRouteTable?: RouteTable;
 
-  constructor(private readonly tables: AWS.EC2.RouteTable[]) {
+  constructor(private readonly tables: RouteTable[]) {
     this.mainRouteTable = this.tables.find(table => !!table.Associations && table.Associations.some(assoc => !!assoc.Main));
   }
 
@@ -203,7 +203,7 @@ class RouteTables {
 /**
  * Return the value of a tag from a set of tags
  */
-function getTag(name: string, tags?: AWS.EC2.Tag[]): string | undefined {
+function getTag(name: string, tags?: Tag[]): string | undefined {
   for (const tag of tags || []) {
     if (tag.Key === name) {
       return tag.Value;

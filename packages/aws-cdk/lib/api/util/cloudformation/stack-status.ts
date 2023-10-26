@@ -1,4 +1,4 @@
-import * as AWS from 'aws-sdk';
+import { Stack } from "@aws-sdk/client-cloudformation";
 
 /**
  * A utility class to inspect CloudFormation stack statuses.
@@ -6,7 +6,7 @@ import * as AWS from 'aws-sdk';
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-describing-stacks.html
  */
 export class StackStatus {
-  public static fromStackDescription(description: AWS.CloudFormation.Stack) {
+  public static fromStackDescription(description: Stack) {
     return new StackStatus(description.StackStatus, description.StackStatusReason);
   }
 

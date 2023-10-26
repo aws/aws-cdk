@@ -1,6 +1,6 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as AWS from 'aws-sdk';
+import { GetParameterCommandOutput } from "@aws-sdk/client-ssm";
 import { Mode } from '../api/aws-auth/credentials';
 import { SdkProvider } from '../api/aws-auth/sdk-provider';
 import { ContextProviderPlugin } from '../api/plugin';
@@ -41,7 +41,7 @@ export class SSMContextProviderPlugin implements ContextProviderPlugin {
    * @throws Error if a service error (other than ``ParameterNotFound``) occurs.
    */
   private async getSsmParameterValue(account: string, region: string, parameterName: string, lookupRoleArn?: string)
-    : Promise<AWS.SSM.GetParameterResult> {
+    : Promise<GetParameterCommandOutput> {
     const options = { assumeRoleArn: lookupRoleArn };
     const ssm = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, options)).sdk.ssm();
     try {

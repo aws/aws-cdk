@@ -1,4 +1,4 @@
-import * as AWS from 'aws-sdk';
+import { UpdateProjectCommandInput } from "@aws-sdk/client-codebuild";
 import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, lowerCaseFirstCharacter, transformObjectKeys } from './common';
 import { ISDK } from '../aws-auth';
 import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
@@ -15,7 +15,7 @@ export async function isHotswappableCodeBuildProjectChange(
   const classifiedChanges = classifyChanges(change, ['Source', 'Environment', 'SourceVersion']);
   classifiedChanges.reportNonHotswappablePropertyChanges(ret);
   if (classifiedChanges.namesOfHotswappableProps.length > 0) {
-    const updateProjectInput: AWS.CodeBuild.UpdateProjectInput = {
+    const updateProjectInput: UpdateProjectCommandInput = {
       name: '',
     };
     const projectName = await evaluateCfnTemplate.establishResourcePhysicalName(logicalId, change.newValue.Properties?.Name);
