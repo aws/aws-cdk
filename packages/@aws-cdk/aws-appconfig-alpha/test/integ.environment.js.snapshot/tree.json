@@ -62,6 +62,49 @@
               "version": "0.0.0"
             }
           },
+          "MyRole": {
+            "id": "MyRole",
+            "path": "aws-appconfig-environment/MyRole",
+            "children": {
+              "ImportMyRole": {
+                "id": "ImportMyRole",
+                "path": "aws-appconfig-environment/MyRole/ImportMyRole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appconfig-environment/MyRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "appconfig.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "0.0.0"
+            }
+          },
           "MyEnvironment": {
             "id": "MyEnvironment",
             "path": "aws-appconfig-environment/MyEnvironment",
@@ -150,6 +193,20 @@
                         "alarmRoleArn": {
                           "Fn::GetAtt": [
                             "MyEnvironmentRole01C8C013F",
+                            "Arn"
+                          ]
+                        }
+                      },
+                      {
+                        "alarmArn": {
+                          "Fn::GetAtt": [
+                            "MyAlarm696658B6",
+                            "Arn"
+                          ]
+                        },
+                        "alarmRoleArn": {
+                          "Fn::GetAtt": [
+                            "MyRoleF48FFE04",
                             "Arn"
                           ]
                         }
