@@ -19,7 +19,7 @@ test('resource interface when primaryIdentifier is an attribute', () => {
 
   expect(rendered).toContain([
     '/**',
-    ' * Shared attributes for both `CfnDomain` and `Domain`.',
+    ' * Attributes for `CfnDomain`.',
     ' *',
     ' * @stability external',
     ' */',
@@ -43,7 +43,7 @@ test('resource interface when primaryIdentifier is a property', () => {
 
   expect(rendered).toContain([
     '/**',
-    ' * Shared attributes for both `CfnApplication` and `Application`.',
+    ' * Attributes for `CfnApplication`.',
     ' *',
     ' * @stability external',
     ' */',
@@ -67,7 +67,7 @@ test('resource interface with multiple primaryIdentifiers', () => {
 
   expect(rendered).toContain([
     '/**',
-    ' * Shared attributes for both `CfnDataCellsFilter` and `DataCellsFilter`.',
+    ' * Attributes for `CfnDataCellsFilter`.',
     ' *',
     ' * @stability external',
     ' */',
@@ -119,7 +119,7 @@ test('resource interface with "Arn"', () => {
 
   expect(rendered).toContain([
     '/**',
-    ' * Shared attributes for both `CfnBucket` and `Bucket`.',
+    ' * Attributes for `CfnBucket`.',
     ' *',
     ' * @stability external',
     ' */',

@@ -79,7 +79,7 @@ export class ResourceClass extends ClassType {
       export: true,
       name: interfaceNameFromResource(this.resource, this.suffix),
       docs: {
-        summary: `Shared attributes for both \`${classNameFromResource(this.resource)}\` and \`${this.resource.name}\`.`,
+        summary: `Attributes for \`${classNameFromResource(this.resource)}\`.`,
         stability: Stability.External,
       },
     });
