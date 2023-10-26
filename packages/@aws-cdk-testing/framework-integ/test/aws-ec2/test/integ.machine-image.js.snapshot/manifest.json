@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "34.0.0",
   "artifacts": {
     "integ-ec2-machine-image-test.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "integ-ec2-machine-image-test.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fa6690179ed0aff2d045f19741af965ccdb151c74c58ea99393b00c3d47ceed9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d898789343437c2eb73edab3927044683b15ba7ce606b73961dcbfe73604deea.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -291,6 +292,36 @@
             "data": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
+        "/integ-ec2-machine-image-test/al2023 with minimal AMI/InstanceSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "al2023withminimalAMIInstanceSecurityGroupB3378C30"
+          }
+        ],
+        "/integ-ec2-machine-image-test/al2023 with minimal AMI/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "al2023withminimalAMIInstanceRole6BA4B2B7"
+          }
+        ],
+        "/integ-ec2-machine-image-test/al2023 with minimal AMI/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "al2023withminimalAMIInstanceProfile9DC9359F"
+          }
+        ],
+        "/integ-ec2-machine-image-test/al2023 with minimal AMI/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "al2023withminimalAMIF0D18F9E"
+          }
+        ],
+        "/integ-ec2-machine-image-test/SsmParameterValue:--aws--service--ami-amazon-linux-latest--al2023-ami-minimal-kernel-6.1-x86_64:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amiminimalkernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
         "/integ-ec2-machine-image-test/AmiParameter": [
           {
             "type": "aws:cdk:logicalId",
@@ -318,7 +349,10 @@
         "/integ-ec2-machine-image-test/ssm-resolve-instance/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ssmresolveinstanceDC2C8573"
+            "data": "ssmresolveinstanceDC2C8573",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-ec2-machine-image-test/LT/Resource": [
@@ -330,7 +364,7 @@
         "/integ-ec2-machine-image-test/ASG": [
           {
             "type": "aws:cdk:warning",
-            "data": "desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215"
+            "data": "desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215 [ack: @aws-cdk/aws-autoscaling:desiredCapacitySet]"
           }
         ],
         "/integ-ec2-machine-image-test/ASG/ASG": [
@@ -367,6 +401,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "integtestDefaultTestDeployAssert24D5C536.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
