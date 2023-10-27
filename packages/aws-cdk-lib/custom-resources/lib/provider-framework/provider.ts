@@ -2,7 +2,7 @@ import * as path from 'path';
 import { Construct } from 'constructs';
 import * as consts from './runtime/consts';
 import { calculateRetryPolicy } from './util';
-import { WaiterStateMachineLogOptions, WaiterStateMachine } from './waiter-state-machine';
+import { LogOptions, WaiterStateMachine } from './waiter-state-machine';
 import { CustomResourceProviderConfig, ICustomResourceProvider } from '../../../aws-cloudformation';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
@@ -128,21 +128,16 @@ export interface ProviderProps {
   readonly providerFunctionEnvEncryption?: kms.IKey;
 
   /**
-   * Log options for `WaiterStateMachine` with `isCompleteHandler` in the provider.
+   * Defines what execution history events of the waiter state machine are logged and where they are logged.
    *
-   * This property must not be used if `isCompleteHandler` is not specified or
-   * `disableWaiterStateMachineLogging` is true.
-   *
-   * @default - no log options
+   * @default - A default log group will be created if logging for the waiter state machine is enabled.
    */
-  readonly waiterStateMachineLogOptions?: WaiterStateMachineLogOptions;
+  readonly waiterStateMachineLogOptions?: LogOptions;
 
   /**
-   * Disable logging for `WaiterStateMachine` with `isCompleteHandler` in the provider.
+   * Whether logging for the waiter state machine is disabled.
    *
-   * This property must not be used if `isCompleteHandler` is not specified.
-   *
-   * @default false
+   * @default - false
    */
   readonly disableWaiterStateMachineLogging?: boolean;
 }
@@ -188,7 +183,7 @@ export class Provider extends Construct implements ICustomResourceProvider {
         || props.waiterStateMachineLogOptions
         || props.disableWaiterStateMachineLogging !== undefined
       ) {
-        throw new Error('"queryInterval" and "totalTimeout" and "waiterStateMachineLogOptions" and "disableWaiterStateMachineLogging" '
+        throw new Error('"queryInterval", "totalTimeout", "waiterStateMachineLogOptions", and "disableWaiterStateMachineLogging" '
           + 'can only be configured if "isCompleteHandler" is specified. '
           + 'Otherwise, they have no meaning');
       }
@@ -208,10 +203,6 @@ export class Provider extends Construct implements ICustomResourceProvider {
     const onEventFunction = this.createFunction(consts.FRAMEWORK_ON_EVENT_HANDLER_NAME, props.providerFunctionName);
 
     if (this.isCompleteHandler) {
-      if (props.disableWaiterStateMachineLogging && props.waiterStateMachineLogOptions) {
-        throw new Error('waiterStateMachineLogOptions must not be used if disableWaiterStateMachineLogging is true');
-      }
-
       const isCompleteFunction = this.createFunction(consts.FRAMEWORK_IS_COMPLETE_HANDLER_NAME);
       const timeoutFunction = this.createFunction(consts.FRAMEWORK_ON_TIMEOUT_HANDLER_NAME);
 
@@ -222,7 +213,7 @@ export class Provider extends Construct implements ICustomResourceProvider {
         backoffRate: retry.backoffRate,
         interval: retry.interval,
         maxAttempts: retry.maxAttempts,
-        logOptions: !props.disableWaiterStateMachineLogging ? props.waiterStateMachineLogOptions : undefined,
+        logOptions: props.waiterStateMachineLogOptions,
         disableLogging: props.disableWaiterStateMachineLogging,
       });
       // the on-event entrypoint is going to start the execution of the waiter

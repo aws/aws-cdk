@@ -2,17 +2,17 @@ import { Construct } from 'constructs';
 import { Grant, IGrantable, PolicyStatement, Role, ServicePrincipal } from '../../../aws-iam';
 import { IFunction } from '../../../aws-lambda';
 import { ILogGroup, LogGroup } from '../../../aws-logs';
-import { LogLevel } from '../../../aws-stepfunctions';
-import { CfnResource, Duration, Stack } from '../../../core';
+import { CfnStateMachine, LogLevel } from '../../../aws-stepfunctions';
+import { Duration, Stack } from '../../../core';
 
 /**
  * Log Options for the state machine.
  */
-export interface WaiterStateMachineLogOptions {
+export interface LogOptions {
   /**
    * The log group where the execution history events will be logged.
    *
-   * @default - Log group generated automatically
+   * @default - a new log group will be created
    */
   readonly destination?: ILogGroup;
 
@@ -61,18 +61,16 @@ export interface WaiterStateMachineProps {
   readonly backoffRate: number;
 
   /**
-   * Options for StateMachine logging.
+   * Defines what execution history events are logged and where they are logged.
    *
-   * This property must not be used if `disableLogging` is true.
-   *
-   * @default - no logOptions
+   * @default - A default log group will be created if logging is enabled.
    */
-  readonly logOptions?: WaiterStateMachineLogOptions;
+  readonly logOptions?: LogOptions;
 
   /**
-   * Disable StateMachine logging.
+   * Whether logging for the state machine is disabled.
    *
-   * @default false
+   * @default - false
    */
   readonly disableLogging?: boolean;
 }
@@ -98,34 +96,6 @@ export class WaiterStateMachine extends Construct {
     });
     props.isCompleteHandler.grantInvoke(role);
     props.timeoutHandler.grantInvoke(role);
-
-    let logGroup: ILogGroup | undefined;
-    if (props.disableLogging) {
-      if (props.logOptions) {
-        throw new Error('logOptions must not be used if disableLogging is true');
-      }
-    } else {
-      logGroup = props.logOptions?.destination
-        ? props.logOptions.destination
-        : new LogGroup(this, 'LogGroup');
-
-      // https://docs.aws.amazon.com/step-functions/latest/dg/cw-logs.html#cloudwatch-iam-policy
-      role.addToPrincipalPolicy(new PolicyStatement({
-        actions: [
-          'logs:CreateLogDelivery',
-          'logs:CreateLogStream',
-          'logs:GetLogDelivery',
-          'logs:UpdateLogDelivery',
-          'logs:DeleteLogDelivery',
-          'logs:ListLogDeliveries',
-          'logs:PutLogEvents',
-          'logs:PutResourcePolicy',
-          'logs:DescribeResourcePolicies',
-          'logs:DescribeLogGroups',
-        ],
-        resources: ['*'],
-      }));
-    }
 
     const definition = Stack.of(this).toJsonString({
       StartAt: 'framework-isComplete-task',
@@ -153,25 +123,10 @@ export class WaiterStateMachine extends Construct {
       },
     });
 
-    const logOptions = logGroup ? {
-      LoggingConfiguration: {
-        Destinations: [{
-          CloudWatchLogsLogGroup: {
-            LogGroupArn: logGroup.logGroupArn,
-          },
-        }],
-        IncludeExecutionData: props.logOptions?.includeExecutionData ?? false,
-        Level: props.logOptions?.level ?? LogLevel.ERROR,
-      },
-    } : undefined;
-
-    const resource = new CfnResource(this, 'Resource', {
-      type: 'AWS::StepFunctions::StateMachine',
-      properties: {
-        DefinitionString: definition,
-        RoleArn: role.roleArn,
-        ...logOptions,
-      },
+    const resource = new CfnStateMachine(this, 'Resource', {
+      definitionString: definition,
+      roleArn: role.roleArn,
+      loggingConfiguration: this.renderLoggingConfiguration(role, props.logOptions, props.disableLogging),
     });
     resource.node.addDependency(role);
 
@@ -187,5 +142,42 @@ export class WaiterStateMachine extends Construct {
       actions: ['states:StartExecution'],
       resourceArns: [this.stateMachineArn],
     });
+  }
+
+  private renderLoggingConfiguration(
+    role: Role,
+    logOptions?: LogOptions,
+    disableLogging?: boolean,
+  ): CfnStateMachine.LoggingConfigurationProperty | undefined {
+    if (disableLogging) return undefined;
+
+    // https://docs.aws.amazon.com/step-functions/latest/dg/cw-logs.html#cloudwatch-iam-policy
+    role.addToPrincipalPolicy(new PolicyStatement({
+      actions: [
+        'logs:CreateLogDelivery',
+        'logs:CreateLogStream',
+        'logs:GetLogDelivery',
+        'logs:UpdateLogDelivery',
+        'logs:DeleteLogDelivery',
+        'logs:ListLogDeliveries',
+        'logs:PutLogEvents',
+        'logs:PutResourcePolicy',
+        'logs:DescribeResourcePolicies',
+        'logs:DescribeLogGroups',
+      ],
+      resources: ['*'],
+    }));
+
+    const logGroup = logOptions?.destination ?? new LogGroup(this, 'LogGroup');
+
+    return {
+      destinations: [{
+        cloudWatchLogsLogGroup: {
+          logGroupArn: logGroup.logGroupArn,
+        },
+      }],
+      includeExecutionData: logOptions?.includeExecutionData ?? false,
+      level: logOptions?.level ?? LogLevel.ERROR,
+    };
   }
 }

@@ -175,24 +175,6 @@ describe('state machine', () => {
     // THEN
     const roleId = 'statemachineRole52044F93';
     Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 0);
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: 'lambda:InvokeFunction',
-            Effect: 'Allow',
-            Resource: stack.resolve(isCompleteHandler.resourceArnsForGrantInvoke),
-          },
-          {
-            Action: 'lambda:InvokeFunction',
-            Effect: 'Allow',
-            Resource: stack.resolve(timeoutHandler.resourceArnsForGrantInvoke),
-          },
-        ],
-        Version: '2012-10-17',
-      },
-      Roles: [{ Ref: roleId }],
-    });
   });
 
   test('fails if logOptions is specified and disableLogging is true', () => {
