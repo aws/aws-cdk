@@ -329,6 +329,11 @@ export enum InstanceClass {
   /**
    * Memory optimized instances based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation
    */
+  R7I = 'r7i',
+
+  /**
+   * Memory optimized instances based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation
+   */
   MEMORY7_INTEL = 'memory7-intel',
 
   /**
@@ -1251,6 +1256,7 @@ export class InstanceType {
       [InstanceClass.R7G]: 'r7g',
       [InstanceClass.MEMORY7_GRAVITON3_NVME_DRIVE]: 'r7gd',
       [InstanceClass.R7GD]: 'r7gd',
+      [InstanceClass.R7I]: 'r7i',
       [InstanceClass.MEMORY7_INTEL]: 'r7iz',
       [InstanceClass.R7IZ]: 'r7iz',
       [InstanceClass.COMPUTE3]: 'c3',
