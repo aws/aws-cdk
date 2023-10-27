@@ -15,6 +15,11 @@ class SomeLambdaTarget implements scheduler.IScheduleTarget {
     return {
       arn: this.fn.functionArn,
       role: this.role,
+      input: scheduler.ScheduleTargetInput.fromText('Input Text'),
+      retryPolicy: {
+        maximumEventAgeInSeconds: 180,
+        maximumRetryAttempts: 3,
+      },
     };
   }
 }
@@ -45,6 +50,16 @@ new scheduler.Schedule(stack, 'DisabledSchedule', {
   enabled: false,
 });
 
+new scheduler.Schedule(stack, 'TargetOverrideSchedule', {
+  schedule: expression,
+  target: target,
+  targetOverrides: {
+    input: scheduler.ScheduleTargetInput.fromText('Changed Text'),
+    maxEventAge: cdk.Duration.seconds(360),
+    retryAttempts: 5,
+  },
+});
+
 new cloudwatch.Alarm(stack, 'AllSchedulerErrorsAlarm', {
   metric: scheduler.Schedule.metricAllErrors(),
   threshold: 1,
@@ -61,3 +76,5 @@ new scheduler.Schedule(stack, 'CustomerKmsSchedule', {
 new IntegTest(app, 'integtest-schedule', {
   testCases: [stack],
 });
+
+app.synth();
