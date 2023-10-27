@@ -121,7 +121,7 @@ export interface LambdaDeploymentGroupProps {
   /**
    * Whether to skip the step of checking CloudWatch alarms during the deployment process
    *
-   * @default false
+   * @default - false
    */
   readonly ignoreAlarmConfiguration?: boolean;
 }
@@ -185,7 +185,8 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
       },
       alarmConfiguration: cdk.Lazy.any({
         produce: () => renderAlarmConfiguration(
-          this.alarms, props.ignorePollAlarmsFailure,
+          this.alarms,
+          props.ignorePollAlarmsFailure,
           props.ignoreAlarmConfiguration,
           removeAlarmsFromDeploymentGroup,
         ),

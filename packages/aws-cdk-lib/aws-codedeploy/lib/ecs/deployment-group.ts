@@ -182,7 +182,7 @@ export interface EcsDeploymentGroupProps {
   /**
    * Whether to skip the step of checking CloudWatch alarms during the deployment process
    *
-   * @default false
+   * @default - false
    */
   readonly ignoreAlarmConfiguration?: boolean;
 }
