@@ -983,7 +983,7 @@ test('passes when idleTimeout is between 1 and 4000 seconds for multiAlbService'
       loadBalancers: [
         {
           name: 'lb',
-          idleTimeout: Duration.seconds(400),
+          idleTimeout: Duration.seconds(5),
           domainName: 'api.example.com',
           domainZone: new PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' }),
           listeners: [
@@ -997,7 +997,7 @@ test('passes when idleTimeout is between 1 and 4000 seconds for multiAlbService'
         },
         {
           name: 'lb2',
-          idleTimeout: Duration.seconds(120),
+          idleTimeout: Duration.seconds(500),
           domainName: 'frontend.com',
           domainZone: new PublicHostedZone(stack, 'HostedZone2', { zoneName: 'frontend.com' }),
           listeners: [
