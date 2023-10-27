@@ -89,7 +89,7 @@ export class CloudFormationStackDriftDetectionCheck extends ManagedRule {
     if (!this.ruleScope) {
       this.ruleScope = RuleScope.fromResources([ResourceType.CLOUDFORMATION_STACK]);
     }
-    
+
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('config.amazonaws.com'),
       managedPolicies: [
