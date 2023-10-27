@@ -42,8 +42,9 @@ export interface AutoscaledCapacityOptions {
   readonly targetUtilizationPercent?: number;
 
   /**
-   * If you want to switch a table's billing mode from on-demand to provisioned, you
-   * must specify a value for this property for each autoscaled resource.
+   * If you want to switch a table's billing mode from on-demand to provisioned or
+   * from provisioned to on-demand, you must specify a value for this property for
+   * each autoscaled resource.
    *
    * @default no seed capacity
    */
