@@ -26,7 +26,7 @@ export interface LogOptions {
   /**
    * Defines which category of execution history events are logged.
    *
-   * @default ERROR
+   * @default - ERROR
    */
   readonly level?: LogLevel;
 }
