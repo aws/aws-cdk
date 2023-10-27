@@ -6,29 +6,29 @@ import * as sfn from '../../../aws-stepfunctions';
 import { Stack } from '../../../core';
 
 /**
- * Properties for DynamoDescribeExport Task
+ * Properties for DynamoDescribeImport Task
  */
-export interface DynamoDescribeExportProps extends sfn.TaskStateBaseProps {
+export interface DynamoDescribeImportProps extends sfn.TaskStateBaseProps {
   /**
-   * The name of the table where the export was created.
+   * The name of the table where the import was created.
    */
   readonly table: ddb.ITable;
   /**
-   * The Amazon Resource Name (ARN) associated with the export.
+   * The Amazon Resource Name (ARN) associated with the table you're importing to.
    *
-   * @see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_DescribeExport.html#API_DescribeExport_RequestSyntax
+   * @see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_DescribeImport.html#API_DescribeImport_RequestSyntax
    */
-  readonly exportArn: string;
+  readonly importArn: string;
 }
 
 /**
- * A StepFunctions task to call DynamoDescribeExport
+ * A StepFunctions task to call DynamoDescribeImport
  */
-export class DynamoDescribeExport extends sfn.TaskStateBase {
+export class DynamoDescribeImport extends sfn.TaskStateBase {
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
   protected readonly taskPolicies?: iam.PolicyStatement[];
 
-  constructor(scope: Construct, id: string, private readonly props: DynamoDescribeExportProps) {
+  constructor(scope: Construct, id: string, private readonly props: DynamoDescribeImportProps) {
     super(scope, id, props);
 
     this.taskPolicies = [
@@ -37,10 +37,10 @@ export class DynamoDescribeExport extends sfn.TaskStateBase {
           Stack.of(this).formatArn({
             service: 'dynamodb',
             resource: 'table',
-            resourceName: `${props.table.tableName}/export/*`,
+            resourceName: `${props.table.tableName}/import/*`,
           }),
         ],
-        actions: ['dynamodb:DescribeExport'],
+        actions: ['dynamodb:DescribeImport'],
       }),
     ];
   }
@@ -50,9 +50,9 @@ export class DynamoDescribeExport extends sfn.TaskStateBase {
    */
   protected _renderTask(): any {
     return {
-      Resource: getDynamoResourceArnFromApi('describeExport'),
+      Resource: getDynamoResourceArnFromApi('describeImport'),
       Parameters: sfn.FieldUtils.renderObject({
-        ExportArn: this.props.exportArn,
+        ImportArn: this.props.importArn,
       }),
     };
   }

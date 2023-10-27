@@ -42,6 +42,7 @@ export * from './dynamodb/update-item';
 export * from './dynamodb/delete-item';
 export * from './dynamodb/shared-types';
 export * from './dynamodb/describe-export';
+export * from './dynamodb/describe-import';
 export * from './codebuild/start-build';
 export * from './athena/start-query-execution';
 export * from './athena/stop-query-execution';

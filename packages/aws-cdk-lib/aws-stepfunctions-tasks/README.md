@@ -39,6 +39,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [DeleteItem](#deleteitem)
     - [UpdateItem](#updateitem)
     - [DescribeExport](#describeexport)
+    - [DescribeImport](#describeimport)
   - [ECS](#ecs)
     - [RunTask](#runtask)
       - [EC2](#ec2)
@@ -425,6 +426,19 @@ declare const myTable: dynamodb.Table;
 new tasks.DynamoDescribeExport(stack, 'DescribeExport', {
   table,
   exportArn: sfn.JsonPath.stringAt('$.ExportDescription.ExportArn'),
+});
+```
+
+### DescribeImport
+
+The [DescribeImport](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_DescribeImport.html) operation
+represents the properties of the import.
+
+```ts
+declare const myTable: dynamodb.Table;
+new tasks.DynamoDescribeImport(stack, 'DescribeImport', {
+  table,
+  importArn: sfn.JsonPath.stringAt('$.ImportDescription.ImportArn'),
 });
 ```
 
