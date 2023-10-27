@@ -669,13 +669,20 @@ Corresponds to the [`addJobFlowSteps`](https://docs.aws.amazon.com/emr/latest/AP
 See this [blog](https://aws.amazon.com/blogs/big-data/introducing-runtime-roles-for-amazon-emr-steps-use-iam-roles-and-aws-lake-formation-for-access-control-with-amazon-emr/) for details.
 
 ```ts
+const clusterRole = new iam.Role(this, 'ClusterRole', {
+  assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+});
+
+const serviceRole = new iam.Role(this, 'ServiceRole', {
+  assumedBy: new iam.ServicePrincipal('elasticmapreduce.amazonaws.com'),
+});
+
 new tasks.EmrCreateCluster(this, 'Create Cluster', {
   instances: {},
   clusterRole,
   name: sfn.TaskInput.fromJsonPathAt('$.ClusterName').value,
   serviceRole,
-  autoScalingRole,
-  securityConfiguration: 'SecurityConfigurationForRuntimeRoles',
+  securityConfiguration: 'SecurityConfiguration',
 });
 
 new tasks.EmrAddStep(this, 'Task', {

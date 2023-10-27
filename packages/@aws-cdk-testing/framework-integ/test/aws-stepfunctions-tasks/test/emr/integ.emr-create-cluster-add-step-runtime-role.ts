@@ -9,9 +9,9 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
  *
  * PREREQUISITES:
  * 1. Fill in the instances block for EmrCreateCluster
- * 2. Create the security configuration as specified here: https://aws.amazon.com/blogs/big-data/introducing-runtime-roles-for-amazon-emr-steps-use-iam-roles-and-aws-lake-formation-for-access-control-with-amazon-emr/
+ * 2. Create the EMR security configuration: https://aws.amazon.com/blogs/big-data/introducing-runtime-roles-for-amazon-emr-steps-use-iam-roles-and-aws-lake-formation-for-access-control-with-amazon-emr/
  * 3. Add the security configuration to EmrCreateCluster
- * 4. Upload the runtime role's trust policy as outlined below
+ * 4. Update the runtime role's trust policy as outlined below
  *
  * Stack verification steps:
  * The generated State Machine can be executed from the CLI (or Step Functions console)
