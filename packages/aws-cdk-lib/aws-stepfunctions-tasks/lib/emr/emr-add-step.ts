@@ -89,6 +89,15 @@ export interface EmrAddStepProps extends sfn.TaskStateBaseProps {
    * @default - No properties
    */
   readonly properties?: { [key: string]: string };
+
+  /**
+   * The Amazon Resource Name (ARN) of the runtime role for a step on the cluster.
+   *
+   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_AddJobFlowSteps.html#API_AddJobFlowSteps_RequestSyntax
+   *
+   * @default - No step-specific role, uses EC2 instance profile role
+   */
+  readonly executionRole?: string;
 }
 
 /**
@@ -128,6 +137,7 @@ export class EmrAddStep extends sfn.TaskStateBase {
       Resource: integrationResourceArn('elasticmapreduce', 'addStep', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
         ClusterId: this.props.clusterId,
+        ExecutionRoleArn: this.props.executionRole,
         Step: {
           Name: this.props.name,
           ActionOnFailure: this.actionOnFailure.valueOf(),

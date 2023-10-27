@@ -2,6 +2,7 @@ import { Template } from '../../../assertions';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
 import * as tasks from '../../lib';
+import * as iam from '../../../aws-iam';
 
 let stack: cdk.Stack;
 
@@ -38,6 +39,59 @@ test('Add Step with static ClusterId and Step configuration', () => {
     End: true,
     Parameters: {
       ClusterId: 'ClusterId',
+      Step: {
+        Name: 'StepName',
+        ActionOnFailure: 'CONTINUE',
+        HadoopJarStep: {
+          Jar: 'Jar',
+        },
+      },
+    },
+  });
+});
+
+test('Add Step with execution role ARN', () => {
+  const executionRole = new iam.Role(stack, 'Role', {
+    roleName: 'EmrStepExecutionRole',
+    // The actual trust policy policy required is more complicated, but abbreviated here for brevity.
+    // @see - https://aws.amazon.com/blogs/big-data/introducing-runtime-roles-for-amazon-emr-steps-use-iam-roles-and-aws-lake-formation-for-access-control-with-amazon-emr/
+    assumedBy: new iam.ServicePrincipal('elasticmapreduce.amazonaws.com'),
+  });
+
+  // WHEN
+  const task = new tasks.EmrAddStep(stack, 'Task', {
+    clusterId: 'ClusterId',
+    name: 'StepName',
+    jar: 'Jar',
+    actionOnFailure: tasks.ActionOnFailure.CONTINUE,
+    integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+    executionRole: executionRole.roleArn,
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::elasticmapreduce:addStep.sync',
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      ClusterId: 'ClusterId',
+      ExecutionRoleArn: {
+        'Fn::GetAtt': [
+          'Role1ABCC5F0',
+          'Arn',
+        ],
+      },
       Step: {
         Name: 'StepName',
         ActionOnFailure: 'CONTINUE',

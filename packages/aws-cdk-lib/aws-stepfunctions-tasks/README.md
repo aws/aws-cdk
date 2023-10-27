@@ -660,6 +660,33 @@ new tasks.EmrAddStep(this, 'Task', {
 });
 ```
 
+### Add Step with Runtime Role
+
+Adds a new step with a runtime role to a running cluster.
+Corresponds to the [`addJobFlowSteps`](https://docs.aws.amazon.com/emr/latest/APIReference/API_AddJobFlowSteps.html) API in EMR.
+
+**Note:** The EMR cluster must be created with a security configuration and the runtime role must have a specific trust policy. 
+See this [blog](https://aws.amazon.com/blogs/big-data/introducing-runtime-roles-for-amazon-emr-steps-use-iam-roles-and-aws-lake-formation-for-access-control-with-amazon-emr/) for details.
+
+```ts
+new tasks.EmrCreateCluster(this, 'Create Cluster', {
+  instances: {},
+  clusterRole,
+  name: sfn.TaskInput.fromJsonPathAt('$.ClusterName').value,
+  serviceRole,
+  autoScalingRole,
+  securityConfiguration: 'SecurityConfigurationForRuntimeRoles',
+});
+
+new tasks.EmrAddStep(this, 'Task', {
+  clusterId: 'ClusterId',
+  executionRole: 'ExecutionRoleArn',
+  name: 'StepName',
+  jar: 'Jar',
+  actionOnFailure: tasks.ActionOnFailure.CONTINUE,
+});
+```
+
 ### Cancel Step
 
 Cancels a pending step in a running cluster.
