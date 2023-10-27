@@ -38,6 +38,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [PutItem](#putitem)
     - [DeleteItem](#deleteitem)
     - [UpdateItem](#updateitem)
+    - [DescribeExport](#describeexport)
   - [ECS](#ecs)
     - [RunTask](#runtask)
       - [EC2](#ec2)
@@ -411,6 +412,19 @@ new tasks.DynamoUpdateItem(this, 'UpdateItem', {
     ':rand': tasks.DynamoAttributeValue.fromNumber(20),
   },
   updateExpression: 'SET TotalCount = :val + :rand',
+});
+```
+
+### DescribeExport
+
+The [DescribeExport](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_DescribeExport.html) operation
+describes an existing table export.
+
+```ts
+declare const myTable: dynamodb.Table;
+new tasks.DynamoDescribeExport(stack, 'DescribeExport', {
+  table,
+  exportArn: sfn.JsonPath.stringAt('$.ExportDescription.ExportArn'),
 });
 ```
 

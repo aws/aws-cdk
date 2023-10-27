@@ -13,6 +13,10 @@ export function getDynamoResourceArn(method: DynamoMethod) {
   return integrationResourceArn('dynamodb', `${method.toLowerCase()}Item`, sfn.IntegrationPattern.REQUEST_RESPONSE);
 }
 
+export function getDynamoResourceArnFromApi(api: string) {
+  return integrationResourceArn('dynamodb', api, sfn.IntegrationPattern.REQUEST_RESPONSE);
+}
+
 export function transformAttributeValueMap(attrMap?: { [key: string]: DynamoAttributeValue }) {
   const transformedValue: any = {};
   for (const key in attrMap) {
