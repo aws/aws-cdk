@@ -34,7 +34,7 @@ export function arnForDeploymentConfig(name: string, resource?: IResource): stri
 export function renderAlarmConfiguration(
   alarms: cloudwatch.IAlarm[],
   ignorePollAlarmFailure?: boolean,
-  ignoreAlarmConfiguration false,
+  ignoreAlarmConfiguration = false,
   removeAlarms = true,
 ): CfnDeploymentGroup.AlarmConfigurationProperty | undefined {
   if (removeAlarms) {
