@@ -1040,4 +1040,50 @@ describe('Graphs', () => {
       });
     }).toThrow(/If you specify a value for end, you must also specify a value for start./);
   });
+
+  test('add annotations to gauge widget', () => {
+    // GIVEN
+    const stack = new Stack();
+    const widget = new GaugeWidget({
+      metrics: [new Metric({ namespace: 'CDK', metricName: 'Test' })],
+      annotations: [
+        {
+          color: '#b2df8d',
+          label: 'Up',
+          value: 1,
+          fill: Shading.ABOVE,
+        },
+      ],
+    });
+
+    // THEN
+    expect(stack.resolve(widget.toJson())).toEqual([{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'gauge',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          ['CDK', 'Test'],
+        ],
+        yAxis: {
+          left: {
+            min: 0,
+            max: 100,
+          },
+        },
+        annotations: {
+          horizontal: [
+            {
+              color: '#b2df8d',
+              label: 'Up',
+              value: 1,
+              fill: 'above',
+            },
+          ],
+        },
+      },
+    }]);
+  });
 });
