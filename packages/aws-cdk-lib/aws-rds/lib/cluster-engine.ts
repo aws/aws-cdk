@@ -681,17 +681,17 @@ export class AuroraPostgresEngineVersion {
   public static readonly VER_11_12 = AuroraPostgresEngineVersion.of('11.12', '11', { s3Import: true, s3Export: true });
   /**
    *  Version "11.13".
-   * @deprecated Version 11.8 is no longer supported by Amazon RDS.
+   * @deprecated Version 11.13 is no longer supported by Amazon RDS.
    */
   public static readonly VER_11_13 = AuroraPostgresEngineVersion.of('11.13', '11', { s3Import: true, s3Export: true });
   /**
    *  Version "11.14".
-   * @deprecated Version 11.13 is no longer supported by Amazon RDS.
+   * @deprecated Version 11.14 is no longer supported by Amazon RDS.
    */
   public static readonly VER_11_14 = AuroraPostgresEngineVersion.of('11.14', '11', { s3Import: true, s3Export: true });
   /**
    *  Version "11.15".
-   * @deprecated Version 11.14 is no longer supported by Amazon RDS.
+   * @deprecated Version 11.15 is no longer supported by Amazon RDS.
    */
   public static readonly VER_11_15 = AuroraPostgresEngineVersion.of('11.15', '11', { s3Import: true, s3Export: true });
   /** Version "11.16". */
@@ -712,17 +712,17 @@ export class AuroraPostgresEngineVersion {
    */
   public static readonly VER_12_4 = AuroraPostgresEngineVersion.of('12.4', '12', { s3Import: true, s3Export: true });
   /**
-   *  Version "12.4".
+   *  Version "12.6".
    * @deprecated Version 12.6 is no longer supported by Amazon RDS.
    */
   public static readonly VER_12_6 = AuroraPostgresEngineVersion.of('12.6', '12', { s3Import: true, s3Export: true });
   /**
-   *  Version "12.4".
+   *  Version "12.7".
    * @deprecated Version 12.7 is no longer supported by Amazon RDS.
    */
   public static readonly VER_12_7 = AuroraPostgresEngineVersion.of('12.7', '12', { s3Import: true, s3Export: true });
   /**
-   *  Version "12.4".
+   *  Version "12.8".
    * @deprecated Version 12.8 is no longer supported by Amazon RDS.
    */
   public static readonly VER_12_8 = AuroraPostgresEngineVersion.of('12.8', '12', { s3Import: true, s3Export: true });
