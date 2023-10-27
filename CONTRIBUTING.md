@@ -1079,6 +1079,20 @@ Experimental packages are used to develop new constructs and experiment with the
 them as stable and including them within `aws-cdk-lib`. Once they are included in `aws-cdk-lib`, no
 more breaking api changes can be made.
 
+When you want to build an alpha package (for example, `some-package-alpha`), you can execute the following in the root of the repository to build it and it's dependencies.
+
+```
+$ npx lerna run build --scope=@aws-cdk/some-package-alpha
+```
+
+At this point, you can run build and test the alpha package.
+
+```
+$ cd packages/@aws-cdk/some-package-alpha
+$ yarn build
+$ yarn test
+```
+
 ## Changing Cloud Assembly Schema
 
 If you plan on making changes to the `cloud-assembly-schema` package, make sure you familiarize yourself with
