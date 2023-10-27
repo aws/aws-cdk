@@ -1,8 +1,8 @@
 import { Template } from '../../../assertions';
+import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
 import * as tasks from '../../lib';
-import * as iam from '../../../aws-iam';
 
 let stack: cdk.Stack;
 
