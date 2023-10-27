@@ -173,11 +173,10 @@ describe('state machine', () => {
     });
 
     // THEN
-    const roleId = 'statemachineRole52044F93';
     Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 0);
   });
 
-  test('fails if logOptions is specified and disableLogging is true', () => {
+  test('default logOptions and required policies will be created if logging is enabled without logOptions specified', () => {
     // GIVEN
     const stack = new Stack();
     Node.of(stack).setContext('@aws-cdk/core:target-partitions', ['aws', 'aws-cn']);
@@ -197,20 +196,68 @@ describe('state machine', () => {
     const backoffRate = 5;
 
     // WHEN
+    new WaiterStateMachine(stack, 'statemachine', {
+      isCompleteHandler,
+      timeoutHandler,
+      backoffRate,
+      interval,
+      maxAttempts,
+    });
+
     // THEN
-    expect(() => {
-      new WaiterStateMachine(stack, 'statemachine', {
-        isCompleteHandler,
-        timeoutHandler,
-        backoffRate,
-        interval,
-        maxAttempts,
-        logOptions: {
-          includeExecutionData: true,
-          level: LogLevel.ALL,
-        },
-        disableLogging: true,
-      });
-    }).toThrow(/logOptions must not be used if disableLogging is true/);
+    const roleId = 'statemachineRole52044F93';
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+      LoggingConfiguration: {
+        Destinations: [
+          {
+            CloudWatchLogsLogGroup: {
+              LogGroupArn: {
+                'Fn::GetAtt': [
+                  'statemachineLogGroupA08E43E4',
+                  'Arn',
+                ],
+              },
+            },
+          },
+        ],
+        IncludeExecutionData: false,
+        Level: 'ERROR',
+      },
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
+            Resource: stack.resolve(isCompleteHandler.resourceArnsForGrantInvoke),
+          },
+          {
+            Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
+            Resource: stack.resolve(timeoutHandler.resourceArnsForGrantInvoke),
+          },
+          {
+            Action: [
+              'logs:CreateLogDelivery',
+              'logs:CreateLogStream',
+              'logs:GetLogDelivery',
+              'logs:UpdateLogDelivery',
+              'logs:DeleteLogDelivery',
+              'logs:ListLogDeliveries',
+              'logs:PutLogEvents',
+              'logs:PutResourcePolicy',
+              'logs:DescribeResourcePolicies',
+              'logs:DescribeLogGroups',
+            ],
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      Roles: [{ Ref: roleId }],
+    });
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 1);
   });
 });
