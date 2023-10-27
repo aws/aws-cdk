@@ -488,6 +488,44 @@ describe('StepFunctionsIntegration', () => {
       },
     });
   });
+
+  test('default method responses are not created when useDefaultMethodResponses is false', () => {
+    //GIVEN
+    const { stack, api, stateMachine } = givenSetup();
+
+    //WHEN
+    const methodOptions = {
+      methodResponses: [
+        {
+          statusCode: '200',
+          responseParameters: {
+            'method.response.header.Access-Control-Allow-Origin': true,
+          },
+        },
+      ],
+    };
+
+    const integrationOptions = {
+      useDefaultMethodResponses: false,
+    };
+
+    const integ = apigw.StepFunctionsIntegration.startExecution(stateMachine, integrationOptions);
+    api.root.addMethod('GET', integ, methodOptions);
+
+    // THEN
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGateway::Method', 1);
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+      HttpMethod: 'GET',
+      MethodResponses: [
+        {
+          ResponseParameters: {
+            'method.response.header.Access-Control-Allow-Origin': true,
+          },
+          StatusCode: '200',
+        },
+      ],
+    });
+  });
 });
 
 function givenSetup() {
