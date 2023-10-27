@@ -140,6 +140,17 @@ Invoking the endpoint with any HTTP method (`GET`, `POST`, `PUT`, `DELETE`, ...)
 
 If the execution fails, an HTTP `500` response is returned with the `error` and `cause` from the execution output as the Response Body. If the request is invalid (ex. bad execution input) HTTP code `400` is returned.
 
+To disable default response models generation use the `useDefaultMethodResponses` property:
+
+```ts
+declare const machine: stepfunctions.IStateMachine;
+
+new apigateway.StepFunctionsRestApi(this, 'StepFunctionsRestApi', {
+  stateMachine: machine,
+  useDefaultMethodResponses: false,
+});
+```
+
 The response from the invocation contains only the `output` field from the
 [StartSyncExecution](https://docs.aws.amazon.com/step-functions/latest/apireference/API_StartSyncExecution.html#API_StartSyncExecution_ResponseSyntax) API.
 In case of failures, the fields `error` and `cause` are returned as part of the response.
