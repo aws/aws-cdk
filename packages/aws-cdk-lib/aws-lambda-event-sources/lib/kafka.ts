@@ -152,7 +152,7 @@ export class ManagedKafkaEventSource extends StreamEventSource {
         kafkaTopic: this.innerProps.topic,
         kafkaConsumerGroupId: this.innerProps.consumerGroupId,
         onFailure: this.innerProps.onFailure,
-        supportS3ODF: true,
+        supportS3OFD: true,
       }),
     );
 
@@ -243,7 +243,7 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
         startingPosition: this.innerProps.startingPosition,
         sourceAccessConfigurations: this.sourceAccessConfigurations(),
         onFailure: this.innerProps.onFailure,
-        supportS3ODF: true,
+        supportS3OFD: true,
       }),
     );
 

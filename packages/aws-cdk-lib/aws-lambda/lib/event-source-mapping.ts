@@ -256,7 +256,7 @@ export interface EventSourceMappingOptions {
    *
    * @default false
    */
-  readonly supportS3ODF?: boolean;
+  readonly supportS3OFD?: boolean;
 }
 
 /**
