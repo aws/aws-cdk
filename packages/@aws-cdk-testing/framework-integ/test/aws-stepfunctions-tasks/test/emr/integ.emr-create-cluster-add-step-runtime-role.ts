@@ -5,7 +5,7 @@ import { App, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 /*
- * Create a state machine with an EMR cluster and adds a step.
+ * Create a state machine with an EMR cluster and adds a step that uses a runtime role.
  *
  * PREREQUISITES:
  * 1. Fill in the instances block for EmrCreateCluster
@@ -62,7 +62,7 @@ const executionRole = new iam.Role(stack, 'Role', {
 
 /*
 The trust policy of the runtime execution role needs to have the following:
-@see - https://aws.amazon.com/blogs/big-data/introducing-runtime-roles-for-amazon-emr-steps-use-iam-roles-and-aws-lake-formation-for-access-control-with-amazon-emr/
+@see https://aws.amazon.com/blogs/big-data/introducing-runtime-roles-for-amazon-emr-steps-use-iam-roles-and-aws-lake-formation-for-access-control-with-amazon-emr/
 {
   "Version": "2012-10-17",
   "Statement": [

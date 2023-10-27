@@ -53,8 +53,8 @@ test('Add Step with static ClusterId and Step configuration', () => {
 test('Add Step with execution role ARN', () => {
   const executionRole = new iam.Role(stack, 'Role', {
     roleName: 'EmrStepExecutionRole',
-    // The actual trust policy policy required is more complicated, but abbreviated here for brevity.
-    // @see - https://aws.amazon.com/blogs/big-data/introducing-runtime-roles-for-amazon-emr-steps-use-iam-roles-and-aws-lake-formation-for-access-control-with-amazon-emr/
+    // The actual trust policy required is more complicated, but abbreviated here for brevity.
+    // @see https://aws.amazon.com/blogs/big-data/introducing-runtime-roles-for-amazon-emr-steps-use-iam-roles-and-aws-lake-formation-for-access-control-with-amazon-emr/
     assumedBy: new iam.ServicePrincipal('elasticmapreduce.amazonaws.com'),
   });
 
