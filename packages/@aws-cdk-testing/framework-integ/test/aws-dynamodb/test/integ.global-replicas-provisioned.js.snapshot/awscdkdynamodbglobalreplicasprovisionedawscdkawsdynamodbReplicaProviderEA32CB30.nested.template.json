@@ -737,12 +737,6 @@
       ]
      ]
     },
-    "RoleArn": {
-     "Fn::GetAtt": [
-      "ProviderwaiterstatemachineRole0C7159F9",
-      "Arn"
-     ]
-    },
     "LoggingConfiguration": {
      "Destinations": [
       {
@@ -758,6 +752,12 @@
      ],
      "IncludeExecutionData": false,
      "Level": "ERROR"
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "ProviderwaiterstatemachineRole0C7159F9",
+      "Arn"
+     ]
     }
    },
    "DependsOn": [
