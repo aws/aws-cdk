@@ -47,7 +47,7 @@ const createClusterStep = new tasks.EmrCreateCluster(stack, 'EmrCreateCluster', 
   tags: {
     Key: 'Value',
   },
-  //securityConfiguration: 'security-group-configuration',
+  //securityConfiguration: 'security-configuration',
   applications: [
     {
       name: 'Spark',
