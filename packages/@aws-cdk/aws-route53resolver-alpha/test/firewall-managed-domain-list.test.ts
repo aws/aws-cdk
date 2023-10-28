@@ -39,6 +39,6 @@ test('importing managed domain list creates custom resource', () => {
       },
     ],
   });
-  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {});
+  Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 1);
 });
 

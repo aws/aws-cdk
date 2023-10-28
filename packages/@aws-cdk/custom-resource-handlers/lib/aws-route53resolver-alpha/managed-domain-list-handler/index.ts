@@ -9,7 +9,7 @@ export async function managedDomainListHandler(event: AWSLambda.CloudFormationCu
   switch (event.RequestType) {
     case 'Create':
     case 'Update':
-      const domainListName = event.ResourceProperties?.DomainListName;
+      const domainListName = event.ResourceProperties.DomainListName;
       const result = await onCreateAndUpdate(domainListName);
       return result;
     case 'Delete':
@@ -25,7 +25,7 @@ export async function onCreateAndUpdate(domainListName: string): Promise<Handler
   const domainListId = domainLists.find((domainList) =>
     domainList.ManagedOwnerName === 'Route 53 Resolver DNS Firewall'
     && domainList.Name === domainListName,
-  )?.Id ?? undefined;
+  )?.Id;
 
   if (!domainListId) {
     throw new Error(`Domain list with the name ${domainListName} could not be found.`);
@@ -40,7 +40,7 @@ export async function onCreateAndUpdate(domainListName: string): Promise<Handler
 /**
  * Get all domain lists recursively
  */
-async function listDomainLists(nextToken? :string): Promise<FirewallDomainListMetadata[]> {
+async function listDomainLists(nextToken?: string): Promise<FirewallDomainListMetadata[]> {
   const result = await route53resolver.listFirewallDomainLists({ NextToken: nextToken });
   const domainLists: FirewallDomainListMetadata[] = result.FirewallDomainLists ?? [];
   if (result.NextToken) {

@@ -54,3 +54,5 @@ ruleGroup.associate('Association', {
 });
 
 new IntegTest(app, 'Integ', { testCases: [stack] });
+
+app.synth();

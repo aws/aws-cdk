@@ -38,7 +38,7 @@ export class FirewallManagedDomainList extends Resource implements IFirewallDoma
       }],
     });
 
-    const result = new CustomResource(this, 'GetDomainListCustomResource', {
+    const resource = new CustomResource(this, 'GetDomainListCustomResource', {
       resourceType: GET_MANAGED_DOMAIN_LIST_TYPE,
       serviceToken: provider.serviceToken,
       properties: {
@@ -46,7 +46,7 @@ export class FirewallManagedDomainList extends Resource implements IFirewallDoma
       },
     });
 
-    this.firewallDomainListId = result.getAttString('DomainListId');
+    this.firewallDomainListId = resource.getAttString('DomainListId');
   }
 }
 
@@ -59,12 +59,14 @@ export enum ManagedDomain {
   /**
    * Domains associated with multiple DNS threat categories including malware, ransomware, botnet, spyware,
    * and DNS tunneling to help block multiple types of threats.
+   *
    * Includes the `AmazonGuardDutyThreatList.`
    */
   AGGREGATE_THREAT_LIST = 'AWSManagedDomainsAggregateThreatList',
 
   /**
    * Domains associated with Amazon GuardDuty DNS security findings.
+   *
    * The domains are sourced from the GuardDuty's threat intelligence systems only,
    * and do not contain domains sourced from external third-party sources.
    */
