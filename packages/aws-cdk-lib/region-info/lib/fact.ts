@@ -5,12 +5,12 @@ import { AWS_REGIONS } from './aws-entities';
  */
 export class Fact {
   /**
-   * @returns the list of names of AWS regions for which there is at least one registered fact. This
-   *          may not be an exhaustive list of all available AWS regions.
+   * @returns the list of names of AWS Regions for which there is at least one registered fact. This
+   *          includes Regions defined in AWS_REGIONS plus custom defined regions.
    */
   public static get regions(): string[] {
-    // Return by copy to ensure no modifications can be made to the undelying constant.
-    return Array.from(AWS_REGIONS);
+    // Return the union of regions in AWS_REGIONS and custom defined regions.
+    return [...new Set([...AWS_REGIONS, ...Object.keys(this.database)])];
   }
 
   /**
@@ -37,7 +37,7 @@ export class Fact {
     const foundFact = this.find(region, name);
 
     if (!foundFact) {
-      throw new Error(`No fact ${name} could be found for region: ${region} and name: ${name}`);
+      throw new Error(`No fact ${name} could be found for region: ${region} and name: ${name}.`);
     }
 
     return foundFact;

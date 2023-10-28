@@ -164,7 +164,7 @@ The `dist/` folder within each module contains the packaged up language artifact
 The AWS CDK provides a VS Code Dev Container with all dependencies pre-installed.
 Please follow the [setup instructions](https://code.visualstudio.com/docs/remote/containers-tutorial) to configure VS Code.
 
-With VS Code setup, you will be prompted to open the `aws-cdk` repo in a Dev Container, or you can choos "Dev Containers: Reopen in Container" from the VS Code command palette.
+With VS Code setup, you will be prompted to open the `aws-cdk` repo in a Dev Container, or you can choose "Dev Containers: Reopen in Container" from the VS Code command palette.
 
 ### Gitpod
 
@@ -485,16 +485,14 @@ CDK integration tests.
 
 ### Step 4: Pull Request
 
-* Create a commit with your changes and push them to a
-  [fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo).
+* Create a [fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo) of the CDK repository.
+* Create a new branch for your change, and push the change commits on it.
   > [!IMPORTANT]
-  > We will not be able to accept your contribution if you do not allow commits to your PR branch, as it introduces
-  > friction in our review process and breaks our automation that syncs with the main branch. In these scenarios, we will close
-  > your pull request and ask that you recreate it with the necessary permissions.
-  > This means that you must contribute from a fork within your personal account (as opposed to an organization owned account) and also develop
-  > your contribution on a branch other than `main`. See
-  > [Allowing changes to a pull request branch created from a fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/allowing-changes-to-a-pull-request-branch-created-from-a-fork)
-  > for more information.
+  > Your pull request must be based off of a branch in a personal account (not an organization owned account, and not the `main` branch).
+  > You must also have the setting enabled that [allows the CDK team to push changes to your branch](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/allowing-changes-to-a-pull-request-branch-created-from-a-fork) (this setting is enabled by default for personal accounts,
+  > and cannot be enabled for organization owned accounts).
+  > The reason for this is that our automation needs to synchronize your branch with our `main` after it has been approved, and
+  > we cannot do that if we cannot push to your branch.
   
   > [!NOTE]
   > CDK core members can push to a branch on the AWS CDK repo (naming convention: `<user>/<feature-bug-name>`).
@@ -1081,6 +1079,20 @@ Experimental packages are used to develop new constructs and experiment with the
 them as stable and including them within `aws-cdk-lib`. Once they are included in `aws-cdk-lib`, no
 more breaking api changes can be made.
 
+When you want to build an alpha package (for example, `some-package-alpha`), you can execute the following in the root of the repository to build it and it's dependencies.
+
+```
+$ npx lerna run build --scope=@aws-cdk/some-package-alpha
+```
+
+At this point, you can run build and test the alpha package.
+
+```
+$ cd packages/@aws-cdk/some-package-alpha
+$ yarn build
+$ yarn test
+```
+
 ## Changing Cloud Assembly Schema
 
 If you plan on making changes to the `cloud-assembly-schema` package, make sure you familiarize yourself with
@@ -1187,7 +1199,7 @@ restart the TypeScript compiler.
 
 Hit F1, type `> TypeScript: Restart TS Server`.
 
-#### I'm doing refactorings between packages and compile times are killing me/I need to switch between differently-verionsed branches a lot and rebuilds because of version errors are taking too long.
+#### I'm doing refactorings between packages and compile times are killing me/I need to switch between differently-versioned branches a lot and rebuilds because of version errors are taking too long.
 
 Our build steps for each package do a couple of things, such as generating code and generating JSII assemblies. If
 you've done a full build at least once to generate all source files, you can do a quicker TypeScript-only rebuild of the
