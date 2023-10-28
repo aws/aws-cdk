@@ -51,7 +51,6 @@ export interface EventBridgePutEventsEntry {
  * Send an event to an AWS EventBridge by AWS EventBridge Scheduler.
  */
 export class EventBridgePutEvents extends ScheduleTargetBase implements IScheduleTarget {
-
   constructor(
     private readonly entry: EventBridgePutEventsEntry,
     private readonly props: ScheduleTargetBaseProps,
