@@ -2,7 +2,6 @@ import { IScheduleTarget, ISchedule, ScheduleTargetInput, ScheduleTargetConfig }
 import { Names } from 'aws-cdk-lib';
 import * as events from 'aws-cdk-lib/aws-events';
 import { IRole } from 'aws-cdk-lib/aws-iam';
-import * as iam from 'aws-cdk-lib/aws-iam';
 import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
 import { sameEnvDimension } from './util';
 
@@ -56,7 +55,7 @@ export class EventBridgePutEvents extends ScheduleTargetBase implements ISchedul
     private readonly props: ScheduleTargetBaseProps,
   ) {
     super(props, entry.eventBus.eventBusArn);
-    if (this.baseProps.input) {
+    if (this.props.input) {
       throw new Error('ScheduleTargetBaseProps.input is not supported for EventBridgePutEvents. Please use entry.detail instead.');
     }
   }
@@ -80,26 +79,12 @@ export class EventBridgePutEvents extends ScheduleTargetBase implements ISchedul
   }
 
   protected bindBaseTargetConfig(_schedule: ISchedule): ScheduleTargetConfig {
-    const role: iam.IRole = this.baseProps.role ?? this.singletonScheduleRole(_schedule, this.targetArn);
-    this.addTargetActionToRole(_schedule, role);
-
-    if (this.baseProps.deadLetterQueue) {
-      this.addToDeadLetterQueueResourcePolicy(_schedule, this.baseProps.deadLetterQueue);
-    }
-
-    const { source, detailType, detail } = this.entry;
-
     return {
-      arn: this.targetArn,
-      role,
-      deadLetterConfig: this.baseProps.deadLetterQueue ? {
-        arn: this.baseProps.deadLetterQueue.queueArn,
-      } : undefined,
-      retryPolicy: this.renderRetryPolicy(this.baseProps.maxEventAge, this.baseProps.retryAttempts),
-      input: detail,
+      ...super.bindBaseTargetConfig(_schedule),
+      input: this.entry.detail,
       eventBridgeParameters: {
-        detailType,
-        source,
+        detailType: this.entry.detailType,
+        source: this.entry.source,
       },
     };
   }

@@ -68,7 +68,7 @@ export interface ScheduleTargetBaseProps {
 export abstract class ScheduleTargetBase {
 
   constructor(
-    protected readonly baseProps: ScheduleTargetBaseProps,
+    private readonly baseProps: ScheduleTargetBaseProps,
     protected readonly targetArn: string,
   ) {
   }
@@ -97,7 +97,7 @@ export abstract class ScheduleTargetBase {
   /**
    * Create a return a Schedule Target Configuration for the given schedule
    * @param schedule
-   * @returnn
+   * @returns a Schedule Target Configuration
    */
   bind(schedule: ISchedule): ScheduleTargetConfig {
     return this.bindBaseTargetConfig(schedule);
@@ -109,7 +109,7 @@ export abstract class ScheduleTargetBase {
    * If a role already exists, it will be returned. This ensures that if multiple
    * events have the same target, they will share a role.
    */
-  protected singletonScheduleRole(schedule: ISchedule, targetArn: string): iam.IRole {
+  private singletonScheduleRole(schedule: ISchedule, targetArn: string): iam.IRole {
     const stack = Stack.of(schedule);
     const arn = Token.isUnresolved(targetArn) ? stack.resolve(targetArn).toString() : targetArn;
     const hash = md5hash(arn).slice(0, 6);
@@ -141,7 +141,7 @@ export abstract class ScheduleTargetBase {
    * @param schedule schedule to add DLQ to
    * @param queue the DLQ
    */
-  protected addToDeadLetterQueueResourcePolicy(schedule: ISchedule, queue: sqs.IQueue) {
+  private addToDeadLetterQueueResourcePolicy(schedule: ISchedule, queue: sqs.IQueue) {
     if (!sameEnvDimension(schedule.env.region, queue.env.region)) {
       throw new Error(`Cannot assign Dead Letter Queue in region ${queue.env.region} to the schedule ${Names.nodeUniqueId(schedule.node)} in region ${schedule.env.region}. Both the queue and the schedule must be in the same region.`);
     }
@@ -164,7 +164,7 @@ export abstract class ScheduleTargetBase {
     }
   }
 
-  protected renderRetryPolicy(maximumEventAge: Duration | undefined, maximumRetryAttempts: number | undefined): CfnSchedule.RetryPolicyProperty {
+  private renderRetryPolicy(maximumEventAge: Duration | undefined, maximumRetryAttempts: number | undefined): CfnSchedule.RetryPolicyProperty {
     const maxMaxAge = Duration.days(1).toSeconds();
     const minMaxAge = Duration.minutes(15).toSeconds();
     let maxAge: number = maxMaxAge;
