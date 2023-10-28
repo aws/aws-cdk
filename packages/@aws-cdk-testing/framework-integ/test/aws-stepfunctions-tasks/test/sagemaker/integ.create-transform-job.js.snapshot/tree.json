@@ -8,17 +8,17 @@
         "id": "aws-cdk-step-functions-task-create-transform-job-integ",
         "path": "aws-cdk-step-functions-task-create-transform-job-integ",
         "children": {
-          "Batch Inference": {
-            "id": "Batch Inference",
-            "path": "aws-cdk-step-functions-task-create-transform-job-integ/Batch Inference",
+          "BatchInferenceTask": {
+            "id": "BatchInferenceTask",
+            "path": "aws-cdk-step-functions-task-create-transform-job-integ/BatchInferenceTask",
             "children": {
               "SagemakerTransformRole": {
                 "id": "SagemakerTransformRole",
-                "path": "aws-cdk-step-functions-task-create-transform-job-integ/Batch Inference/SagemakerTransformRole",
+                "path": "aws-cdk-step-functions-task-create-transform-job-integ/BatchInferenceTask/SagemakerTransformRole",
                 "children": {
                   "ImportSagemakerTransformRole": {
                     "id": "ImportSagemakerTransformRole",
-                    "path": "aws-cdk-step-functions-task-create-transform-job-integ/Batch Inference/SagemakerTransformRole/ImportSagemakerTransformRole",
+                    "path": "aws-cdk-step-functions-task-create-transform-job-integ/BatchInferenceTask/SagemakerTransformRole/ImportSagemakerTransformRole",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.2.70"
@@ -26,7 +26,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-step-functions-task-create-transform-job-integ/Batch Inference/SagemakerTransformRole/Resource",
+                    "path": "aws-cdk-step-functions-task-create-transform-job-integ/BatchInferenceTask/SagemakerTransformRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -172,7 +172,7 @@
                                   "Effect": "Allow",
                                   "Resource": {
                                     "Fn::GetAtt": [
-                                      "BatchInferenceSagemakerTransformRoleB1C48C9A",
+                                      "BatchInferenceTaskSagemakerTransformRoleEABCCE1A",
                                       "Arn"
                                     ]
                                   }
@@ -243,7 +243,7 @@
                       "Fn::Join": [
                         "",
                         [
-                          "{\"StartAt\":\"Batch Inference\",\"States\":{\"Batch Inference\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+                          "{\"StartAt\":\"BatchInferenceTask\",\"States\":{\"BatchInferenceTask\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
                           {
                             "Ref": "AWS::Partition"
                           },

@@ -309,7 +309,7 @@ test('create transform job with instance type supplied as JsonPath', () => {
   });
 });
 
-test('required permmisions are granted to service role if RUN_JOB is supplied as service integration pattern', () => {
+test('required permissions are granted to service role if RUN_JOB is supplied as service integration pattern', () => {
   // WHEN
   const task = new SageMakerCreateTransformJob(stack, 'TransformTask', {
     transformJobName: 'MyTransformJob',
@@ -441,7 +441,7 @@ test('required permmisions are granted to service role if RUN_JOB is supplied as
   });
 });
 
-test('required permmisions are granted to service role if REQUEST_RESPONSE is supplied as service integration pattern', () => {
+test('required permissions are granted to service role if REQUEST_RESPONSE is supplied as service integration pattern', () => {
   // WHEN
   const task = new SageMakerCreateTransformJob(stack, 'TransformTask', {
     transformJobName: 'MyTransformJob',

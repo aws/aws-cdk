@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "BatchInferenceSagemakerTransformRoleB1C48C9A": {
+  "BatchInferenceTaskSagemakerTransformRoleEABCCE1A": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -97,7 +97,7 @@
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [
-         "BatchInferenceSagemakerTransformRoleB1C48C9A",
+         "BatchInferenceTaskSagemakerTransformRoleEABCCE1A",
          "Arn"
         ]
        }
@@ -148,7 +148,7 @@
      "Fn::Join": [
       "",
       [
-       "{\"StartAt\":\"Batch Inference\",\"States\":{\"Batch Inference\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+       "{\"StartAt\":\"BatchInferenceTask\",\"States\":{\"BatchInferenceTask\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
        {
         "Ref": "AWS::Partition"
        },

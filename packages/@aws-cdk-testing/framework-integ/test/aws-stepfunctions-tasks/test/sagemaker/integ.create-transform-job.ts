@@ -6,7 +6,8 @@ import { StateMachine, IntegrationPattern, DefinitionBody } from 'aws-cdk-lib/aw
 class StepFunctionsTaskCreateTransformJobIntegStack extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
-    const batch_inference_job = new SageMakerCreateTransformJob(this, 'Batch Inference', {
+
+    const task = new SageMakerCreateTransformJob(this, 'BatchInferenceTask', {
       transformJobName: 'MyTransformJob',
       modelName: 'MyModelName',
       transformInput: {
@@ -28,7 +29,7 @@ class StepFunctionsTaskCreateTransformJobIntegStack extends Stack {
     });
 
     new StateMachine(this, 'SimpleStateMachine', {
-      definitionBody: DefinitionBody.fromChainable(batch_inference_job),
+      definitionBody: DefinitionBody.fromChainable(task),
     });
   }
 }
