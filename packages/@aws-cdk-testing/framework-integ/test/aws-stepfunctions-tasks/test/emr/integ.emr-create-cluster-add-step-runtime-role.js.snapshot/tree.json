@@ -235,11 +235,39 @@
                               ]
                             }
                           }
+                        },
+                        {
+                          "Action": "sts:SetSourceIdentity",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": {
+                              "Fn::GetAtt": [
+                                "EmrCreateClusterInstanceRoleC80466F5",
+                                "Arn"
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "Action": "sts:TagSession",
+                          "Condition": {
+                            "StringEquals": {
+                              "aws:RequestTag/LakeFormationAuthorizedCaller": "Amazon EMR"
+                            }
+                          },
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": {
+                              "Fn::GetAtt": [
+                                "EmrCreateClusterInstanceRoleC80466F5",
+                                "Arn"
+                              ]
+                            }
+                          }
                         }
                       ],
                       "Version": "2012-10-17"
-                    },
-                    "roleName": "EmrStepExecutionRole"
+                    }
                   }
                 },
                 "constructInfo": {

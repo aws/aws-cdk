@@ -7,11 +7,11 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 /*
  * Create a state machine with an EMR cluster and adds a step that uses a runtime role.
  *
- * PREREQUISITES:
+ * Prerequisites:
  * 1. Fill in the instances block for EmrCreateCluster
- * 2. Create the EMR security configuration: https://aws.amazon.com/blogs/big-data/introducing-runtime-roles-for-amazon-emr-steps-use-iam-roles-and-aws-lake-formation-for-access-control-with-amazon-emr/
+ * 2. Create the EMR security configuration, see https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-create-security-configuration.html and
+ *    https://aws.amazon.com/blogs/big-data/introducing-runtime-roles-for-amazon-emr-steps-use-iam-roles-and-aws-lake-formation-for-access-control-with-amazon-emr/
  * 3. Add the security configuration to EmrCreateCluster
- * 4. Update the runtime role's trust policy as outlined below
  *
  * Stack verification steps:
  * The generated State Machine can be executed from the CLI (or Step Functions console)
@@ -56,45 +56,34 @@ const createClusterStep = new tasks.EmrCreateCluster(stack, 'EmrCreateCluster', 
 });
 
 const executionRole = new iam.Role(stack, 'Role', {
-  roleName: 'EmrStepExecutionRole',
   assumedBy: new iam.ArnPrincipal(createClusterStep.clusterRole.roleArn),
 });
 
-/*
-The trust policy of the runtime execution role needs to have the following:
-@see https://aws.amazon.com/blogs/big-data/introducing-runtime-roles-for-amazon-emr-steps-use-iam-roles-and-aws-lake-formation-for-access-control-with-amazon-emr/
-{
-  "Version": "2012-10-17",
-  "Statement": [
-      {
-          "Effect": "Allow",
-          "Principal": {
-              "AWS": "arn:aws:iam::<AWS_ACCOUNT_ID>:role/<CLUSTER_ROLE>"
-          },
-          "Action": "sts:AssumeRole"
+executionRole.assumeRolePolicy?.addStatements(
+  new iam.PolicyStatement({
+    effect: iam.Effect.ALLOW,
+    principals: [
+      createClusterStep.clusterRole,
+    ],
+    actions: [
+      'sts:SetSourceIdentity',
+    ],
+  }),
+  new iam.PolicyStatement({
+    effect: iam.Effect.ALLOW,
+    principals: [
+      createClusterStep.clusterRole,
+    ],
+    actions: [
+      'sts:TagSession',
+    ],
+    conditions: {
+      StringEquals: {
+        'aws:RequestTag/LakeFormationAuthorizedCaller': 'Amazon EMR',
       },
-      {
-          "Effect": "Allow",
-          "Principal": {
-              "AWS": "arn:aws:iam::<AWS_ACCOUNT_ID>:role/<CLUSTER_ROLE>"
-          },
-          "Action": "sts:SetSourceIdentity"
-      },
-      {
-          "Effect": "Allow",
-          "Principal": {
-              "AWS": "arn:aws:iam::<AWS_ACCOUNT_ID>:role/<CLUSTER_ROLE>"
-          },
-          "Action": "sts:TagSession",
-          "Condition": {
-              "StringEquals": {
-                  "aws:RequestTag/LakeFormationAuthorizedCaller": "Amazon EMR"
-              }
-          }
-      }
-  ]
-}
-*/
+    },
+  }),
+);
 
 const addStepStep = new tasks.EmrAddStep(stack, 'EmrAddStep', {
   resultPath: sfn.JsonPath.DISCARD, // pass cluster id to terminate step
