@@ -1,4 +1,6 @@
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as emr from 'aws-cdk-lib/aws-emr';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import { App, Stack } from 'aws-cdk-lib';
@@ -6,12 +8,6 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 /*
  * Create a state machine with an EMR cluster and adds a step that uses a runtime role.
- *
- * Prerequisites:
- * 1. Fill in the instances block for EmrCreateCluster
- * 2. Create the EMR security configuration, see https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-create-security-configuration.html and
- *    https://aws.amazon.com/blogs/big-data/introducing-runtime-roles-for-amazon-emr-steps-use-iam-roles-and-aws-lake-formation-for-access-control-with-amazon-emr/
- * 3. Add the security configuration to EmrCreateCluster
  *
  * Stack verification steps:
  * The generated State Machine can be executed from the CLI (or Step Functions console)
@@ -24,9 +20,29 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 const app = new App();
 const stack = new Stack(app, 'aws-cdk-emr-add-step-runtime-role');
 
+const vpc = new ec2.Vpc(stack, 'Vpc', { restrictDefaultSecurityGroup: false });
+
+const cfnSecurityConfiguration = new emr.CfnSecurityConfiguration(stack, 'EmrSecurityConfiguration', {
+  name: 'AddStepRuntimeRoleSecConfig',
+  securityConfiguration: JSON.parse(`
+    {
+      "AuthorizationConfiguration": {
+          "IAMConfiguration": {
+              "EnableApplicationScopedIAMRole": true,
+              "ApplicationScopedIAMRoleConfiguration": 
+                  {
+                      "PropagateSourceIdentity": true
+                  }
+          },
+          "LakeFormationConfiguration": {
+              "AuthorizedSessionTagValue": "Amazon EMR"
+          }
+      }
+    }`),
+});
+
 const createClusterStep = new tasks.EmrCreateCluster(stack, 'EmrCreateCluster', {
   instances: {
-    /*
     instanceFleets: [
       {
         instanceFleetType: tasks.EmrCreateCluster.InstanceRoleType.MASTER,
@@ -38,8 +54,7 @@ const createClusterStep = new tasks.EmrCreateCluster(stack, 'EmrCreateCluster', 
         targetOnDemandCapacity: 1,
       },
     ],
-    ec2SubnetId: 'subnet-xxxxxx',
-    */
+    ec2SubnetId: vpc.publicSubnets[0].subnetId,
   },
   name: 'Cluster',
   releaseLabel: 'emr-6.13.0',
@@ -47,7 +62,7 @@ const createClusterStep = new tasks.EmrCreateCluster(stack, 'EmrCreateCluster', 
   tags: {
     Key: 'Value',
   },
-  //securityConfiguration: 'security-configuration',
+  securityConfiguration: cfnSecurityConfiguration.name,
   applications: [
     {
       name: 'Spark',
@@ -95,7 +110,7 @@ const addStepStep = new tasks.EmrAddStep(stack, 'EmrAddStep', {
     'SparkPi',
     '1',
   ],
-  executionRole: executionRole.roleArn,
+  executionRoleArn: executionRole.roleArn,
   actionOnFailure: tasks.ActionOnFailure.TERMINATE_CLUSTER,
 });
 

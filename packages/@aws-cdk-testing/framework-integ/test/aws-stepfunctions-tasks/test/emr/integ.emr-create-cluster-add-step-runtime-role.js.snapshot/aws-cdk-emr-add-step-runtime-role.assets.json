@@ -1,7 +1,7 @@
 {
   "version": "34.0.0",
   "files": {
-    "14f2decff3544ff7c2f4f88741424a871213d803b68515cb4758a8922ac62dd2": {
+    "8de157a5dd03c1169364dbe7f19595c7cbd503a878ead1e759ee4335181c999e": {
       "source": {
         "path": "aws-cdk-emr-add-step-runtime-role.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "14f2decff3544ff7c2f4f88741424a871213d803b68515cb4758a8922ac62dd2.json",
+          "objectKey": "8de157a5dd03c1169364dbe7f19595c7cbd503a878ead1e759ee4335181c999e.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

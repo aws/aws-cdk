@@ -65,7 +65,7 @@ test('Add Step with execution role ARN', () => {
     jar: 'Jar',
     actionOnFailure: tasks.ActionOnFailure.CONTINUE,
     integrationPattern: sfn.IntegrationPattern.RUN_JOB,
-    executionRole: executionRole.roleArn,
+    executionRoleArn: executionRole.roleArn,
   });
 
   // THEN

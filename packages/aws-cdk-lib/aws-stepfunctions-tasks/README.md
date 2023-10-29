@@ -666,25 +666,64 @@ To specify a custom runtime role use the `executionRole` property.
 See this [blog post](https://aws.amazon.com/blogs/big-data/introducing-runtime-roles-for-amazon-emr-steps-use-iam-roles-and-aws-lake-formation-for-access-control-with-amazon-emr/) for more details.
 
 ```ts
-const clusterRole = new iam.Role(this, 'ClusterRole', {
-  assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+const cfnSecurityConfiguration = new emr.CfnSecurityConfiguration(stack, 'EmrSecurityConfiguration', {
+  name: 'AddStepRuntimeRoleSecConfig',
+  securityConfiguration: JSON.parse(`
+    {
+      "AuthorizationConfiguration": {
+          "IAMConfiguration": {
+              "EnableApplicationScopedIAMRole": true,
+              "ApplicationScopedIAMRoleConfiguration": 
+                  {
+                      "PropagateSourceIdentity": true
+                  }
+          },
+          "LakeFormationConfiguration": {
+              "AuthorizedSessionTagValue": "Amazon EMR"
+          }
+      }
+    }`),
 });
 
-const serviceRole = new iam.Role(this, 'ServiceRole', {
-  assumedBy: new iam.ServicePrincipal('elasticmapreduce.amazonaws.com'),
-});
-
-new tasks.EmrCreateCluster(this, 'Create Cluster', {
+const task = new tasks.EmrCreateCluster(this, 'Create Cluster', {
   instances: {},
-  clusterRole,
   name: sfn.TaskInput.fromJsonPathAt('$.ClusterName').value,
-  serviceRole,
-  securityConfiguration: 'SecurityConfiguration',
+  securityConfiguration: cfnSecurityConfiguration.name,
 });
+
+const executionRole = new iam.Role(stack, 'Role', {
+  assumedBy: new iam.ArnPrincipal(task.clusterRole.roleArn),
+});
+
+executionRole.assumeRolePolicy?.addStatements(
+  new iam.PolicyStatement({
+    effect: iam.Effect.ALLOW,
+    principals: [
+      task.clusterRole,
+    ],
+    actions: [
+      'sts:SetSourceIdentity',
+    ],
+  }),
+  new iam.PolicyStatement({
+    effect: iam.Effect.ALLOW,
+    principals: [
+      task.clusterRole,
+    ],
+    actions: [
+      'sts:TagSession',
+    ],
+    conditions: {
+      StringEquals: {
+        'aws:RequestTag/LakeFormationAuthorizedCaller': 'Amazon EMR',
+      },
+    },
+  }),
+);
 
 new tasks.EmrAddStep(this, 'Task', {
   clusterId: 'ClusterId',
-  executionRole: 'ExecutionRoleArn',
+  executionRole: executionRole.roleArn,
   name: 'StepName',
   jar: 'Jar',
   actionOnFailure: tasks.ActionOnFailure.CONTINUE,
