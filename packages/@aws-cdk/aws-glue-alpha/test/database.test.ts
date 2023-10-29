@@ -58,6 +58,29 @@ test('explicit locationURI', () => {
 
 });
 
+test('explicit description', () => {
+  new glue.Database(stack, 'Database', {
+    description: 'database-description',
+  });
+
+  Template.fromStack(stack).templateMatches({
+    Resources: {
+      DatabaseB269D8BB: {
+        Type: 'AWS::Glue::Database',
+        Properties: {
+          CatalogId: {
+            Ref: 'AWS::AccountId',
+          },
+          DatabaseInput: {
+            Description: 'database-description',
+            Name: 'database',
+          },
+        },
+      },
+    },
+  });
+});
+
 test('fromDatabase', () => {
   // WHEN
   const database = glue.Database.fromDatabaseArn(stack, 'import', 'arn:aws:glue:us-east-1:123456789012:database/db1');

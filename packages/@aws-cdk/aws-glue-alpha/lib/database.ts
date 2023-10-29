@@ -43,6 +43,13 @@ export interface DatabaseProps {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-database-databaseinput.html
    */
   readonly locationUri?: string;
+
+  /**
+   * The description of the database.
+   *
+   * @default - none.
+   */
+  readonly description?: string;
 }
 
 /**
@@ -88,6 +95,11 @@ export class Database extends Resource implements IDatabase {
    */
   public readonly locationUri?: string;
 
+  /**
+   * Description of this database.
+   */
+  public readonly description?: string;
+
   constructor(scope: Construct, id: string, props: DatabaseProps = {}) {
     super(scope, id, {
       physicalName: props.databaseName ??
@@ -96,8 +108,11 @@ export class Database extends Resource implements IDatabase {
         }),
     });
 
+    this.description = props.description;
+
     let databaseInput: CfnDatabase.DatabaseInputProperty = {
       name: this.physicalName,
+      description: this.description,
     };
 
     if (props.locationUri !== undefined) {
