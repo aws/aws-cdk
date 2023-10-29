@@ -861,7 +861,7 @@ export enum InstanceClass {
   P4D = 'p4d',
 
   /**
-   * Parallel-processing optimized instances, 4th generation
+   * Parallel-processing optimized instances, 5th generation
    */
   PARALLEL5 = 'parallel5',
 
