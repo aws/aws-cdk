@@ -666,7 +666,7 @@ To specify a custom runtime role use the `executionRoleArn` property.
 See this [blog post](https://aws.amazon.com/blogs/big-data/introducing-runtime-roles-for-amazon-emr-steps-use-iam-roles-and-aws-lake-formation-for-access-control-with-amazon-emr/) for more details.
 
 ```ts
-const cfnSecurityConfiguration = new emr.CfnSecurityConfiguration(stack, 'EmrSecurityConfiguration', {
+const cfnSecurityConfiguration = new emr.CfnSecurityConfiguration(this, 'EmrSecurityConfiguration', {
   name: 'AddStepRuntimeRoleSecConfig',
   securityConfiguration: JSON.parse(`
     {
@@ -691,7 +691,7 @@ const task = new tasks.EmrCreateCluster(this, 'Create Cluster', {
   securityConfiguration: cfnSecurityConfiguration.name,
 });
 
-const executionRole = new iam.Role(stack, 'Role', {
+const executionRole = new iam.Role(this, 'Role', {
   assumedBy: new iam.ArnPrincipal(task.clusterRole.roleArn),
 });
 
