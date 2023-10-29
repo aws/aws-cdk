@@ -97,7 +97,6 @@ export interface EmrAddStepProps extends sfn.TaskStateBaseProps {
    *
    * @default - Uses EC2 instance profile role
    */
-  // eslint-disable-next-line
   readonly executionRoleArn?: string;
 }
 
