@@ -21,6 +21,25 @@
       {
         "name": "Duration",
         "documentation": "How long execution of this Lambda takes"
+      },
+      {
+        "name": "UrlRequestCount",
+        "documentation": "The number of requests made to this Lambda's URL",
+        "type": "count"
+      },
+      {
+        "name": "Url4xxCount",
+        "documentation": "The number of requests that returned a 4XX HTTP status code",
+        "type": "count"
+      },
+      {
+        "name": "Url5xxCount",
+        "documentation": "The number of requests that returned a 5XX HTTP status code",
+        "type": "count"
+      },
+      {
+        "name": "UrlRequestLatency",
+        "documentation": "The time between the function URL receiving and responding a request"
       }
     ]
   }
