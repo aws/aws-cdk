@@ -106,7 +106,7 @@ describe('CloudFormation Pipeline Actions', () => {
                   'Name',
                 ],
               },
-              'BranchName': 'master',
+              'BranchName': 'main',
               'PollForSourceChanges': true,
             },
             'Name': 'source',
