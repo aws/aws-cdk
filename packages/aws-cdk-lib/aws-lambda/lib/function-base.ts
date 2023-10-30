@@ -152,7 +152,7 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
    *
    * @default sum over 5 minutes
    */
-  metricUrl5xxCount (props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+  metricUrl5xxCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Metric for the time between the function URL receiving and responding a request
