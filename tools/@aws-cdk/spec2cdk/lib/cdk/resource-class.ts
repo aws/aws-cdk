@@ -45,44 +45,56 @@ export interface ITypeHost {
 // This convenience typewriter builder is used all over the place
 const $this = $E(expr.this_());
 
+export interface ResourceClassProps {
+  readonly db: SpecDatabase;
+  readonly resource: Resource;
+  readonly suffix?: string;
+}
+
 export class ResourceClass extends ClassType {
+  private readonly db: SpecDatabase;
+  private readonly resource: Resource;
   private readonly propsType: StructType;
-  private readonly interface: InterfaceType;
+  private readonly resourceInterface: InterfaceType;
   private readonly decider: ResourceDecider;
   private readonly converter: TypeConverter;
   private readonly module: Module;
+  private readonly suffix?: string;
 
   constructor(
     scope: IScope,
-    private readonly db: SpecDatabase,
-    private readonly resource: Resource,
-    private readonly suffix?: string,
+    props: ResourceClassProps,
   ) {
+    const resourceInterface = new InterfaceType(scope, {
+      export: true,
+      name: interfaceNameFromResource(props.resource, props.suffix),
+      docs: {
+        summary: `Attributes for \`${classNameFromResource(props.resource)}\`.`,
+        stability: Stability.External,
+      },
+    });
+
     super(scope, {
       export: true,
-      name: classNameFromResource(resource, suffix),
+      name: classNameFromResource(props.resource, props.suffix),
       docs: {
-        ...splitDocumentation(resource.documentation),
+        ...splitDocumentation(props.resource.documentation),
         stability: Stability.External,
-        docTags: { cloudformationResource: resource.cloudFormationType },
+        docTags: { cloudformationResource: props.resource.cloudFormationType },
         see: cloudFormationDocLink({
-          resourceType: resource.cloudFormationType,
+          resourceType: props.resource.cloudFormationType,
         }),
       },
       extends: CDK_CORE.CfnResource,
-      implements: [CDK_CORE.IInspectable, ...ResourceDecider.taggabilityInterfaces(resource)],
+      implements: [CDK_CORE.IInspectable, ...ResourceDecider.taggabilityInterfaces(props.resource)],
     });
+
+    this.db = props.db;
+    this.resource = props.resource;
+    this.resourceInterface = resourceInterface;
+    this.suffix = props.suffix;
 
     this.module = Module.of(this);
-
-    this.interface = new InterfaceType(this.scope, {
-      export: true,
-      name: interfaceNameFromResource(this.resource, this.suffix),
-      docs: {
-        summary: `Attributes for \`${classNameFromResource(this.resource)}\`.`,
-        stability: Stability.External,
-      },
-    });
 
     this.propsType = new StructType(this.scope, {
       export: true,
@@ -97,7 +109,7 @@ export class ResourceClass extends ClassType {
     });
 
     this.converter = TypeConverter.forResource({
-      db: db,
+      db: this.db,
       resource: this.resource,
       resourceClass: this,
     });
@@ -119,13 +131,13 @@ export class ResourceClass extends ClassType {
 
     // Build the shared interface
     for (const identifier of this.decider.primaryIdentifier ?? []) {
-      this.interface.addProperty({
+      this.resourceInterface.addProperty({
         ...identifier,
         immutable: true,
       });
     }
     if (this.decider.arn) {
-      this.interface.addProperty({
+      this.resourceInterface.addProperty({
         ...this.decider.arn,
         immutable: true,
       });

@@ -93,7 +93,11 @@ export class AstBuilder<T extends Module> {
   }
 
   public addResource(resource: Resource) {
-    const resourceClass = new ResourceClass(this.module, this.db, resource, this.nameSuffix);
+    const resourceClass = new ResourceClass(this.module, {
+      db: this.db,
+      resource,
+      suffix: this.nameSuffix,
+    });
     this.resources[resource.cloudFormationType] = resourceClass.spec.name;
 
     resourceClass.build();
