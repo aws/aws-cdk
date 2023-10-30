@@ -114,11 +114,6 @@
        "Arn"
       ]
      },
-     "Input": "\"Input Text\"",
-     "RetryPolicy": {
-      "MaximumEventAgeInSeconds": 180,
-      "MaximumRetryAttempts": 3
-     },
      "RoleArn": {
       "Fn::GetAtt": [
        "Role1ABCC5F0",
@@ -143,41 +138,6 @@
        "Function76856677",
        "Arn"
       ]
-     },
-     "Input": "\"Input Text\"",
-     "RetryPolicy": {
-      "MaximumEventAgeInSeconds": 180,
-      "MaximumRetryAttempts": 3
-     },
-     "RoleArn": {
-      "Fn::GetAtt": [
-       "Role1ABCC5F0",
-       "Arn"
-      ]
-     }
-    }
-   }
-  },
-  "TargetOverrideScheduleFF8CB184": {
-   "Type": "AWS::Scheduler::Schedule",
-   "Properties": {
-    "FlexibleTimeWindow": {
-     "Mode": "OFF"
-    },
-    "ScheduleExpression": "rate(12 hours)",
-    "ScheduleExpressionTimezone": "Etc/UTC",
-    "State": "ENABLED",
-    "Target": {
-     "Arn": {
-      "Fn::GetAtt": [
-       "Function76856677",
-       "Arn"
-      ]
-     },
-     "Input": "\"Changed Text\"",
-     "RetryPolicy": {
-      "MaximumEventAgeInSeconds": 360,
-      "MaximumRetryAttempts": 5
      },
      "RoleArn": {
       "Fn::GetAtt": [
@@ -256,11 +216,6 @@
        "Function76856677",
        "Arn"
       ]
-     },
-     "Input": "\"Input Text\"",
-     "RetryPolicy": {
-      "MaximumEventAgeInSeconds": 180,
-      "MaximumRetryAttempts": 3
      },
      "RoleArn": {
       "Fn::GetAtt": [

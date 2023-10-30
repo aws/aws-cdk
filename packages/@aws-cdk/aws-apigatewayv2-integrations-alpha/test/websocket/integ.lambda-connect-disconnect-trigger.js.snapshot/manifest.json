@@ -1,19 +1,19 @@
 {
   "version": "34.0.0",
   "artifacts": {
-    "aws-cdk-aws-apigatewayv2-websockets.assets": {
+    "integ-apigwv2-lambda-connect-integration.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-aws-apigatewayv2-websockets.assets.json",
+        "file": "integ-apigwv2-lambda-connect-integration.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-aws-apigatewayv2-websockets": {
+    "integ-apigwv2-lambda-connect-integration": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-cdk-aws-apigatewayv2-websockets.template.json",
+        "templateFile": "integ-apigwv2-lambda-connect-integration.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -22,7 +22,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-aws-apigatewayv2-websockets.assets"
+          "integ-apigwv2-lambda-connect-integration.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,46 +31,46 @@
         }
       },
       "dependencies": [
-        "aws-cdk-aws-apigatewayv2-websockets.assets"
+        "integ-apigwv2-lambda-connect-integration.assets"
       ],
       "metadata": {
-        "/aws-cdk-aws-apigatewayv2-websockets/Connect Function/ServiceRole/Resource": [
+        "/integ-apigwv2-lambda-connect-integration/Connect Function/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ConnectFunctionServiceRoleDD1EAA8C"
           }
         ],
-        "/aws-cdk-aws-apigatewayv2-websockets/Connect Function/ServiceRole/DefaultPolicy/Resource": [
+        "/integ-apigwv2-lambda-connect-integration/Connect Function/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ConnectFunctionServiceRoleDefaultPolicy9C1FE0B3"
           }
         ],
-        "/aws-cdk-aws-apigatewayv2-websockets/Connect Function/Resource": [
+        "/integ-apigwv2-lambda-connect-integration/Connect Function/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ConnectFunction4D4B4BB5"
           }
         ],
-        "/aws-cdk-aws-apigatewayv2-websockets/Disconnect Function/ServiceRole/Resource": [
+        "/integ-apigwv2-lambda-connect-integration/Disconnect Function/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DisconnectFunctionServiceRole49DB60AC"
           }
         ],
-        "/aws-cdk-aws-apigatewayv2-websockets/Disconnect Function/ServiceRole/DefaultPolicy/Resource": [
+        "/integ-apigwv2-lambda-connect-integration/Disconnect Function/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DisconnectFunctionServiceRoleDefaultPolicyF5348EC3"
           }
         ],
-        "/aws-cdk-aws-apigatewayv2-websockets/Disconnect Function/Resource": [
+        "/integ-apigwv2-lambda-connect-integration/Disconnect Function/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DisconnectFunction620A9610"
           }
         ],
-        "/aws-cdk-aws-apigatewayv2-websockets/WebSocket Log Table": [
+        "/integ-apigwv2-lambda-connect-integration/WebSocket Log Table": [
           {
             "type": "aws:cdk:hasPhysicalName",
             "data": {
@@ -78,122 +78,74 @@
             }
           }
         ],
-        "/aws-cdk-aws-apigatewayv2-websockets/WebSocket Log Table/Resource": [
+        "/integ-apigwv2-lambda-connect-integration/WebSocket Log Table/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "WebSocketLogTable7F74AAC5"
           }
         ],
-        "/aws-cdk-aws-apigatewayv2-websockets/WebSocket API/Resource": [
+        "/integ-apigwv2-lambda-connect-integration/WebSocket API/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "WebSocketAPIDA75128A"
           }
         ],
-        "/aws-cdk-aws-apigatewayv2-websockets/WebSocket API/$connect-Route/ConnectIntegration-Permission": [
+        "/integ-apigwv2-lambda-connect-integration/WebSocket API/$connect-Route/ConnectIntegration-Permission": [
           {
             "type": "aws:cdk:logicalId",
             "data": "WebSocketAPIconnectRouteConnectIntegrationPermission1FECDE58"
           }
         ],
-        "/aws-cdk-aws-apigatewayv2-websockets/WebSocket API/$connect-Route/ConnectIntegration/Resource": [
+        "/integ-apigwv2-lambda-connect-integration/WebSocket API/$connect-Route/ConnectIntegration/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "WebSocketAPIconnectRouteConnectIntegration2725692A"
           }
         ],
-        "/aws-cdk-aws-apigatewayv2-websockets/WebSocket API/$connect-Route/Resource": [
+        "/integ-apigwv2-lambda-connect-integration/WebSocket API/$connect-Route/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "WebSocketAPIconnectRoute4BD84FCF"
           }
         ],
-        "/aws-cdk-aws-apigatewayv2-websockets/WebSocket API/$disconnect-Route/DisconnectIntegration-Permission": [
+        "/integ-apigwv2-lambda-connect-integration/WebSocket API/$disconnect-Route/DisconnectIntegration-Permission": [
           {
             "type": "aws:cdk:logicalId",
             "data": "WebSocketAPIdisconnectRouteDisconnectIntegrationPermission909CCDD8"
           }
         ],
-        "/aws-cdk-aws-apigatewayv2-websockets/WebSocket API/$disconnect-Route/DisconnectIntegration/Resource": [
+        "/integ-apigwv2-lambda-connect-integration/WebSocket API/$disconnect-Route/DisconnectIntegration/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "WebSocketAPIdisconnectRouteDisconnectIntegration317B9227"
           }
         ],
-        "/aws-cdk-aws-apigatewayv2-websockets/WebSocket API/$disconnect-Route/Resource": [
+        "/integ-apigwv2-lambda-connect-integration/WebSocket API/$disconnect-Route/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "WebSocketAPIdisconnectRouteBC1A3C36"
           }
         ],
-        "/aws-cdk-aws-apigatewayv2-websockets/Production Stage/Resource": [
+        "/integ-apigwv2-lambda-connect-integration/Production Stage/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProductionStage7933AAB2"
           }
         ],
-        "/aws-cdk-aws-apigatewayv2-websockets/BootstrapVersion": [
+        "/integ-apigwv2-lambda-connect-integration/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-aws-apigatewayv2-websockets/CheckBootstrapVersion": [
+        "/integ-apigwv2-lambda-connect-integration/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-aws-apigatewayv2-websockets"
-    },
-    "IntegDefaultTestDeployAssert4E6713E1.assets": {
-      "type": "cdk:asset-manifest",
-      "properties": {
-        "file": "IntegDefaultTestDeployAssert4E6713E1.assets.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-      }
-    },
-    "IntegDefaultTestDeployAssert4E6713E1": {
-      "type": "aws:cloudformation:stack",
-      "environment": "aws://unknown-account/unknown-region",
-      "properties": {
-        "templateFile": "IntegDefaultTestDeployAssert4E6713E1.template.json",
-        "terminationProtection": false,
-        "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
-        "additionalDependencies": [
-          "IntegDefaultTestDeployAssert4E6713E1.assets"
-        ],
-        "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
-          "requiresBootstrapStackVersion": 8,
-          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-        }
-      },
-      "dependencies": [
-        "IntegDefaultTestDeployAssert4E6713E1.assets"
-      ],
-      "metadata": {
-        "/Integ/DefaultTest/DeployAssert/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/Integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
-      "displayName": "Integ/DefaultTest/DeployAssert"
+      "displayName": "integ-apigwv2-lambda-connect-integration"
     },
     "Tree": {
       "type": "cdk:tree",

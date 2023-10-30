@@ -1,12 +1,14 @@
 {
   "version": "34.0.0",
   "testCases": {
-    "Integ/DefaultTest": {
+    "integ.lambda-connect-disconnect-trigger": {
       "stacks": [
-        "aws-cdk-aws-apigatewayv2-websockets"
+        "integ-apigwv2-lambda-connect-integration"
       ],
-      "assertionStack": "Integ/DefaultTest/DeployAssert",
-      "assertionStackName": "IntegDefaultTestDeployAssert4E6713E1"
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
     }
-  }
+  },
+  "synthContext": {},
+  "enableLookups": false
 }

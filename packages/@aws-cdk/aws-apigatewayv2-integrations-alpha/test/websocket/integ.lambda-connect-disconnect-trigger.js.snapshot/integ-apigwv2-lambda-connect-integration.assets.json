@@ -29,7 +29,7 @@
     },
     "78326e78ff76a1ed4538fd2d47129266d95b8c304857736753ec3afa4250d787": {
       "source": {
-        "path": "aws-cdk-aws-apigatewayv2-websockets.template.json",
+        "path": "integ-apigwv2-lambda-connect-integration.template.json",
         "packaging": "file"
       },
       "destinations": {

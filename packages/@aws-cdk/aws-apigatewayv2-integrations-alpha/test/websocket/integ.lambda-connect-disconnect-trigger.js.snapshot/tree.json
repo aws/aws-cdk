@@ -4,21 +4,21 @@
     "id": "App",
     "path": "",
     "children": {
-      "aws-cdk-aws-apigatewayv2-websockets": {
-        "id": "aws-cdk-aws-apigatewayv2-websockets",
-        "path": "aws-cdk-aws-apigatewayv2-websockets",
+      "integ-apigwv2-lambda-connect-integration": {
+        "id": "integ-apigwv2-lambda-connect-integration",
+        "path": "integ-apigwv2-lambda-connect-integration",
         "children": {
           "Connect Function": {
             "id": "Connect Function",
-            "path": "aws-cdk-aws-apigatewayv2-websockets/Connect Function",
+            "path": "integ-apigwv2-lambda-connect-integration/Connect Function",
             "children": {
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "aws-cdk-aws-apigatewayv2-websockets/Connect Function/ServiceRole",
+                "path": "integ-apigwv2-lambda-connect-integration/Connect Function/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "aws-cdk-aws-apigatewayv2-websockets/Connect Function/ServiceRole/ImportServiceRole",
+                    "path": "integ-apigwv2-lambda-connect-integration/Connect Function/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -26,7 +26,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-aws-apigatewayv2-websockets/Connect Function/ServiceRole/Resource",
+                    "path": "integ-apigwv2-lambda-connect-integration/Connect Function/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -65,11 +65,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "aws-cdk-aws-apigatewayv2-websockets/Connect Function/ServiceRole/DefaultPolicy",
+                    "path": "integ-apigwv2-lambda-connect-integration/Connect Function/ServiceRole/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-aws-apigatewayv2-websockets/Connect Function/ServiceRole/DefaultPolicy/Resource",
+                        "path": "integ-apigwv2-lambda-connect-integration/Connect Function/ServiceRole/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -133,11 +133,11 @@
               },
               "Code": {
                 "id": "Code",
-                "path": "aws-cdk-aws-apigatewayv2-websockets/Connect Function/Code",
+                "path": "integ-apigwv2-lambda-connect-integration/Connect Function/Code",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "aws-cdk-aws-apigatewayv2-websockets/Connect Function/Code/Stage",
+                    "path": "integ-apigwv2-lambda-connect-integration/Connect Function/Code/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -145,7 +145,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "aws-cdk-aws-apigatewayv2-websockets/Connect Function/Code/AssetBucket",
+                    "path": "integ-apigwv2-lambda-connect-integration/Connect Function/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
@@ -159,7 +159,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-aws-apigatewayv2-websockets/Connect Function/Resource",
+                "path": "integ-apigwv2-lambda-connect-integration/Connect Function/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
@@ -199,15 +199,15 @@
           },
           "Disconnect Function": {
             "id": "Disconnect Function",
-            "path": "aws-cdk-aws-apigatewayv2-websockets/Disconnect Function",
+            "path": "integ-apigwv2-lambda-connect-integration/Disconnect Function",
             "children": {
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "aws-cdk-aws-apigatewayv2-websockets/Disconnect Function/ServiceRole",
+                "path": "integ-apigwv2-lambda-connect-integration/Disconnect Function/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "aws-cdk-aws-apigatewayv2-websockets/Disconnect Function/ServiceRole/ImportServiceRole",
+                    "path": "integ-apigwv2-lambda-connect-integration/Disconnect Function/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -215,7 +215,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-aws-apigatewayv2-websockets/Disconnect Function/ServiceRole/Resource",
+                    "path": "integ-apigwv2-lambda-connect-integration/Disconnect Function/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -254,11 +254,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "aws-cdk-aws-apigatewayv2-websockets/Disconnect Function/ServiceRole/DefaultPolicy",
+                    "path": "integ-apigwv2-lambda-connect-integration/Disconnect Function/ServiceRole/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-aws-apigatewayv2-websockets/Disconnect Function/ServiceRole/DefaultPolicy/Resource",
+                        "path": "integ-apigwv2-lambda-connect-integration/Disconnect Function/ServiceRole/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -322,11 +322,11 @@
               },
               "Code": {
                 "id": "Code",
-                "path": "aws-cdk-aws-apigatewayv2-websockets/Disconnect Function/Code",
+                "path": "integ-apigwv2-lambda-connect-integration/Disconnect Function/Code",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "aws-cdk-aws-apigatewayv2-websockets/Disconnect Function/Code/Stage",
+                    "path": "integ-apigwv2-lambda-connect-integration/Disconnect Function/Code/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -334,7 +334,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "aws-cdk-aws-apigatewayv2-websockets/Disconnect Function/Code/AssetBucket",
+                    "path": "integ-apigwv2-lambda-connect-integration/Disconnect Function/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
@@ -348,7 +348,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-aws-apigatewayv2-websockets/Disconnect Function/Resource",
+                "path": "integ-apigwv2-lambda-connect-integration/Disconnect Function/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
@@ -388,11 +388,11 @@
           },
           "WebSocket Log Table": {
             "id": "WebSocket Log Table",
-            "path": "aws-cdk-aws-apigatewayv2-websockets/WebSocket Log Table",
+            "path": "integ-apigwv2-lambda-connect-integration/WebSocket Log Table",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-aws-apigatewayv2-websockets/WebSocket Log Table/Resource",
+                "path": "integ-apigwv2-lambda-connect-integration/WebSocket Log Table/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
                   "aws:cdk:cloudformation:props": {
@@ -422,7 +422,7 @@
               },
               "ScalingRole": {
                 "id": "ScalingRole",
-                "path": "aws-cdk-aws-apigatewayv2-websockets/WebSocket Log Table/ScalingRole",
+                "path": "integ-apigwv2-lambda-connect-integration/WebSocket Log Table/ScalingRole",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
@@ -436,11 +436,11 @@
           },
           "WebSocket API": {
             "id": "WebSocket API",
-            "path": "aws-cdk-aws-apigatewayv2-websockets/WebSocket API",
+            "path": "integ-apigwv2-lambda-connect-integration/WebSocket API",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-aws-apigatewayv2-websockets/WebSocket API/Resource",
+                "path": "integ-apigwv2-lambda-connect-integration/WebSocket API/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Api",
                   "aws:cdk:cloudformation:props": {
@@ -456,11 +456,11 @@
               },
               "$connect-Route": {
                 "id": "$connect-Route",
-                "path": "aws-cdk-aws-apigatewayv2-websockets/WebSocket API/$connect-Route",
+                "path": "integ-apigwv2-lambda-connect-integration/WebSocket API/$connect-Route",
                 "children": {
                   "ConnectIntegration-Permission": {
                     "id": "ConnectIntegration-Permission",
-                    "path": "aws-cdk-aws-apigatewayv2-websockets/WebSocket API/$connect-Route/ConnectIntegration-Permission",
+                    "path": "integ-apigwv2-lambda-connect-integration/WebSocket API/$connect-Route/ConnectIntegration-Permission",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
                       "aws:cdk:cloudformation:props": {
@@ -505,11 +505,11 @@
                   },
                   "ConnectIntegration": {
                     "id": "ConnectIntegration",
-                    "path": "aws-cdk-aws-apigatewayv2-websockets/WebSocket API/$connect-Route/ConnectIntegration",
+                    "path": "integ-apigwv2-lambda-connect-integration/WebSocket API/$connect-Route/ConnectIntegration",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-aws-apigatewayv2-websockets/WebSocket API/$connect-Route/ConnectIntegration/Resource",
+                        "path": "integ-apigwv2-lambda-connect-integration/WebSocket API/$connect-Route/ConnectIntegration/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Integration",
                           "aws:cdk:cloudformation:props": {
@@ -555,7 +555,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-aws-apigatewayv2-websockets/WebSocket API/$connect-Route/Resource",
+                    "path": "integ-apigwv2-lambda-connect-integration/WebSocket API/$connect-Route/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -590,11 +590,11 @@
               },
               "$disconnect-Route": {
                 "id": "$disconnect-Route",
-                "path": "aws-cdk-aws-apigatewayv2-websockets/WebSocket API/$disconnect-Route",
+                "path": "integ-apigwv2-lambda-connect-integration/WebSocket API/$disconnect-Route",
                 "children": {
                   "DisconnectIntegration-Permission": {
                     "id": "DisconnectIntegration-Permission",
-                    "path": "aws-cdk-aws-apigatewayv2-websockets/WebSocket API/$disconnect-Route/DisconnectIntegration-Permission",
+                    "path": "integ-apigwv2-lambda-connect-integration/WebSocket API/$disconnect-Route/DisconnectIntegration-Permission",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
                       "aws:cdk:cloudformation:props": {
@@ -639,11 +639,11 @@
                   },
                   "DisconnectIntegration": {
                     "id": "DisconnectIntegration",
-                    "path": "aws-cdk-aws-apigatewayv2-websockets/WebSocket API/$disconnect-Route/DisconnectIntegration",
+                    "path": "integ-apigwv2-lambda-connect-integration/WebSocket API/$disconnect-Route/DisconnectIntegration",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-aws-apigatewayv2-websockets/WebSocket API/$disconnect-Route/DisconnectIntegration/Resource",
+                        "path": "integ-apigwv2-lambda-connect-integration/WebSocket API/$disconnect-Route/DisconnectIntegration/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Integration",
                           "aws:cdk:cloudformation:props": {
@@ -689,7 +689,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-aws-apigatewayv2-websockets/WebSocket API/$disconnect-Route/Resource",
+                    "path": "integ-apigwv2-lambda-connect-integration/WebSocket API/$disconnect-Route/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -730,11 +730,11 @@
           },
           "Production Stage": {
             "id": "Production Stage",
-            "path": "aws-cdk-aws-apigatewayv2-websockets/Production Stage",
+            "path": "integ-apigwv2-lambda-connect-integration/Production Stage",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-aws-apigatewayv2-websockets/Production Stage/Resource",
+                "path": "integ-apigwv2-lambda-connect-integration/Production Stage/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Stage",
                   "aws:cdk:cloudformation:props": {
@@ -758,7 +758,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "aws-cdk-aws-apigatewayv2-websockets/BootstrapVersion",
+            "path": "integ-apigwv2-lambda-connect-integration/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -766,7 +766,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "aws-cdk-aws-apigatewayv2-websockets/CheckBootstrapVersion",
+            "path": "integ-apigwv2-lambda-connect-integration/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
@@ -775,60 +775,6 @@
         },
         "constructInfo": {
           "fqn": "aws-cdk-lib.Stack",
-          "version": "0.0.0"
-        }
-      },
-      "Integ": {
-        "id": "Integ",
-        "path": "Integ",
-        "children": {
-          "DefaultTest": {
-            "id": "DefaultTest",
-            "path": "Integ/DefaultTest",
-            "children": {
-              "Default": {
-                "id": "Default",
-                "path": "Integ/DefaultTest/Default",
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.70"
-                }
-              },
-              "DeployAssert": {
-                "id": "DeployAssert",
-                "path": "Integ/DefaultTest/DeployAssert",
-                "children": {
-                  "BootstrapVersion": {
-                    "id": "BootstrapVersion",
-                    "path": "Integ/DefaultTest/DeployAssert/BootstrapVersion",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "CheckBootstrapVersion": {
-                    "id": "CheckBootstrapVersion",
-                    "path": "Integ/DefaultTest/DeployAssert/CheckBootstrapVersion",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnRule",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.Stack",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
-              "version": "0.0.0"
-            }
-          }
-        },
-        "constructInfo": {
-          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
           "version": "0.0.0"
         }
       },
