@@ -81,19 +81,17 @@
     "@aws-cdk/integ-tests-alpha": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^29.5.5",
-    "@types/mime-types": "^2.1.1",
+    "@types/mime-types": "^2.1.2",
     "aws-cdk-lib": "0.0.0",
     "constructs": "^10.0.0",
     "jest": "^29.7.0"
   },
   "dependencies": {
-    "aws-cdk-lib": "0.0.0",
-    "constructs": "^10.0.0",
     "mime-types": "^2.1.35"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "aws-cdk-lib": "0.0.0",
+    "aws-cdk-lib": "^0.0.0",
     "constructs": "^10.0.0"
   },
   "separate-module": false,

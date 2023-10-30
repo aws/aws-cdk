@@ -18,7 +18,24 @@
     "Threshold": 10
    }
   },
-  "MyEnvironmentRoleC08961D3": {
+  "MyRoleF48FFE04": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "appconfig.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MyEnvironmentRole01C8C013F": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -72,7 +89,21 @@
       },
       "AlarmRoleArn": {
        "Fn::GetAtt": [
-        "MyEnvironmentRoleC08961D3",
+        "MyEnvironmentRole01C8C013F",
+        "Arn"
+       ]
+      }
+     },
+     {
+      "AlarmArn": {
+       "Fn::GetAtt": [
+        "MyAlarm696658B6",
+        "Arn"
+       ]
+      },
+      "AlarmRoleArn": {
+       "Fn::GetAtt": [
+        "MyRoleF48FFE04",
         "Arn"
        ]
       }

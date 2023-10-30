@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "34.0.0",
   "artifacts": {
     "aws-cdk-asg-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-asg-integ.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a423d4fff781844206367e6e7467d7c38befc7540334ef730ae4a8a17de4a454.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7a8efad29e5cb8979aac968ca3709d9f3c874be848a2097779d79b8be52e4fd9.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,6 +34,18 @@
         "aws-cdk-asg-integ.assets"
       ],
       "metadata": {
+        "/aws-cdk-asg-integ/role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "roleC7B7E775"
+          }
+        ],
+        "/aws-cdk-asg-integ/MainLT/Profile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MainLTProfile89E5D1D1"
+          }
+        ],
         "/aws-cdk-asg-integ/MainLT/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -198,7 +211,7 @@
         "/aws-cdk-asg-integ/AsgFromLT": [
           {
             "type": "aws:cdk:warning",
-            "data": "desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215"
+            "data": "desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215 [ack: @aws-cdk/aws-autoscaling:desiredCapacitySet]"
           }
         ],
         "/aws-cdk-asg-integ/AsgFromLT/ASG": [
@@ -216,7 +229,7 @@
         "/aws-cdk-asg-integ/AsgFromMip": [
           {
             "type": "aws:cdk:warning",
-            "data": "desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215"
+            "data": "desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215 [ack: @aws-cdk/aws-autoscaling:desiredCapacitySet]"
           }
         ],
         "/aws-cdk-asg-integ/AsgFromMip/ASG": [
@@ -228,7 +241,7 @@
         "/aws-cdk-asg-integ/AsgFromMipWithoutDistribution": [
           {
             "type": "aws:cdk:warning",
-            "data": "desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215"
+            "data": "desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215 [ack: @aws-cdk/aws-autoscaling:desiredCapacitySet]"
           }
         ],
         "/aws-cdk-asg-integ/AsgFromMipWithoutDistribution/ASG": [
@@ -240,7 +253,7 @@
         "/aws-cdk-asg-integ/AsgWithGp3Blockdevice": [
           {
             "type": "aws:cdk:warning",
-            "data": "desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215"
+            "data": "desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215 [ack: @aws-cdk/aws-autoscaling:desiredCapacitySet]"
           }
         ],
         "/aws-cdk-asg-integ/AsgWithGp3Blockdevice/InstanceSecurityGroup/Resource": [
@@ -277,6 +290,42 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "/aws-cdk-asg-integ/AsgWithIMDSv2/InstanceSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AsgWithIMDSv2InstanceSecurityGroupDE233317"
+          }
+        ],
+        "/aws-cdk-asg-integ/AsgWithIMDSv2/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AsgWithIMDSv2InstanceRole7C239C97"
+          }
+        ],
+        "/aws-cdk-asg-integ/AsgWithIMDSv2/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AsgWithIMDSv2InstanceProfile0D43F696"
+          }
+        ],
+        "/aws-cdk-asg-integ/AsgWithIMDSv2/LaunchTemplate/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AsgWithIMDSv2LaunchTemplateC4EE1BC2"
+          }
+        ],
+        "/aws-cdk-asg-integ/AsgWithIMDSv2/ASG": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AsgWithIMDSv2ASGFD283CC8"
+          }
+        ],
+        "/aws-cdk-asg-integ/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-kernel-5.10-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amikernel510hvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
         "/aws-cdk-asg-integ/BootstrapVersion": [
