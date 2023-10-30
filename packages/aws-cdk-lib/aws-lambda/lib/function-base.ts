@@ -134,6 +134,34 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
   metricThrottles(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
+   * Metric for the number of requests made to this Lambda's URL
+   *
+   * @default sum over 5 minutes
+   */
+  metricUrlRequestCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the number of requests that returned a 4XX HTTP status code
+   *
+   * @default sum over 5 minutes
+   */
+  metricUrl4xxCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the number of requests that returned a 5XX HTTP status code
+   *
+   * @default sum over 5 minutes
+   */
+  metricUrl5xxCount (props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the time between the function URL receiving and responding a request
+   *
+   * @default average over 5 minutes
+   */
+  metricUrlRequestLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
    * Adds an event source to this function.
    *
    * Event sources are implemented in the aws-cdk-lib/aws-lambda-event-sources module.
