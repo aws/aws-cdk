@@ -45,9 +45,9 @@ export interface DatabaseProps {
   readonly locationUri?: string;
 
   /**
-   * The description of the database.
+   * A description of the database.
    *
-   * @default - none.
+   * @default - no database description
    */
   readonly description?: string;
 }
@@ -94,12 +94,6 @@ export class Database extends Resource implements IDatabase {
    * Location URI of this database.
    */
   public readonly locationUri?: string;
-
-  /**
-   * Description of this database.
-   */
-  public readonly description?: string;
-
   constructor(scope: Construct, id: string, props: DatabaseProps = {}) {
     super(scope, id, {
       physicalName: props.databaseName ??
@@ -108,11 +102,13 @@ export class Database extends Resource implements IDatabase {
         }),
     });
 
-    this.description = props.description;
+    if (props.description !== undefined) {
+      validateDescription(props.description);
+    }
 
     let databaseInput: CfnDatabase.DatabaseInputProperty = {
       name: this.physicalName,
-      description: this.description,
+      description: props.description,
     };
 
     if (props.locationUri !== undefined) {
@@ -149,5 +145,11 @@ export class Database extends Resource implements IDatabase {
 function validateLocationUri(locationUri: string): void {
   if (locationUri.length < 1 || locationUri.length > 1024) {
     throw new Error(`locationUri length must be (inclusively) between 1 and 1024, but was ${locationUri.length}`);
+  }
+}
+
+function validateDescription(description: string): void {
+  if (description.length > 2048) {
+    throw new Error(`description length must be less than or equal to 2048, but was ${description.length}`);
   }
 }

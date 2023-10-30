@@ -111,6 +111,14 @@ test('locationUri length must be <= 1024', () => {
   ).toThrow();
 });
 
+test('description length must be <= 2048', () => {
+  expect(() =>
+    new glue.Database(stack, 'Database', {
+      description: 'a'.repeat(2049),
+    }),
+  ).toThrow();
+});
+
 test('can specify a physical name', () => {
   new glue.Database(stack, 'Database', {
     databaseName: 'my_database',
