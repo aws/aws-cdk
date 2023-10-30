@@ -129,6 +129,7 @@ export abstract class StreamEventSource implements lambda.IEventSource {
   public abstract bind(_target: lambda.IFunction): void;
 
   protected enrichMappingOptions(options: lambda.EventSourceMappingOptions): lambda.EventSourceMappingOptions {
+    // check if this event source support S3 as OnFailure, currently only kakfa source are supported
     if (this.props.onFailure instanceof S3OnFailureDestination && !options.supportS3OFD){
       throw new Error('This event source does not support S3 as on failure');
     }

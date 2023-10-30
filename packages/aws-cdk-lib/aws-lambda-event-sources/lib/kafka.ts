@@ -39,7 +39,7 @@ export interface KafkaEventSourceProps extends BaseStreamEventSourceProps {
   readonly filters?: Array<{[key: string]: any}>
 
   /**
-   * Add filter criteria to Event Source
+   * Add an on Failure Destination for this Kafka event. SNS/SQS/S3 are supported
    * @see TODO add document after GA, onFailure for Kafka support SNS/SQS/S3
    *
    * @default - discarded records are ignored
