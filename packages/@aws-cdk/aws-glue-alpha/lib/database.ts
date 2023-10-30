@@ -94,6 +94,7 @@ export class Database extends Resource implements IDatabase {
    * Location URI of this database.
    */
   public readonly locationUri?: string;
+
   constructor(scope: Construct, id: string, props: DatabaseProps = {}) {
     super(scope, id, {
       physicalName: props.databaseName ??
