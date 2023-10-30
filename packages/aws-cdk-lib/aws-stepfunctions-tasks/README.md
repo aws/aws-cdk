@@ -666,6 +666,8 @@ To specify a custom runtime role use the `executionRoleArn` property.
 See this [blog post](https://aws.amazon.com/blogs/big-data/introducing-runtime-roles-for-amazon-emr-steps-use-iam-roles-and-aws-lake-formation-for-access-control-with-amazon-emr/) for more details.
 
 ```ts
+import * as emr from 'aws-cdk-lib/aws-emr';
+
 const cfnSecurityConfiguration = new emr.CfnSecurityConfiguration(this, 'EmrSecurityConfiguration', {
   name: 'AddStepRuntimeRoleSecConfig',
   securityConfiguration: JSON.parse(`
