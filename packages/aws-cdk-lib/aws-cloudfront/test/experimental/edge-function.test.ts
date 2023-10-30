@@ -10,7 +10,7 @@ import { handler } from '../../lib/experimental/edge-function/index';
 let app: cdk.App;
 let stack: cdk.Stack;
 
-type RequestType = 'Create' | 'Update';
+type RequestType = 'Create' | 'Update' | 'Delete';
 
 const mockSSM = {
   getParameter: jest.fn().mockResolvedValue({
