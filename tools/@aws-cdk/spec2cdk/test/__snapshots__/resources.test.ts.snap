@@ -7,6 +7,20 @@ import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 
 /**
+ * Attributes for \`CfnResource\`.
+ *
+ * @stability external
+ */
+export interface ICfnResource {
+  /**
+   * The identifier of the resource.
+   *
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-resource.html#cfn-some-resource-id
+   */
+  readonly attrId?: string;
+}
+
+/**
  * @cloudformationResource AWS::Some::Resource
  * @stability external
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-resource.html
@@ -82,20 +96,6 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable {
 }
 
 /**
- * Attributes for \`CfnResource\`.
- *
- * @stability external
- */
-export interface ICfnResource {
-  /**
-   * The identifier of the resource.
-   *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-resource.html#cfn-some-resource-id
-   */
-  readonly attrId?: string;
-}
-
-/**
  * Properties for defining a \`CfnResource\`
  *
  * @struct
@@ -159,6 +159,20 @@ exports[`resource interface when primaryIdentifier is an attribute 1`] = `
 import * as cdk from "aws-cdk-lib";
 import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
+
+/**
+ * Attributes for \`CfnResource\`.
+ *
+ * @stability external
+ */
+export interface ICfnResource {
+  /**
+   * The identifier of the resource
+   *
+   * @cloudformationAttribute Id
+   */
+  readonly attrId: string;
+}
 
 /**
  * @cloudformationResource AWS::Some::Resource
@@ -236,20 +250,6 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable {
 }
 
 /**
- * Attributes for \`CfnResource\`.
- *
- * @stability external
- */
-export interface ICfnResource {
-  /**
-   * The identifier of the resource
-   *
-   * @cloudformationAttribute Id
-   */
-  readonly attrId: string;
-}
-
-/**
  * Properties for defining a \`CfnResource\`
  *
  * @struct
@@ -304,6 +304,27 @@ exports[`resource interface with "<Resource>Arn" 1`] = `
 import * as cdk from "aws-cdk-lib";
 import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
+
+/**
+ * Attributes for \`CfnSomething\`.
+ *
+ * @stability external
+ */
+export interface ICfnSomething {
+  /**
+   * The identifier of the resource
+   *
+   * @cloudformationAttribute Id
+   */
+  readonly attrId: string;
+
+  /**
+   * The arn for something
+   *
+   * @cloudformationAttribute SomethingArn
+   */
+  readonly attrSomethingArn: string;
+}
 
 /**
  * @cloudformationResource AWS::Some::Something
@@ -389,27 +410,6 @@ export class CfnSomething extends cdk.CfnResource implements cdk.IInspectable {
 }
 
 /**
- * Attributes for \`CfnSomething\`.
- *
- * @stability external
- */
-export interface ICfnSomething {
-  /**
-   * The identifier of the resource
-   *
-   * @cloudformationAttribute Id
-   */
-  readonly attrId: string;
-
-  /**
-   * The arn for something
-   *
-   * @cloudformationAttribute SomethingArn
-   */
-  readonly attrSomethingArn: string;
-}
-
-/**
  * Properties for defining a \`CfnSomething\`
  *
  * @struct
@@ -464,6 +464,27 @@ exports[`resource interface with "Arn" 1`] = `
 import * as cdk from "aws-cdk-lib";
 import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
+
+/**
+ * Attributes for \`CfnResource\`.
+ *
+ * @stability external
+ */
+export interface ICfnResource {
+  /**
+   * The identifier of the resource
+   *
+   * @cloudformationAttribute Id
+   */
+  readonly attrId: string;
+
+  /**
+   * The arn for the resource
+   *
+   * @cloudformationAttribute Arn
+   */
+  readonly attrArn: string;
+}
 
 /**
  * @cloudformationResource AWS::Some::Resource
@@ -549,27 +570,6 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable {
 }
 
 /**
- * Attributes for \`CfnResource\`.
- *
- * @stability external
- */
-export interface ICfnResource {
-  /**
-   * The identifier of the resource
-   *
-   * @cloudformationAttribute Id
-   */
-  readonly attrId: string;
-
-  /**
-   * The arn for the resource
-   *
-   * @cloudformationAttribute Arn
-   */
-  readonly attrArn: string;
-}
-
-/**
  * Properties for defining a \`CfnResource\`
  *
  * @struct
@@ -624,6 +624,27 @@ exports[`resource interface with "ResourceArn" 1`] = `
 import * as cdk from "aws-cdk-lib";
 import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
+
+/**
+ * Attributes for \`CfnResource\`.
+ *
+ * @stability external
+ */
+export interface ICfnResource {
+  /**
+   * The identifier of the resource
+   *
+   * @cloudformationAttribute Id
+   */
+  readonly attrId: string;
+
+  /**
+   * The arn for the resource
+   *
+   * @cloudformationAttribute ResourceArn
+   */
+  readonly attrResourceArn: string;
+}
 
 /**
  * @cloudformationResource AWS::Some::Resource
@@ -709,27 +730,6 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable {
 }
 
 /**
- * Attributes for \`CfnResource\`.
- *
- * @stability external
- */
-export interface ICfnResource {
-  /**
-   * The identifier of the resource
-   *
-   * @cloudformationAttribute Id
-   */
-  readonly attrId: string;
-
-  /**
-   * The arn for the resource
-   *
-   * @cloudformationAttribute ResourceArn
-   */
-  readonly attrResourceArn: string;
-}
-
-/**
  * Properties for defining a \`CfnResource\`
  *
  * @struct
@@ -784,6 +784,27 @@ exports[`resource interface with multiple primaryIdentifiers 1`] = `
 import * as cdk from "aws-cdk-lib";
 import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
+
+/**
+ * Attributes for \`CfnResource\`.
+ *
+ * @stability external
+ */
+export interface ICfnResource {
+  /**
+   * The identifier of the resource
+   *
+   * @cloudformationAttribute Id
+   */
+  readonly attrId: string;
+
+  /**
+   * Another identifier of the resource
+   *
+   * @cloudformationAttribute Another
+   */
+  readonly attrAnother: string;
+}
 
 /**
  * @cloudformationResource AWS::Some::Resource
@@ -866,27 +887,6 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable {
   protected renderProperties(props: Record<string, any>): Record<string, any> {
     return convertCfnResourcePropsToCloudFormation(props);
   }
-}
-
-/**
- * Attributes for \`CfnResource\`.
- *
- * @stability external
- */
-export interface ICfnResource {
-  /**
-   * The identifier of the resource
-   *
-   * @cloudformationAttribute Id
-   */
-  readonly attrId: string;
-
-  /**
-   * Another identifier of the resource
-   *
-   * @cloudformationAttribute Another
-   */
-  readonly attrAnother: string;
 }
 
 /**
