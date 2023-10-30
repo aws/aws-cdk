@@ -260,7 +260,10 @@ describe('stacks', () => {
 });
 
 describe('handler', () => {
-  afterEach(() => { jest.restoreAllMocks(); });
+  afterEach(() => {
+    jest.restoreAllMocks();
+    mockSSM.getParameter.mockClear();
+  });
 
   test('create event', async () => {
     // GIVEN
@@ -290,6 +293,21 @@ describe('handler', () => {
     // THEN
     expect(mockSSM.getParameter).toBeCalledWith({ Name: 'edge-function-arn' });
     expect(response).toEqual({ Data: { FunctionArn: 'arn:aws:lambda:us-west-2:123456789012:function:edge-function' } });
+  });
+
+  test('delete event', async () => {
+    // GIVEN
+    const event = {
+      ...eventCommon,
+      RequestType: 'Delete' as RequestType,
+    };
+
+    // WHEN
+    const response = await handler(event);
+
+    // THEN
+    expect(mockSSM.getParameter).not.toHaveBeenCalled();
+    expect(response).toBe(undefined);
   });
 });
 
