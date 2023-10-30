@@ -258,9 +258,6 @@ export class GaugeWidget extends ConcreteWidget {
   }
 
   public toJson(): any[] {
-    const horizontalAnnotations = [
-      ...(this.props.annotations || []).map(mapAnnotation('annotations')),
-    ];
 
     const metrics = allMetricsGraphJson(this.metrics, []);
     const leftYAxis = {
@@ -279,7 +276,7 @@ export class GaugeWidget extends ConcreteWidget {
         title: this.props.title,
         region: this.props.region || cdk.Aws.REGION,
         metrics: metrics.length > 0 ? metrics : undefined,
-        annotations: horizontalAnnotations.length > 0 ? { horizontal: horizontalAnnotations } : undefined,
+        annotations: (this.props.annotations ?? []).length > 0 ? { horizontal: this.props.annotations } : undefined,
         yAxis: {
           left: leftYAxis ?? undefined,
         },
