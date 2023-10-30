@@ -5,9 +5,39 @@ import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
 import * as cdk from '../../../core';
 import * as cloudfront from '../../lib';
+import { handler } from '../../lib/experimental/edge-function/index';
 
 let app: cdk.App;
 let stack: cdk.Stack;
+
+type RequestType = 'Create' | 'Update';
+
+const mockSSM = {
+  getParameter: jest.fn().mockResolvedValue({
+    Parameter: { Value: 'arn:aws:lambda:us-west-2:123456789012:function:edge-function' },
+  }),
+};
+
+jest.mock('@aws-sdk/client-ssm', () => {
+  return {
+    SSM: jest.fn().mockImplementation(() => {
+      return mockSSM;
+    }),
+  };
+});
+
+const eventCommon = {
+  ServiceToken: 'token',
+  ResponseURL: 'https://localhost',
+  StackId: 'stackId',
+  RequestId: 'requestId',
+  LogicalResourceId: 'logicalResourceId',
+  PhysicalResourceId: 'physicalResourceId',
+  ResourceProperties: {
+    Region: 'us-west-2',
+    ParameterName: 'edge-function-arn',
+  },
+};
 
 beforeEach(() => {
   app = new cdk.App();
@@ -15,6 +45,8 @@ beforeEach(() => {
     env: { account: '111111111111', region: 'testregion' },
   });
 });
+
+afterAll(() => { jest.resetAllMocks(); });
 
 describe('stacks', () => {
   test('creates a custom resource and supporting resources in main stack', () => {
@@ -224,6 +256,40 @@ describe('stacks', () => {
     Template.fromStack(secondFnStack).hasResourceProperties('AWS::SSM::Parameter', {
       Name: '/cdk/EdgeFunctionArn/testregion/SecondStack/MyFn',
     });
+  });
+});
+
+describe('handler', () => {
+  afterEach(() => { jest.restoreAllMocks(); });
+
+  test('create event', async () => {
+    // GIVEN
+    const event = {
+      ...eventCommon,
+      RequestType: 'Create' as RequestType,
+    };
+
+    // WHEN
+    const response = await handler(event);
+
+    // THEN
+    expect(mockSSM.getParameter).toBeCalledWith({ Name: 'edge-function-arn' });
+    expect(response).toEqual({ Data: { FunctionArn: 'arn:aws:lambda:us-west-2:123456789012:function:edge-function' } });
+  });
+
+  test('update event', async () => {
+    // GIVEN
+    const event = {
+      ...eventCommon,
+      RequestType: 'Update' as RequestType,
+    };
+
+    // WHEN
+    const response = await handler(event);
+
+    // THEN
+    expect(mockSSM.getParameter).toBeCalledWith({ Name: 'edge-function-arn' });
+    expect(response).toEqual({ Data: { FunctionArn: 'arn:aws:lambda:us-west-2:123456789012:function:edge-function' } });
   });
 });
 
