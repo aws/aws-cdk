@@ -57,7 +57,11 @@ describe('CodeCommit Source Action', () => {
           {
             stageName: 'Build',
             actions: [
-              new cpactions.CodeBuildAction({ actionName: 'Build', project: new codebuild.PipelineProject(targetStack, 'MyProject'), input: sourceOutput }),
+              new cpactions.CodeBuildAction({
+                actionName: 'Build',
+                project: new codebuild.PipelineProject(targetStack, 'MyProject'),
+                input: sourceOutput,
+              }),
             ],
           },
         ],
@@ -590,6 +594,58 @@ describe('CodeCommit Source Action', () => {
       // while the pipeline's Stack would need the name of the Repository to use as a Source).
       // By moving the Rule to pipeline's Stack, we get rid of the cycle.
       Template.fromStack(pipelineStack).resourceCountIs('AWS::Events::Rule', 1);
+    });
+
+    test('using main as the default branch', () => {
+      const app = new App();
+
+      const repoStack = new Stack(app, 'RepositoryStack');
+      const repo = new codecommit.Repository(repoStack, 'Repository', {
+        repositoryName: 'my-repo',
+      });
+
+      const pipelineStack = new Stack(app, 'PipelineStack');
+
+      const sourceOutput = new codepipeline.Artifact();
+      new codepipeline.Pipeline(pipelineStack, 'Pipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [
+              new cpactions.CodeCommitSourceAction({
+                actionName: 'Source',
+                repository: repo,
+                output: sourceOutput,
+              }),
+            ],
+          },
+          {
+            stageName: 'Build',
+            actions: [
+              new cpactions.CodeBuildAction({
+                actionName: 'Build',
+                project: codebuild.Project.fromProjectName(pipelineStack, 'Project', 'my-project'),
+                input: sourceOutput,
+              }),
+            ],
+          },
+        ],
+      });
+
+      Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+        'Stages': [
+          {
+            'Actions': [
+              {
+                'Configuration': {
+                  'BranchName': 'main',
+                },
+              },
+            ],
+          },
+          {},
+        ],
+      });
     });
   });
 });

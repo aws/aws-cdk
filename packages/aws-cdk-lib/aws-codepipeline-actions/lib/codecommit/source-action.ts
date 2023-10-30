@@ -63,7 +63,7 @@ export interface CodeCommitSourceActionProps extends codepipeline.CommonAwsActio
   readonly output: codepipeline.Artifact;
 
   /**
-   * @default 'master'
+   * @default 'main'
    */
   readonly branch?: string;
 
@@ -121,12 +121,13 @@ export class CodeCommitSourceAction extends Action {
    * @internal
    */
   public static readonly _FULL_CLONE_ARN_PROPERTY = 'CodeCommitCloneRepositoryArn';
+  private static readonly DEFAULT_BRANCH_NAME = 'main';
 
   private readonly branch: string;
   private readonly props: CodeCommitSourceActionProps;
 
   constructor(props: CodeCommitSourceActionProps) {
-    const branch = props.branch ?? 'master';
+    const branch = props.branch ?? CodeCommitSourceAction.DEFAULT_BRANCH_NAME;
     if (!branch) {
       throw new Error("'branch' parameter cannot be an empty string");
     }
@@ -220,7 +221,7 @@ export class CodeCommitSourceAction extends Action {
       } while (this.props.repository.node.tryFindChild(candidate) !== undefined);
       return candidate;
     } else {
-      const branchIdDisambiguator = this.branch === 'master' ? '' : `-${this.branch}-`;
+      const branchIdDisambiguator = this.branch === CodeCommitSourceAction.DEFAULT_BRANCH_NAME ? '' : `-${this.branch}-`;
       return this.eventIdFromPrefix(`${baseId}${branchIdDisambiguator}`);
     }
   }
