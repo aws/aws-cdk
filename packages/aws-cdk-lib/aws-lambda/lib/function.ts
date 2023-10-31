@@ -946,6 +946,7 @@ export class Function extends FunctionBase {
     this.loggingConfig = this.getLoggingConfig(props);
     if (this.loggingConfig !== undefined) {
       resource.loggingConfig = this.loggingConfig;
+      this._logGroup = props.logGroup;
     }
 
     resource.node.addDependency(this.role);
@@ -1079,14 +1080,14 @@ export class Function extends FunctionBase {
    * This method returns the function LoggingConfig Property if the property is set on the
    * function and undefined if not.
    */
-  public getLoggingConfig(props: FunctionProps): CfnFunction.LoggingConfigProperty | undefined {
+  private getLoggingConfig(props: FunctionProps): CfnFunction.LoggingConfigProperty | undefined {
     let loggingConfig: CfnFunction.LoggingConfigProperty;
     if (props.logFormat || props.logGroup) {
       loggingConfig = {
-        logFormat: props.logFormat || undefined,
-        systemLogLevel: props.systemLogLevel || undefined,
-        applicationLogLevel: props.applicationLogLevel || undefined,
-        logGroup: props.logGroup?.logGroupName || undefined,
+        logFormat: props.logFormat,
+        systemLogLevel: props.systemLogLevel,
+        applicationLogLevel: props.applicationLogLevel,
+        logGroup: props.logGroup?.logGroupName,
       };
       return loggingConfig;
     }
