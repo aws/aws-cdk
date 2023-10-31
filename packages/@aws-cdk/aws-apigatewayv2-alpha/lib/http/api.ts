@@ -357,10 +357,18 @@ export class HttpApi extends HttpApiBase {
    */
   public readonly defaultStage: IHttpStage | undefined;
 
-  private readonly _apiEndpoint: string;
-
+  /**
+   * Default Authorizer applied to all routes in the gateway.
+   */
   public readonly defaultAuthorizer?: IHttpRouteAuthorizer;
+
+  /**
+   * Default OIDC scopes attached to all routes in the gateway, unless explicitly configured on the route.
+   * The scopes are used with a COGNITO_USER_POOLS authorizer to authorize the method invocation.
+   */
   public readonly defaultAuthorizationScopes?: string[];
+
+  private readonly _apiEndpoint: string;
 
   constructor(scope: Construct, id: string, props?: HttpApiProps) {
     super(scope, id);
