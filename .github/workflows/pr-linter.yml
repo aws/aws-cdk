@@ -11,6 +11,8 @@ on:
       - opened
       - synchronize
       - reopened
+      - assigned
+      - unassigned
   workflow_run:
     workflows: [PR Linter Trigger]
     types:

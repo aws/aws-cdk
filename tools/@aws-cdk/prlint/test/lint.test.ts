@@ -514,8 +514,7 @@ describe('integration tests required on features', () => {
     test('with label no error', async () => {
       labels.push({ name: 'pr-linter/cli-integ-tested' });
       const prLinter = configureMock(issue, files);
-      await prLinter.validatePullRequestTarget(SHA);
-      // THEN: no exception
+      expect(prLinter.validatePullRequestTarget(SHA)).resolves;
     });
 
     test('with aws-cdk-automation author', async () => {
@@ -888,6 +887,65 @@ describe('integration tests required on features', () => {
         repo: 'aws-cdk',
       });
       expect(mockAddLabel.mock.calls).toEqual([]);
+    });
+
+  });
+});
+
+describe('handling assignees', () => {
+  test('needs maintainer review when assigned', async () => {
+    // GIVEN
+    mockListReviews.mockImplementation(() => ({ data: [] }));
+    const assignee = { login: 'testassignee' }
+    const testPr: Subset<linter.GitHubPr>  = {
+      number: 1234,
+      assignee,
+      title: 'chore(prlint): sample message',
+      labels: [],
+    };
+
+    // WHEN
+    const prLinter = configureMock(testPr);
+    await prLinter.validatePullRequestTarget(SHA);
+
+    // THEN
+    expect(mockAddLabel.mock.calls[0][0]).toEqual({
+      issue_number: 1234,
+      labels: ['pr/needs-maintainer-review'],
+      owner: 'aws',
+      repo: 'aws-cdk',
+    });
+  });
+
+  test('assigning removes community label to apply maintainer', async () => {
+    // GIVEN
+    mockListReviews.mockImplementation(() => ({ data: [] }));
+    const assignee = { login: 'testassignee' }
+    const testPr: Subset<linter.GitHubPr> = {
+      number: 1234,
+      assignees: [assignee],
+      title: 'chore(prlint): sample message',
+      labels: [
+        { name: 'pr/needs-community-review' }
+      ],
+    };
+
+    // WHEN
+    const prLinter = configureMock(testPr);
+    await prLinter.validatePullRequestTarget(SHA);
+
+    // THEN
+    expect(mockRemoveLabel.mock.calls[0][0]).toEqual({
+      issue_number: 1234,
+      name: 'pr/needs-community-review',
+      owner: 'aws',
+      repo: 'aws-cdk',
+    });
+    expect(mockAddLabel.mock.calls[0][0]).toEqual({
+      issue_number: 1234,
+      labels: ['pr/needs-maintainer-review'],
+      owner: 'aws',
+      repo: 'aws-cdk'
     });
   });
 });

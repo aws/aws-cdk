@@ -365,7 +365,7 @@ export class PullRequestLinter {
    *   7. It links to a p2 issue and has an approved community review
    */
   private async assessNeedsReview(
-    pr: Pick<GitHubPr, 'mergeable_state' | 'draft' | 'labels' | 'number'>,
+    pr: Pick<GitHubPr, 'mergeable_state' | 'draft' | 'labels' | 'number' | 'assignee' | 'assignees'>,
   ): Promise<void> {
     const reviews = await this.client.pulls.listReviews(this.prParams);
     console.log(JSON.stringify(reviews.data));
@@ -397,6 +397,10 @@ export class PullRequestLinter {
         && review.state === 'COMMENTED',
     );
 
+    // NOTE: assignment can only be performed by users with write access to the
+    // repository.
+    const isAssigned = (pr.assignee || pr.assignees?.length) ? true : false;
+
     const prLinterFailed = reviews.data.find((review) => review.user?.login === 'aws-cdk-automation' && review.state !== 'DISMISSED') as Review;
     const userRequestsExemption = pr.labels.some(label => (label.name === Exemption.REQUEST_EXEMPTION || label.name === Exemption.REQUEST_CLARIFICATION));
     console.log('evaluation: ', JSON.stringify({
@@ -408,6 +412,7 @@ export class PullRequestLinter {
       communityRequestedChanges,
       communityApproved,
       userRequestsExemption,
+      isAssigned,
     }, undefined, 2));
 
     const fixesP1 = pr.labels.some(label => label.name === 'p1');
@@ -430,10 +435,11 @@ export class PullRequestLinter {
     }
 
     // needs-maintainer-review means one of the following
-    // 1) fixes a p1 bug
-    // 2) is already community approved
-    // 3) is authored by a core team member
-    if (readyForReview && (fixesP1 || communityApproved || pr.labels.some(label => label.name === 'contribution/core'))) {
+    // 1) is assigned
+    // 2) fixes a p1 bug
+    // 3) is already community approved
+    // 4) is authored by a core team member
+    if (readyForReview && (isAssigned || fixesP1 || communityApproved || pr.labels.some(label => label.name === 'contribution/core'))) {
       this.addLabel('pr/needs-maintainer-review', pr);
       this.removeLabel('pr/needs-community-review', pr);
     } else if (readyForReview && !fixesP1) {
