@@ -843,6 +843,8 @@ examples of images you might want to use:
 Create your VPC with VPN connections by specifying the `vpnConnections` props (keys are construct `id`s):
 
 ```ts
+import { SecretValue } from 'aws-cdk-lib/core';
+
 const vpc = new ec2.Vpc(this, 'MyVpc', {
   vpnConnections: {
     dynamic: { // Dynamic routing (BGP)
