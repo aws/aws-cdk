@@ -26,6 +26,7 @@ The following targets are supported:
 
 1. `targets.LambdaInvoke`: [Invoke an AWS Lambda function](#invoke-a-lambda-function))
 2. `targets.StepFunctionsStartExecution`: [Start an AWS Step Function](#start-an-aws-step-function)
+3. `targets.SqsSendMessage`: [Send a Message to an Amazon SQS Queue](#send-a-message-to-sqs-queue)
 
 ## Invoke a Lambda function
 
@@ -101,4 +102,18 @@ new Schedule(this, 'Schedule', {
     input: ScheduleTargetInput.fromObject(payload),
   }),
 });
+```
+
+## Send A Message To SQS Queue
+
+Use the `SqsSendMessage` target to send a message to SQS Queue.
+
+The code snippet below creates an event rule with a SQS Queue as a target
+called every hour by Event Bridge Scheduler with a custom payload.
+
+```ts
+import * as sqs from 'aws-cdk-lib/aws-sqs';
+import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
+
+const payload = 'test';
 ```
