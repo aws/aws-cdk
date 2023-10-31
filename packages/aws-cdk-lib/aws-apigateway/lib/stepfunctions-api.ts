@@ -96,6 +96,13 @@ export interface StepFunctionsRestApiProps extends RestApiProps {
    * @default - a new role is created
    */
   readonly role?: iam.IRole;
+
+  /**
+   * Whether to add default response models with 200, 400, and 500 status codes to the method.
+   *
+   * @default true
+   */
+  readonly useDefaultMethodResponses?: boolean;
 }
 
 /**
@@ -118,6 +125,7 @@ export class StepFunctionsRestApi extends RestApi {
       querystring: props.querystring?? true,
       headers: props.headers,
       authorizer: props.authorizer,
+      useDefaultMethodResponses: props.useDefaultMethodResponses,
     });
 
     super(scope, id, props);
