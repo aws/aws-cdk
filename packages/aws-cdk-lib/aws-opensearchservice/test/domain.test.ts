@@ -1861,9 +1861,6 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
       encryptionAtRest: {
         enabled: true,
       },
-      ebs: {
-        enabled: false,
-      },
     })).toThrow(error);
     expect(() => new Domain(stack, 'Domain3', {
       version: engineVersion,
