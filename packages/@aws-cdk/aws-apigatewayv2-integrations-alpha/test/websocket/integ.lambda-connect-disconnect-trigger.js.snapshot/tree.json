@@ -167,7 +167,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "f00343ba062ce1a3797e6d7daefcc4e0b3e379be9a5c55df797a2a854733cf07.zip"
+                      "s3Key": "2748a200bf25c8ee2c2898271226a9f7bdc386b8ce9669528731eb36c5ed9e28.zip"
                     },
                     "environment": {
                       "variables": {
@@ -356,7 +356,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "48ec310d5a24f214ab5100b4abd94d98450fac6398f4888be0485370e071e99c.zip"
+                      "s3Key": "e593848af17fee558eece2cd2719347804c0c141cff4f8ea1fb8556cf986b5a0.zip"
                     },
                     "environment": {
                       "variables": {
@@ -492,7 +492,7 @@
                               {
                                 "Ref": "WebSocketAPIDA75128A"
                               },
-                              "/*$connect"
+                              "/*/*$connect"
                             ]
                           ]
                         }
@@ -626,7 +626,7 @@
                               {
                                 "Ref": "WebSocketAPIDA75128A"
                               },
-                              "/*$disconnect"
+                              "/*/*$disconnect"
                             ]
                           ]
                         }
@@ -775,6 +775,60 @@
         },
         "constructInfo": {
           "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Integ": {
+        "id": "Integ",
+        "path": "Integ",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "Integ/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "Integ/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "Integ/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "Integ/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "Integ/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
           "version": "0.0.0"
         }
       },

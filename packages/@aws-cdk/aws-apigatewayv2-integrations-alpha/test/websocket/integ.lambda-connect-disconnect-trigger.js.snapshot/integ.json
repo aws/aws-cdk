@@ -1,14 +1,12 @@
 {
   "version": "34.0.0",
   "testCases": {
-    "integ.lambda-connect-disconnect-trigger": {
+    "Integ/DefaultTest": {
       "stacks": [
         "integ-apigwv2-lambda-connect-integration"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "Integ/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegDefaultTestDeployAssert4E6713E1"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }
