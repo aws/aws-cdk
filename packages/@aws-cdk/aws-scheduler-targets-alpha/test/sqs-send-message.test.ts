@@ -268,7 +268,14 @@ describe('schedule target', () => {
   });
 
   test('throws when queue is imported from different account', () => {
-    const importedQueue = sqs.Queue.fromQueueArn(stack, 'ImportedQueue', 'arn:aws:sqs:us-east-1:234567890123:somequeue');
+    const stack2 = new Stack(app, 'Stack2', {
+      env: {
+        region: 'us-east-1',
+        account: '234567890123',
+      },
+    });
+
+    const importedQueue = sqs.Queue.fromQueueArn(stack2, 'ImportedQueue', 'arn:aws:sqs:us-east-1:234567890123:somequeue');
     const queueTarget = new SqsSendMessage(importedQueue, {});
 
     expect(() =>
@@ -279,8 +286,14 @@ describe('schedule target', () => {
   });
 
   test('throws when queue is imported from different region', () => {
-    const importedQueue = sqs.Queue.fromQueueArn(stack, 'ImportedQueue', 'arn:aws:sqs:us-west-2:123456789012:somequeue');
+    const stack2 = new Stack(app, 'Stack2', {
+      env: {
+        region: 'us-west-2',
+        account: '123456789012',
+      },
+    });
 
+    const importedQueue = sqs.Queue.fromQueueArn(stack2, 'ImportedQueue', 'arn:aws:sqs:us-west-2:123456789012:somequeue');
     const queueTarget = new SqsSendMessage(importedQueue, {});
 
     expect(() =>
