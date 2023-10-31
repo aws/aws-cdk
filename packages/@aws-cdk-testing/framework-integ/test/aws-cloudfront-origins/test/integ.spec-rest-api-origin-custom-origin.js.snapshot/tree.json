@@ -1,0 +1,334 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "integ-spec-rest-api-origin-custom-origin": {
+        "id": "integ-spec-rest-api-origin-custom-origin",
+        "path": "integ-spec-rest-api-origin-custom-origin",
+        "children": {
+          "RestApi": {
+            "id": "RestApi",
+            "path": "integ-spec-rest-api-origin-custom-origin/RestApi",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-spec-rest-api-origin-custom-origin/RestApi/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::RestApi",
+                  "aws:cdk:cloudformation:props": {
+                    "body": {
+                      "openapi": "3.0.2",
+                      "info": {
+                        "version": "1.0.0",
+                        "title": "Test API for CDK"
+                      },
+                      "paths": {
+                        "/pets": {
+                          "get": {
+                            "summary": "Test Method",
+                            "operationId": "testMethod",
+                            "responses": {
+                              "200": {
+                                "description": "A paged array of pets",
+                                "content": {
+                                  "application/json": {
+                                    "schema": {
+                                      "$ref": "#/components/schemas/Empty"
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "x-amazon-apigateway-integration": {
+                              "responses": {
+                                "default": {
+                                  "statusCode": "200"
+                                }
+                              },
+                              "requestTemplates": {
+                                "application/json": "{\"statusCode\": 200}"
+                              },
+                              "passthroughBehavior": "when_no_match",
+                              "type": "mock"
+                            }
+                          }
+                        }
+                      },
+                      "components": {
+                        "schemas": {
+                          "Empty": {
+                            "title": "Empty Schema",
+                            "type": "object"
+                          }
+                        }
+                      }
+                    },
+                    "name": "RestApi"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigateway.CfnRestApi",
+                  "version": "0.0.0"
+                }
+              },
+              "Default": {
+                "id": "Default",
+                "path": "integ-spec-rest-api-origin-custom-origin/RestApi/Default",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigateway.ResourceBase",
+                  "version": "0.0.0"
+                }
+              },
+              "Deployment": {
+                "id": "Deployment",
+                "path": "integ-spec-rest-api-origin-custom-origin/RestApi/Deployment",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-spec-rest-api-origin-custom-origin/RestApi/Deployment/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGateway::Deployment",
+                      "aws:cdk:cloudformation:props": {
+                        "description": "Automatically created by the RestApi construct",
+                        "restApiId": {
+                          "Ref": "RestApi0C43BF4B"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigateway.CfnDeployment",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigateway.Deployment",
+                  "version": "0.0.0"
+                }
+              },
+              "DeploymentStage.prod": {
+                "id": "DeploymentStage.prod",
+                "path": "integ-spec-rest-api-origin-custom-origin/RestApi/DeploymentStage.prod",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-spec-rest-api-origin-custom-origin/RestApi/DeploymentStage.prod/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGateway::Stage",
+                      "aws:cdk:cloudformation:props": {
+                        "deploymentId": {
+                          "Ref": "RestApiDeployment180EC503edd77c5c8fffabb2e523387cd087d12f"
+                        },
+                        "restApiId": {
+                          "Ref": "RestApi0C43BF4B"
+                        },
+                        "stageName": "prod"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigateway.CfnStage",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigateway.Stage",
+                  "version": "0.0.0"
+                }
+              },
+              "Endpoint": {
+                "id": "Endpoint",
+                "path": "integ-spec-rest-api-origin-custom-origin/RestApi/Endpoint",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_apigateway.SpecRestApi",
+              "version": "0.0.0"
+            }
+          },
+          "Distribution": {
+            "id": "Distribution",
+            "path": "integ-spec-rest-api-origin-custom-origin/Distribution",
+            "children": {
+              "Origin1": {
+                "id": "Origin1",
+                "path": "integ-spec-rest-api-origin-custom-origin/Distribution/Origin1",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-spec-rest-api-origin-custom-origin/Distribution/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFront::Distribution",
+                  "aws:cdk:cloudformation:props": {
+                    "distributionConfig": {
+                      "enabled": true,
+                      "origins": [
+                        {
+                          "domainName": {
+                            "Fn::Select": [
+                              2,
+                              {
+                                "Fn::Split": [
+                                  "/",
+                                  {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "https://",
+                                        {
+                                          "Ref": "RestApi0C43BF4B"
+                                        },
+                                        ".execute-api.",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ".",
+                                        {
+                                          "Ref": "AWS::URLSuffix"
+                                        },
+                                        "/",
+                                        {
+                                          "Ref": "RestApiDeploymentStageprod3855DE66"
+                                        },
+                                        "/"
+                                      ]
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          "id": "integspecrestapiorigincustomoriginDistributionOrigin1C1368952",
+                          "originPath": "",
+                          "customOriginConfig": {
+                            "originSslProtocols": [
+                              "TLSv1.2"
+                            ],
+                            "originProtocolPolicy": "https-only"
+                          }
+                        }
+                      ],
+                      "defaultCacheBehavior": {
+                        "pathPattern": "*",
+                        "targetOriginId": "integspecrestapiorigincustomoriginDistributionOrigin1C1368952",
+                        "cachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+                        "compress": true,
+                        "viewerProtocolPolicy": "allow-all"
+                      },
+                      "httpVersion": "http2",
+                      "ipv6Enabled": true
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cloudfront.CfnDistribution",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cloudfront.Distribution",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-spec-rest-api-origin-custom-origin/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-spec-rest-api-origin-custom-origin/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "rest-api-origin-custom-origin-path": {
+        "id": "rest-api-origin-custom-origin-path",
+        "path": "rest-api-origin-custom-origin-path",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "rest-api-origin-custom-origin-path/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "rest-api-origin-custom-origin-path/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "rest-api-origin-custom-origin-path/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "rest-api-origin-custom-origin-path/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "rest-api-origin-custom-origin-path/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.2.70"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}
