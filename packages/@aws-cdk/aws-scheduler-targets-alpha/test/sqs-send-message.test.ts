@@ -14,7 +14,9 @@ describe('schedule target', () => {
   beforeEach(() => {
     app = new App();
     stack = new Stack(app, 'Stack', { env: { region: 'us-east-1', account: '123456789012' } });
-    queue = new sqs.Queue(stack, 'MyQueue');
+    queue = new sqs.Queue(stack, 'MyQueue', {
+      fifo: true,
+    });
   });
 
   test('creates IAM role and IAM policy for sqs target in the same account', () => {
