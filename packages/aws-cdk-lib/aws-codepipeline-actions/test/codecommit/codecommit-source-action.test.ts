@@ -6,6 +6,7 @@ import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
 import * as s3 from '../../../aws-s3';
 import { Stack, Lazy, App } from '../../../core';
+import { CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME } from '../../../cx-api';
 import * as cpactions from '../../lib';
 
 /* eslint-disable quote-props */
@@ -596,8 +597,9 @@ describe('CodeCommit Source Action', () => {
       Template.fromStack(pipelineStack).resourceCountIs('AWS::Events::Rule', 1);
     });
 
-    test('using main as the default branch', () => {
-      const app = new App();
+    test('using main as the default branch when feature flag is set', () => {
+      const defaultBranchFeatureFlag = { [CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME]: true };
+      const app = new App({ context: defaultBranchFeatureFlag });
 
       const repoStack = new Stack(app, 'RepositoryStack');
       const repo = new codecommit.Repository(repoStack, 'Repository', {
@@ -632,7 +634,8 @@ describe('CodeCommit Source Action', () => {
         ],
       });
 
-      Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      const template = Template.fromStack(pipelineStack);
+      template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {
             'Actions': [
@@ -645,6 +648,28 @@ describe('CodeCommit Source Action', () => {
           },
           {},
         ],
+      });
+      template.hasResourceProperties('AWS::Events::Rule', {
+        'EventPattern': {
+          'source': [
+            'aws.codecommit',
+          ],
+          'resources': [
+            {},
+          ],
+          'detail-type': [
+            'CodeCommit Repository State Change',
+          ],
+          'detail': {
+            'event': [
+              'referenceCreated',
+              'referenceUpdated',
+            ],
+            'referenceName': [
+              'main',
+            ],
+          },
+        },
       });
     });
   });

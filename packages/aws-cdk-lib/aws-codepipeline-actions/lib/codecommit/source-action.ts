@@ -3,7 +3,8 @@ import * as codecommit from '../../../aws-codecommit';
 import * as codepipeline from '../../../aws-codepipeline';
 import * as targets from '../../../aws-events-targets';
 import * as iam from '../../../aws-iam';
-import { Names, Stack, Token, TokenComparison } from '../../../core';
+import { FeatureFlags, Names, Stack, Token, TokenComparison } from '../../../core';
+import { CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME } from '../../../cx-api';
 import { Action } from '../action';
 import { sourceArtifactBounds } from '../common';
 
@@ -63,7 +64,7 @@ export interface CodeCommitSourceActionProps extends codepipeline.CommonAwsActio
   readonly output: codepipeline.Artifact;
 
   /**
-   * @default 'main'
+   * @default 'master'
    */
   readonly branch?: string;
 
@@ -121,13 +122,14 @@ export class CodeCommitSourceAction extends Action {
    * @internal
    */
   public static readonly _FULL_CLONE_ARN_PROPERTY = 'CodeCommitCloneRepositoryArn';
-  private static readonly DEFAULT_BRANCH_NAME = 'main';
+  private static readonly NEW_DEFAULT_BRANCH_NAME = 'main';
+  private static readonly OLD_DEFAULT_BRANCH_NAME = 'master';
 
   private readonly branch: string;
   private readonly props: CodeCommitSourceActionProps;
 
   constructor(props: CodeCommitSourceActionProps) {
-    const branch = props.branch ?? CodeCommitSourceAction.DEFAULT_BRANCH_NAME;
+    const branch = props.branch ?? CodeCommitSourceAction.OLD_DEFAULT_BRANCH_NAME;
     if (!branch) {
       throw new Error("'branch' parameter cannot be an empty string");
     }
@@ -163,6 +165,8 @@ export class CodeCommitSourceAction extends Action {
 
   protected bound(_scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
+    const isNewDefaultBranch = this.props.branch === undefined && FeatureFlags.of(_scope).isEnabled(CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME);
+    const branchOrDefault = isNewDefaultBranch ? CodeCommitSourceAction.NEW_DEFAULT_BRANCH_NAME : this.branch;
     const createEvent = this.props.trigger === undefined ||
       this.props.trigger === CodeCommitTrigger.EVENTS;
     if (createEvent) {
@@ -171,7 +175,7 @@ export class CodeCommitSourceAction extends Action {
         target: new targets.CodePipeline(stage.pipeline, {
           eventRole: this.props.eventRole,
         }),
-        branches: [this.branch],
+        branches: [branchOrDefault],
         crossStackScope: stage.pipeline as unknown as Construct,
       });
     }
@@ -201,7 +205,7 @@ export class CodeCommitSourceAction extends Action {
     return {
       configuration: {
         RepositoryName: this.props.repository.repositoryName,
-        BranchName: this.branch,
+        BranchName: branchOrDefault,
         PollForSourceChanges: this.props.trigger === CodeCommitTrigger.POLL,
         OutputArtifactFormat: this.props.codeBuildCloneOutput === true
           ? 'CODEBUILD_CLONE_REF'
@@ -221,7 +225,7 @@ export class CodeCommitSourceAction extends Action {
       } while (this.props.repository.node.tryFindChild(candidate) !== undefined);
       return candidate;
     } else {
-      const branchIdDisambiguator = this.branch === CodeCommitSourceAction.DEFAULT_BRANCH_NAME ? '' : `-${this.branch}-`;
+      const branchIdDisambiguator = this.props.branch === undefined ? '' : `-${this.branch}-`;
       return this.eventIdFromPrefix(`${baseId}${branchIdDisambiguator}`);
     }
   }

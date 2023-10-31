@@ -481,7 +481,7 @@
            "Name"
           ]
          },
-         "BranchName": "main",
+         "BranchName": "master",
          "PollForSourceChanges": true
         },
         "Name": "source",

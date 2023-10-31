@@ -693,7 +693,7 @@
                                   "Name"
                                 ]
                               },
-                              "BranchName": "main",
+                              "BranchName": "master",
                               "PollForSourceChanges": true
                             },
                             "runOrder": 1,
