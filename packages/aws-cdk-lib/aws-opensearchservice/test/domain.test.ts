@@ -1809,17 +1809,7 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
     })).toThrow(/Node-to-node encryption requires Elasticsearch version 6.0 or later or OpenSearch version 1.0 or later/);
   });
 
-  test('error when R3, I3, R6GD and IM4GN instance types are specified with EBS enabled', () => {
-    expect(() => new Domain(stack, 'Domain1', {
-      version: engineVersion,
-      capacity: {
-        dataNodeInstanceType: 'r3.2xlarge.search',
-      },
-      ebs: {
-        volumeSize: 100,
-        volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
-      },
-    })).toThrow(/R3, I3, R6GD and IM4GN instance types do not support EBS storage volumes./);
+  test('error when I3, R6GD and IM4GN instance types are specified with EBS enabled', () => {
     expect(() => new Domain(stack, 'Domain2', {
       version: engineVersion,
       capacity: {
@@ -1829,7 +1819,7 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
         volumeSize: 100,
         volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
       },
-    })).toThrow(/R3, I3, R6GD and IM4GN instance types do not support EBS storage volumes./);
+    })).toThrow(/I3, R6GD and IM4GN instance types do not support EBS storage volumes./);
     expect(() => new Domain(stack, 'Domain3', {
       version: engineVersion,
       capacity: {
@@ -1839,7 +1829,7 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
         volumeSize: 100,
         volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
       },
-    })).toThrow(/R3, I3, R6GD and IM4GN instance types do not support EBS storage volumes./);
+    })).toThrow(/I3, R6GD and IM4GN instance types do not support EBS storage volumes./);
     expect(() => new Domain(stack, 'Domain4', {
       version: engineVersion,
       capacity: {
@@ -1849,7 +1839,7 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
         volumeSize: 100,
         volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
       },
-    })).toThrow(/R3, I3, R6GD and IM4GN instance types do not support EBS storage volumes./);
+    })).toThrow(/I3, R6GD and IM4GN instance types do not support EBS storage volumes./);
   });
 
   test('error when m3, r3, or t2 instance types are specified with encryption at rest enabled', () => {

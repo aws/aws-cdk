@@ -1525,8 +1525,8 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
     // Validate against instance type restrictions, per
     // https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-instance-types.html
-    if (isSomeInstanceType('r3', 'i3', 'r6gd', 'im4gn') && ebsEnabled) {
-      throw new Error('R3, I3, R6GD and IM4GN instance types do not support EBS storage volumes.');
+    if (isSomeInstanceType('i3', 'r6gd', 'im4gn') && ebsEnabled) {
+      throw new Error('I3, R6GD and IM4GN instance types do not support EBS storage volumes.');
     }
 
     if (isSomeInstanceType('m3', 'r3', 't2') && encryptionAtRestEnabled) {
