@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ab212011785d32ea6de009fda91d48cf0cd3411ffebcdd7a6b62ccd841c00906.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4ead45111870c9c1adb03a0aba3c5d2de7b2102d0e62479767984e93f983ebe3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -106,6 +106,24 @@
             "data": "PYTHON310functionName"
           }
         ],
+        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_12/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PYTHON312ServiceRoleBEB03378"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_12/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PYTHON3127B62731D"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_12-functionName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PYTHON312functionName"
+          }
+        ],
         "/aws-cdk-lambda-runtime-inlinecode/NODEJS_14_X/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -158,24 +176,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "NODEJS18XfunctionName"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_20_X/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "NODEJS20XServiceRole188A4E38"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_20_X/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "NODEJS20X70A25ADE"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_20_X-functionName": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "NODEJS20XfunctionName"
           }
         ],
         "/aws-cdk-lambda-runtime-inlinecode/BootstrapVersion": [
