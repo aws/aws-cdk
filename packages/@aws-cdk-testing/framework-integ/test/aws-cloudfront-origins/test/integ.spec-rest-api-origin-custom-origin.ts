@@ -9,45 +9,45 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-spec-rest-api-origin-custom-origin');
 
 const restApiSwaggerDefinition = {
-  "openapi": "3.0.0",
-  "info": {
-    "title": "Example API",
-    "description": "Example API for testing",
-    "version": "0.1.9"
+  openapi: '3.0.0',
+  info: {
+    title: 'Example API',
+    description: 'Example API for testing',
+    version: '0.1.9',
   },
-  "servers": [
+  servers: [
     {
-      "url": "http://api.example.com/v1",
-      "description": "Production endpoint"
+      url: 'http://api.example.com/v1',
+      description: 'Production endpoint',
     },
     {
-      "url": "http://staging-api.example.com",
-      "description": "Staging endpoint"
-    }
+      url: 'http://staging-api.example.com',
+      description: 'Staging endpoint',
+    },
   ],
-  "paths": {
-    "/users": {
-      "get": {
-        "summary": "Returns a list of users.",
-        "description": "Optional extended description in CommonMark or HTML.",
-        "responses": {
-          "200": {
-            "description": "A JSON array of user names",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "string';"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+  paths: {
+    '/users': {
+      get: {
+        summary: 'Returns a list of users.',
+        description: 'Optional extended description in CommonMark or HTML.',
+        responses: {
+          200: {
+            description: 'A JSON array of user names',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'array',
+                  items: {
+                    type: "string';",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
 };
 
 const api = new apigateway.SpecRestApi(stack, 'RestApi', {
