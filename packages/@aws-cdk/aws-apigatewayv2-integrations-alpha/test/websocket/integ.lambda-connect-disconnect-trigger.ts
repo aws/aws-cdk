@@ -1,5 +1,6 @@
 import { WebSocketApi, WebSocketStage } from '@aws-cdk/aws-apigatewayv2-alpha';
 import * as cdk from 'aws-cdk-lib';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { WebSocketLambdaIntegration } from '../../lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as path from 'path';
@@ -74,3 +75,5 @@ new WebSocketStage(
     autoDeploy: true,
   },
 );
+
+new IntegTest(app, 'Integ', { testCases: [stack] });
