@@ -9,42 +9,48 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-spec-rest-api-origin-custom-origin');
 
 const restApiSwaggerDefinition = {
-  openapi: '3.0.0',
+  openapi: '3.0.2',
   info: {
-    title: 'Example API',
-    description: 'Example API for testing',
-    version: '0.1.9',
+    version: '1.0.0',
+    title: 'Test API for CDK',
   },
-  servers: [
-    {
-      url: 'http://api.example.com/v1',
-      description: 'Production endpoint',
-    },
-    {
-      url: 'http://staging-api.example.com',
-      description: 'Staging endpoint',
-    },
-  ],
   paths: {
-    '/users': {
+    '/pets': {
       get: {
-        summary: 'Returns a list of users.',
-        description: 'Optional extended description in CommonMark or HTML.',
-        responses: {
+        'summary': 'Test Method',
+        'operationId': 'testMethod',
+        'responses': {
           200: {
-            description: 'A JSON array of user names',
+            description: 'A paged array of pets',
             content: {
               'application/json': {
                 schema: {
-                  type: 'array',
-                  items: {
-                    type: "string';",
-                  },
+                  $ref: '#/components/schemas/Empty',
                 },
               },
             },
           },
         },
+        'x-amazon-apigateway-integration': {
+          responses: {
+            default: {
+              statusCode: '200',
+            },
+          },
+          requestTemplates: {
+            'application/json': '{"statusCode": 200}',
+          },
+          passthroughBehavior: 'when_no_match',
+          type: 'mock',
+        },
+      },
+    },
+  },
+  components: {
+    schemas: {
+      Empty: {
+        title: 'Empty Schema',
+        type: 'object',
       },
     },
   },
