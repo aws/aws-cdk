@@ -379,29 +379,29 @@ describe('restapi', () => {
     // THEN
     expect(stack.resolve(api.url)).toEqual({
       'Fn::Join':
-    ['',
-      ['https://',
-        { Ref: 'apiC8550315' },
-        '.execute-api.',
-        { Ref: 'AWS::Region' },
-        '.',
-        { Ref: 'AWS::URLSuffix' },
-        '/',
-        { Ref: 'apiDeploymentStageprod896C8101' },
-        '/']],
+        ['',
+          ['https://',
+            { Ref: 'apiC8550315' },
+            '.execute-api.',
+            { Ref: 'AWS::Region' },
+            '.',
+            { Ref: 'AWS::URLSuffix' },
+            '/',
+            { Ref: 'apiDeploymentStageprod896C8101' },
+            '/']],
     });
     expect(stack.resolve(api.urlForPath('/foo/bar'))).toEqual({
       'Fn::Join':
-    ['',
-      ['https://',
-        { Ref: 'apiC8550315' },
-        '.execute-api.',
-        { Ref: 'AWS::Region' },
-        '.',
-        { Ref: 'AWS::URLSuffix' },
-        '/',
-        { Ref: 'apiDeploymentStageprod896C8101' },
-        '/foo/bar']],
+        ['',
+          ['https://',
+            { Ref: 'apiC8550315' },
+            '.execute-api.',
+            { Ref: 'AWS::Region' },
+            '.',
+            { Ref: 'AWS::URLSuffix' },
+            '/',
+            { Ref: 'apiDeploymentStageprod896C8101' },
+            '/foo/bar']],
     });
   });
 
@@ -438,16 +438,16 @@ describe('restapi', () => {
     // THEN
     expect(stack.resolve(arn)).toEqual({
       'Fn::Join':
-    ['',
-      ['arn:',
-        { Ref: 'AWS::Partition' },
-        ':execute-api:',
-        { Ref: 'AWS::Region' },
-        ':',
-        { Ref: 'AWS::AccountId' },
-        ':',
-        { Ref: 'apiC8550315' },
-        '/stage/method/path']],
+        ['',
+          ['arn:',
+            { Ref: 'AWS::Partition' },
+            ':execute-api:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':',
+            { Ref: 'apiC8550315' },
+            '/stage/method/path']],
     });
   });
 
@@ -481,18 +481,18 @@ describe('restapi', () => {
     // THEN
     expect(stack.resolve(method.methodArn)).toEqual({
       'Fn::Join':
-    ['',
-      ['arn:',
-        { Ref: 'AWS::Partition' },
-        ':execute-api:',
-        { Ref: 'AWS::Region' },
-        ':',
-        { Ref: 'AWS::AccountId' },
-        ':',
-        { Ref: 'apiC8550315' },
-        '/',
-        { Ref: 'apiDeploymentStageprod896C8101' },
-        '/*/']],
+        ['',
+          ['arn:',
+            { Ref: 'AWS::Partition' },
+            ':execute-api:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':',
+            { Ref: 'apiC8550315' },
+            '/',
+            { Ref: 'apiDeploymentStageprod896C8101' },
+            '/*/']],
     });
   });
 
@@ -1384,6 +1384,57 @@ describe('SpecRestApi', () => {
       Template.fromStack(stack).hasResourceProperties(
         'AWS::ApiGateway::RestApi', {});
     });
+  });
+
+  test('check if url property exists for a SpecRestApi', () => {
+    // GIVEN
+    const stack = new Stack();
+    const restApiSwaggerDefinition = {
+      "openapi": "3.0.0",
+      "info": {
+        "title": "Example API",
+        "description": "Example API for testing",
+        "version": "0.1.9"
+      },
+      "servers": [
+        {
+          "url": "http://api.example.com/v1",
+          "description": "Production endpoint"
+        },
+        {
+          "url": "http://staging-api.example.com",
+          "description": "Staging endpoint"
+        }
+      ],
+      "paths": {
+        "/users": {
+          "get": {
+            "summary": "Returns a list of users.",
+            "description": "Optional extended description in CommonMark or HTML.",
+            "responses": {
+              "200": {
+                "description": "A JSON array of user names",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "array",
+                      "items": {
+                        "type": "string';"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    };
+    const api = new apigw.SpecRestApi(stack, 'my-api', {
+      apiDefinition: apigw.ApiDefinition.fromInline(restApiSwaggerDefinition),
+    });
+    // THEN
+    expect(api.url);
   });
 
   test('can override "apiKeyRequired" set in "defaultMethodOptions" at the resource level', () => {
