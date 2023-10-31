@@ -26,7 +26,64 @@ test('resource interface when primaryIdentifier is a property', () => {
     properties: {
       Id: {
         type: { type: 'string' },
+        required: true,
         documentation: 'The identifier of the resource',
+      },
+    },
+    cloudFormationType: 'AWS::Some::Resource',
+  });
+  db.link('hasResource', service, resource);
+
+  // THEN
+  const foundResource = db.lookup('resource', 'cloudFormationType', 'equals', 'AWS::Some::Resource').only();
+
+  const ast = AstBuilder.forResource(foundResource, { db });
+
+  const rendered = renderer.render(ast.module);
+
+  expect(rendered).toMatchSnapshot();
+});
+
+test('resource with optional primary identifier gets property from ref', () => {
+  // GIVEN
+  const resource = db.allocate('resource', {
+    name: 'Resource',
+    primaryIdentifier: ['Id'],
+    attributes: {},
+    properties: {
+      Id: {
+        type: { type: 'string' },
+        documentation: 'The identifier of the resource',
+      },
+    },
+    cloudFormationType: 'AWS::Some::Resource',
+  });
+  db.link('hasResource', service, resource);
+
+  // THEN
+  const foundResource = db.lookup('resource', 'cloudFormationType', 'equals', 'AWS::Some::Resource').only();
+
+  const ast = AstBuilder.forResource(foundResource, { db });
+
+  const rendered = renderer.render(ast.module);
+
+  expect(rendered).toMatchSnapshot();
+});
+
+test('resource with multiple primaryIdentifiers as properties are dropped entirely', () => {
+  // GIVEN
+  const resource = db.allocate('resource', {
+    name: 'Resource',
+    primaryIdentifier: ['Id', 'AnotherId'],
+    attributes: {},
+    properties: {
+      Id: {
+        type: { type: 'string' },
+        documentation: 'The identifier of the resource',
+      },
+      AnotherId: {
+        type: { type: 'string' },
+        documentation: 'Another identifier of the resource',
       },
     },
     cloudFormationType: 'AWS::Some::Resource',
