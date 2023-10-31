@@ -62,7 +62,7 @@ Flags come in three types:
 | [@aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier](#aws-cdkaws-appsyncusearnforsourceapiassociationidentifier) | When enabled, will always use the arn for identifiers for CfnSourceApiAssociation in the GraphqlApi construct rather than id. | 2.97.0 | (fix) |
 | [@aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters](#aws-cdkaws-rdsauroraclusterchangescopeofinstanceparametergroupwitheachparameters) | When enabled, a scope of InstanceParameterGroup for AuroraClusterInstance with each parameters will change. | 2.97.0 | (fix) |
 | [@aws-cdk/aws-rds:preventRenderingDeprecatedCredentials](#aws-cdkaws-rdspreventrenderingdeprecatedcredentials) | When enabled, creating an RDS database cluster from a snapshot will only render credentials for snapshot credentials. | 2.98.0 | (fix) |
-| [@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource](#aws-cdkaws-codepipeline-actionsusenewdefaultbranchforcodecommitsource) | When enabled, the CodeCommit source action is using the default branch name 'main'. | 2.104.0 | (fix) |
+| [@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource](#aws-cdkaws-codepipeline-actionsusenewdefaultbranchforcodecommitsource) | When enabled, the CodeCommit source action is using the default branch name 'main'. | 2.103.1 | (fix) |
 
 <!-- END table -->
 
@@ -1190,7 +1190,7 @@ However, with the activation of this feature flag, the default branch is updated
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| 2.104.0 | `false` | `true` |
+| 2.103.1 | `false` | `true` |
 
 
 <!-- END details -->
