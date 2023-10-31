@@ -212,6 +212,28 @@ describe('vpn', () => {
 
   });
 
+  test('does not fail when specifying two tunnels but no tunnelInsideCidr', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    expect(() => new Vpc(stack, 'VpcNetwork', {
+      vpnConnections: {
+        VpnConnection: {
+          ip: '192.0.2.1',
+          tunnelOptions: [
+            {
+              preSharedKeySecret: SecretValue.unsafePlainText('secretkey1234'),
+            },
+            {
+              preSharedKeySecret: SecretValue.unsafePlainText('secretkey5678'),
+            },
+          ],
+        },
+      },
+    })).not.toThrow();
+
+  });
+
   testDeprecated('fails when specifying an invalid pre-shared key', () => {
     // GIVEN
     const stack = new Stack();
