@@ -18,16 +18,16 @@ function main(oldPackage: string, newPackage: string) {
   const oldFacts = definedFacts(oldPkg.Fact);
   const newFacts = definedFacts(newPkg.Fact);
 
-  const disappearedFacts = oldFacts.filter((oldFact) => !newFacts.some((newFact) => factEq(oldFact, newFact)));
+  const disappearedFacts = oldFacts
+    .filter((oldFact) => !newFacts.some((newFact) => factEq(oldFact, newFact)))
+    .map((fact) => ({ fact, key: `${fact[0]}:${fact[1]}` }))
+    .filter(({ key }) => !allowedBreaks.has(key));
+
   if (disappearedFacts.length > 0) {
     console.log('Facts have disappeared from region fact database (add to allowed-breaking-changes.txt to ignore):');
-    for (const [region, name] of disappearedFacts) {
-      const key = `${region}:${name}`;
-
-      if (!allowedBreaks.has(key)) {
-        console.log(`- ${key}`);
-        process.exitCode = 1;
-      }
+    for (const { key } of disappearedFacts) {
+      console.log(`- ${key}`);
+      process.exitCode = 1;
     }
   }
 }
