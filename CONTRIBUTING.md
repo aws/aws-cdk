@@ -210,7 +210,7 @@ The `dist/` folder within each module contains the packaged up language artifact
 The AWS CDK provides a VS Code Dev Container with all dependencies pre-installed.
 Please follow the [setup instructions](https://code.visualstudio.com/docs/remote/containers-tutorial) to configure VS Code.
 
-With VS Code setup, you will be prompted to open the `aws-cdk` repo in a Dev Container, or you can choos "Dev Containers: Reopen in Container" from the VS Code command palette.
+With VS Code setup, you will be prompted to open the `aws-cdk` repo in a Dev Container, or you can choose "Dev Containers: Reopen in Container" from the VS Code command palette.
 
 ### Gitpod
 
@@ -1125,6 +1125,20 @@ Experimental packages are used to develop new constructs and experiment with the
 them as stable and including them within `aws-cdk-lib`. Once they are included in `aws-cdk-lib`, no
 more breaking api changes can be made.
 
+When you want to build an alpha package (for example, `some-package-alpha`), you can execute the following in the root of the repository to build it and it's dependencies.
+
+```
+$ npx lerna run build --scope=@aws-cdk/some-package-alpha
+```
+
+At this point, you can run build and test the alpha package.
+
+```
+$ cd packages/@aws-cdk/some-package-alpha
+$ yarn build
+$ yarn test
+```
+
 ## Changing Cloud Assembly Schema
 
 If you plan on making changes to the `cloud-assembly-schema` package, make sure you familiarize yourself with
@@ -1231,7 +1245,7 @@ restart the TypeScript compiler.
 
 Hit F1, type `> TypeScript: Restart TS Server`.
 
-#### I'm doing refactorings between packages and compile times are killing me/I need to switch between differently-verionsed branches a lot and rebuilds because of version errors are taking too long.
+#### I'm doing refactorings between packages and compile times are killing me/I need to switch between differently-versioned branches a lot and rebuilds because of version errors are taking too long.
 
 Our build steps for each package do a couple of things, such as generating code and generating JSII assemblies. If
 you've done a full build at least once to generate all source files, you can do a quicker TypeScript-only rebuild of the
