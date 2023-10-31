@@ -57,7 +57,7 @@
                               "referenceUpdated"
                             ],
                             "referenceName": [
-                              "master"
+                              "main"
                             ]
                           }
                         },
@@ -341,7 +341,7 @@
                                   "Name"
                                 ]
                               },
-                              "BranchName": "master",
+                              "BranchName": "main",
                               "PollForSourceChanges": false
                             },
                             "runOrder": 1,

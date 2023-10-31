@@ -269,7 +269,7 @@
            "Name"
           ]
          },
-         "BranchName": "master",
+         "BranchName": "main",
          "PollForSourceChanges": true
         },
         "Name": "CodeCommitSource",

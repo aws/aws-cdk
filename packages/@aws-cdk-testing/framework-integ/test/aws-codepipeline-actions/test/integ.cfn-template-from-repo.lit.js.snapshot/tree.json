@@ -437,7 +437,7 @@
                                   "Name"
                                 ]
                               },
-                              "BranchName": "master",
+                              "BranchName": "main",
                               "PollForSourceChanges": true
                             },
                             "runOrder": 1,

@@ -557,7 +557,7 @@
                                   "Name"
                                 ]
                               },
-                              "BranchName": "master",
+                              "BranchName": "main",
                               "PollForSourceChanges": false
                             },
                             "runOrder": 1,
@@ -588,7 +588,7 @@
                                   "Name"
                                 ]
                               },
-                              "BranchName": "master",
+                              "BranchName": "main",
                               "PollForSourceChanges": false
                             },
                             "runOrder": 1,
@@ -1801,7 +1801,7 @@
                               "referenceUpdated"
                             ],
                             "referenceName": [
-                              "master"
+                              "main"
                             ]
                           }
                         },
@@ -1908,7 +1908,7 @@
                               "referenceUpdated"
                             ],
                             "referenceName": [
-                              "master"
+                              "main"
                             ]
                           }
                         },
