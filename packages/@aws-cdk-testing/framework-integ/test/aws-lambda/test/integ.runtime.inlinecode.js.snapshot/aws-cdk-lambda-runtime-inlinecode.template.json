@@ -200,6 +200,56 @@
     "PYTHON310ServiceRole65985CC8"
    ]
   },
+  "PYTHON312ServiceRoleBEB03378": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "PYTHON3127B62731D": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "def handler(event, context):\n  return \"success\""
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "PYTHON312ServiceRoleBEB03378",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.12"
+   },
+   "DependsOn": [
+    "PYTHON312ServiceRoleBEB03378"
+   ]
+  },
   "NODEJS14XServiceRole4523ECDB": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -420,6 +470,11 @@
   "PYTHON310functionName": {
    "Value": {
     "Ref": "PYTHON310431C418B"
+   }
+  },
+  "PYTHON312functionName": {
+   "Value": {
+    "Ref": "PYTHON3127B62731D"
    }
   },
   "NODEJS14XfunctionName": {
