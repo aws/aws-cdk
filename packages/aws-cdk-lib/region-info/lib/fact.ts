@@ -25,7 +25,7 @@ export class Fact {
   /**
    * Return all pairs of (region, factName) that are defined
    */
-  public static definedFacts(): Array<[string, string]> {
+  public static definedFacts(): Array<string[]> {
     return Object.entries(this.database)
       .flatMap(([regionName, regionFacts]) =>
         Object.keys(regionFacts).map((factName) =>
