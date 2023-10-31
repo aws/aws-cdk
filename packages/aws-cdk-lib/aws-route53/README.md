@@ -182,7 +182,7 @@ new route53.ARecord(this, 'ARecord', {
 ### Cross Account Zone Delegation
 
 If you want to have your root domain hosted zone in one account and your subdomain hosted
-zone in a diferent one, you can use `CrossAccountZoneDelegationRecord` to set up delegation
+zone in a different one, you can use `CrossAccountZoneDelegationRecord` to set up delegation
 between them.
 
 In the account containing the parent hosted zone:
