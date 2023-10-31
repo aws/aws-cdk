@@ -14,6 +14,25 @@ export class Fact {
   }
 
   /**
+   * Returns the list of names of registered facts.
+   *
+   * All facts will be present in at least one region.
+   */
+  public static get names(): string[] {
+    return [...new Set(Object.values(this.database).flatMap(regionFacts => Object.keys(regionFacts)))];
+  }
+
+  /**
+   * Return all pairs of (region, factName) that are defined
+   */
+  public static definedFacts(): Array<string[]> {
+    return Object.entries(this.database)
+      .flatMap(([regionName, regionFacts]) =>
+        Object.keys(regionFacts).map((factName) =>
+          [regionName, factName] satisfies [string, string]));
+  }
+
+  /**
    * Retrieves a fact from this Fact database.
    *
    * @param region the name of the region (e.g: `us-east-1`)
