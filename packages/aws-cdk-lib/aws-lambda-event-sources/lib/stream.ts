@@ -1,5 +1,5 @@
 import * as lambda from '../../aws-lambda';
-import { S3OnFailureDestination } from './s3-onfailuredestination';
+import { S3OnFailureDestination } from './s3-ofd';
 import { Duration } from '../../core';
 
 /**
