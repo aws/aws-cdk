@@ -6,7 +6,7 @@ import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
 import { sameEnvDimension } from './util';
 
 /**
- * Base properties for a Schedule Target
+ * Properties for a SQS Queue Target
  */
 export interface SqsSendMessageProps extends ScheduleTargetBaseProps {
   /**
