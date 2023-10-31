@@ -52,6 +52,7 @@ class TestStack extends Stack {
               contributorInsights: false,
             },
           },
+          tags: [{ key: 'USE2ReplicaTagKey', value: 'USE2ReplicaTagValue' }],
         },
         {
           region: 'us-west-2',
@@ -62,8 +63,10 @@ class TestStack extends Stack {
               readCapacity: Capacity.fixed(15),
             },
           },
+          tags: [{ key: 'USW2ReplicaTagKey', value: 'USW2ReplicaTagValue' }],
         },
       ],
+      tags: [{ key: 'primaryTableTagKey', value: 'primaryTableTagValue' }],
     });
   }
 }

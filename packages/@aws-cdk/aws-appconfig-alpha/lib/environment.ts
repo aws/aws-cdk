@@ -22,16 +22,22 @@ export interface EnvironmentAttributes {
 
   /**
    * The name of the environment.
+   *
+   * @default - None.
    */
   readonly name?: string;
 
   /**
    * The description of the environment.
+   *
+   * @default - None.
    */
   readonly description?: string;
 
   /**
    * The monitors for the environment.
+   *
+   * @default - None.
    */
   readonly monitors?: Monitor[];
 }
@@ -238,8 +244,10 @@ export class Environment extends EnvironmentBase {
       description: this.description,
       monitors: this.monitors?.map((monitor, index) => {
         return {
-          alarmArn: monitor.alarm.alarmArn,
-          alarmRoleArn: monitor.alarmRole?.roleArn || this.createAlarmRole(monitor.alarm.alarmArn, index).roleArn,
+          alarmArn: monitor.alarmArn,
+          ...(monitor.monitorType === MonitorType.CLOUDWATCH
+            ? { alarmRoleArn: monitor.alarmRoleArn || this.createAlarmRole(monitor.alarmArn, index).roleArn }
+            : { alarmRoleArn: monitor.alarmRoleArn }),
         };
       }),
     });
@@ -276,21 +284,57 @@ export class Environment extends EnvironmentBase {
   }
 }
 
+export enum MonitorType {
+  CLOUDWATCH,
+  CFN_MONITORS_PROPERTY,
+}
+
 /**
  * Defines monitors that will be associated with an AWS AppConfig environment.
  */
-export interface Monitor {
+export abstract class Monitor {
   /**
-   * The Amazon CloudWatch alarm.
+   * Creates a Monitor from a CloudWatch alarm. If the alarm role is not specified, a role will
+   * be generated.
+   *
+   * @param alarm The Amazon CloudWatch alarm.
+   * @param alarmRole The IAM role for AWS AppConfig to view the alarm state.
    */
-  readonly alarm: cloudwatch.IAlarm;
+  public static fromCloudWatchAlarm(alarm: cloudwatch.IAlarm, alarmRole?: iam.IRole): Monitor {
+    return {
+      alarmArn: alarm.alarmArn,
+      alarmRoleArn: alarmRole?.roleArn,
+      monitorType: MonitorType.CLOUDWATCH,
+    };
+  }
 
   /**
-   * The IAM role for AWS AppConfig to view the alarm state.
+   * Creates a Monitor from a CfnEnvironment.MonitorsProperty construct.
    *
-   * @default - A role is generated.
+   * @param monitorsProperty The monitors property.
    */
-  readonly alarmRole?: iam.IRole;
+  public static fromCfnMonitorsProperty(monitorsProperty: CfnEnvironment.MonitorsProperty): Monitor {
+    return {
+      alarmArn: monitorsProperty.alarmArn!,
+      alarmRoleArn: monitorsProperty.alarmRoleArn,
+      monitorType: MonitorType.CFN_MONITORS_PROPERTY,
+    };
+  }
+
+  /**
+   * The alarm ARN for AWS AppConfig to monitor.
+   */
+  public abstract readonly alarmArn: string;
+
+  /**
+   * The type of monitor.
+   */
+  public abstract readonly monitorType: MonitorType;
+
+  /**
+   * The IAM role ARN for AWS AppConfig to view the alarm state.
+   */
+  public abstract readonly alarmRoleArn?: string;
 }
 
 export interface IEnvironment extends IResource {
