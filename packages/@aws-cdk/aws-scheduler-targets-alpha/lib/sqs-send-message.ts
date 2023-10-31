@@ -26,6 +26,18 @@ export class SqsSendMessage extends ScheduleTargetBase implements IScheduleTarge
     private readonly props: SqsSendMessageProps,
   ) {
     super(props, queue.queueArn);
+
+    if (props.messageGroupId !== undefined) {
+      if (props.messageGroupId.length < 1 || props.messageGroupId.length > 128 ) {
+        throw new Error(`messageGroupId length must be between 1 and 128, got ${props.messageGroupId.length}`);
+      }
+      if (!queue.fifo) {
+        throw new Error('queue must be FIFO queue if messageGroupId is specified');
+      }
+      if (!(queue.node.defaultChild as sqs.CfnQueue).contentBasedDeduplication) {
+        throw new Error('contentBasedDeduplication must be true if messageGroupId is specified');
+      }
+    }
   }
 
   protected addTargetActionToRole(schedule: ISchedule, role: IRole): void {
@@ -41,7 +53,7 @@ export class SqsSendMessage extends ScheduleTargetBase implements IScheduleTarge
       throw new Error(`Cannot grant permission to execution role in account ${this.props.role.env.account} to invoke target ${Names.nodeUniqueId(this.queue.node)} in account ${this.queue.env.account}. Both the target and the execution role must be in the same account.`);
     }
 
-    this.queue.grantSendMessages(role);
+    this.queue.grant(role, 'sqs:SendMessage');
   }
 
   protected bindBaseTargetConfig(_schedule: ISchedule): ScheduleTargetConfig {

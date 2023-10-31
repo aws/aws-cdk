@@ -16,6 +16,7 @@ describe('schedule target', () => {
     stack = new Stack(app, 'Stack', { env: { region: 'us-east-1', account: '123456789012' } });
     queue = new sqs.Queue(stack, 'MyQueue', {
       fifo: true,
+      contentBasedDeduplication: true,
     });
   });
 
@@ -43,7 +44,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['sqs:SendMessage', 'sqs:GetQueueAttributes', 'sqs:GetQueueUrl'],
+            Action: 'sqs:SendMessage',
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
@@ -101,7 +102,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['sqs:SendMessage', 'sqs:GetQueueAttributes', 'sqs:GetQueueUrl'],
+            Action: 'sqs:SendMessage',
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
@@ -146,7 +147,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['sqs:SendMessage', 'sqs:GetQueueAttributes', 'sqs:GetQueueUrl'],
+            Action: 'sqs:SendMessage',
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
@@ -182,7 +183,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['sqs:SendMessage', 'sqs:GetQueueAttributes', 'sqs:GetQueueUrl'],
+            Action: 'sqs:SendMessage',
             Effect: 'Allow',
             Resource: 'arn:aws:sqs:us-east-1:123456789012:somequeue',
           },
@@ -220,7 +221,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['sqs:SendMessage', 'sqs:GetQueueAttributes', 'sqs:GetQueueUrl'],
+            Action: 'sqs:SendMessage',
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
@@ -259,7 +260,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['sqs:SendMessage', 'sqs:GetQueueAttributes', 'sqs:GetQueueUrl'],
+            Action: 'sqs:SendMessage',
             Effect: 'Allow',
             Resource: 'arn:aws:sqs:us-east-1:123456789012:somequeue',
           },
@@ -501,4 +502,38 @@ describe('schedule target', () => {
     });
   });
 
+  test('throws when messageGroupId length is less than 1', () => {
+    expect(() =>
+      new SqsSendMessage(queue, {
+        messageGroupId: '',
+      })).toThrow(/messageGroupId length must be between 1 and 128, got 0/);
+  });
+
+  test('throws when messageGroupId length is greater than 128', () => {
+    expect(() =>
+      new SqsSendMessage(queue, {
+        messageGroupId: 'a'.repeat(129),
+      })).toThrow(/messageGroupId length must be between 1 and 128, got 129/);
+  });
+
+  test('throws when queue is not FIFO queue if messageGroupId is specified', () => {
+    const wrongQueue = new sqs.Queue(stack, 'WrongQueue', {
+      fifo: false,
+    });
+    expect(() =>
+      new SqsSendMessage(wrongQueue, {
+        messageGroupId: 'id',
+      })).toThrow(/queue must be FIFO queue if messageGroupId is specified/);
+  });
+
+  test('throws when contentBasedDeduplication is not true if messageGroupId is specified', () => {
+    const wrongQueue = new sqs.Queue(stack, 'WrongQueue', {
+      fifo: true,
+      contentBasedDeduplication: false,
+    });
+    expect(() =>
+      new SqsSendMessage(wrongQueue, {
+        messageGroupId: 'id',
+      })).toThrow(/contentBasedDeduplication must be true if messageGroupId is specified/);
+  });
 });
