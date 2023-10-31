@@ -40,6 +40,9 @@ jobs:
           token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
+      - name: Test output
+        run: |
+          echo "Testing"
       - name: Submit to test-pipeline
         run: |
           git config --global user.name 'aws-cdk-automation'
