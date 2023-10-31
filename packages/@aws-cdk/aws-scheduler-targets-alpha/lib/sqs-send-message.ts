@@ -1,4 +1,4 @@
-import { ISchedule, IScheduleTarget } from '@aws-cdk/aws-scheduler-alpha';
+import { ISchedule, IScheduleTarget, ScheduleTargetConfig } from '@aws-cdk/aws-scheduler-alpha';
 import { Names } from 'aws-cdk-lib';
 import { IRole } from 'aws-cdk-lib/aws-iam';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
@@ -6,12 +6,24 @@ import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
 import { sameEnvDimension } from './util';
 
 /**
+ * Base properties for a Schedule Target
+ */
+export interface SqsSendMessageProps extends ScheduleTargetBaseProps {
+  /**
+   * The FIFO message group ID to use as the target.
+   *
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-scheduler-schedule-sqsparameters.html#cfn-scheduler-schedule-sqsparameters-messagegroupid
+   */
+  readonly messageGroupId?: string;
+}
+
+/**
  * Use an Amazon SQS Queue as a target for AWS EventBridge Scheduler.
  */
 export class SqsSendMessage extends ScheduleTargetBase implements IScheduleTarget {
   constructor(
     private readonly queue: sqs.IQueue,
-    private readonly props: ScheduleTargetBaseProps,
+    private readonly props: SqsSendMessageProps,
   ) {
     super(props, queue.queueArn);
   }
@@ -32,22 +44,12 @@ export class SqsSendMessage extends ScheduleTargetBase implements IScheduleTarge
     this.queue.grantSendMessages(role);
   }
 
-  // protected bindBaseTargetConfig(_schedule: ISchedule): ScheduleTargetConfig {
-  //   const role: iam.IRole = this.baseProps.role ?? this.singletonScheduleRole(_schedule, this.targetArn);
-  //   this.addTargetActionToRole(_schedule, role);
-
-  //   if (this.baseProps.deadLetterQueue) {
-  //     this.addToDeadLetterQueueResourcePolicy(_schedule, this.baseProps.deadLetterQueue);
-  //   }
-
-  //   return {
-  //     arn: this.targetArn,
-  //     role: role,
-  //     deadLetterConfig: this.baseProps.deadLetterQueue ? {
-  //       arn: this.baseProps.deadLetterQueue.queueArn,
-  //     } : undefined,
-  //     retryPolicy: this.renderRetryPolicy(this.baseProps.maxEventAge, this.baseProps.retryAttempts),
-  //     input: this.baseProps.input,
-  //   };
-  // }
+  protected bindBaseTargetConfig(_schedule: ISchedule): ScheduleTargetConfig {
+    return {
+      ...super.bindBaseTargetConfig(_schedule),
+      sqsParameters: {
+        messageGroupId: this.props.messageGroupId,
+      },
+    };
+  }
 }
