@@ -492,7 +492,7 @@
                               {
                                 "Ref": "WebSocketAPIDA75128A"
                               },
-                              "/*/*$connect"
+                              "/*$connect"
                             ]
                           ]
                         }
@@ -626,7 +626,7 @@
                               {
                                 "Ref": "WebSocketAPIDA75128A"
                               },
-                              "/*/*$disconnect"
+                              "/*$disconnect"
                             ]
                           ]
                         }

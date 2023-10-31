@@ -77,3 +77,5 @@ new WebSocketStage(
 );
 
 new IntegTest(app, 'Integ', { testCases: [stack] });
+
+app.synth();
