@@ -472,4 +472,31 @@ describe('schedule target', () => {
         target: queueTarget,
       })).toThrow(/Number of retry attempts should be less or equal than 185/);
   });
+
+  test('add message group id for target config', () => {
+    const queueTarget = new SqsSendMessage(queue, {
+      messageGroupId: 'messageGroupId',
+    });
+
+    new Schedule(stack, 'MyScheduleDummy', {
+      schedule: expr,
+      target: queueTarget,
+    });
+
+    Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
+      Properties: {
+        Target: {
+          Arn: {
+            'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
+          },
+          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget1441a743A31888', 'Arn'] },
+          RetryPolicy: {},
+          SqsParameters: {
+            MessageGroupId: 'messageGroupId',
+          },
+        },
+      },
+    });
+  });
+
 });
