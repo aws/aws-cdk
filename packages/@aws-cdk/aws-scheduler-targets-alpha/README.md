@@ -112,8 +112,5 @@ The code snippet below creates an event rule with a SQS Queue as a target
 called every hour by Event Bridge Scheduler with a custom payload.
 
 ```ts
-import * as sqs from 'aws-cdk-lib/aws-sqs';
-import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
-
 const payload = 'test';
 ```
