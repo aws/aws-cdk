@@ -17,10 +17,28 @@ import { DomainMappingOptions } from '../common/stage';
 export interface IHttpApi extends IApi {
   /**
    * The identifier of this API Gateway HTTP API.
+   *
    * @attribute
    * @deprecated - use apiId instead
    */
   readonly httpApiId: string;
+
+  /**
+   * Default Authorizer applied to all routes in the gateway.
+   *
+   * @attribute
+   * @default - no default authorizer
+   */
+  readonly defaultAuthorizer?: IHttpRouteAuthorizer;
+
+  /**
+   * Default OIDC scopes attached to all routes in the gateway, unless explicitly configured on the route.
+   * The scopes are used with a COGNITO_USER_POOLS authorizer to authorize the method invocation.
+   *
+   * @attribute
+   * @default - no default authorization scopes
+   */
+  readonly defaultAuthorizationScopes?: string[];
 
   /**
    * Metric for the number of client-side errors captured in a given period.
@@ -125,14 +143,15 @@ export interface HttpApiProps {
   readonly disableExecuteApiEndpoint?: boolean;
 
   /**
-   * Default Authorizer to applied to all routes in the gateway
+   * Default Authorizer applied to all routes in the gateway.
    *
-   * @default - No authorizer
+   * @default - no default authorizer
    */
   readonly defaultAuthorizer?: IHttpRouteAuthorizer;
 
   /**
    * Default OIDC scopes attached to all routes in the gateway, unless explicitly configured on the route.
+   * The scopes are used with a COGNITO_USER_POOLS authorizer to authorize the method invocation.
    *
    * @default - no default authorization scopes
    */
@@ -338,10 +357,18 @@ export class HttpApi extends HttpApiBase {
    */
   public readonly defaultStage: IHttpStage | undefined;
 
-  private readonly _apiEndpoint: string;
+  /**
+   * Default Authorizer applied to all routes in the gateway.
+   */
+  public readonly defaultAuthorizer?: IHttpRouteAuthorizer;
 
-  private readonly defaultAuthorizer?: IHttpRouteAuthorizer;
-  private readonly defaultAuthorizationScopes?: string[];
+  /**
+   * Default OIDC scopes attached to all routes in the gateway, unless explicitly configured on the route.
+   * The scopes are used with a COGNITO_USER_POOLS authorizer to authorize the method invocation.
+   */
+  public readonly defaultAuthorizationScopes?: string[];
+
+  private readonly _apiEndpoint: string;
 
   constructor(scope: Construct, id: string, props?: HttpApiProps) {
     super(scope, id);
