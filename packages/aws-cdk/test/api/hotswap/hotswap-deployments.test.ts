@@ -630,4 +630,70 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       });
     }
   });
+
+  test('can correctly reference Fn::ImportValue in hotswappable changes', async () => {
+    // GIVEN
+    setup.setCurrentCfnStackTemplate({
+      Resources: {
+        Func: {
+          Type: 'AWS::Lambda::Function',
+          Properties: {
+            Code: {
+              S3Bucket: 'current-bucket',
+              S3Key: 'old-key',
+            },
+            FunctionName: 'aws-my-function',
+          },
+          Metadata: {
+            'aws:asset:path': 'new-path',
+          },
+        },
+      },
+    });
+    const cdkStackArtifact = setup.cdkStackArtifactOf({
+      template: {
+        Resources: {
+          Func: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              Code: {
+                S3Bucket: 'current-bucket',
+                S3Key: {
+                  'Fn::ImportValue': 'test-import',
+                },
+              },
+              FunctionName: 'aws-my-function',
+            },
+            Metadata: {
+              'aws:asset:path': 'new-path',
+            },
+          },
+        },
+      },
+    });
+
+    const listExports = jest.fn().mockReturnValue({
+      Exports: [
+        {
+          ExportingStackId: 'test-exporting-stack-id',
+          Name: 'test-import',
+          Value: 'new-key',
+        },
+      ],
+    });
+    hotswapMockSdkProvider.mockSdkProvider.stubCloudFormation({
+      listExports,
+    });
+
+    // WHEN
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+
+    // THEN
+    expect(deployStackResult).not.toBeUndefined();
+    expect(mockUpdateLambdaCode).toHaveBeenCalledWith({
+      FunctionName: 'aws-my-function',
+      S3Bucket: 'current-bucket',
+      S3Key: 'new-key',
+    });
+  });
 });
