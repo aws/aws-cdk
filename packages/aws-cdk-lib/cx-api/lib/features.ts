@@ -96,6 +96,7 @@ export const LAMBDA_NODEJS_USE_LATEST_RUNTIME = '@aws-cdk/aws-lambda-nodejs:useL
 export const RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS = '@aws-cdk/aws-rds:preventRenderingDeprecatedCredentials';
 export const AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS = '@aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters';
 export const APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION = '@aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier';
+export const CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME = '@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -960,6 +961,19 @@ export const FLAGS: Record<string, FlagInfo> = {
       database cluster from a snapshot.
     `,
     introducedIn: { v2: '2.98.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, the CodeCommit source action is using the default branch name \'main\'.',
+    detailsMd: `
+      When setting up a CodeCommit source action for the source stage of a pipeline, please note that the 
+      default branch is \'master\'.
+      However, with the activation of this feature flag, the default branch is updated to \'main\'.
+    `,
+    introducedIn: { v2: '2.103.1' },
     recommendedValue: true,
   },
 };
