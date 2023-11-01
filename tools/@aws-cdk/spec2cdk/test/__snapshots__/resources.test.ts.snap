@@ -76,7 +76,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IC
 
     cdk.requireProperty(props, "id", this);
 
-    this.attrId = props.id;
+    this.attrId = cdk.Token.asString(this.ref);
     this.id = props.id;
   }
 
@@ -811,7 +811,7 @@ export interface ICfnResource {
  * @stability external
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-resource.html
  */
-export class CfnResource extends cdk.CfnResource implements cdk.IInspectable {
+export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, ICfnResource {
   /**
    * The CloudFormation resource type name for this resource class.
    */
@@ -1103,7 +1103,15 @@ import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
  * @stability external
  */
 export interface ICfnResource {
+  /**
+   * The identifier of the resource.
+   */
+  readonly attrId?: string;
 
+  /**
+   * Another identifier of the resource.
+   */
+  readonly attrAnotherId?: string;
 }
 
 /**
@@ -1144,6 +1152,16 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IC
   /**
    * Another identifier of the resource.
    */
+  public attrAnotherId?: string;
+
+  /**
+   * The identifier of the resource.
+   */
+  public attrId?: string;
+
+  /**
+   * Another identifier of the resource.
+   */
   public anotherId?: string;
 
   /**
@@ -1162,6 +1180,8 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IC
       "properties": props
     });
 
+    this.attrAnotherId = cdk.Token.asString(cdk.Fn.select(1, cdk.Fn.split('|', this.ref)));
+    this.attrId = cdk.Token.asString(cdk.Fn.select(0, cdk.Fn.split('|', this.ref)));
     this.anotherId = props.anotherId;
     this.id = props.id;
   }
@@ -1331,7 +1351,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IC
       "properties": props
     });
 
-    this.attrId = (props.id ? props.id : cdk.Token.asString(this.getAtt("Ref", cdk.ResolutionTypeHint.STRING)));
+    this.attrId = cdk.Token.asString(this.ref);
     this.id = props.id;
   }
 

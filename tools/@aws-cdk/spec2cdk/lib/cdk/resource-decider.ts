@@ -13,6 +13,9 @@ export const HAS_25610 = false;
 // This convenience typewriter builder is used all over the place
 const $this = $E(expr.this_());
 
+// This convenience typewriter builder is used for cloudformation intrinsics
+const $Fn = $E(expr.directCode('cdk.Fn'));
+
 /**
  * Decide how properties get mapped between model types, Typescript types, and CloudFormation
  */
@@ -68,7 +71,9 @@ export class ResourceDecider {
   }
 
   private convertPrimaryIdentifier() {
-    for (const cfnName of this.resource.primaryIdentifier ?? []) {
+    if (this.resource.primaryIdentifier === undefined) { return; }
+    for (let i = 0; i < (this.resource.primaryIdentifier).length; i++) {
+      const cfnName = this.resource.primaryIdentifier[i];
       const att = this.findAttributeByName(attributePropertyName(cfnName));
       const prop = this.findPropertyByName(propertyNameFromCloudFormation(cfnName));
       if (att) {
@@ -78,16 +83,12 @@ export class ResourceDecider {
 
         // Build an attribute out of the property we're getting
         // Create initializer for new attribute, if possible
-        let initializer: ((props: Expression) => Expression) | undefined = undefined;
+        let initializer: Expression | undefined = undefined;
         if (propSpec.type === Type.STRING) { // handling only this case for now
-          const originalInitializer = prop.initializer;
-          if (propSpec.optional === false) {
-            initializer = originalInitializer;
-          } else if (this.resource.primaryIdentifier!.length === 1) {
-            initializer = (props: Expression) =>
-              expr.cond(originalInitializer(props),
-                originalInitializer(props),
-                CDK_CORE.tokenAsString($this.getAtt(expr.lit('Ref'), $T(CDK_CORE.ResolutionTypeHint).STRING)));
+          if (this.resource.primaryIdentifier!.length === 1) {
+            initializer = CDK_CORE.tokenAsString($this.ref);
+          } else {
+            initializer = CDK_CORE.tokenAsString($Fn.select(expr.directCode(i.toString()), $Fn.split(expr.directCode('\'|\''), $this.ref)));
           }
         }
 
@@ -105,11 +106,9 @@ export class ResourceDecider {
         };
 
         // Add the new attribute to the relevant places
-        // TODO: we probably want this to be attribute properties but initializers are different
-        this.classProperties.push({
+        this.classAttributeProperties.push({
           propertySpec: attrPropertySpec,
           initializer,
-          cfnValueToRender: {},
         });
 
         this.primaryIdentifier.push(attrPropertySpec);
