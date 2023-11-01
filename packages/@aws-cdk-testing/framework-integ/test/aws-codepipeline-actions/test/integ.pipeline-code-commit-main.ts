@@ -3,13 +3,12 @@ import * as codepipeline from 'aws-cdk-lib/aws-codepipeline';
 import * as cdk from 'aws-cdk-lib';
 import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
 import { CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME } from 'aws-cdk-lib/cx-api';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-const defaultBranchFeatureFlag = { [CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME]: false };
-const app = new cdk.App({
-  postCliContext: defaultBranchFeatureFlag,
-});
+const defaultBranchFeatureFlag = { [CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME]: true };
+const app = new cdk.App({ postCliContext: defaultBranchFeatureFlag });
 
-const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-codecommit');
+const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-codecommit-main');
 
 const repo = new codecommit.Repository(stack, 'MyRepo', {
   repositoryName: 'my-repo',
@@ -36,4 +35,6 @@ new codepipeline.Pipeline(stack, 'Pipeline', {
   ],
 });
 
-app.synth();
+new IntegTest(app, 'IntegTest', {
+  testCases: [stack],
+});
