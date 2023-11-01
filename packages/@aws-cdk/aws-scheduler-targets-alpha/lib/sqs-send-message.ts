@@ -12,7 +12,12 @@ export interface SqsSendMessageProps extends ScheduleTargetBaseProps {
   /**
    * The FIFO message group ID to use as the target.
    *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-scheduler-schedule-sqsparameters.html#cfn-scheduler-schedule-sqsparameters-messagegroupid
+   * This must be specified when the target is a FIFO queue. If you specify
+   * a FIFO queue as a target, the queue must have content-based deduplication enabled.
+   *
+   * A length of `messageGroupId` must be between 1 and 128.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-scheduler-schedule-sqsparameters.html#cfn-scheduler-schedule-sqsparameters-messagegroupid
    */
   readonly messageGroupId?: string;
 }

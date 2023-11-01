@@ -111,6 +111,24 @@ Use the `SqsSendMessage` target to send a message to SQS Queue.
 The code snippet below creates an event rule with a SQS Queue as a target
 called every hour by Event Bridge Scheduler with a custom payload.
 
+Contains the `messageGroupId` to use when the target is a FIFO queue. If you specify
+a FIFO queue as a target, the queue must have content-based deduplication enabled.
+
 ```ts
 const payload = 'test';
+const messageGroupId = 'id';
+const queue = new Queue(stack, 'MyQueue', {
+  fifo: true,
+  contentBasedDeduplication: true,
+});
+
+const target = new targets.SqsSendMessage(queue, {
+    input: scheduler.ScheduleTargetInput.fromText(payload),
+    messageGroupId,
+});
+
+const schedule = new Schedule(this, 'Schedule', {
+    schedule: ScheduleExpression.rate(Duration.minutes(1)),
+    target
+});
 ```
