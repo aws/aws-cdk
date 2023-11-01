@@ -123,14 +123,14 @@ export function InstanceTypeConfigPropertyToJson(property: EmrCreateCluster.Inst
 export function InstanceFleetProvisioningSpecificationsPropertyToJson(property: EmrCreateCluster.InstanceFleetProvisioningSpecificationsProperty) {
   return {
     OnDemandSpecification: {
-      AllocationStrategy: cdk.stringToCloudFormation(property.onDemandSpecification.allocationStrategy),
-      CapacityReservationOptions: cdk.objectToCloudFormation(property.onDemandSpecification.capacityReservationOptions),
+      AllocationStrategy: cdk.stringToCloudFormation(property.onDemandSpecification?.allocationStrategy),
+      CapacityReservationOptions: cdk.objectToCloudFormation(property.onDemandSpecification?.capacityReservationOptions),
     },
     SpotSpecification: {
-      AllocationStrategy: cdk.stringToCloudFormation(property.spotSpecification.allocationStrategy),
-      BlockDurationMinutes: cdk.numberToCloudFormation(property.spotSpecification.blockDurationMinutes),
-      TimeoutAction: cdk.stringToCloudFormation(property.spotSpecification.timeoutAction?.valueOf()),
-      TimeoutDurationMinutes: cdk.numberToCloudFormation(property.spotSpecification.timeoutDurationMinutes),
+      AllocationStrategy: cdk.stringToCloudFormation(property.spotSpecification?.allocationStrategy),
+      BlockDurationMinutes: cdk.numberToCloudFormation(property.spotSpecification?.blockDurationMinutes),
+      TimeoutAction: cdk.stringToCloudFormation(property.spotSpecification?.timeoutAction?.valueOf()),
+      TimeoutDurationMinutes: cdk.numberToCloudFormation(property.spotSpecification?.timeoutDurationMinutes),
     },
   };
 }
