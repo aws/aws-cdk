@@ -18,7 +18,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
                   "aws:cdk:cloudformation:props": {
-                    "cidrBlock": "10.10.0.0/16",
+                    "cidrBlock": "10.11.0.0/16",
                     "enableDnsHostnames": true,
                     "enableDnsSupport": true,
                     "instanceTenancy": "default",
@@ -53,7 +53,7 @@
                             }
                           ]
                         },
-                        "cidrBlock": "10.10.0.0/18",
+                        "cidrBlock": "10.11.0.0/18",
                         "mapPublicIpOnLaunch": true,
                         "tags": [
                           {
@@ -220,7 +220,7 @@
                             }
                           ]
                         },
-                        "cidrBlock": "10.10.64.0/18",
+                        "cidrBlock": "10.11.64.0/18",
                         "mapPublicIpOnLaunch": true,
                         "tags": [
                           {
@@ -387,7 +387,7 @@
                             }
                           ]
                         },
-                        "cidrBlock": "10.10.128.0/18",
+                        "cidrBlock": "10.11.128.0/18",
                         "mapPublicIpOnLaunch": false,
                         "tags": [
                           {
@@ -506,7 +506,7 @@
                             }
                           ]
                         },
-                        "cidrBlock": "10.10.192.0/18",
+                        "cidrBlock": "10.11.192.0/18",
                         "mapPublicIpOnLaunch": false,
                         "tags": [
                           {
@@ -671,7 +671,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.VpnGateway",
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               },
@@ -781,7 +781,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.VpnConnection",
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               }
@@ -813,17 +813,17 @@
           "version": "0.0.0"
         }
       },
-      "aws-cdk-redshift-elastic-ip-test": {
-        "id": "aws-cdk-redshift-elastic-ip-test",
-        "path": "aws-cdk-redshift-elastic-ip-test",
+      "aws-cdk-ec2-vpn-two-tunnels-test": {
+        "id": "aws-cdk-ec2-vpn-two-tunnels-test",
+        "path": "aws-cdk-ec2-vpn-two-tunnels-test",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "aws-cdk-redshift-elastic-ip-test/DefaultTest",
+            "path": "aws-cdk-ec2-vpn-two-tunnels-test/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "aws-cdk-redshift-elastic-ip-test/DefaultTest/Default",
+                "path": "aws-cdk-ec2-vpn-two-tunnels-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.2.70"
@@ -831,11 +831,11 @@
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "aws-cdk-redshift-elastic-ip-test/DefaultTest/DeployAssert",
+                "path": "aws-cdk-ec2-vpn-two-tunnels-test/DefaultTest/DeployAssert",
                 "children": {
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "aws-cdk-redshift-elastic-ip-test/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "aws-cdk-ec2-vpn-two-tunnels-test/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
@@ -843,7 +843,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "aws-cdk-redshift-elastic-ip-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "aws-cdk-ec2-vpn-two-tunnels-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"

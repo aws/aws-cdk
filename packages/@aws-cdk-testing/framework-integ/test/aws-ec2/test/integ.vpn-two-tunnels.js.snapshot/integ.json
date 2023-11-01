@@ -1,12 +1,12 @@
 {
   "version": "34.0.0",
   "testCases": {
-    "aws-cdk-redshift-elastic-ip-test/DefaultTest": {
+    "aws-cdk-ec2-vpn-two-tunnels-test/DefaultTest": {
       "stacks": [
         "aws-cdk-ec2-vpn-two-tunnels"
       ],
-      "assertionStack": "aws-cdk-redshift-elastic-ip-test/DefaultTest/DeployAssert",
-      "assertionStackName": "awscdkredshiftelasticiptestDefaultTestDeployAssertEAC4B798"
+      "assertionStack": "aws-cdk-ec2-vpn-two-tunnels-test/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkec2vpntwotunnelstestDefaultTestDeployAssert354DB13C"
     }
   }
 }

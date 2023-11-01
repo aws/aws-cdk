@@ -3,7 +3,7 @@
   "MyVpcF9F0CA6F": {
    "Type": "AWS::EC2::VPC",
    "Properties": {
-    "CidrBlock": "10.10.0.0/16",
+    "CidrBlock": "10.11.0.0/16",
     "EnableDnsHostnames": true,
     "EnableDnsSupport": true,
     "InstanceTenancy": "default",
@@ -26,7 +26,7 @@
       }
      ]
     },
-    "CidrBlock": "10.10.0.0/18",
+    "CidrBlock": "10.11.0.0/18",
     "MapPublicIpOnLaunch": true,
     "Tags": [
      {
@@ -134,7 +134,7 @@
       }
      ]
     },
-    "CidrBlock": "10.10.64.0/18",
+    "CidrBlock": "10.11.64.0/18",
     "MapPublicIpOnLaunch": true,
     "Tags": [
      {
@@ -242,7 +242,7 @@
       }
      ]
     },
-    "CidrBlock": "10.10.128.0/18",
+    "CidrBlock": "10.11.128.0/18",
     "MapPublicIpOnLaunch": false,
     "Tags": [
      {
@@ -311,7 +311,7 @@
       }
      ]
     },
-    "CidrBlock": "10.10.192.0/18",
+    "CidrBlock": "10.11.192.0/18",
     "MapPublicIpOnLaunch": false,
     "Tags": [
      {
