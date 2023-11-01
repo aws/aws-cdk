@@ -165,8 +165,8 @@ export class CodeCommitSourceAction extends Action {
 
   protected bound(_scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
-    const isNewDefaultBranch = this.props.branch === undefined && FeatureFlags.of(_scope).isEnabled(CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME);
-    const branchOrDefault = isNewDefaultBranch ? CodeCommitSourceAction.NEW_DEFAULT_BRANCH_NAME : this.branch;
+    const branchOrDefault = this.getBranchOrDefault(_scope);
+
     const createEvent = this.props.trigger === undefined ||
       this.props.trigger === CodeCommitTrigger.EVENTS;
     if (createEvent) {
@@ -214,6 +214,13 @@ export class CodeCommitSourceAction extends Action {
     };
   }
 
+  private getBranchOrDefault(scope: Construct) {
+    const defaultBranch = FeatureFlags.of(scope).isEnabled(CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME) ?
+      CodeCommitSourceAction.NEW_DEFAULT_BRANCH_NAME :
+      CodeCommitSourceAction.OLD_DEFAULT_BRANCH_NAME;
+    return this.props.branch === undefined ? defaultBranch : this.branch;
+  }
+
   private generateEventId(stage: codepipeline.IStage): string {
     const baseId = Names.nodeUniqueId(stage.pipeline.node);
     if (Token.isUnresolved(this.branch)) {
@@ -225,7 +232,11 @@ export class CodeCommitSourceAction extends Action {
       } while (this.props.repository.node.tryFindChild(candidate) !== undefined);
       return candidate;
     } else {
-      const branchIdDisambiguator = this.props.branch === undefined ? '' : `-${this.branch}-`;
+      // To not break backwards compatibility it needs to be checked if the branch was set to master or if no branch was provided
+      const branchIdDisambiguator =
+        this.props.branch === undefined || this.branch === CodeCommitSourceAction.OLD_DEFAULT_BRANCH_NAME
+          ? ''
+          : `-${this.branch}-`;
       return this.eventIdFromPrefix(`${baseId}${branchIdDisambiguator}`);
     }
   }

@@ -672,6 +672,81 @@ describe('CodeCommit Source Action', () => {
         },
       });
     });
+
+    test('using master as the default branch when feature flag is not set', () => {
+      const app = new App();
+
+      const repoStack = new Stack(app, 'RepositoryStack');
+      const repo = new codecommit.Repository(repoStack, 'Repository', {
+        repositoryName: 'my-repo',
+      });
+
+      const pipelineStack = new Stack(app, 'PipelineStack');
+
+      const sourceOutput = new codepipeline.Artifact();
+      new codepipeline.Pipeline(pipelineStack, 'Pipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [
+              new cpactions.CodeCommitSourceAction({
+                actionName: 'Source',
+                repository: repo,
+                output: sourceOutput,
+              }),
+            ],
+          },
+          {
+            stageName: 'Build',
+            actions: [
+              new cpactions.CodeBuildAction({
+                actionName: 'Build',
+                project: codebuild.Project.fromProjectName(pipelineStack, 'Project', 'my-project'),
+                input: sourceOutput,
+              }),
+            ],
+          },
+        ],
+      });
+
+      const template = Template.fromStack(pipelineStack);
+      template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+        'Stages': [
+          {
+            'Actions': [
+              {
+                'Configuration': {
+                  'BranchName': 'master',
+                },
+              },
+            ],
+          },
+          {},
+        ],
+      });
+      template.hasResourceProperties('AWS::Events::Rule', {
+        'EventPattern': {
+          'source': [
+            'aws.codecommit',
+          ],
+          'resources': [
+            {},
+          ],
+          'detail-type': [
+            'CodeCommit Repository State Change',
+          ],
+          'detail': {
+            'event': [
+              'referenceCreated',
+              'referenceUpdated',
+            ],
+            'referenceName': [
+              'master',
+            ],
+          },
+        },
+      });
+    });
   });
 });
 
