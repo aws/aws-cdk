@@ -3139,7 +3139,7 @@ describe('bucket', () => {
     const stack = new cdk.Stack();
 
     const inventoryBucket = new s3.Bucket(stack, 'InventoryBucket');
-    new s3.Bucket(stack, 'AVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVery&LongNodeIdName', {
+    new s3.Bucket(stack, 'AVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVery@#$+:;?!&LongNodeIdName', {
       inventories: [
         {
           destination: {
