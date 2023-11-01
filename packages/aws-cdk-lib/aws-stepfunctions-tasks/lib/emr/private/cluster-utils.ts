@@ -128,7 +128,9 @@ export function InstanceFleetProvisioningSpecificationsPropertyToJson(property: 
 
   return {
     OnDemandSpecification: {
-      AllocationStrategy: cdk.stringToCloudFormation(property.onDemandSpecification?.allocationStrategy),
+      AllocationStrategy: cdk.stringToCloudFormation(
+        property.onDemandSpecification?.allocationStrategy ?? EmrCreateCluster.OnDemandAllocationStrategy.LOWEST_PRICE,
+      ),
       CapacityReservationOptions: {
         CapacityReservationPreference: cdk.stringToCloudFormation(
           property.onDemandSpecification?.capacityReservationOptions?.capacityReservationPreference,
