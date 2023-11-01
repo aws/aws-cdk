@@ -1344,6 +1344,61 @@ test('Create Cluster with InstanceFleet for Both instances On-Demand and Spot', 
   });
 });
 
+test('throws when length of capacityReservationResourceGroupArn is greater than 256', () => {
+  // WHEN
+  const task = new EmrCreateCluster(stack, 'Task', {
+    instances: {
+      instanceFleets: [{
+        instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
+        instanceTypeConfigs: [{
+          bidPrice: '1',
+          bidPriceAsPercentageOfOnDemandPrice: 1,
+          configurations: [{
+            classification: 'Classification',
+            properties: {
+              Key: 'Value',
+            },
+          }],
+          ebsConfiguration: {
+            ebsBlockDeviceConfigs: [{
+              volumeSpecification: {
+                iops: 1,
+                volumeSize: cdk.Size.gibibytes(1),
+                volumeType: EmrCreateCluster.EbsBlockDeviceVolumeType.STANDARD,
+              },
+              volumesPerInstance: 1,
+            }],
+            ebsOptimized: true,
+          },
+          instanceType: 'm5.xlarge',
+          weightedCapacity: 1,
+        }],
+        launchSpecifications: {
+          onDemandSpecification: {
+            allocationStrategy: EmrCreateCluster.OnDemandAllocationStrategy.LOWEST_PRICE,
+            capacityReservationOptions: {
+              capacityReservationPreference: EmrCreateCluster.CapacityReservationPreference.OPEN,
+              capacityReservationResourceGroupArn: 'a'.repeat(257),
+              usageStrategy: EmrCreateCluster.UsageStrategy.USE_CAPACITY_RESERVATIONS_FIRST,
+            },
+          },
+        },
+        name: 'Master',
+        targetOnDemandCapacity: 1,
+        targetSpotCapacity: 1,
+      }],
+    },
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  });
+  // THEN
+  expect(() => {
+    stack.resolve(task.toStateJson());
+  }).toThrow(/length of capacityReservationResourceGroupArn must be between 0 and 256, got 257/);
+});
+
 test('Create Cluster with InstanceGroup', () => {
   // WHEN
   const task = new EmrCreateCluster(stack, 'Task', {

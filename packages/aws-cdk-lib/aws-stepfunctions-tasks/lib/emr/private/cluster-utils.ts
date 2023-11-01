@@ -121,6 +121,11 @@ export function InstanceTypeConfigPropertyToJson(property: EmrCreateCluster.Inst
  * @param property
  */
 export function InstanceFleetProvisioningSpecificationsPropertyToJson(property: EmrCreateCluster.InstanceFleetProvisioningSpecificationsProperty) {
+  const capacityReservationResourceGroupArn = property.onDemandSpecification?.capacityReservationOptions?.capacityReservationResourceGroupArn;
+  if (capacityReservationResourceGroupArn !== undefined && capacityReservationResourceGroupArn.length > 256) {
+    throw new Error(`length of capacityReservationResourceGroupArn must be between 0 and 256, got ${capacityReservationResourceGroupArn.length}`);
+  }
+
   return {
     OnDemandSpecification: {
       AllocationStrategy: cdk.stringToCloudFormation(property.onDemandSpecification?.allocationStrategy),
