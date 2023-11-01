@@ -1,9 +1,10 @@
 import { Schedule, ScheduleExpression } from '@aws-cdk/aws-scheduler-alpha';
-import { App, Stack } from 'aws-cdk-lib';
+import { App, Duration, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { BuildSpec, Project } from 'aws-cdk-lib/aws-codebuild';
 import { AccountRootPrincipal, Role } from 'aws-cdk-lib/aws-iam';
-import { CodeBuildStartBuild } from '../lib/codebuild-start-build';
+import { Queue } from 'aws-cdk-lib/aws-sqs';
+import { CodeBuildStartBuild } from '../lib';
 
 describe('codebuild start build', () => {
   let app: App;
@@ -287,4 +288,174 @@ describe('codebuild start build', () => {
       })).toThrow(expectedError);
   });
 
+  /**/
+
+  test('throws when IAM role is imported from different account', () => {
+    const anotherAccountId = '123456789015';
+    const importedRole = Role.fromRoleArn(stack, 'ImportedRole', `arn:aws:iam::${anotherAccountId}:role/someRole`);
+
+    const codebuildProjectTarget = new CodeBuildStartBuild(codebuildProject, {
+      role: importedRole,
+    });
+
+    expect(() =>
+      new Schedule(stack, 'MyScheduleDummy', {
+        schedule: expr,
+        target: codebuildProjectTarget,
+      })).toThrow(/Both the target and the execution role must be in the same account/);
+  });
+
+  test('adds permissions to DLQ', () => {
+    const dlq = new Queue(stack, 'DummyDeadLetterQueue');
+
+    const codebuildProjectTarget = new CodeBuildStartBuild(codebuildProject, {
+      deadLetterQueue: dlq,
+    });
+
+    new Schedule(stack, 'MyScheduleDummy', {
+      schedule: expr,
+      target: codebuildProjectTarget,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::SQS::QueuePolicy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'sqs:SendMessage',
+            Principal: {
+              Service: 'scheduler.amazonaws.com',
+            },
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': ['DummyDeadLetterQueueCEBF3463', 'Arn'],
+            },
+          },
+        ],
+      },
+      Queues: [
+        {
+          Ref: 'DummyDeadLetterQueueCEBF3463',
+        },
+      ],
+    });
+  });
+
+  test('throws when adding permissions to DLQ from a different region', () => {
+    const stack2 = new Stack(app, 'Stack2', {
+      env: {
+        region: 'eu-west-2',
+      },
+    });
+    const queue = new Queue(stack2, 'DummyDeadLetterQueue');
+
+    const codebuildProjectTarget = new CodeBuildStartBuild(codebuildProject, {
+      deadLetterQueue: queue,
+    });
+
+    expect(() =>
+      new Schedule(stack, 'MyScheduleDummy', {
+        schedule: expr,
+        target: codebuildProjectTarget,
+      })).toThrow(/Both the queue and the schedule must be in the same region./);
+  });
+
+  test('does not create a queue policy when DLQ is imported', () => {
+    const importedQueue = Queue.fromQueueArn(stack, 'ImportedQueue', 'arn:aws:sqs:us-east-1:123456789012:queue1');
+
+    const codebuildProjectTarget = new CodeBuildStartBuild(codebuildProject, {
+      deadLetterQueue: importedQueue,
+    });
+
+    new Schedule(stack, 'MyScheduleDummy', {
+      schedule: expr,
+      target: codebuildProjectTarget,
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::SQS::QueuePolicy', 0);
+  });
+
+  test('does not create a queue policy when DLQ is created in a different account', () => {
+    const stack2 = new Stack(app, 'Stack2', {
+      env: {
+        region: 'us-east-1',
+        account: '234567890123',
+      },
+    });
+
+    const queue = new Queue(stack2, 'DummyDeadLetterQueue', {
+      queueName: 'DummyDeadLetterQueue',
+    });
+
+    const codebuildProjectTarget = new CodeBuildStartBuild(codebuildProject, {
+      deadLetterQueue: queue,
+    });
+
+    new Schedule(stack, 'MyScheduleDummy', {
+      schedule: expr,
+      target: codebuildProjectTarget,
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::SQS::QueuePolicy', 0);
+  });
+
+  test('renders expected retry policy', () => {
+    const codebuildProjectTarget = new CodeBuildStartBuild(codebuildProject, {
+      retryAttempts: 5,
+      maxEventAge: Duration.hours(3),
+    });
+
+    new Schedule(stack, 'MyScheduleDummy', {
+      schedule: expr,
+      target: codebuildProjectTarget,
+    });
+
+    Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
+      Properties: {
+        Target: {
+          Arn: codebuildArnRef,
+          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget1441a743A31888', 'Arn'] },
+          RetryPolicy: {
+            MaximumEventAgeInSeconds: 10800,
+            MaximumRetryAttempts: 5,
+          },
+        },
+      },
+    });
+  });
+
+  test('throws when retry policy max age is more than 1 day', () => {
+    const codebuildProjectTarget = new CodeBuildStartBuild(codebuildProject, {
+      maxEventAge: Duration.days(3),
+    });
+
+    expect(() =>
+      new Schedule(stack, 'MyScheduleDummy', {
+        schedule: expr,
+        target: codebuildProjectTarget,
+      })).toThrow(/Maximum event age is 1 day/);
+  });
+
+  test('throws when retry policy max age is less than 15 minutes', () => {
+    const codebuildProjectTarget = new CodeBuildStartBuild(codebuildProject, {
+      maxEventAge: Duration.minutes(5),
+    });
+
+    expect(() =>
+      new Schedule(stack, 'MyScheduleDummy', {
+        schedule: expr,
+        target: codebuildProjectTarget,
+      })).toThrow(/Minimum event age is 15 minutes/);
+  });
+
+  test('throws when retry policy max retry attempts is out of the allowed limits', () => {
+    const codebuildProjectTarget = new CodeBuildStartBuild(codebuildProject, {
+      retryAttempts: 200,
+    });
+
+    expect(() =>
+      new Schedule(stack, 'MyScheduleDummy', {
+        schedule: expr,
+        target: codebuildProjectTarget,
+      })).toThrow(/Number of retry attempts should be less or equal than 185/);
+  });
 });

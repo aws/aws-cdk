@@ -102,3 +102,21 @@ new Schedule(this, 'Schedule', {
   }),
 });
 ```
+
+## Start a CodeBuild job
+
+Use the `CodeBuildStartBuild` target to start a new build run on a CodeBuild project.
+
+The code snippet below creates an event rule with a CodeBuild project as target which is
+called every hour by Event Bridge Scheduler.
+
+```ts
+import * as codebuild from 'aws-cdk-lib/aws-codebuild';
+
+declare const project: codebuild.Project;
+
+new scheduler.Schedule(stack, 'Schedule', {
+  schedule: scheduler.ScheduleExpression.rate(Duration.minutes(60)),
+  target: new targets.CodeBuildStartBuild(project, {}),
+});
+```
