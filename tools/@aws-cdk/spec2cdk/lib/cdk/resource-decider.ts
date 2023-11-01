@@ -52,12 +52,13 @@ export class ResourceDecider {
     this.classAttributeProperties.sort((p1, p2) => p1.propertySpec.name.localeCompare(p2.propertySpec.name));
   }
 
-  // TODO: uh, make this not a loop of loops haha
   private findArn() {
-    // a list of possible names for the arn, in order of most likely to least likely
+    // A list of possible names for the arn, in order of importance.
+    // This is relevant because some resources, like AWS::VpcLattice::AccessLogSubscription
+    // has both `Arn` and `ResourceArn`, and we want to select the `Arn` property.
     const possibleArnNames = ['Arn', 'ResourceArn', `${this.resource.name}Arn`];
     for (const arn of possibleArnNames) {
-      const att = this.classAttributeProperties.filter((a) => a.propertySpec.name == attributePropertyName(arn));
+      const att = this.classAttributeProperties.filter((a) => a.propertySpec.name === attributePropertyName(arn));
       const prop = this.propsProperties.filter((p) => p.propertySpec.name === propertyNameFromCloudFormation(arn));
       if (att.length > 0 || prop.length > 0) {
         return att[0] ? att[0].propertySpec : prop[0].propertySpec;
