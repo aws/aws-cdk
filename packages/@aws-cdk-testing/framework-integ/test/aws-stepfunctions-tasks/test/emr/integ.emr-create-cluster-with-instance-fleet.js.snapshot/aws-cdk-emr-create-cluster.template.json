@@ -138,6 +138,34 @@
          ]
         ]
        }
+      },
+      {
+       "Action": [
+        "events:DescribeRule",
+        "events:PutRule",
+        "events:PutTargets"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":events:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":rule/StepFunctionsGetEventForEMRRunJobFlowRule"
+         ]
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -161,7 +189,7 @@
        {
         "Ref": "AWS::Partition"
        },
-       ":states:::elasticmapreduce:createCluster\",\"Parameters\":{\"Instances\":{\"InstanceFleets\":[{\"InstanceFleetType\":\"MASTER\",\"InstanceTypeConfigs\":[{\"BidPrice\":\"1\",\"BidPriceAsPercentageOfOnDemandPrice\":1,\"Configurations\":[{\"Classification\":\"Classification\",\"Properties\":{\"Key\":\"Value\"}}],\"EbsConfiguration\":{\"EbsBlockDeviceConfigs\":[{\"VolumeSpecification\":{\"Iops\":1,\"SizeInGB\":1,\"VolumeType\":\"standard\"},\"VolumesPerInstance\":1}],\"EbsOptimized\":true},\"InstanceType\":\"m5.xlarge\",\"WeightedCapacity\":1}],\"LaunchSpecifications\":{\"OnDemandSpecification\":{\"AllocationStrategy\":\"lowest-price\",\"CapacityReservationOptions\":{\"CapacityReservationPreference\":\"open\",\"UsageStrategy\":\"use-capacity-reservations-first\"}},\"SpotSpecification\":{\"AllocationStrategy\":\"capacity-optimized\",\"BlockDurationMinutes\":1,\"TimeoutAction\":\"TERMINATE_CLUSTER\",\"TimeoutDurationMinutes\":1}},\"Name\":\"Master\",\"TargetOnDemandCapacity\":1,\"TargetSpotCapacity\":1}],\"KeepJobFlowAliveWhenNoSteps\":true},\"JobFlowRole\":\"",
+       ":states:::elasticmapreduce:createCluster.sync\",\"Parameters\":{\"Instances\":{\"InstanceFleets\":[{\"InstanceFleetType\":\"MASTER\",\"InstanceTypeConfigs\":[{\"BidPrice\":\"1\",\"BidPriceAsPercentageOfOnDemandPrice\":1,\"Configurations\":[{\"Classification\":\"Classification\",\"Properties\":{\"Key\":\"Value\"}}],\"EbsConfiguration\":{\"EbsBlockDeviceConfigs\":[{\"VolumeSpecification\":{\"Iops\":1,\"SizeInGB\":1,\"VolumeType\":\"standard\"},\"VolumesPerInstance\":1}],\"EbsOptimized\":true},\"InstanceType\":\"m5.xlarge\",\"WeightedCapacity\":1}],\"LaunchSpecifications\":{\"OnDemandSpecification\":{\"AllocationStrategy\":\"lowest-price\",\"CapacityReservationOptions\":{\"CapacityReservationPreference\":\"open\",\"UsageStrategy\":\"use-capacity-reservations-first\"}},\"SpotSpecification\":{\"AllocationStrategy\":\"capacity-optimized\",\"BlockDurationMinutes\":1,\"TimeoutAction\":\"TERMINATE_CLUSTER\",\"TimeoutDurationMinutes\":1}},\"Name\":\"Master\",\"TargetOnDemandCapacity\":1,\"TargetSpotCapacity\":1}],\"KeepJobFlowAliveWhenNoSteps\":true},\"JobFlowRole\":\"",
        {
         "Ref": "EmrCreateClusterInstanceRoleC80466F5"
        },

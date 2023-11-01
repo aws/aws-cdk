@@ -1,7 +1,7 @@
 {
   "version": "34.0.0",
   "files": {
-    "487584206af66e61f0c4824db2360dadcd4d40f958c7785a6a8d01a3c9fb58a8": {
+    "938c0e7520f7536e08b089785e991c322b218187a86f9aaebe3d5489ec195bd7": {
       "source": {
         "path": "aws-cdk-emr-create-cluster.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "487584206af66e61f0c4824db2360dadcd4d40f958c7785a6a8d01a3c9fb58a8.json",
+          "objectKey": "938c0e7520f7536e08b089785e991c322b218187a86f9aaebe3d5489ec195bd7.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
