@@ -450,6 +450,11 @@
                           "Role1ABCC5F0",
                           "Arn"
                         ]
+                      },
+                      "input": "\"Input Text\"",
+                      "retryPolicy": {
+                        "maximumEventAgeInSeconds": 180,
+                        "maximumRetryAttempts": 3
                       }
                     }
                   }
