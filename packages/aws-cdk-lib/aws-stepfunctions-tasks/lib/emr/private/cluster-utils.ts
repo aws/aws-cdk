@@ -124,7 +124,17 @@ export function InstanceFleetProvisioningSpecificationsPropertyToJson(property: 
   return {
     OnDemandSpecification: {
       AllocationStrategy: cdk.stringToCloudFormation(property.onDemandSpecification?.allocationStrategy),
-      CapacityReservationOptions: cdk.objectToCloudFormation(property.onDemandSpecification?.capacityReservationOptions),
+      CapacityReservationOptions: {
+        CapacityReservationPreference: cdk.stringToCloudFormation(
+          property.onDemandSpecification?.capacityReservationOptions?.capacityReservationPreference,
+        ),
+        CapacityReservationResourceGroupArn: cdk.stringToCloudFormation(
+          property.onDemandSpecification?.capacityReservationOptions?.capacityReservationResourceGroupArn,
+        ),
+        UsageStrategy: cdk.stringToCloudFormation(
+          property.onDemandSpecification?.capacityReservationOptions?.usageStrategy,
+        ),
+      },
     },
     SpotSpecification: {
       AllocationStrategy: cdk.stringToCloudFormation(property.spotSpecification?.allocationStrategy),

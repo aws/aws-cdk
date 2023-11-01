@@ -851,7 +851,7 @@ test('Create Cluster with Instances configuration', () => {
   });
 });
 
-test('Create Cluster with InstanceFleet with allocation strategy=capacity-optimized', () => {
+test('Create Cluster with InstanceFleet with allocation strategy=capacity-optimized for Spot instances', () => {
   // WHEN
   const task = new EmrCreateCluster(stack, 'Task', {
     instances: {
@@ -945,6 +945,10 @@ test('Create Cluster with InstanceFleet with allocation strategy=capacity-optimi
             WeightedCapacity: 1,
           }],
           LaunchSpecifications: {
+            OnDemandSpecification: {
+              CapacityReservationOptions: {},
+              CapacityReservationOptions: {},
+            },
             SpotSpecification: {
               AllocationStrategy: 'capacity-optimized',
               BlockDurationMinutes: 1,
@@ -968,7 +972,7 @@ test('Create Cluster with InstanceFleet with allocation strategy=capacity-optimi
   });
 });
 
-test('Create Cluster with InstanceFleet', () => {
+test('Create Cluster with InstanceFleet for Spot instances', () => {
   // WHEN
   const task = new EmrCreateCluster(stack, 'Task', {
     instances: {
@@ -1061,7 +1065,265 @@ test('Create Cluster with InstanceFleet', () => {
             WeightedCapacity: 1,
           }],
           LaunchSpecifications: {
+            OnDemandSpecification: {
+              CapacityReservationOptions: {},
+            },
             SpotSpecification: {
+              BlockDurationMinutes: 1,
+              TimeoutAction: 'TERMINATE_CLUSTER',
+              TimeoutDurationMinutes: 1,
+            },
+          },
+          Name: 'Master',
+          TargetOnDemandCapacity: 1,
+          TargetSpotCapacity: 1,
+        }],
+      },
+      VisibleToAllUsers: true,
+      JobFlowRole: {
+        Ref: 'ClusterRoleD9CA7471',
+      },
+      ServiceRole: {
+        Ref: 'ServiceRole4288B192',
+      },
+    },
+  });
+});
+
+test('Create Cluster with InstanceFleet for On-Demand instances', () => {
+  // WHEN
+  const task = new EmrCreateCluster(stack, 'Task', {
+    instances: {
+      instanceFleets: [{
+        instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
+        instanceTypeConfigs: [{
+          bidPrice: '1',
+          bidPriceAsPercentageOfOnDemandPrice: 1,
+          configurations: [{
+            classification: 'Classification',
+            properties: {
+              Key: 'Value',
+            },
+          }],
+          ebsConfiguration: {
+            ebsBlockDeviceConfigs: [{
+              volumeSpecification: {
+                iops: 1,
+                volumeSize: cdk.Size.gibibytes(1),
+                volumeType: EmrCreateCluster.EbsBlockDeviceVolumeType.STANDARD,
+              },
+              volumesPerInstance: 1,
+            }],
+            ebsOptimized: true,
+          },
+          instanceType: 'm5.xlarge',
+          weightedCapacity: 1,
+        }],
+        launchSpecifications: {
+          onDemandSpecification: {
+            allocationStrategy: EmrCreateCluster.OnDemandAllocationStrategy.LOWEST_PRICE,
+            capacityReservationOptions: {
+              capacityReservationPreference: EmrCreateCluster.CapacityReservationPreference.OPEN,
+              capacityReservationResourceGroupArn: 'arn:aws:resource-groups:us-east-1:123456789012:group/my-cr-group',
+              usageStrategy: EmrCreateCluster.UsageStrategy.USE_CAPACITY_RESERVATIONS_FIRST,
+            },
+          },
+        },
+        name: 'Master',
+        targetOnDemandCapacity: 1,
+        targetSpotCapacity: 1,
+      }],
+    },
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::elasticmapreduce:createCluster',
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      Name: 'Cluster',
+      Instances: {
+        KeepJobFlowAliveWhenNoSteps: true,
+        InstanceFleets: [{
+          InstanceFleetType: 'MASTER',
+          InstanceTypeConfigs: [{
+            BidPrice: '1',
+            BidPriceAsPercentageOfOnDemandPrice: 1,
+            Configurations: [{
+              Classification: 'Classification',
+              Properties: {
+                Key: 'Value',
+              },
+            }],
+            EbsConfiguration: {
+              EbsBlockDeviceConfigs: [{
+                VolumeSpecification: {
+                  Iops: 1,
+                  SizeInGB: 1,
+                  VolumeType: 'standard',
+                },
+                VolumesPerInstance: 1,
+              }],
+              EbsOptimized: true,
+            },
+            InstanceType: 'm5.xlarge',
+            WeightedCapacity: 1,
+          }],
+          LaunchSpecifications: {
+            OnDemandSpecification: {
+              AllocationStrategy: 'lowest-price',
+              CapacityReservationOptions: {
+                CapacityReservationPreference: 'open',
+                CapacityReservationResourceGroupArn: 'arn:aws:resource-groups:us-east-1:123456789012:group/my-cr-group',
+                UsageStrategy: 'use-capacity-reservations-first',
+              },
+            },
+            SpotSpecification: {},
+          },
+          Name: 'Master',
+          TargetOnDemandCapacity: 1,
+          TargetSpotCapacity: 1,
+        }],
+      },
+      VisibleToAllUsers: true,
+      JobFlowRole: {
+        Ref: 'ClusterRoleD9CA7471',
+      },
+      ServiceRole: {
+        Ref: 'ServiceRole4288B192',
+      },
+    },
+  });
+});
+
+test('Create Cluster with InstanceFleet for Both instances On-Demand and Spot', () => {
+  // WHEN
+  const task = new EmrCreateCluster(stack, 'Task', {
+    instances: {
+      instanceFleets: [{
+        instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
+        instanceTypeConfigs: [{
+          bidPrice: '1',
+          bidPriceAsPercentageOfOnDemandPrice: 1,
+          configurations: [{
+            classification: 'Classification',
+            properties: {
+              Key: 'Value',
+            },
+          }],
+          ebsConfiguration: {
+            ebsBlockDeviceConfigs: [{
+              volumeSpecification: {
+                iops: 1,
+                volumeSize: cdk.Size.gibibytes(1),
+                volumeType: EmrCreateCluster.EbsBlockDeviceVolumeType.STANDARD,
+              },
+              volumesPerInstance: 1,
+            }],
+            ebsOptimized: true,
+          },
+          instanceType: 'm5.xlarge',
+          weightedCapacity: 1,
+        }],
+        launchSpecifications: {
+          onDemandSpecification: {
+            allocationStrategy: EmrCreateCluster.OnDemandAllocationStrategy.LOWEST_PRICE,
+            capacityReservationOptions: {
+              capacityReservationPreference: EmrCreateCluster.CapacityReservationPreference.OPEN,
+              capacityReservationResourceGroupArn: 'arn:aws:resource-groups:us-east-1:123456789012:group/my-cr-group',
+              usageStrategy: EmrCreateCluster.UsageStrategy.USE_CAPACITY_RESERVATIONS_FIRST,
+            },
+          },
+          spotSpecification: {
+            allocationStrategy: EmrCreateCluster.SpotAllocationStrategy.CAPACITY_OPTIMIZED,
+            blockDurationMinutes: 1,
+            timeoutAction: EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
+            timeoutDurationMinutes: 1,
+          },
+        },
+        name: 'Master',
+        targetOnDemandCapacity: 1,
+        targetSpotCapacity: 1,
+      }],
+    },
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::elasticmapreduce:createCluster',
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      Name: 'Cluster',
+      Instances: {
+        KeepJobFlowAliveWhenNoSteps: true,
+        InstanceFleets: [{
+          InstanceFleetType: 'MASTER',
+          InstanceTypeConfigs: [{
+            BidPrice: '1',
+            BidPriceAsPercentageOfOnDemandPrice: 1,
+            Configurations: [{
+              Classification: 'Classification',
+              Properties: {
+                Key: 'Value',
+              },
+            }],
+            EbsConfiguration: {
+              EbsBlockDeviceConfigs: [{
+                VolumeSpecification: {
+                  Iops: 1,
+                  SizeInGB: 1,
+                  VolumeType: 'standard',
+                },
+                VolumesPerInstance: 1,
+              }],
+              EbsOptimized: true,
+            },
+            InstanceType: 'm5.xlarge',
+            WeightedCapacity: 1,
+          }],
+          LaunchSpecifications: {
+            OnDemandSpecification: {
+              AllocationStrategy: 'lowest-price',
+              CapacityReservationOptions: {
+                CapacityReservationPreference: 'open',
+                CapacityReservationResourceGroupArn: 'arn:aws:resource-groups:us-east-1:123456789012:group/my-cr-group',
+                UsageStrategy: 'use-capacity-reservations-first',
+              },
+            },
+            SpotSpecification: {
+              AllocationStrategy: 'capacity-optimized',
               BlockDurationMinutes: 1,
               TimeoutAction: 'TERMINATE_CLUSTER',
               TimeoutDurationMinutes: 1,
