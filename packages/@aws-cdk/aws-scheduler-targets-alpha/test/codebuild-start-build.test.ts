@@ -199,13 +199,13 @@ describe('codebuild start build', () => {
     const importedRoleArn = 'arn:aws:iam::123456789012:role/someRole';
     const importedRole = Role.fromRoleArn(stack, 'ImportedRole', importedRoleArn);
 
-    const stepFunctionTarget = new CodeBuildStartBuild(codebuildProject, {
+    const codeBuildTarget = new CodeBuildStartBuild(codebuildProject, {
       role: importedRole,
     });
 
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
-      target: stepFunctionTarget,
+      target: codeBuildTarget,
     });
 
     const template = Template.fromStack(stack);
