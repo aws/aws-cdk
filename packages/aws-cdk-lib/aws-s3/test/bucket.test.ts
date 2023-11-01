@@ -3149,7 +3149,6 @@ describe('bucket', () => {
       ],
     });
 
-
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       InventoryConfigurations: Match.arrayWith([
         Match.objectLike({
