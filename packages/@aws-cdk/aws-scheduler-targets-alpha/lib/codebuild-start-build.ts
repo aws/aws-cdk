@@ -18,11 +18,11 @@ export class CodeBuildStartBuild extends ScheduleTargetBase implements ISchedule
 
   protected addTargetActionToRole(schedule: ISchedule, role: IRole): void {
     if (!sameEnvDimension(this.project.env.region, schedule.env.region)) {
-      throw new Error(`Cannot assign function in region ${this.project.env.region} to the schedule ${Names.nodeUniqueId(schedule.node)} in region ${schedule.env.region}. Both the schedule and the function must be in the same region.`);
+      throw new Error(`Cannot assign project in region ${this.project.env.region} to the schedule ${Names.nodeUniqueId(schedule.node)} in region ${schedule.env.region}. Both the schedule and the project must be in the same region.`);
     }
 
     if (!sameEnvDimension(this.project.env.account, schedule.env.account)) {
-      throw new Error(`Cannot assign function in account ${this.project.env.account} to the schedule ${Names.nodeUniqueId(schedule.node)} in account ${schedule.env.region}. Both the schedule and the function must be in the same account.`);
+      throw new Error(`Cannot assign project in account ${this.project.env.account} to the schedule ${Names.nodeUniqueId(schedule.node)} in account ${schedule.env.region}. Both the schedule and the project must be in the same account.`);
     }
 
     if (this.props.role && !sameEnvDimension(this.props.role.env.account, schedule.env.account)) {
