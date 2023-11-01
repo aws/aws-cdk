@@ -866,7 +866,7 @@ export enum InstanceClass {
   PARALLEL5 = 'parallel5',
 
   /**
-   * Parallel-processing optimized instances, 4th generation
+   * Parallel-processing optimized instances, 5th generation
    */
   P5 = 'p5',
 
