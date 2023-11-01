@@ -2424,7 +2424,7 @@ export class Bucket extends BucketBase {
     return this.inventories.map((inventory, index) => {
       const format = inventory.format ?? InventoryFormat.CSV;
       const frequency = inventory.frequency ?? InventoryFrequency.WEEKLY;
-      const id = inventory.inventoryId ?? `${this.node.id}Inventory${index}`;
+      const id = inventory.inventoryId ?? `${this.node.id}Inventory${index}`.replace( /[^\w\.\-]/g, '').slice(-64);
 
       if (inventory.destination.bucket instanceof Bucket) {
         inventory.destination.bucket.addToResourcePolicy(new iam.PolicyStatement({
