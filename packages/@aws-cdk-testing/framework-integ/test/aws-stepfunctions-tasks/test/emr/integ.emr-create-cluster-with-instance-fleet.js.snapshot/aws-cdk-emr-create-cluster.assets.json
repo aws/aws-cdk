@@ -1,0 +1,19 @@
+{
+  "version": "34.0.0",
+  "files": {
+    "487584206af66e61f0c4824db2360dadcd4d40f958c7785a6a8d01a3c9fb58a8": {
+      "source": {
+        "path": "aws-cdk-emr-create-cluster.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "487584206af66e61f0c4824db2360dadcd4d40f958c7785a6a8d01a3c9fb58a8.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

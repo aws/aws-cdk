@@ -57,7 +57,7 @@ const step = new EmrCreateCluster(stack, 'EmrCreateCluster', {
     }],
   },
   name: 'Cluster',
-  integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+  integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
   tags: {
     Key: 'Value',
   },
