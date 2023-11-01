@@ -36,12 +36,13 @@ const resourceProperties: ResourcePropertiesType = {
   databaseName,
   ServiceToken: '',
 };
+const requestId = 'requestId';
 const genericEvent: AWSLambda.CloudFormationCustomResourceEventCommon = {
   ResourceProperties: resourceProperties,
   ServiceToken: '',
   ResponseURL: '',
   StackId: stackId,
-  RequestId: '',
+  RequestId: requestId,
   LogicalResourceId: '',
   ResourceType: '',
 };
@@ -63,7 +64,7 @@ describe('create', () => {
       Data: {
         TableName: `${tableNamePrefix}${stackIdTruncated}`,
       },
-      PhysicalResourceId: `${tableNamePrefix}${stackIdTruncated}`,
+      PhysicalResourceId: `${clusterName}:${databaseName}:${tableNamePrefix}${stackIdTruncated}:${requestId}`,
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
       Sql: `CREATE TABLE ${tableNamePrefix}${stackIdTruncated} (col1 varchar(1))`,
@@ -84,7 +85,7 @@ describe('create', () => {
       Data: {
         TableName: tableNamePrefix,
       },
-      PhysicalResourceId: tableNamePrefix,
+      PhysicalResourceId: `${clusterName}:${databaseName}:${tableNamePrefix}:${requestId}`,
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
       Sql: `CREATE TABLE ${tableNamePrefix} (col1 varchar(1))`,
@@ -481,7 +482,7 @@ describe('update', () => {
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `ALTER TABLE ${physicalResourceId} ALTER DISTSTYLE KEY DISTKEY col1`,
+        Sql: `ALTER TABLE ${tableNamePrefix}${stackIdTruncated} ALTER DISTSTYLE KEY DISTKEY col1`,
       }));
     });
 
@@ -501,7 +502,7 @@ describe('update', () => {
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `ALTER TABLE ${physicalResourceId} ALTER DISTSTYLE AUTO`,
+        Sql: `ALTER TABLE ${tableNamePrefix}${stackIdTruncated} ALTER DISTSTYLE AUTO`,
       }));
     });
 
