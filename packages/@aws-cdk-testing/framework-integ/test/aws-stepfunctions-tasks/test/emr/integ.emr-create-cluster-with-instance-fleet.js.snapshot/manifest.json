@@ -1,28 +1,28 @@
 {
   "version": "34.0.0",
   "artifacts": {
-    "aws-cdk-emr-create-cluster.assets": {
+    "aws-cdk-emr-create-cluster-with-instance-fleet.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-emr-create-cluster.assets.json",
+        "file": "aws-cdk-emr-create-cluster-with-instance-fleet.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-emr-create-cluster": {
+    "aws-cdk-emr-create-cluster-with-instance-fleet": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-cdk-emr-create-cluster.template.json",
+        "templateFile": "aws-cdk-emr-create-cluster-with-instance-fleet.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/938c0e7520f7536e08b089785e991c322b218187a86f9aaebe3d5489ec195bd7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/537753531bd2796b8201d724615e6abf2fe4d191c75233268c046ee914372adc.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-emr-create-cluster.assets"
+          "aws-cdk-emr-create-cluster-with-instance-fleet.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,59 +31,59 @@
         }
       },
       "dependencies": [
-        "aws-cdk-emr-create-cluster.assets"
+        "aws-cdk-emr-create-cluster-with-instance-fleet.assets"
       ],
       "metadata": {
-        "/aws-cdk-emr-create-cluster/EmrCreateCluster/ServiceRole/Resource": [
+        "/aws-cdk-emr-create-cluster-with-instance-fleet/EmrCreateCluster/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EmrCreateClusterServiceRole5251910D"
           }
         ],
-        "/aws-cdk-emr-create-cluster/EmrCreateCluster/InstanceRole/Resource": [
+        "/aws-cdk-emr-create-cluster-with-instance-fleet/EmrCreateCluster/InstanceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EmrCreateClusterInstanceRoleC80466F5"
           }
         ],
-        "/aws-cdk-emr-create-cluster/EmrCreateCluster/InstanceProfile": [
+        "/aws-cdk-emr-create-cluster-with-instance-fleet/EmrCreateCluster/InstanceProfile": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EmrCreateClusterInstanceProfileC1729180"
           }
         ],
-        "/aws-cdk-emr-create-cluster/SM/Role/Resource": [
+        "/aws-cdk-emr-create-cluster-with-instance-fleet/SM/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SMRole49C19C48"
           }
         ],
-        "/aws-cdk-emr-create-cluster/SM/Role/DefaultPolicy/Resource": [
+        "/aws-cdk-emr-create-cluster-with-instance-fleet/SM/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SMRoleDefaultPolicy34CA15C7"
           }
         ],
-        "/aws-cdk-emr-create-cluster/SM/Resource": [
+        "/aws-cdk-emr-create-cluster-with-instance-fleet/SM/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SM934E715A"
           }
         ],
-        "/aws-cdk-emr-create-cluster/BootstrapVersion": [
+        "/aws-cdk-emr-create-cluster-with-instance-fleet/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-emr-create-cluster/CheckBootstrapVersion": [
+        "/aws-cdk-emr-create-cluster-with-instance-fleet/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-emr-create-cluster"
+      "displayName": "aws-cdk-emr-create-cluster-with-instance-fleet"
     },
     "EmrCreateClusterTestDefaultTestDeployAssert697DC891.assets": {
       "type": "cdk:asset-manifest",

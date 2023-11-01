@@ -4,21 +4,21 @@
     "id": "App",
     "path": "",
     "children": {
-      "aws-cdk-emr-create-cluster": {
-        "id": "aws-cdk-emr-create-cluster",
-        "path": "aws-cdk-emr-create-cluster",
+      "aws-cdk-emr-create-cluster-with-instance-fleet": {
+        "id": "aws-cdk-emr-create-cluster-with-instance-fleet",
+        "path": "aws-cdk-emr-create-cluster-with-instance-fleet",
         "children": {
           "EmrCreateCluster": {
             "id": "EmrCreateCluster",
-            "path": "aws-cdk-emr-create-cluster/EmrCreateCluster",
+            "path": "aws-cdk-emr-create-cluster-with-instance-fleet/EmrCreateCluster",
             "children": {
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "aws-cdk-emr-create-cluster/EmrCreateCluster/ServiceRole",
+                "path": "aws-cdk-emr-create-cluster-with-instance-fleet/EmrCreateCluster/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "aws-cdk-emr-create-cluster/EmrCreateCluster/ServiceRole/ImportServiceRole",
+                    "path": "aws-cdk-emr-create-cluster-with-instance-fleet/EmrCreateCluster/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.2.70"
@@ -26,7 +26,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-emr-create-cluster/EmrCreateCluster/ServiceRole/Resource",
+                    "path": "aws-cdk-emr-create-cluster-with-instance-fleet/EmrCreateCluster/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -76,11 +76,11 @@
               },
               "InstanceRole": {
                 "id": "InstanceRole",
-                "path": "aws-cdk-emr-create-cluster/EmrCreateCluster/InstanceRole",
+                "path": "aws-cdk-emr-create-cluster-with-instance-fleet/EmrCreateCluster/InstanceRole",
                 "children": {
                   "ImportInstanceRole": {
                     "id": "ImportInstanceRole",
-                    "path": "aws-cdk-emr-create-cluster/EmrCreateCluster/InstanceRole/ImportInstanceRole",
+                    "path": "aws-cdk-emr-create-cluster-with-instance-fleet/EmrCreateCluster/InstanceRole/ImportInstanceRole",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.2.70"
@@ -88,7 +88,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-emr-create-cluster/EmrCreateCluster/InstanceRole/Resource",
+                    "path": "aws-cdk-emr-create-cluster-with-instance-fleet/EmrCreateCluster/InstanceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -119,7 +119,7 @@
               },
               "InstanceProfile": {
                 "id": "InstanceProfile",
-                "path": "aws-cdk-emr-create-cluster/EmrCreateCluster/InstanceProfile",
+                "path": "aws-cdk-emr-create-cluster-with-instance-fleet/EmrCreateCluster/InstanceProfile",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
                   "aws:cdk:cloudformation:props": {
@@ -146,15 +146,15 @@
           },
           "SM": {
             "id": "SM",
-            "path": "aws-cdk-emr-create-cluster/SM",
+            "path": "aws-cdk-emr-create-cluster-with-instance-fleet/SM",
             "children": {
               "Role": {
                 "id": "Role",
-                "path": "aws-cdk-emr-create-cluster/SM/Role",
+                "path": "aws-cdk-emr-create-cluster-with-instance-fleet/SM/Role",
                 "children": {
                   "ImportRole": {
                     "id": "ImportRole",
-                    "path": "aws-cdk-emr-create-cluster/SM/Role/ImportRole",
+                    "path": "aws-cdk-emr-create-cluster-with-instance-fleet/SM/Role/ImportRole",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.2.70"
@@ -162,7 +162,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-emr-create-cluster/SM/Role/Resource",
+                    "path": "aws-cdk-emr-create-cluster-with-instance-fleet/SM/Role/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -187,11 +187,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "aws-cdk-emr-create-cluster/SM/Role/DefaultPolicy",
+                    "path": "aws-cdk-emr-create-cluster-with-instance-fleet/SM/Role/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-emr-create-cluster/SM/Role/DefaultPolicy/Resource",
+                        "path": "aws-cdk-emr-create-cluster-with-instance-fleet/SM/Role/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -306,7 +306,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-emr-create-cluster/SM/Resource",
+                "path": "aws-cdk-emr-create-cluster-with-instance-fleet/SM/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
                   "aws:cdk:cloudformation:props": {
@@ -318,7 +318,7 @@
                           {
                             "Ref": "AWS::Partition"
                           },
-                          ":states:::elasticmapreduce:createCluster.sync\",\"Parameters\":{\"Instances\":{\"InstanceFleets\":[{\"InstanceFleetType\":\"MASTER\",\"InstanceTypeConfigs\":[{\"BidPrice\":\"1\",\"BidPriceAsPercentageOfOnDemandPrice\":1,\"Configurations\":[{\"Classification\":\"Classification\",\"Properties\":{\"Key\":\"Value\"}}],\"EbsConfiguration\":{\"EbsBlockDeviceConfigs\":[{\"VolumeSpecification\":{\"Iops\":1,\"SizeInGB\":1,\"VolumeType\":\"standard\"},\"VolumesPerInstance\":1}],\"EbsOptimized\":true},\"InstanceType\":\"m5.xlarge\",\"WeightedCapacity\":1}],\"LaunchSpecifications\":{\"OnDemandSpecification\":{\"AllocationStrategy\":\"lowest-price\",\"CapacityReservationOptions\":{\"CapacityReservationPreference\":\"open\",\"UsageStrategy\":\"use-capacity-reservations-first\"}},\"SpotSpecification\":{\"AllocationStrategy\":\"capacity-optimized\",\"BlockDurationMinutes\":1,\"TimeoutAction\":\"TERMINATE_CLUSTER\",\"TimeoutDurationMinutes\":1}},\"Name\":\"Master\",\"TargetOnDemandCapacity\":1,\"TargetSpotCapacity\":1}],\"KeepJobFlowAliveWhenNoSteps\":true},\"JobFlowRole\":\"",
+                          ":states:::elasticmapreduce:createCluster.sync\",\"Parameters\":{\"Instances\":{\"InstanceFleets\":[{\"InstanceFleetType\":\"MASTER\",\"InstanceTypeConfigs\":[{\"BidPriceAsPercentageOfOnDemandPrice\":1,\"InstanceType\":\"m5.xlarge\",\"WeightedCapacity\":1}],\"LaunchSpecifications\":{\"OnDemandSpecification\":{\"AllocationStrategy\":\"lowest-price\",\"CapacityReservationOptions\":{\"CapacityReservationPreference\":\"open\",\"UsageStrategy\":\"use-capacity-reservations-first\"}},\"SpotSpecification\":{\"AllocationStrategy\":\"capacity-optimized\",\"BlockDurationMinutes\":60,\"TimeoutAction\":\"TERMINATE_CLUSTER\",\"TimeoutDurationMinutes\":5}},\"Name\":\"Master\",\"TargetOnDemandCapacity\":1}],\"KeepJobFlowAliveWhenNoSteps\":true},\"JobFlowRole\":\"",
                           {
                             "Ref": "EmrCreateClusterInstanceRoleC80466F5"
                           },
@@ -326,7 +326,7 @@
                           {
                             "Ref": "EmrCreateClusterServiceRole5251910D"
                           },
-                          "\",\"Tags\":[{\"Key\":\"Key\",\"Value\":\"Value\"}],\"VisibleToAllUsers\":true}}}}"
+                          "\",\"ReleaseLabel\":\"emr-5.36.1\",\"Tags\":[{\"Key\":\"Key\",\"Value\":\"Value\"}],\"VisibleToAllUsers\":true}}}}"
                         ]
                       ]
                     },
@@ -351,7 +351,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "aws-cdk-emr-create-cluster/BootstrapVersion",
+            "path": "aws-cdk-emr-create-cluster-with-instance-fleet/BootstrapVersion",
             "constructInfo": {
               "fqn": "constructs.Construct",
               "version": "10.2.70"
@@ -359,7 +359,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "aws-cdk-emr-create-cluster/CheckBootstrapVersion",
+            "path": "aws-cdk-emr-create-cluster-with-instance-fleet/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "constructs.Construct",
               "version": "10.2.70"

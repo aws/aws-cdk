@@ -1,36 +1,19 @@
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
-import { App, Size, Stack } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { EmrCreateCluster } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 
 const app = new App();
 
-const stack = new Stack(app, 'aws-cdk-emr-create-cluster');
+const stack = new Stack(app, 'aws-cdk-emr-create-cluster-with-instance-fleet');
 
 const step = new EmrCreateCluster(stack, 'EmrCreateCluster', {
+  releaseLabel: 'emr-5.36.1',
   instances: {
     instanceFleets: [{
       instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
       instanceTypeConfigs: [{
-        bidPrice: '1',
         bidPriceAsPercentageOfOnDemandPrice: 1,
-        configurations: [{
-          classification: 'Classification',
-          properties: {
-            Key: 'Value',
-          },
-        }],
-        ebsConfiguration: {
-          ebsBlockDeviceConfigs: [{
-            volumeSpecification: {
-              iops: 1,
-              volumeSize: Size.gibibytes(1),
-              volumeType: EmrCreateCluster.EbsBlockDeviceVolumeType.STANDARD,
-            },
-            volumesPerInstance: 1,
-          }],
-          ebsOptimized: true,
-        },
         instanceType: 'm5.xlarge',
         weightedCapacity: 1,
       }],
@@ -46,14 +29,13 @@ const step = new EmrCreateCluster(stack, 'EmrCreateCluster', {
         },
         spotSpecification: {
           allocationStrategy: EmrCreateCluster.SpotAllocationStrategy.CAPACITY_OPTIMIZED,
-          blockDurationMinutes: 1,
+          blockDurationMinutes: 60,
           timeoutAction: EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
-          timeoutDurationMinutes: 1,
+          timeoutDurationMinutes: 5,
         },
       },
       name: 'Master',
       targetOnDemandCapacity: 1,
-      targetSpotCapacity: 1,
     }],
   },
   name: 'Cluster',
