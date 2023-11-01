@@ -115,8 +115,8 @@ import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 
 declare const project: codebuild.Project;
 
-new scheduler.Schedule(stack, 'Schedule', {
-  schedule: scheduler.ScheduleExpression.rate(Duration.minutes(60)),
+new Schedule(this, 'Schedule', {
+  schedule: ScheduleExpression.rate(Duration.minutes(60)),
   target: new targets.CodeBuildStartBuild(project, {}),
 });
 ```
