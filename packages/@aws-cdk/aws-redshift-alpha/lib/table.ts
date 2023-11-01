@@ -236,7 +236,6 @@ export class Table extends TableBase {
   readonly tableColumns: Column[];
   readonly cluster: ICluster;
   readonly databaseName: string;
-  readonly id: string;
 
   private resource: DatabaseQuery<TableHandlerProps>;
 

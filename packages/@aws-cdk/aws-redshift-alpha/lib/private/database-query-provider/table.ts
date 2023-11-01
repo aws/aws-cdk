@@ -1,9 +1,9 @@
 /* eslint-disable-next-line import/no-unresolved */
 import * as AWSLambda from 'aws-lambda';
+import { Column } from '../../table';
 import { executeStatement } from './redshift-data';
 import { ClusterProps, TableAndClusterProps, TableSortStyle } from './types';
-import { areColumnsEqual, getDistKeyColumn, getSortKeyColumns } from './util';
-import { Column } from '../../table';
+import { areColumnsEqual, getDistKeyColumn, getSortKeyColumns, makePhysicalId } from './util';
 
 export async function handler(props: TableAndClusterProps, event: AWSLambda.CloudFormationCustomResourceEvent) {
   const tableNamePrefix = props.tableName.prefix;
@@ -15,7 +15,7 @@ export async function handler(props: TableAndClusterProps, event: AWSLambda.Clou
   if (event.RequestType === 'Create') {
     const tableName = await createTable(tableNamePrefix, tableNameSuffix, tableColumns, tableAndClusterProps);
     return {
-      PhysicalResourceId: tableName,
+      PhysicalResourceId: makePhysicalId(tableName, tableAndClusterProps, event.RequestId),
       Data: { TableName: tableName },
     };
   } else if (event.RequestType === 'Delete') {
