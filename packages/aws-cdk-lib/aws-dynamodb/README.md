@@ -201,6 +201,18 @@ const globalTable = new dynamodb.TableV2(stack, 'GlobalTable', {
 });
 ```
 
+When changing the billing for a table from provisioned to on-demand or from on-demand to provisioned, `seedCapacity` must be configured for each autoscaled resource:
+
+```ts
+const globalTable = new dynamodb.TableV2(this, 'Table', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  billing: dynamodb.Billing.provisioned({
+    readCapacity: dynamodb.Capacity.fixed(10),
+    writeCapacity: dynamodb.Capacity.autoscaled({ maxCapacity: 10, seedCapacity: 20 }),
+  }),
+});
+```
+
 Further reading:
 https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadWriteCapacityMode.html
 

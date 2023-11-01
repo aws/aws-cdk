@@ -49,6 +49,7 @@
        "WriteCapacityAutoScalingSettings": {
         "MaxCapacity": 20,
         "MinCapacity": 1,
+        "SeedCapacity": 10,
         "TargetTrackingScalingPolicyConfiguration": {
          "TargetValue": 60
         }
@@ -251,6 +252,7 @@
      "WriteCapacityAutoScalingSettings": {
       "MaxCapacity": 20,
       "MinCapacity": 1,
+      "SeedCapacity": 10,
       "TargetTrackingScalingPolicyConfiguration": {
        "TargetValue": 60
       }
