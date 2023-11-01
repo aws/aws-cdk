@@ -174,7 +174,7 @@ describe('delete', () => {
     await manageTable(resourceProperties, event);
 
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `DROP TABLE ${physicalResourceId}`,
+      Sql: `DROP TABLE ${tableNamePrefix}${stackIdTruncated}`,
     }));
   });
 });
