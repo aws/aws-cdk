@@ -117,17 +117,17 @@ a FIFO queue as a target, the queue must have content-based deduplication enable
 ```ts
 const payload = 'test';
 const messageGroupId = 'id';
-const queue = new Queue(stack, 'MyQueue', {
+const queue = new sqs.Queue(this, 'MyQueue', {
   fifo: true,
   contentBasedDeduplication: true,
 });
 
 const target = new targets.SqsSendMessage(queue, {
-    input: scheduler.ScheduleTargetInput.fromText(payload),
+    input: ScheduleTargetInput.fromText(payload),
     messageGroupId,
 });
 
-const schedule = new Schedule(this, 'Schedule', {
+new Schedule(this, 'Schedule', {
     schedule: ScheduleExpression.rate(Duration.minutes(1)),
     target
 });
