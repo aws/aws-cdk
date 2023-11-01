@@ -70,7 +70,7 @@ test('resource with optional primary identifier gets property from ref', () => {
   expect(rendered).toMatchSnapshot();
 });
 
-test('resource with multiple primaryIdentifiers as properties are dropped entirely', () => {
+test('resource with multiple primaryIdentifiers as properties', () => {
   // GIVEN
   const resource = db.allocate('resource', {
     name: 'Resource',
