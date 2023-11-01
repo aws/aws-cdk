@@ -945,9 +945,6 @@ test('Create Cluster with InstanceFleet with allocation strategy=capacity-optimi
             WeightedCapacity: 1,
           }],
           LaunchSpecifications: {
-            OnDemandSpecification: {
-              CapacityReservationOptions: {},
-            },
             SpotSpecification: {
               AllocationStrategy: 'capacity-optimized',
               BlockDurationMinutes: 1,
@@ -1064,9 +1061,6 @@ test('Create Cluster with InstanceFleet for Spot instances', () => {
             WeightedCapacity: 1,
           }],
           LaunchSpecifications: {
-            OnDemandSpecification: {
-              CapacityReservationOptions: {},
-            },
             SpotSpecification: {
               BlockDurationMinutes: 1,
               TimeoutAction: 'TERMINATE_CLUSTER',
@@ -1193,7 +1187,6 @@ test('Create Cluster with InstanceFleet for On-Demand instances', () => {
                 UsageStrategy: 'use-capacity-reservations-first',
               },
             },
-            SpotSpecification: {},
           },
           Name: 'Master',
           TargetOnDemandCapacity: 1,

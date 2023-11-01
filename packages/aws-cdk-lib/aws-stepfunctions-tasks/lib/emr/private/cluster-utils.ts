@@ -121,34 +121,59 @@ export function InstanceTypeConfigPropertyToJson(property: EmrCreateCluster.Inst
  * @param property
  */
 export function InstanceFleetProvisioningSpecificationsPropertyToJson(property: EmrCreateCluster.InstanceFleetProvisioningSpecificationsProperty) {
-  const capacityReservationResourceGroupArn = property.onDemandSpecification?.capacityReservationOptions?.capacityReservationResourceGroupArn;
+  return {
+    OnDemandSpecification: OnDemandProvisioningSpecificationPropertyToJson(property.onDemandSpecification),
+    SpotSpecification: SpotProvisioningSpecificationPropertyToJson(property.spotSpecification),
+  };
+}
+
+/**
+ * Render the OnDemandProvisioningSpecificationProperty to JSON
+ *
+ * @param property
+ */
+function OnDemandProvisioningSpecificationPropertyToJson(property: EmrCreateCluster.OnDemandProvisioningSpecificationProperty | undefined) {
+  if (!property) {
+    return undefined;
+  }
+  const capacityReservationResourceGroupArn = property.capacityReservationOptions?.capacityReservationResourceGroupArn;
   if (capacityReservationResourceGroupArn !== undefined && capacityReservationResourceGroupArn.length > 256) {
     throw new Error(`length of capacityReservationResourceGroupArn must be between 0 and 256, got ${capacityReservationResourceGroupArn.length}`);
   }
 
   return {
-    OnDemandSpecification: {
-      AllocationStrategy: cdk.stringToCloudFormation(
-        property.onDemandSpecification?.allocationStrategy ?? EmrCreateCluster.OnDemandAllocationStrategy.LOWEST_PRICE,
+    AllocationStrategy: cdk.stringToCloudFormation(
+      property.allocationStrategy ?? EmrCreateCluster.OnDemandAllocationStrategy.LOWEST_PRICE,
+    ),
+    CapacityReservationOptions: {
+      CapacityReservationPreference: cdk.stringToCloudFormation(
+        property.capacityReservationOptions?.capacityReservationPreference,
       ),
-      CapacityReservationOptions: {
-        CapacityReservationPreference: cdk.stringToCloudFormation(
-          property.onDemandSpecification?.capacityReservationOptions?.capacityReservationPreference,
-        ),
-        CapacityReservationResourceGroupArn: cdk.stringToCloudFormation(
-          property.onDemandSpecification?.capacityReservationOptions?.capacityReservationResourceGroupArn,
-        ),
-        UsageStrategy: cdk.stringToCloudFormation(
-          property.onDemandSpecification?.capacityReservationOptions?.usageStrategy,
-        ),
-      },
+      CapacityReservationResourceGroupArn: cdk.stringToCloudFormation(
+        property.capacityReservationOptions?.capacityReservationResourceGroupArn,
+      ),
+      UsageStrategy: cdk.stringToCloudFormation(
+        property.capacityReservationOptions?.usageStrategy,
+      ),
     },
-    SpotSpecification: {
-      AllocationStrategy: cdk.stringToCloudFormation(property.spotSpecification?.allocationStrategy),
-      BlockDurationMinutes: cdk.numberToCloudFormation(property.spotSpecification?.blockDurationMinutes),
-      TimeoutAction: cdk.stringToCloudFormation(property.spotSpecification?.timeoutAction?.valueOf()),
-      TimeoutDurationMinutes: cdk.numberToCloudFormation(property.spotSpecification?.timeoutDurationMinutes),
-    },
+  };
+}
+
+/**
+ * Render the SpotProvisioningSpecificationProperty to JSON
+ *
+ * @param property
+ */
+function SpotProvisioningSpecificationPropertyToJson(property: EmrCreateCluster.SpotProvisioningSpecificationProperty | undefined) {
+  if (!property) {
+    return undefined;
+  }
+
+  return {
+    AllocationStrategy: cdk.stringToCloudFormation(property.allocationStrategy),
+    BlockDurationMinutes: cdk.numberToCloudFormation(property.blockDurationMinutes),
+    TimeoutAction: cdk.stringToCloudFormation(property.timeoutAction?.valueOf()),
+    TimeoutDurationMinutes: cdk.numberToCloudFormation(property.timeoutDurationMinutes),
   };
 }
 
