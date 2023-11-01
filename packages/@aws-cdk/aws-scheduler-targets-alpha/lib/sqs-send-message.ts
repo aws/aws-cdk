@@ -32,11 +32,13 @@ export class SqsSendMessage extends ScheduleTargetBase implements IScheduleTarge
         throw new Error(`messageGroupId length must be between 1 and 128, got ${props.messageGroupId.length}`);
       }
       if (!queue.fifo) {
-        throw new Error('queue must be FIFO queue if messageGroupId is specified');
+        throw new Error('target must be a FIFO queue if messageGroupId is specified');
       }
       if (!(queue.node.defaultChild as sqs.CfnQueue).contentBasedDeduplication) {
-        throw new Error('contentBasedDeduplication must be true if messageGroupId is specified');
+        throw new Error('contentBasedDeduplication must be true if the target is a FIFO queue');
       }
+    } else if (queue.fifo) {
+      throw new Error('messageGroupId must be specified if the target is a FIFO queue');
     }
   }
 

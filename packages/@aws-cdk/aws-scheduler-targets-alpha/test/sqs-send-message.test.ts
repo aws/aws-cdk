@@ -14,10 +14,7 @@ describe('schedule target', () => {
   beforeEach(() => {
     app = new App();
     stack = new Stack(app, 'Stack', { env: { region: 'us-east-1', account: '123456789012' } });
-    queue = new sqs.Queue(stack, 'MyQueue', {
-      fifo: true,
-      contentBasedDeduplication: true,
-    });
+    queue = new sqs.Queue(stack, 'MyQueue');
   });
 
   test('creates IAM role and IAM policy for sqs target in the same account', () => {
@@ -477,7 +474,11 @@ describe('schedule target', () => {
   });
 
   test('add message group id for target config', () => {
-    const queueTarget = new SqsSendMessage(queue, {
+    const fifoQueue = new sqs.Queue(stack, 'FifoQueue', {
+      fifo: true,
+      contentBasedDeduplication: true,
+    });
+    const queueTarget = new SqsSendMessage(fifoQueue, {
       messageGroupId: 'messageGroupId',
     });
 
@@ -490,7 +491,7 @@ describe('schedule target', () => {
       Properties: {
         Target: {
           Arn: {
-            'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
+            'Fn::GetAtt': ['FifoQueueE5FF7273', 'Arn'],
           },
           RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget1441a743A31888', 'Arn'] },
           RetryPolicy: {},
@@ -503,15 +504,23 @@ describe('schedule target', () => {
   });
 
   test('throws when messageGroupId length is less than 1', () => {
+    const fifoQueue = new sqs.Queue(stack, 'FifoQueue', {
+      fifo: true,
+      contentBasedDeduplication: true,
+    });
     expect(() =>
-      new SqsSendMessage(queue, {
+      new SqsSendMessage(fifoQueue, {
         messageGroupId: '',
       })).toThrow(/messageGroupId length must be between 1 and 128, got 0/);
   });
 
   test('throws when messageGroupId length is greater than 128', () => {
+    const fifoQueue = new sqs.Queue(stack, 'FifoQueue', {
+      fifo: true,
+      contentBasedDeduplication: true,
+    });
     expect(() =>
-      new SqsSendMessage(queue, {
+      new SqsSendMessage(fifoQueue, {
         messageGroupId: 'a'.repeat(129),
       })).toThrow(/messageGroupId length must be between 1 and 128, got 129/);
   });
@@ -523,10 +532,10 @@ describe('schedule target', () => {
     expect(() =>
       new SqsSendMessage(wrongQueue, {
         messageGroupId: 'id',
-      })).toThrow(/queue must be FIFO queue if messageGroupId is specified/);
+      })).toThrow(/target must be a FIFO queue if messageGroupId is specified/);
   });
 
-  test('throws when contentBasedDeduplication is not true if messageGroupId is specified', () => {
+  test('throws when contentBasedDeduplication is not true if queue is FIFO queue', () => {
     const wrongQueue = new sqs.Queue(stack, 'WrongQueue', {
       fifo: true,
       contentBasedDeduplication: false,
@@ -534,6 +543,15 @@ describe('schedule target', () => {
     expect(() =>
       new SqsSendMessage(wrongQueue, {
         messageGroupId: 'id',
-      })).toThrow(/contentBasedDeduplication must be true if messageGroupId is specified/);
+      })).toThrow(/contentBasedDeduplication must be true if the target is a FIFO queue/);
+  });
+
+  test('throws when queue is FIFO queue if messageGroupId is not specified', () => {
+    const wrongQueue = new sqs.Queue(stack, 'WrongQueue', {
+      fifo: true,
+      contentBasedDeduplication: true,
+    });
+    expect(() =>
+      new SqsSendMessage(wrongQueue, {})).toThrow(/messageGroupId must be specified if the target is a FIFO queue/);
   });
 });
