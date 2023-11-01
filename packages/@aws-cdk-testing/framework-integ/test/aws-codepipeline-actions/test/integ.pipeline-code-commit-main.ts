@@ -6,7 +6,7 @@ import { CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME } from 'aws-cdk-lib/cx-api
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const defaultBranchFeatureFlag = { [CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME]: true };
-const app = new cdk.App({ context: defaultBranchFeatureFlag });
+const app = new cdk.App({ postCliContext: defaultBranchFeatureFlag });
 
 const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-codecommit-main');
 

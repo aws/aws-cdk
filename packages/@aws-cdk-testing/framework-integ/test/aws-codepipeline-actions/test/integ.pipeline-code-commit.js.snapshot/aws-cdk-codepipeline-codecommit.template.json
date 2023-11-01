@@ -30,7 +30,7 @@
        "referenceUpdated"
       ],
       "referenceName": [
-       "main"
+       "master"
       ]
      }
     },
@@ -340,7 +340,7 @@
            "Name"
           ]
          },
-         "BranchName": "main",
+         "BranchName": "master",
          "PollForSourceChanges": false
         },
         "Name": "source",
