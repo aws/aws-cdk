@@ -171,7 +171,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
+                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpStage",
                   "version": "0.0.0"
                 }
               },
@@ -209,7 +209,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
+                      "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpIntegration",
                       "version": "0.0.0"
                     }
                   },
@@ -292,7 +292,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
+                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpRoute",
                   "version": "0.0.0"
                 }
               },
@@ -349,7 +349,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
+                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpAuthorizer",
                   "version": "0.0.0"
                 }
               },
@@ -403,7 +403,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpApi",
               "version": "0.0.0"
             }
           },
@@ -450,7 +450,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
+                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpStage",
                   "version": "0.0.0"
                 }
               },
@@ -507,7 +507,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
+                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpAuthorizer",
                   "version": "0.0.0"
                 }
               },
@@ -561,7 +561,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpApi",
               "version": "0.0.0"
             }
           },
@@ -719,7 +719,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
+                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpIntegration",
                   "version": "0.0.0"
                 }
               },
@@ -802,7 +802,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpRoute",
               "version": "0.0.0"
             }
           },

@@ -1,0 +1,11 @@
+{
+  "name": "connect",
+  "version": "1.0.0",
+  "description": "connect example for WebSockets on API Gateway",
+  "main": "index.js",
+  "author": "SAM CLI",
+  "license": "MIT",
+  "dependencies": {
+    "aws-sdk": "^2.690.0"
+  }
+}
