@@ -6,8 +6,8 @@ Shout out to our top contributors!
 - [skinny85](https://github.com/skinny85)
 - [RomainMuller](https://github.com/RomainMuller)
 - [njlynch](https://github.com/njlynch)
-- [jogold](https://github.com/jogold)
 - [kaizencc](https://github.com/kaizencc)
+- [jogold](https://github.com/jogold)
 - [iliapolo](https://github.com/iliapolo)
 - [corymhall](https://github.com/corymhall)
 - [shivlaks](https://github.com/shivlaks)
@@ -16,17 +16,17 @@ Shout out to our top contributors!
 - [NetaNir](https://github.com/NetaNir)
 - [comcalvi](https://github.com/comcalvi)
 - [robertd](https://github.com/robertd)
+- [MrArnoldPalmer](https://github.com/MrArnoldPalmer)
 - [pahud](https://github.com/pahud)
 - [mrgrain](https://github.com/mrgrain)
-- [MrArnoldPalmer](https://github.com/MrArnoldPalmer)
 - [peterwoodworth](https://github.com/peterwoodworth)
 - [TheRealAmazonKendra](https://github.com/TheRealAmazonKendra)
+- [lpizzinidev](https://github.com/lpizzinidev)
 - [nija-at](https://github.com/nija-at)
 - [hoegertn](https://github.com/hoegertn)
-- [lpizzinidev](https://github.com/lpizzinidev)
 - [jumic](https://github.com/jumic)
-- [SoManyHs](https://github.com/SoManyHs)
 - [watany-dev](https://github.com/watany-dev)
+- [SoManyHs](https://github.com/SoManyHs)
 
 
-_Last updated: Sun, 01 Oct 23 00:09:32 +0000_
+_Last updated: Wed, 01 Nov 23 00:09:18 +0000_
