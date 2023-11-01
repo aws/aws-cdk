@@ -947,7 +947,6 @@ test('Create Cluster with InstanceFleet with allocation strategy=capacity-optimi
           LaunchSpecifications: {
             OnDemandSpecification: {
               CapacityReservationOptions: {},
-              CapacityReservationOptions: {},
             },
             SpotSpecification: {
               AllocationStrategy: 'capacity-optimized',
