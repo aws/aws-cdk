@@ -136,7 +136,9 @@ export class ResourceClass extends ClassType {
         immutable: true,
       });
     }
-    if (this.decider.arn) {
+
+    // Add the arn too, unless it is duplicated in the resourceIdentifier already
+    if (this.decider.arn && this.resourceInterface.properties.every((p) => p.name !== this.decider.arn!.name)) {
       this.resourceInterface.addProperty({
         ...this.decider.arn,
         immutable: true,

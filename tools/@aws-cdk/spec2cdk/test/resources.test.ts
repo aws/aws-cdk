@@ -246,24 +246,28 @@ test('resource interface with "<Resource>Arn"', () => {
   expect(rendered).toMatchSnapshot();
 });
 
-// function getInterface(module: ResourceModule, intName: string) {
-//   const int = moduleInterfaces(module).find((i) => i.spec.name === intName);
-//   if (!int) throw new Error('wtf');
-//   return new InterfaceRenderer().renderInterface(int);
-// }
+test('resource interface with Arn as primaryIdentifier', () => {
+  // GIVEN
+  const resource = db.allocate('resource', {
+    name: 'Resource',
+    primaryIdentifier: ['Arn'],
+    properties: {},
+    attributes: {
+      Arn: {
+        type: { type: 'string' },
+        documentation: 'The arn of the resource',
+      },
+    },
+    cloudFormationType: 'AWS::Some::Resource',
+  });
+  db.link('hasResource', service, resource);
 
-// Should be in Module
-// function moduleInterfaces(module: ResourceModule) {
-//   return module.types.filter((t) => t instanceof InterfaceType).map((t) => t as InterfaceType);
-// }
+  // THEN
+  const foundResource = db.lookup('resource', 'cloudFormationType', 'equals', 'AWS::Some::Resource').only();
 
-// class InterfaceRenderer extends TypeScriptRenderer {
+  const ast = AstBuilder.forResource(foundResource, { db });
 
-//   public render() {
-//     super.r
-//   }
+  const rendered = renderer.render(ast.module);
 
-//   public renderInterface(interfaceType: InterfaceType) {
-//     super.renderInterface(interfaceType);
-//   }
-// }
+  expect(rendered).toMatchSnapshot();
+});
