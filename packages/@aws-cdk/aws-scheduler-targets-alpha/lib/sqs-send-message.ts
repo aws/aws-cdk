@@ -18,6 +18,8 @@ export interface SqsSendMessageProps extends ScheduleTargetBaseProps {
    * A length of `messageGroupId` must be between 1 and 128.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-scheduler-schedule-sqsparameters.html#cfn-scheduler-schedule-sqsparameters-messagegroupid
+   *
+   * @default - no message group ID
    */
   readonly messageGroupId?: string;
 }
