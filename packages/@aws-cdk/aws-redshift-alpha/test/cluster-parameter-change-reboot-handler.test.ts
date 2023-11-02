@@ -231,7 +231,7 @@ describe('cluster-parameter-change-reboot-handler', () => {
     expect(mockRebootCluster).toHaveBeenCalledTimes(2);
   });
 
-  test('retries if rebootCluster throws generic error', async () => {
+  test('fails if rebootCluster throws generic error', async () => {
     // GIVEN
     mockDescribeClusters.mockImplementation(() => {
       return {
