@@ -26,7 +26,7 @@ The following targets are supported:
 
 1. `targets.LambdaInvoke`: [Invoke an AWS Lambda function](#invoke-a-lambda-function))
 2. `targets.StepFunctionsStartExecution`: [Start an AWS Step Function](#start-an-aws-step-function)
-2. `targets.CodeBuildStartBuild`: [Start a CodeBuild job](#start-a-codebuild-job)
+3. `targets.CodeBuildStartBuild`: [Start a CodeBuild job](#start-a-codebuild-job)
 
 ## Invoke a Lambda function
 
