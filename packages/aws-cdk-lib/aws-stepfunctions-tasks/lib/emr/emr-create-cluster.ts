@@ -687,7 +687,6 @@ export namespace EmrCreateCluster {
      * @default - No allocation strategy, i.e. spot instance type will be chosen based on current price only
      */
     readonly allocationStrategy?: SpotAllocationStrategy;
-
     /**
      * The defined duration for Spot instances (also known as Spot blocks) in minutes.
      *
