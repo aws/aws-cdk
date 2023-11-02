@@ -598,6 +598,7 @@ new tasks.EmrCreateCluster(this, 'SpotSpecification', {
           timeoutAction: tasks.EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
           timeoutDurationMinutes: 60,
         },
+      },
     }],
   },
   name: 'SpotCluster',
