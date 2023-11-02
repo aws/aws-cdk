@@ -90,6 +90,7 @@ export class CoreTypes {
    */
   public static isCfnType(interfaceType: reflect.Type) {
     return interfaceType.name.startsWith('Cfn')
+      || interfaceType.name.startsWith('ICfn')
       || (interfaceType.namespace && interfaceType.namespace.startsWith('Cfn'))
       // aws_service.CfnTheResource.SubType
       || (interfaceType.namespace && interfaceType.namespace.split('.', 2).at(1)?.startsWith('Cfn'));
