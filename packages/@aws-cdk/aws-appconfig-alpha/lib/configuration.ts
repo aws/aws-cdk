@@ -335,11 +335,15 @@ export interface HostedConfigurationOptions extends ConfigurationOptions {
 
   /**
    * The latest version number of the hosted configuration.
+   *
+   * @default - None.
    */
   readonly latestVersionNumber?: number;
 
   /**
    * The version label of the hosted configuration.
+   *
+   * @default - None.
    */
   readonly versionLabel?: string;
 }
@@ -352,11 +356,15 @@ export interface HostedConfigurationProps extends ConfigurationProps {
 
   /**
    * The latest version number of the hosted configuration.
+   *
+   * @default - None.
    */
   readonly latestVersionNumber?: number;
 
   /**
    * The version label of the hosted configuration.
+   *
+   * @default - None.
    */
   readonly versionLabel?: string;
 }
