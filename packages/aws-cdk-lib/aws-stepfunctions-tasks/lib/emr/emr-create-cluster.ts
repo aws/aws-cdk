@@ -659,11 +659,10 @@ export namespace EmrCreateCluster {
     /**
      * The defined duration for Spot instances (also known as Spot blocks) in minutes.
      *
-     * This is no longer available to new customers from July 1, 2021.
-     * For customers who have previously used the feature, we will continue to support Spot Instances
-     * with a defined duration until December 31, 2022.
-     *
      * @default - No blockDurationMinutes
+     *
+     * @deprecated - Spot Instances with a defined duration (also known as Spot blocks) are no longer available to new customers from July 1, 2021.
+     * For customers who have previously used the feature, we will continue to support Spot Instances with a defined duration until December 31, 2022.
      */
     readonly blockDurationMinutes?: number;
 
