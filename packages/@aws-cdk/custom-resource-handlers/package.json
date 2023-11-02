@@ -31,6 +31,7 @@
     "@aws-sdk/client-ecs": "^3.421.0",
     "@aws-sdk/client-kinesis": "^3.421.0",
     "@aws-sdk/client-kms": "^3.421.0",
+    "@aws-sdk/client-cloudwatch-logs": "^3.441.0",
     "@types/jest": "^29.5.5",
     "aws-sdk-client-mock": "^3.0.0",
     "aws-sdk-client-mock-jest": "^3.0.0",
@@ -46,7 +47,6 @@
     "@aws-sdk/client-synthetics": "^3.421.0",
     "@aws-sdk/client-ecr": "^3.421.0",
     "@aws-sdk/client-s3": "^3.421.0",
-    "@aws-sdk/client-cloudwatch-logs": "^3.441.0",
     "aws-sdk": "^2.1466.0"
   },
   "repository": {
