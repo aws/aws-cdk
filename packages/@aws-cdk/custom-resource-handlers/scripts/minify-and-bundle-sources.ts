@@ -10,6 +10,7 @@ function recFolderStructure(fileOrDir: string) {
       recFolderStructure(path.join(fileOrDir, i));
     }
   } else {
+    // minify + bundle 'index.ts' and 'index.js' files
     if (['index.ts', 'index.js'].some(file => fileOrDir.includes(file))) {
       entryPoints.push(fileOrDir);
     }
