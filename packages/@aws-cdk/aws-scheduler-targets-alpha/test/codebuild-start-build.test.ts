@@ -23,7 +23,7 @@ describe('codebuild start build', () => {
     });
   });
 
-  test('creates IAM role and IAM policy for step function target in the same account', () => {
+  test('creates IAM role and IAM policy for codebuild target in the same account', () => {
     const codeBuildTarget = new CodeBuildStartBuild(codebuildProject, {});
 
     new Schedule(stack, 'MyScheduleDummy', {
@@ -158,7 +158,7 @@ describe('codebuild start build', () => {
     }, 1);
   });
 
-  test('creates IAM policy for imported state machine in the same account', () => {
+  test('creates IAM policy for imported codebuild project in the same account', () => {
     const importedCodeBuildArn = 'arn:aws:codebuild:us-east-1:123456789012:project/myproject';
     const importedCodeBuild = Project.fromProjectArn(stack, 'ImportedProject', importedCodeBuildArn);
 
@@ -287,8 +287,6 @@ describe('codebuild start build', () => {
         target: codeBuildTarget,
       })).toThrow(expectedError);
   });
-
-  /**/
 
   test('throws when IAM role is imported from different account', () => {
     const anotherAccountId = '123456789015';
