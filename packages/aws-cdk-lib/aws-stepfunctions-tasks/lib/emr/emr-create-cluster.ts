@@ -719,14 +719,14 @@ export namespace EmrCreateCluster {
      * The instance fleet configuration is available only in Amazon EMR releases 4.8.0 and later, excluding 5.0.x versions.
      * On-Demand Instances allocation strategy is available in Amazon EMR releases 5.12.1 and later.
      *
-     * @default - no onDemandSpecification
+     * @default - no on-demand specification
      */
     readonly onDemandSpecification?: OnDemandProvisioningSpecificationProperty;
 
     /**
      * The launch specification for Spot instances in the fleet, which determines the defined duration and provisioning timeout behavior.
      *
-     * @default - no spotSpecification
+     * @default - no spot specification
      */
     readonly spotSpecification?: SpotProvisioningSpecificationProperty;
   }
