@@ -39,7 +39,16 @@ export interface AutoscaledCapacityOptions {
    *
    * @default 70
    */
-  readonly targetUtilizationPercent?: number
+  readonly targetUtilizationPercent?: number;
+
+  /**
+   * If you want to switch a table's billing mode from on-demand to provisioned or
+   * from provisioned to on-demand, you must specify a value for this property for
+   * each autoscaled resource.
+   *
+   * @default no seed capacity
+   */
+  readonly seedCapacity?: number;
 }
 
 /**
@@ -85,6 +94,10 @@ export abstract class Capacity {
         if (options.targetUtilizationPercent !== undefined && (options.targetUtilizationPercent < 20 || options.targetUtilizationPercent > 90)) {
           throw new Error('`targetUtilizationPercent` cannot be less than 20 or greater than 90');
         }
+
+        if (options.seedCapacity !== undefined && (options.seedCapacity < 1)) {
+          throw new Error(`'seedCapacity' cannot be less than 1 - received ${options.seedCapacity}`);
+        }
       }
 
       public _renderReadCapacity() {
@@ -103,6 +116,7 @@ export abstract class Capacity {
         return {
           minCapacity: options.minCapacity ?? 1,
           maxCapacity: options.maxCapacity,
+          seedCapacity: options.seedCapacity,
           targetTrackingScalingPolicyConfiguration: {
             targetValue: options.targetUtilizationPercent ?? 70,
           },

@@ -153,6 +153,43 @@ describe('stack monitor, collecting errors from events', () => {
     expect(monitor.errors).toStrictEqual(['actual failure error message', 'nested stack failed']);
   });
 
+  test('does not consider events without physical resource id for monitoring nested stacks', async () => {
+    const monitor = await testMonitorWithEventCalls([
+      (request) => {
+        expect(request.StackName).toStrictEqual('StackName');
+        return {
+          StackEvents: [
+            addErrorToStackEvent(
+              event(100), {
+                logicalResourceId: 'nestedStackLogicalResourceId',
+                physicalResourceId: '',
+                resourceType: 'AWS::CloudFormation::Stack',
+                resourceStatusReason: 'nested stack failed',
+              },
+            ),
+          ],
+        };
+      },
+      (request) => {
+        // Note that the second call happened for the top level stack instead of a nested stack
+        expect(request.StackName).toStrictEqual('StackName');
+        return {
+          StackEvents: [
+            addErrorToStackEvent(
+              event(101), {
+                logicalResourceId: 'OtherResource',
+                resourceType: 'Some::Other::Resource',
+                resourceStatusReason: 'some failure',
+              },
+            ),
+          ],
+        };
+      },
+    ]);
+
+    expect(monitor.errors).toStrictEqual(['nested stack failed', 'some failure']);
+  });
+
   test('does not check for nested stacks that have already completed successfully', async () => {
     const monitor = await testMonitorWithEventCalls([
       (request) => {

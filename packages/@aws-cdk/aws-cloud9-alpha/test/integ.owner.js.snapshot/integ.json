@@ -1,0 +1,12 @@
+{
+  "version": "34.0.0",
+  "testCases": {
+    "OwnerInteg/DefaultTest": {
+      "stacks": [
+        "cloud9-owner-integ"
+      ],
+      "assertionStack": "OwnerInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "OwnerIntegDefaultTestDeployAssertEE359F09"
+    }
+  }
+}

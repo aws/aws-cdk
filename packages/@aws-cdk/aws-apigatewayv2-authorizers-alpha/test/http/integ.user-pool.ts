@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { HttpApi, HttpMethod } from '@aws-cdk/aws-apigatewayv2-alpha';
+import { HttpApi, HttpMethod, HttpRoute, HttpRouteKey } from '@aws-cdk/aws-apigatewayv2-alpha';
 import { HttpLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
@@ -16,11 +16,17 @@ import { HttpUserPoolAuthorizer } from '../../lib';
 const app = new App();
 const stack = new Stack(app, 'AuthorizerInteg');
 
-const httpApi = new HttpApi(stack, 'MyHttpApi');
-
 const userPool = new cognito.UserPool(stack, 'userpool');
+const userPoolForDefaultAuthorizer = new cognito.UserPool(stack, 'userpoolForDefaultAuthorizer');
 
 const authorizer = new HttpUserPoolAuthorizer('UserPoolAuthorizer', userPool);
+const defaultAuthorizer = new HttpUserPoolAuthorizer('UserPoolDefaultAuthorizer', userPoolForDefaultAuthorizer);
+
+const httpApi = new HttpApi(stack, 'MyHttpApi');
+const httpApiWithDefaultAuthorizer = new HttpApi(stack, 'MyHttpApiWithDefaultAuthorizer', {
+  defaultAuthorizer,
+  defaultAuthorizationScopes: ['scope1', 'scope2'],
+});
 
 const handler = new lambda.Function(stack, 'lambda', {
   runtime: lambda.Runtime.NODEJS_18_X,
@@ -33,4 +39,10 @@ httpApi.addRoutes({
   methods: [HttpMethod.GET],
   integration: new HttpLambdaIntegration('RootIntegratin', handler),
   authorizer,
+});
+
+new HttpRoute(stack, 'Route', {
+  httpApi: httpApiWithDefaultAuthorizer,
+  routeKey: HttpRouteKey.with('/v1/mything/{proxy+}', HttpMethod.ANY),
+  integration: new HttpLambdaIntegration('RootIntegration', handler),
 });

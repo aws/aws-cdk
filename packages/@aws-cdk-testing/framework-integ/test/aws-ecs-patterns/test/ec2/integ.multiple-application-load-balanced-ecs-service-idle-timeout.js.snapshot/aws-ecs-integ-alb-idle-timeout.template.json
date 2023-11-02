@@ -906,7 +906,7 @@
      },
      {
       "Key": "idle_timeout.timeout_seconds",
-      "Value": "400"
+      "Value": "5"
      }
     ],
     "Scheme": "internet-facing",
@@ -1101,7 +1101,7 @@
      },
      {
       "Key": "idle_timeout.timeout_seconds",
-      "Value": "400"
+      "Value": "500"
      }
     ],
     "Scheme": "internet-facing",

@@ -430,7 +430,7 @@
                               {
                                 "Ref": "mywsapi32E6CE11"
                               },
-                              "/*/*$connect"
+                              "/*$connect"
                             ]
                           ]
                         }
@@ -564,7 +564,7 @@
                               {
                                 "Ref": "mywsapi32E6CE11"
                               },
-                              "/*/*$disconnect"
+                              "/*$disconnect"
                             ]
                           ]
                         }
@@ -698,7 +698,7 @@
                               {
                                 "Ref": "mywsapi32E6CE11"
                               },
-                              "/*/*$default"
+                              "/*$default"
                             ]
                           ]
                         }
@@ -832,7 +832,7 @@
                               {
                                 "Ref": "mywsapi32E6CE11"
                               },
-                              "/*/*sendmessage"
+                              "/*sendmessage"
                             ]
                           ]
                         }

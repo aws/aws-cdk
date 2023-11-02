@@ -2,6 +2,7 @@ import { Match, Template } from '../../../assertions';
 import * as autoscaling from '../../../aws-autoscaling';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
+import * as lbv1 from '../../../aws-elasticloadbalancing';
 import * as lbv2 from '../../../aws-elasticloadbalancingv2';
 import * as cdk from '../../../core';
 import * as codedeploy from '../../lib';
@@ -210,6 +211,95 @@ describe('CodeDeploy Server Deployment Group', () => {
         'DeploymentOption': 'WITH_TRAFFIC_CONTROL',
       },
     });
+  });
+
+  test.each([
+    ['CLB + ALB', true, true, false],
+    ['CLB + NLB', true, false, true],
+    ['ALB + NLB', false, true, true],
+    ['CLB + ALB + NLB', true, true, true],
+  ])('can be created with multiple load balancers (%s)', (_, withCLB, withALB, withNLB) => {
+    const stack = new cdk.Stack();
+    const defaultVpc = new ec2.Vpc(stack, 'VPC');
+
+    const loadBalancers: codedeploy.LoadBalancer[] = [];
+    const loadBalancerInfo: { TargetGroupInfoList?: any[]; ElbInfoList?: any[] } = {};
+
+    if (withCLB) {
+      loadBalancers.push(codedeploy.LoadBalancer.classic(new lbv1.LoadBalancer(stack, 'CLB', {
+        vpc: defaultVpc,
+        listeners: [{
+          externalPort: 8080,
+          externalProtocol: lbv1.LoadBalancingProtocol.TCP,
+          internalProtocol: lbv1.LoadBalancingProtocol.TCP,
+        }],
+      })));
+
+      loadBalancerInfo.ElbInfoList?.push({
+        'Name': {
+          'Ref': 'CLB677386E0',
+        },
+      });
+    }
+
+    if (withALB) {
+      const alb = new lbv2.ApplicationLoadBalancer(stack, 'ALB', {
+        vpc: defaultVpc,
+      });
+
+      const listener = alb.addListener('ListenerALB', { protocol: lbv2.ApplicationProtocol.HTTP, port: 8080 });
+      const targetGroup = listener.addTargets('Fleet', { protocol: lbv2.ApplicationProtocol.HTTP, port: 8080 });
+      loadBalancers.push(codedeploy.LoadBalancer.application(targetGroup));
+
+      loadBalancerInfo.TargetGroupInfoList?.push({
+        'Name': {
+          'Fn::GetAtt': [
+            'ALBListenerALBFleetGroupF4CBAA91',
+            'TargetGroupName',
+          ],
+        },
+      });
+    }
+
+    if (withNLB) {
+      const nlb = new lbv2.NetworkLoadBalancer(stack, 'NLB', {
+        vpc: defaultVpc,
+      });
+
+      const nlbListener = nlb.addListener('ListenerNLB', { port: 8080, protocol: lbv2.Protocol.TCP });
+      const nlbTargetGroup = nlbListener.addTargets('Fleet', { port: 8080, protocol: lbv2.Protocol.TCP });
+      loadBalancers.push(codedeploy.LoadBalancer.network(nlbTargetGroup));
+
+      loadBalancerInfo.TargetGroupInfoList?.push({
+        'Name': {
+          'Fn::GetAtt': [
+            'NLBListenerNLB0FleetGroup657E42E4',
+            'TargetGroupName',
+          ],
+        },
+      });
+    }
+
+    new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
+      loadBalancers,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
+      'LoadBalancerInfo': loadBalancerInfo,
+      'DeploymentStyle': {
+        'DeploymentOption': 'WITH_TRAFFIC_CONTROL',
+      },
+    });
+  });
+
+  test('should throw error is empty array is passed to loadBalancers', () => {
+    const stack = new cdk.Stack();
+
+    expect(() => {
+      new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
+        loadBalancers: [],
+      });
+    }).toThrow(new Error('loadBalancers must be a non-empty array'));
   });
 
   test('can be created with an NLB Target Group as the load balancer', () => {

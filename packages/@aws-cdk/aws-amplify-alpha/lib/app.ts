@@ -164,7 +164,7 @@ export interface AppProps {
    * generated (SSG) apps (i.e. a Create React App or Gatsby) and WEB_COMPUTE
    * for server side rendered (SSR) apps (i.e. NextJS).
    *
-   * @default - WEB
+   * @default Platform.WEB
    */
   readonly platform?: Platform;
 }
@@ -539,6 +539,9 @@ function renderCustomResponseHeaders(customHeaders: CustomResponseHeader[]): str
   return `${yaml.join('\n')}\n`;
 }
 
+/**
+ * Available hosting platforms to use on the App.
+ */
 export enum Platform {
   /**
    * WEB - Used to indicate that the app is hosted using only static assets.

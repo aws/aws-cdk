@@ -168,8 +168,18 @@ export interface ServerDeploymentGroupProps {
    * or an Application Load Balancer / Network Load Balancer Target Group.
    *
    * @default - Deployment Group will not have a load balancer defined.
+   * @deprecated - Use `loadBalancers` instead.
    */
   readonly loadBalancer?: LoadBalancer;
+
+  /**
+   * CodeDeploy supports the deployment to multiple load balancers.
+   * Specify either multiple Classic Load Balancers, or
+   * Application Load Balancers / Network Load Balancers Target Groups.
+   *
+   * @default - Deployment Group will not have load balancers defined.
+   */
+  readonly loadBalancers?: LoadBalancer[];
 
   /**
    * All EC2 instances matching the given set of tags when a deployment occurs will be added to this Deployment Group.
@@ -244,6 +254,7 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
   private readonly installAgent: boolean;
   private readonly codeDeployBucket: s3.IBucket;
   private readonly alarms: cloudwatch.IAlarm[];
+  private readonly loadBalancers?: LoadBalancer[];
 
   constructor(scope: Construct, id: string, props: ServerDeploymentGroupProps = {}) {
     super(scope, id, {
@@ -262,6 +273,12 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
     this._autoScalingGroups = props.autoScalingGroups || [];
     this.installAgent = props.installAgent ?? true;
     this.codeDeployBucket = s3.Bucket.fromBucketName(this, 'Bucket', `aws-codedeploy-${cdk.Stack.of(this).region}`);
+    this.loadBalancers = props.loadBalancers || (props.loadBalancer ? [props.loadBalancer]: undefined);
+
+    if (this.loadBalancers && this.loadBalancers.length === 0) {
+      throw new Error('loadBalancers must be a non-empty array');
+    }
+
     for (const asg of this._autoScalingGroups) {
       this.addCodeDeployAgentInstallUserData(asg);
     }
@@ -277,8 +294,8 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
       deploymentConfigName: props.deploymentConfig &&
         props.deploymentConfig.deploymentConfigName,
       autoScalingGroups: cdk.Lazy.list({ produce: () => this._autoScalingGroups.map(asg => asg.autoScalingGroupName) }, { omitEmpty: true }),
-      loadBalancerInfo: this.loadBalancerInfo(props.loadBalancer),
-      deploymentStyle: props.loadBalancer === undefined
+      loadBalancerInfo: this.loadBalancersInfo(this.loadBalancers),
+      deploymentStyle: this.loadBalancers === undefined
         ? undefined
         : {
           deploymentOption: 'WITH_TRAFFIC_CONTROL',
@@ -369,26 +386,25 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
     }
   }
 
-  private loadBalancerInfo(loadBalancer?: LoadBalancer):
+  private loadBalancersInfo(loadBalancers?: LoadBalancer[]):
   CfnDeploymentGroup.LoadBalancerInfoProperty | undefined {
-    if (!loadBalancer) {
-      return undefined;
-    }
-
-    switch (loadBalancer.generation) {
-      case LoadBalancerGeneration.FIRST:
-        return {
-          elbInfoList: [
-            { name: loadBalancer.name },
-          ],
-        };
-      case LoadBalancerGeneration.SECOND:
-        return {
-          targetGroupInfoList: [
-            { name: loadBalancer.name },
-          ],
-        };
-    }
+    return loadBalancers?.reduce((accumulator : {
+      elbInfoList?: {name: string}[],
+      targetGroupInfoList?: {name: string}[]
+    }, loadBalancer: LoadBalancer) => {
+      switch (loadBalancer.generation) {
+        case LoadBalancerGeneration.FIRST:
+          if (!accumulator.elbInfoList) accumulator.elbInfoList = [];
+          accumulator.elbInfoList.push({ name: loadBalancer.name });
+          return accumulator;
+        case LoadBalancerGeneration.SECOND:
+          if (!accumulator.targetGroupInfoList) accumulator.targetGroupInfoList = [];
+          accumulator.targetGroupInfoList.push({ name: loadBalancer.name });
+          return accumulator;
+        default:
+          return accumulator;
+      }
+    }, {});
   }
 
   private ec2TagSet(tagSet?: InstanceTagSet):

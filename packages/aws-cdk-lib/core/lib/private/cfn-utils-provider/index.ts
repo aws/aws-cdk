@@ -13,7 +13,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     return cfnJsonStringifyHandler(event);
   }
 
-  throw new Error(`unexpected resource type "${event.ResourceType}`);
+  throw new Error(`unexpected resource type "${event.ResourceType}"`);
 }
 
 function cfnJsonHandler(event: AWSLambda.CloudFormationCustomResourceEvent) {

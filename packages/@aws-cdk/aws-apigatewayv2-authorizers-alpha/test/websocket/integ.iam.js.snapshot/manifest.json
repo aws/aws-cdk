@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "IntegApiGatewayV2Iam.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/89f3eb281075e38df0df45fd2cf30f90cd7bbaabddef614ebee1040631c2a0c6.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0fecdddcc93cb59f37820c43eaa8030e35f0be824e2f8e7b63bde0bb0b24e264.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -66,7 +67,10 @@
         "/IntegApiGatewayV2Iam/WebSocketApi/$connect-Route/WebSocketLambdaIntegration-Permission": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "WebSocketApiconnectRouteWebSocketLambdaIntegrationPermission76CD86C6"
+            "data": "WebSocketApiconnectRouteWebSocketLambdaIntegrationPermission76CD86C6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/IntegApiGatewayV2Iam/WebSocketApi/$connect-Route/WebSocketLambdaIntegration/Resource": [
@@ -133,6 +137,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "ApiGatewayV2WebSocketIamTestDefaultTestDeployAssert2B412D7B.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
