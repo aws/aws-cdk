@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.104.0](https://github.com/aws/aws-cdk/compare/v2.103.1...v2.104.0) (2023-11-02)
+
+
+### Features
+
+* **apigateway:** add useDefaultMethodResponses property for StepFunctionsIntegrations ([#27645](https://github.com/aws/aws-cdk/issues/27645)) ([22a3234](https://github.com/aws/aws-cdk/commit/22a3234d7accb9ec78b87bfc8ca5fe6537b769c6)), closes [#27520](https://github.com/aws/aws-cdk/issues/27520)
+* **codedeploy:** support multiple load balancers for deployment groups ([#27607](https://github.com/aws/aws-cdk/issues/27607)) ([d57504e](https://github.com/aws/aws-cdk/commit/d57504ec6087fd4679d33c3ea3b5ae464a8f1291)), closes [#27407](https://github.com/aws/aws-cdk/issues/27407)
+* **dynamodb:** add seed capacity property to support changing table billing mode ([#27734](https://github.com/aws/aws-cdk/issues/27734)) ([22168b1](https://github.com/aws/aws-cdk/commit/22168b183417d446d6a5113cee569b4c814f10d8)), closes [#27735](https://github.com/aws/aws-cdk/issues/27735)
+* **dynamodb:** add tagging support to TableV2 ([#27649](https://github.com/aws/aws-cdk/issues/27649)) ([d46b535](https://github.com/aws/aws-cdk/commit/d46b5359cf0c4960b6aeae989b72278df7e49a4e)), closes [#27146](https://github.com/aws/aws-cdk/issues/27146)
+* **ec2:** Add support for P5 instances EC2 ([#27705](https://github.com/aws/aws-cdk/issues/27705)) ([c3357ad](https://github.com/aws/aws-cdk/commit/c3357ad1771461365008e951dcfafa4ec23a06f3)), closes [/docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-instance.html#cfn-ec2](https://github.com/aws//docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-instance.html/issues/cfn-ec2) [#27704](https://github.com/aws/aws-cdk/issues/27704)
+* **ec2:** support for m6in, m6idn, r6in and r6idn instance types in aws-ec2 ([#27795](https://github.com/aws/aws-cdk/issues/27795)) ([23b8f8f](https://github.com/aws/aws-cdk/commit/23b8f8f99306b2184d072936ed69482de2935055)), closes [/docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-instance.html#cfn-ec2](https://github.com/aws//docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-instance.html/issues/cfn-ec2)
+* **eks:** support updateConfig properties for managed node groups ([#27593](https://github.com/aws/aws-cdk/issues/27593)) ([f9ee5e6](https://github.com/aws/aws-cdk/commit/f9ee5e651a461fa7995823b556aa3b7c69c59a72))
+* **rds:** support aurora MySQL 3.05.0 ([#27748](https://github.com/aws/aws-cdk/issues/27748)) ([d449cfd](https://github.com/aws/aws-cdk/commit/d449cfd6408513e18d785d284995b99759a2aa46))
+* update AWS Service Spec ([#27755](https://github.com/aws/aws-cdk/issues/27755)) ([72bf499](https://github.com/aws/aws-cdk/commit/72bf499071dd36ef54c24fce0ac265140291fb4f))
+
+
+### Bug Fixes
+
+* **apigateway:** validation for path parts does not allow creation of resources beginning with dollar sign ([#27619](https://github.com/aws/aws-cdk/issues/27619)) ([a8f5326](https://github.com/aws/aws-cdk/commit/a8f5326b07f2c1e7034036cb3f9c76f84a87dd9a))
+* **autoscaling:** AutoScalingGroup.requireImdsv2 throws error with LaunchTemplates ([#27648](https://github.com/aws/aws-cdk/issues/27648)) ([a4142aa](https://github.com/aws/aws-cdk/commit/a4142aa57c032014172f383c413547d4498112a4)), closes [#27586](https://github.com/aws/aws-cdk/issues/27586)
+* **cli:** fix stack monitoring when the stack events do not have phsical resource id set ([#27692](https://github.com/aws/aws-cdk/issues/27692)) ([857ab7d](https://github.com/aws/aws-cdk/commit/857ab7d8eb465afa50753b74d6a2a4bec2cddf1e))
+* **cloudwatch:** setting gauge widget annotations caused deployment failures ([#27720](https://github.com/aws/aws-cdk/issues/27720)) ([9198807](https://github.com/aws/aws-cdk/commit/919880793fdf79be460d87cfe633b05d37bcaa87)), closes [#25496](https://github.com/aws/aws-cdk/issues/25496)
+* **codepipeline-actions:** default branch for CodeCommit is master (under feature flag) ([#27753](https://github.com/aws/aws-cdk/issues/27753)) ([93c6a9a](https://github.com/aws/aws-cdk/commit/93c6a9aca7e2323492d1c7bde53d0097ffb073b7)), closes [#27710](https://github.com/aws/aws-cdk/issues/27710)
+* **opensearchservice:** IM4GN instances don't support EBS ([#27765](https://github.com/aws/aws-cdk/issues/27765)) ([af1f6bd](https://github.com/aws/aws-cdk/commit/af1f6bd4ed6c9b51a579783cf675ae122414f98b)), closes [#27757](https://github.com/aws/aws-cdk/issues/27757)
+* duration doesn't get accurately compared in multi alb service base ([#27664](https://github.com/aws/aws-cdk/issues/27664)) ([7e426c8](https://github.com/aws/aws-cdk/commit/7e426c8e7f383ff73e3b2a777524f7a7fef01781))
+
+
 ## [2.103.1](https://github.com/aws/aws-cdk/compare/v2.103.0...v2.103.1) (2023-10-26)
 
 
