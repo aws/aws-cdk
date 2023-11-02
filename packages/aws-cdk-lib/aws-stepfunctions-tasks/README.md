@@ -570,6 +570,41 @@ new tasks.EmrCreateCluster(this, 'Create Cluster', {
 });
 ```
 
+You can use the launch specification for On-Demand and Spot instances in the fleet.
+
+```ts
+new tasks.EmrCreateCluster(this, 'OnDemandSpecification', {
+  instances: {
+    instanceFleets: [{
+      instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
+      launchSpecifications: {
+        onDemandSpecification: {
+          allocationStrategy: EmrCreateCluster.OnDemandAllocationStrategy.LOWEST_PRICE,
+        },
+      },
+    }],
+  },
+  name: 'OnDemandCluster',
+  integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+});
+
+new tasks.EmrCreateCluster(this, 'SpotSpecification', {
+  instances: {
+    instanceFleets: [{
+      instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
+      launchSpecifications: {
+        spotSpecification: {
+          allocationStrategy: EmrCreateCluster.SpotAllocationStrategy.CAPACITY_OPTIMIZED,
+          timeoutAction: EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
+          timeoutDurationMinutes: 60,
+        },
+    }],
+  },
+  name: 'SpotCluster',
+  integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+});
+```
+
 If you want to run multiple steps in [parallel](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-concurrent-steps.html),
 you can specify the `stepConcurrencyLevel` property. The concurrency range is between 1
 and 256 inclusive, where the default concurrency of 1 means no step concurrency is allowed.
