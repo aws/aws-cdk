@@ -16,7 +16,7 @@ class TestStack extends Stack {
       sortKey: { name: 'sk', type: AttributeType.NUMBER },
       billing: Billing.provisioned({
         readCapacity: Capacity.fixed(10),
-        writeCapacity: Capacity.autoscaled({ maxCapacity: 20, targetUtilizationPercent: 60 }),
+        writeCapacity: Capacity.autoscaled({ maxCapacity: 20, targetUtilizationPercent: 60, seedCapacity: 10 }),
       }),
       encryption: TableEncryptionV2.awsManagedKey(),
       contributorInsights: true,
