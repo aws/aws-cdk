@@ -29,10 +29,6 @@ All notable changes to this project will be documented in this file. See [standa
 * duration doesn't get accurately compared in multi alb service base ([#27664](https://github.com/aws/aws-cdk/issues/27664)) ([7e426c8](https://github.com/aws/aws-cdk/commit/7e426c8e7f383ff73e3b2a777524f7a7fef01781))
 
 
-### Reverts
-
-* "fix(pipelines): using the same source (s3, connection, or codecommit) in a pipeline causes duplicate id error" ([#27700](https://github.com/aws/aws-cdk/issues/27700)) ([1141992](https://github.com/aws/aws-cdk/commit/114199229aea495e82b119291743258e734cfbeb)), closes [aws/aws-cdk#27602](https://github.com/aws/aws-cdk/issues/27602)
-
 ## [2.103.1](https://github.com/aws/aws-cdk/compare/v2.103.0...v2.103.1) (2023-10-26)
 
 
