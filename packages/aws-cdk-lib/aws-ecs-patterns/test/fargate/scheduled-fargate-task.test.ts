@@ -93,6 +93,10 @@ test('Can create a scheduled Fargate Task - with optional props', () => {
       memoryLimitMiB: 512,
       cpu: 2,
       environment: { TRIGGER: 'CloudWatch Events' },
+      runtimePlatform: {
+        operatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
+        cpuArchitecture: ecs.CpuArchitecture.ARM64,
+      },
     },
     desiredTaskCount: 2,
     schedule: events.Schedule.expression('rate(1 minute)'),
@@ -162,6 +166,10 @@ test('Can create a scheduled Fargate Task - with optional props', () => {
         Name: 'ScheduledContainer',
       },
     ],
+    RuntimePlatform: {
+      CpuArchitecture: 'ARM64',
+      OperatingSystemFamily: 'LINUX',
+    },
   });
 });
 

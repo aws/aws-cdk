@@ -76,6 +76,7 @@ export class ScheduledFargateTask extends ScheduledTaskBase {
       this.taskDefinition = new FargateTaskDefinition(this, 'ScheduledTaskDef', {
         memoryLimitMiB: taskImageOptions.memoryLimitMiB || 512,
         cpu: taskImageOptions.cpu || 256,
+        runtimePlatform: taskImageOptions.runtimePlatform,
       });
       this.taskDefinition.addContainer('ScheduledContainer', {
         image: taskImageOptions.image,
