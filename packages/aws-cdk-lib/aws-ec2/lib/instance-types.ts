@@ -881,6 +881,16 @@ export enum InstanceClass {
   P4D = 'p4d',
 
   /**
+   * Parallel-processing optimized instances, 5th generation
+   */
+  PARALLEL5 = 'parallel5',
+
+  /**
+   * Parallel-processing optimized instances, 5th generation
+   */
+  P5 = 'p5',
+
+  /**
    * Arm processor based instances, 1st generation
    */
   ARM1 = 'arm1',
@@ -1391,6 +1401,8 @@ export class InstanceType {
       [InstanceClass.P4DE]: 'p4de',
       [InstanceClass.PARALLEL4]: 'p4d',
       [InstanceClass.P4D]: 'p4d',
+      [InstanceClass.PARALLEL5]: 'p5',
+      [InstanceClass.P5]: 'p5',
       [InstanceClass.ARM1]: 'a1',
       [InstanceClass.A1]: 'a1',
       [InstanceClass.STANDARD6_GRAVITON]: 'm6g',
