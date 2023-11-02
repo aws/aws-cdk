@@ -314,9 +314,17 @@ describe('sns topic schedule target', () => {
   });
 
   test('throws when sns topic is imported from different account', () => {
-    const importedTopic = sns.Topic.fromTopicArn(stack, 'ImportedTopic', 'arn:aws:sns:us-east-1:234567890123:my-topic');
+    const differentAccountStack = new Stack(app, 'DummyStack', {
+      env: {
+        account: '234567890123',
+        region: 'us-east-1',
+      },
+    });
 
-    const target = new SnsPublish(importedTopic, {});
+    const differentAccountTopic = new sns.Topic(differentAccountStack, 'DummyTopic', {
+      topicName: 'DummyTopic',
+    });
+    const target = new SnsPublish(differentAccountTopic, {});
 
     expect(() =>
       new scheduler.Schedule(stack, 'Schedule', {
@@ -326,9 +334,17 @@ describe('sns topic schedule target', () => {
   });
 
   test('throws when sns topic is imported from different region', () => {
-    const importedTopic = sns.Topic.fromTopicArn(stack, 'ImportedTopic', 'arn:aws:sns:us-west-2:123456789012:my-topic');
+    const differentRegionStack = new Stack(app, 'DummyStack', {
+      env: {
+        account: '123456789012',
+        region: 'us-west-2',
+      },
+    });
 
-    const target = new SnsPublish(importedTopic, {});
+    const differentRegionTopic = new sns.Topic(differentRegionStack, 'DummyTopic', {
+      topicName: 'DummyTopic',
+    });
+    const target = new SnsPublish(differentRegionTopic, {});
 
     expect(() =>
       new scheduler.Schedule(stack, 'Schedule', {
