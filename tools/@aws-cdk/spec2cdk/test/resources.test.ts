@@ -160,7 +160,7 @@ test('resource interface with "Arn"', () => {
   // GIVEN
   const resource = db.allocate('resource', {
     name: 'Resource',
-    primaryIdentifier: ['Id', 'Another'],
+    primaryIdentifier: ['Id'],
     properties: {},
     attributes: {
       Id: {
@@ -238,6 +238,37 @@ test('resource interface with "<Resource>Arn"', () => {
 
   // THEN
   const foundResource = db.lookup('resource', 'cloudFormationType', 'equals', 'AWS::Some::Something').only();
+
+  const ast = AstBuilder.forResource(foundResource, { db });
+
+  const rendered = renderer.render(ast.module);
+
+  expect(rendered).toMatchSnapshot();
+});
+
+test('resource interface with Arn as a property and not a primaryIdentifier', () => {
+  // GIVEN
+  const resource = db.allocate('resource', {
+    name: 'Resource',
+    primaryIdentifier: ['Id'],
+    properties: {
+      Arn: {
+        type: { type: 'string' },
+        documentation: 'The arn for the resource',
+      },
+    },
+    attributes: {
+      Id: {
+        type: { type: 'string' },
+        documentation: 'The identifier of the resource',
+      },
+    },
+    cloudFormationType: 'AWS::Some::Resource',
+  });
+  db.link('hasResource', service, resource);
+
+  // THEN
+  const foundResource = db.lookup('resource', 'cloudFormationType', 'equals', 'AWS::Some::Resource').only();
 
   const ast = AstBuilder.forResource(foundResource, { db });
 

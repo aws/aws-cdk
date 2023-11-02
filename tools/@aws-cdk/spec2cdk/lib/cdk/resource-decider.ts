@@ -61,13 +61,28 @@ export class ResourceDecider {
     // has both `Arn` and `ResourceArn`, and we want to select the `Arn` property.
     const possibleArnNames = ['Arn', 'ResourceArn', `${this.resource.name}Arn`];
     for (const arn of possibleArnNames) {
-      const att = this.classAttributeProperties.filter((a) => a.propertySpec.name === attributePropertyName(arn));
-      const prop = this.propsProperties.filter((p) => p.propertySpec.name === propertyNameFromCloudFormation(arn));
-      if (att.length > 0 || prop.length > 0) {
-        return att[0] ? att[0].propertySpec : prop[0].propertySpec;
-      }
+      const att = this.classAttributeProperties.find((a) => a.propertySpec.name === attributePropertyName(arn));
+      if (att) { return att.propertySpec; }
+      // TODO: double check -- if an arn is a property, not an attribute, and not a primaryIdentifier
+      // it is not getting returned by cloudformation in any way, right?
+      // const prop = this.propsProperties.find((p) => p.propertySpec.name === propertyNameFromCloudFormation(arn));
+      // if (prop) {
+      //   return this.convertPropertySpecToRefAttribute(prop.propertySpec);
+      // }
     }
     return;
+  }
+
+  private convertPropertySpecToRefAttribute(propSpec: PropertySpec): PropertySpec {
+    return {
+      ...propSpec,
+      name: attributePropertyName(propSpec.name[0].toUpperCase() + propSpec.name.slice(1)),
+      docs: {
+        ...propSpec.docs,
+        remarks: propSpec.docs?.remarks?.concat(['\n', '@cloudformationAttribute Ref'].join('\n')),
+      },
+      immutable: true,
+    };
   }
 
   private convertPrimaryIdentifier() {
@@ -96,14 +111,7 @@ export class ResourceDecider {
         if (!initializer) { continue; }
 
         // Build an attribute spec out of the property spec
-        const attrPropertySpec = {
-          ...propSpec,
-          name: attributePropertyName(propSpec.name[0].toUpperCase() + propSpec.name.slice(1)),
-          docs: {
-            ...propSpec.docs,
-            remarks: propSpec.docs?.remarks?.concat(['\n', '@cloudformationAttribute Ref'].join('\n')),
-          },
-        };
+        const attrPropertySpec = this.convertPropertySpecToRefAttribute(propSpec);
 
         // Add the new attribute to the relevant places
         this.classAttributeProperties.push({
