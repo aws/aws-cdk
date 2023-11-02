@@ -62,6 +62,7 @@ Flags come in three types:
 | [@aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier](#aws-cdkaws-appsyncusearnforsourceapiassociationidentifier) | When enabled, will always use the arn for identifiers for CfnSourceApiAssociation in the GraphqlApi construct rather than id. | 2.97.0 | (fix) |
 | [@aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters](#aws-cdkaws-rdsauroraclusterchangescopeofinstanceparametergroupwitheachparameters) | When enabled, a scope of InstanceParameterGroup for AuroraClusterInstance with each parameters will change. | 2.97.0 | (fix) |
 | [@aws-cdk/aws-rds:preventRenderingDeprecatedCredentials](#aws-cdkaws-rdspreventrenderingdeprecatedcredentials) | When enabled, creating an RDS database cluster from a snapshot will only render credentials for snapshot credentials. | 2.98.0 | (fix) |
+| [@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource](#aws-cdkaws-codepipeline-actionsusenewdefaultbranchforcodecommitsource) | When enabled, the CodeCommit source action is using the default branch name 'main'. | 2.103.1 | (fix) |
 
 <!-- END table -->
 
@@ -114,7 +115,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId": true,
     "@aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters": true,
     "@aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier": true,
-    "@aws-cdk/aws-rds:preventRenderingDeprecatedCredentials": true
+    "@aws-cdk/aws-rds:preventRenderingDeprecatedCredentials": true,
+    "@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource": true
   }
 }
 ```
@@ -1174,6 +1176,21 @@ database cluster from a snapshot.
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.98.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource
+
+*When enabled, the CodeCommit source action is using the default branch name 'main'.* (fix)
+
+When setting up a CodeCommit source action for the source stage of a pipeline, please note that the 
+default branch is 'master'.
+However, with the activation of this feature flag, the default branch is updated to 'main'.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.103.1 | `false` | `true` |
 
 
 <!-- END details -->
