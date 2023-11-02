@@ -576,10 +576,10 @@ You can use the launch specification for On-Demand and Spot instances in the fle
 new tasks.EmrCreateCluster(this, 'OnDemandSpecification', {
   instances: {
     instanceFleets: [{
-      instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
+      instanceFleetType: tasks.EmrCreateCluster.InstanceRoleType.MASTER,
       launchSpecifications: {
         onDemandSpecification: {
-          allocationStrategy: EmrCreateCluster.OnDemandAllocationStrategy.LOWEST_PRICE,
+          allocationStrategy: tasks.EmrCreateCluster.OnDemandAllocationStrategy.LOWEST_PRICE,
         },
       },
     }],
@@ -591,11 +591,11 @@ new tasks.EmrCreateCluster(this, 'OnDemandSpecification', {
 new tasks.EmrCreateCluster(this, 'SpotSpecification', {
   instances: {
     instanceFleets: [{
-      instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
+      instanceFleetType: tasks.EmrCreateCluster.InstanceRoleType.MASTER,
       launchSpecifications: {
         spotSpecification: {
-          allocationStrategy: EmrCreateCluster.SpotAllocationStrategy.CAPACITY_OPTIMIZED,
-          timeoutAction: EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
+          allocationStrategy: tasks.EmrCreateCluster.SpotAllocationStrategy.CAPACITY_OPTIMIZED,
+          timeoutAction: tasks.EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
           timeoutDurationMinutes: 60,
         },
     }],
