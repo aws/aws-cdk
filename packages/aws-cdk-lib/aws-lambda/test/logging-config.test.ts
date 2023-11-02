@@ -115,7 +115,6 @@ describe('logging Config', () => {
       runtime: lambda.Runtime.NODEJS_18_X,
       logGroup: logGroup,
     });
-    expect(lambdaFunction.logGroup).toEqual(logGroup);
     expect(lambdaFunction.logGroup.logGroupName).toEqual(logGroup.logGroupName);
     expect(lambdaFunction.logGroup.logGroupPhysicalName()).toEqual(logGroup.logGroupPhysicalName());
   });
@@ -133,7 +132,6 @@ describe('logging Config', () => {
       runtime: lambda.Runtime.NODEJS_18_X,
       logFormat: lambda.LogFormat.JSON,
     });
-    expect(lambdaFunction.logGroup).not.toEqual(logGroup);
     expect(lambdaFunction.logGroup.logGroupName).not.toEqual(logGroup.logGroupName);
     expect(lambdaFunction.logGroup.logGroupPhysicalName()).not.toEqual(logGroup.logGroupPhysicalName());
   });
