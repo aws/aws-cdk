@@ -579,3 +579,587 @@ describe('grantSubscription Permissions', () => {
     });
   });
 });
+
+describe('for a imported api', () => {
+  beforeEach(() => {
+    api = appsync.GraphqlApi.fromGraphqlApiAttributes(stack, 'imported', {
+      graphqlApiId: 'importedId',
+    });
+  });
+  describe('grant Permissions', () => {
+    test('IamResource throws error when custom is called with no arguments', () => {
+      //THEN
+      expect(() => {
+        api.grant(role, appsync.IamResource.custom(), 'appsync:GraphQL');
+      }).toThrowError('At least 1 custom ARN must be provided.');
+    });
+
+    test('grant provides custom permissions when called with `custom` argument', () => {
+      // WHEN
+      api.grant(
+        role,
+        appsync.IamResource.custom('types/Mutation/fields/addTest'),
+        'appsync:GraphQL',
+      );
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'appsync:GraphQL',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':appsync:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':apis/importedId/types/Mutation/fields/addTest',
+                  ],
+                ],
+              },
+            },
+          ],
+        },
+      });
+    });
+
+    test('grant provides [type parameter]/* permissions when called with `type` argument', () => {
+      // WHEN
+      api.grant(role, appsync.IamResource.ofType('Mutation'), 'appsync:GraphQL');
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'appsync:GraphQL',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':appsync:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':apis/importedId/types/Mutation/*',
+                  ],
+                ],
+              },
+            },
+          ],
+        },
+      });
+    });
+
+    test('grant provides fields/[field param] permissions when called with `type` and `field` argument', () => {
+      // WHEN
+      api.grant(role, appsync.IamResource.ofType('Mutation', 'addTest'), 'appsync:GraphQL');
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'appsync:GraphQL',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':appsync:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':apis/importedId/types/Mutation/fields/addTest',
+                  ],
+                ],
+              },
+            },
+          ],
+        },
+      });
+    });
+
+    test('grant provides all permissions when called with IamResource.all()', () => {
+      // WHEN
+      api.grant(role, appsync.IamResource.all(), 'appsync:GraphQL');
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'appsync:GraphQL',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':appsync:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':apis/importedId/*',
+                  ],
+                ],
+              },
+            },
+          ],
+        },
+      });
+    });
+
+    test('grant provides multiple permissions using one IamResource custom call', () => {
+      // WHEN
+      api.grant(role, appsync.IamResource.custom('I', 'am', 'custom'), 'appsync:GraphQL');
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'appsync:GraphQL',
+              Effect: 'Allow',
+              Resource: [
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':appsync:',
+                      { Ref: 'AWS::Region' },
+                      ':',
+                      { Ref: 'AWS::AccountId' },
+                      ':apis/importedId/I',
+                    ],
+                  ],
+                },
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':appsync:',
+                      { Ref: 'AWS::Region' },
+                      ':',
+                      { Ref: 'AWS::AccountId' },
+                      ':apis/importedId/am',
+                    ],
+                  ],
+                },
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':appsync:',
+                      { Ref: 'AWS::Region' },
+                      ':',
+                      { Ref: 'AWS::AccountId' },
+                      ':apis/importedId/custom',
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      });
+    });
+
+    test('grant provides multiple permissions using one IamResource ofType call', () => {
+      // WHEN
+      api.grant(role, appsync.IamResource.ofType('I', 'am', 'custom'), 'appsync:GraphQL');
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'appsync:GraphQL',
+              Effect: 'Allow',
+              Resource: [
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':appsync:',
+                      { Ref: 'AWS::Region' },
+                      ':',
+                      { Ref: 'AWS::AccountId' },
+                      ':apis/importedId/types/I/fields/am',
+                    ],
+                  ],
+                },
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':appsync:',
+                      { Ref: 'AWS::Region' },
+                      ':',
+                      { Ref: 'AWS::AccountId' },
+                      ':apis/importedId/types/I/fields/custom',
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      });
+    });
+  });
+
+  describe('grantMutation Permissions', () => {
+    test('grantMutation provides Mutation/* permissions when called with no `fields` argument', () => {
+      // WHEN
+      api.grantMutation(role);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'appsync:GraphQL',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':appsync:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':apis/importedId/types/Mutation/*',
+                  ],
+                ],
+              },
+            },
+          ],
+        },
+      });
+    });
+
+    test('grantMutation provides fields/[field param] permissions when called with `fields` argument', () => {
+      // WHEN
+      api.grantMutation(role, 'addTest');
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'appsync:GraphQL',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':appsync:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':apis/importedId/types/Mutation/fields/addTest',
+                  ],
+                ],
+              },
+            },
+          ],
+        },
+      });
+    });
+
+    test('grantMutation provides multiple permissions when called with `fields` argument', () => {
+      // WHEN
+      api.grantMutation(role, 'addTest', 'removeTest');
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'appsync:GraphQL',
+              Effect: 'Allow',
+              Resource: [
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':appsync:',
+                      { Ref: 'AWS::Region' },
+                      ':',
+                      { Ref: 'AWS::AccountId' },
+                      ':apis/importedId/types/Mutation/fields/addTest',
+                    ],
+                  ],
+                },
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':appsync:',
+                      { Ref: 'AWS::Region' },
+                      ':',
+                      { Ref: 'AWS::AccountId' },
+                      ':apis/importedId/types/Mutation/fields/removeTest',
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      });
+    });
+  });
+
+  describe('grantQuery Permissions', () => {
+    test('grantQuery provides Query/* permissions when called without the `fields` argument', () => {
+      // WHEN
+      api.grantQuery(role);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'appsync:GraphQL',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':appsync:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':apis/importedId/types/Query/*',
+                  ],
+                ],
+              },
+            },
+          ],
+        },
+      });
+    });
+
+    test('grantQuery provides fields/[field param] permissions when called with `fields` arugment', () => {
+      // WHEN
+      api.grantQuery(role, 'getTest');
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'appsync:GraphQL',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':appsync:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':apis/importedId/types/Query/fields/getTest',
+                  ],
+                ],
+              },
+            },
+          ],
+        },
+      });
+    });
+
+    test('grantQuery provides multiple permissions when called with `fields` argument', () => {
+      // WHEN
+      api.grantQuery(role, 'getTests', 'getTest');
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'appsync:GraphQL',
+              Effect: 'Allow',
+              Resource: [
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':appsync:',
+                      { Ref: 'AWS::Region' },
+                      ':',
+                      { Ref: 'AWS::AccountId' },
+                      ':apis/importedId/types/Query/fields/getTests',
+                    ],
+                  ],
+                },
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':appsync:',
+                      { Ref: 'AWS::Region' },
+                      ':',
+                      { Ref: 'AWS::AccountId' },
+                      ':apis/importedId/types/Query/fields/getTest',
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      });
+    });
+  });
+
+  describe('grantSubscription Permissions', () => {
+    test('grantSubscription provides Subscription/* permissions when called without `fields` argument', () => {
+      // WHEN
+      api.grantSubscription(role);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'appsync:GraphQL',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':appsync:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':apis/importedId/types/Subscription/*',
+                  ],
+                ],
+              },
+            },
+          ],
+        },
+      });
+    });
+
+    test('grantSubscription provides fields/[field param] when called with `field` argument', () => {
+      api.grantSubscription(role, 'subscribe');
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'appsync:GraphQL',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':appsync:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':apis/importedId/types/Subscription/fields/subscribe',
+                  ],
+                ],
+              },
+            },
+          ],
+        },
+      });
+    });
+
+    test('grantSubscription provides multiple permissions when called with `fields` argument', () => {
+      // WHEN
+      api.grantSubscription(role, 'subscribe', 'custom');
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'appsync:GraphQL',
+              Effect: 'Allow',
+              Resource: [
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':appsync:',
+                      { Ref: 'AWS::Region' },
+                      ':',
+                      { Ref: 'AWS::AccountId' },
+                      ':apis/importedId/types/Subscription/fields/subscribe',
+                    ],
+                  ],
+                },
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':appsync:',
+                      { Ref: 'AWS::Region' },
+                      ':',
+                      { Ref: 'AWS::AccountId' },
+                      ':apis/importedId/types/Subscription/fields/custom',
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      });
+    });
+  });
+});
