@@ -159,6 +159,26 @@ export enum InstanceClass {
   R6ID = 'r6id',
 
   /**
+   * Memory optimized instances for high performance computing powered by Intel Xeon Scalable processors (code named Ice Lake), 6th generation
+   */
+  MEMORY6_INTEL_HIGH_PERFORMANCE = 'memory6-intel-high-performance',
+
+  /**
+   * Memory optimized instances for high performance computing powered by Intel Xeon Scalable processors (code named Ice Lake), 6th generation
+   */
+  R6IN = 'r6in',
+
+  /**
+   * Memory optimized instances with local NVME drive for high performance computing powered by Intel Xeon Scalable processors (code named Ice Lake), 6th generation
+   */
+  MEMORY6_INTEL_NVME_DRIVE_HIGH_PERFORMANCE = 'memory6-intel-nvme-drive-high-performance',
+
+  /**
+   * Memory optimized instances with local NVME drive for high performance computing powered by Intel Xeon Scalable processors (code named Ice Lake), 6th generation
+   */
+  R6IDN = 'r6idn',
+
+  /**
    * Memory optimized instances for high performance computing, 5th generation
    */
   MEMORY5_HIGH_PERFORMANCE = 'memory5-high-performance',
@@ -866,6 +886,16 @@ export enum InstanceClass {
   P4D = 'p4d',
 
   /**
+   * Parallel-processing optimized instances, 5th generation
+   */
+  PARALLEL5 = 'parallel5',
+
+  /**
+   * Parallel-processing optimized instances, 5th generation
+   */
+  P5 = 'p5',
+
+  /**
    * Arm processor based instances, 1st generation
    */
   ARM1 = 'arm1',
@@ -904,6 +934,26 @@ export enum InstanceClass {
    * Standard instances based on Intel (Ice Lake) with local NVME drive, 6th generation.
    */
   M6ID = 'm6id',
+
+  /**
+   * Standard instances for high performance computing powered by Intel Xeon Scalable processors (code named Ice Lake), 6th generation.
+   */
+  STANDARD6_INTEL_HIGH_PERFORMANCE = 'standard6-intel-high-performance',
+
+  /**
+   * Standard instances for high performance computing powered by Intel Xeon Scalable processors (code named Ice Lake), 6th generation.
+   */
+  M6IN = 'm6in',
+
+  /**
+   * Standard instances with local NVME drive for high performance computing powered by Intel Xeon Scalable processors (code named Ice Lake), 6th generation.
+   */
+  STANDARD6_INTEL_NVME_DRIVE_HIGH_PERFORMANCE = 'standard6-intel-nvme-drive-high-performance',
+
+  /**
+   * Standard instances with local NVME drive for high performance computing powered by Intel Xeon Scalable processors (code named Ice Lake), 6th generation.
+   */
+  M6IDN = 'm6idn',
 
   /**
    * Standard instances based on 3rd Gen AMD EPYC processors, 6th generation.
@@ -1224,6 +1274,10 @@ export class InstanceType {
       [InstanceClass.R6I]: 'r6i',
       [InstanceClass.MEMORY6_INTEL_NVME_DRIVE]: 'r6id',
       [InstanceClass.R6ID]: 'r6id',
+      [InstanceClass.MEMORY6_INTEL_HIGH_PERFORMANCE]: 'r6in',
+      [InstanceClass.R6IN]: 'r6in',
+      [InstanceClass.MEMORY6_INTEL_NVME_DRIVE_HIGH_PERFORMANCE]: 'r6idn',
+      [InstanceClass.R6IDN]: 'r6idn',
       [InstanceClass.MEMORY5_HIGH_PERFORMANCE]: 'r5n',
       [InstanceClass.R5N]: 'r5n',
       [InstanceClass.MEMORY5_NVME_DRIVE]: 'r5d',
@@ -1353,6 +1407,8 @@ export class InstanceType {
       [InstanceClass.P4DE]: 'p4de',
       [InstanceClass.PARALLEL4]: 'p4d',
       [InstanceClass.P4D]: 'p4d',
+      [InstanceClass.PARALLEL5]: 'p5',
+      [InstanceClass.P5]: 'p5',
       [InstanceClass.ARM1]: 'a1',
       [InstanceClass.A1]: 'a1',
       [InstanceClass.STANDARD6_GRAVITON]: 'm6g',
@@ -1361,6 +1417,10 @@ export class InstanceType {
       [InstanceClass.M6I]: 'm6i',
       [InstanceClass.STANDARD6_INTEL_NVME_DRIVE]: 'm6id',
       [InstanceClass.M6ID]: 'm6id',
+      [InstanceClass.STANDARD6_INTEL_HIGH_PERFORMANCE]: 'm6in',
+      [InstanceClass.M6IN]: 'm6in',
+      [InstanceClass.STANDARD6_INTEL_NVME_DRIVE_HIGH_PERFORMANCE]: 'm6idn',
+      [InstanceClass.M6IDN]: 'm6idn',
       [InstanceClass.STANDARD6_AMD]: 'm6a',
       [InstanceClass.M6A]: 'm6a',
       [InstanceClass.STANDARD6_GRAVITON2_NVME_DRIVE]: 'm6gd',
