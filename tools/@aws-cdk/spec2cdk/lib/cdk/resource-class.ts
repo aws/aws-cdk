@@ -20,6 +20,7 @@ import {
   Stability,
   ObjectLiteral,
   Module,
+  InterfaceType,
 } from '@cdklabs/typewriter';
 import { CDK_CORE, CONSTRUCTS } from './cdk';
 import { CloudFormationMapping } from './cloudformation-mapping';
@@ -33,6 +34,7 @@ import {
   cfnProducerNameFromType,
   propStructNameFromResource,
   staticRequiredTransform,
+  interfaceNameFromResource,
 } from '../naming';
 import { splitDocumentation } from '../util';
 
@@ -43,32 +45,54 @@ export interface ITypeHost {
 // This convenience typewriter builder is used all over the place
 const $this = $E(expr.this_());
 
+export interface ResourceClassProps {
+  readonly db: SpecDatabase;
+  readonly resource: Resource;
+  readonly suffix?: string;
+}
+
 export class ResourceClass extends ClassType {
+  private readonly db: SpecDatabase;
+  private readonly resource: Resource;
   private readonly propsType: StructType;
+  private readonly resourceInterface: InterfaceType;
   private readonly decider: ResourceDecider;
   private readonly converter: TypeConverter;
   private readonly module: Module;
+  private readonly suffix?: string;
 
   constructor(
     scope: IScope,
-    private readonly db: SpecDatabase,
-    private readonly resource: Resource,
-    private readonly suffix?: string,
+    props: ResourceClassProps,
   ) {
+    const resourceInterface = new InterfaceType(scope, {
+      export: true,
+      name: interfaceNameFromResource(props.resource, props.suffix),
+      docs: {
+        summary: `Attributes for \`${classNameFromResource(props.resource)}\`.`,
+        stability: Stability.External,
+      },
+    });
+
     super(scope, {
       export: true,
-      name: classNameFromResource(resource, suffix),
+      name: classNameFromResource(props.resource, props.suffix),
       docs: {
-        ...splitDocumentation(resource.documentation),
+        ...splitDocumentation(props.resource.documentation),
         stability: Stability.External,
-        docTags: { cloudformationResource: resource.cloudFormationType },
+        docTags: { cloudformationResource: props.resource.cloudFormationType },
         see: cloudFormationDocLink({
-          resourceType: resource.cloudFormationType,
+          resourceType: props.resource.cloudFormationType,
         }),
       },
       extends: CDK_CORE.CfnResource,
-      implements: [CDK_CORE.IInspectable, ...ResourceDecider.taggabilityInterfaces(resource)],
+      implements: [CDK_CORE.IInspectable, ...ResourceDecider.taggabilityInterfaces(props.resource)],
     });
+
+    this.db = props.db;
+    this.resource = props.resource;
+    this.resourceInterface = resourceInterface;
+    this.suffix = props.suffix;
 
     this.module = Module.of(this);
 
@@ -85,7 +109,7 @@ export class ResourceClass extends ClassType {
     });
 
     this.converter = TypeConverter.forResource({
-      db: db,
+      db: this.db,
       resource: this.resource,
       resourceClass: this,
     });
@@ -103,6 +127,22 @@ export class ResourceClass extends ClassType {
     for (const prop of this.decider.propsProperties) {
       this.propsType.addProperty(prop.propertySpec);
       cfnMapping.add(prop.cfnMapping);
+    }
+
+    // Build the shared interface
+    for (const identifier of this.decider.primaryIdentifier ?? []) {
+      this.resourceInterface.addProperty({
+        ...identifier,
+        immutable: true,
+      });
+    }
+
+    // Add the arn too, unless it is duplicated in the resourceIdentifier already
+    if (this.decider.arn && this.resourceInterface.properties.every((p) => p.name !== this.decider.arn!.name)) {
+      this.resourceInterface.addProperty({
+        ...this.decider.arn,
+        immutable: true,
+      });
     }
 
     // Build the members of this class

@@ -28,6 +28,11 @@ export class ResourceDecider {
 
   private readonly taggability?: TaggabilityStyle;
 
+  /**
+   * The arn returned by the resource, if applicable.
+   */
+  public readonly arn?: PropertySpec;
+  public readonly primaryIdentifier = new Array<PropertySpec>();
   public readonly propsProperties = new Array<PropsProperty>();
   public readonly classProperties = new Array<ClassProperty>();
   public readonly classAttributeProperties = new Array<ClassAttributeProperty>();
@@ -38,9 +43,62 @@ export class ResourceDecider {
     this.convertProperties();
     this.convertAttributes();
 
+    // must be called after convertProperties and convertAttributes
+    this.convertPrimaryIdentifier();
+    this.arn = this.findArn();
+
     this.propsProperties.sort((p1, p2) => p1.propertySpec.name.localeCompare(p2.propertySpec.name));
     this.classProperties.sort((p1, p2) => p1.propertySpec.name.localeCompare(p2.propertySpec.name));
     this.classAttributeProperties.sort((p1, p2) => p1.propertySpec.name.localeCompare(p2.propertySpec.name));
+  }
+
+  private findArn() {
+    // A list of possible names for the arn, in order of importance.
+    // This is relevant because some resources, like AWS::VpcLattice::AccessLogSubscription
+    // has both `Arn` and `ResourceArn`, and we want to select the `Arn` property.
+    const possibleArnNames = ['Arn', 'ResourceArn', `${this.resource.name}Arn`];
+    for (const arn of possibleArnNames) {
+      const att = this.classAttributeProperties.filter((a) => a.propertySpec.name === attributePropertyName(arn));
+      const prop = this.propsProperties.filter((p) => p.propertySpec.name === propertyNameFromCloudFormation(arn));
+      if (att.length > 0 || prop.length > 0) {
+        return att[0] ? att[0].propertySpec : prop[0].propertySpec;
+      }
+    }
+    return;
+  }
+
+  private convertPrimaryIdentifier() {
+    for (const cfnName of this.resource.primaryIdentifier ?? []) {
+      const att = this.findAttributeByName(attributePropertyName(cfnName));
+      const prop = this.findPropertyByName(propertyNameFromCloudFormation(cfnName));
+      if (att) {
+        this.primaryIdentifier.push(att);
+      } else if (prop) {
+        // rename the prop name as an attribute name, since it is gettable by ref
+        this.primaryIdentifier.push({
+          ...prop,
+          name: attributePropertyName(prop.name[0].toUpperCase() + prop.name.slice(1)),
+          docs: {
+            ...prop.docs,
+            remarks: prop.docs?.remarks?.concat(['\n', `@cloudformationRef ${prop.name}`].join('\n')),
+          },
+        });
+      }
+    }
+  }
+
+  private findPropertyByName(name: string): PropertySpec | undefined {
+    const props = this.propsProperties.filter((prop) => prop.propertySpec.name === name);
+    // there's no way we have multiple properties with the same name
+    if (props.length > 0) { return props[0].propertySpec; }
+    return;
+  }
+
+  private findAttributeByName(name: string): PropertySpec | undefined {
+    const atts = this.classAttributeProperties.filter((att) => att.propertySpec.name === name);
+    // there's no way we have multiple attributes with the same name
+    if (atts.length > 0) { return atts[0].propertySpec; }
+    return;
   }
 
   private convertProperties() {
