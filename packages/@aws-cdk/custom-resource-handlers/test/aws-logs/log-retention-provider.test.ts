@@ -73,7 +73,7 @@ describe('log retention provider', () => {
 
     expect(cloudwatchLogsMock).toHaveReceivedCommandWith(PutRetentionPolicyCommand, {
       logGroupName: 'group',
-      retentionInDays: 29,
+      retentionInDays: 30,
     });
 
     expect(cloudwatchLogsMock).toHaveReceivedCommandWith(CreateLogGroupCommand, {
