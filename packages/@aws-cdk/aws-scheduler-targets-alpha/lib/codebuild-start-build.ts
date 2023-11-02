@@ -11,7 +11,7 @@ import { sameEnvDimension } from './util';
 export class CodeBuildStartBuild extends ScheduleTargetBase implements IScheduleTarget {
   constructor(
     private readonly project: IProject,
-    private readonly props: ScheduleTargetBaseProps,
+    private readonly props: ScheduleTargetBaseProps = {},
   ) {
     super(props, project.projectArn);
   }

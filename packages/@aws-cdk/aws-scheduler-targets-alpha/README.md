@@ -118,6 +118,6 @@ declare const project: codebuild.Project;
 
 new Schedule(this, 'Schedule', {
   schedule: ScheduleExpression.rate(Duration.minutes(60)),
-  target: new targets.CodeBuildStartBuild(project, {}),
+  target: new targets.CodeBuildStartBuild(project),
 });
 ```
