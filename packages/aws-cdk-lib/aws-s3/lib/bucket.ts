@@ -1250,6 +1250,7 @@ export interface Inventory {
   readonly enabled?: boolean;
   /**
    * The inventory configuration ID.
+   * Should be limited to 64 characters and can only contain letters, numbers, periods, dashes, and underscores.
    *
    * @default - generated ID.
    */
