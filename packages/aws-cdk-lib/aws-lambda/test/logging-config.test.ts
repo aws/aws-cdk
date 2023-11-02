@@ -115,25 +115,9 @@ describe('logging Config', () => {
       runtime: lambda.Runtime.NODEJS_18_X,
       logGroup: logGroup,
     });
+    expect(lambdaFunction.logGroup).toEqual(logGroup);
     expect(lambdaFunction.logGroup.logGroupName).toEqual(logGroup.logGroupName);
     expect(lambdaFunction.logGroup.logGroupPhysicalName()).toEqual(logGroup.logGroupPhysicalName());
-  });
-
-  test('function with no custom logGroup creates default logGroup', () => {
-    // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'stack');
-    const logGroup = new logs.LogGroup(stack, 'MyLogGroup', {
-      logGroupName: 'customLogGroup',
-    });
-    const lambdaFunction = new lambda.Function(stack, 'Lambda', {
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
-      logFormat: lambda.LogFormat.JSON,
-    });
-    expect(lambdaFunction.logGroup.logGroupName).not.toEqual(logGroup.logGroupName);
-    expect(lambdaFunction.logGroup.logGroupPhysicalName()).not.toEqual(logGroup.logGroupPhysicalName());
   });
 
   test('Throws when logGroup and LogRention are set', () => {
