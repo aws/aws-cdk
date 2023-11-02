@@ -638,10 +638,8 @@ export namespace EmrCreateCluster {
      * Specifies the strategy to use in launching On-Demand instance fleets.
      *
      * Currently, the only option is lowest-price (the default), which launches the lowest price first.
-     *
-     * @default - lowest-price
      */
-    readonly allocationStrategy?: OnDemandAllocationStrategy;
+    readonly allocationStrategy: OnDemandAllocationStrategy;
   }
 
   /**

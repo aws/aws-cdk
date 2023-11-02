@@ -137,9 +137,7 @@ function OnDemandProvisioningSpecificationPropertyToJson(property: EmrCreateClus
     return undefined;
   }
   return {
-    AllocationStrategy: cdk.stringToCloudFormation(
-      property.allocationStrategy ?? EmrCreateCluster.OnDemandAllocationStrategy.LOWEST_PRICE,
-    ),
+    AllocationStrategy: cdk.stringToCloudFormation(property.allocationStrategy),
   };
 }
 
