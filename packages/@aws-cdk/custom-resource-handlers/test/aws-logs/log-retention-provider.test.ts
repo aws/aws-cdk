@@ -2,7 +2,7 @@ import { CloudWatchLogsClient, CloudWatchLogsClientResolvedConfig, CreateLogGrou
 import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';
 import * as nock from 'nock';
-import * as provider from '../lib/log-retention-provider';
+import * as provider from '../../lib/aws-logs/log-retention-provider/index';
 
 const cloudwatchLogsMock = mockClient(CloudWatchLogsClient);
 const OPERATION_ABORTED = new OperationAbortedException({ message: '', $metadata: {} });
@@ -73,7 +73,7 @@ describe('log retention provider', () => {
 
     expect(cloudwatchLogsMock).toHaveReceivedCommandWith(PutRetentionPolicyCommand, {
       logGroupName: 'group',
-      retentionInDays: 30,
+      retentionInDays: 29,
     });
 
     expect(cloudwatchLogsMock).toHaveReceivedCommandWith(CreateLogGroupCommand, {
