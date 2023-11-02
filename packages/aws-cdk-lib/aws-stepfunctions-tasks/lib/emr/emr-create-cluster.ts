@@ -617,7 +617,7 @@ export namespace EmrCreateCluster {
    *
    * Specifies the strategy to use in launching On-Demand instance fleets. Currently, the only option is "lowest-price" (the default), which launches the lowest price first.
    *
-   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_OnDemandProvisioningSpecification.html
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-emr-instancefleetconfig-ondemandprovisioningspecification.html
    *
    */
   export enum OnDemandAllocationStrategy {
@@ -628,79 +628,9 @@ export namespace EmrCreateCluster {
   }
 
   /**
-   * The instance's Capacity Reservation preferences.
-   *
-   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_OnDemandCapacityReservationOptions.html
-   *
-   */
-  export enum CapacityReservationPreference {
-    /**
-     * The instance can run in any open Capacity Reservation that has matching attributes (instance type, platform, Availability Zone).
-     */
-    OPEN = 'open',
-
-    /**
-     * The instance avoids running in a Capacity Reservation even if one is available. The instance runs as an On-Demand Instance.
-     */
-    NONE = 'none',
-  }
-
-  /**
-   * Whether to use unused Capacity Reservations for fulfilling On-Demand capacity.
-   *
-   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_OnDemandCapacityReservationOptions.html
-   *
-   */
-  export enum UsageStrategy {
-    /**
-     * The fleet uses unused Capacity Reservations to fulfill On-Demand capacity up to the target On-Demand capacity.
-     */
-    USE_CAPACITY_RESERVATIONS_FIRST = 'use-capacity-reservations-first',
-  }
-
-  /**
-   * The strategy for using unused Capacity Reservations for fulfilling On-Demand capacity.
-   *
-   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_OnDemandCapacityReservationOptions.html
-   *
-   */
-  export interface CapacityReservationOptions {
-    /**
-     * The instance's Capacity Reservation preferences.
-     *
-     * @default - no capacityReservationPreference
-     */
-    readonly capacityReservationPreference?: CapacityReservationPreference;
-
-    /**
-     * The ARN of the Capacity Reservation resource group in which to run the instance.
-     *
-     * Length Constraints: Minimum length of 0. Maximum length of 256.
-     * Pattern: [\u0020-\uD7FF\uE000-\uFFFD\uD800\uDC00-\uDBFF\uDFFF\r\n\t]*
-     *
-     * @default - no capacityReservationResourceGroupArn
-     */
-    readonly capacityReservationResourceGroupArn?: string;
-
-    /**
-     * Whether to use unused Capacity Reservations for fulfilling On-Demand capacity.
-     *
-     * If you specify use-capacity-reservations-first, the fleet uses unused Capacity Reservations to fulfill On-Demand capacity up to the target On-Demand capacity.
-     * If multiple instance pools have unused Capacity Reservations, the On-Demand allocation strategy (lowest-price) is applied.
-     * If the number of unused Capacity Reservations is less than the On-Demand target capacity,
-     * the remaining On-Demand target capacity is launched according to the On-Demand allocation strategy (lowest-price).
-     *
-     * If you do not specify a value, the fleet fulfills the On-Demand capacity according to the chosen On-Demand allocation strategy.
-     *
-     * @default - no usageStrategy
-     */
-    readonly usageStrategy?: UsageStrategy;
-  }
-
-  /**
    * The launch specification for On-Demand Instances in the instance fleet, which determines the allocation strategy.
    *
-   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_OnDemandProvisioningSpecification.html
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-emr-instancefleetconfig-ondemandprovisioningspecification.html
    *
    */
   export interface OnDemandProvisioningSpecificationProperty {
@@ -712,13 +642,6 @@ export namespace EmrCreateCluster {
      * @default - lowest-price
      */
     readonly allocationStrategy?: OnDemandAllocationStrategy;
-
-    /**
-     * The launch specification for On-Demand instances in the instance fleet, which determines the allocation strategy.
-     *
-     * @default - No capacityReservationOptions
-     */
-    readonly capacityReservationOptions?: CapacityReservationOptions;
   }
 
   /**
@@ -784,7 +707,10 @@ export namespace EmrCreateCluster {
   }
 
   /**
-   * The launch specification for Spot instances in the fleet, which determines the defined duration and provisioning timeout behavior.
+   * The launch specification for On-Demand and Spot instances in the fleet, which determines the defined duration and provisioning timeout behavior, and allocation strategy.
+   *
+   * The instance fleet configuration is available only in Amazon EMR releases 4.8.0 and later, excluding 5.0.x versions.
+   * On-Demand and Spot instance allocation strategies are available in Amazon EMR releases 5.12.1 and later.
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_InstanceFleetProvisioningSpecifications.html
    *

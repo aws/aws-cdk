@@ -136,26 +136,10 @@ function OnDemandProvisioningSpecificationPropertyToJson(property: EmrCreateClus
   if (!property) {
     return undefined;
   }
-  const capacityReservationResourceGroupArn = property.capacityReservationOptions?.capacityReservationResourceGroupArn;
-  if (capacityReservationResourceGroupArn !== undefined && capacityReservationResourceGroupArn.length > 256) {
-    throw new Error(`length of capacityReservationResourceGroupArn must be between 0 and 256, got ${capacityReservationResourceGroupArn.length}`);
-  }
-
   return {
     AllocationStrategy: cdk.stringToCloudFormation(
       property.allocationStrategy ?? EmrCreateCluster.OnDemandAllocationStrategy.LOWEST_PRICE,
     ),
-    CapacityReservationOptions: {
-      CapacityReservationPreference: cdk.stringToCloudFormation(
-        property.capacityReservationOptions?.capacityReservationPreference,
-      ),
-      CapacityReservationResourceGroupArn: cdk.stringToCloudFormation(
-        property.capacityReservationOptions?.capacityReservationResourceGroupArn,
-      ),
-      UsageStrategy: cdk.stringToCloudFormation(
-        property.capacityReservationOptions?.usageStrategy,
-      ),
-    },
   };
 }
 
@@ -168,7 +152,6 @@ function SpotProvisioningSpecificationPropertyToJson(property: EmrCreateCluster.
   if (!property) {
     return undefined;
   }
-
   return {
     AllocationStrategy: cdk.stringToCloudFormation(property.allocationStrategy),
     BlockDurationMinutes: cdk.numberToCloudFormation(property.blockDurationMinutes),
