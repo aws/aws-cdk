@@ -14,6 +14,9 @@ import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 export interface ICfnResource {
   /**
    * The identifier of the resource.
+   * This property gets determined after the resource is created.
+   *
+   * @cloudformationAttribute Ref
    */
   readonly attrId: string;
 }
@@ -55,6 +58,9 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IC
 
   /**
    * The identifier of the resource.
+   * This property gets determined after the resource is created.
+   *
+   * @cloudformationAttribute Ref
    */
   public readonly attrId: string;
 
@@ -1107,11 +1113,17 @@ import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 export interface ICfnResource {
   /**
    * The identifier of the resource.
+   * This property gets determined after the resource is created.
+   *
+   * @cloudformationAttribute Ref
    */
   readonly attrId?: string;
 
   /**
    * Another identifier of the resource.
+   * This property gets determined after the resource is created.
+   *
+   * @cloudformationAttribute Ref
    */
   readonly attrAnotherId?: string;
 }
@@ -1153,11 +1165,17 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IC
 
   /**
    * Another identifier of the resource.
+   * This property gets determined after the resource is created.
+   *
+   * @cloudformationAttribute Ref
    */
   public readonly attrAnotherId?: string;
 
   /**
    * The identifier of the resource.
+   * This property gets determined after the resource is created.
+   *
+   * @cloudformationAttribute Ref
    */
   public readonly attrId?: string;
 
@@ -1293,6 +1311,9 @@ import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 export interface ICfnResource {
   /**
    * The identifier of the resource.
+   * This property gets determined after the resource is created.
+   *
+   * @cloudformationAttribute Ref
    */
   readonly attrId?: string;
 }
@@ -1334,6 +1355,9 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IC
 
   /**
    * The identifier of the resource.
+   * This property gets determined after the resource is created.
+   *
+   * @cloudformationAttribute Ref
    */
   public readonly attrId?: string;
 

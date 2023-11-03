@@ -73,7 +73,8 @@ export class ResourceDecider {
       name: attributePropertyName(propSpec.name[0].toUpperCase() + propSpec.name.slice(1)),
       docs: {
         ...propSpec.docs,
-        remarks: propSpec.docs?.remarks?.concat(['\n', '@cloudformationAttribute Ref'].join('\n')),
+        summary: (propSpec.docs?.summary ?? '').concat('\nThis property gets determined after the resource is created.'),
+        remarks: (propSpec.docs?.remarks ?? '').concat('@cloudformationAttribute Ref'),
       },
       immutable: true,
     };
