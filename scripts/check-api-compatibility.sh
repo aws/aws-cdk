@@ -3,6 +3,7 @@
 set -eu
 
 repo_root="$(cd $(dirname $0)/.. && pwd)"
+scriptdir="$repo_root/scripts"
 tmpdir=/tmp/compat-check
 
 package_name() {
@@ -104,6 +105,18 @@ for dir in $jsii_package_dirs; do
         cat $tmpdir/output.txt
     fi
 done
+
+#----------------------------------------------------------------------
+#  Do a special region-info check independently
+echo -n "Checking region info facts... "
+if npx ts-node $scriptdir/check-region-info-compatibility.ts $tmpdir/node_modules/aws-cdk-lib $repo_root/packages/aws-cdk-lib; then
+    echo "OK."
+else
+    echo "MISSING."
+    success=false
+fi
+
+#----------------------------------------------------------------------
 
 if $success; then
     echo "All OK." >&2
