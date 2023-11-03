@@ -26,7 +26,6 @@ test('resource interface when primaryIdentifier is a property', () => {
     properties: {
       Id: {
         type: { type: 'string' },
-        required: true,
         documentation: 'The identifier of the resource',
       },
     },

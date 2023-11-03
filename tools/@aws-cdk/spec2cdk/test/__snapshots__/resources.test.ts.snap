@@ -18,7 +18,7 @@ export interface ICfnResource {
    *
    * @cloudformationAttribute Ref
    */
-  readonly attrId: string;
+  readonly attrId?: string;
 }
 
 /**
@@ -62,25 +62,23 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IC
    *
    * @cloudformationAttribute Ref
    */
-  public readonly attrId: string;
+  public readonly attrId?: string;
 
   /**
    * The identifier of the resource.
    */
-  public id: string;
+  public id?: string;
 
   /**
    * @param scope Scope in which this resource is defined
    * @param id Construct identifier for this resource (unique in its scope)
    * @param props Resource properties
    */
-  public constructor(scope: constructs.Construct, id: string, props: CfnResourceProps) {
+  public constructor(scope: constructs.Construct, id: string, props: CfnResourceProps = {}) {
     super(scope, id, {
       "type": CfnResource.CFN_RESOURCE_TYPE_NAME,
       "properties": props
     });
-
-    cdk.requireProperty(props, "id", this);
 
     this.attrId = cdk.Token.asString(this.ref);
     this.id = props.id;
@@ -120,7 +118,7 @@ export interface CfnResourceProps {
    *
    * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-resource.html#cfn-some-resource-id
    */
-  readonly id: string;
+  readonly id?: string;
 }
 
 /**
@@ -137,7 +135,6 @@ function CfnResourcePropsValidator(properties: any): cdk.ValidationResult {
   if (!(properties && typeof properties == 'object' && !Array.isArray(properties))) {
     errors.collect(new cdk.ValidationResult("Expected an object, but received: " + JSON.stringify(properties)));
   }
-  errors.collect(cdk.propertyValidator("id", cdk.requiredValidator)(properties.id));
   errors.collect(cdk.propertyValidator("id", cdk.validateString)(properties.id));
   return errors.wrap("supplied properties not correct for \\"CfnResourceProps\\"");
 }
