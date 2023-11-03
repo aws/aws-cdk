@@ -14,18 +14,11 @@ import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 export interface ICfnResource {
   /**
    * The identifier of the resource.
-<<<<<<< HEAD
    * This property gets determined after the resource is created.
    *
    * @cloudformationAttribute Ref
    */
   readonly attrId: string;
-=======
-   *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-resource.html#cfn-some-resource-id
-   */
-  readonly attrId?: string;
->>>>>>> b2da9db3844a8e7926a81548785ace77c60bbc1b
 }
 
 /**
@@ -33,11 +26,7 @@ export interface ICfnResource {
  * @stability external
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-resource.html
  */
-<<<<<<< HEAD
 export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, ICfnResource {
-=======
-export class CfnResource extends cdk.CfnResource implements cdk.IInspectable {
->>>>>>> b2da9db3844a8e7926a81548785ace77c60bbc1b
   /**
    * The CloudFormation resource type name for this resource class.
    */
@@ -69,7 +58,6 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable {
 
   /**
    * The identifier of the resource.
-<<<<<<< HEAD
    * This property gets determined after the resource is created.
    *
    * @cloudformationAttribute Ref
@@ -80,32 +68,21 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable {
    * The identifier of the resource.
    */
   public id: string;
-=======
-   */
-  public id?: string;
->>>>>>> b2da9db3844a8e7926a81548785ace77c60bbc1b
 
   /**
    * @param scope Scope in which this resource is defined
    * @param id Construct identifier for this resource (unique in its scope)
    * @param props Resource properties
    */
-<<<<<<< HEAD
   public constructor(scope: constructs.Construct, id: string, props: CfnResourceProps) {
-=======
-  public constructor(scope: constructs.Construct, id: string, props: CfnResourceProps = {}) {
->>>>>>> b2da9db3844a8e7926a81548785ace77c60bbc1b
     super(scope, id, {
       "type": CfnResource.CFN_RESOURCE_TYPE_NAME,
       "properties": props
     });
 
-<<<<<<< HEAD
     cdk.requireProperty(props, "id", this);
 
     this.attrId = cdk.Token.asString(this.ref);
-=======
->>>>>>> b2da9db3844a8e7926a81548785ace77c60bbc1b
     this.id = props.id;
   }
 
@@ -143,11 +120,7 @@ export interface CfnResourceProps {
    *
    * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-resource.html#cfn-some-resource-id
    */
-<<<<<<< HEAD
   readonly id: string;
-=======
-  readonly id?: string;
->>>>>>> b2da9db3844a8e7926a81548785ace77c60bbc1b
 }
 
 /**
@@ -164,10 +137,7 @@ function CfnResourcePropsValidator(properties: any): cdk.ValidationResult {
   if (!(properties && typeof properties == 'object' && !Array.isArray(properties))) {
     errors.collect(new cdk.ValidationResult("Expected an object, but received: " + JSON.stringify(properties)));
   }
-<<<<<<< HEAD
   errors.collect(cdk.propertyValidator("id", cdk.requiredValidator)(properties.id));
-=======
->>>>>>> b2da9db3844a8e7926a81548785ace77c60bbc1b
   errors.collect(cdk.propertyValidator("id", cdk.validateString)(properties.id));
   return errors.wrap("supplied properties not correct for \\"CfnResourceProps\\"");
 }
@@ -222,11 +192,7 @@ export interface ICfnResource {
  * @stability external
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-resource.html
  */
-<<<<<<< HEAD
 export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, ICfnResource {
-=======
-export class CfnResource extends cdk.CfnResource implements cdk.IInspectable {
->>>>>>> b2da9db3844a8e7926a81548785ace77c60bbc1b
   /**
    * The CloudFormation resource type name for this resource class.
    */
@@ -378,11 +344,7 @@ export interface ICfnSomething {
  * @stability external
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-something.html
  */
-<<<<<<< HEAD
 export class CfnSomething extends cdk.CfnResource implements cdk.IInspectable, ICfnSomething {
-=======
-export class CfnSomething extends cdk.CfnResource implements cdk.IInspectable {
->>>>>>> b2da9db3844a8e7926a81548785ace77c60bbc1b
   /**
    * The CloudFormation resource type name for this resource class.
    */
@@ -542,11 +504,7 @@ export interface ICfnResource {
  * @stability external
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-resource.html
  */
-<<<<<<< HEAD
 export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, ICfnResource {
-=======
-export class CfnResource extends cdk.CfnResource implements cdk.IInspectable {
->>>>>>> b2da9db3844a8e7926a81548785ace77c60bbc1b
   /**
    * The CloudFormation resource type name for this resource class.
    */
@@ -674,11 +632,7 @@ function CfnResourcePropsFromCloudFormation(properties: any): cfn_parse.FromClou
 }"
 `;
 
-<<<<<<< HEAD
 exports[`resource interface with Arn as a property and not a primaryIdentifier 1`] = `
-=======
-exports[`resource interface with "ResourceArn" 1`] = `
->>>>>>> b2da9db3844a8e7926a81548785ace77c60bbc1b
 "/* eslint-disable prettier/prettier,max-len */
 import * as cdk from "aws-cdk-lib";
 import * as constructs from "constructs";
@@ -696,16 +650,6 @@ export interface ICfnResource {
    * @cloudformationAttribute Id
    */
   readonly attrId: string;
-<<<<<<< HEAD
-=======
-
-  /**
-   * The arn for the resource
-   *
-   * @cloudformationAttribute ResourceArn
-   */
-  readonly attrResourceArn: string;
->>>>>>> b2da9db3844a8e7926a81548785ace77c60bbc1b
 }
 
 /**
@@ -713,11 +657,7 @@ export interface ICfnResource {
  * @stability external
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-resource.html
  */
-<<<<<<< HEAD
 export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, ICfnResource {
-=======
-export class CfnResource extends cdk.CfnResource implements cdk.IInspectable {
->>>>>>> b2da9db3844a8e7926a81548785ace77c60bbc1b
   /**
    * The CloudFormation resource type name for this resource class.
    */
@@ -755,17 +695,9 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable {
   public readonly attrId: string;
 
   /**
-<<<<<<< HEAD
    * The arn for the resource.
    */
   public arn?: string;
-=======
-   * The arn for the resource
-   *
-   * @cloudformationAttribute ResourceArn
-   */
-  public readonly attrResourceArn: string;
->>>>>>> b2da9db3844a8e7926a81548785ace77c60bbc1b
 
   /**
    * @param scope Scope in which this resource is defined
@@ -779,7 +711,6 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable {
     });
 
     this.attrId = cdk.Token.asString(this.getAtt("Id", cdk.ResolutionTypeHint.STRING));
-<<<<<<< HEAD
     this.arn = props.arn;
   }
 
@@ -787,13 +718,6 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable {
     return {
       "arn": this.arn
     };
-=======
-    this.attrResourceArn = cdk.Token.asString(this.getAtt("ResourceArn", cdk.ResolutionTypeHint.STRING));
-  }
-
-  protected get cfnProperties(): Record<string, any> {
-    return {};
->>>>>>> b2da9db3844a8e7926a81548785ace77c60bbc1b
   }
 
   /**
@@ -819,16 +743,12 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable {
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-resource.html
  */
 export interface CfnResourceProps {
-<<<<<<< HEAD
   /**
    * The arn for the resource.
    *
    * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-resource.html#cfn-some-resource-arn
    */
   readonly arn?: string;
-=======
-
->>>>>>> b2da9db3844a8e7926a81548785ace77c60bbc1b
 }
 
 /**
@@ -845,10 +765,7 @@ function CfnResourcePropsValidator(properties: any): cdk.ValidationResult {
   if (!(properties && typeof properties == 'object' && !Array.isArray(properties))) {
     errors.collect(new cdk.ValidationResult("Expected an object, but received: " + JSON.stringify(properties)));
   }
-<<<<<<< HEAD
   errors.collect(cdk.propertyValidator("arn", cdk.validateString)(properties.arn));
-=======
->>>>>>> b2da9db3844a8e7926a81548785ace77c60bbc1b
   return errors.wrap("supplied properties not correct for \\"CfnResourceProps\\"");
 }
 
@@ -856,13 +773,9 @@ function CfnResourcePropsValidator(properties: any): cdk.ValidationResult {
 function convertCfnResourcePropsToCloudFormation(properties: any): any {
   if (!cdk.canInspect(properties)) return properties;
   CfnResourcePropsValidator(properties).assertSuccess();
-<<<<<<< HEAD
   return {
     "Arn": cdk.stringToCloudFormation(properties.arn)
   };
-=======
-  return {};
->>>>>>> b2da9db3844a8e7926a81548785ace77c60bbc1b
 }
 
 // @ts-ignore TS6133
@@ -875,10 +788,7 @@ function CfnResourcePropsFromCloudFormation(properties: any): cfn_parse.FromClou
     return new cfn_parse.FromCloudFormationResult(properties);
   }
   const ret = new cfn_parse.FromCloudFormationPropertyObject<CfnResourceProps>();
-<<<<<<< HEAD
   ret.addPropertyResult("arn", "Arn", (properties.Arn != null ? cfn_parse.FromCloudFormation.getString(properties.Arn) : undefined));
-=======
->>>>>>> b2da9db3844a8e7926a81548785ace77c60bbc1b
   ret.addUnrecognizedPropertiesAsExtra(properties);
   return ret;
 }"
@@ -909,11 +819,7 @@ export interface ICfnResource {
  * @stability external
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-resource.html
  */
-<<<<<<< HEAD
 export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, ICfnResource {
-=======
-export class CfnResource extends cdk.CfnResource implements cdk.IInspectable {
->>>>>>> b2da9db3844a8e7926a81548785ace77c60bbc1b
   /**
    * The CloudFormation resource type name for this resource class.
    */
@@ -1065,11 +971,7 @@ export interface ICfnResource {
  * @stability external
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-resource.html
  */
-<<<<<<< HEAD
 export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, ICfnResource {
-=======
-export class CfnResource extends cdk.CfnResource implements cdk.IInspectable {
->>>>>>> b2da9db3844a8e7926a81548785ace77c60bbc1b
   /**
    * The CloudFormation resource type name for this resource class.
    */
@@ -1196,7 +1098,6 @@ function CfnResourcePropsFromCloudFormation(properties: any): cfn_parse.FromClou
   return ret;
 }"
 `;
-<<<<<<< HEAD
 
 exports[`resource with multiple primaryIdentifiers as properties 1`] = `
 "/* eslint-disable prettier/prettier,max-len */
@@ -1559,5 +1460,3 @@ function CfnResourcePropsFromCloudFormation(properties: any): cfn_parse.FromClou
   return ret;
 }"
 `;
-=======
->>>>>>> b2da9db3844a8e7926a81548785ace77c60bbc1b
