@@ -59,16 +59,10 @@ export class ResourceDecider {
     // A list of possible names for the arn, in order of importance.
     // This is relevant because some resources, like AWS::VpcLattice::AccessLogSubscription
     // has both `Arn` and `ResourceArn`, and we want to select the `Arn` property.
-    const possibleArnNames = ['Arn', 'ResourceArn', `${this.resource.name}Arn`];
+    const possibleArnNames = ['Arn', `${this.resource.name}Arn`];
     for (const arn of possibleArnNames) {
       const att = this.classAttributeProperties.find((a) => a.propertySpec.name === attributePropertyName(arn));
       if (att) { return att.propertySpec; }
-      // TODO: double check -- if an arn is a property, not an attribute, and not a primaryIdentifier
-      // it is not getting returned by cloudformation in any way, right?
-      // const prop = this.propsProperties.find((p) => p.propertySpec.name === propertyNameFromCloudFormation(arn));
-      // if (prop) {
-      //   return this.convertPropertySpecToRefAttribute(prop.propertySpec);
-      // }
     }
     return;
   }
