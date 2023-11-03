@@ -2421,11 +2421,15 @@ export class Bucket extends BucketBase {
     if (!this.inventories || this.inventories.length === 0) {
       return undefined;
     }
+    const inventoryIdValidationRegex = /[^\w\.\-]/g;
 
     return this.inventories.map((inventory, index) => {
       const format = inventory.format ?? InventoryFormat.CSV;
       const frequency = inventory.frequency ?? InventoryFrequency.WEEKLY;
-      const id = inventory.inventoryId ?? `${this.node.id}Inventory${index}`.replace( /[^\w\.\-]/g, '').slice(-64);
+      if (inventory.inventoryId !== undefined && (inventory.inventoryId.length > 64 || inventoryIdValidationRegex.test(inventory.inventoryId))) {
+        throw new Error('InventoryId should not exceed 64 characters and should not contain special characters except . and -');
+      }
+      const id = inventory.inventoryId ?? `${this.node.id}Inventory${index}`.replace(inventoryIdValidationRegex, '').slice(-64);
 
       if (inventory.destination.bucket instanceof Bucket) {
         inventory.destination.bucket.addToResourcePolicy(new iam.PolicyStatement({

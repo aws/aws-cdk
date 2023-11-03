@@ -3158,6 +3158,24 @@ describe('bucket', () => {
     });
   });
 
+  test('throws when inventoryid is invalid', () => {
+    // Given
+    const stack = new cdk.Stack();
+
+    const inventoryBucket = new s3.Bucket(stack, 'InventoryBucket');
+
+    expect(() => new s3.Bucket(stack, 'MyBucket2', {
+      inventories: [
+        {
+          destination: {
+            bucket: inventoryBucket,
+          },
+          inventoryId: 'InvalidId&/',
+        },
+      ],
+    })).toThrow(/InventoryId should not exceed 64 characters and should not contain special characters except . and -/);
+  });
+
   test('Bucket with objectOwnership set to BUCKET_OWNER_ENFORCED', () => {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
@@ -3668,3 +3686,4 @@ describe('bucket', () => {
     });
   });
 });
+
