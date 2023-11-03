@@ -163,7 +163,7 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
 
   private getOrCreateProvider() {
     return CustomResourceProvider.getOrCreateProvider(this, RESOURCE_TYPE, {
-      codeDirectory: path.join(__dirname, 'oidc-provider'),
+      codeDirectory: path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-iam', 'oidc-handler'),
       runtime: CustomResourceProviderRuntime.NODEJS_18_X,
       policyStatements: [
         {
