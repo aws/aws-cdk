@@ -3163,8 +3163,7 @@ describe('bucket', () => {
     const stack = new cdk.Stack();
 
     const inventoryBucket = new s3.Bucket(stack, 'InventoryBucket');
-
-    expect(() => new s3.Bucket(stack, 'MyBucket2', {
+    new s3.Bucket(stack, 'MyBucket2', {
       inventories: [
         {
           destination: {
@@ -3173,7 +3172,9 @@ describe('bucket', () => {
           inventoryId: 'InvalidId&/',
         },
       ],
-    })).toThrow(/InventoryId should not exceed 64 characters and should not contain special characters except . and -/);
+    });
+
+    expect(() => Template.fromStack(stack)).toThrow(/InventoryId should not exceed 64 characters and should not contain special characters except . and -/);
   });
 
   test('Bucket with objectOwnership set to BUCKET_OWNER_ENFORCED', () => {
