@@ -202,7 +202,7 @@ export class Runtime {
    */
   public static readonly JAVA_21 = new Runtime('java21', RuntimeFamily.JAVA, {
     supportsCodeGuruProfiling: true,
-    supportsSnapStart: false,
+    supportsSnapStart: true,
   });
 
   /**
