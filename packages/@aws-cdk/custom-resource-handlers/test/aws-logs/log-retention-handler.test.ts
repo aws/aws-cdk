@@ -3,7 +3,7 @@ import { CloudWatchLogsClient, CloudWatchLogsClientResolvedConfig, CreateLogGrou
 import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';
 import * as nock from 'nock';
-import * as provider from '../../lib/aws-logs/log-retention-provider/index';
+import * as provider from '../../lib/aws-logs/log-retention-handler/index';
 
 const cloudwatchLogsMock = mockClient(CloudWatchLogsClient);
 const OPERATION_ABORTED = new OperationAbortedException({ message: '', $metadata: {} });
