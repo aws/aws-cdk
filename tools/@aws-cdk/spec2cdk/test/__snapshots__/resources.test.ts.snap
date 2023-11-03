@@ -1182,8 +1182,8 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IC
       "properties": props
     });
 
-    this.attrAnotherId = cdk.Token.asString(cdk.Fn.select(1, cdk.Fn.split('|', this.ref)));
-    this.attrId = cdk.Token.asString(cdk.Fn.select(0, cdk.Fn.split('|', this.ref)));
+    this.attrAnotherId = cdk.Token.asString(cdk.Fn.select(1, cdk.Fn.split("|", this.ref)));
+    this.attrId = cdk.Token.asString(cdk.Fn.select(0, cdk.Fn.split("|", this.ref)));
     this.anotherId = props.anotherId;
     this.id = props.id;
   }

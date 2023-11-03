@@ -97,7 +97,7 @@ export class ResourceDecider {
           if (this.resource.primaryIdentifier!.length === 1) {
             initializer = CDK_CORE.tokenAsString($this.ref);
           } else {
-            initializer = CDK_CORE.tokenAsString($Fn.select(expr.directCode(i.toString()), $Fn.split(expr.directCode('\'|\''), $this.ref)));
+            initializer = CDK_CORE.tokenAsString($Fn.select(expr.lit(i), $Fn.split(expr.lit('|'), $this.ref)));
           }
         }
 
