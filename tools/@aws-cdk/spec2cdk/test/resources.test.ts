@@ -26,7 +26,10 @@ test('resource interface when primaryIdentifier is a property', () => {
     properties: {
       Id: {
         type: { type: 'string' },
+<<<<<<< HEAD
         required: true,
+=======
+>>>>>>> b2da9db3844a8e7926a81548785ace77c60bbc1b
         documentation: 'The identifier of the resource',
       },
     },
@@ -44,6 +47,7 @@ test('resource interface when primaryIdentifier is a property', () => {
   expect(rendered).toMatchSnapshot();
 });
 
+<<<<<<< HEAD
 test('resource with optional primary identifier gets property from ref', () => {
   // GIVEN
   const resource = db.allocate('resource', {
@@ -100,6 +104,8 @@ test('resource with multiple primaryIdentifiers as properties', () => {
   expect(rendered).toMatchSnapshot();
 });
 
+=======
+>>>>>>> b2da9db3844a8e7926a81548785ace77c60bbc1b
 test('resource interface when primaryIdentifier is an attribute', () => {
   // GIVEN
   const resource = db.allocate('resource', {
@@ -160,7 +166,11 @@ test('resource interface with "Arn"', () => {
   // GIVEN
   const resource = db.allocate('resource', {
     name: 'Resource',
+<<<<<<< HEAD
     primaryIdentifier: ['Id'],
+=======
+    primaryIdentifier: ['Id', 'Another'],
+>>>>>>> b2da9db3844a8e7926a81548785ace77c60bbc1b
     properties: {},
     attributes: {
       Id: {
@@ -186,6 +196,39 @@ test('resource interface with "Arn"', () => {
   expect(rendered).toMatchSnapshot();
 });
 
+<<<<<<< HEAD
+=======
+test('resource interface with "ResourceArn"', () => {
+  // GIVEN
+  const resource = db.allocate('resource', {
+    name: 'Resource',
+    primaryIdentifier: ['Id'],
+    properties: {},
+    attributes: {
+      Id: {
+        type: { type: 'string' },
+        documentation: 'The identifier of the resource',
+      },
+      ResourceArn: {
+        type: { type: 'string' },
+        documentation: 'The arn for the resource',
+      },
+    },
+    cloudFormationType: 'AWS::Some::Resource',
+  });
+  db.link('hasResource', service, resource);
+
+  // THEN
+  const foundResource = db.lookup('resource', 'cloudFormationType', 'equals', 'AWS::Some::Resource').only();
+
+  const ast = AstBuilder.forResource(foundResource, { db });
+
+  const rendered = renderer.render(ast.module);
+
+  expect(rendered).toMatchSnapshot();
+});
+
+>>>>>>> b2da9db3844a8e7926a81548785ace77c60bbc1b
 test('resource interface with "<Resource>Arn"', () => {
   // GIVEN
   const resource = db.allocate('resource', {
@@ -216,6 +259,7 @@ test('resource interface with "<Resource>Arn"', () => {
   expect(rendered).toMatchSnapshot();
 });
 
+<<<<<<< HEAD
 test('resource interface with Arn as a property and not a primaryIdentifier', () => {
   // GIVEN
   const resource = db.allocate('resource', {
@@ -247,6 +291,8 @@ test('resource interface with Arn as a property and not a primaryIdentifier', ()
   expect(rendered).toMatchSnapshot();
 });
 
+=======
+>>>>>>> b2da9db3844a8e7926a81548785ace77c60bbc1b
 test('resource interface with Arn as primaryIdentifier', () => {
   // GIVEN
   const resource = db.allocate('resource', {
