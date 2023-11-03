@@ -13,12 +13,12 @@ import { Resolver, ExtendedResolverProps } from './resolver';
 import { ITable } from '../../aws-dynamodb';
 import { IDomain as IElasticsearchDomain } from '../../aws-elasticsearch';
 import { IEventBus } from '../../aws-events';
+import { IGrantable, Grant } from '../../aws-iam';
 import { IFunction } from '../../aws-lambda';
 import { IDomain as IOpenSearchDomain } from '../../aws-opensearchservice';
 import { IServerlessCluster } from '../../aws-rds';
 import { ISecret } from '../../aws-secretsmanager';
 import { CfnResource, IResource, Resource, Stack, ArnFormat } from '../../core';
-import { IGrantable, Grant } from '../../aws-iam';
 
 /**
  * Optional configuration for data sources
