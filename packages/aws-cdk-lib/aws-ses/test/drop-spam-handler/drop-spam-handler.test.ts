@@ -1,26 +1,8 @@
 import { handler } from '../../lib/drop-spam-handler/index';
 
 describe('handler', () => {
-  test('drop spam when spf verdict status is FAIL', async () => {
-    const sesEvent = createSesEvent({ spf: { status: 'FAIL' } });
-    const response = await handler(sesEvent);
-    expect(response).toEqual({ disposition: 'STOP_RULE_SET' });
-  });
-
-  test('drop spam when dkim verdict status is FAIL', async () => {
-    const sesEvent = createSesEvent({ dkim: { status: 'FAIL' } });
-    const response = await handler(sesEvent);
-    expect(response).toEqual({ disposition: 'STOP_RULE_SET' });
-  });
-
-  test('drop spam when spam verdict status is FAIL', async () => {
-    const sesEvent = createSesEvent({ spam: { status: 'FAIL' } });
-    const response = await handler(sesEvent);
-    expect(response).toEqual({ disposition: 'STOP_RULE_SET' });
-  });
-
-  test('drop spam when virus verdict status is FAIL', async () => {
-    const sesEvent = createSesEvent({ virus: { status: 'FAIL' } });
+  test.each(['spf', 'dkim', 'spam', 'virus'])('drop spam when %s status is FAIL', async (key) => {
+    const sesEvent = createSesEvent({ [key]: { status: 'FAIL' } });
     const response = await handler(sesEvent);
     expect(response).toEqual({ disposition: 'STOP_RULE_SET' });
   });
