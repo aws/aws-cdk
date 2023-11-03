@@ -4,6 +4,7 @@ import * as path from 'path';
 import * as db from 'aws-cdk-lib/aws-dynamodb';
 import * as cdk from 'aws-cdk-lib';
 import * as appsync from 'aws-cdk-lib/aws-appsync';
+import * as iam from 'aws-cdk-lib/aws-iam';
 
 /*
  * Creates an Appsync GraphQL API in a separate stack.
@@ -86,5 +87,9 @@ new appsync.Resolver(stack, 'pipeline_resolver', {
     version: 'v1',
   })),
 });
+
+const role = new iam.Role(stack, 'role', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com') });
+api.grantQuery(role, 'getTests');
+api.grantMutation(role, 'addTest');
 
 app.synth();
