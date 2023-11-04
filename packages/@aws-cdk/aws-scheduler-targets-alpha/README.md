@@ -27,6 +27,7 @@ The following targets are supported:
 1. `targets.LambdaInvoke`: [Invoke an AWS Lambda function](#invoke-a-lambda-function))
 2. `targets.StepFunctionsStartExecution`: [Start an AWS Step Function](#start-an-aws-step-function)
 3. `targets.CodeBuildStartBuild`: [Start a CodeBuild job](#start-a-codebuild-job)
+4. `targets.SnsPublish`: [Publish to a SNS topic](#publish-to-a-sns-topic)
 
 ## Invoke a Lambda function
 
@@ -119,5 +120,23 @@ declare const project: codebuild.Project;
 new Schedule(this, 'Schedule', {
   schedule: ScheduleExpression.rate(Duration.minutes(60)),
   target: new targets.CodeBuildStartBuild(project),
+});
+```
+
+## Publish to a SNS topic
+
+Use the `SnsPublish` target to publish to a SNS topic.
+
+The code snippet below creates an event rule with a SNS publish as target which is
+called every hour by Event Bridge Scheduler.
+
+```ts
+import * as sns from 'aws-cdk-lib/aws-sns';
+
+declare const topic: sns.Topic;
+
+new Schedule(this, 'Schedule', {
+  schedule: ScheduleExpression.rate(Duration.minutes(60)),
+  target: new targets.SnsPublish(topic),
 });
 ```

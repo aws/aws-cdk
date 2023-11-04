@@ -1,0 +1,13 @@
+{
+  "version": "34.0.0",
+  "testCases": {
+    "integrationtest-scheduler-targets-sns-publish/DefaultTest": {
+      "stacks": [
+        "aws-cdk-scheduler-targets-sns-publish"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "integrationtest-scheduler-targets-sns-publish/DefaultTest/DeployAssert",
+      "assertionStackName": "integrationtestschedulertargetssnspublishDefaultTestDeployAssertCB3D1A70"
+    }
+  }
+}

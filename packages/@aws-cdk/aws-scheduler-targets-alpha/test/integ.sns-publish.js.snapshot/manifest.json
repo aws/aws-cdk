@@ -1,0 +1,239 @@
+{
+  "version": "34.0.0",
+  "artifacts": {
+    "aws-cdk-scheduler-targets-sns-publish.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-scheduler-targets-sns-publish.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-scheduler-targets-sns-publish": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-scheduler-targets-sns-publish.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7e0d37c1d29f5851a260482cb137b300d92afccde71a5436d8ef3130cc086961.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-scheduler-targets-sns-publish.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-scheduler-targets-sns-publish.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-scheduler-targets-sns-publish/MyLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaServiceRole4539ECB6"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-sns-publish/MyLambda/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaServiceRoleDefaultPolicy5BBC6F68"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-sns-publish/MyLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaCCE802FB"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-sns-publish/MyLambda/AllowInvoke:awscdkschedulertargetssnspublishTopic52E7BC41": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaAllowInvokeawscdkschedulertargetssnspublishTopic52E7BC4108B1284E"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-sns-publish/MyLambda/Topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaTopic6C6C36B2"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-sns-publish/MyParameter/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyParameter18BA547D"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-sns-publish/Topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TopicBFC7AF6E"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-sns-publish/Schedule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Schedule83A77FD1"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-sns-publish/SchedulerRoleForTarget-1441a7/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SchedulerRoleForTarget1441a743A31888"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-sns-publish/SchedulerRoleForTarget-1441a7/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SchedulerRoleForTarget1441a7DefaultPolicy885B6BFD"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-sns-publish/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-sns-publish/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-scheduler-targets-sns-publish"
+    },
+    "integrationtestschedulertargetssnspublishDefaultTestDeployAssertCB3D1A70.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integrationtestschedulertargetssnspublishDefaultTestDeployAssertCB3D1A70.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integrationtestschedulertargetssnspublishDefaultTestDeployAssertCB3D1A70": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integrationtestschedulertargetssnspublishDefaultTestDeployAssertCB3D1A70.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fe11ff21fec40e405ae1a793305b9009581c3760179bd55a2770942ff29ad6e5.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integrationtestschedulertargetssnspublishDefaultTestDeployAssertCB3D1A70.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integrationtestschedulertargetssnspublishDefaultTestDeployAssertCB3D1A70.assets"
+      ],
+      "metadata": {
+        "/integrationtest-scheduler-targets-sns-publish/DefaultTest/DeployAssert/AwsApiCallSSMgetParameterb39dc1574b03e33d60318219fdc43b01/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSSMgetParameterb39dc1574b03e33d60318219fdc43b01"
+          }
+        ],
+        "/integrationtest-scheduler-targets-sns-publish/DefaultTest/DeployAssert/AwsApiCallSSMgetParameterb39dc1574b03e33d60318219fdc43b01/WaitFor/IsCompleteProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSSMgetParameterb39dc1574b03e33d60318219fdc43b01WaitForIsCompleteProviderInvokeB88D7FB1"
+          }
+        ],
+        "/integrationtest-scheduler-targets-sns-publish/DefaultTest/DeployAssert/AwsApiCallSSMgetParameterb39dc1574b03e33d60318219fdc43b01/WaitFor/TimeoutProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSSMgetParameterb39dc1574b03e33d60318219fdc43b01WaitForTimeoutProviderInvoke74E2CEFE"
+          }
+        ],
+        "/integrationtest-scheduler-targets-sns-publish/DefaultTest/DeployAssert/AwsApiCallSSMgetParameterb39dc1574b03e33d60318219fdc43b01/WaitFor/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSSMgetParameterb39dc1574b03e33d60318219fdc43b01WaitForRole9ED837B7"
+          }
+        ],
+        "/integrationtest-scheduler-targets-sns-publish/DefaultTest/DeployAssert/AwsApiCallSSMgetParameterb39dc1574b03e33d60318219fdc43b01/WaitFor/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSSMgetParameterb39dc1574b03e33d60318219fdc43b01WaitForD1C4776F"
+          }
+        ],
+        "/integrationtest-scheduler-targets-sns-publish/DefaultTest/DeployAssert/AwsApiCallSSMgetParameterb39dc1574b03e33d60318219fdc43b01/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallSSMgetParameterb39dc1574b03e33d60318219fdc43b01"
+          }
+        ],
+        "/integrationtest-scheduler-targets-sns-publish/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/integrationtest-scheduler-targets-sns-publish/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/integrationtest-scheduler-targets-sns-publish/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+          }
+        ],
+        "/integrationtest-scheduler-targets-sns-publish/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+          }
+        ],
+        "/integrationtest-scheduler-targets-sns-publish/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+          }
+        ],
+        "/integrationtest-scheduler-targets-sns-publish/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+          }
+        ],
+        "/integrationtest-scheduler-targets-sns-publish/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integrationtest-scheduler-targets-sns-publish/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integrationtest-scheduler-targets-sns-publish/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

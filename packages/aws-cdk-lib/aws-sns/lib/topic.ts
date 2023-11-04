@@ -61,6 +61,8 @@ export class Topic extends TopicBase {
    * @param topicArn topic ARN (i.e. arn:aws:sns:us-east-2:444455556666:MyTopic)
    */
   public static fromTopicArn(scope: Construct, id: string, topicArn: string): ITopic {
+    const parsedArn = Stack.of(scope).splitArn(topicArn, ArnFormat.SLASH_RESOURCE_NAME);
+
     class Import extends TopicBase {
       public readonly topicArn = topicArn;
       public readonly topicName = Stack.of(scope).splitArn(topicArn, ArnFormat.NO_RESOURCE_NAME).resource;
@@ -69,7 +71,10 @@ export class Topic extends TopicBase {
       protected autoCreatePolicy: boolean = false;
     }
 
-    return new Import(scope, id);
+    return new Import(scope, id, {
+      account: parsedArn.account,
+      region: parsedArn.region,
+    });
   }
 
   public readonly topicArn: string;
