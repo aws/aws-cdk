@@ -26,6 +26,7 @@ The following targets are supported:
 
 1. `targets.LambdaInvoke`: [Invoke an AWS Lambda function](#invoke-a-lambda-function))
 2. `targets.StepFunctionsStartExecution`: [Start an AWS Step Function](#start-an-aws-step-function)
+3. `targets.SnsPublish`: [Publish messages to an Amazon SNS topic](#publish-messages-to-an-amazon-sns-topic)
 
 ## Invoke a Lambda function
 
@@ -100,5 +101,31 @@ new Schedule(this, 'Schedule', {
   target: new targets.StepFunctionsStartExecution(stateMachine, {
     input: ScheduleTargetInput.fromObject(payload),
   }),
+});
+```
+
+## Publish messages to an Amazon SNS topic
+
+Use the `SnsPublish` target to publish messages to an Amazon SNS topic.
+
+The code snippets below create create an event rule with a Amazon SNS topic as a target.
+It's called every hour by Amazon Event Bridge Scheduler with custom payload.
+
+```ts
+import * as sns from 'aws-cdk-lib/aws-sns';
+
+const topic = new sns.Topic(this, 'Topic', {});
+
+const payload = {
+  message: 'Hello scheduler!',
+};
+
+const target = new targets.SnsPublish(topic, {
+  input: ScheduleTargetInput.fromObject(payload),
+});
+
+new Schedule(this, 'Schedule', {
+  schedule: ScheduleExpression.rate(Duration.hours(1)),
+  target,
 });
 ```
