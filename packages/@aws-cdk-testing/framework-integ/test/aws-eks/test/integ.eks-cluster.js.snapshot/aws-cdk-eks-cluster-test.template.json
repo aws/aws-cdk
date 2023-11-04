@@ -3402,7 +3402,7 @@
     },
     "ScalingConfig": {
      "DesiredSize": 1,
-     "MaxSize": 1,
+     "MaxSize": 4,
      "MinSize": 1
     },
     "Subnets": [
@@ -3412,7 +3412,10 @@
      {
       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
      }
-    ]
+    ],
+    "UpdateConfig": {
+     "MaxUnavailable": 3
+    }
    }
   },
   "ClusterNodegroupextrangspotNodeGroupRoleB53B4857": {
@@ -3589,7 +3592,10 @@
      {
       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
      }
-    ]
+    ],
+    "UpdateConfig": {
+     "MaxUnavailablePercentage": 33
+    }
    }
   },
   "ClusterNodegroupextrangarm3NodeGroupRole3A6AB3EC": {

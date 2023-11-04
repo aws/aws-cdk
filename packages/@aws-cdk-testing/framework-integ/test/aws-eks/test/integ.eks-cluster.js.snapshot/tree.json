@@ -4461,7 +4461,7 @@
                         },
                         "scalingConfig": {
                           "desiredSize": 1,
-                          "maxSize": 1,
+                          "maxSize": 4,
                           "minSize": 1
                         },
                         "subnets": [
@@ -4471,7 +4471,10 @@
                           {
                             "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
                           }
-                        ]
+                        ],
+                        "updateConfig": {
+                          "maxUnavailable": 3
+                        }
                       }
                     },
                     "constructInfo": {
@@ -4736,7 +4739,10 @@
                           {
                             "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
                           }
-                        ]
+                        ],
+                        "updateConfig": {
+                          "maxUnavailablePercentage": 33
+                        }
                       }
                     },
                     "constructInfo": {
