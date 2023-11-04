@@ -11,7 +11,7 @@ import { sameEnvDimension } from './util';
 export class CodePipelineStartPipelineExecution extends ScheduleTargetBase implements IScheduleTarget {
   constructor(
     private readonly pipeline: IPipeline,
-    private readonly props: ScheduleTargetBaseProps,
+    private readonly props: ScheduleTargetBaseProps = {},
   ) {
     super(props, pipeline.pipelineArn);
   }

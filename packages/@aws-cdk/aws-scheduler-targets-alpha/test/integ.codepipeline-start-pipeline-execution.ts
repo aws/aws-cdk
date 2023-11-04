@@ -84,7 +84,7 @@ const pipeline = new Pipeline(stack, 'Pipeline', {
 pipeline.node.addDependency(deployment);
 new scheduler.Schedule(stack, 'Schedule', {
   schedule: scheduler.ScheduleExpression.rate(cdk.Duration.minutes(1)),
-  target: new CodePipelineStartPipelineExecution(pipeline, {}),
+  target: new CodePipelineStartPipelineExecution(pipeline),
 });
 
 const integrationTest = new IntegTest(app, 'integrationtest-codepipeline-start-pipeline-execution', {
