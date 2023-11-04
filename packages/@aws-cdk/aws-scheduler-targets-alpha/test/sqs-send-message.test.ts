@@ -41,7 +41,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: 'sqs:SendMessage',
+            Action: ['sqs:SendMessage', 'sqs:GetQueueAttributes', 'sqs:GetQueueUrl'],
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
@@ -99,7 +99,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: 'sqs:SendMessage',
+            Action: ['sqs:SendMessage', 'sqs:GetQueueAttributes', 'sqs:GetQueueUrl'],
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
@@ -144,7 +144,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: 'sqs:SendMessage',
+            Action: ['sqs:SendMessage', 'sqs:GetQueueAttributes', 'sqs:GetQueueUrl'],
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
@@ -180,7 +180,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: 'sqs:SendMessage',
+            Action: ['sqs:SendMessage', 'sqs:GetQueueAttributes', 'sqs:GetQueueUrl'],
             Effect: 'Allow',
             Resource: 'arn:aws:sqs:us-east-1:123456789012:somequeue',
           },
@@ -218,7 +218,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: 'sqs:SendMessage',
+            Action: ['sqs:SendMessage', 'sqs:GetQueueAttributes', 'sqs:GetQueueUrl'],
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
@@ -257,7 +257,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: 'sqs:SendMessage',
+            Action: ['sqs:SendMessage', 'sqs:GetQueueAttributes', 'sqs:GetQueueUrl'],
             Effect: 'Allow',
             Resource: 'arn:aws:sqs:us-east-1:123456789012:somequeue',
           },

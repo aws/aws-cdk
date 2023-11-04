@@ -72,7 +72,11 @@
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": "sqs:SendMessage",
+       "Action": [
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl",
+        "sqs:SendMessage"
+       ],
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [

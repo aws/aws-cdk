@@ -1,5 +1,5 @@
 import { ISchedule, IScheduleTarget, ScheduleTargetConfig } from '@aws-cdk/aws-scheduler-alpha';
-import { Names } from 'aws-cdk-lib';
+import { Names, Token } from 'aws-cdk-lib';
 import { IRole } from 'aws-cdk-lib/aws-iam';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
@@ -35,7 +35,7 @@ export class SqsSendMessage extends ScheduleTargetBase implements IScheduleTarge
     super(props, queue.queueArn);
 
     if (props.messageGroupId !== undefined) {
-      if (props.messageGroupId.length < 1 || props.messageGroupId.length > 128 ) {
+      if (!Token.isUnresolved(props.messageGroupId) && (props.messageGroupId.length < 1 || props.messageGroupId.length > 128)) {
         throw new Error(`messageGroupId length must be between 1 and 128, got ${props.messageGroupId.length}`);
       }
       if (!queue.fifo) {
@@ -62,7 +62,7 @@ export class SqsSendMessage extends ScheduleTargetBase implements IScheduleTarge
       throw new Error(`Cannot grant permission to execution role in account ${this.props.role.env.account} to invoke target ${Names.nodeUniqueId(this.queue.node)} in account ${this.queue.env.account}. Both the target and the execution role must be in the same account.`);
     }
 
-    this.queue.grant(role, 'sqs:SendMessage');
+    this.queue.grantSendMessages(role);
   }
 
   protected bindBaseTargetConfig(_schedule: ISchedule): ScheduleTargetConfig {
