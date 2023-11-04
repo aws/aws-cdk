@@ -3,6 +3,65 @@
   "TopicBFC7AF6E": {
    "Type": "AWS::SNS::Topic"
   },
+  "Queue4A7E3555": {
+   "Type": "AWS::SQS::Queue",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "QueuePolicy25439813": {
+   "Type": "AWS::SQS::QueuePolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sqs:SendMessage",
+       "Condition": {
+        "ArnEquals": {
+         "aws:SourceArn": {
+          "Ref": "TopicBFC7AF6E"
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "sns.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "Queue4A7E3555",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Queues": [
+     {
+      "Ref": "Queue4A7E3555"
+     }
+    ]
+   }
+  },
+  "QueueAwsSchedulerTargetsSnsPublishTopicCB9BF6E1C346AD60": {
+   "Type": "AWS::SNS::Subscription",
+   "Properties": {
+    "Endpoint": {
+     "Fn::GetAtt": [
+      "Queue4A7E3555",
+      "Arn"
+     ]
+    },
+    "Protocol": "sqs",
+    "RawMessageDelivery": true,
+    "TopicArn": {
+     "Ref": "TopicBFC7AF6E"
+    }
+   },
+   "DependsOn": [
+    "QueuePolicy25439813"
+   ]
+  },
   "Schedule83A77FD1": {
    "Type": "AWS::Scheduler::Schedule",
    "Properties": {
@@ -16,7 +75,7 @@
      "Arn": {
       "Ref": "TopicBFC7AF6E"
      },
-     "Input": "{\"message\":\"hello scheduler!\"}",
+     "Input": "\"Hello, Scheduler!\"",
      "RetryPolicy": {
       "MaximumEventAgeInSeconds": 86400,
       "MaximumRetryAttempts": 185
@@ -75,6 +134,16 @@
       "Ref": "SchedulerRoleForTarget1441a743A31888"
      }
     ]
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefQueue4A7E3555425E8BD3": {
+   "Value": {
+    "Ref": "Queue4A7E3555"
+   },
+   "Export": {
+    "Name": "AwsSchedulerTargetsSnsPublish:ExportsOutputRefQueue4A7E3555425E8BD3"
    }
   }
  },

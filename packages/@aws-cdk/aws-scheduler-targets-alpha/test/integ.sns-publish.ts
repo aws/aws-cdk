@@ -1,6 +1,6 @@
 import * as schedule from '@aws-cdk/aws-scheduler-alpha';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { App, Duration, Stack } from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import * as subscriptions from 'aws-cdk-lib/aws-sns-subscriptions';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
@@ -12,24 +12,22 @@ import { SnsPublish } from '../lib/sns-publish';
  * 2. The SQS queue subscribes the topic
  * 3. The assertion checks that the expected message is delivered to the queue by calling an api
  */
-const app = new App();
-const stack = new Stack(app, 'Stack');
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'AwsSchedulerTargetsSnsPublish');
+
+const message = 'Hello, Scheduler!';
 
 const topic = new sns.Topic(stack, 'Topic', {});
 
-const payload = {
-  Value: '🌈',
-};
+const queue = new sqs.Queue(stack, 'Queue', {});
+topic.addSubscription(new subscriptions.SqsSubscription(queue, { rawMessageDelivery: true }));
 
 new schedule.Schedule(stack, 'Schedule', {
-  schedule: schedule.ScheduleExpression.rate(Duration.minutes(1)),
+  schedule: schedule.ScheduleExpression.rate(cdk.Duration.minutes(1)),
   target: new SnsPublish(topic, {
-    input: schedule.ScheduleTargetInput.fromObject(payload),
+    input: schedule.ScheduleTargetInput.fromText(message),
   }),
 });
-
-const queue = new sqs.Queue(stack, 'Queue', {});
-topic.addSubscription(new subscriptions.SqsSubscription(queue));
 
 const integ = new IntegTest(app, 'IntegTestSnsPublish', {
   testCases: [stack],
@@ -40,6 +38,12 @@ const receiveMessage = integ.assertions.awsApiCall('SQS', 'receiveMessage', {
   QueueUrl: queue.queueUrl,
 });
 
-receiveMessage.expect(ExpectedResult.stringLikeRegexp(payload.Value)).waitForAssertions({
-  totalTimeout: Duration.minutes(5),
+receiveMessage.expect(ExpectedResult.objectLike({
+  Messages: [
+    {
+      Body: `"${message}"`,
+    },
+  ],
+})).waitForAssertions({
+  totalTimeout: cdk.Duration.minutes(5),
 });

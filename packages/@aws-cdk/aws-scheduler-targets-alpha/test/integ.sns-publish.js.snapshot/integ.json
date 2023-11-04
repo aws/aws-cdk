@@ -3,7 +3,7 @@
   "testCases": {
     "IntegTestSnsPublish/DefaultTest": {
       "stacks": [
-        "Stack"
+        "AwsSchedulerTargetsSnsPublish"
       ],
       "stackUpdateWorkflow": false,
       "assertionStack": "IntegTestSnsPublish/DefaultTest/DeployAssert",
