@@ -5,6 +5,9 @@ import { IRole, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
 import { sameEnvDimension } from './util';
 
+/**
+ * Use an AWS CodePipeline pipeline as a target for AWS EventBridge Scheduler.
+ */
 export class CodePipelineStartPipelineExecution extends ScheduleTargetBase implements IScheduleTarget {
   constructor(
     private readonly pipeline: IPipeline,
