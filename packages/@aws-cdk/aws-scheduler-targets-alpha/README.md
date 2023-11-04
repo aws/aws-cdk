@@ -27,6 +27,7 @@ The following targets are supported:
 1. `targets.LambdaInvoke`: [Invoke an AWS Lambda function](#invoke-a-lambda-function))
 2. `targets.StepFunctionsStartExecution`: [Start an AWS Step Function](#start-an-aws-step-function)
 3. `targets.CodeBuildStartBuild`: [Start a CodeBuild job](#start-a-codebuild-job)
+4. `targets.CodePipelineStartPipelineExecution`: [Start a CodePipeline execution](#start-a-codepipeline-execution)
 
 ## Invoke a Lambda function
 
@@ -119,5 +120,23 @@ declare const project: codebuild.Project;
 new Schedule(this, 'Schedule', {
   schedule: ScheduleExpression.rate(Duration.minutes(60)),
   target: new targets.CodeBuildStartBuild(project),
+});
+```
+
+## Start a CodePipeline execution
+
+Use the `CodePipelineStartPipelineExecution` target to start a new execution for a CodePipeline pipeline.
+
+The code snippet below creates an event rule with a CodePipeline pipeline as target which is
+called every hour by Event Bridge Scheduler.
+
+```ts
+import * as codepipeline from 'aws-cdk-lib/aws-codepipeline';
+
+declare const pipeline: codepipeline.Pipeline;
+
+new Schedule(this, 'Schedule', {
+  schedule: ScheduleExpression.rate(Duration.minutes(60)),
+  target: new targets.CodePipelineStartPipelineExecution(pipeline),
 });
 ```
