@@ -1,5 +1,4 @@
-import { Event } from '../../../../../node_modules/aws-cdk-lib/aws-stepfunctions-tasks/lib/evaluate-expression';
-import { handler } from '../../lib/aws-stepfunctions-tasks/eval-nodejs-handler';
+import { handler, Event } from '../../lib/aws-stepfunctions-tasks/eval-nodejs-handler';
 
 beforeAll(() => {
   jest.spyOn(console, 'log').mockImplementation();

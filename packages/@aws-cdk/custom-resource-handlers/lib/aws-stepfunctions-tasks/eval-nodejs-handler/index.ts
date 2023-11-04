@@ -1,5 +1,21 @@
 /* eslint-disable no-console */
-import { Event } from '../../../../../../node_modules/aws-cdk-lib/aws-stepfunctions-tasks/lib/evaluate-expression';
+
+/**
+ * The event received by the Lambda function
+ *
+ * @internal
+ */
+export interface Event {
+  /**
+   * The expression to evaluate
+   */
+  readonly expression: string;
+
+  /**
+   * The expression attribute values
+   */
+  readonly expressionAttributeValues: { [key: string]: any };
+}
 
 function escapeRegex(x: string) {
   return x.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
