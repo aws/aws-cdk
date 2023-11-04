@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { Event } from '../evaluate-expression';
+import { Event } from '../../../../../../node_modules/aws-cdk-lib/aws-stepfunctions-tasks/lib/evaluate-expression';
 
 function escapeRegex(x: string) {
   return x.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
@@ -15,5 +15,6 @@ export async function handler(event: Event): Promise<any> {
     );
   console.log(`Expression: ${expression}`);
 
-  return eval(expression);
+  // direct eval with bundler is not recommended - using indirect eval
+  return [eval][0](expression);
 }
