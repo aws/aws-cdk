@@ -24,7 +24,7 @@ export interface KinesisStreamPutRecordProps extends ScheduleTargetBaseProps {
  */
 export class KinesisStreamPutRecord extends ScheduleTargetBase implements IScheduleTarget {
   constructor(
-    private readonly stream: kinesis.Stream,
+    private readonly stream: kinesis.IStream,
     private readonly props: KinesisStreamPutRecordProps,
   ) {
     super(props, stream.streamArn);
