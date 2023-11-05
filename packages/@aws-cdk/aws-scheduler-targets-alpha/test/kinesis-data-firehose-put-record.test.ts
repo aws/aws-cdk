@@ -164,7 +164,7 @@ describe('schedule target', () => {
         account: '123456789012',
       },
     });
-    const anotherFirehose = new kinesisfirehose.CfnDeliveryStream(stack2, 'AnotherFirehose');
+    const anotherFirehose = new CfnDeliveryStream(stack2, 'AnotherFirehose');
 
     const firehoseTarget = new KinesisDataFirehosePutRecord(anotherFirehose, {});
 
@@ -179,7 +179,7 @@ describe('schedule target', () => {
       Properties: {
         Target: {
           Arn: {
-            "Fn::ImportValue": "Stack2:ExportsOutputFnGetAttAnotherFirehoseArn24CBF54A",
+            'Fn::ImportValue': 'Stack2:ExportsOutputFnGetAttAnotherFirehoseArn24CBF54A',
           },
           RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget1441a743A31888', 'Arn'] },
           RetryPolicy: {},
@@ -194,7 +194,7 @@ describe('schedule target', () => {
             Action: 'firehose:PutRecord',
             Effect: 'Allow',
             Resource: {
-              "Fn::ImportValue": "Stack2:ExportsOutputFnGetAttAnotherFirehoseArn24CBF54A",
+              'Fn::ImportValue': 'Stack2:ExportsOutputFnGetAttAnotherFirehoseArn24CBF54A',
             },
           },
         ],
@@ -250,7 +250,7 @@ describe('schedule target', () => {
         account: '123456789012',
       },
     });
-    const anotherFirehose = new kinesisfirehose.CfnDeliveryStream(stack2, 'AnotherFirehose');
+    const anotherFirehose = new CfnDeliveryStream(stack2, 'AnotherFirehose');
     const importedRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/someRole');
 
     const firehoseTarget = new KinesisDataFirehosePutRecord(anotherFirehose, {
@@ -267,7 +267,7 @@ describe('schedule target', () => {
       Properties: {
         Target: {
           Arn: {
-            "Fn::ImportValue": "Stack2:ExportsOutputFnGetAttAnotherFirehoseArn24CBF54A",
+            'Fn::ImportValue': 'Stack2:ExportsOutputFnGetAttAnotherFirehoseArn24CBF54A',
           },
           RoleArn: 'arn:aws:iam::123456789012:role/someRole',
           RetryPolicy: {},
@@ -282,7 +282,7 @@ describe('schedule target', () => {
             Action: 'firehose:PutRecord',
             Effect: 'Allow',
             Resource: {
-              "Fn::ImportValue": "Stack2:ExportsOutputFnGetAttAnotherFirehoseArn24CBF54A",
+              'Fn::ImportValue': 'Stack2:ExportsOutputFnGetAttAnotherFirehoseArn24CBF54A',
             },
           },
         ],
@@ -298,7 +298,7 @@ describe('schedule target', () => {
         account: '234567890123',
       },
     });
-    const anotherFirehose = new kinesisfirehose.CfnDeliveryStream(stack2, 'AnotherFirehose');
+    const anotherFirehose = new CfnDeliveryStream(stack2, 'AnotherFirehose');
     const firehoseTarget = new KinesisDataFirehosePutRecord(anotherFirehose, {});
 
     expect(() =>
@@ -315,7 +315,7 @@ describe('schedule target', () => {
         account: '123456789012',
       },
     });
-    const anotherFirehose = new kinesisfirehose.CfnDeliveryStream(stack2, 'AnotherFirehose');
+    const anotherFirehose = new CfnDeliveryStream(stack2, 'AnotherFirehose');
 
     const firehoseTarget = new KinesisDataFirehosePutRecord(anotherFirehose, {});
 
