@@ -26,34 +26,9 @@ const destinationBucket = new Bucket(stack, 'DestinationBucket', {
 const deliveryStreamRole = new cdk.aws_iam.Role(stack, 'deliveryStreamRole', {
   assumedBy: new cdk.aws_iam.ServicePrincipal('firehose.amazonaws.com'),
 });
-deliveryStreamRole.addToPolicy(
-  new cdk.aws_iam.PolicyStatement({
-    actions: [
-      'kinesis:DescribeStream',
-      'kinesis:GetShardIterator',
-      'kinesis:GetRecords',
-    ],
-    effect: cdk.aws_iam.Effect.ALLOW,
-    resources: [`arn:aws:kinesis:${cdk.Stack.of(stack).region}:${cdk.Stack.of(stack).account}:stream/*`],
-  }),
-);
-deliveryStreamRole.addToPolicy(
-  new cdk.aws_iam.PolicyStatement({
-    actions: [
-      's3:AbortMultipartUpload',
-      's3:GetBucketLocation',
-      's3:GetObject',
-      's3:ListBucket',
-      's3:ListBucketMultipartUploads',
-      's3:PutObject',
-    ],
-    effect: cdk.aws_iam.Effect.ALLOW,
-    resources: [
-      destinationBucket.bucketArn,
-      `${destinationBucket.bucketArn}/*`,
-    ],
-  }),
-);
+
+destinationBucket.grantReadWrite(deliveryStreamRole);
+
 const firehose = new CfnDeliveryStream(stack, 'MyFirehose', {
   s3DestinationConfiguration: {
     bucketArn: destinationBucket.bucketArn,

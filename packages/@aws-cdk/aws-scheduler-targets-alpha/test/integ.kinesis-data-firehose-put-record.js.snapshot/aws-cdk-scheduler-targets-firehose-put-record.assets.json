@@ -14,7 +14,7 @@
         }
       }
     },
-    "8f854590d0a9d434e130d08ece7c50b619f414ab1a5edc0691f1358dbad7d130": {
+    "0d3df05c3dec5107383ce03d849520a8b99c04af5ce5bbbba132109b8356d0fe": {
       "source": {
         "path": "aws-cdk-scheduler-targets-firehose-put-record.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "8f854590d0a9d434e130d08ece7c50b619f414ab1a5edc0691f1358dbad7d130.json",
+          "objectKey": "0d3df05c3dec5107383ce03d849520a8b99c04af5ce5bbbba132109b8356d0fe.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
