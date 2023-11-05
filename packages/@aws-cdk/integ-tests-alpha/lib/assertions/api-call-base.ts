@@ -23,6 +23,21 @@ export interface IApiCall extends IConstruct {
   readonly provider: AssertionsProvider;
 
   /**
+   * access the AssertionsProvider for the waiter state machine.
+   * This can be used to add additional IAM policies
+   * the the provider role policy
+   *
+   * @example
+   * declare const apiCall: AwsApiCall;
+   * apiCall.waiterProvider?.addToRolePolicy({
+   *   Effect: 'Allow',
+   *   Action: ['s3:GetObject'],
+   *   Resource: ['*'],
+   * });
+   */
+  readonly waiterProvider?: AssertionsProvider;
+
+  /**
    * Returns the value of an attribute of the custom resource of an arbitrary
    * type. Attributes are returned from the custom resource provider through the
    * `Data` map where the key is the attribute name.
