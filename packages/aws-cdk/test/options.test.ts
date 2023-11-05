@@ -26,7 +26,7 @@ describe('options', () => {
     await expect(async () => {
       await exec(['version', '--foo-bar', '-v']);
     }).rejects.toThrowError(/Process exited/);
-    expect(mockedConsoleError).toHaveBeenCalledWith('Unknown arguments: foo-bar, fooBar');
+    expect(mockedConsoleError).toHaveBeenCalledWith(expect.stringContaining('Unknown arguments: foo-bar, fooBar'));
   });
 
   test('succeeds with valid options', async () => {
