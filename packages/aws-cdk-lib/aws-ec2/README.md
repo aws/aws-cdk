@@ -1721,7 +1721,7 @@ declare const vpc: ec2.Vpc;
 declare const deliveryStream: firehose.CfnDeliveryStream;
 
 vpc.addFlowLog('FlowLogsKinesisDataFirehose', {
-  destination: ec2.FlowLogDestination.toKinesisDataFirehose(deliveryStream.attrArn),
+  destination: ec2.FlowLogDestination.toKinesisDataFirehoseDestination(deliveryStream.attrArn),
 });
 ```
 
