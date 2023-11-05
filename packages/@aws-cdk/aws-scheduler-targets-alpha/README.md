@@ -27,6 +27,7 @@ The following targets are supported:
 1. `targets.LambdaInvoke`: [Invoke an AWS Lambda function](#invoke-a-lambda-function))
 2. `targets.StepFunctionsStartExecution`: [Start an AWS Step Function](#start-an-aws-step-function)
 3. `targets.CodeBuildStartBuild`: [Start a CodeBuild job](#start-a-codebuild-job)
+4. `targets.KinesisDataFirehosePutRecord`: [Put records to Amazon Kinesis Data Firehose](#put-records-to-amazon-kinesis-data-firehose)
 
 ## Invoke a Lambda function
 
@@ -119,5 +120,29 @@ declare const project: codebuild.Project;
 new Schedule(this, 'Schedule', {
   schedule: ScheduleExpression.rate(Duration.minutes(60)),
   target: new targets.CodeBuildStartBuild(project),
+});
+```
+
+## Put records to Amazon Kinesis Data Firehose
+
+Use the `KinesisDataFirehosePutRecord` target to put records to Amazon Kinesis Data Firehose.
+
+The code snippet below creates an event rule with a Kinesis Data Firehose as a target
+called every hour by Event Bridge Scheduler with a custom payload.
+
+```ts
+import * as kinesisfirehose from 'aws-cdk-lib/aws-kinesisfirehose';
+
+declare const deliveryStream: kinesisfirehose.CfnDeliveryStream;
+
+const payload = {
+  Data: "record",
+};
+
+new Schedule(this, 'Schedule', {
+  schedule: ScheduleExpression.rate(Duration.minutes(60)),
+  target: new targets.KinesisDataFirehosePutRecord(deliveryStream, {
+    input: ScheduleTargetInput.fromObject(payload),
+  }),
 });
 ```
