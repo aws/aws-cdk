@@ -10,7 +10,7 @@ import { ILock } from './api/util/rwlock';
 import { checkForPlatformWarnings } from './platform-warnings';
 import { enableTracing } from './util/tracing';
 import { SdkProvider } from '../lib/api/aws-auth';
-import { BootstrapSource, Bootstrapper } from '../lib/api/bootstrap';
+import { Bootstrapper, BootstrapSource } from '../lib/api/bootstrap';
 import { StackSelector } from '../lib/api/cxapp/cloud-assembly';
 import { CloudExecutable, Synthesizer } from '../lib/api/cxapp/cloud-executable';
 import { execProgram } from '../lib/api/cxapp/exec';
@@ -18,14 +18,14 @@ import { Deployments } from '../lib/api/deployments';
 import { PluginHost } from '../lib/api/plugin';
 import { ToolkitInfo } from '../lib/api/toolkit-info';
 import { StackActivityProgress } from '../lib/api/util/cloudformation/stack-activity-monitor';
-import { CdkToolkit, AssetBuildTime } from '../lib/cdk-toolkit';
+import { AssetBuildTime, CdkToolkit } from '../lib/cdk-toolkit';
 import { realHandler as context } from '../lib/commands/context';
 import { realHandler as docs } from '../lib/commands/docs';
 import { realHandler as doctor } from '../lib/commands/doctor';
 import { MIGRATE_SUPPORTED_LANGUAGES } from '../lib/commands/migrate';
 import { RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
-import { data, debug, error, print, setLogLevel, setCI } from '../lib/logging';
+import { data, debug, error, print, setCI, setLogLevel } from '../lib/logging';
 import { displayNotices, refreshNotices } from '../lib/notices';
 import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
@@ -297,6 +297,7 @@ async function parseCommandLineArguments(args: string[]) {
     .demandCommand(1, '') // just print help
     .recommendCommands()
     .help()
+    .strictOptions()
     .alias('h', 'help')
     .epilogue([
       'If your app has a single stack, there is no need to specify the stack name',
