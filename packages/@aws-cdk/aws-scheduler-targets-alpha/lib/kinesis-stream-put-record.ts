@@ -15,8 +15,6 @@ export interface KinesisStreamPutRecordProps extends ScheduleTargetBaseProps {
    * A length of `partitionKey` must be between 1 and 256.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-scheduler-schedule-kinesisparameters.html
-   *
-   * @default - no partition key
    */
   readonly partitionKey: string;
 }
