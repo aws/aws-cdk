@@ -2,9 +2,9 @@ import { ScheduleExpression, Schedule } from '@aws-cdk/aws-scheduler-alpha';
 import { App, Duration, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { AccountRootPrincipal, Role } from 'aws-cdk-lib/aws-iam';
+import { CfnDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import { KinesisDataFirehosePutRecord } from '../lib';
-import { CfnDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
 
 describe('schedule target', () => {
   let app: App;
