@@ -198,7 +198,7 @@ export abstract class FlowLogDestination {
    *
    * @param deliveryStreamArn the ARN of Kinesis Data Firehose delivery stream to publish logs to
    */
-  public static toKinesisDataFirehose(deliveryStreamArn: string): FlowLogDestination {
+  public static toKinesisDataFirehoseDestination(deliveryStreamArn: string): FlowLogDestination {
     return new KinesisDataFirehoseDestination({
       logDestinationType: FlowLogDestinationType.KINESIS_DATA_FIREHOSE,
       deliveryStreamArn,
@@ -251,7 +251,7 @@ export interface FlowLogDestinationConfig {
   readonly keyPrefix?: string;
 
   /**
-   * the ARN of Kinesis Data Firehose delivery stream to publish the flow logs to
+   * The ARN of Kinesis Data Firehose delivery stream to publish the flow logs to
    *
    * @default - undefined
    */

@@ -89,7 +89,7 @@ describe('vpc flow logs', () => {
     });
     new FlowLog(stack, 'FlowLogs', {
       resourceType: FlowLogResourceType.fromNetworkInterfaceId('eni-123456'),
-      destination: FlowLogDestination.toKinesisDataFirehose(
+      destination: FlowLogDestination.toKinesisDataFirehoseDestination(
         deliveryStreamArn,
       ),
     });

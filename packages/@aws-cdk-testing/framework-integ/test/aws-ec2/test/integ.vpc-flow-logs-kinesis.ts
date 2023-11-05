@@ -46,7 +46,7 @@ class TestStack extends Stack {
     });
 
     vpc.addFlowLog('FlowLogsKinesisDataFirehose', {
-      destination: FlowLogDestination.toKinesisDataFirehose(deliveryStream.attrArn),
+      destination: FlowLogDestination.toKinesisDataFirehoseDestination(deliveryStream.attrArn),
     });
   }
 }
