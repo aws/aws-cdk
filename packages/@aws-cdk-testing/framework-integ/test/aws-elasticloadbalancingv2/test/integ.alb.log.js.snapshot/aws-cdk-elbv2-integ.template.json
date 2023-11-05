@@ -644,8 +644,6 @@
     "Type": "application"
    },
    "DependsOn": [
-    "BucketAutoDeleteObjectsCustomResourceBAFD23C2",
-    "BucketPolicyE9A3008A",
     "Bucket83908E77",
     "VPCPublicSubnet1DefaultRoute91CEF279",
     "VPCPublicSubnet1RouteTableAssociation0B0896DC",
@@ -678,12 +676,7 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
-   },
-   "DependsOn": [
-    "BucketAutoDeleteObjectsCustomResourceBAFD23C2",
-    "BucketPolicyE9A3008A",
-    "Bucket83908E77"
-   ]
+   }
   },
   "LBListener49E825B4": {
    "Type": "AWS::ElasticLoadBalancingV2::Listener",
@@ -701,12 +694,7 @@
     },
     "Port": 80,
     "Protocol": "HTTP"
-   },
-   "DependsOn": [
-    "BucketAutoDeleteObjectsCustomResourceBAFD23C2",
-    "BucketPolicyE9A3008A",
-    "Bucket83908E77"
-   ]
+   }
   },
   "LBListenerTargetGroupF04FCF6D": {
    "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
@@ -738,9 +726,6 @@
     }
    },
    "DependsOn": [
-    "BucketAutoDeleteObjectsCustomResourceBAFD23C2",
-    "BucketPolicyE9A3008A",
-    "Bucket83908E77",
     "VPCPublicSubnet1DefaultRoute91CEF279",
     "VPCPublicSubnet1EIP6AD938E8",
     "VPCPublicSubnet1NATGatewayE0556630",
