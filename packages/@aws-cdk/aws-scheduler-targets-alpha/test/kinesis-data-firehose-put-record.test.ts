@@ -2,20 +2,20 @@ import { ScheduleExpression, Schedule } from '@aws-cdk/aws-scheduler-alpha';
 import { App, Duration, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { AccountRootPrincipal, Role } from 'aws-cdk-lib/aws-iam';
-import * as kinesisfirehose from 'aws-cdk-lib/aws-kinesisfirehose';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import { KinesisDataFirehosePutRecord } from '../lib';
+import { CfnDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
 
 describe('schedule target', () => {
   let app: App;
   let stack: Stack;
-  let firehose: kinesisfirehose.CfnDeliveryStream;
+  let firehose: CfnDeliveryStream;
   const expr = ScheduleExpression.at(new Date(Date.UTC(1969, 10, 20, 0, 0, 0)));
 
   beforeEach(() => {
     app = new App();
     stack = new Stack(app, 'Stack', { env: { region: 'us-east-1', account: '123456789012' } });
-    firehose = new kinesisfirehose.CfnDeliveryStream(stack, 'MyFirehose');
+    firehose = new CfnDeliveryStream(stack, 'MyFirehose');
   });
 
   test('creates IAM role and IAM policy for kinesis data firehose target in the same account', () => {
