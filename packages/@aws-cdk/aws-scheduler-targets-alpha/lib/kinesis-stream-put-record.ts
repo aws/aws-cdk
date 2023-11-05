@@ -6,7 +6,7 @@ import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
 import { sameEnvDimension } from './util';
 
 /**
- * Properties for a Kinesis Stream Target
+ * Properties for a Kinesis Data Streams Target
  */
 export interface KinesisStreamPutRecordProps extends ScheduleTargetBaseProps {
   /**
@@ -20,7 +20,7 @@ export interface KinesisStreamPutRecordProps extends ScheduleTargetBaseProps {
 }
 
 /**
- * Use an Amazon Kinesis Stream as a target for AWS EventBridge Scheduler.
+ * Use an Amazon Kinesis Data Streams as a target for AWS EventBridge Scheduler.
  */
 export class KinesisStreamPutRecord extends ScheduleTargetBase implements IScheduleTarget {
   constructor(
