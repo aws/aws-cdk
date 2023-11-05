@@ -27,6 +27,7 @@ The following targets are supported:
 1. `targets.LambdaInvoke`: [Invoke an AWS Lambda function](#invoke-a-lambda-function))
 2. `targets.StepFunctionsStartExecution`: [Start an AWS Step Function](#start-an-aws-step-function)
 3. `targets.CodeBuildStartBuild`: [Start a CodeBuild job](#start-a-codebuild-job)
+4. `targets.KinesisStreamPutRecord`: [Put a record to an Amazon Kinesis Data Streams](#put-a-record-to-kinesis-data-streams)
 
 ## Invoke a Lambda function
 
@@ -104,20 +105,22 @@ new Schedule(this, 'Schedule', {
 });
 ```
 
-## Start a CodeBuild job
+## Put a record to Kinesis Data Streams
 
-Use the `CodeBuildStartBuild` target to start a new build run on a CodeBuild project.
+Use the `KinesisStreamPutRecord` target to put a record to a Kinesis Data Streams.
 
-The code snippet below creates an event rule with a CodeBuild project as target which is
+The code snippet below creates an event rule with a stream as target which is
 called every hour by Event Bridge Scheduler.
 
 ```ts
-import * as codebuild from 'aws-cdk-lib/aws-codebuild';
+import * as kinesis from 'aws-cdk-lib/aws-kinesis';
 
-declare const project: codebuild.Project;
+const stream = new kinesis.Stream(this, 'MyStream');
 
 new Schedule(this, 'Schedule', {
   schedule: ScheduleExpression.rate(Duration.minutes(60)),
-  target: new targets.CodeBuildStartBuild(project),
+  target: new targets.KinesisStreamPutRecord(stream, {
+    partitionKey: 'key',
+  }),
 });
 ```
