@@ -27,6 +27,7 @@ The following targets are supported:
 1. `targets.LambdaInvoke`: [Invoke an AWS Lambda function](#invoke-a-lambda-function))
 2. `targets.StepFunctionsStartExecution`: [Start an AWS Step Function](#start-an-aws-step-function)
 3. `targets.CodeBuildStartBuild`: [Start a CodeBuild job](#start-a-codebuild-job)
+4. `targets.InspectorStartAssessmentRun`: [Start an Amazon Inspector assessment run](#start-an-aws-inspector-assessment-run)
 
 ## Invoke a Lambda function
 
@@ -119,5 +120,23 @@ declare const project: codebuild.Project;
 new Schedule(this, 'Schedule', {
   schedule: ScheduleExpression.rate(Duration.minutes(60)),
   target: new targets.CodeBuildStartBuild(project),
+});
+```
+
+## Start an Amazon Inspector assessment run
+
+Use the `InspectorStartAssessmentRun` target to start an Inspector assessment run.
+
+The code snippet below creates an event rule with an assessment template as target which is
+called every hour by Event Bridge Scheduler.
+
+```ts
+import * as inspector from 'aws-cdk-lib/aws-inspector';
+
+declare const assessmentTemplate: inspector.CfnAssessmentTemplate;
+
+new Schedule(this, 'Schedule', {
+  schedule: ScheduleExpression.rate(Duration.minutes(60)),
+  target: new targets.InspectorStartAssessmentRun(assessmentTemplate, {}),
 });
 ```
