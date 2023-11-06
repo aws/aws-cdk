@@ -80,7 +80,6 @@
       "packages/@aws-cdk/*/lambda-packages/*",
       "tools/@aws-cdk/cdk-build-tools",
       "tools/@aws-cdk/cdk-release",
-      "tools/@aws-cdk/cfn2ts",
       "tools/@aws-cdk/eslint-plugin",
       "tools/@aws-cdk/node-bundle",
       "tools/@aws-cdk/pkglint",
