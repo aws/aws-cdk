@@ -14,7 +14,7 @@ function recFolderStructure(fileOrDir: string) {
     // The reason why they are called 'index.ts' is that aws-cdk-lib expects that
     // as the file name and it is more intuitive to keep the same name rather than
     // rename as we copy it out.
-    if (fileOrDir.includes('index.ts')) {
+    if (['index.ts', 'index.js'].some(fileName => fileOrDir.includes(fileName))) {
       entryPoints.push(fileOrDir);
     }
   }
@@ -71,7 +71,9 @@ async function main() {
 
   function calculateOutfile(file: string) {
     // turn ts extension into js extension
-    file = path.join(path.dirname(file), path.basename(file, path.extname(file)) + '.js');
+    if (file.includes('index.ts')) {
+      file = path.join(path.dirname(file), path.basename(file, path.extname(file)) + '.js');
+    }
 
     // replace /lib with /dist
     const fileContents = file.split(path.sep);
