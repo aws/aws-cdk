@@ -5,6 +5,7 @@ import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import * as cdk from 'aws-cdk-lib';
 import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 /*
  * * Creates a state machine with a task state to run a job with ECS on EC2
@@ -63,6 +64,10 @@ const sm = new sfn.StateMachine(stack, 'StateMachine', {
 
 new cdk.CfnOutput(stack, 'stateMachineArn', {
   value: sm.stateMachineArn,
+});
+
+new IntegTest(app, 'EmrCreateClusterTest', {
+  testCases: [stack],
 });
 
 app.synth();

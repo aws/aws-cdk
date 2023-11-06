@@ -61,9 +61,6 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                           "aws:cdk:cloudformation:props": {
-                            "vpcId": {
-                              "Ref": "Ec2ClusterVpc568127F1"
-                            },
                             "availabilityZone": {
                               "Fn::Select": [
                                 0,
@@ -87,7 +84,10 @@
                                 "key": "Name",
                                 "value": "aws-sfn-tasks-ecs-ec2-integ/Ec2Cluster/Vpc/PublicSubnet1"
                               }
-                            ]
+                            ],
+                            "vpcId": {
+                              "Ref": "Ec2ClusterVpc568127F1"
+                            }
                           }
                         },
                         "constructInfo": {
@@ -109,15 +109,15 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                           "aws:cdk:cloudformation:props": {
-                            "vpcId": {
-                              "Ref": "Ec2ClusterVpc568127F1"
-                            },
                             "tags": [
                               {
                                 "key": "Name",
                                 "value": "aws-sfn-tasks-ecs-ec2-integ/Ec2Cluster/Vpc/PublicSubnet1"
                               }
-                            ]
+                            ],
+                            "vpcId": {
+                              "Ref": "Ec2ClusterVpc568127F1"
+                            }
                           }
                         },
                         "constructInfo": {
@@ -150,12 +150,12 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                           "aws:cdk:cloudformation:props": {
-                            "routeTableId": {
-                              "Ref": "Ec2ClusterVpcPublicSubnet1RouteTableE30610F5"
-                            },
                             "destinationCidrBlock": "0.0.0.0/0",
                             "gatewayId": {
                               "Ref": "Ec2ClusterVpcIGW605638EB"
+                            },
+                            "routeTableId": {
+                              "Ref": "Ec2ClusterVpcPublicSubnet1RouteTableE30610F5"
                             }
                           }
                         },
@@ -190,14 +190,14 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                           "aws:cdk:cloudformation:props": {
-                            "subnetId": {
-                              "Ref": "Ec2ClusterVpcPublicSubnet1SubnetD46FD92B"
-                            },
                             "allocationId": {
                               "Fn::GetAtt": [
                                 "Ec2ClusterVpcPublicSubnet1EIPD4B5D142",
                                 "AllocationId"
                               ]
+                            },
+                            "subnetId": {
+                              "Ref": "Ec2ClusterVpcPublicSubnet1SubnetD46FD92B"
                             },
                             "tags": [
                               {
@@ -228,9 +228,6 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                           "aws:cdk:cloudformation:props": {
-                            "vpcId": {
-                              "Ref": "Ec2ClusterVpc568127F1"
-                            },
                             "availabilityZone": {
                               "Fn::Select": [
                                 1,
@@ -254,7 +251,10 @@
                                 "key": "Name",
                                 "value": "aws-sfn-tasks-ecs-ec2-integ/Ec2Cluster/Vpc/PublicSubnet2"
                               }
-                            ]
+                            ],
+                            "vpcId": {
+                              "Ref": "Ec2ClusterVpc568127F1"
+                            }
                           }
                         },
                         "constructInfo": {
@@ -276,15 +276,15 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                           "aws:cdk:cloudformation:props": {
-                            "vpcId": {
-                              "Ref": "Ec2ClusterVpc568127F1"
-                            },
                             "tags": [
                               {
                                 "key": "Name",
                                 "value": "aws-sfn-tasks-ecs-ec2-integ/Ec2Cluster/Vpc/PublicSubnet2"
                               }
-                            ]
+                            ],
+                            "vpcId": {
+                              "Ref": "Ec2ClusterVpc568127F1"
+                            }
                           }
                         },
                         "constructInfo": {
@@ -317,12 +317,12 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                           "aws:cdk:cloudformation:props": {
-                            "routeTableId": {
-                              "Ref": "Ec2ClusterVpcPublicSubnet2RouteTable44A09188"
-                            },
                             "destinationCidrBlock": "0.0.0.0/0",
                             "gatewayId": {
                               "Ref": "Ec2ClusterVpcIGW605638EB"
+                            },
+                            "routeTableId": {
+                              "Ref": "Ec2ClusterVpcPublicSubnet2RouteTable44A09188"
                             }
                           }
                         },
@@ -357,14 +357,14 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                           "aws:cdk:cloudformation:props": {
-                            "subnetId": {
-                              "Ref": "Ec2ClusterVpcPublicSubnet2Subnet207D9E5E"
-                            },
                             "allocationId": {
                               "Fn::GetAtt": [
                                 "Ec2ClusterVpcPublicSubnet2EIP921925E6",
                                 "AllocationId"
                               ]
+                            },
+                            "subnetId": {
+                              "Ref": "Ec2ClusterVpcPublicSubnet2Subnet207D9E5E"
                             },
                             "tags": [
                               {
@@ -395,9 +395,6 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                           "aws:cdk:cloudformation:props": {
-                            "vpcId": {
-                              "Ref": "Ec2ClusterVpc568127F1"
-                            },
                             "availabilityZone": {
                               "Fn::Select": [
                                 0,
@@ -421,7 +418,10 @@
                                 "key": "Name",
                                 "value": "aws-sfn-tasks-ecs-ec2-integ/Ec2Cluster/Vpc/PrivateSubnet1"
                               }
-                            ]
+                            ],
+                            "vpcId": {
+                              "Ref": "Ec2ClusterVpc568127F1"
+                            }
                           }
                         },
                         "constructInfo": {
@@ -443,15 +443,15 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                           "aws:cdk:cloudformation:props": {
-                            "vpcId": {
-                              "Ref": "Ec2ClusterVpc568127F1"
-                            },
                             "tags": [
                               {
                                 "key": "Name",
                                 "value": "aws-sfn-tasks-ecs-ec2-integ/Ec2Cluster/Vpc/PrivateSubnet1"
                               }
-                            ]
+                            ],
+                            "vpcId": {
+                              "Ref": "Ec2ClusterVpc568127F1"
+                            }
                           }
                         },
                         "constructInfo": {
@@ -484,12 +484,12 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                           "aws:cdk:cloudformation:props": {
-                            "routeTableId": {
-                              "Ref": "Ec2ClusterVpcPrivateSubnet1RouteTable50D391D1"
-                            },
                             "destinationCidrBlock": "0.0.0.0/0",
                             "natGatewayId": {
                               "Ref": "Ec2ClusterVpcPublicSubnet1NATGateway79A8A839"
+                            },
+                            "routeTableId": {
+                              "Ref": "Ec2ClusterVpcPrivateSubnet1RouteTable50D391D1"
                             }
                           }
                         },
@@ -514,9 +514,6 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                           "aws:cdk:cloudformation:props": {
-                            "vpcId": {
-                              "Ref": "Ec2ClusterVpc568127F1"
-                            },
                             "availabilityZone": {
                               "Fn::Select": [
                                 1,
@@ -540,7 +537,10 @@
                                 "key": "Name",
                                 "value": "aws-sfn-tasks-ecs-ec2-integ/Ec2Cluster/Vpc/PrivateSubnet2"
                               }
-                            ]
+                            ],
+                            "vpcId": {
+                              "Ref": "Ec2ClusterVpc568127F1"
+                            }
                           }
                         },
                         "constructInfo": {
@@ -562,15 +562,15 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                           "aws:cdk:cloudformation:props": {
-                            "vpcId": {
-                              "Ref": "Ec2ClusterVpc568127F1"
-                            },
                             "tags": [
                               {
                                 "key": "Name",
                                 "value": "aws-sfn-tasks-ecs-ec2-integ/Ec2Cluster/Vpc/PrivateSubnet2"
                               }
-                            ]
+                            ],
+                            "vpcId": {
+                              "Ref": "Ec2ClusterVpc568127F1"
+                            }
                           }
                         },
                         "constructInfo": {
@@ -603,12 +603,12 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                           "aws:cdk:cloudformation:props": {
-                            "routeTableId": {
-                              "Ref": "Ec2ClusterVpcPrivateSubnet2RouteTable22B9DAE6"
-                            },
                             "destinationCidrBlock": "0.0.0.0/0",
                             "natGatewayId": {
                               "Ref": "Ec2ClusterVpcPublicSubnet2NATGateway302F96C0"
+                            },
+                            "routeTableId": {
+                              "Ref": "Ec2ClusterVpcPrivateSubnet2RouteTable22B9DAE6"
                             }
                           }
                         },
@@ -648,11 +648,11 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Ec2ClusterVpc568127F1"
-                        },
                         "internetGatewayId": {
                           "Ref": "Ec2ClusterVpcIGW605638EB"
+                        },
+                        "vpcId": {
+                          "Ref": "Ec2ClusterVpc568127F1"
                         }
                       }
                     },
@@ -854,6 +854,14 @@
                       "version": "0.0.0"
                     }
                   },
+                  "ImportedInstanceProfile": {
+                    "id": "ImportedInstanceProfile",
+                    "path": "aws-sfn-tasks-ecs-ec2-integ/Ec2Cluster/DefaultAutoScalingGroup/ImportedInstanceProfile",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "LaunchTemplate": {
                     "id": "LaunchTemplate",
                     "path": "aws-sfn-tasks-ecs-ec2-integ/Ec2Cluster/DefaultAutoScalingGroup/LaunchTemplate",
@@ -953,8 +961,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::AutoScaling::AutoScalingGroup",
                       "aws:cdk:cloudformation:props": {
-                        "maxSize": "1",
-                        "minSize": "1",
                         "launchTemplate": {
                           "launchTemplateId": {
                             "Ref": "Ec2ClusterDefaultAutoScalingGroupLaunchTemplate346F58BE"
@@ -966,6 +972,8 @@
                             ]
                           }
                         },
+                        "maxSize": "1",
+                        "minSize": "1",
                         "tags": [
                           {
                             "key": "Name",
@@ -1173,12 +1181,6 @@
                                 "code": {
                                   "zipFile": "import boto3, json, os, time\n\necs = boto3.client('ecs')\nautoscaling = boto3.client('autoscaling')\n\n\ndef lambda_handler(event, context):\n  print(json.dumps(dict(event, ResponseURL='...')))\n  cluster = os.environ['CLUSTER']\n  snsTopicArn = event['Records'][0]['Sns']['TopicArn']\n  lifecycle_event = json.loads(event['Records'][0]['Sns']['Message'])\n  instance_id = lifecycle_event.get('EC2InstanceId')\n  if not instance_id:\n    print('Got event without EC2InstanceId: %s', json.dumps(dict(event, ResponseURL='...')))\n    return\n\n  instance_arn = container_instance_arn(cluster, instance_id)\n  print('Instance %s has container instance ARN %s' % (lifecycle_event['EC2InstanceId'], instance_arn))\n\n  if not instance_arn:\n    return\n\n  task_arns = container_instance_task_arns(cluster, instance_arn)\n\n  if task_arns:\n    print('Instance ARN %s has task ARNs %s' % (instance_arn, ', '.join(task_arns)))\n\n  while has_tasks(cluster, instance_arn, task_arns):\n    time.sleep(10)\n\n  try:\n    print('Terminating instance %s' % instance_id)\n    autoscaling.complete_lifecycle_action(\n        LifecycleActionResult='CONTINUE',\n        **pick(lifecycle_event, 'LifecycleHookName', 'LifecycleActionToken', 'AutoScalingGroupName'))\n  except Exception as e:\n    # Lifecycle action may have already completed.\n    print(str(e))\n\n\ndef container_instance_arn(cluster, instance_id):\n  \"\"\"Turn an instance ID into a container instance ARN.\"\"\"\n  arns = ecs.list_container_instances(cluster=cluster, filter='ec2InstanceId==' + instance_id)['containerInstanceArns']\n  if not arns:\n    return None\n  return arns[0]\n\ndef container_instance_task_arns(cluster, instance_arn):\n  \"\"\"Fetch tasks for a container instance ARN.\"\"\"\n  arns = ecs.list_tasks(cluster=cluster, containerInstance=instance_arn)['taskArns']\n  return arns\n\ndef has_tasks(cluster, instance_arn, task_arns):\n  \"\"\"Return True if the instance is running tasks for the given cluster.\"\"\"\n  instances = ecs.describe_container_instances(cluster=cluster, containerInstances=[instance_arn])['containerInstances']\n  if not instances:\n    return False\n  instance = instances[0]\n\n  if instance['status'] == 'ACTIVE':\n    # Start draining, then try again later\n    set_container_instance_to_draining(cluster, instance_arn)\n    return True\n\n  task_count = None\n\n  if task_arns:\n    # Fetch details for tasks running on the container instance\n    tasks = ecs.describe_tasks(cluster=cluster, tasks=task_arns)['tasks']\n    if tasks:\n      # Consider any non-stopped tasks as running\n      task_count = sum(task['lastStatus'] != 'STOPPED' for task in tasks) + instance['pendingTasksCount']\n\n  if not task_count:\n    # Fallback to instance task counts if detailed task information is unavailable\n    task_count = instance['runningTasksCount'] + instance['pendingTasksCount']\n\n  print('Instance %s has %s tasks' % (instance_arn, task_count))\n\n  return task_count > 0\n\ndef set_container_instance_to_draining(cluster, instance_arn):\n  ecs.update_container_instances_state(\n      cluster=cluster,\n      containerInstances=[instance_arn], status='DRAINING')\n\n\ndef pick(dct, *keys):\n  \"\"\"Pick a subset of a dict.\"\"\"\n  return {k: v for k, v in dct.items() if k in keys}\n"
                                 },
-                                "role": {
-                                  "Fn::GetAtt": [
-                                    "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole23116FA3",
-                                    "Arn"
-                                  ]
-                                },
                                 "environment": {
                                   "variables": {
                                     "CLUSTER": {
@@ -1187,6 +1189,12 @@
                                   }
                                 },
                                 "handler": "index.lambda_handler",
+                                "role": {
+                                  "Fn::GetAtt": [
+                                    "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole23116FA3",
+                                    "Arn"
+                                  ]
+                                },
                                 "runtime": "python3.9",
                                 "tags": [
                                   {
@@ -1236,15 +1244,15 @@
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
                                   "aws:cdk:cloudformation:props": {
-                                    "protocol": "lambda",
-                                    "topicArn": {
-                                      "Ref": "Ec2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicF7263B30"
-                                    },
                                     "endpoint": {
                                       "Fn::GetAtt": [
                                         "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctionE0DEFB31",
                                         "Arn"
                                       ]
+                                    },
+                                    "protocol": "lambda",
+                                    "topicArn": {
+                                      "Ref": "Ec2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicF7263B30"
                                     }
                                   }
                                 },
@@ -1268,7 +1276,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "version": "10.2.70"
                     }
                   },
                   "LifecycleHookDrainHook": {
@@ -1403,9 +1411,9 @@
                             "autoScalingGroupName": {
                               "Ref": "Ec2ClusterDefaultAutoScalingGroupASGC5A6D4C0"
                             },
-                            "lifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING",
                             "defaultResult": "CONTINUE",
                             "heartbeatTimeout": 300,
+                            "lifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING",
                             "notificationTargetArn": {
                               "Ref": "Ec2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicF7263B30"
                             },
@@ -1513,7 +1521,7 @@
                       {
                         "essential": true,
                         "image": {
-                          "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:7a4895bc694ae074467753dddb9a798e58f2f5eda62bcce5833d7d356b8a1da2"
+                          "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:2fd4a6b04e9ebb0162037939c7caef60d007d2593ce4bfcfbe4bf8b3fca00594"
                         },
                         "memory": 256,
                         "name": "TheContainer",
@@ -2017,17 +2025,11 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
                   "aws:cdk:cloudformation:props": {
-                    "roleArn": {
-                      "Fn::GetAtt": [
-                        "StateMachineRoleB840431D",
-                        "Arn"
-                      ]
-                    },
                     "definitionString": {
                       "Fn::Join": [
                         "",
                         [
-                          "{\"StartAt\":\"Start\",\"States\":{\"Start\":{\"Type\":\"Pass\",\"Result\":{\"SomeKey\":\"SomeValue\"},\"Next\":\"Run\"},\"Run\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+                          "{\"StartAt\":\"Start\",\"States\":{\"Start\":{\"Type\":\"Pass\",\"Result\":{\"SomeKey\":\"Result\"},\"Next\":\"Run\"},\"Run\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
                           {
                             "Ref": "AWS::Partition"
                           },
@@ -2040,6 +2042,12 @@
                           },
                           "\",\"TaskDefinition\":\"awssfntasksecsec2integTaskDefFAFE2BE7\",\"Overrides\":{\"ContainerOverrides\":[{\"Name\":\"TheContainer\",\"Environment\":[{\"Name\":\"SOME_KEY\",\"Value.$\":\"$.SomeKey\"}]}]},\"LaunchType\":\"EC2\"}}}}"
                         ]
+                      ]
+                    },
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "StateMachineRoleB840431D",
+                        "Arn"
                       ]
                     }
                   }
@@ -2090,7 +2098,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.55"
+          "version": "10.2.70"
         }
       }
     },
