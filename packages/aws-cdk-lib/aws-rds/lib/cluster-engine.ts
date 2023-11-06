@@ -509,7 +509,10 @@ export class AuroraMysqlEngineVersion {
    * @deprecated Version 5.7.mysql_aurora.2.10.3 is no longer supported by Amazon RDS.
    */
   public static readonly VER_2_10_3 = AuroraMysqlEngineVersion.builtIn_5_7('2.10.3');
-  /** Version "5.7.mysql_aurora.2.11.0". */
+  /** 
+   * Version "5.7.mysql_aurora.2.11.0".
+   * This version isn't available for new creations.
+   */
   public static readonly VER_2_11_0 = AuroraMysqlEngineVersion.builtIn_5_7('2.11.0');
   /** Version "5.7.mysql_aurora.2.11.1". */
   public static readonly VER_2_11_1 = AuroraMysqlEngineVersion.builtIn_5_7('2.11.1');
