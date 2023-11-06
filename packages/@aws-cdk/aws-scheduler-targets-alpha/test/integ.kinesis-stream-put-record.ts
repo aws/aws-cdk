@@ -1,8 +1,8 @@
 import * as scheduler from '@aws-cdk/aws-scheduler-alpha';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import { KinesisStreamPutRecord } from '../lib';
 import { Stream } from 'aws-cdk-lib/aws-kinesis';
+import { KinesisStreamPutRecord } from '../lib';
 
 /*
  * Stack verification steps:
