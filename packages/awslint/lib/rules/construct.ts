@@ -181,7 +181,7 @@ constructLinter.add({
 
 constructLinter.add({
   code: 'construct-interface-extends-iconstruct',
-  message: 'construct interface must extend core.IConstruct',
+  message: 'construct interface must extend constructs.IConstruct',
   eval: e => {
     if (!e.ctx.interfaceType) { return; }
     const interfaceBase = e.ctx.sys.findInterface(e.ctx.core.constructInterface.fqn);
