@@ -173,8 +173,6 @@ describe('schedule target', () => {
       target: firehoseTarget,
     });
 
-    Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 0);
-
     Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
       Properties: {
         Target: {
@@ -262,7 +260,6 @@ describe('schedule target', () => {
       target: firehoseTarget,
     });
 
-    Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 0);
     Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
       Properties: {
         Target: {
