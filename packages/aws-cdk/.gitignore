@@ -41,3 +41,4 @@ test/integ/cli/*.d.ts
 junit.xml
 
 lib/**/*.wasm
+db.json.gz
