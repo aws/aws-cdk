@@ -29,7 +29,7 @@ const integrationTest = new IntegTest(app, 'integrationtest-inspector-start-asse
   stackUpdateWorkflow: false, // this would cause the schedule to trigger with the old code
 });
 
-// Verifies that an object was delivered to the S3 bucket by the firehose
+// Verifies that the assessment run by the firehose
 integrationTest.assertions.awsApiCall('Inspector', 'listAssessmentRuns', {
   AssessmentTemplateArns: [assessmentTemplate.attrArn],
 }).assertAtPath(
