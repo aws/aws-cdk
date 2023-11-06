@@ -23,6 +23,10 @@ class EventStack extends cdk.Stack {
         memoryLimitMiB: 512,
         cpu: 256,
         environment: { TRIGGER: 'CloudWatch Events' },
+        runtimePlatform: {
+          operatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
+          cpuArchitecture: ecs.CpuArchitecture.ARM64,
+        },
       },
       desiredTaskCount: 2,
       schedule: events.Schedule.rate(cdk.Duration.minutes(2)),
