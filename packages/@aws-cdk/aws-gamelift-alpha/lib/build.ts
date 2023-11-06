@@ -319,7 +319,7 @@ export class Build extends BuildBase {
       throw new Error(`serverSdkVersion must be in the 0.0.0 format, got ${serverSdkVersion}.`);
     }
     if (serverSdkVersion.length > 128) {
-      throw new Error(`serverSdkVersion length must be smaller than 128, got ${serverSdkVersion}.`);
+      throw new Error(`serverSdkVersion length must be smaller than or equal to 128, got ${serverSdkVersion}.`);
     }
   }
 }
