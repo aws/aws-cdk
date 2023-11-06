@@ -6,7 +6,7 @@ import { InspectorStartAssessmentRun } from '../lib';
 
 /*
  * Stack verification steps:
- * An inspector assessment target run by the scheduler
+ * An inspector assessment run by the scheduler
  * The assertion checks whether the assessment run
  */
 const app = new cdk.App();

@@ -1,0 +1,524 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "aws-cdk-scheduler-targets-inspector-start-assessment-run": {
+        "id": "aws-cdk-scheduler-targets-inspector-start-assessment-run",
+        "path": "aws-cdk-scheduler-targets-inspector-start-assessment-run",
+        "children": {
+          "MyAssessmentTarget": {
+            "id": "MyAssessmentTarget",
+            "path": "aws-cdk-scheduler-targets-inspector-start-assessment-run/MyAssessmentTarget",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Inspector::AssessmentTarget",
+              "aws:cdk:cloudformation:props": {}
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
+            }
+          },
+          "MyAssessmentTemplate": {
+            "id": "MyAssessmentTemplate",
+            "path": "aws-cdk-scheduler-targets-inspector-start-assessment-run/MyAssessmentTemplate",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Inspector::AssessmentTemplate",
+              "aws:cdk:cloudformation:props": {
+                "assessmentTargetArn": {
+                  "Fn::GetAtt": [
+                    "MyAssessmentTarget",
+                    "Arn"
+                  ]
+                },
+                "durationInSeconds": 3600,
+                "rulesPackageArns": [
+                  "arn:aws:inspector:us-east-1:316112463485:rulespackage/0-gEjTy7T7"
+                ]
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
+            }
+          },
+          "Schedule": {
+            "id": "Schedule",
+            "path": "aws-cdk-scheduler-targets-inspector-start-assessment-run/Schedule",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-scheduler-targets-inspector-start-assessment-run/Schedule/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Scheduler::Schedule",
+                  "aws:cdk:cloudformation:props": {
+                    "flexibleTimeWindow": {
+                      "mode": "OFF"
+                    },
+                    "scheduleExpression": "rate(10 minutes)",
+                    "scheduleExpressionTimezone": "Etc/UTC",
+                    "state": "ENABLED",
+                    "target": {
+                      "arn": {
+                        "Fn::GetAtt": [
+                          "MyAssessmentTemplate",
+                          "Arn"
+                        ]
+                      },
+                      "roleArn": {
+                        "Fn::GetAtt": [
+                          "SchedulerRoleForTarget1441a743A31888",
+                          "Arn"
+                        ]
+                      },
+                      "retryPolicy": {
+                        "maximumEventAgeInSeconds": 86400,
+                        "maximumRetryAttempts": 185
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-scheduler-alpha.Schedule",
+              "version": "0.0.0"
+            }
+          },
+          "SchedulerRoleForTarget-1441a7": {
+            "id": "SchedulerRoleForTarget-1441a7",
+            "path": "aws-cdk-scheduler-targets-inspector-start-assessment-run/SchedulerRoleForTarget-1441a7",
+            "children": {
+              "ImportSchedulerRoleForTarget-1441a7": {
+                "id": "ImportSchedulerRoleForTarget-1441a7",
+                "path": "aws-cdk-scheduler-targets-inspector-start-assessment-run/SchedulerRoleForTarget-1441a7/ImportSchedulerRoleForTarget-1441a7",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-scheduler-targets-inspector-start-assessment-run/SchedulerRoleForTarget-1441a7/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Condition": {
+                            "StringEquals": {
+                              "aws:SourceAccount": {
+                                "Ref": "AWS::AccountId"
+                              }
+                            }
+                          },
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "scheduler.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "aws-cdk-scheduler-targets-inspector-start-assessment-run/SchedulerRoleForTarget-1441a7/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-scheduler-targets-inspector-start-assessment-run/SchedulerRoleForTarget-1441a7/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "inspector:StartAssessmentRun",
+                              "Effect": "Allow",
+                              "Resource": "*"
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "SchedulerRoleForTarget1441a7DefaultPolicy885B6BFD",
+                        "roles": [
+                          {
+                            "Ref": "SchedulerRoleForTarget1441a743A31888"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "aws-cdk-scheduler-targets-inspector-start-assessment-run/Exports",
+            "children": {
+              "Output{\"Fn::GetAtt\":[\"MyAssessmentTemplate\",\"Arn\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"MyAssessmentTemplate\",\"Arn\"]}",
+                "path": "aws-cdk-scheduler-targets-inspector-start-assessment-run/Exports/Output{\"Fn::GetAtt\":[\"MyAssessmentTemplate\",\"Arn\"]}",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-scheduler-targets-inspector-start-assessment-run/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-scheduler-targets-inspector-start-assessment-run/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.2.70"
+        }
+      },
+      "integrationtest-inspector-start-assessment-run": {
+        "id": "integrationtest-inspector-start-assessment-run",
+        "path": "integrationtest-inspector-start-assessment-run",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "integrationtest-inspector-start-assessment-run/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "integrationtest-inspector-start-assessment-run/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "integrationtest-inspector-start-assessment-run/DefaultTest/DeployAssert",
+                "children": {
+                  "AwsApiCallInspectorlistAssessmentRuns843176f2a5d1011b3de98e22718ad9b2": {
+                    "id": "AwsApiCallInspectorlistAssessmentRuns843176f2a5d1011b3de98e22718ad9b2",
+                    "path": "integrationtest-inspector-start-assessment-run/DefaultTest/DeployAssert/AwsApiCallInspectorlistAssessmentRuns843176f2a5d1011b3de98e22718ad9b2",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "integrationtest-inspector-start-assessment-run/DefaultTest/DeployAssert/AwsApiCallInspectorlistAssessmentRuns843176f2a5d1011b3de98e22718ad9b2/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "integrationtest-inspector-start-assessment-run/DefaultTest/DeployAssert/AwsApiCallInspectorlistAssessmentRuns843176f2a5d1011b3de98e22718ad9b2/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.2.70"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.70"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "integrationtest-inspector-start-assessment-run/DefaultTest/DeployAssert/AwsApiCallInspectorlistAssessmentRuns843176f2a5d1011b3de98e22718ad9b2/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "integrationtest-inspector-start-assessment-run/DefaultTest/DeployAssert/AwsApiCallInspectorlistAssessmentRuns843176f2a5d1011b3de98e22718ad9b2/Default/Default",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.2.70"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.70"
+                        }
+                      },
+                      "WaitFor": {
+                        "id": "WaitFor",
+                        "path": "integrationtest-inspector-start-assessment-run/DefaultTest/DeployAssert/AwsApiCallInspectorlistAssessmentRuns843176f2a5d1011b3de98e22718ad9b2/WaitFor",
+                        "children": {
+                          "IsCompleteProvider": {
+                            "id": "IsCompleteProvider",
+                            "path": "integrationtest-inspector-start-assessment-run/DefaultTest/DeployAssert/AwsApiCallInspectorlistAssessmentRuns843176f2a5d1011b3de98e22718ad9b2/WaitFor/IsCompleteProvider",
+                            "children": {
+                              "AssertionsProvider": {
+                                "id": "AssertionsProvider",
+                                "path": "integrationtest-inspector-start-assessment-run/DefaultTest/DeployAssert/AwsApiCallInspectorlistAssessmentRuns843176f2a5d1011b3de98e22718ad9b2/WaitFor/IsCompleteProvider/AssertionsProvider",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.2.70"
+                                }
+                              },
+                              "Invoke": {
+                                "id": "Invoke",
+                                "path": "integrationtest-inspector-start-assessment-run/DefaultTest/DeployAssert/AwsApiCallInspectorlistAssessmentRuns843176f2a5d1011b3de98e22718ad9b2/WaitFor/IsCompleteProvider/Invoke",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.2.70"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.2.70"
+                            }
+                          },
+                          "TimeoutProvider": {
+                            "id": "TimeoutProvider",
+                            "path": "integrationtest-inspector-start-assessment-run/DefaultTest/DeployAssert/AwsApiCallInspectorlistAssessmentRuns843176f2a5d1011b3de98e22718ad9b2/WaitFor/TimeoutProvider",
+                            "children": {
+                              "AssertionsProvider": {
+                                "id": "AssertionsProvider",
+                                "path": "integrationtest-inspector-start-assessment-run/DefaultTest/DeployAssert/AwsApiCallInspectorlistAssessmentRuns843176f2a5d1011b3de98e22718ad9b2/WaitFor/TimeoutProvider/AssertionsProvider",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.2.70"
+                                }
+                              },
+                              "Invoke": {
+                                "id": "Invoke",
+                                "path": "integrationtest-inspector-start-assessment-run/DefaultTest/DeployAssert/AwsApiCallInspectorlistAssessmentRuns843176f2a5d1011b3de98e22718ad9b2/WaitFor/TimeoutProvider/Invoke",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.2.70"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.2.70"
+                            }
+                          },
+                          "Role": {
+                            "id": "Role",
+                            "path": "integrationtest-inspector-start-assessment-run/DefaultTest/DeployAssert/AwsApiCallInspectorlistAssessmentRuns843176f2a5d1011b3de98e22718ad9b2/WaitFor/Role",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.2.70"
+                            }
+                          },
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "integrationtest-inspector-start-assessment-run/DefaultTest/DeployAssert/AwsApiCallInspectorlistAssessmentRuns843176f2a5d1011b3de98e22718ad9b2/WaitFor/Resource",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.2.70"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.70"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "integrationtest-inspector-start-assessment-run/DefaultTest/DeployAssert/AwsApiCallInspectorlistAssessmentRuns843176f2a5d1011b3de98e22718ad9b2/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.70"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
+                    }
+                  },
+                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
+                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "integrationtest-inspector-start-assessment-run/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "integrationtest-inspector-start-assessment-run/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.70"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "integrationtest-inspector-start-assessment-run/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.70"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "integrationtest-inspector-start-assessment-run/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.70"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
+                    }
+                  },
+                  "SingletonFunction76b3e830a873425f8453eddd85c86925": {
+                    "id": "SingletonFunction76b3e830a873425f8453eddd85c86925",
+                    "path": "integrationtest-inspector-start-assessment-run/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "integrationtest-inspector-start-assessment-run/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Staging",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.70"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "integrationtest-inspector-start-assessment-run/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.70"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "integrationtest-inspector-start-assessment-run/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.70"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
+                    }
+                  },
+                  "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a": {
+                    "id": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a",
+                    "path": "integrationtest-inspector-start-assessment-run/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "integrationtest-inspector-start-assessment-run/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Staging",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.70"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "integrationtest-inspector-start-assessment-run/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.70"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "integrationtest-inspector-start-assessment-run/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.70"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
+                    }
+                  },
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "integrationtest-inspector-start-assessment-run/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "integrationtest-inspector-start-assessment-run/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.2.70"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.2.70"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.2.70"
+    }
+  }
+}
