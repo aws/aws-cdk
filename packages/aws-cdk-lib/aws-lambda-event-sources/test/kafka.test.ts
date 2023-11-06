@@ -2,10 +2,10 @@ import { TestFunction } from './test-function';
 import { Template, Match } from '../../assertions';
 import { SecurityGroup, SubnetType, Vpc } from '../../aws-ec2';
 import * as lambda from '../../aws-lambda';
+import { Bucket } from '../../aws-s3';
 import { Secret } from '../../aws-secretsmanager';
 import * as cdk from '../../core';
 import * as sources from '../lib';
-import { Bucket } from 'aws-cdk-lib/aws-s3';
 
 describe('KafkaEventSource', () => {
   describe('msk', () => {
@@ -196,8 +196,8 @@ describe('KafkaEventSource', () => {
         DestinationConfig: {
           OnFailure: {
             Destination: {
-              "Fn::Join": ["",["arn:",{"Ref": "AWS::Partition"},":s3:::my-bucket"]],
-            }
+              'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket']],
+            },
           },
         },
       });
@@ -356,8 +356,8 @@ describe('KafkaEventSource', () => {
         DestinationConfig: {
           OnFailure: {
             Destination: {
-              "Fn::Join": ["",["arn:",{"Ref": "AWS::Partition"},":s3:::my-bucket"]],
-            }
+              'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket']],
+            },
           },
         },
       });

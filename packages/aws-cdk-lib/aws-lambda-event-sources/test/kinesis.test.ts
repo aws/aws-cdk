@@ -2,9 +2,9 @@ import { TestFunction } from './test-function';
 import { Template } from '../../assertions';
 import * as kinesis from '../../aws-kinesis';
 import * as lambda from '../../aws-lambda';
+import { Bucket } from '../../aws-s3';
 import * as cdk from '../../core';
 import * as sources from '../lib';
-import { Bucket } from 'aws-cdk-lib/aws-s3';
 
 /* eslint-disable quote-props */
 
@@ -315,11 +315,10 @@ describe('KinesisEventSource', () => {
     const fn = new TestFunction(stack, 'Fn');
 
     const stream = new kinesis.Stream(stack, 'S');
-    
 
     const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
     const s3ofd = new sources.S3OnFailureDestination(bucket);
-    
+
     expect(() => {
       // WHEN
       fn.addEventSource(new sources.KinesisEventSource(stream, {
@@ -333,5 +332,3 @@ describe('KinesisEventSource', () => {
   });
 
 });
-
-

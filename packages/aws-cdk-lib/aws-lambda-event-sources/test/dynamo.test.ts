@@ -2,11 +2,10 @@ import { TestFunction } from './test-function';
 import { Template } from '../../assertions';
 import * as dynamodb from '../../aws-dynamodb';
 import * as lambda from '../../aws-lambda';
+import { Bucket } from '../../aws-s3';
 import * as sqs from '../../aws-sqs';
 import * as cdk from '../../core';
 import * as sources from '../lib';
-import { Bucket } from 'aws-cdk-lib/aws-s3';
-
 
 /* eslint-disable quote-props */
 
@@ -816,13 +815,13 @@ describe('DynamoEventSource', () => {
 
     const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
     const s3ofd = new sources.S3OnFailureDestination(bucket);
-    
+
     expect(() => {
       // WHEN
       fn.addEventSource(new sources.DynamoEventSource(table, {
-      startingPosition: lambda.StartingPosition.LATEST,
-      onFailure: s3ofd,
-    }));
+        startingPosition: lambda.StartingPosition.LATEST,
+        onFailure: s3ofd,
+      }));
     //THEN
     }).toThrowError('This event source does not support S3 as on failure');
 
