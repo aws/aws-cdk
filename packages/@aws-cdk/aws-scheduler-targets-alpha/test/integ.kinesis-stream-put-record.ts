@@ -6,7 +6,7 @@ import { KinesisStreamPutRecord } from '../lib';
 
 /*
  * Stack verification steps:
- * A record is put to the kinesis data stream stream by the scheduler
+ * A record is put to the kinesis data stream by the scheduler
  * The assertion checks that the expected record is received by the stream
  */
 const app = new cdk.App();
