@@ -11,7 +11,7 @@ import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
  *
  * @stability external
  */
-export interface ICfnResource {
+export interface ICfnResource extends constructs.IConstruct {
   /**
    * The identifier of the resource.
    *
@@ -165,7 +165,7 @@ import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
  *
  * @stability external
  */
-export interface ICfnResource {
+export interface ICfnResource extends constructs.IConstruct {
   /**
    * The identifier of the resource
    *
@@ -310,7 +310,7 @@ import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
  *
  * @stability external
  */
-export interface ICfnSomething {
+export interface ICfnSomething extends constructs.IConstruct {
   /**
    * The identifier of the resource
    *
@@ -470,7 +470,7 @@ import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
  *
  * @stability external
  */
-export interface ICfnResource {
+export interface ICfnResource extends constructs.IConstruct {
   /**
    * The identifier of the resource
    *
@@ -630,7 +630,7 @@ import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
  *
  * @stability external
  */
-export interface ICfnResource {
+export interface ICfnResource extends constructs.IConstruct {
   /**
    * The identifier of the resource
    *
@@ -790,7 +790,7 @@ import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
  *
  * @stability external
  */
-export interface ICfnResource {
+export interface ICfnResource extends constructs.IConstruct {
   /**
    * The arn of the resource
    *
@@ -935,7 +935,7 @@ import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
  *
  * @stability external
  */
-export interface ICfnResource {
+export interface ICfnResource extends constructs.IConstruct {
   /**
    * The identifier of the resource
    *
