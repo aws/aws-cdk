@@ -4,6 +4,7 @@ import * as kinesis from '../../aws-kinesis';
 import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
 import * as sources from '../lib';
+import { Bucket } from 'aws-cdk-lib/aws-s3';
 
 /* eslint-disable quote-props */
 
@@ -307,4 +308,30 @@ describe('KinesisEventSource', () => {
       StartingPositionTimestamp: 1640995200,
     });
   });
+
+  test('s3ofd raise unsupport error', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+
+    const stream = new kinesis.Stream(stack, 'S');
+    
+
+    const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
+    const s3ofd = new sources.S3OnFailureDestination(bucket);
+    
+    expect(() => {
+      // WHEN
+      fn.addEventSource(new sources.KinesisEventSource(stream, {
+        startingPosition: lambda.StartingPosition.AT_TIMESTAMP,
+        startingPositionTimestamp: 1640995200,
+        onFailure: s3ofd,
+      }));
+    //THEN
+    }).toThrowError('This event source does not support S3 as on failure');
+
+  });
+
 });
+
+

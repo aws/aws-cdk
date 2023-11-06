@@ -5,6 +5,7 @@ import * as lambda from '../../aws-lambda';
 import { Secret } from '../../aws-secretsmanager';
 import * as cdk from '../../core';
 import * as sources from '../lib';
+import { Bucket } from 'aws-cdk-lib/aws-s3';
 
 describe('KafkaEventSource', () => {
   describe('msk', () => {
@@ -172,6 +173,36 @@ describe('KafkaEventSource', () => {
       });
     });
 
+    test('with s3 ofd', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+      const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
+      const s3ofd = new sources.S3OnFailureDestination(bucket);
+
+      // WHEN
+      fn.addEventSource(new sources.ManagedKafkaEventSource(
+        {
+          clusterArn,
+          topic: kafkaTopic,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          onFailure: s3ofd,
+        }));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        DestinationConfig: {
+          OnFailure: {
+            Destination: {
+              "Fn::Join": ["",["arn:",{"Ref": "AWS::Partition"},":s3:::my-bucket"]],
+            }
+          },
+        },
+      });
+    });
+
   });
 
   describe('self-managed kafka', () => {
@@ -299,6 +330,37 @@ describe('KafkaEventSource', () => {
           }));
       }).toThrow(/secret must be set/);
 
+    });
+
+    test('with s3 ofd', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const kafkaTopic = 'some-topic';
+      const bootstrapServers = ['kafka-broker:9092'];
+      const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
+      const s3ofd = new sources.S3OnFailureDestination(bucket);
+
+      // WHEN
+      fn.addEventSource(new sources.SelfManagedKafkaEventSource(
+        {
+          bootstrapServers: bootstrapServers,
+          topic: kafkaTopic,
+          secret: new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' }),
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          onFailure: s3ofd,
+        }));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        DestinationConfig: {
+          OnFailure: {
+            Destination: {
+              "Fn::Join": ["",["arn:",{"Ref": "AWS::Partition"},":s3:::my-bucket"]],
+            }
+          },
+        },
+      });
     });
 
     describe('vpc', () => {

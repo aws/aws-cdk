@@ -5,6 +5,8 @@ import * as lambda from '../../aws-lambda';
 import * as sqs from '../../aws-sqs';
 import * as cdk from '../../core';
 import * as sources from '../lib';
+import { Bucket } from 'aws-cdk-lib/aws-s3';
+
 
 /* eslint-disable quote-props */
 
@@ -796,6 +798,33 @@ describe('DynamoEventSource', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       'Enabled': false,
     });
+
+  });
+
+  test('s3ofd raise unsupport error', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING,
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
+    });
+
+    const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
+    const s3ofd = new sources.S3OnFailureDestination(bucket);
+    
+    expect(() => {
+      // WHEN
+      fn.addEventSource(new sources.DynamoEventSource(table, {
+      startingPosition: lambda.StartingPosition.LATEST,
+      onFailure: s3ofd,
+    }));
+    //THEN
+    }).toThrowError('This event source does not support S3 as on failure');
 
   });
 });
