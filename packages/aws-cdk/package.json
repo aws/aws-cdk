@@ -28,7 +28,8 @@
   },
   "cdk-build": {
     "post": [
-      "cp ../../node_modules/cdk-from-cfn/index_bg.wasm ./lib/"
+      "cp ../../node_modules/cdk-from-cfn/index_bg.wasm ./lib/",
+      "cp ../../node_modules/@aws-cdk/aws-service-spec/db.json.gz ./"
     ]
   },
   "cdk-package": {
@@ -47,7 +48,7 @@
         "0BSD",
         "MIT OR Apache-2.0"
       ],
-      "dontAttribute": "^@aws-cdk/|^cdk-assets$|^cdk-cli-wrapper$",
+      "dontAttribute": "^@aws-cdk/|^@cdklabs/|^cdk-assets$|^cdk-cli-wrapper$",
       "test": "bin/cdk --version",
       "entryPoints": [
         "lib/index.js"
