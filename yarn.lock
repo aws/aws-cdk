@@ -55,13 +55,13 @@
   resolved "https://registry.npmjs.org/@aws-cdk/asset-node-proxy-agent-v6/-/asset-node-proxy-agent-v6-2.0.1.tgz#6dc9b7cdb22ff622a7176141197962360c33e9ac"
   integrity sha512-DDt4SLdLOwWCjGtltH4VCST7hpOI5DzieuhGZsBpZ+AgJdSI2GCjklCXm0GCTwJG/SolkL5dtQXyUKgg9luBDg==
 
-"@aws-cdk/aws-service-spec@^0.0.25":
-  version "0.0.25"
-  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.0.25.tgz#2f5eda16c882394fb7533a79ab75bb95ab18c342"
-  integrity sha512-hJiBmbhN9O7iIe4SOs52tSd4bRFlLEFaq3exe+5SrELiPKZsRxQs9FvRFz1ALadbj9Wno/qkd36D7s7jNhpmVQ==
+"@aws-cdk/aws-service-spec@^0.0.26":
+  version "0.0.26"
+  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.0.26.tgz#0031f1dad37018222dbe5a0fcc0f1b3af78bf9f8"
+  integrity sha512-GHqTx1qTSBk9C008x7dxKuoV/J2FLPT4KDAhLAHa9ux5wb7eWy+3aXZNEOv0LDMh2G0HcZ5pBkOH+dIUBqADLA==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.25"
-    "@cdklabs/tskb" "^0.0.2"
+    "@aws-cdk/service-spec-types" "^0.0.26"
+    "@cdklabs/tskb" "^0.0.3"
 
 "@aws-cdk/lambda-layer-kubectl-v24@^2.0.242":
   version "2.0.242"
@@ -91,12 +91,12 @@
   dependencies:
     "@cdklabs/tskb" "^0.0.2"
 
-"@aws-cdk/service-spec-types@^0.0.25":
-  version "0.0.25"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.25.tgz#971c5539630fb66abb2d685f76dffef33eabbba1"
-  integrity sha512-urxao77R7+a9c8Mj3RAt2/ee9cY3pm4lrJHdy6b8qavPYgslYYM7ibk67KzR2Uz24CVWUfxHF7N4EqDK+hKKew==
+"@aws-cdk/service-spec-types@^0.0.26":
+  version "0.0.26"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.26.tgz#a00d43361767664bad022ad4e742d94cbf2f45e0"
+  integrity sha512-zjn8tfrazrzh97khRabWRaGuqPZbTFaIMC74W3/Pe789WM+S4t/cRtqQNfxk1puSMwzhxpsluBLY1PfszIhGtg==
   dependencies:
-    "@cdklabs/tskb" "^0.0.2"
+    "@cdklabs/tskb" "^0.0.3"
 
 "@aws-crypto/crc32@3.0.0":
   version "3.0.0"
@@ -2251,6 +2251,11 @@
   version "0.0.2"
   resolved "https://registry.npmjs.org/@cdklabs/tskb/-/tskb-0.0.2.tgz#bb39faf0375ee865eea48139be9802e35cc4264c"
   integrity sha512-ZWPfM6U0XeiAPEUc+xwBBP0T8W1lFl1+cYL6zcPjT9c0tt0ijtSm952GLuZXzlDhu1YUMoMn3M+FJNbLqOCSEg==
+
+"@cdklabs/tskb@^0.0.3":
+  version "0.0.3"
+  resolved "https://registry.npmjs.org/@cdklabs/tskb/-/tskb-0.0.3.tgz#4b79846d9381eb1252ba85d5d20b7cd7d99b6ecb"
+  integrity sha512-JR+MuD4awAXvutu7HArephXfZm09GPTaSAQUqNcJB5+ZENRm4kV+L6vJL6Tn1xHjCcHksO+HAqj3gYtm5K94vA==
 
 "@cdklabs/typewriter@^0.0.2":
   version "0.0.2"
