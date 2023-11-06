@@ -27,6 +27,8 @@ export interface EvaluateExpressionProps extends sfn.TaskStateBaseProps {
 /**
  * The event received by the Lambda function
  *
+ * Shared definition with packages/@aws-cdk/custom-resource-handlers/lib/custom-resources/aws-stepfunctions-tasks/index.ts
+ *
  * @internal
  */
 export interface Event {
