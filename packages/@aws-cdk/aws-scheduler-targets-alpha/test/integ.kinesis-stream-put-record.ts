@@ -46,17 +46,14 @@ const getShardIterator = integrationTest.assertions.awsApiCall('kinesis', 'getSh
   totalTimeout: cdk.Duration.minutes(10),
 });
 
-integrationTest.assertions.awsApiCall('kinesis', 'getRecords', {
+const getRecords = integrationTest.assertions.awsApiCall('kinesis', 'getRecords', {
   ShardIterator: getShardIterator.getAttString('ShardIterator'),
-}).expect(ExpectedResult.objectLike(
-  {
-    Records: ExpectedResult.arrayWith([
-      {
-        PartitionKey: partitionKey,
-      },
-    ]),
-  },
-)).waitForAssertions({
+});
+
+getRecords.assertAtPath(
+  'Records.0.PartitionKey',
+  ExpectedResult.stringLikeRegexp(partitionKey),
+).waitForAssertions({
   interval: cdk.Duration.seconds(30),
   totalTimeout: cdk.Duration.minutes(10),
 });
