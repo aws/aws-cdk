@@ -306,6 +306,7 @@
   "MyAuthorizer6575980E": {
    "Type": "AWS::ApiGateway::Authorizer",
    "Properties": {
+    "AuthorizerResultTtlInSeconds": 300,
     "AuthorizerUri": {
      "Fn::Join": [
       "",
@@ -366,6 +367,7 @@
   "MySecondAuthorizer25A69B96": {
    "Type": "AWS::ApiGateway::Authorizer",
    "Properties": {
+    "AuthorizerResultTtlInSeconds": 300,
     "AuthorizerUri": {
      "Fn::Join": [
       "",

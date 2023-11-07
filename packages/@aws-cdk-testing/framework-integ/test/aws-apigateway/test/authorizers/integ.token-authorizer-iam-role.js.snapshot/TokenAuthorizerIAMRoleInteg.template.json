@@ -79,6 +79,7 @@
       "Arn"
      ]
     },
+    "AuthorizerResultTtlInSeconds": 300,
     "AuthorizerUri": {
      "Fn::Join": [
       "",
