@@ -265,7 +265,6 @@ env:
             {"area":"@aws-cdk/aws-wafv2","keywords":["wafv2","aws-wafv2"],"labels":["@aws-cdk/aws-wafv2"]},
             {"area":"@aws-cdk/aws-workspaces","keywords":["aws-workspaces","workspaces"],"labels":["@aws-cdk/aws-workspaces"]},
             {"area":"@aws-cdk/aws-xray","keywords":["aws-xray","xray"],"labels":["@aws-cdk/aws-xray"]},
-            {"area":"@aws-cdk/cfnspec","keywords":["cfnspec"],"labels":["@aws-cdk/cfnspec"]},
             {"area":"@aws-cdk/cloud-assembly-schema","keywords":["cloud-assembly-schema","manifest"],"labels":["@aws-cdk/cloud-assembly-schema"]},
             {"area":"@aws-cdk/cloudformation-diff","keywords":["cloudformation-diff","cfn-diff"],"labels":["@aws-cdk/cloudformation-diff"]},
             {"area":"@aws-cdk/cloudformation-include","keywords":["cloudformation-include","cfn-include"],"labels":["@aws-cdk/cloudformation-include"]},

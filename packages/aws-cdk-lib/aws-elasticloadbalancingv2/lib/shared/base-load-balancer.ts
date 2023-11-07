@@ -283,7 +283,9 @@ export abstract class BaseLoadBalancer extends Resource {
     );
 
     // make sure the bucket's policy is created before the ALB (see https://github.com/aws/aws-cdk/issues/1633)
-    this.node.addDependency(bucket);
+    // at the L1 level to avoid creating a circular dependency (see https://github.com/aws/aws-cdk/issues/27528)
+    const lb = this.node.defaultChild as CfnLoadBalancer;
+    lb.addDependency(bucket.node.defaultChild as s3.CfnBucket);
   }
 
   /**
