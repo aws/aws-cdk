@@ -368,7 +368,7 @@ describe('Topic', () => {
     const imported = sns.Topic.fromTopicArn(stack, 'Imported', 'arn:aws:sns:us-west-2:123456789012:my-topic');
 
     // THEN
-    expect(imported.env.region).toEqual('es-west-2');
+    expect(imported.env.region).toEqual('us-west-2');
   });
 
   test('test metrics', () => {
