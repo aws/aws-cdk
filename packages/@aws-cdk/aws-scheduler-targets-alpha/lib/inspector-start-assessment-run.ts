@@ -11,7 +11,7 @@ import { sameEnvDimension } from './util';
 export class InspectorStartAssessmentRun extends ScheduleTargetBase implements IScheduleTarget {
   constructor(
     private readonly template: CfnAssessmentTemplate,
-    private readonly props: ScheduleTargetBaseProps,
+    private readonly props: ScheduleTargetBaseProps = {},
   ) {
     super(props, template.attrArn);
   }
