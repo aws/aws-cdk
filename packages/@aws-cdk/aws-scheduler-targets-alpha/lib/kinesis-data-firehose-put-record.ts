@@ -11,7 +11,7 @@ import { sameEnvDimension } from './util';
 export class KinesisDataFirehosePutRecord extends ScheduleTargetBase implements IScheduleTarget {
   constructor(
     private readonly deliveryStream: CfnDeliveryStream,
-    private readonly props: ScheduleTargetBaseProps,
+    private readonly props: ScheduleTargetBaseProps = {},
   ) {
     super(props, deliveryStream.attrArn);
   }

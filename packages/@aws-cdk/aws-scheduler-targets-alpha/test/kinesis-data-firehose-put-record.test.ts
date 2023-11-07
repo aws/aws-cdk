@@ -19,7 +19,7 @@ describe('schedule target', () => {
   });
 
   test('creates IAM role and IAM policy for kinesis data firehose target in the same account', () => {
-    const firehoseTarget = new KinesisDataFirehosePutRecord(firehose, {});
+    const firehoseTarget = new KinesisDataFirehosePutRecord(firehose);
 
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
@@ -113,7 +113,7 @@ describe('schedule target', () => {
   });
 
   test('reuses IAM role and IAM policy for two schedules from the same account', () => {
-    const firehoseTarget = new KinesisDataFirehosePutRecord(firehose, { });
+    const firehoseTarget = new KinesisDataFirehosePutRecord(firehose);
 
     new Schedule(stack, 'MyScheduleDummy1', {
       schedule: expr,
@@ -166,7 +166,7 @@ describe('schedule target', () => {
     });
     const anotherFirehose = new CfnDeliveryStream(stack2, 'AnotherFirehose');
 
-    const firehoseTarget = new KinesisDataFirehosePutRecord(anotherFirehose, {});
+    const firehoseTarget = new KinesisDataFirehosePutRecord(anotherFirehose);
 
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
@@ -296,7 +296,7 @@ describe('schedule target', () => {
       },
     });
     const anotherFirehose = new CfnDeliveryStream(stack2, 'AnotherFirehose');
-    const firehoseTarget = new KinesisDataFirehosePutRecord(anotherFirehose, {});
+    const firehoseTarget = new KinesisDataFirehosePutRecord(anotherFirehose);
 
     expect(() =>
       new Schedule(stack, 'MyScheduleDummy', {
@@ -314,7 +314,7 @@ describe('schedule target', () => {
     });
     const anotherFirehose = new CfnDeliveryStream(stack2, 'AnotherFirehose');
 
-    const firehoseTarget = new KinesisDataFirehosePutRecord(anotherFirehose, {});
+    const firehoseTarget = new KinesisDataFirehosePutRecord(anotherFirehose);
 
     expect(() =>
       new Schedule(stack, 'MyScheduleDummy', {
