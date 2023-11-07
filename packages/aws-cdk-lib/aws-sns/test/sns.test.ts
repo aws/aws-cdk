@@ -349,17 +349,6 @@ describe('Topic', () => {
     expect(imported.fifo).toEqual(true);
   });
 
-  test('sets region for imported topic env', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-
-    // WHEN
-    const imported = sns.Topic.fromTopicArn(stack, 'Imported', 'arn:aws:sns:us-west-2:123456789012:my-topic');
-
-    // THEN
-    expect(imported.env.account).toEqual('es-west-2');
-  });
-
   test('sets account for imported topic env', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -368,7 +357,18 @@ describe('Topic', () => {
     const imported = sns.Topic.fromTopicArn(stack, 'Imported', 'arn:aws:sns:us-west-2:123456789012:my-topic');
 
     // THEN
-    expect(imported.env.region).toEqual('123456789012');
+    expect(imported.env.account).toEqual('123456789012');
+  });
+
+  test('sets region for imported topic env', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const imported = sns.Topic.fromTopicArn(stack, 'Imported', 'arn:aws:sns:us-west-2:123456789012:my-topic');
+
+    // THEN
+    expect(imported.env.region).toEqual('es-west-2');
   });
 
   test('test metrics', () => {
