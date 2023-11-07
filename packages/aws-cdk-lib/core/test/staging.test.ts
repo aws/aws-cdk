@@ -496,6 +496,72 @@ describe('staging', () => {
     ]);
   });
 
+  test('bundler ignores secret tokens in code artifact URLs', () => {
+    // GIVEN
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+    const stack = new Stack(app, 'stack');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // WHEN
+    new AssetStaging(stack, 'Asset', {
+      sourcePath: directory,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SUCCESS],
+        environment: {
+          PIP_INDEX_URL: 'https://aws:MY_SECRET_TOKEN@your-code-repo.d.codeartifact.us-west-2.amazonaws.com/pypi/python/simple/',
+        },
+      },
+    });
+
+    new AssetStaging(stack, 'AssetWithDifferentBundlingOptions', {
+      sourcePath: directory,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SUCCESS],
+        environment: {
+          PIP_INDEX_URL: 'https://aws:MY_OTHER_SECRET_TOKEN@your-code-repo.d.codeartifact.us-west-2.amazonaws.com/pypi/python/simple/',
+        },
+      },
+    });
+
+    // THEN
+    const assembly = app.synth();
+
+    // We're testing that docker was run once, only for the first Asset, since the only difference is the token.
+    expect(
+      readDockerStubInputConcat()).toEqual(
+      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated --env PIP_INDEX_URL=https://aws:MY_SECRET_TOKEN@your-code-repo.d.codeartifact.us-west-2.amazonaws.com/pypi/python/simple/ -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+    );
+
+    expect(fs.readdirSync(assembly.directory)).toEqual([
+      'asset.2de2347dd01e3f43a463652635acaae09539cdf32769d9a60ac0ad4622b1e943', // 'Asset'
+      'cdk.out',
+      'manifest.json',
+      'stack.template.json',
+      'tree.json',
+    ]);
+  });
+
+  test('bundler throws n error when the PIP url is not a valid url', () => {
+    // GIVEN
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+    const stack = new Stack(app, 'stack');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // WHEN
+    expect(() => new AssetStaging(stack, 'Asset', {
+      sourcePath: directory,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SUCCESS],
+        environment: {
+          PIP_INDEX_URL: 'NOT_A_URL',
+        },
+      },
+    })).toThrow('PIP_INDEX_URL must be a valid URL, got NOT_A_URL.');
+  });
+
   test('bundler outputs to intermediate dir and renames to asset', () => {
     // GIVEN
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
@@ -602,6 +668,68 @@ describe('staging', () => {
     expect(appAssembly.directory).toEqual(app2Assembly.directory);
     expect(fs.readdirSync(appAssembly.directory)).toEqual([
       'asset.b1e32e86b3523f2fa512eb99180ee2975a50a4439e63e8badd153f2a68d61aa4',
+      'cdk.out',
+      'manifest.json',
+      'stack.template.json',
+      'tree.json',
+    ]);
+  });
+
+  test('bundler re-uses assets from previous synths, ignoring tokens', () => {
+    // GIVEN
+    const TEST_OUTDIR = path.join(__dirname, 'cdk.out');
+    if (fs.existsSync(TEST_OUTDIR)) {
+      fs.removeSync(TEST_OUTDIR);
+    }
+
+    const app = new App({ outdir: TEST_OUTDIR, context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+    const stack = new Stack(app, 'stack');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // WHEN
+    new AssetStaging(stack, 'Asset', {
+      sourcePath: directory,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SUCCESS],
+        environment: {
+          PIP_EXTRA_INDEX_URL: 'https://aws:MY_SECRET_TOKEN@your-code-repo.d.codeartifact.us-west-2.amazonaws.com/pypi/python/simple/',
+        },
+      },
+    });
+
+    // Clear asset hash cache to show that during the second synth bundling
+    // will consider the existing bundling dir (file system cache).
+    AssetStaging.clearAssetHashCache();
+
+    // GIVEN
+    const app2 = new App({ outdir: TEST_OUTDIR, context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+    const stack2 = new Stack(app2, 'stack');
+
+    // WHEN
+    new AssetStaging(stack2, 'Asset', {
+      sourcePath: directory,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SUCCESS],
+        environment: {
+          PIP_EXTRA_INDEX_URL: 'https://aws:MY_OTHER_SECRET_TOKEN@your-code-repo.d.codeartifact.us-west-2.amazonaws.com/pypi/python/simple/',
+        },
+      },
+    });
+
+    // THEN
+    const appAssembly = app.synth();
+    const app2Assembly = app2.synth();
+
+    expect(
+      readDockerStubInputConcat()).toEqual(
+      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated --env PIP_EXTRA_INDEX_URL=https://aws:MY_SECRET_TOKEN@your-code-repo.d.codeartifact.us-west-2.amazonaws.com/pypi/python/simple/ -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+    );
+
+    expect(appAssembly.directory).toEqual(app2Assembly.directory);
+    expect(fs.readdirSync(appAssembly.directory)).toEqual([
+      'asset.ec1d4062c578dacd630d64166a7d1efcd472e570e085a63f8857f6c674491bac',
       'cdk.out',
       'manifest.json',
       'stack.template.json',
