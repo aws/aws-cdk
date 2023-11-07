@@ -313,44 +313,17 @@ describe('sns topic schedule target', () => {
     });
   });
 
-  test('throws when sns topic is imported from different account', () => {
-    const differentAccountStack = new Stack(app, 'DummyStack', {
-      env: {
-        account: '234567890123',
-        region: 'us-east-1',
-      },
-    });
-
-    const differentAccountTopic = new sns.Topic(differentAccountStack, 'DummyTopic', {
-      topicName: 'DummyTopic',
-    });
-    const target = new SnsPublish(differentAccountTopic, {});
-
+  test.each([
+    ['account', 'arn:aws:sns:us-east-1:999999999999:topic', /Both the schedule and the topic must be in the same account./],
+    ['region', 'arn:aws:sns:eu-central-1:123456789012:topic', /Both the schedule and the topic must be in the same region./],
+  ])('throws when SNS topic is imported from different %s', (_, arn: string, expectedError: RegExp) => {
+    const importedSnsTopic = sns.Topic.fromTopicArn(stack, 'ImportedTopic', arn);
+    const target = new SnsPublish(importedSnsTopic, {});
     expect(() =>
-      new scheduler.Schedule(stack, 'Schedule', {
+      new scheduler.Schedule(stack, 'MyScheduleDummy', {
         schedule: scheduleExpression,
-        target,
-      })).toThrow(/Both the schedule and the topic must be in the same account/);
-  });
-
-  test('throws when sns topic is imported from different region', () => {
-    const differentRegionStack = new Stack(app, 'DummyStack', {
-      env: {
-        account: '123456789012',
-        region: 'us-west-2',
-      },
-    });
-
-    const differentRegionTopic = new sns.Topic(differentRegionStack, 'DummyTopic', {
-      topicName: 'DummyTopic',
-    });
-    const target = new SnsPublish(differentRegionTopic, {});
-
-    expect(() =>
-      new scheduler.Schedule(stack, 'Schedule', {
-        schedule: scheduleExpression,
-        target,
-      })).toThrow(/Both the schedule and the topic must be in the same region/);
+        target: target,
+      })).toThrow(expectedError);
   });
 
   test('throws when IAM role is imported from different account', () => {
