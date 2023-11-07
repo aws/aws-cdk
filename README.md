@@ -79,7 +79,7 @@ For a detailed walkthrough, see the [tutorial](https://docs.aws.amazon.com/cdk/l
 
 ### At a glance
 
-Install or update the [AWS CDK CLI] from npm (requires [Node.js ≥ 14.15.0](https://nodejs.org/download/release/latest-v14.x/)). We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
+Install or update the [AWS CDK CLI] from npm (requires [Node.js ≥ 14.15.0](https://nodejs.org/download/release/latest-v14.x/)). We recommend using a version in [Active LTS](https://nodejs.org/en/about/previous-releases)
 
 ```sh
 npm i -g aws-cdk
