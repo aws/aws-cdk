@@ -314,12 +314,12 @@ export class Build extends BuildBase {
   }
 
   private validateServerSdkVersion(serverSdkVersion?: string) {
-    if (!serverSdkVersion) return;
+    if (serverSdkVersion === undefined || cdk.Token.isUnresolved(serverSdkVersion)) return;
     if (!serverSdkVersion.match(/^\d+\.\d+\.\d+$/)) {
-      throw new Error(`serverSdkVersion must be in the 0.0.0 format, got ${serverSdkVersion}.`);
+      throw new Error(`serverSdkVersion must be in the 0.0.0 format, got \'${serverSdkVersion}\'.`);
     }
     if (serverSdkVersion.length > 128) {
-      throw new Error(`serverSdkVersion length must be smaller than or equal to 128, got ${serverSdkVersion}.`);
+      throw new Error(`serverSdkVersion length must be smaller than or equal to 128, got ${serverSdkVersion.length}.`);
     }
   }
 }

@@ -190,14 +190,14 @@ describe('build', () => {
         expect(() => new gamelift.Build(stack, 'BuildWithInvalidServerSdkVersion', {
           content,
           serverSdkVersion: 'invalid',
-        })).toThrow(/serverSdkVersion must be in the 0.0.0 format, got invalid./);
+        })).toThrow(/serverSdkVersion must be in the 0.0.0 format, got 'invalid'./);
       });
 
       test('with an incorrect serverSdkVersion length', () => {
         expect(() => new gamelift.Build(stack, 'BuildWithInvalidServerSdkVersion', {
           content,
           serverSdkVersion: '1'.repeat(50) + '.' + '1'.repeat(50) + '.' + '1'.repeat(50),
-        })).toThrow(/serverSdkVersion length must be smaller than or equal to 128/);
+        })).toThrow(/serverSdkVersion length must be smaller than or equal to 128, got 152./);
       });
     });
   });
