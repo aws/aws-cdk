@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.105.0](https://github.com/aws/aws-cdk/compare/v2.104.0...v2.105.0) (2023-11-07)
+
+
+### Features
+
+* **lambda:** new lambda runtime provided.al2023 ([#27856](https://github.com/aws/aws-cdk/issues/27856)) ([e66ca89](https://github.com/aws/aws-cdk/commit/e66ca89d5714cc79dc41815006cec863baf7abb0))
+
 ## [2.104.0](https://github.com/aws/aws-cdk/compare/v2.103.1...v2.104.0) (2023-11-02)
 
 
