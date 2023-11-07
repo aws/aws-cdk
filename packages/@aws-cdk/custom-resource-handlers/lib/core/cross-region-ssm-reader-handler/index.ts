@@ -1,7 +1,7 @@
 /*eslint-disable no-console*/
 /* eslint-disable import/no-extraneous-dependencies */
 import { SSM } from '@aws-sdk/client-ssm';
-import { ExportReaderCRProps, CrossRegionExports } from '../types';
+import { ExportReaderCRProps, CrossRegionExports } from 'aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/types';
 
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
   const props: ExportReaderCRProps = event.ResourceProperties.ReaderProps;
