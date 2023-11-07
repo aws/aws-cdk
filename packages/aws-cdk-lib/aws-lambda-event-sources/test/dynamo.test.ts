@@ -800,10 +800,10 @@ describe('DynamoEventSource', () => {
 
   });
 
-  test('s3ofd raise unsupport error', () => {
+  test('S3 onFailure Destination raise unsupport error', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const fn = new TestFunction(stack, 'Fn');
+    const testLambdaFunction = new TestFunction(stack, 'Fn');
 
     const table = new dynamodb.Table(stack, 'T', {
       partitionKey: {
@@ -814,16 +814,16 @@ describe('DynamoEventSource', () => {
     });
 
     const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
-    const s3ofd = new sources.S3OnFailureDestination(bucket);
+    const s3OnFailureDestination = new sources.S3OnFailureDestination(bucket);
 
     expect(() => {
       // WHEN
-      fn.addEventSource(new sources.DynamoEventSource(table, {
+      testLambdaFunction.addEventSource(new sources.DynamoEventSource(table, {
         startingPosition: lambda.StartingPosition.LATEST,
-        onFailure: s3ofd,
+        onFailure: s3OnFailureDestination,
       }));
     //THEN
-    }).toThrowError('This event source does not support S3 as on failure');
+    }).toThrowError('S3 onFailure Destination is not supported for this event source');
 
   });
 });

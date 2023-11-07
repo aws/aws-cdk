@@ -1,8 +1,8 @@
 import { TestFunction } from './test-function';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { AuthenticationMethod, SelfManagedKafkaEventSource , S3OnFailureDestination } from 'aws-cdk-lib/aws-lambda-event-sources';
-import * as lambda from 'aws-cdk-lib/aws-lambda'
-import { App, StackProps, Stack, RemovalPolicy, SecretValue }  from 'aws-cdk-lib';
+import { AuthenticationMethod, SelfManagedKafkaEventSource, S3OnFailureDestination } from 'aws-cdk-lib/aws-lambda-event-sources';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { App, StackProps, Stack, RemovalPolicy, SecretValue } from 'aws-cdk-lib';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 
@@ -10,7 +10,7 @@ export class S3OnFailureDestinationStack extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const fn = new TestFunction(this, 'F');
+    const testLambdaFunction = new TestFunction(this, 'F');
     const dummyCertString = `-----BEGIN CERTIFICATE-----
     MIIE5DCCAsygAwIBAgIRAPJdwaFaNRrytHBto0j5BA0wDQYJKoZIhvcNAQELBQAw
     cmUuiAii9R0=
@@ -20,7 +20,7 @@ export class S3OnFailureDestinationStack extends Stack {
     c8PH3PSoAaRwMMgOSA2ALJvbRz8mpg==
     -----END CERTIFICATE-----"
     `;
-    
+
     const dummyPrivateKey = `-----BEGIN ENCRYPTED PRIVATE KEY-----
     zp2mwJn2NYB7AZ7+imp0azDZb+8YG2aUCiyqb6PnnA==
     -----END ENCRYPTED PRIVATE KEY-----`;
@@ -36,8 +36,8 @@ export class S3OnFailureDestinationStack extends Stack {
         privateKey: SecretValue.unsafePlainText(dummyPrivateKey),
       },
     });
-    rootCASecret.grantRead(fn);
-    clientCertificatesSecret.grantRead(fn);
+    rootCASecret.grantRead(testLambdaFunction);
+    clientCertificatesSecret.grantRead(testLambdaFunction);
 
     const bootstrapServers = [
       'my-self-hosted-kafka-broker-1:9092',
@@ -49,7 +49,7 @@ export class S3OnFailureDestinationStack extends Stack {
       autoDeleteObjects: true,
     });
     const s3ofd = new S3OnFailureDestination(bucket);
-    fn.addEventSource(new SelfManagedKafkaEventSource({
+    testLambdaFunction.addEventSource(new SelfManagedKafkaEventSource({
       bootstrapServers,
       topic: 'my-test-topic',
       consumerGroupId: 'myTestConsumerGroup',

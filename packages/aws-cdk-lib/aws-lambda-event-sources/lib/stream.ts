@@ -1,4 +1,4 @@
-import { S3OnFailureDestination } from './s3-ofd';
+import { S3OnFailureDestination } from './s3-onfailuire-destination';
 import * as lambda from '../../aws-lambda';
 import { Duration } from '../../core';
 
@@ -109,7 +109,7 @@ export interface StreamEventSourceProps extends BaseStreamEventSourceProps {
    *
    * @default - discarded records are ignored
    */
-  readonly onFailure?: lambda.IEventSourceDlq;
+  readonly onFailure?: lambda.IEventSourceOnFailureDestination;
 
   /**
    * Add filter criteria option
@@ -130,8 +130,8 @@ export abstract class StreamEventSource implements lambda.IEventSource {
 
   protected enrichMappingOptions(options: lambda.EventSourceMappingOptions): lambda.EventSourceMappingOptions {
     // check if this event source support S3 as OnFailure, currently only kakfa source are supported
-    if (this.props.onFailure instanceof S3OnFailureDestination && !options.supportS3OFD) {
-      throw new Error('This event source does not support S3 as on failure');
+    if (this.props.onFailure instanceof S3OnFailureDestination && !options.supportS3OnFailureDestination) {
+      throw new Error('S3 onFailure Destination is not supported for this event source');
     }
     return {
       ...options,

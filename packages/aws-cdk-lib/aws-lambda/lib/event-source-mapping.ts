@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
-import { IEventSourceDlq } from './dlq';
 import { IFunction } from './function-base';
 import { CfnEventSourceMapping } from './lambda.generated';
+import { IEventSourceOnFailureDestination } from './on-failure-destination';
 import * as cdk from '../../core';
 
 /**
@@ -112,7 +112,7 @@ export interface EventSourceMappingOptions {
    *
    * @default discarded records are ignored
    */
-  readonly onFailure?: IEventSourceDlq;
+  readonly onFailure?: IEventSourceOnFailureDestination;
 
   /**
    * Set to false to disable the event source upon creation.
@@ -252,11 +252,11 @@ export interface EventSourceMappingOptions {
   readonly filters?: Array<{[key: string]: any}>
 
   /**
-   * Check if support S3 on failure destination(ODF). Currently only MSK and kafka event support S3 ODF
+   * Check if support S3 onfailure destination(ODF). Currently only MSK and self managed kafka event support S3 ODF
    *
    * @default false
    */
-  readonly supportS3OFD?: boolean;
+  readonly supportS3OnFailureDestination?: boolean;
 }
 
 /**

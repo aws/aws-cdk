@@ -44,7 +44,7 @@ export interface KafkaEventSourceProps extends BaseStreamEventSourceProps {
    *
    * @default - discarded records are ignored
    */
-  readonly onFailure?: lambda.IEventSourceDlq;
+  readonly onFailure?: lambda.IEventSourceOnFailureDestination;
 }
 
 /**
@@ -152,7 +152,7 @@ export class ManagedKafkaEventSource extends StreamEventSource {
         kafkaTopic: this.innerProps.topic,
         kafkaConsumerGroupId: this.innerProps.consumerGroupId,
         onFailure: this.innerProps.onFailure,
-        supportS3OFD: true,
+        supportS3OnFailureDestination: true,
       }),
     );
 
@@ -243,7 +243,7 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
         startingPosition: this.innerProps.startingPosition,
         sourceAccessConfigurations: this.sourceAccessConfigurations(),
         onFailure: this.innerProps.onFailure,
-        supportS3OFD: true,
+        supportS3OnFailureDestination: true,
       }),
     );
 

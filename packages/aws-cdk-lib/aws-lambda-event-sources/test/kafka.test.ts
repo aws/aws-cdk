@@ -173,22 +173,22 @@ describe('KafkaEventSource', () => {
       });
     });
 
-    test('with s3 ofd', () => {
+    test('with s3 onfailure destination', () => {
       // GIVEN
       const stack = new cdk.Stack();
-      const fn = new TestFunction(stack, 'Fn');
+      const testLambdaFunction = new TestFunction(stack, 'Fn');
       const clusterArn = 'some-arn';
       const kafkaTopic = 'some-topic';
       const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
-      const s3ofd = new sources.S3OnFailureDestination(bucket);
+      const s3OnFailureDestination = new sources.S3OnFailureDestination(bucket);
 
       // WHEN
-      fn.addEventSource(new sources.ManagedKafkaEventSource(
+      testLambdaFunction.addEventSource(new sources.ManagedKafkaEventSource(
         {
           clusterArn,
           topic: kafkaTopic,
           startingPosition: lambda.StartingPosition.TRIM_HORIZON,
-          onFailure: s3ofd,
+          onFailure: s3OnFailureDestination,
         }));
 
       // THEN
@@ -332,23 +332,23 @@ describe('KafkaEventSource', () => {
 
     });
 
-    test('with s3 ofd', () => {
+    test('with s3 onFailure Destination', () => {
       // GIVEN
       const stack = new cdk.Stack();
-      const fn = new TestFunction(stack, 'Fn');
+      const testLambdaFunction = new TestFunction(stack, 'Fn');
       const kafkaTopic = 'some-topic';
       const bootstrapServers = ['kafka-broker:9092'];
       const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
-      const s3ofd = new sources.S3OnFailureDestination(bucket);
+      const s3OnFailureDestination = new sources.S3OnFailureDestination(bucket);
 
       // WHEN
-      fn.addEventSource(new sources.SelfManagedKafkaEventSource(
+      testLambdaFunction.addEventSource(new sources.SelfManagedKafkaEventSource(
         {
           bootstrapServers: bootstrapServers,
           topic: kafkaTopic,
           secret: new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' }),
           startingPosition: lambda.StartingPosition.TRIM_HORIZON,
-          onFailure: s3ofd,
+          onFailure: s3OnFailureDestination,
         }));
 
       // THEN

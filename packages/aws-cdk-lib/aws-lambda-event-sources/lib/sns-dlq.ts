@@ -1,4 +1,4 @@
-import { DlqDestinationConfig, IEventSourceDlq, IEventSourceMapping, IFunction } from '../../aws-lambda';
+import { OnFailureDestinationConfig, IEventSourceDlq, IEventSourceMapping, IFunction } from '../../aws-lambda';
 import * as sns from '../../aws-sns';
 
 /**
@@ -11,7 +11,7 @@ export class SnsDlq implements IEventSourceDlq {
   /**
    * Returns a destination configuration for the DLQ
    */
-  public bind(_target: IEventSourceMapping, targetHandler: IFunction): DlqDestinationConfig {
+  public bind(_target: IEventSourceMapping, targetHandler: IFunction): OnFailureDestinationConfig {
     this.topic.grantPublish(targetHandler);
 
     return {
