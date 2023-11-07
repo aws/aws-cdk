@@ -83,6 +83,14 @@ new appconfig.HostedConfiguration(this, 'MyHostedConfiguration', {
 });
 ```
 
+You can define hosted configuration content using any of the following ConfigurationContent methods:
+
+* `fromFile` - Defines the hosted configuration content from a file.
+* `fromInlineText` - Defines the hosted configuration from inline text.
+* `fromInlineJson` - Defines the hosted configuration from inline JSON.
+* `fromInlineYaml` - Defines the hosted configuration from inline YAML.
+* `fromInline` - Defines the hosted configuration from user-specified content types.
+
 AWS AppConfig supports the following types of configuration profiles.
 
 * **Feature flag**: Use a feature flag configuration to turn on new features that require a timely deployment, such as a product launch or announcement.
