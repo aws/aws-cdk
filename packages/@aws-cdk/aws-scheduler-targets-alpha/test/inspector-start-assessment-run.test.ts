@@ -24,7 +24,7 @@ describe('schedule target', () => {
   });
 
   test('creates IAM role and IAM policy for inspector assessment template in the same account', () => {
-    const inspectorTarget = new InspectorStartAssessmentRun(template, {});
+    const inspectorTarget = new InspectorStartAssessmentRun(template);
 
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
@@ -114,7 +114,7 @@ describe('schedule target', () => {
   });
 
   test('reuses IAM role and IAM policy for two schedules from the same account', () => {
-    const inspectorTarget = new InspectorStartAssessmentRun(template, { });
+    const inspectorTarget = new InspectorStartAssessmentRun(template);
 
     new Schedule(stack, 'MyScheduleDummy1', {
       schedule: expr,
@@ -170,7 +170,7 @@ describe('schedule target', () => {
       rulesPackageArns: ['arn:aws:inspector:us-east-1:316112463485:rulespackage/0-gEjTy7T7'],
     });
 
-    const inspectorTarget = new InspectorStartAssessmentRun(anotherTemplate, {});
+    const inspectorTarget = new InspectorStartAssessmentRun(anotherTemplate);
 
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
@@ -305,7 +305,7 @@ describe('schedule target', () => {
       rulesPackageArns: ['arn:aws:inspector:us-east-1:316112463485:rulespackage/0-gEjTy7T7'],
     });
 
-    const inspectorTarget = new InspectorStartAssessmentRun(anotherTemplate, {});
+    const inspectorTarget = new InspectorStartAssessmentRun(anotherTemplate);
 
     expect(() =>
       new Schedule(stack, 'MyScheduleDummy', {
@@ -328,7 +328,7 @@ describe('schedule target', () => {
       rulesPackageArns: ['arn:aws:inspector:us-east-1:316112463485:rulespackage/0-gEjTy7T7'],
     });
 
-    const inspectorTarget = new InspectorStartAssessmentRun(anotherTemplate, {});
+    const inspectorTarget = new InspectorStartAssessmentRun(anotherTemplate);
 
     expect(() =>
       new Schedule(stack, 'MyScheduleDummy', {

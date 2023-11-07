@@ -21,7 +21,7 @@ const assessmentTemplate = new CfnAssessmentTemplate(stack, 'MyAssessmentTemplat
 
 new scheduler.Schedule(stack, 'Schedule', {
   schedule: scheduler.ScheduleExpression.rate(cdk.Duration.minutes(10)),
-  target: new InspectorStartAssessmentRun(assessmentTemplate, {}),
+  target: new InspectorStartAssessmentRun(assessmentTemplate),
 });
 
 const integrationTest = new IntegTest(app, 'integrationtest-inspector-start-assessment-run', {
