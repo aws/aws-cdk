@@ -185,6 +185,19 @@ resourceLinter.add({
   },
 });
 
+resourceLinter.add({
+  code: 'resource-interface-extends-resource-ref',
+  message: 'construct interfaces of AWS resources must extend the corresponding reference interface ICfn<ResourceName> (e.g. ICfnBucket)',
+  eval: e => {
+    const resourceInterface = e.ctx.construct.interfaceType;
+    if (!resourceInterface) { return; }
+
+    const resourceRefInterfaceFqn = e.ctx.cfn.refInterfaceFqn;
+    const interfaceBase = e.ctx.sys.findInterface(resourceRefInterfaceFqn);
+    e.assert(resourceInterface.extends(interfaceBase), resourceInterface.fqn);
+  },
+});
+
 /*
 // This rule is the worst
 resourceLinter.add({
