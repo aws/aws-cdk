@@ -335,11 +335,15 @@ export interface HostedConfigurationOptions extends ConfigurationOptions {
 
   /**
    * The latest version number of the hosted configuration.
+   *
+   * @default - None.
    */
   readonly latestVersionNumber?: number;
 
   /**
    * The version label of the hosted configuration.
+   *
+   * @default - None.
    */
   readonly versionLabel?: string;
 }
@@ -352,11 +356,15 @@ export interface HostedConfigurationProps extends ConfigurationProps {
 
   /**
    * The latest version number of the hosted configuration.
+   *
+   * @default - None.
    */
   readonly latestVersionNumber?: number;
 
   /**
    * The version label of the hosted configuration.
+   *
+   * @default - None.
    */
   readonly versionLabel?: string;
 }
@@ -817,6 +825,18 @@ export abstract class ConfigurationContent {
     return {
       content,
       contentType: 'text/plain',
+    };
+  }
+
+  /**
+   * Defines the hosted configuration content as YAML from inline code.
+   *
+   * @param content The inline code that defines the configuration content
+   */
+  public static fromInlineYaml(content: string): ConfigurationContent {
+    return {
+      content,
+      contentType: 'application/x-yaml',
     };
   }
 

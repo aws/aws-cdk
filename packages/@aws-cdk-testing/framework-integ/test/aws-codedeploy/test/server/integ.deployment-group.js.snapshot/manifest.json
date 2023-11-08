@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "34.0.0",
   "artifacts": {
     "aws-cdk-codedeploy-server-dg.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-codedeploy-server-dg.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f8e6ede2e8bf4d32dc013a76bff9a6bbde55993ddf3336f77a370c1fa0073da2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/311f99f3a451f89703d918b7882c557c5685e0fc80390abc634597fa70d365da.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -261,10 +262,64 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "ASGLaunchTemplateProfileB99C522F": [
+        "ALBAEE750D2": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGLaunchTemplateProfileB99C522F",
+            "data": "ALBAEE750D2",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ALBSecurityGroup8B8624F8": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ALBSecurityGroup8B8624F8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ALBListener3B99FF85": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ALBListener3B99FF85",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ALBListenerFleetGroup008CEEE4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ALBListenerFleetGroup008CEEE4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "NLB55158F82": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NLB55158F82",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "NLBListener96C8170F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NLBListener96C8170F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "NLBListenerFleetGroupB882EC86": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NLBListenerFleetGroupB882EC86",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]

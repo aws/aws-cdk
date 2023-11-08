@@ -44,7 +44,7 @@
         "BSD-2-Clause",
         "0BSD"
       ],
-      "dontAttribute": "^@aws-cdk/|^cdk-assets$",
+      "dontAttribute": "^@aws-cdk/|^@cdklabs/|^cdk-assets$",
       "test": "bin/integ-runner --version"
     }
   },

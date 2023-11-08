@@ -43,7 +43,7 @@ class Test extends cdk.Stack {
     toys.addMethod('POST');
     toys.addMethod('PUT');
 
-    const appliances = v1.addResource('appliances:all');
+    const appliances = v1.addResource('$appliances:all');
     appliances.addMethod('GET');
 
     const books = v1.addResource('books');
