@@ -13,7 +13,7 @@ const integ = new IntegTest(app, 'WaiterProviderTest', {
   testCases: [stack],
 });
 
-integ.assertions.awsApiCall('S3', 'listObjectsV2', {
+const listObjectsCall = integ.assertions.awsApiCall('S3', 'listObjectsV2', {
   Bucket: bucket.bucketName,
   MaxKeys: 1,
 }).expect(ExpectedResult.objectLike({
@@ -21,7 +21,8 @@ integ.assertions.awsApiCall('S3', 'listObjectsV2', {
 })).waitForAssertions({
   interval: Duration.seconds(10),
   totalTimeout: Duration.minutes(3),
-}).waiterProvider?.addToRolePolicy({
+});
+listObjectsCall.waiterProvider?.addToRolePolicy({
   Effect: 'Allow',
   Action: ['s3:GetObject', 's3:ListBucket'],
   Resource: [
