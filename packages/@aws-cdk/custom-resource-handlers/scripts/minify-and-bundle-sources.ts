@@ -10,10 +10,6 @@ function recFolderStructure(fileOrDir: string) {
       recFolderStructure(path.join(fileOrDir, i));
     }
   } else {
-    // Only minify + bundle 'index.ts' files.
-    // The reason why they are called 'index.ts' is that aws-cdk-lib expects that
-    // as the file name and it is more intuitive to keep the same name rather than
-    // rename as we copy it out.
     if (['index.ts', 'index.js', 'index.py'].some(fileName => fileOrDir.includes(fileName))) {
       entryPoints.push(fileOrDir);
     }
