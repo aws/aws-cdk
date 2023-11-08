@@ -22,6 +22,7 @@ const listObjectsCall = integ.assertions.awsApiCall('S3', 'listObjectsV2', {
   interval: Duration.seconds(10),
   totalTimeout: Duration.minutes(3),
 });
+
 listObjectsCall.waiterProvider?.addToRolePolicy({
   Effect: 'Allow',
   Action: ['s3:GetObject', 's3:ListBucket'],
