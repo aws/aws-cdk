@@ -522,7 +522,8 @@ const describe = testCase.assertions.awsApiCall('StepFunctions', 'describeExecut
 });
 ```
 
-In cases where the `waitForAssertions()` is used for the `awsApiCall`, the actual API call is executed by the `waiterProvider`.
+In cases where the `waitForAssertions()` is used for the `awsApiCall`, the actual API call is executed
+by the `waiterProvider`.
 
 Same as `provider`, by default, the `AwsApiCall` construct will automatically add the correct IAM policies
 to allow the Lambda function to make the API call. It does this based on the `service`
