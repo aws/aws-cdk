@@ -519,16 +519,18 @@ the ability to add data sources and resolvers through a `IGraphqlApi` interface.
 ```ts
 declare const api: appsync.GraphqlApi;
 declare const table: dynamodb.Table;
+declare const role: iam.Role;
 const importedApi = appsync.GraphqlApi.fromGraphqlApiAttributes(this, 'IApi', {
   graphqlApiId: api.apiId,
   graphqlApiArn: api.arn,
 });
 importedApi.addDynamoDbDataSource('TableDataSource', table);
+importedApi.grantMutation(role, 'aMutation')
 ```
 
 If you don't specify `graphqlArn` in `fromXxxAttributes`, CDK will autogenerate
-the expected `arn` for the imported api, given the `apiId`. For creating data
-sources and resolvers, an `apiId` is sufficient.
+the expected `arn` for the imported api, given the `apiId`. sources, creating
+resolvers, and granting IAM permissions, an `apiId` is sufficient.
 
 ## Private APIs
 
