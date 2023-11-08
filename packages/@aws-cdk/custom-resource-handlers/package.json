@@ -33,6 +33,7 @@
     "@aws-sdk/client-kms": "^3.421.0",
     "@aws-sdk/client-lambda": "^3.421.0",
     "@aws-sdk/client-account": "^3.445.0",
+    "@smithy/util-stream": "^2.0.12",
     "@types/jest": "^29.5.5",
     "aws-sdk-client-mock": "^3.0.0",
     "aws-sdk-client-mock-jest": "^3.0.0",
