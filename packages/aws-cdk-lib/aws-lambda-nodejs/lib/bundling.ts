@@ -49,13 +49,6 @@ export interface BundlingProps extends BundlingOptions {
    * @default - BundlingFileAccess.BIND_MOUNT
    */
   readonly bundlingFileAccess?: cdk.BundlingFileAccess;
-
-  /**
-   * Whether or not the bundling process should be skipped
-   *
-   * @default - Does not skip bundling
-   */
-  readonly skip?: boolean;
 }
 
 /**
@@ -66,10 +59,12 @@ export class Bundling implements cdk.BundlingOptions {
    * esbuild bundled Lambda asset code
    */
   public static bundle(scope: IConstruct, options: BundlingProps): AssetCode {
+    const skip = !cdk.Stack.of(scope).bundlingRequired;
     return Code.fromAsset(options.projectRoot, {
       assetHash: options.assetHash,
-      assetHashType: options.assetHash ? cdk.AssetHashType.CUSTOM : cdk.AssetHashType.OUTPUT,
-      bundling: options.skip ? undefined : new Bundling(scope, options),
+      assetHashType: skip ? cdk.AssetHashType.SOURCE :
+        options.assetHash ? cdk.AssetHashType.CUSTOM : cdk.AssetHashType.OUTPUT,
+      bundling: skip ? undefined : new Bundling(scope, options),
     });
   }
 

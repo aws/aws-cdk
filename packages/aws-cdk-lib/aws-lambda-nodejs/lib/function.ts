@@ -7,7 +7,7 @@ import { BundlingOptions } from './types';
 import { callsites, findUpMultiple } from './util';
 import { Architecture } from '../../aws-lambda';
 import * as lambda from '../../aws-lambda';
-import { FeatureFlags, Stack } from '../../core';
+import { FeatureFlags } from '../../core';
 import { LAMBDA_NODEJS_USE_LATEST_RUNTIME } from '../../cx-api';
 
 /**
@@ -112,7 +112,6 @@ export class NodejsFunction extends lambda.Function {
         architecture,
         depsLockFilePath,
         projectRoot,
-        skip: !Stack.of(scope).bundlingRequired,
       }),
       handler: handler.indexOf('.') !== -1 ? `${handler}` : `index.${handler}`,
     });
