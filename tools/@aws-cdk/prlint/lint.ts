@@ -589,10 +589,6 @@ export class PullRequestLinter {
   };
 }
 
-function isPkgCfnspec(pr: GitHubPr): boolean {
-  return pr.title.indexOf('(cfnspec)') > -1;
-}
-
 function isFeature(pr: GitHubPr): boolean {
   return pr.title.startsWith('feat');
 }
@@ -619,7 +615,7 @@ function readmeChanged(files: GitHubFile[]): boolean {
 
 function featureContainsReadme(pr: GitHubPr, files: GitHubFile[]): TestResult {
   const result = new TestResult();
-  result.assessFailure(isFeature(pr) && !readmeChanged(files) && !isPkgCfnspec(pr), 'Features must contain a change to a README file.');
+  result.assessFailure(isFeature(pr) && !readmeChanged(files), 'Features must contain a change to a README file.');
   return result;
 }
 
