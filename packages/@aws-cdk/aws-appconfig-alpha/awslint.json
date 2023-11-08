@@ -1,5 +1,38 @@
 {
     "exclude": [
-        "*:*"
+        "docs-public-apis:@aws-cdk/aws-appconfig-alpha.ConfigurationSourceType.S3",
+        "docs-public-apis:@aws-cdk/aws-appconfig-alpha.ConfigurationSourceType.SSM_DOCUMENT",
+        "docs-public-apis:@aws-cdk/aws-appconfig-alpha.ConfigurationSourceType.SSM_PARAMETER",
+        "docs-public-apis:@aws-cdk/aws-appconfig-alpha.ConfigurationSourceType.SECRETS_MANAGER",
+        "docs-public-apis:@aws-cdk/aws-appconfig-alpha.ConfigurationSourceType.CODE_PIPELINE",
+        "docs-public-apis:@aws-cdk/aws-appconfig-alpha.SourceType.LAMBDA",
+        "docs-public-apis:@aws-cdk/aws-appconfig-alpha.SourceType.SQS",
+        "docs-public-apis:@aws-cdk/aws-appconfig-alpha.SourceType.SNS",
+        "docs-public-apis:@aws-cdk/aws-appconfig-alpha.SourceType.EVENTS",
+        "docs-public-apis:@aws-cdk/aws-appconfig-alpha.Platform.ARM_64",
+        "docs-public-apis:@aws-cdk/aws-appconfig-alpha.Platform.X86_64",
+        "docs-public-apis:@aws-cdk/aws-appconfig-alpha.ActionPoint.PRE_CREATE_HOSTED_CONFIGURATION_VERSION",
+        "docs-public-apis:@aws-cdk/aws-appconfig-alpha.ActionPoint.PRE_START_DEPLOYMENT",
+        "docs-public-apis:@aws-cdk/aws-appconfig-alpha.ActionPoint.ON_DEPLOYMENT_START",
+        "docs-public-apis:@aws-cdk/aws-appconfig-alpha.ActionPoint.ON_DEPLOYMENT_STEP",
+        "docs-public-apis:@aws-cdk/aws-appconfig-alpha.ActionPoint.ON_DEPLOYMENT_BAKING",
+        "docs-public-apis:@aws-cdk/aws-appconfig-alpha.ActionPoint.ON_DEPLOYMENT_COMPLETE",
+        "docs-public-apis:@aws-cdk/aws-appconfig-alpha.ActionPoint.ON_DEPLOYMENT_ROLLED_BACK",
+        "docs-public-apis:@aws-cdk/aws-appconfig-alpha.IValidator",
+        "docs-public-apis:@aws-cdk/aws-appconfig-alpha.IExtension",
+        "docs-public-apis:@aws-cdk/aws-appconfig-alpha.IEnvironment",
+        "docs-public-apis:@aws-cdk/aws-appconfig-alpha.IDeploymentStrategy",
+        "docs-public-apis:@aws-cdk/aws-appconfig-alpha.IConfiguration",
+        "docs-public-apis:@aws-cdk/aws-appconfig-alpha.IApplication",
+
+        "no-unused-type:@aws-cdk/aws-appconfig-alpha.PredefinedDeploymentStrategyId",
+        "ref-via-interface:@aws-cdk/aws-appconfig-alpha.Application.addAgentToEcs.taskDef",
+        "props-physical-name:@aws-cdk/aws-appconfig-alpha.ApplicationProps",
+        "props-physical-name:@aws-cdk/aws-appconfig-alpha.DeploymentStrategyProps",
+        "props-physical-name:@aws-cdk/aws-appconfig-alpha.EnvironmentProps",
+        "props-physical-name:@aws-cdk/aws-appconfig-alpha.ExtensionProps",
+        "events-in-interface",
+        "events-method-signature",
+        "events-generic"
     ]
 }
