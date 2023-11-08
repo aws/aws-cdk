@@ -45,7 +45,7 @@
     "esbuild": "^0.19.4"
   },
   "dependencies": {
-    "@aws-sdk/client-lambda": "^3.421.0",
+    "@aws-sdk/client-lambda": "^3.445.0",
     "@aws-sdk/client-synthetics": "^3.421.0",
     "@aws-sdk/client-ecr": "^3.421.0",
     "@aws-sdk/client-s3": "^3.421.0",
