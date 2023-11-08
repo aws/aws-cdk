@@ -18,11 +18,11 @@ export class KinesisDataFirehosePutRecord extends ScheduleTargetBase implements 
 
   protected addTargetActionToRole(schedule: ISchedule, role: IRole): void {
     if (!sameEnvDimension(this.deliveryStream.stack.region, schedule.env.region)) {
-      throw new Error(`Cannot assign firehose in region ${this.deliveryStream.stack.region} to the schedule ${Names.nodeUniqueId(schedule.node)} in region ${schedule.env.region}. Both the schedule and the firehose must be in the same region.`);
+      throw new Error(`Cannot assign the Firehose delivery stream in region ${this.deliveryStream.stack.region} to the schedule ${Names.nodeUniqueId(schedule.node)} in region ${schedule.env.region}. Both the schedule and the Firehose delivery stream must be in the same region.`);
     }
 
     if (!sameEnvDimension(this.deliveryStream.stack.account, schedule.env.account)) {
-      throw new Error(`Cannot assign firehose in account ${this.deliveryStream.stack.account} to the schedule ${Names.nodeUniqueId(schedule.node)} in account ${schedule.env.region}. Both the schedule and the firehose must be in the same account.`);
+      throw new Error(`Cannot assign the Firehose delivery stream in account ${this.deliveryStream.stack.account} to the schedule ${Names.nodeUniqueId(schedule.node)} in account ${schedule.env.region}. Both the schedule and the Firehose delivery stream must be in the same account.`);
     }
 
     if (this.props.role && !sameEnvDimension(this.props.role.env.account, this.deliveryStream.stack.account)) {

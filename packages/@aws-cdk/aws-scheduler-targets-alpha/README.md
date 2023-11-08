@@ -27,7 +27,7 @@ The following targets are supported:
 1. `targets.LambdaInvoke`: [Invoke an AWS Lambda function](#invoke-a-lambda-function))
 2. `targets.StepFunctionsStartExecution`: [Start an AWS Step Function](#start-an-aws-step-function)
 3. `targets.CodeBuildStartBuild`: [Start a CodeBuild job](#start-a-codebuild-job)
-4. `targets.KinesisDataFirehosePutRecord`: [Put records to an Amazon Kinesis Data Firehose](#put-records-to-an-amazon-kinesis-data-firehose)
+4. `targets.KinesisDataFirehosePutRecord`: [Put a record to a Kinesis Data Firehose](#put-a-record-to-a-kinesis-data-firehose)
 
 ## Invoke a Lambda function
 
@@ -123,17 +123,16 @@ new Schedule(this, 'Schedule', {
 });
 ```
 
-## Put records to an Amazon Kinesis Data Firehose
+## Put a record to a Kinesis Data Firehose
 
-Use the `KinesisDataFirehosePutRecord` target to put records to an Amazon Kinesis Data Firehose.
+Use the `KinesisDataFirehosePutRecord` target to put a record to a Kinesis Data Firehose delivery stream.
 
 The code snippet below creates an event rule with a delivery stream as a target
 called every hour by Event Bridge Scheduler with a custom payload.
 
 ```ts
-import * as kinesisfirehose from 'aws-cdk-lib/aws-kinesisfirehose';
-
-declare const deliveryStream: kinesisfirehose.CfnDeliveryStream;
+import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
+declare const deliveryStream: firehose.CfnDeliveryStream;
 
 const payload = {
   Data: "record",

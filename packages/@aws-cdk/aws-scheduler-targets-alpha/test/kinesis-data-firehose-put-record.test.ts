@@ -302,7 +302,7 @@ describe('schedule target', () => {
       new Schedule(stack, 'MyScheduleDummy', {
         schedule: expr,
         target: firehoseTarget,
-      })).toThrow(/Both the schedule and the firehose must be in the same account/);
+      })).toThrow(/Both the schedule and the Firehose delivery stream must be in the same account/);
   });
 
   test('throws when firehose is in the another stack with different region', () => {
@@ -320,7 +320,7 @@ describe('schedule target', () => {
       new Schedule(stack, 'MyScheduleDummy', {
         schedule: expr,
         target: firehoseTarget,
-      })).toThrow(/Both the schedule and the firehose must be in the same region/);
+      })).toThrow(/Both the schedule and the Firehose delivery stream must be in the same region/);
   });
 
   test('throws when IAM role is imported from different account', () => {
