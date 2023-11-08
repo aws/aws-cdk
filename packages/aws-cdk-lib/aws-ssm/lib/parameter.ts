@@ -33,7 +33,7 @@ export interface IParameter extends IResource {
   readonly parameterType: string;
 
   /**
-   * Grants read (DescribeParameter, GetParameter, GetParameterHistory) permissions on the SSM Parameter.
+   * Grants read (DescribeParameter, GetParameters, GetParameter, GetParameterHistory) permissions on the SSM Parameter.
    *
    * @param grantee the role to be granted read-only access to the parameter.
    */
