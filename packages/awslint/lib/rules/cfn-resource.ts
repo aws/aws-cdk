@@ -68,6 +68,7 @@ export class CfnResourceReflection {
   public readonly fullname: string; // AWS::S3::Bucket
   public readonly namespace: string; // AWS::S3
   public readonly basename: string; // Bucket
+  public readonly refInterfaceFqn: string; // ICfnBucket
   public readonly attributeNames: string[]; // (normalized) bucketArn, bucketName, queueUrl
   public readonly doc: string; // link to CloudFormation docs
 
@@ -75,6 +76,8 @@ export class CfnResourceReflection {
     this.classType = cls;
 
     this.basename = cls.name.slice('Cfn'.length);
+
+    this.refInterfaceFqn = `${this.typePrefix(cls)}.I${cls.name}`;
 
     const fullname = cls.docs.customTag('cloudformationResource');
     if (!fullname) {
@@ -91,6 +94,10 @@ export class CfnResourceReflection {
       .map(p => this.attributePropertyNameFromCfnName(p));
 
     this.doc = cls.docs.docs.see || '';
+  }
+
+  private typePrefix(classType: reflect.ClassType) {
+    return classType.assembly.name + (classType.namespace ? `.${classType.namespace}` : '');
   }
 
   private attributePropertyNameFromCfnName(name: string): string {
