@@ -470,6 +470,7 @@ All notable changes to this project will be documented in this file. See [standa
 * **ec2:** support using ssm parameter to resolve AMI ID at instance launch time ([#26273](https://github.com/aws/aws-cdk/issues/26273)) ([2462b0b](https://github.com/aws/aws-cdk/commit/2462b0b0155a5cf5382b1780e8a8cd40d1206a95))
 * **eks:** support eks with k8s 1.27 ([#25897](https://github.com/aws/aws-cdk/issues/25897)) ([fdd3309](https://github.com/aws/aws-cdk/commit/fdd3309ee98a8dcd9542d8ffec9defcdbdcd28af))
 * **lambda-event-sources:** added filters support to kafka sources ([#26366](https://github.com/aws/aws-cdk/issues/26366)) ([c575dde](https://github.com/aws/aws-cdk/commit/c575dded26834bd55618813b74046d2f380d1940)), closes [#26348](https://github.com/aws/aws-cdk/issues/26348)
+* **lambda:** Add Lambda runtime Python 3.11, `PYTHON_3_11` ([#26248](https://github.com/aws/aws-cdk/issues/26248)) ([e2b7791](https://github.com/aws/aws-cdk/commit/e2b7791072e187f441eb72a5f6d0462748ec5112))
 * **opensearch:** opensearch 2.7 engine version ([#26313](https://github.com/aws/aws-cdk/issues/26313)) ([fb580b5](https://github.com/aws/aws-cdk/commit/fb580b56541a63485fc1ef24cd75e5f9ae18f940))
 * **opensearchservice:** support for MultiAZWithStandBy (under feature flag) ([#26082](https://github.com/aws/aws-cdk/issues/26082)) ([6c75581](https://github.com/aws/aws-cdk/commit/6c75581ae2b9537fa9d1d724b837fe81ae22d345)), closes [#26026](https://github.com/aws/aws-cdk/issues/26026)
 * **rds:** support Aurora MySQL engine v. 2.11.3 ([#26419](https://github.com/aws/aws-cdk/issues/26419)) ([c646644](https://github.com/aws/aws-cdk/commit/c6466448e53f2f486ec40ff176b8623257e4b3f8)), closes [#26407](https://github.com/aws/aws-cdk/issues/26407)
@@ -841,7 +842,7 @@ CHANGES:
 
 ### Features
 
-* **aws-lambda:** Add AWS Lambda runtime python3.10 ([08fb3cd](https://github.com/aws/aws-cdk/commit/08fb3cdab13e2e2a68ceadb36702a108c429e674))
+* **aws-lambda:** Add AWS Lambda runtime Python 3.10, `PYTHON_3_10` ([08fb3cd](https://github.com/aws/aws-cdk/commit/08fb3cdab13e2e2a68ceadb36702a108c429e674))
 
 ## [2.74.0](https://github.com/aws/aws-cdk/compare/v2.73.0...v2.74.0) (2023-04-13)
 
