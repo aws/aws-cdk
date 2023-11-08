@@ -24,6 +24,15 @@
     "Name": "awsappconfigconfiguration-MyAppConfig-HostedEnvFromJson-140D2DDD"
    }
   },
+  "MyAppConfigHostedEnvFromYaml82D3D1B2": {
+   "Type": "AWS::AppConfig::Environment",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "Name": "awsappconfigconfiguration-MyAppConfig-HostedEnvFromYaml-BB2C802A"
+   }
+  },
   "MyAppConfigParameterEnvD769FB19": {
    "Type": "AWS::AppConfig::Environment",
    "Properties": {
@@ -172,6 +181,51 @@
     },
     "EnvironmentId": {
      "Ref": "MyAppConfigHostedEnvFromJson9E6E36C4"
+    }
+   }
+  },
+  "MyHostedConfigFromYamlConfigurationProfile7C77A435": {
+   "Type": "AWS::AppConfig::ConfigurationProfile",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "LocationUri": "hosted",
+    "Name": "awsappconfigconfiguration-MyHostedConfigFromYaml-87E9786A"
+   }
+  },
+  "MyHostedConfigFromYaml13C5BE35": {
+   "Type": "AWS::AppConfig::HostedConfigurationVersion",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "ConfigurationProfileId": {
+     "Ref": "MyHostedConfigFromYamlConfigurationProfile7C77A435"
+    },
+    "Content": "This is the configuration content",
+    "ContentType": "application/x-yaml"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "MyHostedConfigFromYamlDeploymentFE9624CBE5FC6": {
+   "Type": "AWS::AppConfig::Deployment",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "ConfigurationProfileId": {
+     "Ref": "MyHostedConfigFromYamlConfigurationProfile7C77A435"
+    },
+    "ConfigurationVersion": {
+     "Ref": "MyHostedConfigFromYaml13C5BE35"
+    },
+    "DeploymentStrategyId": {
+     "Ref": "MyDeployStrategy062CAEA2"
+    },
+    "EnvironmentId": {
+     "Ref": "MyAppConfigHostedEnvFromYaml82D3D1B2"
     }
    }
   },

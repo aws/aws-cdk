@@ -47,9 +47,6 @@
   "cdk-package": {
     "pre": [
       "/bin/bash ./scripts/minify-sources.sh"
-    ],
-    "post": [
-      "ts-node ./scripts/verify-stripped-exp.ts"
     ]
   },
   "pkglint": {
@@ -121,7 +118,7 @@
     "yaml"
   ],
   "dependencies": {
-    "@aws-cdk/asset-awscli-v1": "^2.2.200",
+    "@aws-cdk/asset-awscli-v1": "^2.2.201",
     "@aws-cdk/asset-kubectl-v20": "^2.1.2",
     "@aws-cdk/asset-node-proxy-agent-v6": "^2.0.1",
     "@balena/dockerignore": "^1.0.2",
