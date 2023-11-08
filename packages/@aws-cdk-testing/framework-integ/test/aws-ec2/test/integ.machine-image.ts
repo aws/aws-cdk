@@ -30,7 +30,7 @@ export class TestCase extends Stack {
       vpc,
     });
 
-    new ec2.Instance(this, 'al2023 with minimal AMI', {
+    new ec2.Instance(this, 'al2023WithMinimalAMI', {
       instanceType,
       machineImage: new ec2.AmazonLinuxImage({
         generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023,
@@ -40,14 +40,15 @@ export class TestCase extends Stack {
     });
 
     const parameter = new ssm.CfnParameter(this, 'AmiParameter', {
-      name: 'myAmi',
+      name: 'IntegTestAmi',
       type: 'String',
       dataType: 'aws:ec2:image',
       value: 'ami-06ca3ca175f37dd66',
     });
 
     const machineImage = ec2.MachineImage.resolveSsmParameterAtLaunch(parameter.ref);
-    new ec2.Instance(this, 'ssm-resolve-instance', { instanceType, machineImage, vpc });
+    const ssmInstanceTest = new ec2.Instance(this, 'ssm-resolve-instance', { instanceType, machineImage, vpc });
+    ssmInstanceTest.node.addDependency(parameter);
 
     const launchTemplate = new ec2.LaunchTemplate(this, 'LT', { instanceType, machineImage });
     new asg.AutoScalingGroup(this, 'ASG', {

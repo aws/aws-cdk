@@ -708,10 +708,10 @@
     "al2023InstanceRoleECC2D6DD"
    ]
   },
-  "al2023withminimalAMIInstanceSecurityGroupB3378C30": {
+  "al2023WithMinimalAMIInstanceSecurityGroupBD2FA3C4": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "integ-ec2-machine-image-test/al2023 with minimal AMI/InstanceSecurityGroup",
+    "GroupDescription": "integ-ec2-machine-image-test/al2023WithMinimalAMI/InstanceSecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -722,7 +722,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-machine-image-test/al2023 with minimal AMI"
+      "Value": "integ-ec2-machine-image-test/al2023WithMinimalAMI"
      }
     ],
     "VpcId": {
@@ -730,7 +730,7 @@
     }
    }
   },
-  "al2023withminimalAMIInstanceRole6BA4B2B7": {
+  "al2023WithMinimalAMIInstanceRoleD28B1D5E": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -748,27 +748,27 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-machine-image-test/al2023 with minimal AMI"
+      "Value": "integ-ec2-machine-image-test/al2023WithMinimalAMI"
      }
     ]
    }
   },
-  "al2023withminimalAMIInstanceProfile9DC9359F": {
+  "al2023WithMinimalAMIInstanceProfile3DC008CC": {
    "Type": "AWS::IAM::InstanceProfile",
    "Properties": {
     "Roles": [
      {
-      "Ref": "al2023withminimalAMIInstanceRole6BA4B2B7"
+      "Ref": "al2023WithMinimalAMIInstanceRoleD28B1D5E"
      }
     ]
    }
   },
-  "al2023withminimalAMIF0D18F9E": {
+  "al2023WithMinimalAMI03A043A1": {
    "Type": "AWS::EC2::Instance",
    "Properties": {
     "AvailabilityZone": "test-region-1a",
     "IamInstanceProfile": {
-     "Ref": "al2023withminimalAMIInstanceProfile9DC9359F"
+     "Ref": "al2023WithMinimalAMIInstanceProfile3DC008CC"
     },
     "ImageId": {
      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amiminimalkernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
@@ -777,7 +777,7 @@
     "SecurityGroupIds": [
      {
       "Fn::GetAtt": [
-       "al2023withminimalAMIInstanceSecurityGroupB3378C30",
+       "al2023WithMinimalAMIInstanceSecurityGroupBD2FA3C4",
        "GroupId"
       ]
      }
@@ -788,7 +788,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-machine-image-test/al2023 with minimal AMI"
+      "Value": "integ-ec2-machine-image-test/al2023WithMinimalAMI"
      }
     ],
     "UserData": {
@@ -796,14 +796,14 @@
     }
    },
    "DependsOn": [
-    "al2023withminimalAMIInstanceRole6BA4B2B7"
+    "al2023WithMinimalAMIInstanceRoleD28B1D5E"
    ]
   },
   "AmiParameter": {
    "Type": "AWS::SSM::Parameter",
    "Properties": {
     "DataType": "aws:ec2:image",
-    "Name": "myAmi",
+    "Name": "IntegTestAmi",
     "Type": "String",
     "Value": "ami-06ca3ca175f37dd66"
    }
@@ -828,7 +828,10 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   }
+   },
+   "DependsOn": [
+    "AmiParameter"
+   ]
   },
   "ssmresolveinstanceInstanceRoleCC771AEF": {
    "Type": "AWS::IAM::Role",
@@ -851,7 +854,10 @@
       "Value": "integ-ec2-machine-image-test/ssm-resolve-instance"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "AmiParameter"
+   ]
   },
   "ssmresolveinstanceInstanceProfileAD70EB72": {
    "Type": "AWS::IAM::InstanceProfile",
@@ -861,7 +867,10 @@
       "Ref": "ssmresolveinstanceInstanceRoleCC771AEF"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "AmiParameter"
+   ]
   },
   "ssmresolveinstanceDC2C8573": {
    "Type": "AWS::EC2::Instance",
@@ -904,6 +913,7 @@
     }
    },
    "DependsOn": [
+    "AmiParameter",
     "ssmresolveinstanceInstanceRoleCC771AEF"
    ]
   },

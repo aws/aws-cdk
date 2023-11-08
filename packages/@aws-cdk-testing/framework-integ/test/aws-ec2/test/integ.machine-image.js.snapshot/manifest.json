@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d898789343437c2eb73edab3927044683b15ba7ce606b73961dcbfe73604deea.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b002645f95f6a2b0670b702b8ebd2f5e504cadb0469d1de92f091adf7f3c1855.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -292,28 +292,28 @@
             "data": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
-        "/integ-ec2-machine-image-test/al2023 with minimal AMI/InstanceSecurityGroup/Resource": [
+        "/integ-ec2-machine-image-test/al2023WithMinimalAMI/InstanceSecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "al2023withminimalAMIInstanceSecurityGroupB3378C30"
+            "data": "al2023WithMinimalAMIInstanceSecurityGroupBD2FA3C4"
           }
         ],
-        "/integ-ec2-machine-image-test/al2023 with minimal AMI/InstanceRole/Resource": [
+        "/integ-ec2-machine-image-test/al2023WithMinimalAMI/InstanceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "al2023withminimalAMIInstanceRole6BA4B2B7"
+            "data": "al2023WithMinimalAMIInstanceRoleD28B1D5E"
           }
         ],
-        "/integ-ec2-machine-image-test/al2023 with minimal AMI/InstanceProfile": [
+        "/integ-ec2-machine-image-test/al2023WithMinimalAMI/InstanceProfile": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "al2023withminimalAMIInstanceProfile9DC9359F"
+            "data": "al2023WithMinimalAMIInstanceProfile3DC008CC"
           }
         ],
-        "/integ-ec2-machine-image-test/al2023 with minimal AMI/Resource": [
+        "/integ-ec2-machine-image-test/al2023WithMinimalAMI/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "al2023withminimalAMIF0D18F9E"
+            "data": "al2023WithMinimalAMI03A043A1"
           }
         ],
         "/integ-ec2-machine-image-test/SsmParameterValue:--aws--service--ami-amazon-linux-latest--al2023-ami-minimal-kernel-6.1-x86_64:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
@@ -349,10 +349,7 @@
         "/integ-ec2-machine-image-test/ssm-resolve-instance/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ssmresolveinstanceDC2C8573",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ssmresolveinstanceDC2C8573"
           }
         ],
         "/integ-ec2-machine-image-test/LT/Resource": [
