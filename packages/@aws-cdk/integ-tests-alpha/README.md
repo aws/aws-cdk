@@ -534,8 +534,6 @@ example the S3 `listObjectsV2` api. In these cases it is possible to add the cor
 by accessing the `waiterProvider` object.
 
 ```ts
-declare const app: App;
-declare const stack: Stack;
 declare const integ: IntegTest;
 
 const apiCall = integ.assertions.awsApiCall('S3', 'listObjectsV2', {
