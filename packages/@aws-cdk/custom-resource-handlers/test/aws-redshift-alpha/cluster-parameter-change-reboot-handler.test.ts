@@ -13,7 +13,7 @@ jest.mock('@aws-sdk/client-redshift', () => {
 
 jest.setTimeout(35_000);
 
-import { handler } from '../lib/cluster-parameter-change-reboot-handler';
+import { handler } from '../../lib/aws-redshift-alpha/cluster-parameter-change-reboot-handler';
 
 describe('cluster-parameter-change-reboot-handler', () => {
 
