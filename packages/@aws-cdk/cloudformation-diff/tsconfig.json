@@ -20,8 +20,5 @@
         "experimentalDecorators": true
     },
     "include": ["**/*.ts" ],
-    "exclude": ["node_modules"],
-    "references": [
-        { "path": "../cfnspec" }
-    ]
+    "exclude": ["node_modules"]
 }

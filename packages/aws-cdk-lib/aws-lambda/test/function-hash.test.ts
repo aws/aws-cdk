@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { resourceSpecification } from '@aws-cdk/cfnspec';
+import { loadAwsServiceSpec } from '@aws-cdk/aws-service-spec';
 import { Template } from '../../assertions';
 import * as ssm from '../../aws-ssm';
 import { App, CfnOutput, CfnResource, Stack } from '../../core';
@@ -437,12 +437,12 @@ describe('function hash', () => {
       expect(calculateFunctionHash(fn1)).toEqual(original);
     });
 
-    test('all CFN properties are classified', () => {
-      const spec = resourceSpecification('AWS::Lambda::Function');
-      expect(spec.Properties).toBeDefined();
-      const expected = Object.keys(spec.Properties!).sort();
+    test('all CFN properties are classified', async () => {
+      const db = await loadAwsServiceSpec();
+      const spec = db.lookup('resource', 'cloudFormationType', 'equals', 'AWS::Lambda::Function').only();
+      const expected = Object.keys(spec.properties).sort();
       const actual = Object.keys(VERSION_LOCKED).sort();
-      expect(actual).toEqual(expected);
+      expect(expected).toEqual(actual);
     });
   });
 });

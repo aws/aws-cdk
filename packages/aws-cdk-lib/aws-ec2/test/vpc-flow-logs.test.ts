@@ -77,6 +77,32 @@ describe('vpc flow logs', () => {
     });
 
   });
+  test('with kinesis data firehose as the destination, allows use of existing resources', () => {
+    const stack = getTestStack();
+
+    const deliveryStreamArn = Stack.of(stack).formatArn({
+      resource: 'deliverystream',
+      region: '',
+      service: 'firehose',
+      account: '',
+      resourceName: 'testdeliverystream',
+    });
+    new FlowLog(stack, 'FlowLogs', {
+      resourceType: FlowLogResourceType.fromNetworkInterfaceId('eni-123456'),
+      destination: FlowLogDestination.toKinesisDataFirehoseDestination(
+        deliveryStreamArn,
+      ),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::FlowLog', {
+      DestinationOptions: Match.absent(),
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::FlowLog', {
+      LogDestinationType: 'kinesis-data-firehose',
+    });
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 0);
+  });
 
   test('with flowLogName, adds Name tag with the name', () => {
     const stack = getTestStack();

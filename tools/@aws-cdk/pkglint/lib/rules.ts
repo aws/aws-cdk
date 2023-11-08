@@ -1075,7 +1075,6 @@ export class MustDependonCdkByPointVersions extends ValidationRule {
     const expectedVersion = require(path.join(monoRepoRoot(), 'package.json')).version; // eslint-disable-line @typescript-eslint/no-require-imports
     const ignore = [
       '@aws-cdk/cloudformation-diff',
-      '@aws-cdk/cfnspec',
       '@aws-cdk/cx-api',
       '@aws-cdk/cloud-assembly-schema',
       '@aws-cdk/region-info',
@@ -1258,11 +1257,6 @@ export class PkgLintAsScript extends ValidationRule {
   public readonly name = 'package-info/scripts/pkglint';
 
   public validate(pkg: PackageJson): void {
-    if (pkg.packageName === '@aws-cdk/cfn2ts') {
-      // cfn2ts uses pkglint as a real dependency, and it can't be both.
-      return;
-    }
-
     const script = 'pkglint -f';
 
     expectDevDependency(this.name, pkg, '@aws-cdk/pkglint', `${PKGLINT_VERSION}`); // eslint-disable-line @typescript-eslint/no-require-imports
@@ -1414,18 +1408,6 @@ export class AwsLint extends ValidationRule {
     }
 
     expectJSON(this.name, pkg, 'scripts.awslint', 'cdk-awslint');
-  }
-}
-
-export class Cfn2Ts extends ValidationRule {
-  public readonly name = 'cfn2ts';
-
-  public validate(pkg: PackageJson) {
-    if (!isJSII(pkg) || !isAWS(pkg)) {
-      return expectJSON(this.name, pkg, 'scripts.cfn2ts', undefined);
-    }
-
-    expectJSON(this.name, pkg, 'scripts.cfn2ts', 'cfn2ts');
   }
 }
 
@@ -1692,7 +1674,6 @@ export class UbergenPackageVisibility extends ValidationRule {
   // The ONLY (non-alpha) packages that should be published for v2.
   // These include dependencies of the CDK CLI (aws-cdk).
   private readonly v2PublicPackages = [
-    '@aws-cdk/cfnspec',
     '@aws-cdk/cloud-assembly-schema',
     '@aws-cdk/cloudformation-diff',
     '@aws-cdk/cx-api',
@@ -1859,7 +1840,6 @@ function shouldUseCDKBuildTools(pkg: PackageJson) {
   const exclude = [
     '@aws-cdk/cdk-build-tools',
     '@aws-cdk/script-tests',
-    '@aws-cdk/cfn2ts',
     'awslint',
   ];
 

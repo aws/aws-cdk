@@ -434,6 +434,39 @@ describe('configuration', () => {
     });
   });
 
+  test('default configuration from inline yaml', () => {
+    const stack = new cdk.Stack();
+    const app = new Application(stack, 'MyAppConfig');
+    new HostedConfiguration(stack, 'MyConfiguration', {
+      deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
+        rolloutStrategy: RolloutStrategy.linear({
+          growthFactor: 15,
+          deploymentDuration: cdk.Duration.minutes(30),
+        }),
+      }),
+      application: app,
+      content: ConfigurationContent.fromInlineYaml('This should be of content type application/x-yaml'),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::ConfigurationProfile', {
+      Name: 'MyConfiguration',
+      ApplicationId: {
+        Ref: 'MyAppConfigB4B63E75',
+      },
+      LocationUri: 'hosted',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::HostedConfigurationVersion', {
+      ApplicationId: {
+        Ref: 'MyAppConfigB4B63E75',
+      },
+      ConfigurationProfileId: {
+        Ref: 'MyConfigurationConfigurationProfileEE0ECA85',
+      },
+      Content: 'This should be of content type application/x-yaml',
+      ContentType: 'application/x-yaml',
+    });
+  });
+
   test('configuration profile with name', () => {
     const stack = new cdk.Stack();
     const app = new Application(stack, 'MyAppConfig');
