@@ -10,7 +10,7 @@ import { WaiterStateMachineOptions } from './waiter-state-machine';
 export interface IApiCall extends IConstruct {
   /**
    * Access the AssertionsProvider. This can be used to add additional IAM policies
-   * to the the provider role policy.
+   * to the provider role policy.
    *
    * @example
    * declare const apiCall: AwsApiCall;
@@ -25,7 +25,7 @@ export interface IApiCall extends IConstruct {
   /**
    * Access the AssertionsProvider for the waiter state machine.
    * This can be used to add additional IAM policies
-   * to the the provider role policy.
+   * to the provider role policy.
    *
    * @example
    * declare const apiCall: AwsApiCall;
