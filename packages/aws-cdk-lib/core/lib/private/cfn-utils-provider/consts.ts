@@ -1,4 +1,4 @@
-// Shared definition with @aws-cdk/custom-resource-handlers/
+// Shared definition with packages/@aws-cdk/custom-resource-handlers/lib/core/cfn-utils-provider/index.ts
 /**
  * Supported resource type.
  *
