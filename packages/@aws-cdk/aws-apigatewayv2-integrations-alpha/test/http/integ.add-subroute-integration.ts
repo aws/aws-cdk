@@ -51,6 +51,7 @@ httpApi.addRoutes({
   integration: referencedLambdaHandlerIntegration,
 });
 
+// Integ Test Assertions
 const integ = new IntegTest(app, 'Integ', { testCases: [stack] });
 
 integ.assertions.httpApiCall(httpApi.apiEndpoint + '/firstroute').expect(ExpectedResult.objectLike({
@@ -72,5 +73,3 @@ integ.assertions.httpApiCall(httpApi.apiEndpoint + '/secondroute/subroute').expe
   status: 200,
   body: 'success - hit this referenced lambda!',
 }));
-
-app.synth();
