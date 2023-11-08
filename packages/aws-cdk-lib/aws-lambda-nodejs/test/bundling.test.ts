@@ -952,6 +952,34 @@ test('bundling with NODEJS_LATEST warns when any dependencies are external', () 
   );
 });
 
+test('Do not build docker image when skipping bundling', () => {
+  Bundling.bundle(stack, {
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: Runtime.NODEJS_LATEST,
+    architecture: Architecture.X86_64,
+    forceDockerBundling: true,
+    skip: true,
+  });
+
+  expect(DockerImage.fromBuild).not.toHaveBeenCalled();
+});
+
+test('Build docker image when bundling is not skipped', () => {
+  Bundling.bundle(stack, {
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: Runtime.NODEJS_LATEST,
+    architecture: Architecture.X86_64,
+    forceDockerBundling: true,
+    skip: false,
+  });
+
+  expect(DockerImage.fromBuild).toHaveBeenCalled();
+});
+
 function findParentTsConfigPath(dir: string, depth: number = 1, limit: number = 5): string {
   const target = path.join(dir, 'tsconfig.json');
   if (fs.existsSync(target)) {

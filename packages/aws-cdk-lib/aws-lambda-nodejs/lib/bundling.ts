@@ -49,6 +49,13 @@ export interface BundlingProps extends BundlingOptions {
    * @default - BundlingFileAccess.BIND_MOUNT
    */
   readonly bundlingFileAccess?: cdk.BundlingFileAccess;
+
+  /**
+   * Whether or not the bundling process should be skipped
+   *
+   * @default - Does not skip bundling
+   */
+  readonly skip?: boolean;
 }
 
 /**
@@ -62,7 +69,7 @@ export class Bundling implements cdk.BundlingOptions {
     return Code.fromAsset(options.projectRoot, {
       assetHash: options.assetHash,
       assetHashType: options.assetHash ? cdk.AssetHashType.CUSTOM : cdk.AssetHashType.OUTPUT,
-      bundling: new Bundling(scope, options),
+      bundling: options.skip ? undefined : new Bundling(scope, options),
     });
   }
 
