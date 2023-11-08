@@ -1,5 +1,7 @@
+// Shared definition with @aws-cdk/custom-resource-handlers/
 /**
  * Supported resource type.
+ *
  */
 export enum CfnUtilsResourceType {
   /**
