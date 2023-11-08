@@ -457,6 +457,30 @@
    ]
   }
  },
+ "Outputs": {
+  "ExportsOutputFnGetAttApiF70053CDApiIdF185726B": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ApiF70053CD",
+     "ApiId"
+    ]
+   },
+   "Export": {
+    "Name": "aws-appsync-integ:ExportsOutputFnGetAttApiF70053CDApiIdF185726B"
+   }
+  },
+  "ExportsOutputFnGetAttApiF70053CDGraphQLUrl63BE288A": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ApiF70053CD",
+     "GraphQLUrl"
+    ]
+   },
+   "Export": {
+    "Name": "aws-appsync-integ:ExportsOutputFnGetAttApiF70053CDGraphQLUrl63BE288A"
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

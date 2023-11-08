@@ -1,3 +1,4 @@
+/// !cdk-integ *
 import { join } from 'path';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
 import { AttributeType, BillingMode, Table } from 'aws-cdk-lib/aws-dynamodb';
@@ -102,6 +103,31 @@ new Function(stack, 'testQuery', {
   role: lambdaIAM,
 });
 new Function(stack, 'testFail', {
+  code: Code.fromAsset(join(__dirname, 'verify/iam-query')),
+  handler: 'iam-query.handler',
+  runtime: STANDARD_NODEJS_RUNTIME,
+  environment: { APPSYNC_ENDPOINT: api.graphqlUrl },
+});
+
+const otherStack = new Stack(app, 'aws-appsync-import-integ');
+const importedApi = GraphqlApi.fromGraphqlApiAttributes(otherStack, 'Api', {
+  graphqlApiId: `${api.apiId}`,
+});
+
+const otherLambdaIAM = new Role(otherStack, 'LambdaIAM', { assumedBy: new ServicePrincipal('lambda.amazonaws.com') });
+
+importedApi.grant(otherLambdaIAM, IamResource.custom('types/Query/fields/getTests'), 'appsync:graphql');
+importedApi.grant(otherLambdaIAM, IamResource.ofType('test'), 'appsync:GraphQL');
+importedApi.grantMutation(otherLambdaIAM, 'addTest');
+
+new Function(otherStack, 'testQuery', {
+  code: Code.fromAsset(join(__dirname, 'verify/iam-query')),
+  handler: 'iam-query.handler',
+  runtime: STANDARD_NODEJS_RUNTIME,
+  environment: { APPSYNC_ENDPOINT: api.graphqlUrl },
+  role: otherLambdaIAM,
+});
+new Function(otherStack, 'testFail', {
   code: Code.fromAsset(join(__dirname, 'verify/iam-query')),
   handler: 'iam-query.handler',
   runtime: STANDARD_NODEJS_RUNTIME,

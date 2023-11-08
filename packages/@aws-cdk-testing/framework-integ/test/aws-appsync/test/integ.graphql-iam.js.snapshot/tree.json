@@ -793,6 +793,32 @@
               "version": "0.0.0"
             }
           },
+          "Exports": {
+            "id": "Exports",
+            "path": "aws-appsync-integ/Exports",
+            "children": {
+              "Output{\"Fn::GetAtt\":[\"ApiF70053CD\",\"ApiId\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"ApiF70053CD\",\"ApiId\"]}",
+                "path": "aws-appsync-integ/Exports/Output{\"Fn::GetAtt\":[\"ApiF70053CD\",\"ApiId\"]}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Fn::GetAtt\":[\"ApiF70053CD\",\"GraphQLUrl\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"ApiF70053CD\",\"GraphQLUrl\"]}",
+                "path": "aws-appsync-integ/Exports/Output{\"Fn::GetAtt\":[\"ApiF70053CD\",\"GraphQLUrl\"]}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "aws-appsync-integ/BootstrapVersion",
@@ -804,6 +830,396 @@
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "aws-appsync-integ/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "aws-appsync-import-integ": {
+        "id": "aws-appsync-import-integ",
+        "path": "aws-appsync-import-integ",
+        "children": {
+          "Api": {
+            "id": "Api",
+            "path": "aws-appsync-import-integ/Api",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.GraphqlApiBase",
+              "version": "0.0.0"
+            }
+          },
+          "LambdaIAM": {
+            "id": "LambdaIAM",
+            "path": "aws-appsync-import-integ/LambdaIAM",
+            "children": {
+              "ImportLambdaIAM": {
+                "id": "ImportLambdaIAM",
+                "path": "aws-appsync-import-integ/LambdaIAM/ImportLambdaIAM",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appsync-import-integ/LambdaIAM/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "lambda.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "aws-appsync-import-integ/LambdaIAM/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-appsync-import-integ/LambdaIAM/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "appsync:graphql",
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":appsync:",
+                                    {
+                                      "Ref": "AWS::Region"
+                                    },
+                                    ":",
+                                    {
+                                      "Ref": "AWS::AccountId"
+                                    },
+                                    ":apis/",
+                                    {
+                                      "Fn::ImportValue": "aws-appsync-integ:ExportsOutputFnGetAttApiF70053CDApiIdF185726B"
+                                    },
+                                    "/types/Query/fields/getTests"
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "Action": "appsync:GraphQL",
+                              "Effect": "Allow",
+                              "Resource": [
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":appsync:",
+                                      {
+                                        "Ref": "AWS::Region"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":apis/",
+                                      {
+                                        "Fn::ImportValue": "aws-appsync-integ:ExportsOutputFnGetAttApiF70053CDApiIdF185726B"
+                                      },
+                                      "/types/Mutation/fields/addTest"
+                                    ]
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":appsync:",
+                                      {
+                                        "Ref": "AWS::Region"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":apis/",
+                                      {
+                                        "Fn::ImportValue": "aws-appsync-integ:ExportsOutputFnGetAttApiF70053CDApiIdF185726B"
+                                      },
+                                      "/types/test/*"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "LambdaIAMDefaultPolicy96DEA124",
+                        "roles": [
+                          {
+                            "Ref": "LambdaIAM687B49AF"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "0.0.0"
+            }
+          },
+          "testQuery": {
+            "id": "testQuery",
+            "path": "aws-appsync-import-integ/testQuery",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "aws-appsync-import-integ/testQuery/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "aws-appsync-import-integ/testQuery/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "aws-appsync-import-integ/testQuery/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appsync-import-integ/testQuery/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "f38244b9028d22d4e265a5b466bdba928d93b5a4ac2b4bbf583309b3f027f044.zip"
+                    },
+                    "environment": {
+                      "variables": {
+                        "APPSYNC_ENDPOINT": {
+                          "Fn::ImportValue": "aws-appsync-integ:ExportsOutputFnGetAttApiF70053CDGraphQLUrl63BE288A"
+                        }
+                      }
+                    },
+                    "handler": "iam-query.handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "LambdaIAM687B49AF",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs18.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "testFail": {
+            "id": "testFail",
+            "path": "aws-appsync-import-integ/testFail",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "aws-appsync-import-integ/testFail/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-appsync-import-integ/testFail/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-appsync-import-integ/testFail/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "aws-appsync-import-integ/testFail/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "aws-appsync-import-integ/testFail/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "aws-appsync-import-integ/testFail/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appsync-import-integ/testFail/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "f38244b9028d22d4e265a5b466bdba928d93b5a4ac2b4bbf583309b3f027f044.zip"
+                    },
+                    "environment": {
+                      "variables": {
+                        "APPSYNC_ENDPOINT": {
+                          "Fn::ImportValue": "aws-appsync-integ:ExportsOutputFnGetAttApiF70053CDGraphQLUrl63BE288A"
+                        }
+                      }
+                    },
+                    "handler": "iam-query.handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "testFailServiceRole9FF22F85",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs18.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-appsync-import-integ/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-appsync-import-integ/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
