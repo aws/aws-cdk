@@ -829,6 +829,18 @@ export abstract class ConfigurationContent {
   }
 
   /**
+   * Defines the hosted configuration content as YAML from inline code.
+   *
+   * @param content The inline code that defines the configuration content
+   */
+  public static fromInlineYaml(content: string): ConfigurationContent {
+    return {
+      content,
+      contentType: 'application/x-yaml',
+    };
+  }
+
+  /**
    * The configuration content.
    */
   public abstract readonly content: string;
