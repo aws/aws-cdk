@@ -139,7 +139,7 @@ describe('Kinesis data streams', () => {
   test('sets account for imported stream env by fromStreamAttributes', () => {
     const stack = new Stack();
     const imported = Stream.fromStreamAttributes(stack, 'Imported', {
-      streamArn: 'arn:aws:sns:us-west-2:999999999999:stream/imported-stream',
+      streamArn: 'arn:aws:kinesis:us-west-2:999999999999:stream/imported-stream',
     });
 
     expect(imported.env.account).toEqual('999999999999');
@@ -148,7 +148,7 @@ describe('Kinesis data streams', () => {
   test('sets region for imported stream env by fromStreamAttributes', () => {
     const stack = new Stack();
     const imported = Stream.fromStreamAttributes(stack, 'Imported', {
-      streamArn: 'arn:aws:sns:us-west-2:999999999999:stream/imported-stream',
+      streamArn: 'arn:aws:kinesis:us-west-2:999999999999:stream/imported-stream',
     });
 
     expect(imported.env.region).toEqual('us-west-2');
@@ -156,14 +156,14 @@ describe('Kinesis data streams', () => {
 
   test('sets account for imported stream env by fromStreamArn', () => {
     const stack = new Stack();
-    const imported = Stream.fromStreamArn(stack, 'Imported', 'arn:aws:sns:us-west-2:999999999999:stream/imported-stream');
+    const imported = Stream.fromStreamArn(stack, 'Imported', 'arn:aws:kinesis:us-west-2:999999999999:stream/imported-stream');
 
     expect(imported.env.account).toEqual('999999999999');
   });
 
   test('sets region for imported stream env by fromStreamArn', () => {
     const stack = new Stack();
-    const imported = Stream.fromStreamArn(stack, 'Imported', 'arn:aws:sns:us-west-2:123456789012:stream/imported-stream');
+    const imported = Stream.fromStreamArn(stack, 'Imported', 'arn:aws:kinesis:us-west-2:123456789012:stream/imported-stream');
 
     expect(imported.env.region).toEqual('us-west-2');
   });
