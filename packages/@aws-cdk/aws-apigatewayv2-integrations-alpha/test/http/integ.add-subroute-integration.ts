@@ -65,7 +65,7 @@ httpApi.addRoutes({
   integration: lambdaFromFunctionAttributesIntegration,
 });
 
-// Second Route tests Integration with Lambda.Function.fromFunctionName()
+// Third Route tests Integration with Lambda.Function.fromFunctionName()
 httpApi.addRoutes({
   path: '/thirdroute',
   methods: [HttpMethod.GET],
@@ -101,19 +101,12 @@ integ.assertions.httpApiCall(httpApi.apiEndpoint + '/secondroute/subroute').expe
   status: 200,
 }));
 
-// integ.assertions.httpApiCall(httpApi.apiEndpoint + '/secondroute').expect(ExpectedResult.objectLike({
-//   body: 'success - hit this referenced lambda!',
-//   status: 200,
-// }));
+integ.assertions.httpApiCall(httpApi.apiEndpoint + '/thirdroute').expect(ExpectedResult.objectLike({
+  body: 'success-hit-third-lambda',
+  status: 200,
+}));
 
-// integ.assertions.httpApiCall(httpApi.apiEndpoint + '/secondroute/subroute').expect(ExpectedResult.objectLike({
-//   body: 'success - hit this referenced lambda!',
-//   status: 200,
-// }));
-
-// integ.assertions.httpApiCall(httpApi.apiEndpoint + '/secondroute').expect(ExpectedResult.stringLikeRegexp('success - hit this referenced lambda!'));
-
-// integ.assertions.httpApiCall(httpApi.apiEndpoint + '/secondroute/').expect(ExpectedResult.objectLike({
-//   body: 'success-hit-second-lambda',
-//   status: 200,
-// }));
+integ.assertions.httpApiCall(httpApi.apiEndpoint + '/thirdroute/subroute').expect(ExpectedResult.objectLike({
+  body: 'success-hit-third-lambda',
+  status: 200,
+}));
