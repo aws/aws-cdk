@@ -362,7 +362,7 @@ export enum InstanceClass {
   MEMORY7_INTEL = 'memory7-intel',
 
   /**
-   * Memory optimized instances based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation w/ sustained 3.9GHz turbo frequency
+   * Memory optimized instances based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation, with sustained 3.9GHz turbo frequency
    */
   R7IZ = 'r7iz',
 
