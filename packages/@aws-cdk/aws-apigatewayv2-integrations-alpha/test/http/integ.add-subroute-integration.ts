@@ -9,23 +9,37 @@ const stack = new Stack(app, 'integ-lambda-add-subroute-integration');
 
 const httpApi = new HttpApi(stack, 'test-apigwv2-add-subroute-integration');
 
-const lambdaHandler = new lambda.Function(stack, 'AlwaysSuccess - FirstRoute', {
+// Regular Lambda Function
+const lambdaHandler = new lambda.Function(stack, 'first-lambda-function', {
   runtime: lambda.Runtime.NODEJS_18_X,
   handler: 'index.handler',
-  code: new lambda.InlineCode('exports.handler = async function(event, context) { return { statusCode: 200, body: \'success - hit this lambda\' }; };'),
+  code: new lambda.InlineCode('exports.handler = async function(event, context) { return { statusCode: 200, body: \'success-hit-first-lambda\' }; };'),
 });
-
-const secondLambdaHandler = new lambda.Function(stack, 'AlwaysSuccess - SecondRoute', {
-  runtime: lambda.Runtime.NODEJS_18_X,
-  handler: 'index.handler',
-  code: new lambda.InlineCode('exports.handler = async function(event, context) { return { statusCode: 200, body: \'success - hit this referneced lambda!\' }; };'),
-});
-const referencedLambdaFunction = lambda.Function.fromFunctionArn(stack, 'Referenced', secondLambdaHandler.functionArn);
-
 const lambdaHandlerIntegration = new HttpLambdaIntegration('my-lambda-integration', lambdaHandler);
-const referencedLambdaHandlerIntegration = new HttpLambdaIntegration('my-referenced-lambda-integration', referencedLambdaFunction);
 
-// First Route tests regular Lambda Function Integration
+// Lambda created with Function.fromFunctionAttributes()
+const secondLambdaHandler = new lambda.Function(stack, 'second-lambda-function', {
+  runtime: lambda.Runtime.NODEJS_18_X,
+  handler: 'index.handler',
+  code: new lambda.InlineCode('exports.handler = async function(event, context) { return { statusCode: 200, body: \'success-hit-second-lambda\' }; };'),
+});
+const lambdaFromFunctionAttributes = lambda.Function.fromFunctionAttributes(stack, 'Referenced-Lambda-Attributes', {
+  functionArn: secondLambdaHandler.functionArn,
+  sameEnvironment: true,
+});
+const lambdaFromFunctionAttributesIntegration = new HttpLambdaIntegration('my-referenced-lambda-integration', lambdaFromFunctionAttributes);
+
+// Lambda created with Function.fromFunctionName()
+const thirdLambdaName = 'third-lambda-function';
+new lambda.Function(stack, thirdLambdaName, {
+  runtime: lambda.Runtime.NODEJS_18_X,
+  handler: 'index.handler',
+  code: new lambda.InlineCode('exports.handler = async function(event, context) { return { statusCode: 200, body: \'success-hit-third-lambda\' }; };'),
+});
+const lambdaFromFunctionName = lambda.Function.fromFunctionName(stack, 'Referenced-Lambda-Name', thirdLambdaName);
+const lambdaFromFunctionNameIntegration = new HttpLambdaIntegration('my-referenced-lambda-integration', lambdaFromFunctionName);
+
+// First Route tests Integration with regular Lambda Function
 httpApi.addRoutes({
   path: '/firstroute',
   methods: [HttpMethod.GET],
@@ -38,38 +52,68 @@ httpApi.addRoutes({
   integration: lambdaHandlerIntegration,
 });
 
-// Second Route tests Referenced Lambda Function Integration
+// Second Route tests Integration with Lambda.Function.fromFunctionAttributes()
 httpApi.addRoutes({
   path: '/secondroute',
   methods: [HttpMethod.GET],
-  integration: referencedLambdaHandlerIntegration,
+  integration: lambdaFromFunctionAttributesIntegration,
 });
 
 httpApi.addRoutes({
   path: '/secondroute/subroute',
   methods: [HttpMethod.GET],
-  integration: referencedLambdaHandlerIntegration,
+  integration: lambdaFromFunctionAttributesIntegration,
+});
+
+// Second Route tests Integration with Lambda.Function.fromFunctionName()
+httpApi.addRoutes({
+  path: '/thirdroute',
+  methods: [HttpMethod.GET],
+  integration: lambdaFromFunctionNameIntegration,
+});
+
+httpApi.addRoutes({
+  path: '/thirdroute/subroute',
+  methods: [HttpMethod.GET],
+  integration: lambdaFromFunctionNameIntegration,
 });
 
 // Integ Test Assertions
 const integ = new IntegTest(app, 'Integ', { testCases: [stack] });
 
 integ.assertions.httpApiCall(httpApi.apiEndpoint + '/firstroute').expect(ExpectedResult.objectLike({
+  body: 'success-hit-first-lambda',
   status: 200,
-  body: 'success - hit this lambda',
 }));
 
 integ.assertions.httpApiCall(httpApi.apiEndpoint + '/firstroute/subroute').expect(ExpectedResult.objectLike({
+  body: 'success-hit-first-lambda',
   status: 200,
-  body: 'success - hit this lambda',
 }));
 
 integ.assertions.httpApiCall(httpApi.apiEndpoint + '/secondroute').expect(ExpectedResult.objectLike({
+  body: 'success-hit-second-lambda',
   status: 200,
-  body: 'success - hit this referenced lambda!',
 }));
 
 integ.assertions.httpApiCall(httpApi.apiEndpoint + '/secondroute/subroute').expect(ExpectedResult.objectLike({
+  body: 'success-hit-second-lambda',
   status: 200,
-  body: 'success - hit this referenced lambda!',
 }));
+
+// integ.assertions.httpApiCall(httpApi.apiEndpoint + '/secondroute').expect(ExpectedResult.objectLike({
+//   body: 'success - hit this referenced lambda!',
+//   status: 200,
+// }));
+
+// integ.assertions.httpApiCall(httpApi.apiEndpoint + '/secondroute/subroute').expect(ExpectedResult.objectLike({
+//   body: 'success - hit this referenced lambda!',
+//   status: 200,
+// }));
+
+// integ.assertions.httpApiCall(httpApi.apiEndpoint + '/secondroute').expect(ExpectedResult.stringLikeRegexp('success - hit this referenced lambda!'));
+
+// integ.assertions.httpApiCall(httpApi.apiEndpoint + '/secondroute/').expect(ExpectedResult.objectLike({
+//   body: 'success-hit-second-lambda',
+//   status: 200,
+// }));
