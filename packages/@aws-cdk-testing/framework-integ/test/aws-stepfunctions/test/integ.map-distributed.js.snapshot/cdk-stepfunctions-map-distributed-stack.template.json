@@ -1,0 +1,79 @@
+{
+ "Resources": {
+  "StateMachineRoleB840431D": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "StateMachine2E01A3A5": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": "{\"StartAt\":\"My-Map-State\",\"States\":{\"My-Map-State\":{\"Type\":\"Map\",\"End\":true,\"Parameters\":{\"foo\":\"foo\",\"bar.$\":\"$.bar\"},\"ItemsPath\":\"$.inputForMap\",\"ItemProcessor\":{\"ProcessorConfig\":{\"Mode\":\"DISTRIBUTED\",\"ExecutionType\":\"STANDARD\"},\"StartAt\":\"Pass State\",\"States\":{\"Pass State\":{\"Type\":\"Pass\",\"End\":true}}},\"MaxConcurrency\":1}},\"TimeoutSeconds\":30}",
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "StateMachineRoleB840431D",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "StateMachineRoleB840431D"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "StateMachineARN": {
+   "Value": {
+    "Ref": "StateMachine2E01A3A5"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
