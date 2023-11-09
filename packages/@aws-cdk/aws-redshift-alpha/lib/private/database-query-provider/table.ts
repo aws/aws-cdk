@@ -11,18 +11,19 @@ export async function handler(props: TableAndClusterProps, event: AWSLambda.Clou
   const tableColumns = props.tableColumns;
   const tableAndClusterProps = props;
   const useColumnIds = props.useColumnIds;
+  let tableName = tableNamePrefix + tableNameSuffix;
 
   if (event.RequestType === 'Create') {
-    const tableName = await createTable(tableNamePrefix, tableNameSuffix, tableColumns, tableAndClusterProps);
+    tableName = await createTable(tableNamePrefix, tableNameSuffix, tableColumns, tableAndClusterProps);
     return {
       PhysicalResourceId: makePhysicalId(tableName, tableAndClusterProps, event.RequestId),
       Data: { TableName: tableName },
     };
   } else if (event.RequestType === 'Delete') {
-    await dropTable(tableNamePrefix + tableNameSuffix, tableAndClusterProps);
+    await dropTable(tableName, tableAndClusterProps);
     return;
   } else if (event.RequestType === 'Update') {
-    const tableName = await updateTable(
+    tableName = await updateTable(
       event.OldResourceProperties?.Data?.TableName ?? event.PhysicalResourceId,
       tableNamePrefix,
       tableNameSuffix,
