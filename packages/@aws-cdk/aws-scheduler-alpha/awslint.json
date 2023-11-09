@@ -1,5 +1,23 @@
 {
-    "exclude": [
-        "*:*"
-    ]
+  "exclude": [
+    "construct-ctor-props-optional:@aws-cdk/aws-scheduler-alpha.Group",
+    "props-physical-name:@aws-cdk/aws-scheduler-alpha.GroupProps",
+    "from-method:@aws-cdk/aws-scheduler-alpha.Schedule",
+    "attribute-tag:@aws-cdk/aws-scheduler-alpha.Schedule.scheduleArn",
+    "attribute-tag:@aws-cdk/aws-scheduler-alpha.Schedule.scheduleName",
+    "docs-public-apis:@aws-cdk/aws-scheduler-alpha.ContextAttribute.name",
+    "docs-public-apis:@aws-cdk/aws-scheduler-alpha.Group",
+    "docs-public-apis:@aws-cdk/aws-scheduler-alpha.GroupProps",
+    "docs-public-apis:@aws-cdk/aws-scheduler-alpha.IGroup",
+    "props-default-doc:@aws-cdk/aws-scheduler-alpha.ScheduleProps.targetOverrides",
+    "props-default-doc:@aws-cdk/aws-scheduler-alpha.ScheduleTargetConfig.deadLetterConfig",
+    "props-default-doc:@aws-cdk/aws-scheduler-alpha.ScheduleTargetConfig.ecsParameters",
+    "props-default-doc:@aws-cdk/aws-scheduler-alpha.ScheduleTargetConfig.eventBridgeParameters",
+    "props-default-doc:@aws-cdk/aws-scheduler-alpha.ScheduleTargetConfig.input",
+    "props-default-doc:@aws-cdk/aws-scheduler-alpha.ScheduleTargetConfig.kinesisParameters",
+    "props-default-doc:@aws-cdk/aws-scheduler-alpha.ScheduleTargetConfig.retryPolicy",
+    "props-default-doc:@aws-cdk/aws-scheduler-alpha.ScheduleTargetConfig.sageMakerPipelineParameters",
+    "props-default-doc:@aws-cdk/aws-scheduler-alpha.ScheduleTargetConfig.sqsParameters",
+    "docs-public-apis:@aws-cdk/aws-scheduler-alpha.ScheduleTargetProps"
+  ]
 }
