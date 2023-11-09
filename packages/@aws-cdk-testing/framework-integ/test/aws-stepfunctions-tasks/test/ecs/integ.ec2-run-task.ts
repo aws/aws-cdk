@@ -66,7 +66,7 @@ new cdk.CfnOutput(stack, 'stateMachineArn', {
   value: sm.stateMachineArn,
 });
 
-new IntegTest(app, 'EmrCreateClusterTest', {
+new IntegTest(app, 'SfnTasksEcsEc2RunTaskTest', {
   testCases: [stack],
 });
 

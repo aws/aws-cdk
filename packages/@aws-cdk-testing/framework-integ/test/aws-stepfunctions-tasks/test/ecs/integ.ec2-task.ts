@@ -63,7 +63,7 @@ new sfn.StateMachine(stack, 'StateMachine', {
   definition,
 });
 
-new IntegTest(app, 'EmrCreateClusterTest', {
+new IntegTest(app, 'SfnTasksEcsEc2TaskTest', {
   testCases: [stack],
 });
 
