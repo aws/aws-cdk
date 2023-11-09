@@ -17,9 +17,9 @@ const stack = new cdk.Stack(app, 'AwsSchedulerTargetsSnsPublish');
 
 const message = 'Hello, Scheduler!';
 
-const topic = new sns.Topic(stack, 'Topic', {});
+const topic = new sns.Topic(stack, 'Topic');
 
-const queue = new sqs.Queue(stack, 'Queue', {});
+const queue = new sqs.Queue(stack, 'Queue');
 topic.addSubscription(new subscriptions.SqsSubscription(queue, { rawMessageDelivery: true }));
 
 new schedule.Schedule(stack, 'Schedule', {

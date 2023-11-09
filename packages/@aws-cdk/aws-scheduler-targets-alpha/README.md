@@ -133,7 +133,7 @@ It's called every hour by Amazon Event Bridge Scheduler with custom payload.
 ```ts
 import * as sns from 'aws-cdk-lib/aws-sns';
 
-const topic = new sns.Topic(this, 'Topic', {});
+const topic = new sns.Topic(this, 'Topic');
 
 const payload = {
   message: 'Hello scheduler!',
