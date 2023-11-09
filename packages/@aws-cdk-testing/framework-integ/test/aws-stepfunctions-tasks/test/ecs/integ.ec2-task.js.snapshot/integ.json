@@ -1,14 +1,12 @@
 {
   "version": "34.0.0",
   "testCases": {
-    "integ.ec2-task": {
+    "EmrCreateClusterTest/DefaultTest": {
       "stacks": [
         "aws-ecs-integ2"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "EmrCreateClusterTest/DefaultTest/DeployAssert",
+      "assertionStackName": "EmrCreateClusterTestDefaultTestDeployAssert697DC891"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

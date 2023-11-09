@@ -1921,7 +1921,7 @@
                       "Fn::Join": [
                         "",
                         [
-                          "{\"StartAt\":\"Start\",\"States\":{\"Start\":{\"Type\":\"Pass\",\"Result\":{\"SomeKey\":\"Result\"},\"Next\":\"Run\"},\"Run\":{\"End\":true,\"Parameters\":{\"Cluster\":\"",
+                          "{\"StartAt\":\"Start\",\"States\":{\"Start\":{\"Type\":\"Pass\",\"Result\":{\"SomeKey\":\"SomeValue\"},\"Next\":\"Run\"},\"Run\":{\"End\":true,\"Parameters\":{\"Cluster\":\"",
                           {
                             "Fn::GetAtt": [
                               "FargateCluster7CCD5F93",
@@ -1978,6 +1978,60 @@
         },
         "constructInfo": {
           "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "EmrCreateClusterTest": {
+        "id": "EmrCreateClusterTest",
+        "path": "EmrCreateClusterTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "EmrCreateClusterTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "EmrCreateClusterTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "EmrCreateClusterTest/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "EmrCreateClusterTest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "EmrCreateClusterTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
           "version": "0.0.0"
         }
       },

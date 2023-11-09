@@ -1070,117 +1070,231 @@
       {
        "Action": "ecs:RunTask",
        "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Fn::Select": [
-            1,
-            {
-             "Fn::Split": [
-              ":",
-              {
-               "Ref": "TaskDef54694570"
-              }
-             ]
-            }
-           ]
-          },
-          ":",
-          {
-           "Fn::Select": [
-            2,
-            {
-             "Fn::Split": [
-              ":",
-              {
-               "Ref": "TaskDef54694570"
-              }
-             ]
-            }
-           ]
-          },
-          ":",
-          {
-           "Fn::Select": [
-            3,
-            {
-             "Fn::Split": [
-              ":",
-              {
-               "Ref": "TaskDef54694570"
-              }
-             ]
-            }
-           ]
-          },
-          ":",
-          {
-           "Fn::Select": [
-            4,
-            {
-             "Fn::Split": [
-              ":",
-              {
-               "Ref": "TaskDef54694570"
-              }
-             ]
-            }
-           ]
-          },
-          ":",
-          {
-           "Fn::Select": [
-            0,
-            {
-             "Fn::Split": [
-              "/",
-              {
-               "Fn::Select": [
-                5,
-                {
-                 "Fn::Split": [
-                  ":",
-                  {
-                   "Ref": "TaskDef54694570"
-                  }
-                 ]
-                }
-               ]
-              }
-             ]
-            }
-           ]
-          },
-          "/",
-          {
-           "Fn::Select": [
-            1,
-            {
-             "Fn::Split": [
-              "/",
-              {
-               "Fn::Select": [
-                5,
-                {
-                 "Fn::Split": [
-                  ":",
-                  {
-                   "Ref": "TaskDef54694570"
-                  }
-                 ]
-                }
-               ]
-              }
-             ]
-            }
-           ]
-          }
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Fn::Select": [
+             1,
+             {
+              "Fn::Split": [
+               ":",
+               {
+                "Ref": "TaskDef54694570"
+               }
+              ]
+             }
+            ]
+           },
+           ":",
+           {
+            "Fn::Select": [
+             2,
+             {
+              "Fn::Split": [
+               ":",
+               {
+                "Ref": "TaskDef54694570"
+               }
+              ]
+             }
+            ]
+           },
+           ":",
+           {
+            "Fn::Select": [
+             3,
+             {
+              "Fn::Split": [
+               ":",
+               {
+                "Ref": "TaskDef54694570"
+               }
+              ]
+             }
+            ]
+           },
+           ":",
+           {
+            "Fn::Select": [
+             4,
+             {
+              "Fn::Split": [
+               ":",
+               {
+                "Ref": "TaskDef54694570"
+               }
+              ]
+             }
+            ]
+           },
+           ":",
+           {
+            "Fn::Select": [
+             0,
+             {
+              "Fn::Split": [
+               "/",
+               {
+                "Fn::Select": [
+                 5,
+                 {
+                  "Fn::Split": [
+                   ":",
+                   {
+                    "Ref": "TaskDef54694570"
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           },
+           "/",
+           {
+            "Fn::Select": [
+             1,
+             {
+              "Fn::Split": [
+               "/",
+               {
+                "Fn::Select": [
+                 5,
+                 {
+                  "Fn::Split": [
+                   ":",
+                   {
+                    "Ref": "TaskDef54694570"
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           },
+           ":*"
+          ]
          ]
-        ]
-       }
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Fn::Select": [
+             1,
+             {
+              "Fn::Split": [
+               ":",
+               {
+                "Ref": "TaskDef54694570"
+               }
+              ]
+             }
+            ]
+           },
+           ":",
+           {
+            "Fn::Select": [
+             2,
+             {
+              "Fn::Split": [
+               ":",
+               {
+                "Ref": "TaskDef54694570"
+               }
+              ]
+             }
+            ]
+           },
+           ":",
+           {
+            "Fn::Select": [
+             3,
+             {
+              "Fn::Split": [
+               ":",
+               {
+                "Ref": "TaskDef54694570"
+               }
+              ]
+             }
+            ]
+           },
+           ":",
+           {
+            "Fn::Select": [
+             4,
+             {
+              "Fn::Split": [
+               ":",
+               {
+                "Ref": "TaskDef54694570"
+               }
+              ]
+             }
+            ]
+           },
+           ":",
+           {
+            "Fn::Select": [
+             0,
+             {
+              "Fn::Split": [
+               "/",
+               {
+                "Fn::Select": [
+                 5,
+                 {
+                  "Fn::Split": [
+                   ":",
+                   {
+                    "Ref": "TaskDef54694570"
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           },
+           "/",
+           {
+            "Fn::Select": [
+             1,
+             {
+              "Fn::Split": [
+               "/",
+               {
+                "Fn::Select": [
+                 5,
+                 {
+                  "Fn::Split": [
+                   ":",
+                   {
+                    "Ref": "TaskDef54694570"
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         ]
+        }
+       ]
       },
       {
        "Action": [
@@ -1254,7 +1368,7 @@
      "Fn::Join": [
       "",
       [
-       "{\"StartAt\":\"Start\",\"States\":{\"Start\":{\"Type\":\"Pass\",\"Result\":{\"SomeKey\":\"Result\"},\"Next\":\"Run\"},\"Run\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+       "{\"StartAt\":\"Start\",\"States\":{\"Start\":{\"Type\":\"Pass\",\"Result\":{\"SomeKey\":\"SomeValue\"},\"Next\":\"Run\"},\"Run\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
        {
         "Ref": "AWS::Partition"
        },

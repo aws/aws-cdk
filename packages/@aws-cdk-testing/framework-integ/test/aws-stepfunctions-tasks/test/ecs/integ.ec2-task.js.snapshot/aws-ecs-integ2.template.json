@@ -1146,7 +1146,7 @@
      "Fn::Join": [
       "",
       [
-       "{\"StartAt\":\"Start\",\"States\":{\"Start\":{\"Type\":\"Pass\",\"Result\":{\"SomeKey\":\"Result\"},\"Next\":\"Run\"},\"Run\":{\"End\":true,\"Parameters\":{\"Cluster\":\"",
+       "{\"StartAt\":\"Start\",\"States\":{\"Start\":{\"Type\":\"Pass\",\"Result\":{\"SomeKey\":\"SomeValue\"},\"Next\":\"Run\"},\"Run\":{\"End\":true,\"Parameters\":{\"Cluster\":\"",
        {
         "Fn::GetAtt": [
          "FargateCluster7CCD5F93",
