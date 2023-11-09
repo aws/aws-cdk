@@ -1,28 +1,28 @@
 {
   "version": "34.0.0",
   "artifacts": {
-    "cdk-lambda-bucket-notifications.assets": {
+    "cdk-integ-lambda-bucket-notifications.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "cdk-lambda-bucket-notifications.assets.json",
+        "file": "cdk-integ-lambda-bucket-notifications.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "cdk-lambda-bucket-notifications": {
+    "cdk-integ-lambda-bucket-notifications": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "cdk-lambda-bucket-notifications.template.json",
+        "templateFile": "cdk-integ-lambda-bucket-notifications.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4e3bb4ed4f7346885d3bd0389ac51f007e94ec1dd3e8d440e922790fe5582578.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/76b2e39f693d6f0ad3a2af818bc19b173d3f591514eb3235967ba78f4698dda9.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "cdk-lambda-bucket-notifications.assets"
+          "cdk-integ-lambda-bucket-notifications.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,89 +31,89 @@
         }
       },
       "dependencies": [
-        "cdk-lambda-bucket-notifications.assets"
+        "cdk-integ-lambda-bucket-notifications.assets"
       ],
       "metadata": {
-        "/cdk-lambda-bucket-notifications/MyBucket/Resource": [
+        "/cdk-integ-lambda-bucket-notifications/MyBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyBucketF68F3FF0"
           }
         ],
-        "/cdk-lambda-bucket-notifications/MyBucket/Notifications/Resource": [
+        "/cdk-integ-lambda-bucket-notifications/MyBucket/Notifications/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyBucketNotifications46AC0CD2"
           }
         ],
-        "/cdk-lambda-bucket-notifications/MyBucket/AllowBucketNotificationsTocdklambdabucketnotificationsMyFunctionB04B6042": [
+        "/cdk-integ-lambda-bucket-notifications/MyBucket/AllowBucketNotificationsTocdkinteglambdabucketnotificationsMyFunctionEA6057A1": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyBucketAllowBucketNotificationsTocdklambdabucketnotificationsMyFunctionB04B6042A2015A7A"
+            "data": "MyBucketAllowBucketNotificationsTocdkinteglambdabucketnotificationsMyFunctionEA6057A1AF09DAA1"
           }
         ],
-        "/cdk-lambda-bucket-notifications/MyFunction/ServiceRole/Resource": [
+        "/cdk-integ-lambda-bucket-notifications/MyFunction/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyFunctionServiceRole3C357FF2"
           }
         ],
-        "/cdk-lambda-bucket-notifications/MyFunction/Resource": [
+        "/cdk-integ-lambda-bucket-notifications/MyFunction/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyFunction3BAA72D1"
           }
         ],
-        "/cdk-lambda-bucket-notifications/YourBucket/Resource": [
+        "/cdk-integ-lambda-bucket-notifications/YourBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "YourBucketC6A57364"
           }
         ],
-        "/cdk-lambda-bucket-notifications/YourBucket/Notifications/Resource": [
+        "/cdk-integ-lambda-bucket-notifications/YourBucket/Notifications/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "YourBucketNotifications8D39901A"
           }
         ],
-        "/cdk-lambda-bucket-notifications/YourBucket/AllowBucketNotificationsTocdklambdabucketnotificationsMyFunctionB04B6042": [
+        "/cdk-integ-lambda-bucket-notifications/YourBucket/AllowBucketNotificationsTocdkinteglambdabucketnotificationsMyFunctionEA6057A1": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "YourBucketAllowBucketNotificationsTocdklambdabucketnotificationsMyFunctionB04B60427D5C2203"
+            "data": "YourBucketAllowBucketNotificationsTocdkinteglambdabucketnotificationsMyFunctionEA6057A165D77D83"
           }
         ],
-        "/cdk-lambda-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/Resource": [
+        "/cdk-integ-lambda-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
           }
         ],
-        "/cdk-lambda-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/DefaultPolicy/Resource": [
+        "/cdk-integ-lambda-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36"
           }
         ],
-        "/cdk-lambda-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Resource": [
+        "/cdk-integ-lambda-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691"
           }
         ],
-        "/cdk-lambda-bucket-notifications/BootstrapVersion": [
+        "/cdk-integ-lambda-bucket-notifications/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/cdk-lambda-bucket-notifications/CheckBootstrapVersion": [
+        "/cdk-integ-lambda-bucket-notifications/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "cdk-lambda-bucket-notifications"
+      "displayName": "cdk-integ-lambda-bucket-notifications"
     },
     "Tree": {
       "type": "cdk:tree",

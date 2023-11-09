@@ -45,10 +45,10 @@
     "Managed": true
    },
    "DependsOn": [
-    "MyBucketAllowBucketNotificationsTocdklambdabucketnotificationsMyFunctionB04B6042A2015A7A"
+    "MyBucketAllowBucketNotificationsTocdkinteglambdabucketnotificationsMyFunctionEA6057A1AF09DAA1"
    ]
   },
-  "MyBucketAllowBucketNotificationsTocdklambdabucketnotificationsMyFunctionB04B6042A2015A7A": {
+  "MyBucketAllowBucketNotificationsTocdkinteglambdabucketnotificationsMyFunctionEA6057A1AF09DAA1": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -155,10 +155,10 @@
     "Managed": true
    },
    "DependsOn": [
-    "YourBucketAllowBucketNotificationsTocdklambdabucketnotificationsMyFunctionB04B60427D5C2203"
+    "YourBucketAllowBucketNotificationsTocdkinteglambdabucketnotificationsMyFunctionEA6057A165D77D83"
    ]
   },
-  "YourBucketAllowBucketNotificationsTocdklambdabucketnotificationsMyFunctionB04B60427D5C2203": {
+  "YourBucketAllowBucketNotificationsTocdkinteglambdabucketnotificationsMyFunctionEA6057A165D77D83": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
