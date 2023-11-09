@@ -742,7 +742,9 @@ export class Stream extends StreamBase {
       public readonly encryptionKey = attrs.encryptionKey;
     }
 
-    return new Import(scope, id);
+    return new Import(scope, id, {
+      environmentFromArn: attrs.streamArn,
+    });
   }
 
   public readonly streamArn: string;

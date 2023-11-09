@@ -292,44 +292,19 @@ describe('schedule target', () => {
     });
   });
 
-  test('throws when stream is imported from different account', () => {
-    const stack2 = new Stack(app, 'Stack2', {
-      env: {
-        region: 'us-east-1',
-        account: '234567890123',
-      },
-    });
-
-    const importedStream = kinesis.Stream.fromStreamArn(stack2, 'ImportedStream', 'arn:aws:kinesis:us-east-1:234567890123:stream/Foo');
+  test.each([
+    ['account', 'arn:aws:kinesis:us-east-1:999999999999:stream/Foo', /Both the schedule and the stream must be in the same account./],
+    ['region', 'arn:aws:kinesis:eu-central-1:123456789012:stream/Foo', /Both the schedule and the stream must be in the same region./],
+  ])('throws when Kinesis Data Stream is imported from different %s', (_, arn: string, expectedError: RegExp) => {
+    const importedStream = kinesis.Stream.fromStreamArn(stack, 'ImportedStream', arn);
     const streamTarget = new KinesisStreamPutRecord(importedStream, {
       partitionKey: 'key',
     });
-
     expect(() =>
       new Schedule(stack, 'MyScheduleDummy', {
         schedule: expr,
         target: streamTarget,
-      })).toThrow(/Both the schedule and the stream must be in the same account/);
-  });
-
-  test('throws when stream is imported from different region', () => {
-    const stack2 = new Stack(app, 'Stack2', {
-      env: {
-        region: 'us-west-2',
-        account: '123456789012',
-      },
-    });
-
-    const importedStream = kinesis.Stream.fromStreamArn(stack2, 'ImportedStream', 'arn:aws:kinesis:us-west-2:123456789012:stream/Foo');
-    const streamTarget = new KinesisStreamPutRecord(importedStream, {
-      partitionKey: 'key',
-    });
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: streamTarget,
-      })).toThrow(/Both the schedule and the stream must be in the same region/);
+      })).toThrow(expectedError);
   });
 
   test('throws when IAM role is imported from different account', () => {
