@@ -3169,7 +3169,7 @@ describe('bucket', () => {
           destination: {
             bucket: inventoryBucket,
           },
-          inventoryId: 'InvalidId&/',
+          inventoryId: 'InvalidId&123',
         },
       ],
     });
