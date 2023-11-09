@@ -2,8 +2,12 @@ import * as codecommit from 'aws-cdk-lib/aws-codecommit';
 import * as codepipeline from 'aws-cdk-lib/aws-codepipeline';
 import * as cdk from 'aws-cdk-lib';
 import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
+import { CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME } from 'aws-cdk-lib/cx-api';
 
-const app = new cdk.App();
+const defaultBranchFeatureFlag = { [CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME]: false };
+const app = new cdk.App({
+  postCliContext: defaultBranchFeatureFlag,
+});
 
 const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-codecommit');
 
