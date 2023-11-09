@@ -3174,7 +3174,7 @@ describe('bucket', () => {
       ],
     });
 
-    expect(() => Template.fromStack(stack)).toThrow(/InventoryId should not exceed 64 characters and should not contain special characters except . and -/);
+    expect(() => Template.fromStack(stack)).toThrow(/inventoryId should not exceed 64 characters and should not contain special characters except . and -, got InvalidId&123/);
   });
 
   test('Bucket with objectOwnership set to BUCKET_OWNER_ENFORCED', () => {
