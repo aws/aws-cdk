@@ -288,7 +288,7 @@ describe('export and import', () => {
   test('sets account for imported queue env by fromQueueAttributes', () => {
     const stack = new Stack();
     const imported = sqs.Queue.fromQueueAttributes(stack, 'Imported', {
-      queueArn: 'arn:aws:sns:us-west-2:999999999999:queue',
+      queueArn: 'arn:aws:sqs:us-west-2:999999999999:queue',
     });
 
     expect(imported.env.account).toEqual('999999999999');
@@ -297,7 +297,7 @@ describe('export and import', () => {
   test('sets region for imported queue env by fromQueueAttributes', () => {
     const stack = new Stack();
     const imported = sqs.Queue.fromQueueAttributes(stack, 'Imported', {
-      queueArn: 'arn:aws:sns:us-west-2:999999999999:queue',
+      queueArn: 'arn:aws:sqs:us-west-2:999999999999:queue',
     });
 
     expect(imported.env.region).toEqual('us-west-2');
@@ -305,14 +305,14 @@ describe('export and import', () => {
 
   test('sets account for imported queue env by fromQueueArn', () => {
     const stack = new Stack();
-    const imported = sqs.Queue.fromQueueArn(stack, 'Imported', 'arn:aws:sns:us-west-2:999999999999:queue');
+    const imported = sqs.Queue.fromQueueArn(stack, 'Imported', 'arn:aws:sqs:us-west-2:999999999999:queue');
 
     expect(imported.env.account).toEqual('999999999999');
   });
 
   test('sets region for imported queue env by fromQueueArn', () => {
     const stack = new Stack();
-    const imported = sqs.Queue.fromQueueArn(stack, 'Imported', 'arn:aws:sns:us-west-2:123456789012:queue');
+    const imported = sqs.Queue.fromQueueArn(stack, 'Imported', 'arn:aws:sqs:us-west-2:123456789012:queue');
 
     expect(imported.env.region).toEqual('us-west-2');
   });
