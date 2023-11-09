@@ -652,7 +652,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
+                  "fqn": "aws-cdk-lib.aws_ec2.FlowLog",
                   "version": "0.0.0"
                 }
               }
@@ -873,7 +873,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "aws-cdk-lib.aws_ec2.FlowLog",
               "version": "0.0.0"
             }
           },
