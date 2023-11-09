@@ -36,13 +36,14 @@ import { S3Table, Database, DataFormat, Schema } from '@aws-cdk/aws-glue-alpha';
 import { CfnDataLakeSettings, CfnTag, CfnTagAssociation } from 'aws-cdk-lib/aws-lakeformation';
 
 declare const stack: cdk.Stack;
+declare const accountId: string;
 
 const tagKey = 'aws';
 const tagValues = ['dev'];
 
-const database = new Database(stack, 'Database');
+const database = new Database(this, 'Database');
 
-const table = new S3Table(stack, 'Table', {
+const table = new S3Table(this, 'Table', {
   database,
   columns: [
     {
@@ -57,15 +58,15 @@ const table = new S3Table(stack, 'Table', {
   dataFormat: DataFormat.CSV,
 });
 
-const synthesizer = stack.synthesizer as cdk.DefaultStackSynthesizer;
-new CfnDataLakeSettings(stack, 'DataLakeSettings', {
+const synthesizer = this.synthesizer as cdk.DefaultStackSynthesizer;
+new CfnDataLakeSettings(this, 'DataLakeSettings', {
   admins: [
     { 
       dataLakePrincipalIdentifier: stack.formatArn({
         service: 'iam',
         resource: 'role',
         region: '',
-        account: stack.account,
+        account: accountId,
         resourceName: 'Admin',
       }),
     },
@@ -76,25 +77,25 @@ new CfnDataLakeSettings(stack, 'DataLakeSettings', {
   ],
 });
 
-const tag = new CfnTag(stack, 'Tag', {
-  catalogId: stack.account,
+const tag = new CfnTag(this, 'Tag', {
+  catalogId: accountId,
   tagKey,
   tagValues,
 });
 
 const lfTagPairProperty: CfnTagAssociation.LFTagPairProperty = {
-  catalogId: stack.account,
+  catalogId: accountId,
   tagKey,
   tagValues,
 };
 
-const tagAssociation = new CfnTagAssociation(stack, 'TagAssociation', {
+const tagAssociation = new CfnTagAssociation(this, 'TagAssociation', {
   lfTags: [lfTagPairProperty],
   resource: {
     tableWithColumns: {
       databaseName: database.databaseName,
       columnNames: ['col1', 'col2'],
-      catalogId: stack.account,
+      catalogId: accountId,
       name: table.tableName,
     }
   }
