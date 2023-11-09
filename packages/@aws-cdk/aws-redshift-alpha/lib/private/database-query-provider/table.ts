@@ -96,6 +96,7 @@ async function updateTable(
   oldResourceProperties: TableAndClusterProps,
 ): Promise<string> {
   const alterationStatements: string[] = [];
+  const newTableName = tableNamePrefix + tableNameSuffix;
 
   const oldClusterProps = oldResourceProperties;
   if (tableAndClusterProps.clusterName !== oldClusterProps.clusterName || tableAndClusterProps.databaseName !== oldClusterProps.databaseName) {
@@ -212,7 +213,7 @@ async function updateTable(
 
   const oldTableNamePrefix = oldResourceProperties.tableName.prefix;
   if (tableNamePrefix !== oldTableNamePrefix) {
-    await executeStatement(`ALTER TABLE ${tableName} RENAME TO ${tableNamePrefix + tableNameSuffix}`, tableAndClusterProps);
+    await executeStatement(`ALTER TABLE ${tableName} RENAME TO ${newTableName}`, tableAndClusterProps);
     return tableNamePrefix + tableNameSuffix;
   }
 
