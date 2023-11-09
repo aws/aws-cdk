@@ -100,7 +100,7 @@ export class ExportWriter extends Construct {
 
     const resourceType = 'Custom::CrossRegionExportWriter';
     this.provider = CRProvider.getOrCreateProvider(this, resourceType, {
-      codeDirectory: path.join(__dirname, 'cross-region-ssm-writer-handler'),
+      codeDirectory: path.join(__dirname, '..', '..', '..', '..', 'custom-resource-handlers', 'dist', 'core', 'cross-region-ssm-writer-handler'),
       runtime: CustomResourceProviderRuntime.NODEJS_18_X,
     });
 
