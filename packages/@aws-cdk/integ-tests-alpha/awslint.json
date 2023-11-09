@@ -1,5 +1,13 @@
 {
-    "exclude": [
-        "*:*"
-    ]
+  "exclude": [
+    "props-struct-name:@aws-cdk/integ-tests-alpha.IHttpApiCall",
+    "construct-ctor-props-type:@aws-cdk/integ-tests-alpha.HttpApiCall",
+    "docs-public-apis:@aws-cdk/integ-tests-alpha.HttpRequestParameters",
+    "props-default-doc:@aws-cdk/integ-tests-alpha.HttpRequestParameters.fetchOptions",
+    "props-default-doc:@aws-cdk/integ-tests-alpha.HttpResponse.body",
+    "props-default-doc:@aws-cdk/integ-tests-alpha.HttpResponse.headers",
+    "props-default-doc:@aws-cdk/integ-tests-alpha.HttpResponse.ok",
+    "props-default-doc:@aws-cdk/integ-tests-alpha.HttpResponse.status",
+    "props-default-doc:@aws-cdk/integ-tests-alpha.HttpResponse.statusText"
+  ]
 }

@@ -1,5 +1,9 @@
 {
-    "exclude": [
-        "*:*"
-    ]
+  "exclude": [
+    "docs-public-apis:@aws-cdk/aws-gamelift-alpha.OperatingSystem.AMAZON_LINUX",
+    "docs-public-apis:@aws-cdk/aws-gamelift-alpha.OperatingSystem.AMAZON_LINUX_2",
+    "docs-public-apis:@aws-cdk/aws-gamelift-alpha.OperatingSystem.WINDOWS_2012",
+    "docs-public-apis:@aws-cdk/aws-gamelift-alpha.Protocol.TCP",
+    "docs-public-apis:@aws-cdk/aws-gamelift-alpha.Protocol.UDP"
+  ]
 }
