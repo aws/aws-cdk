@@ -3,11 +3,10 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
 import * as s3n from 'aws-cdk-lib/aws-s3-notifications';
 import { STANDARD_NODEJS_RUNTIME } from '../../../config';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'lambda-bucket-notifications');
+const stack = new cdk.Stack(app, 'cdk-lambda-bucket-notifications');
 
 const bucketA = new s3.Bucket(stack, 'MyBucket', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
@@ -25,10 +24,6 @@ const bucketB = new s3.Bucket(stack, 'YourBucket', {
 
 bucketA.addObjectCreatedNotification(new s3n.LambdaDestination(fn), { suffix: '.png' });
 bucketB.addEventNotification(s3.EventType.OBJECT_REMOVED, new s3n.LambdaDestination(fn));
-
-new IntegTest(app, 'cdk-lambda-bucket-notification', {
-  testCases: [stack],
-});
 
 app.synth();
 
