@@ -28,27 +28,24 @@ For more information on the resources and properties available for this service,
 
 ### Example
 
-Using the lakeformation L1s is not always the most straight forward. Here is an example of creating a glue table and putting lakeformation tags on it. Note: this example uses deprecated constructs and overly permissive IAM roles. This example is meant to give a general idea of using the L1s; it is not production level.
+Here is an example of creating a glue table and putting lakeformation tags on it. Note: this example uses deprecated constructs and overly permissive IAM roles. This example is meant to give a general idea of using the L1s; it is not production level.
 
 ```ts
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { Table, Database, DataFormat, Schema } from '@aws-cdk/aws-glue-alpha';
+import { S3Table, Database, DataFormat, Schema } from '@aws-cdk/aws-glue-alpha';
 import { CfnDataLakeSettings, CfnTag, CfnTagAssociation } from 'aws-cdk-lib/aws-lakeformation';
 
 export class LakeFormationTaggingStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const accountId = process.env.CDK_DEFAULT_ACCOUNT!;
-    const region = process.env.CDK_DEFAULT_REGION!;
-
     const tagKey = 'aws';
     const tagValues = ['dev'];
 
     const database = new Database(this, 'Database');
 
-    const table = new Table(this, 'Table', {
+    const table = new S3Table(this, 'Table', {
       database,
       columns: [
         {
@@ -71,22 +68,25 @@ export class LakeFormationTaggingStack extends cdk.Stack {
             service: 'iam',
             resource: 'role',
             region: '',
-            account: accountId,
+            account: this.account,
             resourceName: 'Admin',
           }),
         },
-        { dataLakePrincipalIdentifier: `arn:aws:iam::${accountId}:role/cdk-hnb659fds-cfn-exec-role-${accountId}-${region}` },
+        {
+          // The CDK cloudformation execution role.
+          dataLakePrincipalIdentifier: synthesizer.cloudFormationExecutionRoleArn.replace('${AWS::Partition}', 'aws'),
+        },
       ],
     });
 
     const tag = new CfnTag(this, 'Tag', {
-      catalogId: accountId,
+      catalogId: this.account,
       tagKey,
       tagValues,
     });
 
     const lfTagPairProperty: CfnTagAssociation.LFTagPairProperty = {
-      catalogId: accountId,
+      catalogId: this.account,
       tagKey,
       tagValues,
     };
@@ -97,7 +97,7 @@ export class LakeFormationTaggingStack extends cdk.Stack {
         tableWithColumns: {
           databaseName: database.databaseName,
           columnNames: ['col1', 'col2'],
-          catalogId: accountId,
+          catalogId: this.account,
           name: table.tableName,
         }
       }
