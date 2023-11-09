@@ -52,9 +52,34 @@ export abstract class BuildBase extends cdk.Resource implements IBuild {
  * The operating system that the game server binaries are built to run on.
  */
 export enum OperatingSystem {
+  /**
+   * Amazon Linux operating system.
+   */
   AMAZON_LINUX = 'AMAZON_LINUX',
+
+  /**
+   * Amazon Linux 2 operating system.
+   */
   AMAZON_LINUX_2 = 'AMAZON_LINUX_2',
-  WINDOWS_2012 = 'WINDOWS_2012'
+
+  /**
+   * Amazon Linux 2023 operating system.
+   */
+  AMAZON_LINUX_2023 = 'AMAZON_LINUX_2023',
+
+  /**
+   * Windows Server 2012 operating system.
+   *
+   * @deprecated If you have active fleets using the Windows Server 2012 operating system,
+   * you can continue to create new builds using this OS until October 10, 2023, when Microsoft ends its support.
+   * All others must use Windows Server 2016 when creating new Windows-based builds.
+   */
+  WINDOWS_2012 = 'WINDOWS_2012',
+
+  /**
+   * Windows Server 2016 operating system.
+   */
+  WINDOWS_2016 = 'WINDOWS_2016',
 }
 
 /**
@@ -137,6 +162,15 @@ export interface BuildProps {
     * @default - a role will be created with default permissions.
     */
   readonly role?: iam.IRole;
+
+  /**
+   * A server SDK version you used when integrating your game server build with Amazon GameLift.
+   *
+   * @see https://docs.aws.amazon.com/gamelift/latest/developerguide/integration-custom-intro.html
+   *
+   * @default - 4.0.2
+   */
+  readonly serverSdkVersion?: string;
 }
 
 /**
@@ -247,6 +281,8 @@ export class Build extends BuildBase {
       }
     }
 
+    this.validateServerSdkVersion(props.serverSdkVersion);
+
     this.role = props.role ?? new iam.Role(this, 'ServiceRole', {
       assumedBy: new iam.ServicePrincipal('gamelift.amazonaws.com'),
     });
@@ -263,6 +299,7 @@ export class Build extends BuildBase {
         objectVersion: content.s3Location && content.s3Location.objectVersion,
         roleArn: this.role.roleArn,
       },
+      serverSdkVersion: props.serverSdkVersion,
     });
 
     resource.node.addDependency(this.role);
@@ -276,4 +313,13 @@ export class Build extends BuildBase {
     });
   }
 
+  private validateServerSdkVersion(serverSdkVersion?: string) {
+    if (serverSdkVersion === undefined || cdk.Token.isUnresolved(serverSdkVersion)) return;
+    if (!serverSdkVersion.match(/^\d+\.\d+\.\d+$/)) {
+      throw new Error(`serverSdkVersion must be in the 0.0.0 format, got \'${serverSdkVersion}\'.`);
+    }
+    if (serverSdkVersion.length > 128) {
+      throw new Error(`serverSdkVersion length must be smaller than or equal to 128, got ${serverSdkVersion.length}.`);
+    }
+  }
 }

@@ -72,7 +72,8 @@
       ]
      }
     },
-    "Version": "1.0"
+    "Version": "1.0",
+    "ServerSdkVersion": "5.0.0"
    },
    "DependsOn": [
     "BuildServiceRoleDefaultPolicyCB7101C6",
