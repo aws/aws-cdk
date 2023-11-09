@@ -13,6 +13,7 @@ class TestStack extends cdk.Stack {
       content: gamelift.Content.fromAsset(path.join(__dirname, 'my-game-build')),
       operatingSystem: gamelift.OperatingSystem.AMAZON_LINUX_2,
       buildVersion: '1.0',
+      serverSdkVersion: '5.0.0',
     });
 
     new CfnOutput(this, 'BuildArn', { value: build.buildArn });
