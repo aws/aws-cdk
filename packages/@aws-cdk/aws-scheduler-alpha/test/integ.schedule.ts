@@ -39,9 +39,26 @@ const role = new iam.Role(stack, 'Role', {
 
 const target = new SomeLambdaTarget(func, role);
 
+const namedGroup = new scheduler.Group(stack, 'NamedGroup', {
+  groupName: 'TestGroup',
+});
+const unnamedGroup = new scheduler.Group(stack, 'UnnamedGroup', {});
+
 new scheduler.Schedule(stack, 'DefaultSchedule', {
   schedule: expression,
   target: target,
+});
+
+new scheduler.Schedule(stack, 'NamedGroupSchedule', {
+  schedule: expression,
+  target: target,
+  group: namedGroup,
+});
+
+new scheduler.Schedule(stack, 'UnnamedGroupSchedule', {
+  schedule: expression,
+  target: target,
+  group: unnamedGroup,
 });
 
 new scheduler.Schedule(stack, 'DisabledSchedule', {

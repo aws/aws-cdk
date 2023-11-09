@@ -4,7 +4,7 @@ import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { IScheduleTarget, Schedule, ScheduleTargetConfig } from '../lib';
+import { Group, IScheduleTarget, Schedule, ScheduleTargetConfig } from '../lib';
 import { ScheduleExpression } from '../lib/schedule-expression';
 
 class SomeLambdaTarget implements IScheduleTarget {
@@ -126,6 +126,42 @@ describe('Schedule', () => {
         ],
         Version: '2012-10-17',
       },
+    });
+  });
+
+  test('schedule gets added to group with specified group name', () => {
+    // GIVEN
+    const group = new Group(stack, 'Group', {
+      groupName: 'TestGroup',
+    });
+
+    // WHEN
+    new Schedule(stack, 'TestSchedule', {
+      schedule: expr,
+      target: new SomeLambdaTarget(func, role),
+      group,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Scheduler::Schedule', {
+      GroupName: group.groupName,
+    });
+  });
+
+  test('schedule gets added to group with unspecified group name', () => {
+    // GIVEN
+    const group = new Group(stack, 'Group', {});
+
+    // WHEN
+    new Schedule(stack, 'TestSchedule', {
+      schedule: expr,
+      target: new SomeLambdaTarget(func, role),
+      group,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Scheduler::Schedule', {
+      GroupName: group.groupName,
     });
   });
 });
