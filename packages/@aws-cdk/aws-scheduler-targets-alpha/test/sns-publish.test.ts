@@ -19,7 +19,7 @@ describe('sns topic schedule target', () => {
   });
 
   test('creates IAM role and IAM policy for SNS topic in the same account', () => {
-    const target = new SnsPublish(topic, {});
+    const target = new SnsPublish(topic);
 
     new scheduler.Schedule(stack, 'Schedule', {
       schedule: scheduleExpression,
@@ -134,7 +134,7 @@ describe('sns topic schedule target', () => {
   });
 
   test('reuses IAM role and IAM policy for two schedulers from the same account', () => {
-    const target = new SnsPublish(topic, {});
+    const target = new SnsPublish(topic);
 
     new scheduler.Schedule(stack, 'Schedule1', {
       schedule: scheduleExpression,
@@ -193,7 +193,7 @@ describe('sns topic schedule target', () => {
   test('creates IAM policy for imported sns topic in the same account', () => {
     const importedTopic = sns.Topic.fromTopicArn(stack, 'ImportedTopic', 'arn:aws:sns:us-east-1:123456789012:my-topic');
 
-    const target = new SnsPublish(importedTopic, {});
+    const target = new SnsPublish(importedTopic);
 
     new scheduler.Schedule(stack, 'Schedule', {
       schedule: scheduleExpression,
@@ -318,7 +318,7 @@ describe('sns topic schedule target', () => {
     ['region', 'arn:aws:sns:eu-central-1:123456789012:topic', /Both the schedule and the topic must be in the same region./],
   ])('throws when SNS topic is imported from different %s', (_, arn: string, expectedError: RegExp) => {
     const importedSnsTopic = sns.Topic.fromTopicArn(stack, 'ImportedTopic', arn);
-    const target = new SnsPublish(importedSnsTopic, {});
+    const target = new SnsPublish(importedSnsTopic);
     expect(() =>
       new scheduler.Schedule(stack, 'MyScheduleDummy', {
         schedule: scheduleExpression,

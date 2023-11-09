@@ -11,7 +11,7 @@ import { sameEnvDimension } from './util';
 export class SnsPublish extends ScheduleTargetBase implements IScheduleTarget {
   constructor(
     private readonly topic: sns.ITopic,
-    private readonly props: ScheduleTargetBaseProps,
+    private readonly props: ScheduleTargetBaseProps = {},
   ) {
     super(props, topic.topicArn);
   }
