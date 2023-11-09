@@ -5588,10 +5588,10 @@ cdk8s-plus-24@2.12.1:
   dependencies:
     minimatch "^3.1.2"
 
-cdk8s@^2.68.2:
-  version "2.68.2"
-  resolved "https://registry.npmjs.org/cdk8s/-/cdk8s-2.68.2.tgz#007662d718d062000b09ee82421959cc88745710"
-  integrity sha512-95DmLwUW0dv+2RK7J/IdYqgRWDNVV9YN6dZaPIjbzoE0Y1D4HIGe51oCJpaa1bYAMba7v+sippd2pLxA7dxdIA==
+cdk8s@2.64.23:
+  version "2.64.23"
+  resolved "https://registry.npmjs.org/cdk8s/-/cdk8s-2.64.23.tgz#35d3e609918236f10cf4cc09c3f021c6b582ac9d"
+  integrity sha512-aweandhvYeITpstj6uuAXMeaiEJ5shoaYNJiMLqbcYEGKoS/luEf2tfql5Pl8NsG49ctTUcaJEiMpKlVusKpJw==
   dependencies:
     fast-json-patch "^3.1.1"
     follow-redirects "^1.15.2"

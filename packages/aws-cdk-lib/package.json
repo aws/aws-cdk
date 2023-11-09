@@ -167,7 +167,7 @@
     "aws-sdk-client-mock": "^3.0.0",
     "aws-sdk-client-mock-jest": "^3.0.0",
     "aws-sdk-mock": "5.8.0",
-    "cdk8s": "^2.68.2",
+    "cdk8s": "2.64.23",
     "constructs": "^10.0.0",
     "delay": "5.0.0",
     "esbuild": "^0.19.5",
