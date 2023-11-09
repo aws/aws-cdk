@@ -31,6 +31,7 @@
     "@aws-sdk/client-ecs": "^3.421.0",
     "@aws-sdk/client-kinesis": "^3.421.0",
     "@aws-sdk/client-kms": "^3.421.0",
+    "@aws-sdk/client-redshift": "^3.445.0",
     "@types/jest": "^29.5.5",
     "aws-sdk-client-mock": "^3.0.0",
     "aws-sdk-client-mock-jest": "^3.0.0",
