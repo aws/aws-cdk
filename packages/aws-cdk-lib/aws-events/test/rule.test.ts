@@ -578,6 +578,20 @@ describe('rule', () => {
     expect(importedRule.ruleName).toEqual('example');
   });
 
+  test('sets account for imported rule env by fromEventRuleArn', () => {
+    const stack = new cdk.Stack();
+    const importedRule = Rule.fromEventRuleArn(stack, 'Imported', 'arn:aws:events:us-west-2:123456789012:rule/example');
+
+    expect(importedRule.env.account).toEqual('123456789012');
+  });
+
+  test('sets region for imported rule env by fromEventRuleArn', () => {
+    const stack = new cdk.Stack();
+    const importedRule = Rule.fromEventRuleArn(stack, 'Imported', 'arn:aws:events:us-west-2:123456789012:rule/example');
+
+    expect(importedRule.env.region).toEqual('us-west-2');
+  });
+
   test('rule can be disabled', () => {
     // GIVEN
     const stack = new cdk.Stack();
