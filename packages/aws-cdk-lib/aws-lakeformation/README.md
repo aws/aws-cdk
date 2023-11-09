@@ -32,80 +32,74 @@ Here is an example of creating a glue table and putting lakeformation tags on it
 
 ```ts
 import * as cdk from 'aws-cdk-lib';
-import { Construct } from 'constructs';
 import { S3Table, Database, DataFormat, Schema } from '@aws-cdk/aws-glue-alpha';
 import { CfnDataLakeSettings, CfnTag, CfnTagAssociation } from 'aws-cdk-lib/aws-lakeformation';
 
-export class LakeFormationTaggingStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
-    super(scope, id, props);
+const tagKey = 'aws';
+const tagValues = ['dev'];
 
-    const tagKey = 'aws';
-    const tagValues = ['dev'];
+const database = new Database(this, 'Database');
 
-    const database = new Database(this, 'Database');
+const table = new S3Table(this, 'Table', {
+  database,
+  columns: [
+    {
+      name: 'col1',
+      type: Schema.STRING,
+    },
+    {
+      name: 'col2',
+      type: Schema.STRING,
+    }
+  ],
+  dataFormat: DataFormat.CSV,
+});
 
-    const table = new S3Table(this, 'Table', {
-      database,
-      columns: [
-        {
-          name: 'col1',
-          type: Schema.STRING,
-        },
-        {
-          name: 'col2',
-          type: Schema.STRING,
-        }
-      ],
-      dataFormat: DataFormat.CSV,
-    });
+const synthesizer = this.synthesizer as cdk.DefaultStackSynthesizer;
+new CfnDataLakeSettings(this, 'DataLakeSettings', {
+  admins: [
+    { 
+      dataLakePrincipalIdentifier: this.formatArn({
+        service: 'iam',
+        resource: 'role',
+        region: '',
+        account: this.account,
+        resourceName: 'Admin',
+      }),
+    },
+    {
+      // The CDK cloudformation execution role.
+      dataLakePrincipalIdentifier: synthesizer.cloudFormationExecutionRoleArn.replace('${AWS::Partition}', 'aws'),
+    },
+  ],
+});
 
-    const synthesizer = this.synthesizer as cdk.DefaultStackSynthesizer;
-    new CfnDataLakeSettings(this, 'DataLakeSettings', {
-      admins: [
-        { 
-          dataLakePrincipalIdentifier: this.formatArn({
-            service: 'iam',
-            resource: 'role',
-            region: '',
-            account: this.account,
-            resourceName: 'Admin',
-          }),
-        },
-        {
-          // The CDK cloudformation execution role.
-          dataLakePrincipalIdentifier: synthesizer.cloudFormationExecutionRoleArn.replace('${AWS::Partition}', 'aws'),
-        },
-      ],
-    });
+const tag = new CfnTag(this, 'Tag', {
+  catalogId: this.account,
+  tagKey,
+  tagValues,
+});
 
-    const tag = new CfnTag(this, 'Tag', {
+const lfTagPairProperty: CfnTagAssociation.LFTagPairProperty = {
+  catalogId: this.account,
+  tagKey,
+  tagValues,
+};
+
+const tagAssociation = new CfnTagAssociation(this, 'TagAssociation', {
+  lfTags: [lfTagPairProperty],
+  resource: {
+    tableWithColumns: {
+      databaseName: database.databaseName,
+      columnNames: ['col1', 'col2'],
       catalogId: this.account,
-      tagKey,
-      tagValues,
-    });
-
-    const lfTagPairProperty: CfnTagAssociation.LFTagPairProperty = {
-      catalogId: this.account,
-      tagKey,
-      tagValues,
-    };
-
-    const tagAssociation = new CfnTagAssociation(this, 'TagAssociation', {
-      lfTags: [lfTagPairProperty],
-      resource: {
-        tableWithColumns: {
-          databaseName: database.databaseName,
-          columnNames: ['col1', 'col2'],
-          catalogId: this.account,
-          name: table.tableName,
-        }
-      }
-    });
-
-    tagAssociation.node.addDependency(tag);
-    tagAssociation.node.addDependency(table);
+      name: table.tableName,
+    }
   }
-}
+});
+
+tagAssociation.node.addDependency(tag);
+tagAssociation.node.addDependency(table);
+
 ```
 Additionally, you may need to use the lakeformation console to give permissions, particularly to give the cdk-exec-role tagging permissions.
