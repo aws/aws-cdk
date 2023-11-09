@@ -1,0 +1,12 @@
+{
+  "version": "34.0.0",
+  "testCases": {
+    "cdk-integ-bucket-inventory/DefaultTest": {
+      "stacks": [
+        "aws-cdk-bucket-inventory"
+      ],
+      "assertionStack": "cdk-integ-bucket-inventory/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegbucketinventoryDefaultTestDeployAssertDAAFB0C3"
+    }
+  }
+}

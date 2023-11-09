@@ -1,0 +1,119 @@
+{
+ "Resources": {
+  "InventoryBucketA869B8CB": {
+   "Type": "AWS::S3::Bucket",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "InventoryBucketPolicyEDF94353": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "InventoryBucketA869B8CB"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:PutObject",
+       "Condition": {
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::GetAtt": [
+           "AVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryLongNodeIdName525AF55D",
+           "Arn"
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "s3.amazonaws.com"
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "InventoryBucketA869B8CB",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "InventoryBucketA869B8CB",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "AVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryLongNodeIdName525AF55D": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "InventoryConfigurations": [
+     {
+      "Destination": {
+       "BucketArn": {
+        "Fn::GetAtt": [
+         "InventoryBucketA869B8CB",
+         "Arn"
+        ]
+       },
+       "Format": "CSV"
+      },
+      "Enabled": true,
+      "Id": "VeryVeryVeryVeryVeryVeryVeryVeryVeryVeryLongNodeIdNameInventory0",
+      "IncludedObjectVersions": "All",
+      "ScheduleFrequency": "Weekly"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
