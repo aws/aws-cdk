@@ -107,12 +107,15 @@ describe('ADOT Lambda Layer', () => {
       // THEN
       Template.fromStack(fn.stack).hasOutput('ExportLayerArn', {
         Value: {
-          'Fn::FindInMap': [
-            'AdotlambdalayerMap',
-            {
-              Ref: 'AWS::Region',
-            },
-            'JAVAxSDKx1x31x0xarm64',
+          'Fn::Join': [
+            '',
+            [
+              'arn:aws:lambda:',
+              {
+                Ref: 'AWS::Region',
+              },
+              ':901920570463:layer:aws-otel-java-wrapper-arm64-ver-1-31-0:1',
+            ],
           ],
         },
       });
