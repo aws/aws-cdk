@@ -1,5 +1,17 @@
 {
-    "exclude": [
-        "*:*"
-    ]
+  "exclude": [
+    "props-no-undefined-default:@aws-cdk/cli-lib-alpha.BootstrapOptions.bootstrapCustomerKey",
+    "props-no-undefined-default:@aws-cdk/cli-lib-alpha.BootstrapOptions.bootstrapKmsKeyId",
+    "props-no-undefined-default:@aws-cdk/cli-lib-alpha.BootstrapOptions.customPermissionsBoundary",
+    "props-no-undefined-default:@aws-cdk/cli-lib-alpha.BootstrapOptions.examplePermissionsBoundary",
+    "props-no-undefined-default:@aws-cdk/cli-lib-alpha.BootstrapOptions.publicAccessBlockConfiguration",
+    "props-no-undefined-default:@aws-cdk/cli-lib-alpha.BootstrapOptions.qualifier",
+    "props-default-doc:@aws-cdk/cli-lib-alpha.BootstrapOptions.template",
+    "props-default-doc:@aws-cdk/cli-lib-alpha.BootstrapOptions.toolkitStackName",
+    "props-no-undefined-default:@aws-cdk/cli-lib-alpha.BootstrapOptions.trust",
+    "props-no-undefined-default:@aws-cdk/cli-lib-alpha.BootstrapOptions.trustForLookup",
+    "docs-public-apis:@aws-cdk/cli-lib-alpha.DeployOptions.hotswap",
+    "props-default-doc:@aws-cdk/cli-lib-alpha.DeployOptions.hotswap",
+    "docs-public-apis:@aws-cdk/cli-lib-alpha.HotswapMode"
+  ]
 }
