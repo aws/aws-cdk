@@ -1,0 +1,125 @@
+{
+  "version": "35.0.0",
+  "artifacts": {
+    "codebuild-project-linux-lambda.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "codebuild-project-linux-lambda.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "codebuild-project-linux-lambda": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "codebuild-project-linux-lambda.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4335cb2c0902278bf3cc3f24a77760e7e3dd838bfb94ac5779bbec0b991d8c0c.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "codebuild-project-linux-lambda.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "codebuild-project-linux-lambda.assets"
+      ],
+      "metadata": {
+        "/codebuild-project-linux-lambda/MyProject/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProjectRole9BBE5233"
+          }
+        ],
+        "/codebuild-project-linux-lambda/MyProject/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProjectRoleDefaultPolicyB19B7C29"
+          }
+        ],
+        "/codebuild-project-linux-lambda/MyProject/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProject39F7B0AE"
+          }
+        ],
+        "/codebuild-project-linux-lambda/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/codebuild-project-linux-lambda/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "codebuild-project-linux-lambda"
+    },
+    "linuxlambdacodebuildDefaultTestDeployAssertD60C42C8.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "linuxlambdacodebuildDefaultTestDeployAssertD60C42C8.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "linuxlambdacodebuildDefaultTestDeployAssertD60C42C8": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "linuxlambdacodebuildDefaultTestDeployAssertD60C42C8.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "linuxlambdacodebuildDefaultTestDeployAssertD60C42C8.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "linuxlambdacodebuildDefaultTestDeployAssertD60C42C8.assets"
+      ],
+      "metadata": {
+        "/linux-lambda-codebuild/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/linux-lambda-codebuild/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "linux-lambda-codebuild/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
