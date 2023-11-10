@@ -26,7 +26,7 @@ export class LinuxArmLambdaBuildImage implements IBuildImage {
   /** Image "aws/codebuild/amazonlinux-aarch64-lambda-standard:ruby3.2". */
   public static readonly AMAZON_LINUX_2_RUBY_3_2 = LinuxArmLambdaBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux-aarch64-lambda-standard:ruby3.2');
   /** Image "	aws/codebuild/amazonlinux-aarch64-lambda-standard:corretto17". */
-  public static readonly AMAZON_LINUX_2_CORRETTO_17 = LinuxArmLambdaBuildImage.fromCodeBuildImageId('	aws/codebuild/amazonlinux-aarch64-lambda-standard:corretto17');
+  public static readonly AMAZON_LINUX_2_CORRETTO_17 = LinuxArmLambdaBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux-aarch64-lambda-standard:corretto17');
   /** Image "aws/codebuild/amazonlinux-aarch64-lambda-standard:corretto11". */
   public static readonly AMAZON_LINUX_2_CORRETTO_11 = LinuxArmLambdaBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux-aarch64-lambda-standard:corretto11');
   /** Image "aws/codebuild/amazonlinux-aarch64-lambda-standard:go1.21". */
