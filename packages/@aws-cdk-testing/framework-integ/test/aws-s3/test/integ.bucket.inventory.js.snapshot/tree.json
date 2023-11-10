@@ -1,0 +1,233 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "aws-cdk-bucket-inventory": {
+        "id": "aws-cdk-bucket-inventory",
+        "path": "aws-cdk-bucket-inventory",
+        "children": {
+          "InventoryBucket": {
+            "id": "InventoryBucket",
+            "path": "aws-cdk-bucket-inventory/InventoryBucket",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-bucket-inventory/InventoryBucket/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "version": "0.0.0"
+                }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "aws-cdk-bucket-inventory/InventoryBucket/Policy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-bucket-inventory/InventoryBucket/Policy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "bucket": {
+                          "Ref": "InventoryBucketA869B8CB"
+                        },
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "s3:PutObject",
+                              "Condition": {
+                                "ArnLike": {
+                                  "aws:SourceArn": {
+                                    "Fn::GetAtt": [
+                                      "AVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryLongNodeIdName525AF55D",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              },
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "s3.amazonaws.com"
+                              },
+                              "Resource": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "InventoryBucketA869B8CB",
+                                    "Arn"
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "InventoryBucketA869B8CB",
+                                          "Arn"
+                                        ]
+                                      },
+                                      "/*"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.CfnBucketPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3.Bucket",
+              "version": "0.0.0"
+            }
+          },
+          "AVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVery@#$+:;?!&LongNodeIdName": {
+            "id": "AVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVery@#$+:;?!&LongNodeIdName",
+            "path": "aws-cdk-bucket-inventory/AVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVery@#$+:;?!&LongNodeIdName",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-bucket-inventory/AVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVery@#$+:;?!&LongNodeIdName/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {
+                    "inventoryConfigurations": [
+                      {
+                        "id": "VeryVeryVeryVeryVeryVeryVeryVeryVeryVeryLongNodeIdNameInventory0",
+                        "destination": {
+                          "bucketArn": {
+                            "Fn::GetAtt": [
+                              "InventoryBucketA869B8CB",
+                              "Arn"
+                            ]
+                          },
+                          "format": "CSV"
+                        },
+                        "enabled": true,
+                        "includedObjectVersions": "All",
+                        "scheduleFrequency": "Weekly"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3.Bucket",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-bucket-inventory/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-bucket-inventory/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "cdk-integ-bucket-inventory": {
+        "id": "cdk-integ-bucket-inventory",
+        "path": "cdk-integ-bucket-inventory",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "cdk-integ-bucket-inventory/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "cdk-integ-bucket-inventory/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "cdk-integ-bucket-inventory/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "cdk-integ-bucket-inventory/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "cdk-integ-bucket-inventory/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.2.70"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

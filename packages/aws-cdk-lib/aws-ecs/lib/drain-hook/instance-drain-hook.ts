@@ -61,7 +61,7 @@ export class InstanceDrainHook extends Construct {
 
     // Invoke Lambda via SNS Topic
     const fn = new lambda.Function(this, 'Function', {
-      code: lambda.Code.fromInline(fs.readFileSync(path.join(__dirname, 'lambda-source', 'index.py'), { encoding: 'utf-8' })),
+      code: lambda.Code.fromInline(fs.readFileSync(path.join(__dirname, '..', '..', '..', 'custom-resource-handlers', 'dist', 'aws-ecs', 'lambda-source', 'index.py'), { encoding: 'utf-8' })),
       handler: 'index.lambda_handler',
       runtime: lambda.Runtime.PYTHON_3_9,
       // Timeout: some extra margin for additional API calls made by the Lambda,

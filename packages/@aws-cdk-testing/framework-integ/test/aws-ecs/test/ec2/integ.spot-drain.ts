@@ -10,9 +10,9 @@ const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup:
 const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
 cluster.addCapacity('asgSpot', {
-  maxCapacity: 2,
-  minCapacity: 2,
-  desiredCapacity: 2,
+  maxCapacity: 3,
+  minCapacity: 3,
+  desiredCapacity: 3,
   instanceType: new ec2.InstanceType('c5.xlarge'),
   spotPrice: '0.0735',
   spotInstanceDraining: true,

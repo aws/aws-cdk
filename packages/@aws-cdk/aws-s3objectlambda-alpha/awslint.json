@@ -1,5 +1,5 @@
 {
-    "exclude": [
-        "*:*"
-    ]
+  "exclude": [
+    "attribute-tag:@aws-cdk/aws-s3objectlambda-alpha.AccessPoint.accessPointName"
+  ]
 }

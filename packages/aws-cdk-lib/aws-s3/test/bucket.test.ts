@@ -3134,6 +3134,49 @@ describe('bucket', () => {
     });
   });
 
+  test('Inventory Ids are shortened to 64 characters', () => {
+    // Given
+    const stack = new cdk.Stack();
+
+    const inventoryBucket = new s3.Bucket(stack, 'InventoryBucket');
+    new s3.Bucket(stack, 'AVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVery@#$+:;?!&LongNodeIdName', {
+      inventories: [
+        {
+          destination: {
+            bucket: inventoryBucket,
+          },
+        },
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      InventoryConfigurations: Match.arrayWith([
+        Match.objectLike({
+          Id: 'VeryVeryVeryVeryVeryVeryVeryVeryVeryVeryLongNodeIdNameInventory0',
+        }),
+      ]),
+    });
+  });
+
+  test('throws when inventoryid is invalid', () => {
+    // Given
+    const stack = new cdk.Stack();
+
+    const inventoryBucket = new s3.Bucket(stack, 'InventoryBucket');
+    new s3.Bucket(stack, 'MyBucket2', {
+      inventories: [
+        {
+          destination: {
+            bucket: inventoryBucket,
+          },
+          inventoryId: 'InvalidId&123',
+        },
+      ],
+    });
+
+    expect(() => Template.fromStack(stack)).toThrow(/inventoryId should not exceed 64 characters and should not contain special characters except . and -, got InvalidId&123/);
+  });
+
   test('Bucket with objectOwnership set to BUCKET_OWNER_ENFORCED', () => {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
@@ -3644,3 +3687,4 @@ describe('bucket', () => {
     });
   });
 });
+

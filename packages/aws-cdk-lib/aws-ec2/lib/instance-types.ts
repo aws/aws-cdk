@@ -347,14 +347,34 @@ export enum InstanceClass {
   R7GD = 'r7gd',
 
   /**
-   * Memory optimized instances based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation
+   * Memory optimized instances based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation w/  3.2GHz turbo frequency
+   */
+  MEMORY7_INTEL_BASE = 'memory7-intel-base',
+
+  /**
+   * Memory optimized instances based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation w/  3.2GHz turbo frequency
+   */
+  R7I = 'r7i',
+
+  /**
+   * Memory optimized instances based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation, with sustained 3.9GHz turbo frequency
    */
   MEMORY7_INTEL = 'memory7-intel',
 
   /**
-   * Memory optimized instances based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation
+   * Memory optimized instances based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation, with sustained 3.9GHz turbo frequency
    */
   R7IZ = 'r7iz',
+
+  /**
+   * Memory optimized instances based on 4th generation AMD EPYC (codename Genoa), 7th generation
+   */
+  MEMORY7_AMD = 'memory7-amd',
+
+  /**
+   * Memory optimized instances based on 4th generation AMD EPYC (codename Genoa), 7th generation
+   */
+  R7A = 'r7a',
 
   /**
    * Compute optimized instances, 3rd generation
@@ -545,6 +565,16 @@ export enum InstanceClass {
    * Compute optimized instances based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation
    */
   C7I = 'c7i',
+
+  /**
+   * Compute optimized instances based on 4th generation AMD EPYC (codename Genoa), 7th generation
+   */
+  COMPUTE7_AMD = 'compute7-amd',
+
+  /**
+   * Compute optimized instances based on 4th generation AMD EPYC (codename Genoa), 7th generation
+   */
+  C7A = 'c7a',
 
   /**
    * Storage-optimized instances, 2nd generation
@@ -1021,6 +1051,16 @@ export enum InstanceClass {
   M7I_FLEX = 'm7i-flex',
 
   /**
+   * Standard instances based on 4th generation AMD EPYC (codename Genoa), 7th generation
+   */
+  STANDARD7_AMD = 'standard7-amd',
+
+  /**
+   * Standard instances based on 4th generation AMD EPYC (codename Genoa), 7th generation
+   */
+  M7A = 'm7a',
+
+  /**
    * High memory and compute capacity instances, 1st generation
    */
   HIGH_COMPUTE_MEMORY1 = 'high-compute-memory1',
@@ -1305,8 +1345,12 @@ export class InstanceType {
       [InstanceClass.R7G]: 'r7g',
       [InstanceClass.MEMORY7_GRAVITON3_NVME_DRIVE]: 'r7gd',
       [InstanceClass.R7GD]: 'r7gd',
+      [InstanceClass.MEMORY7_INTEL_BASE]: 'r7i',
+      [InstanceClass.R7I]: 'r7i',
       [InstanceClass.MEMORY7_INTEL]: 'r7iz',
       [InstanceClass.R7IZ]: 'r7iz',
+      [InstanceClass.MEMORY7_AMD]: 'r7a',
+      [InstanceClass.R7A]: 'r7a',
       [InstanceClass.COMPUTE3]: 'c3',
       [InstanceClass.C3]: 'c3',
       [InstanceClass.COMPUTE4]: 'c4',
@@ -1343,6 +1387,8 @@ export class InstanceType {
       [InstanceClass.C7GN]: 'c7gn',
       [InstanceClass.COMPUTE7_INTEL]: 'c7i',
       [InstanceClass.C7I]: 'c7i',
+      [InstanceClass.COMPUTE7_AMD]: 'c7a',
+      [InstanceClass.C7A]: 'c7a',
       [InstanceClass.STORAGE2]: 'd2',
       [InstanceClass.D2]: 'd2',
       [InstanceClass.STORAGE3]: 'd3',
@@ -1427,6 +1473,8 @@ export class InstanceType {
       [InstanceClass.M7I]: 'm7i',
       [InstanceClass.STANDARD7_INTEL_FLEX]: 'm7i-flex',
       [InstanceClass.M7I_FLEX]: 'm7i-flex',
+      [InstanceClass.STANDARD7_AMD]: 'm7a',
+      [InstanceClass.M7A]: 'm7a',
       [InstanceClass.HIGH_COMPUTE_MEMORY1]: 'z1d',
       [InstanceClass.Z1D]: 'z1d',
       [InstanceClass.INFERENCE1]: 'inf1',

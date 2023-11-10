@@ -80,6 +80,33 @@
                   "version": "0.0.0"
                 }
               },
+              "HostedEnvFromYaml": {
+                "id": "HostedEnvFromYaml",
+                "path": "aws-appconfig-configuration/MyAppConfig/HostedEnvFromYaml",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-appconfig-configuration/MyAppConfig/HostedEnvFromYaml/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppConfig::Environment",
+                      "aws:cdk:cloudformation:props": {
+                        "applicationId": {
+                          "Ref": "MyAppConfigB4B63E75"
+                        },
+                        "name": "awsappconfigconfiguration-MyAppConfig-HostedEnvFromYaml-BB2C802A"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_appconfig.CfnEnvironment",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appconfig-alpha.Environment",
+                  "version": "0.0.0"
+                }
+              },
               "ParameterEnv": {
                 "id": "ParameterEnv",
                 "path": "aws-appconfig-configuration/MyAppConfig/ParameterEnv",
@@ -395,6 +422,83 @@
                     },
                     "environmentId": {
                       "Ref": "MyAppConfigHostedEnvFromJson9E6E36C4"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appconfig.CfnDeployment",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-appconfig-alpha.HostedConfiguration",
+              "version": "0.0.0"
+            }
+          },
+          "MyHostedConfigFromYaml": {
+            "id": "MyHostedConfigFromYaml",
+            "path": "aws-appconfig-configuration/MyHostedConfigFromYaml",
+            "children": {
+              "ConfigurationProfile": {
+                "id": "ConfigurationProfile",
+                "path": "aws-appconfig-configuration/MyHostedConfigFromYaml/ConfigurationProfile",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppConfig::ConfigurationProfile",
+                  "aws:cdk:cloudformation:props": {
+                    "applicationId": {
+                      "Ref": "MyAppConfigB4B63E75"
+                    },
+                    "locationUri": "hosted",
+                    "name": "awsappconfigconfiguration-MyHostedConfigFromYaml-87E9786A"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appconfig.CfnConfigurationProfile",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appconfig-configuration/MyHostedConfigFromYaml/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppConfig::HostedConfigurationVersion",
+                  "aws:cdk:cloudformation:props": {
+                    "applicationId": {
+                      "Ref": "MyAppConfigB4B63E75"
+                    },
+                    "configurationProfileId": {
+                      "Ref": "MyHostedConfigFromYamlConfigurationProfile7C77A435"
+                    },
+                    "content": "This is the configuration content",
+                    "contentType": "application/x-yaml"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appconfig.CfnHostedConfigurationVersion",
+                  "version": "0.0.0"
+                }
+              },
+              "DeploymentFE962": {
+                "id": "DeploymentFE962",
+                "path": "aws-appconfig-configuration/MyHostedConfigFromYaml/DeploymentFE962",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppConfig::Deployment",
+                  "aws:cdk:cloudformation:props": {
+                    "applicationId": {
+                      "Ref": "MyAppConfigB4B63E75"
+                    },
+                    "configurationProfileId": {
+                      "Ref": "MyHostedConfigFromYamlConfigurationProfile7C77A435"
+                    },
+                    "configurationVersion": {
+                      "Ref": "MyHostedConfigFromYaml13C5BE35"
+                    },
+                    "deploymentStrategyId": {
+                      "Ref": "MyDeployStrategy062CAEA2"
+                    },
+                    "environmentId": {
+                      "Ref": "MyAppConfigHostedEnvFromYaml82D3D1B2"
                     }
                   }
                 },
@@ -2554,13 +2658,13 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.69"
+                      "version": "10.2.70"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.69"
+                  "version": "10.2.70"
                 }
               },
               "prod": {
@@ -2743,13 +2847,13 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.69"
+                      "version": "10.2.70"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.69"
+                  "version": "10.2.70"
                 }
               }
             },
@@ -2860,7 +2964,7 @@
                 "path": "appconfig-configuration/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.69"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
@@ -2906,7 +3010,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.69"
+          "version": "10.2.70"
         }
       }
     },
