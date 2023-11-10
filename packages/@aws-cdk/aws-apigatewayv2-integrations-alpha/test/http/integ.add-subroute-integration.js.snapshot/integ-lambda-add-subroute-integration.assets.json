@@ -1,0 +1,19 @@
+{
+  "version": "34.0.0",
+  "files": {
+    "13f7f339f1f4fc7730c51d7df90db70db88fc0755ae67b48e9b35666d0b470d4": {
+      "source": {
+        "path": "integ-lambda-add-subroute-integration.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "13f7f339f1f4fc7730c51d7df90db70db88fc0755ae67b48e9b35666d0b470d4.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
