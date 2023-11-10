@@ -764,7 +764,8 @@ const fn = lambda.Function.fromFunctionAttributes(this, 'Function', {
 
 If `fromFunctionArn()` causes an error related to having to provide an account and/or region in a different construct,
 and the lambda is in the same account and region as the stack you're importing it into,
-you can use `Function.fromFunctionName()` instead:
+you can use `Function.fromFunctionName()` instead. Also use this if you get a warning message about not being able to
+add permissions to an imported lambda and the lambda is in the same account and region as the stack you're importing it into.
 
 ```ts
 const fn = lambda.Function.fromFunctionName(this, 'Function', 'MyFn');
