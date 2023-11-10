@@ -20,7 +20,7 @@ class EksClusterAlbControllerStack extends Stack {
       vpc,
       ...getClusterVersionConfig(this),
       albController: {
-        version: eks.AlbControllerVersion.V2_5_1,
+        version: eks.AlbControllerVersion.V2_6_2,
       },
     });
 

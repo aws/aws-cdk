@@ -1,5 +1,8 @@
 {
-    "exclude": [
-        "*:*"
-    ]
+  "exclude": [
+    "props-physical-name:@aws-cdk/aws-neptune-alpha.ClusterParameterGroupProps",
+    "props-physical-name:@aws-cdk/aws-neptune-alpha.ParameterGroupProps",
+    "props-physical-name:@aws-cdk/aws-neptune-alpha.SubnetGroupProps",
+    "docs-public-apis:@aws-cdk/aws-neptune-alpha.ServerlessScalingConfiguration"
+  ]
 }
