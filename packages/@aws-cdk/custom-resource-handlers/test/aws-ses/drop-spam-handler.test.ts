@@ -1,4 +1,4 @@
-import { handler } from '../../lib/drop-spam-handler/index';
+import { handler } from '../../lib/aws-ses/drop-spam-handler/index';
 
 describe('handler', () => {
   test.each(['spf', 'dkim', 'spam', 'virus'])('drop spam when %s status is FAIL', async (key) => {
