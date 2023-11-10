@@ -317,3 +317,4 @@ def replace_markers(filename, markers):
     # # delete the original file and rename the new one to the original
     os.remove(filename)
     os.rename(outfile, filename)
+    
