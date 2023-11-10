@@ -136,6 +136,31 @@ describe('Schedule Group', () => {
     });
   });
 
+  test('adds schedules to the group with unspecified name', () => {
+    const group = new Group(stack, 'TestGroup', {});
+    const role = iam.Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/someRole');
+
+    const schedule1 = new Schedule(stack, 'MyScheduleDummy1', {
+      schedule: expr,
+      group: group,
+      target: new SomeLambdaTarget(func, role),
+    });
+    const schedule2 = new Schedule(stack, 'MyScheduleDummy2', {
+      schedule: expr,
+      group: group,
+      target: new SomeLambdaTarget(func, role),
+    });
+
+    expect(schedule1.group).toEqual(group);
+    expect(schedule2.group).toEqual(group);
+
+    Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
+      Properties: {
+        GroupName: group.groupName,
+      },
+    });
+  });
+
   test('grantReadSchedules', () => {
     // GIVEN
     const props: GroupProps = {

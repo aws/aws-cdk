@@ -128,40 +128,4 @@ describe('Schedule', () => {
       },
     });
   });
-
-  test('schedule gets added to group with specified group name', () => {
-    // GIVEN
-    const group = new Group(stack, 'Group', {
-      groupName: 'TestGroup',
-    });
-
-    // WHEN
-    new Schedule(stack, 'TestSchedule', {
-      schedule: expr,
-      target: new SomeLambdaTarget(func, role),
-      group,
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Scheduler::Schedule', {
-      GroupName: group.groupName,
-    });
-  });
-
-  test('schedule gets added to group with unspecified group name', () => {
-    // GIVEN
-    const group = new Group(stack, 'Group', {});
-
-    // WHEN
-    new Schedule(stack, 'TestSchedule', {
-      schedule: expr,
-      target: new SomeLambdaTarget(func, role),
-      group,
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Scheduler::Schedule', {
-      GroupName: group.groupName,
-    });
-  });
 });
