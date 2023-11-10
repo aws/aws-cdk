@@ -59,6 +59,41 @@ plan.addSelection('Selection', {
 If not specified, a new IAM role with a managed policy for backup will be
 created for the selection. The `BackupSelection` implements `IGrantable`.
 
+You can set `allowBackups` to false and attach your role to the plan
+if you don't want to use the managed policy.
+
+```ts
+declare const plan: backup.BackupPlan;
+
+const role = new iam.Role(this, 'BackupRole', {
+  assumedBy: new iam.ServicePrincipal('backup.amazonaws.com'),
+});
+role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AWSBackupServiceRolePolicyForS3Backup'));
+role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AWSBackupServiceRolePolicyForS3Restore'));
+
+plan.addSelection('Selection', {
+  resources: [
+    backup.BackupResource.fromTag('stage', 'prod'),
+  ],
+  role,
+  allowBackups: false,
+});
+```
+
+A managed policy for restores will be attached to the role by setting
+`allowRestores` to true.
+
+```ts
+declare const plan: backup.BackupPlan;
+
+plan.addSelection('Selection', {
+  resources: [
+    backup.BackupResource.fromTag('stage', 'prod'),
+  ],
+  allowRestores: true,
+});
+```
+
 To add rules to a plan, use `addRule()`:
 
 ```ts

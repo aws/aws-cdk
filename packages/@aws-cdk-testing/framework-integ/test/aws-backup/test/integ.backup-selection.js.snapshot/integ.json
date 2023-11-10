@@ -1,0 +1,12 @@
+{
+  "version": "35.0.0",
+  "testCases": {
+    "BackupSelectionTest/DefaultTest": {
+      "stacks": [
+        "cdk-backup-selection"
+      ],
+      "assertionStack": "BackupSelectionTest/DefaultTest/DeployAssert",
+      "assertionStackName": "BackupSelectionTestDefaultTestDeployAssertA837BB17"
+    }
+  }
+}
