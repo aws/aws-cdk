@@ -1,9 +1,10 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import { AccessDeniedException } from '@aws-sdk/client-account';
 import { InvokeCommand, LambdaClient } from '@aws-sdk/client-lambda';
 import { Uint8ArrayBlobAdapter } from '@smithy/util-stream';
 import { mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest' ;
-import * as lambda from '../lib/lambda';
+import * as lambda from '../../lib/triggers/lambda/index';
 
 beforeAll(() => {
   jest.spyOn(console, 'log').mockImplementation();
