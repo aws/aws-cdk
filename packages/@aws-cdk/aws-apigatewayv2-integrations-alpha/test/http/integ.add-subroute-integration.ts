@@ -35,6 +35,7 @@ new lambda.Function(stack, thirdLambdaName, {
   runtime: lambda.Runtime.NODEJS_18_X,
   handler: 'index.handler',
   code: new lambda.InlineCode('exports.handler = async function(event, context) { return { statusCode: 200, body: \'success-hit-third-lambda\' }; };'),
+  functionName: thirdLambdaName,
 });
 const lambdaFromFunctionName = lambda.Function.fromFunctionName(stack, 'Referenced-Lambda-Name', thirdLambdaName);
 const lambdaFromFunctionNameIntegration = new HttpLambdaIntegration('my-referenced-lambda-integration', lambdaFromFunctionName);
