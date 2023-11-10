@@ -8879,9 +8879,9 @@ var require_getAwsChunkedEncodingStream = __commonJS({
   }
 });
 
-// ../../../node_modules/@smithy/querystring-builder/dist-cjs/index.js
+// ../../../node_modules/@smithy/node-http-handler/node_modules/@smithy/querystring-builder/dist-cjs/index.js
 var require_dist_cjs32 = __commonJS({
-  "../../../node_modules/@smithy/querystring-builder/dist-cjs/index.js"(exports) {
+  "../../../node_modules/@smithy/node-http-handler/node_modules/@smithy/querystring-builder/dist-cjs/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.buildQueryString = void 0;
