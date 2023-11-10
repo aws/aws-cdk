@@ -12,7 +12,7 @@ mkdir -p ${staging}
 cd ${staging}
 
 # copy src and overlay with test
-cp ${script_dir}/../../lib/notifications-resource/lambda/index.py $PWD
+cp ${script_dir}/../../../lib/aws-s3/notifications-resource-handler/index.py $PWD
 cp ${script_dir}/test_index.py $PWD
 cp ${script_dir}/Dockerfile $PWD
 
