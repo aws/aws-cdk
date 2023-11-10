@@ -40,11 +40,10 @@ export interface KafkaEventSourceProps extends BaseStreamEventSourceProps {
 
   /**
    * Add an on Failure Destination for this Kafka event. SNS/SQS/S3 are supported
-   * @see TODO add document after GA, onFailure for Kafka support SNS/SQS/S3
    *
    * @default - discarded records are ignored
    */
-  readonly onFailure?: lambda.IEventSourceOnFailureDestination;
+  readonly onFailure?: lambda.IEventSourceDlq;
 }
 
 /**

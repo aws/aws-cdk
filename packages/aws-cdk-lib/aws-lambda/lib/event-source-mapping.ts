@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
+import { IEventSourceDlq } from './dlq';
 import { IFunction } from './function-base';
 import { CfnEventSourceMapping } from './lambda.generated';
-import { IEventSourceOnFailureDestination } from './on-failure-destination';
 import * as cdk from '../../core';
 
 /**
@@ -112,7 +112,7 @@ export interface EventSourceMappingOptions {
    *
    * @default discarded records are ignored
    */
-  readonly onFailure?: IEventSourceOnFailureDestination;
+  readonly onFailure?: IEventSourceDlq;
 
   /**
    * Set to false to disable the event source upon creation.

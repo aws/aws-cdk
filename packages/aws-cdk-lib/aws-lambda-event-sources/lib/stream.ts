@@ -109,7 +109,7 @@ export interface StreamEventSourceProps extends BaseStreamEventSourceProps {
    *
    * @default - discarded records are ignored
    */
-  readonly onFailure?: lambda.IEventSourceOnFailureDestination;
+  readonly onFailure?: lambda.IEventSourceDlq;
 
   /**
    * Add filter criteria option

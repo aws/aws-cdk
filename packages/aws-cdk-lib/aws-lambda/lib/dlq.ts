@@ -1,19 +1,22 @@
-import { IEventSourceOnFailureDestination, OnFailureDestinationConfig } from './on-failure-destination';
+import { IEventSourceMapping } from './event-source-mapping';
+import { IFunction } from './function-base';
 
 /**
  * A destination configuration
  */
-export interface DlqDestinationConfig extends OnFailureDestinationConfig {
+export interface DlqDestinationConfig {
   /**
    * The Amazon Resource Name (ARN) of the destination resource
    */
+  readonly destination: string;
 }
 
 /**
  * A DLQ for an event source
  */
-export interface IEventSourceDlq extends IEventSourceOnFailureDestination {
+export interface IEventSourceDlq {
   /**
    * Returns the DLQ destination config of the DLQ
    */
+  bind(target: IEventSourceMapping, targetHandler: IFunction): DlqDestinationConfig;
 }
