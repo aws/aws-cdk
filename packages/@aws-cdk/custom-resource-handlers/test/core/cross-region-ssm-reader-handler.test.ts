@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { InvalidResourceId } from '@aws-sdk/client-ssm';
-import { SSM_EXPORT_PATH_PREFIX } from 'aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/types';
-import { handler } from '../../lib/core/cross-region-ssm-reader-handler/index';
+import { handler } from '../../lib/core/cross-region-export-handlers/cross-region-ssm-reader-handler/index';
+import { SSM_EXPORT_PATH_PREFIX } from '../../lib/core/cross-region-export-handlers/types';
 
 let mockDeleteParameters: jest.Mock ;
 let mockAddTagsToResource: jest.Mock;
