@@ -533,7 +533,7 @@ const map = new sfn.Map(this, 'Map State', {
   resultPath: '$.mapOutput',
 });
 
-map.itemProcessor(definition, {
+map.itemProcessor(new sfn.Pass(this, 'Pass State'), {
   mode: sfn.ProcessorMode.DISTRIBUTED,
   executionType: sfn.ProcessorType.STANDARD,
 });
