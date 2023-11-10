@@ -206,6 +206,27 @@ cluster.addNodegroupCapacity('custom-node-group', {
 });
 ```
 
+To define the maximum number of instances which can be simultaneously replaced in a node group during a version update you can set `maxUnavailable` or `maxUnavailablePercentage` options.
+
+> For more details visit [Updating a managed node group](https://docs.aws.amazon.com/eks/latest/userguide/update-managed-node-group.html)
+
+```ts
+declare const cluster: eks.Cluster;
+cluster.addNodegroupCapacity('custom-node-group', {
+  instanceTypes: [new ec2.InstanceType('m5.large')],
+  maxSize: 5,
+  maxUnavailable: 2,
+});
+```
+
+```ts
+declare const cluster: eks.Cluster;
+cluster.addNodegroupCapacity('custom-node-group', {
+  instanceTypes: [new ec2.InstanceType('m5.large')],
+  maxUnavailablePercentage: 33,
+});
+```
+
 #### Node Groups with IPv6 Support
 
 Node groups are available with IPv6 configured networks.  For custom roles assigned to node groups additional permissions are necessary in order for pods to obtain an IPv6 address.  The default node role will include these permissions.
@@ -572,9 +593,9 @@ To deploy the controller on your EKS cluster, configure the `albController` prop
 
 ```ts
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_21,
+  version: eks.KubernetesVersion.V1_27,
   albController: {
-    version: eks.AlbControllerVersion.V2_4_1,
+    version: eks.AlbControllerVersion.V2_6_2,
   },
 });
 ```
