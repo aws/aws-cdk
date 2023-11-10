@@ -344,7 +344,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
    */
   public addPermission(id: string, permission: Permission) {
     if (!this.canCreatePermissions) {
-      // FIXME: @deprecated(v2) - throw an error if calling `addPermission` on a resource that doesn't support it.
+      Annotations.of(this).addWarningV2('LambdaPermissionNotAllowed', 'addPermission is being called on a lambda resource that does not support it.');
       return;
     }
 
