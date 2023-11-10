@@ -440,8 +440,6 @@ export interface CommonClusterOptions {
   /**
    * Where to place EKS Control Plane ENIs
    *
-   * If you want to create public load balancers, this must include public subnets.
-   *
    * For example, to only select private subnets, supply the following:
    *
    * `vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }]`
