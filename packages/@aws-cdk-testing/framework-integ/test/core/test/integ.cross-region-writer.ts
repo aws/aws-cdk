@@ -22,9 +22,13 @@ new ssm.StringParameter(producingStack, 'SomeParameter', {
   stringValue,
 });
 
-new IntegTest(app, 'CrossRegionWriterInteg', {
+const integTest = new IntegTest(app, 'CrossRegionWriterInteg', {
   testCases: [producingStack],
   // Explicitly deploy to us-east-2 to guarantee a cross stack reference, if you exclude this
   // it doesn't respect the `env` parameter passed to the stack.
   regions: ['us-east-2'],
+});
+
+integTest.assertions.awsApiCall('SSM', 'getParameters', {
+  Names: [parameterName],
 });
