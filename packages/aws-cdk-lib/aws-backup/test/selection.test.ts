@@ -114,7 +114,7 @@ test('allow backups', () => {
     resources: [
       BackupResource.fromArn('arn1'),
     ],
-    allowBackups: true,
+    attachBackupPolicy: true,
   });
 
   // THEN
@@ -143,7 +143,7 @@ test('no policy is attached if allowBackups is false', () => {
     resources: [
       BackupResource.fromArn('arn1'),
     ],
-    allowBackups: false,
+    attachBackupPolicy: false,
   });
 
   // THEN

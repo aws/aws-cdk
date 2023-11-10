@@ -59,7 +59,7 @@ plan.addSelection('Selection', {
 If not specified, a new IAM role with a managed policy for backup will be
 created for the selection. The `BackupSelection` implements `IGrantable`.
 
-You can set `allowBackups` to false and attach your role to the plan
+You can set `attachBackupPolicy` to false and attach your role to the plan
 if you don't want to use the managed policy.
 
 ```ts
@@ -76,7 +76,7 @@ plan.addSelection('Selection', {
     backup.BackupResource.fromTag('stage', 'prod'),
   ],
   role,
-  allowBackups: false,
+  attachBackupPolicy: false,
 });
 ```
 

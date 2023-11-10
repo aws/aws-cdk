@@ -38,7 +38,7 @@ export interface BackupSelectionOptions {
    *
    * @default true
    */
-  readonly allowBackups?: boolean;
+  readonly attachBackupPolicy?: boolean;
 
   /**
    * Whether to automatically give restores permissions to the role that AWS
@@ -93,7 +93,7 @@ export class BackupSelection extends Resource implements iam.IGrantable {
     const role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('backup.amazonaws.com'),
     });
-    if (props.allowBackups ?? true) {
+    if (props.attachBackupPolicy ?? true) {
       role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSBackupServiceRolePolicyForBackup'));
     }
     if (props.allowRestores) {
