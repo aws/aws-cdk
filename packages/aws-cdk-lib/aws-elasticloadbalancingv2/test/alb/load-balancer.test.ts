@@ -451,6 +451,71 @@ describe('tests', () => {
     });
   });
 
+  test('Log access logs can be setup without an environment', () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+
+    const logAccessLogsBucket = new s3.Bucket(stack, 'AccessLoggingBucket');
+
+    lb.logAccessLogs(logAccessLogsBucket);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      LoadBalancerAttributes: Match.arrayWith([
+        {
+          Key: 'access_logs.s3.enabled',
+          Value: 'true',
+        },
+        {
+          Key: 'access_logs.s3.bucket',
+          Value: { Ref: 'AccessLoggingBucketA6D88F29' },
+        },
+        {
+          Key: 'access_logs.s3.prefix',
+          Value: '',
+        },
+      ]),
+    });
+
+    // Verify service account is when env is not used
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Action: 's3:PutObject',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'logdelivery.elasticloadbalancing.amazonaws.com',
+            },
+            Resource: {
+              'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'] }, '/AWSLogs/',
+                { Ref: 'AWS::AccountId' }, '/*']],
+            },
+          },
+          {
+            Action: 's3:PutObject',
+            Effect: 'Allow',
+            Principal: { Service: 'delivery.logs.amazonaws.com' },
+            Resource: {
+              'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'] }, '/AWSLogs/',
+                { Ref: 'AWS::AccountId' }, '/*']],
+            },
+            Condition: { StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' } },
+          },
+          {
+            Action: 's3:GetBucketAcl',
+            Effect: 'Allow',
+            Principal: { Service: 'delivery.logs.amazonaws.com' },
+            Resource: {
+              'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'],
+            },
+          },
+        ],
+      },
+    });
+  });
+
   test('Exercise metrics', () => {
     // GIVEN
     const stack = new cdk.Stack();
