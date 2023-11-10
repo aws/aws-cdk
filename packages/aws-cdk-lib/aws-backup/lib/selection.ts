@@ -32,7 +32,7 @@ export interface BackupSelectionOptions {
   readonly role?: iam.IRole;
 
   /**
-   * Whether to automatically give backups permissions to the role that AWS
+   * Whether to automatically give backup permissions to the role that AWS
    * Backup uses. If `true`, the `AWSBackupServiceRolePolicyForBackup` managed
    * policy will be attached to the role.
    *

@@ -79,64 +79,7 @@ test('create a selection', () => {
   });
 });
 
-test('allow backups by default', () => {
-  // WHEN
-  new BackupSelection(stack, 'Selection', {
-    backupPlan: plan,
-    resources: [
-      BackupResource.fromArn('arn1'),
-    ],
-  });
-
-  // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
-    ManagedPolicyArns: [
-      {
-        'Fn::Join': [
-          '',
-          [
-            'arn:',
-            {
-              Ref: 'AWS::Partition',
-            },
-            ':iam::aws:policy/service-role/AWSBackupServiceRolePolicyForBackup',
-          ],
-        ],
-      },
-    ],
-  });
-});
-
-test('allow backups', () => {
-  // WHEN
-  new BackupSelection(stack, 'Selection', {
-    backupPlan: plan,
-    resources: [
-      BackupResource.fromArn('arn1'),
-    ],
-    attachBackupPolicy: true,
-  });
-
-  // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
-    ManagedPolicyArns: [
-      {
-        'Fn::Join': [
-          '',
-          [
-            'arn:',
-            {
-              Ref: 'AWS::Partition',
-            },
-            ':iam::aws:policy/service-role/AWSBackupServiceRolePolicyForBackup',
-          ],
-        ],
-      },
-    ],
-  });
-});
-
-test('no policy is attached if allowBackups is false', () => {
+test('no policy is attached if attachBackupPolicy is false', () => {
   // WHEN
   new BackupSelection(stack, 'Selection', {
     backupPlan: plan,
