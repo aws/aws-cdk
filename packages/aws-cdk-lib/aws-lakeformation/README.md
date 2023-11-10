@@ -58,7 +58,7 @@ const table = new S3Table(this, 'Table', {
   dataFormat: DataFormat.CSV,
 });
 
-const synthesizer = this.synthesizer as cdk.DefaultStackSynthesizer;
+const synthesizer = stack.synthesizer as cdk.DefaultStackSynthesizer;
 new CfnDataLakeSettings(this, 'DataLakeSettings', {
   admins: [
     { 
