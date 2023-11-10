@@ -1,4 +1,17 @@
-import { CfnUtilsResourceType } from './consts';
+/**
+ * Supported resource type.
+ */
+export enum CfnUtilsResourceType {
+  /**
+   * CfnJson
+   */
+  CFN_JSON = 'Custom::AWSCDKCfnJson',
+
+  /**
+   * CfnJsonStringify
+   */
+  CFN_JSON_STRINGIFY = 'Custom::AWSCDKCfnJsonStringify',
+}
 
 /**
  * Parses the value of "Value" and reflects it back as attribute.

@@ -1,5 +1,4 @@
-import { CfnUtilsResourceType } from '../../lib/private/cfn-utils-provider/consts';
-import { handler } from '../../lib/private/cfn-utils-provider/index';
+import { handler, CfnUtilsResourceType } from '../../lib/core/cfn-utils-provider/index';
 
 test('parses value as JSON', async () => {
   // GIVEN
@@ -65,6 +64,17 @@ test('fails if wrong resource type', async () => {
 
   // WHEN
   await expect(() => invokeHandler(event)).rejects.toThrow(/unexpected resource type "Create"/);
+});
+
+test('resource provider simply parses json and reflects back as an attribute', async () => {
+  const input = { foo: 1234 };
+  const response = await handler({
+    ResourceType: CfnUtilsResourceType.CFN_JSON,
+    ResourceProperties: {
+      Value: JSON.stringify(input),
+    },
+  } as any);
+  expect(input).toEqual(response.Data.Value);
 });
 
 // helper function to get around TypeScript expecting a complete event object,
