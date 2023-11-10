@@ -4,7 +4,7 @@ import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { Group, IScheduleTarget, Schedule, ScheduleTargetConfig } from '../lib';
+import { IScheduleTarget, Schedule, ScheduleTargetConfig } from '../lib';
 import { ScheduleExpression } from '../lib/schedule-expression';
 
 class SomeLambdaTarget implements IScheduleTarget {
