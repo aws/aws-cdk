@@ -1,7 +1,3 @@
-import { IResolvable } from '../../resolvable';
-
-// Shared definition with packages/@aws-cdk/custom-resource-handlers/lib/core/cross-region-export-handlers/types.ts
-
 /**
  * The SSM parameter prefix that will be used for
  * all cross region exports
@@ -32,7 +28,7 @@ export interface ExportReaderCRProps {
    * A list of imports used by this stack.
    * Will be a list of parameter names
    */
-  readonly imports: CrossRegionExports | IResolvable;
+  readonly imports: CrossRegionExports;
 }
 
 /**
@@ -47,5 +43,5 @@ export interface ExportWriterCRProps {
   /**
    * A list of values to export to the target region
    */
-  readonly exports: CrossRegionExports | IResolvable;
+  readonly exports: CrossRegionExports;
 }
