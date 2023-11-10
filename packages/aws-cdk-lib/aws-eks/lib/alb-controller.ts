@@ -128,6 +128,36 @@ export class AlbControllerVersion {
   public static readonly V2_5_1 = new AlbControllerVersion('v2.5.1', '1.5.2', false);
 
   /**
+   * v2.5.2
+   */
+  public static readonly V2_5_2 = new AlbControllerVersion('v2.5.2', '1.5.3', false);
+
+  /**
+   * v2.5.3
+   */
+  public static readonly V2_5_3 = new AlbControllerVersion('v2.5.3', '1.5.4', false);
+
+  /**
+   * v2.5.4
+   */
+  public static readonly V2_5_4 = new AlbControllerVersion('v2.5.4', '1.5.5', false);
+
+  /**
+   * v2.6.0
+   */
+  public static readonly V2_6_0 = new AlbControllerVersion('v2.6.0', '1.6.0', false);
+
+  /**
+   * v2.6.1
+   */
+  public static readonly V2_6_1 = new AlbControllerVersion('v2.6.1', '1.6.1', false);
+
+  /**
+   * v2.6.2
+   */
+  public static readonly V2_6_2 = new AlbControllerVersion('v2.6.2', '1.6.2', false);
+
+  /**
    * Specify a custom version and an associated helm chart version.
    * Use this if the version you need is not available in one of the predefined versions.
    * Note that in this case, you will also need to provide an IAM policy in the controller options.
