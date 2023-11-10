@@ -1,0 +1,13 @@
+{
+  "version": "34.0.0",
+  "testCases": {
+    "integrationtest-codebuild-start-build/DefaultTest": {
+      "stacks": [
+        "aws-cdk-scheduler-targets-codebuild-start-build"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "integrationtest-codebuild-start-build/DefaultTest/DeployAssert",
+      "assertionStackName": "integrationtestcodebuildstartbuildDefaultTestDeployAssert416931F1"
+    }
+  }
+}
