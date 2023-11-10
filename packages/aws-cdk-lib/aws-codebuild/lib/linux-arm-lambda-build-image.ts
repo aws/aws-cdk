@@ -22,7 +22,7 @@ export class LinuxArmLambdaBuildImage implements IBuildImage {
   /** Image "aws/codebuild/amazonlinux-aarch64-lambda-standard:nodejs18". */
   public static readonly AMAZON_LINUX_2_NODE_18 = LinuxArmLambdaBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux-aarch64-lambda-standard:nodejs18');
   /** Image "aws/codebuild/amazonlinux-aarch64-lambda-standard:python3.11	". */
-  public static readonly AMAZON_LINUX_2_PYTHON_3_11 = LinuxArmLambdaBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux-aarch64-lambda-standard:python3.11	');
+  public static readonly AMAZON_LINUX_2_PYTHON_3_11 = LinuxArmLambdaBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux-aarch64-lambda-standard:python3.11');
   /** Image "aws/codebuild/amazonlinux-aarch64-lambda-standard:ruby3.2". */
   public static readonly AMAZON_LINUX_2_RUBY_3_2 = LinuxArmLambdaBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux-aarch64-lambda-standard:ruby3.2');
   /** Image "	aws/codebuild/amazonlinux-aarch64-lambda-standard:corretto17". */
