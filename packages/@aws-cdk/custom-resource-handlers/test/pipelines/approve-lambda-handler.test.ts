@@ -13,7 +13,7 @@ jest.mock('@aws-sdk/client-codepipeline', () => {
 
 jest.setTimeout(10_000);
 
-import { handler } from '../../lib/private/approve-lambda/index';
+import { handler } from '../../lib/pipelines/approve-lambda/index';
 
 describe('approve-lambda handler', () => {
 
