@@ -1334,6 +1334,23 @@ export class Project extends ProjectBase {
     const hasEnvironmentVars = Object.keys(vars).length > 0;
 
     const errors = this.buildImage.validate(env);
+
+    // Lambda compute does not support timeoutInMinutes property
+    if (this.isLambdaComputeType(this.buildImage)) {
+      if (props.timeout) {
+        errors.push('Cannot specify timeoutInMinutes for lambda compute');
+      }
+      if (props.queuedTimeout) {
+        errors.push('Cannot specify queuedTimeoutInMinutes for lambda compute');
+      }
+      if (props.cache) {
+        errors.push('Cannot specify cache for lambda compute');
+      }
+      if (props.badge) {
+        errors.push('Cannot specify badgeEnabled for lambda compute');
+      }
+    }
+
     if (errors.length > 0) {
       throw new Error('Invalid CodeBuild environment: ' + errors.join('\n'));
     }
@@ -1542,6 +1559,10 @@ export class Project extends ProjectBase {
       throw new Error('Both source and artifacts must be set to CodePipeline');
     }
   }
+
+  private isLambdaComputeType(buildImage: IBuildImage): boolean {
+    return buildImage instanceof LinuxLambdaBuildImage || buildImage instanceof LinuxArmLambdaBuildImage;
+  }
 }
 
 /**
@@ -1551,7 +1572,12 @@ export enum ComputeType {
   SMALL = 'BUILD_GENERAL1_SMALL',
   MEDIUM = 'BUILD_GENERAL1_MEDIUM',
   LARGE = 'BUILD_GENERAL1_LARGE',
-  X2_LARGE = 'BUILD_GENERAL1_2XLARGE'
+  X2_LARGE = 'BUILD_GENERAL1_2XLARGE',
+  LAMBDA_1GB = 'BUILD_LAMBDA_1GB',
+  LAMBDA_2GB = 'BUILD_LAMBDA_2GB',
+  LAMBDA_4GB = 'BUILD_LAMBDA_4GB',
+  LAMBDA_8GB = 'BUILD_LAMBDA_8GB',
+  LAMBDA_10GB = 'BUILD_LAMBDA_10GB',
 }
 
 /**
@@ -1715,8 +1741,11 @@ interface LinuxBuildImageProps {
 }
 
 // Keep around to resolve a circular dependency until removing deprecated ARM image constants from LinuxBuildImage
-// eslint-disable-next-line no-duplicate-imports, import/order
+/* eslint-disable no-duplicate-imports, import/order */
 import { LinuxArmBuildImage } from './linux-arm-build-image';
+import { LinuxArmLambdaBuildImage } from './linux-arm-lambda-build-image';
+import { LinuxLambdaBuildImage } from './linux-lambda-build-image';
+/* eslint-enable no-duplicate-imports, import/order */
 
 /**
  * A CodeBuild image running x86-64 Linux.
@@ -1903,7 +1932,15 @@ export class LinuxBuildImage implements IBuildImage {
   }
 
   public validate(_env: BuildEnvironment): string[] {
-    return [];
+    const ret = [];
+
+    const lambdaComputeTypes = Object.values(ComputeType).filter(value => value.startsWith('BUILD_LAMBDA'));
+    if (_env.computeType && lambdaComputeTypes.includes(_env.computeType)) {
+      ret.push(`x86-64 images only support ComputeTypes between '${ComputeType.SMALL}' and '${ComputeType.X2_LARGE}' - ` +
+               `'${_env.computeType}' was given`);
+    }
+
+    return ret;
   }
 
   public runScriptBuildspec(entrypoint: string): BuildSpec {
@@ -2066,6 +2103,12 @@ export class WindowsBuildImage implements IBuildImage {
 
   public validate(buildEnvironment: BuildEnvironment): string[] {
     const ret: string[] = [];
+
+    const lambdaComputeTypes = Object.values(ComputeType).filter(value => value.startsWith('BUILD_LAMBDA'));
+    if (buildEnvironment.computeType && lambdaComputeTypes.includes(buildEnvironment.computeType)) {
+      ret.push('Windows images do not support Lambda compute mode');
+    }
+
     if (buildEnvironment.computeType === ComputeType.SMALL) {
       ret.push('Windows images do not support the Small ComputeType');
     }

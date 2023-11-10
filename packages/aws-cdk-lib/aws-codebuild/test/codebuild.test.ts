@@ -1649,6 +1649,34 @@ describe('Windows2019 image', () => {
         },
       });
     });
+
+    test('cannot be used in conjunction with ComputeType LAMBDA_1GB', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => {
+        new codebuild.PipelineProject(stack, 'Project', {
+          environment: {
+            buildImage: codebuild.WindowsBuildImage.WIN_SERVER_CORE_2019_BASE,
+            computeType: codebuild.ComputeType.LAMBDA_1GB,
+          },
+        });
+      }).toThrow(/Invalid CodeBuild environment: Windows images do not support Lambda compute mode/);
+    });
+  });
+});
+
+describe('Linux x86-64 Image', () => {
+  test('cannot be used in conjunction with ComputeType LAMBDA_1GB', () => {
+    const stack = new cdk.Stack();
+
+    expect(() => {
+      new codebuild.PipelineProject(stack, 'Project', {
+        environment: {
+          buildImage: codebuild.LinuxBuildImage.STANDARD_7_0,
+          computeType: codebuild.ComputeType.LAMBDA_1GB,
+        },
+      });
+    }).toThrow(/Invalid CodeBuild environment: x86-64 images only support ComputeTypes between 'BUILD_GENERAL1_SMALL' and 'BUILD_GENERAL1_2XLARGE' - 'BUILD_LAMBDA_1GB' was given/);
   });
 });
 
@@ -1728,6 +1756,19 @@ describe('ARM image', () => {
           },
         });
       }).toThrow(/ARM images only support ComputeTypes 'BUILD_GENERAL1_SMALL' and 'BUILD_GENERAL1_LARGE' - 'BUILD_GENERAL1_2XLARGE' was given/);
+    });
+
+    test('cannot be used in conjunction with ComputeType LAMBDA_1GB', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => {
+        new codebuild.PipelineProject(stack, 'Project', {
+          environment: {
+            buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_ARM,
+            computeType: codebuild.ComputeType.LAMBDA_1GB,
+          },
+        });
+      }).toThrow(/ARM images only support ComputeTypes 'BUILD_GENERAL1_SMALL' and 'BUILD_GENERAL1_LARGE' - 'BUILD_LAMBDA_1GB' was given/);
     });
   });
 });
