@@ -7,7 +7,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "0f19e51d1e47290d7a33e0b67405e4722942dee4b92b9d29425fccf0d99017c3.zip"
+     "S3Key": "096b0b696556ba7cc2ef5b5aedafc3b30654d446f5fc1a0258831f858b87adaf.zip"
     },
     "Description": "onEvent handler for EKS kubectl resource provider",
     "Handler": "index.handler",
@@ -16,27 +16,27 @@
       "Ref": "AwsCliLayerF44AAF94"
      },
      {
-      "Ref": "referencetoawscdkeksclusterinferencetestKubectlLayerC250C540Ref"
+      "Ref": "referencetoawscdkeksclusterinferenceKubectlLayer60564DD6Ref"
      }
     ],
     "MemorySize": 1024,
     "Role": {
-     "Ref": "referencetoawscdkeksclusterinferencetestClusterKubectlHandlerRole9FB34EF2Arn"
+     "Ref": "referencetoawscdkeksclusterinferenceClusterKubectlHandlerRoleBE5D4979Arn"
     },
     "Runtime": "python3.10",
     "Timeout": 900,
     "VpcConfig": {
      "SecurityGroupIds": [
       {
-       "Ref": "referencetoawscdkeksclusterinferencetestClusterF6AC11E0ClusterSecurityGroupId"
+       "Ref": "referencetoawscdkeksclusterinferenceCluster774B69DCClusterSecurityGroupId"
       }
      ],
      "SubnetIds": [
       {
-       "Ref": "referencetoawscdkeksclusterinferencetestVpcPrivateSubnet1Subnet57B9547BRef"
+       "Ref": "referencetoawscdkeksclusterinferenceVpcPrivateSubnet1SubnetD1079FA2Ref"
       },
       {
-       "Ref": "referencetoawscdkeksclusterinferencetestVpcPrivateSubnet2Subnet006B3B78Ref"
+       "Ref": "referencetoawscdkeksclusterinferenceVpcPrivateSubnet2SubnetA5170822Ref"
       }
      ]
     }
@@ -49,7 +49,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "e2277687077a2abf9ae1af1cc9565e6715e2ebb62f79ec53aa75a1af9298f642.zip"
+     "S3Key": "3fb6287214999ddeafa7cd0e3e58bc5144c8678bb720f3b5e45e8fd32f333eb3.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -146,9 +146,9 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "d002370061965c69bc4caf15dddb5eccc9df318933ade6e4fa57cddb81c5abef.zip"
+     "S3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
     },
-    "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.KubectlProvider/Provider)",
+    "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.KubectlProvider/Provider)",
     "Environment": {
      "Variables": {
       "USER_ON_EVENT_FUNCTION_ARN": {
@@ -171,15 +171,15 @@
     "VpcConfig": {
      "SecurityGroupIds": [
       {
-       "Ref": "referencetoawscdkeksclusterinferencetestClusterF6AC11E0ClusterSecurityGroupId"
+       "Ref": "referencetoawscdkeksclusterinferenceCluster774B69DCClusterSecurityGroupId"
       }
      ],
      "SubnetIds": [
       {
-       "Ref": "referencetoawscdkeksclusterinferencetestVpcPrivateSubnet1Subnet57B9547BRef"
+       "Ref": "referencetoawscdkeksclusterinferenceVpcPrivateSubnet1SubnetD1079FA2Ref"
       },
       {
-       "Ref": "referencetoawscdkeksclusterinferencetestVpcPrivateSubnet2Subnet006B3B78Ref"
+       "Ref": "referencetoawscdkeksclusterinferenceVpcPrivateSubnet2SubnetA5170822Ref"
       }
      ]
     }
@@ -191,7 +191,7 @@
   }
  },
  "Outputs": {
-  "awscdkeksclusterinferencetestawscdkawseksKubectlProviderframeworkonEvent96006823Arn": {
+  "awscdkeksclusterinferenceawscdkawseksKubectlProviderframeworkonEventBC4137D4Arn": {
    "Value": {
     "Fn::GetAtt": [
      "ProviderframeworkonEvent83C1D0A7",
@@ -201,19 +201,19 @@
   }
  },
  "Parameters": {
-  "referencetoawscdkeksclusterinferencetestKubectlLayerC250C540Ref": {
+  "referencetoawscdkeksclusterinferenceKubectlLayer60564DD6Ref": {
    "Type": "String"
   },
-  "referencetoawscdkeksclusterinferencetestClusterKubectlHandlerRole9FB34EF2Arn": {
+  "referencetoawscdkeksclusterinferenceClusterKubectlHandlerRoleBE5D4979Arn": {
    "Type": "String"
   },
-  "referencetoawscdkeksclusterinferencetestVpcPrivateSubnet1Subnet57B9547BRef": {
+  "referencetoawscdkeksclusterinferenceVpcPrivateSubnet1SubnetD1079FA2Ref": {
    "Type": "String"
   },
-  "referencetoawscdkeksclusterinferencetestVpcPrivateSubnet2Subnet006B3B78Ref": {
+  "referencetoawscdkeksclusterinferenceVpcPrivateSubnet2SubnetA5170822Ref": {
    "Type": "String"
   },
-  "referencetoawscdkeksclusterinferencetestClusterF6AC11E0ClusterSecurityGroupId": {
+  "referencetoawscdkeksclusterinferenceCluster774B69DCClusterSecurityGroupId": {
    "Type": "String"
   }
  }
