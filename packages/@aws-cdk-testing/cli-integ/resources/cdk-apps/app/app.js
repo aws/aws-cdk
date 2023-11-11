@@ -346,12 +346,16 @@ class EcsHotswapStack extends cdk.Stack {
       environment: {
         SOME_VARIABLE: process.env.DYNAMIC_ECS_PROPERTY_VALUE ?? 'environment',
       },
+      healthCheck: {
+        command: ['CMD-SHELL', 'exit 0'], // fake health check to speed up deployment
+        interval: cdk.Duration.seconds(5),
+      },
     });
     const service = new ecs.FargateService(this, 'service', {
       cluster,
       taskDefinition,
       assignPublicIp: true, // required without NAT to pull image
-      circuitBreaker: { rollback: true },
+      circuitBreaker: { rollback: false },
       desiredCount,
     });
 
