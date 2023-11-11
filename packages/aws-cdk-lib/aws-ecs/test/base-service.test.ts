@@ -225,7 +225,7 @@ describe('When specifying a task definition revision', () => {
       },
       minHealthyPercent: 100,
       maxHealthyPercent: 200,
-      taskDefinitionRevision: '1',
+      taskDefinitionRevision: ecs.TaskDefinitionRevision.revision(1),
     });
 
     // THEN
@@ -252,7 +252,7 @@ describe('When specifying a task definition revision', () => {
       },
       minHealthyPercent: 100,
       maxHealthyPercent: 200,
-      taskDefinitionRevision: 'latest',
+      taskDefinitionRevision: ecs.TaskDefinitionRevision.latest(),
     });
 
     // THEN

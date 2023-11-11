@@ -22,7 +22,14 @@ import {
 import * as cxapi from '../../../cx-api';
 
 import { RegionInfo } from '../../../region-info';
-import { LoadBalancerTargetOptions, NetworkMode, TaskDefinition } from '../base/task-definition';
+import {
+  LoadBalancerTargetOptions,
+  NetworkMode,
+  TaskDefinition,
+  TaskDefinitionRevision,
+  LatestTaskDefinitionRevision,
+  SpecificTaskDefinitionRevision,
+} from '../base/task-definition';
 import { ICluster, CapacityProviderStrategy, ExecuteCommandLogging, Cluster } from '../cluster';
 import { ContainerDefinition, Protocol } from '../container-definition';
 import { CfnService } from '../ecs.generated';
@@ -351,7 +358,7 @@ export interface BaseServiceOptions {
    *
    * @default - Uses the revision of the passed task definition deployed by CloudFormation
    */
-  readonly taskDefinitionRevision?: string | 'latest';
+  readonly taskDefinitionRevision?: TaskDefinitionRevision;
 }
 
 /**
@@ -645,7 +652,7 @@ export abstract class BaseService extends Resource
     if (
       props.deploymentController?.type === DeploymentControllerType.CODE_DEPLOY
       && props.taskDefinitionRevision
-      && props.taskDefinitionRevision !== 'latest'
+      && !props.taskDefinitionRevision instanceof LatestTaskDefinitionRevision
     ) {
       throw new Error('CODE_DEPLOY deploymentController cannot be used with a non-latest task definition revision');
     }
@@ -658,8 +665,8 @@ export abstract class BaseService extends Resource
       this.node.addDependency(taskDefinition);
     } else if (props.taskDefinitionRevision) {
       this.resource.taskDefinition = taskDefinition.family;
-      if (props.taskDefinitionRevision !== 'latest') {
-        this.resource.taskDefinition += `:${props.taskDefinitionRevision}`;
+      if (props.taskDefinitionRevision.revision !== 'latest') {
+        this.resource.taskDefinition += `:${props.taskDefinitionRevision.revision}`;
       }
       this.node.addDependency(taskDefinition);
     }

@@ -624,14 +624,14 @@ new ecs.ExternalService(this, 'Service', {
   cluster,
   taskDefinition,
   desiredCount: 5,
-  taskDefinitionRevision: '1'
+  taskDefinitionRevision: ecs.TaskDefinitionRevision.revision(1)
 });
 
 new ecs.ExternalService(this, 'Service', {
   cluster,
   taskDefinition,
   desiredCount: 5,
-  taskDefinitionRevision: 'latest'
+  taskDefinitionRevision: ecs.TaskDefinitionRevision.latest()
 });
 ```
 
