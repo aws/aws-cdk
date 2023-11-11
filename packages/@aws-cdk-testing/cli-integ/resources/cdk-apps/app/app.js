@@ -4,6 +4,7 @@ var constructs = require('constructs');
 if (process.env.PACKAGE_LAYOUT_VERSION === '1') {
   var cdk = require('@aws-cdk/core');
   var ec2 = require('@aws-cdk/aws-ec2');
+  var ecs = require('@aws-cdk/aws-ecs');
   var s3 = require('@aws-cdk/aws-s3');
   var ssm = require('@aws-cdk/aws-ssm');
   var iam = require('@aws-cdk/aws-iam');
@@ -17,6 +18,7 @@ if (process.env.PACKAGE_LAYOUT_VERSION === '1') {
     DefaultStackSynthesizer,
     LegacyStackSynthesizer,
     aws_ec2: ec2,
+    aws_ecs: ecs,
     aws_s3: s3,
     aws_ssm: ssm,
     aws_iam: iam,
@@ -303,6 +305,47 @@ class LambdaHotswapStack extends cdk.Stack {
   }
 }
 
+class EcsHotswapStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    // define a simple vpc and cluster
+    const vpc = new ec2.Vpc(this, 'vpc', {
+      natGateways: 0,
+      subnetConfiguration: [
+        {
+          cidrMask: 24,
+          name: 'Public',
+          subnetType: ec2.SubnetType.PUBLIC,
+        },
+      ],
+      maxAzs: 1,
+    });
+    const cluster = new ecs.Cluster(this, 'cluster', {
+      vpc,
+    });
+
+    // define a simple Fargate service
+    const taskDefinition = new ecs.FargateTaskDefinition(
+      this,
+      'task-definition'
+    );
+    taskDefinition.addContainer('nginx', {
+      image: ecs.ContainerImage.fromRegistry('nginx:alpine'),
+      environment: {
+        SOME_VARIABLE: process.env.DYNAMIC_ECS_PROPERTY_VALUE ?? 'environment',
+      },
+    });
+    const service = new ecs.FargateService(this, 'service', {
+      cluster,
+      taskDefinition,
+      assignPublicIp: true, // required without NAT to pull image
+    });
+
+    new cdk.CfnOutput(this, 'ServiceName', { value: service.serviceName });
+  }
+}
+
 class DockerStack extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, props);
@@ -478,6 +521,7 @@ switch (stackSet) {
 
     new LambdaStack(app, `${stackPrefix}-lambda`);
     new LambdaHotswapStack(app, `${stackPrefix}-lambda-hotswap`);
+    new EcsHotswapStack(app, `${stackPrefix}-ecs-hotswap`);
     new DockerStack(app, `${stackPrefix}-docker`);
     new DockerStackWithCustomFile(app, `${stackPrefix}-docker-with-custom-file`);
     const failed = new FailedStack(app, `${stackPrefix}-failed`)
