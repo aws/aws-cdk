@@ -122,8 +122,8 @@ export async function isHotswappableEcsServiceChange(
         (sdk.ecs() as any).api.waiters.deploymentCompleted = {
           name: 'DeploymentCompleted',
           operation: 'describeServices',
-          delay: 10,
-          maxAttempts: 60,
+          delay: 6,
+          maxAttempts: 100,
           acceptors: [
             {
               matcher: 'pathAny',
