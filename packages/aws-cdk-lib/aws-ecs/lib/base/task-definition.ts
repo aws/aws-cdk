@@ -1254,9 +1254,9 @@ export class TaskDefinitionRevision {
     return new TaskDefinitionRevision(revision.toString());
   }
 
-  public readonly revision: string;
+  public readonly revisionId: string;
 
   constructor(revision: string) {
-    this.revision = revision;
+    this.revisionId = revision;
   }
 }

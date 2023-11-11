@@ -650,7 +650,7 @@ export abstract class BaseService extends Resource
     if (
       props.deploymentController?.type === DeploymentControllerType.CODE_DEPLOY
       && props.taskDefinitionRevision
-      && props.taskDefinitionRevision.revision !== 'latest'
+      && props.taskDefinitionRevision.revisionId !== 'latest'
     ) {
       throw new Error('CODE_DEPLOY deploymentController cannot be used with a non-latest task definition revision');
     }
@@ -663,8 +663,8 @@ export abstract class BaseService extends Resource
       this.node.addDependency(taskDefinition);
     } else if (props.taskDefinitionRevision) {
       this.resource.taskDefinition = taskDefinition.family;
-      if (props.taskDefinitionRevision.revision !== 'latest') {
-        this.resource.taskDefinition += `:${props.taskDefinitionRevision.revision}`;
+      if (props.taskDefinitionRevision.revisionId !== 'latest') {
+        this.resource.taskDefinition += `:${props.taskDefinitionRevision.revisionId}`;
       }
       this.node.addDependency(taskDefinition);
     }
