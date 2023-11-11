@@ -1327,6 +1327,29 @@ integTest('hotswap deployment for ecs service waits for deployment to complete',
 
 }));
 
+integTest('hotswap deployment for ecs service detects failed deployment and errors', withDefaultFixture(async (fixture) => {
+  // GIVEN
+  await fixture.cdkDeploy('ecs-hotswap', {
+    modEnv: {
+      USE_HIGH_ECS_TASK_COUNT: 'true', // need to initially deploy high task count because hotswap deploy cannot modify task counts
+    },
+  });
+
+  // WHEN
+  const deployOutput = await fixture.cdkDeploy('ecs-hotswap', {
+    options: ['--hotswap'],
+    modEnv: {
+      USE_INVALID_ECS_HOTSWAP_IMAGE: 'true',
+      USE_HIGH_ECS_TASK_COUNT: 'true',
+    },
+    allowErrExit: true,
+  });
+
+  // THEN
+  expect(deployOutput).toContain(`❌  ${fixture.stackNamePrefix}-ecs-hotswap failed: ResourceNotReady: Resource is not in the state deploymentCompleted`);
+  expect(deployOutput).not.toContain('hotswapped!');
+}));
+
 async function listChildren(parent: string, pred: (x: string) => Promise<boolean>) {
   const ret = new Array<string>();
   for (const child of await fs.readdir(parent, { encoding: 'utf-8' })) {
