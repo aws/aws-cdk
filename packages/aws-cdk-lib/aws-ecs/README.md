@@ -611,29 +611,23 @@ const service = new ecs.ExternalService(this, 'Service', {
 If you'd like to specify which security groups to use you can override the `securityGroups` property.
 
 By default, the service will use the revision of the passed task definition generated when the `TaskDefinition`
-is deployed by CloudFormation. In order to specify a specific revision, pass a `taskDefinitionRevision`:
+is deployed by CloudFormation. However, this may not be desired if the revision is externally managed,
+for example through CodeDeploy.
+
+To set a specific revision number or the special `latest` revision, use the `taskDefinitionRevision` parameter:
 
 ```ts
 declare const cluster: ecs.Cluster;
 declare const taskDefinition: ecs.TaskDefinition;
 
-const service = new ecs.ExternalService(this, 'Service', {
+new ecs.ExternalService(this, 'Service', {
   cluster,
   taskDefinition,
   desiredCount: 5,
-  taskDefinitionRevision: '1'
+  taskDefinitionRevision: 1
 });
-```
 
-Or, to always use the latest active revision (for example, when using the CodePipeline EcsDeployAction
-without using the CODE_DEPLOY deployment controller to ensure future service deployments don't revert
-the task revision used by the service):
-
-```ts
-declare const cluster: ecs.Cluster;
-declare const taskDefinition: ecs.TaskDefinition;
-
-const service = new ecs.ExternalService(this, 'Service', {
+new ecs.ExternalService(this, 'Service', {
   cluster,
   taskDefinition,
   desiredCount: 5,

@@ -347,8 +347,7 @@ export interface BaseServiceOptions {
   readonly serviceConnectConfiguration?: ServiceConnectProps;
 
   /**
-   * The revision of the service's task definition to use for tasks in this service
-   * or 'latest' to use the latest ACTIVE task revision
+   * Revision number for the task definition or `latest` to use the latest active task revision.
    *
    * @default - Uses the revision of the passed task definition deployed by CloudFormation
    */
