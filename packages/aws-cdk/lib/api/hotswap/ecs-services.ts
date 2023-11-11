@@ -145,7 +145,7 @@ export async function isHotswappableEcsServiceChange(
             },
             {
               matcher: 'path',
-              argument: "length(services[].deployments[? status == 'PRIMARY' && rolloutState == 'COMPLETED'][]) == `1`",
+              argument: "length(services[].deployments[? status == 'PRIMARY' && rolloutState != 'COMPLETED'][]) == `0`",
               expected: true,
               state: 'success',
             },
