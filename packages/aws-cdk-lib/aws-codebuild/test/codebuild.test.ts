@@ -1649,6 +1649,32 @@ describe('Windows2019 image', () => {
         },
       });
     });
+
+    test('cannot be used in conjunction with ComputeType SMALL', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => {
+        new codebuild.PipelineProject(stack, 'Project', {
+          environment: {
+            buildImage: codebuild.WindowsBuildImage.WIN_SERVER_CORE_2019_BASE,
+            computeType: codebuild.ComputeType.SMALL,
+          },
+        });
+      }).toThrow(/Windows images do not support the Small ComputeType/);
+    });
+
+    test('cannot be used in conjunction with ComputeType 2XLARGE', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => {
+        new codebuild.PipelineProject(stack, 'Project', {
+          environment: {
+            buildImage: codebuild.WindowsBuildImage.WIN_SERVER_CORE_2019_BASE,
+            computeType: codebuild.ComputeType.X2_LARGE,
+          },
+        });
+      }).toThrow(/Windows images do not support the 2xLarge ComputeType/);
+    });
   });
 });
 

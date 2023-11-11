@@ -2069,6 +2069,9 @@ export class WindowsBuildImage implements IBuildImage {
     if (buildEnvironment.computeType === ComputeType.SMALL) {
       ret.push('Windows images do not support the Small ComputeType');
     }
+    if (buildEnvironment.computeType === ComputeType.X2_LARGE) {
+      ret.push('Windows images do not support the 2xLarge ComputeType');
+    }
     return ret;
   }
 
