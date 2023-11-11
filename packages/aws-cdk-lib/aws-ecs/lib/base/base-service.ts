@@ -352,7 +352,7 @@ export interface BaseServiceOptions {
    *
    * @default - Uses the revision of the passed task definition deployed by CloudFormation
    */
-  readonly taskDefinitionRevision?: string;
+  readonly taskDefinitionRevision?: string | 'latest';
 }
 
 /**
