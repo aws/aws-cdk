@@ -25,3 +25,84 @@ For more information on the resources and properties available for this service,
 (Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)
 
 <!--END CFNONLY DISCLAIMER-->
+
+### Example
+
+Here is an example of creating a glue table and putting lakeformation tags on it. Note: this example uses deprecated constructs and overly permissive IAM roles. This example is meant to give a general idea of using the L1s; it is not production level.
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+import { S3Table, Database, DataFormat, Schema } from '@aws-cdk/aws-glue-alpha';
+import { CfnDataLakeSettings, CfnTag, CfnTagAssociation } from 'aws-cdk-lib/aws-lakeformation';
+
+declare const stack: cdk.Stack;
+declare const accountId: string;
+
+const tagKey = 'aws';
+const tagValues = ['dev'];
+
+const database = new Database(this, 'Database');
+
+const table = new S3Table(this, 'Table', {
+  database,
+  columns: [
+    {
+      name: 'col1',
+      type: Schema.STRING,
+    },
+    {
+      name: 'col2',
+      type: Schema.STRING,
+    }
+  ],
+  dataFormat: DataFormat.CSV,
+});
+
+const synthesizer = stack.synthesizer as cdk.DefaultStackSynthesizer;
+new CfnDataLakeSettings(this, 'DataLakeSettings', {
+  admins: [
+    { 
+      dataLakePrincipalIdentifier: stack.formatArn({
+        service: 'iam',
+        resource: 'role',
+        region: '',
+        account: accountId,
+        resourceName: 'Admin',
+      }),
+    },
+    {
+      // The CDK cloudformation execution role.
+      dataLakePrincipalIdentifier: synthesizer.cloudFormationExecutionRoleArn.replace('${AWS::Partition}', 'aws'),
+    },
+  ],
+});
+
+const tag = new CfnTag(this, 'Tag', {
+  catalogId: accountId,
+  tagKey,
+  tagValues,
+});
+
+const lfTagPairProperty: CfnTagAssociation.LFTagPairProperty = {
+  catalogId: accountId,
+  tagKey,
+  tagValues,
+};
+
+const tagAssociation = new CfnTagAssociation(this, 'TagAssociation', {
+  lfTags: [lfTagPairProperty],
+  resource: {
+    tableWithColumns: {
+      databaseName: database.databaseName,
+      columnNames: ['col1', 'col2'],
+      catalogId: accountId,
+      name: table.tableName,
+    }
+  }
+});
+
+tagAssociation.node.addDependency(tag);
+tagAssociation.node.addDependency(table);
+
+```
+Additionally, you may need to use the lakeformation console to give permissions, particularly to give the cdk-exec-role tagging permissions.
