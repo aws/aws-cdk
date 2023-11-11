@@ -624,7 +624,7 @@ new ecs.ExternalService(this, 'Service', {
   cluster,
   taskDefinition,
   desiredCount: 5,
-  taskDefinitionRevision: 1
+  taskDefinitionRevision: '1'
 });
 
 new ecs.ExternalService(this, 'Service', {
