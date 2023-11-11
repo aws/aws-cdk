@@ -1617,6 +1617,24 @@ test('using ComputeType.Small with a Windows image fails validation', () => {
   }).toThrow(/Windows images do not support the Small ComputeType/);
 });
 
+test('using ComputeType.X2Large with a Windows image fails validation', () => {
+  const stack = new cdk.Stack();
+  const invalidEnvironment: codebuild.BuildEnvironment = {
+    buildImage: codebuild.WindowsBuildImage.WIN_SERVER_CORE_2019_BASE,
+    computeType: codebuild.ComputeType.X2_LARGE,
+  };
+
+  expect(() => {
+    new codebuild.Project(stack, 'MyProject', {
+      source: codebuild.Source.s3({
+        bucket: new s3.Bucket(stack, 'MyBucket'),
+        path: 'path',
+      }),
+      environment: invalidEnvironment,
+    });
+  }).toThrow(/Windows images do not support the 2xLarge ComputeType/);
+});
+
 test('fromCodebuildImage', () => {
   const stack = new cdk.Stack();
   new codebuild.PipelineProject(stack, 'Project', {
@@ -1648,32 +1666,6 @@ describe('Windows2019 image', () => {
           'ComputeType': 'BUILD_GENERAL1_MEDIUM',
         },
       });
-    });
-
-    test('cannot be used in conjunction with ComputeType SMALL', () => {
-      const stack = new cdk.Stack();
-
-      expect(() => {
-        new codebuild.PipelineProject(stack, 'Project', {
-          environment: {
-            buildImage: codebuild.WindowsBuildImage.WIN_SERVER_CORE_2019_BASE,
-            computeType: codebuild.ComputeType.SMALL,
-          },
-        });
-      }).toThrow(/Windows images do not support the Small ComputeType/);
-    });
-
-    test('cannot be used in conjunction with ComputeType 2XLARGE', () => {
-      const stack = new cdk.Stack();
-
-      expect(() => {
-        new codebuild.PipelineProject(stack, 'Project', {
-          environment: {
-            buildImage: codebuild.WindowsBuildImage.WIN_SERVER_CORE_2019_BASE,
-            computeType: codebuild.ComputeType.X2_LARGE,
-          },
-        });
-      }).toThrow(/Windows images do not support the 2xLarge ComputeType/);
     });
   });
 });
