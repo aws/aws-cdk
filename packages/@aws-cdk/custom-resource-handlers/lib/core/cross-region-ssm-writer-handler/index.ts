@@ -1,7 +1,7 @@
 /*eslint-disable no-console*/
 /* eslint-disable import/no-extraneous-dependencies */
 import { SSM } from '@aws-sdk/client-ssm';
-import { CrossRegionExports, ExportWriterCRProps } from 'aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/types';
+import { CrossRegionExports, ExportWriterCRProps } from '../types';
 
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
   const props: ExportWriterCRProps = event.ResourceProperties.WriterProps;

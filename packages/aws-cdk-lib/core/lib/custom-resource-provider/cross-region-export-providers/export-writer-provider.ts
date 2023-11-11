@@ -13,7 +13,7 @@ import { Token } from '../../token';
 import { CustomResourceProviderRuntime, CustomResourceProvider, CustomResourceProviderProps } from '../custom-resource-provider';
 
 /**
- * Properties for an ExportReader
+ * Properties for an ExportWriter
  */
 export interface ExportWriterProps {
   /**
