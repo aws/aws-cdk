@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.106.1](https://github.com/aws/aws-cdk/compare/v2.106.0...v2.106.1) (2023-11-11)
+
+
+### Reverts
+
+* "chore(cdk): boostrap template uses deprecated AccessControl property" ([#27939](https://github.com/aws/aws-cdk/issues/27939)) ([bede2d1](https://github.com/aws/aws-cdk/commit/bede2d1195d65e61464a40d0da4213f9f09152ca)), closes [aws/aws-cdk#27764](https://github.com/aws/aws-cdk/issues/27764)
+
 ## [2.106.0](https://github.com/aws/aws-cdk/compare/v2.105.0...v2.106.0) (2023-11-10)
 
 
