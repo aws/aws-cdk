@@ -1239,7 +1239,7 @@ export function isExternalCompatible(compatibility: Compatibility): boolean {
  * Represents revision of a task definition, either a specific numbered revision or
  * the specia "latest" revision
  */
-export abstract class TaskDefinitionRevision {
+export class TaskDefinitionRevision {
   /**
    * The most recent revision of a task
    */

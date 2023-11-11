@@ -27,8 +27,6 @@ import {
   NetworkMode,
   TaskDefinition,
   TaskDefinitionRevision,
-  LatestTaskDefinitionRevision,
-  SpecificTaskDefinitionRevision,
 } from '../base/task-definition';
 import { ICluster, CapacityProviderStrategy, ExecuteCommandLogging, Cluster } from '../cluster';
 import { ContainerDefinition, Protocol } from '../container-definition';
@@ -652,7 +650,7 @@ export abstract class BaseService extends Resource
     if (
       props.deploymentController?.type === DeploymentControllerType.CODE_DEPLOY
       && props.taskDefinitionRevision
-      && !props.taskDefinitionRevision instanceof LatestTaskDefinitionRevision
+      && props.taskDefinitionRevision.revision !== 'latest'
     ) {
       throw new Error('CODE_DEPLOY deploymentController cannot be used with a non-latest task definition revision');
     }
