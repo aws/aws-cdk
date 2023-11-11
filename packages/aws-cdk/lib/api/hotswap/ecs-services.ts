@@ -119,8 +119,8 @@ export async function isHotswappableEcsServiceChange(
 
         // Step 3 - wait for the service deployments triggered in Step 2 to finish
         // configure a custom Waiter
-        (sdk.ecs() as any).api.waiters.deploymentToFinish = {
-          name: 'DeploymentToFinish',
+        (sdk.ecs() as any).api.waiters.deploymentCompleted = {
+          name: 'DeploymentCompleted',
           operation: 'describeServices',
           delay: 10,
           maxAttempts: 60,
@@ -170,8 +170,8 @@ export async function isHotswappableEcsServiceChange(
             },
           ],
         };
-        // create a custom Waiter that uses the deploymentToFinish configuration added above
-        const deploymentWaiter = new (AWS as any).ResourceWaiter(sdk.ecs(), 'deploymentToFinish');
+        // create a custom Waiter that uses the deploymentCompleted configuration added above
+        const deploymentWaiter = new (AWS as any).ResourceWaiter(sdk.ecs(), 'deploymentCompleted');
         // wait for all of the waiters to finish
         await Promise.all(Object.entries(servicePerClusterUpdates).map(([clusterName, serviceUpdates]) => {
           return deploymentWaiter.wait({
