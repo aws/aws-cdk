@@ -1268,6 +1268,35 @@ integTest('hotswap deployment supports Fn::ImportValue intrinsic', withDefaultFi
   }
 }));
 
+integTest('hotswap deployment supports ecs service', withDefaultFixture(async (fixture) => {
+  // GIVEN
+  const stackArn = await fixture.cdkDeploy('ecs-hotswap', {
+    captureStderr: false,
+  });
+
+  // WHEN
+  const deployOutput = await fixture.cdkDeploy('ecs-hotswap', {
+    options: ['--hotswap'],
+    captureStderr: true,
+    onlyStderr: true,
+    modEnv: {
+      DYNAMIC_ECS_PROPERTY_VALUE: 'new value',
+    },
+  });
+
+  const response = await fixture.aws.cloudFormation('describeStacks', {
+    StackName: stackArn,
+  });
+  const serviceName = response.Stacks?.[0].Outputs?.[0].OutputValue;
+
+  // THEN
+
+  // The deployment should not trigger a full deployment, thus the stack's status must remains
+  // "CREATE_COMPLETE"
+  expect(response.Stacks?.[0].StackStatus).toEqual('CREATE_COMPLETE');
+  expect(deployOutput).toContain(`ECS Service '${serviceName}' hotswapped!`);
+}));
+
 async function listChildren(parent: string, pred: (x: string) => Promise<boolean>) {
   const ret = new Array<string>();
   for (const child of await fs.readdir(parent, { encoding: 'utf-8' })) {
