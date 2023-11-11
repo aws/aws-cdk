@@ -342,6 +342,7 @@ class EcsHotswapStack extends cdk.Stack {
       assignPublicIp: true, // required without NAT to pull image
     });
 
+    new cdk.CfnOutput(this, 'ClusterName', { value: cluster.clusterName });
     new cdk.CfnOutput(this, 'ServiceName', { value: service.serviceName });
   }
 }

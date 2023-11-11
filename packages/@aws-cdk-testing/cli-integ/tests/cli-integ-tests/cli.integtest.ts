@@ -1457,7 +1457,7 @@ integTest('hotswap deployment supports ecs service', withDefaultFixture(async (f
   const response = await fixture.aws.cloudFormation('describeStacks', {
     StackName: stackArn,
   });
-  const serviceName = response.Stacks?.[0].Outputs?.[0].OutputValue;
+  const serviceName = response.Stacks?.[0].Outputs?.find(output => output.OutputKey == 'ServiceName')?.OutputValue;
 
   // THEN
 
@@ -1465,6 +1465,36 @@ integTest('hotswap deployment supports ecs service', withDefaultFixture(async (f
   // "CREATE_COMPLETE"
   expect(response.Stacks?.[0].StackStatus).toEqual('CREATE_COMPLETE');
   expect(deployOutput).toContain(`ECS Service '${serviceName}' hotswapped!`);
+}));
+
+integTest('hotswap deployment for ecs service waits for deployment to complete', withDefaultFixture(async (fixture) => {
+  // GIVEN
+  const stackArn = await fixture.cdkDeploy('ecs-hotswap', {
+    captureStderr: false,
+  });
+
+  // WHEN
+  await fixture.cdkDeploy('ecs-hotswap', {
+    options: ['--hotswap'],
+    modEnv: {
+      DYNAMIC_ECS_PROPERTY_VALUE: 'new value',
+    },
+  });
+
+  const describeStacksResponse = await fixture.aws.cloudFormation('describeStacks', {
+    StackName: stackArn,
+  });
+  const clusterName = describeStacksResponse.Stacks?.[0].Outputs?.find(output => output.OutputKey == 'ClusterName')?.OutputValue!;
+  const serviceName = describeStacksResponse.Stacks?.[0].Outputs?.find(output => output.OutputKey == 'ServiceName')?.OutputValue!;
+
+  // THEN
+
+  const describeServicesResponse = await fixture.aws.ecs('describeServices', {
+    cluster: clusterName,
+    services: [serviceName],
+  });
+  expect(describeServicesResponse.services?.[0].deployments).toHaveLength(1); // only one deployment present
+
 }));
 
 async function listChildren(parent: string, pred: (x: string) => Promise<boolean>) {
