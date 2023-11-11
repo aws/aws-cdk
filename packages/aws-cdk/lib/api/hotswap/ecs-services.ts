@@ -143,9 +143,28 @@ export async function isHotswappableEcsServiceChange(
               expected: 'INACTIVE',
               state: 'failure',
             },
+
+            // wait for all services to report COMPLETED status for the PRIMARY deployment
             {
               matcher: 'path',
               argument: "length(services[].deployments[? status == 'PRIMARY' && rolloutState != 'COMPLETED'][]) == `0`",
+              expected: true,
+              state: 'success',
+            },
+
+            // failure if any services report a deployment with status FAILED
+            {
+              matcher: 'path',
+              argument: "length(services[].deployments[? rolloutState == 'FAILED'][]) > `0`",
+              expected: true,
+              state: 'failure',
+            },
+
+            // backup for non-rolling update services that do not provide rolloutState
+            // wait for all services to report only a single deployment
+            {
+              matcher: 'path',
+              argument: 'length(services[? length(deployments) > `1`]) == `0`',
               expected: true,
               state: 'success',
             },
