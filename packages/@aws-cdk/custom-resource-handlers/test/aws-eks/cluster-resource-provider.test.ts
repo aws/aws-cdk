@@ -1,6 +1,7 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import * as eks from '@aws-sdk/client-eks';
 import * as mocks from './cluster-resource-handler-mocks';
-import { ClusterResourceHandler } from '../lib/cluster-resource-handler/cluster';
+import { ClusterResourceHandler } from '../../lib/aws-eks/cluster-resource-handler/cluster';
 
 beforeAll(() => {
   jest.spyOn(console, 'log').mockImplementation();
