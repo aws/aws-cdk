@@ -4,7 +4,7 @@
 import * as EKS from '@aws-sdk/client-eks';
 import { EksClient, ResourceEvent, ResourceHandler } from './common';
 import { compareLoggingProps } from './compareLogging';
-import { IsCompleteResponse, OnEventResponse } from '../../../custom-resources/lib/provider-framework/types';
+import { IsCompleteResponse, OnEventResponse } from '../../types';
 
 const MAX_CLUSTER_NAME_LEN = 100;
 

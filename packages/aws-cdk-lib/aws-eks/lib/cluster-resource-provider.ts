@@ -6,7 +6,7 @@ import { Duration, NestedStack, Stack } from '../../core';
 import * as cr from '../../custom-resources';
 import { NodeProxyAgentLayer } from '../../lambda-layer-node-proxy-agent';
 
-const HANDLER_DIR = path.join(__dirname, 'cluster-resource-handler');
+const HANDLER_DIR = path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-eks', 'cluster-resource-handler');
 
 export interface ClusterResourceProviderProps {
 

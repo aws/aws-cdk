@@ -1,6 +1,7 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import * as eks from '@aws-sdk/client-eks';
 import * as sts from '@aws-sdk/client-sts';
-import { EksClient } from '../lib/cluster-resource-handler/common';
+import { EksClient } from '../../lib/aws-eks/cluster-resource-handler/common';
 
 /**
  * Request objects will be assigned when a request of the relevant type will be

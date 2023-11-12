@@ -11,7 +11,7 @@ import { ClusterResourceHandler } from './cluster';
 import { EksClient } from './common';
 import * as consts from './consts';
 import { FargateProfileResourceHandler } from './fargate';
-import { IsCompleteResponse } from '../../../custom-resources/lib/provider-framework/types';
+import { IsCompleteResponse } from '../../types';
 
 const proxyAgent = new ProxyAgent();
 const awsConfig = {
