@@ -25,20 +25,23 @@ export interface BackupSelectionOptions {
 
   /**
    * The role that AWS Backup uses to authenticate when backuping or restoring
-   * the resources.
+   * the resources. The `AWSBackupServiceRolePolicyForBackup` managed policy
+   * will be attached to this role unless `disableDefaultBackupPolicy`
+   * is set to `true`.
    *
    * @default - a new role will be created
    */
   readonly role?: iam.IRole;
 
   /**
-   * Whether to automatically give backup permissions to the role that AWS
-   * Backup uses. If `true`, the `AWSBackupServiceRolePolicyForBackup` managed
-   * policy will be attached to the role.
+   * Whether to disable automatically assigning default backup permissions to the role
+   * that AWS Backup uses.
+   * If `false`, the `AWSBackupServiceRolePolicyForBackup` managed policy will be
+   * attached to the role.
    *
-   * @default true
+   * @default false
    */
-  readonly attachBackupPolicy?: boolean;
+  readonly disableDefaultBackupPolicy?: boolean;
 
   /**
    * Whether to automatically give restores permissions to the role that AWS
@@ -93,7 +96,7 @@ export class BackupSelection extends Resource implements iam.IGrantable {
     const role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('backup.amazonaws.com'),
     });
-    if (props.attachBackupPolicy ?? true) {
+    if (!props.disableDefaultBackupPolicy) {
       role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSBackupServiceRolePolicyForBackup'));
     }
     if (props.allowRestores) {

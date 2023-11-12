@@ -51,7 +51,7 @@ class TestStack extends Stack {
         backup.BackupResource.fromConstruct(this),
       ],
       role,
-      attachBackupPolicy: false,
+      disableDefaultBackupPolicy: true,
     });
   }
 }

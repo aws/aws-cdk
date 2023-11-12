@@ -79,14 +79,14 @@ test('create a selection', () => {
   });
 });
 
-test('no policy is attached if attachBackupPolicy is false', () => {
+test('no policy is attached if disableDefaultBackupPolicy is true', () => {
   // WHEN
   new BackupSelection(stack, 'Selection', {
     backupPlan: plan,
     resources: [
       BackupResource.fromArn('arn1'),
     ],
-    attachBackupPolicy: false,
+    disableDefaultBackupPolicy: true,
   });
 
   // THEN
