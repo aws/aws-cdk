@@ -1561,16 +1561,16 @@ export class Project extends ProjectBase {
     if (!this.isLambdaBuildImage(buildImage)) return [];
     const ret = [];
     if (props.timeout) {
-      ret.push('Cannot specify timeoutInMinutes for lambda compute');
+      ret.push('Cannot specify timeout for Lambda compute');
     }
     if (props.queuedTimeout) {
-      ret.push('Cannot specify queuedTimeoutInMinutes for lambda compute');
+      ret.push('Cannot specify queuedTimeout for Lambda compute');
     }
     if (props.cache) {
-      ret.push('Cannot specify cache for lambda compute');
+      ret.push('Cannot specify cache for Lambda compute');
     }
     if (props.badge) {
-      ret.push('Cannot specify badgeEnabled for lambda compute');
+      ret.push('Cannot enable badge for Lambda compute');
     }
     return ret;
   }
@@ -1590,6 +1590,12 @@ export enum ComputeType {
   LAMBDA_8GB = 'BUILD_LAMBDA_8GB',
   LAMBDA_10GB = 'BUILD_LAMBDA_10GB',
 }
+
+// Because LinuxArmLambdaBuildImage and LinuxLambdaBuildImage depend on ComputeType, it is necessary to import them below ComputeType.
+/* eslint-disable no-duplicate-imports, import/order */
+import { LinuxArmLambdaBuildImage } from './linux-arm-lambda-build-image';
+import { LinuxLambdaBuildImage } from './linux-lambda-build-image';
+/* eslint-enable no-duplicate-imports, import/order */
 
 /**
  * The type of principal CodeBuild will use to pull your build Docker image.
@@ -1752,11 +1758,8 @@ interface LinuxBuildImageProps {
 }
 
 // Keep around to resolve a circular dependency until removing deprecated ARM image constants from LinuxBuildImage
-/* eslint-disable no-duplicate-imports, import/order */
+// eslint-disable-next-line no-duplicate-imports, import/order
 import { LinuxArmBuildImage } from './linux-arm-build-image';
-import { LinuxArmLambdaBuildImage } from './linux-arm-lambda-build-image';
-import { LinuxLambdaBuildImage } from './linux-lambda-build-image';
-/* eslint-enable no-duplicate-imports, import/order */
 
 /**
  * A CodeBuild image running x86-64 Linux.
@@ -1942,11 +1945,11 @@ export class LinuxBuildImage implements IBuildImage {
     this.repository = props.repository;
   }
 
-  public validate(_env: BuildEnvironment): string[] {
+  public validate(env: BuildEnvironment): string[] {
     const ret = [];
 
-    if (isLambdaComputeType(_env.computeType)) {
-      ret.push('x86-64 images do not support Lambda compute mode');
+    if (isLambdaComputeType(env.computeType)) {
+      ret.push('x86-64 images do not support Lambda compute types');
     }
 
     return ret;

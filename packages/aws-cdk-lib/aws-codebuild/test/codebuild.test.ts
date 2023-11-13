@@ -1689,7 +1689,7 @@ describe('Linux x86-64 Image', () => {
           computeType: codebuild.ComputeType.LAMBDA_1GB,
         },
       });
-    }).toThrow(/Invalid CodeBuild environment: x86-64 images do not support Lambda compute mode/);
+    }).toThrow(/Invalid CodeBuild environment: x86-64 images do not support Lambda compute type/);
   });
 });
 

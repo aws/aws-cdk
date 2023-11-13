@@ -302,7 +302,7 @@ can use the `environment` property to customize the build environment:
 
 The CodeBuild library supports both Linux and Windows images via the
 `LinuxBuildImage` (or `LinuxArmBuildImage`), and `WindowsBuildImage` classes, respectively.
-Additionally, with the introduction of Lambda compute support, the `LambdaBuildImage` (or `LinuxArmLambdaBuildImage`) class 
+With the introduction of Lambda compute support, the `LinuxLambdaBuildImage ` (or `LinuxArmLambdaBuildImage`) class 
 is available for specifying Lambda-compatible images.
 
 You can specify one of the predefined Windows/Linux images by using one
@@ -332,7 +332,7 @@ or one of the corresponding methods on `LinuxArmBuildImage`:
 * `LinuxArmBuildImage.fromDockerRegistry(image[, { secretsManagerCredentials }])`
 * `LinuxArmBuildImage.fromEcrRepository(repo[, tag])`
 
-However, be aware that specifying custom images is not possible with Lambda Images.
+**Note:** You cannot specify custom images on `LinuxLambdaBuildImage` or `LinuxArmLambdaBuildImage` images.
 
 Note that the `WindowsBuildImage` version of the static methods accepts an optional parameter of type `WindowsImageType`,
 which can be either `WindowsImageType.STANDARD`, the default, or `WindowsImageType.SERVER_2019`:
