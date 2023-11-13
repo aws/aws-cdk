@@ -1335,32 +1335,21 @@ export class Project extends ProjectBase {
 
     const errors = this.buildImage.validate(env);
 
-    // Lambda compute does not support timeoutInMinutes property
-    if (this.isLambdaComputeType(this.buildImage)) {
-      if (props.timeout) {
-        errors.push('Cannot specify timeoutInMinutes for lambda compute');
-      }
-      if (props.queuedTimeout) {
-        errors.push('Cannot specify queuedTimeoutInMinutes for lambda compute');
-      }
-      if (props.cache) {
-        errors.push('Cannot specify cache for lambda compute');
-      }
-      if (props.badge) {
-        errors.push('Cannot specify badgeEnabled for lambda compute');
-      }
-    }
+    errors.push(...this.validateLambdaBuildImage(this.buildImage, props));
 
     if (errors.length > 0) {
       throw new Error('Invalid CodeBuild environment: ' + errors.join('\n'));
     }
 
     // For Lambda compute, specifying imagePullPrincipalType is not supported
-    const imagePullPrincipalType = this.isLambdaComputeType(this.buildImage)
-      ? undefined
-      : this.buildImage.imagePullPrincipalType === ImagePullPrincipalType.CODEBUILD
-        ? ImagePullPrincipalType.CODEBUILD
-        : ImagePullPrincipalType.SERVICE_ROLE;
+    // const imagePullPrincipalType = this.isLambdaBuildImage(this.buildImage)
+    //   ? undefined
+    //   : this.buildImage.imagePullPrincipalType === ImagePullPrincipalType.CODEBUILD
+    //     ? ImagePullPrincipalType.CODEBUILD
+    //     : ImagePullPrincipalType.SERVICE_ROLE;
+    const imagePullPrincipalType = this.buildImage.imagePullPrincipalType === ImagePullPrincipalType.CODEBUILD
+      ? ImagePullPrincipalType.CODEBUILD
+      : ImagePullPrincipalType.SERVICE_ROLE;
     if (this.buildImage.repository) {
       if (imagePullPrincipalType === ImagePullPrincipalType.SERVICE_ROLE) {
         this.buildImage.repository.grantPull(this);
@@ -1563,8 +1552,30 @@ export class Project extends ProjectBase {
     }
   }
 
-  private isLambdaComputeType(buildImage: IBuildImage): boolean {
+  private isLambdaBuildImage(buildImage: IBuildImage): boolean {
     return buildImage instanceof LinuxLambdaBuildImage || buildImage instanceof LinuxArmLambdaBuildImage;
+  }
+
+  /**
+   * Validates a Lambda build image given the project properties.
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/lambda.html#lambda.limitations
+   */
+  private validateLambdaBuildImage(buildImage: IBuildImage, props: ProjectProps): string[] {
+    if (!this.isLambdaBuildImage(buildImage)) return [];
+    const ret = [];
+    if (props.timeout) {
+      ret.push('Cannot specify timeoutInMinutes for lambda compute');
+    }
+    if (props.queuedTimeout) {
+      ret.push('Cannot specify queuedTimeoutInMinutes for lambda compute');
+    }
+    if (props.cache) {
+      ret.push('Cannot specify cache for lambda compute');
+    }
+    if (props.badge) {
+      ret.push('Cannot specify badgeEnabled for lambda compute');
+    }
+    return ret;
   }
 }
 
@@ -1937,10 +1948,8 @@ export class LinuxBuildImage implements IBuildImage {
   public validate(_env: BuildEnvironment): string[] {
     const ret = [];
 
-    const lambdaComputeTypes = Object.values(ComputeType).filter(value => value.startsWith('BUILD_LAMBDA'));
-    if (_env.computeType && lambdaComputeTypes.includes(_env.computeType)) {
-      ret.push(`x86-64 images only support ComputeTypes between '${ComputeType.SMALL}' and '${ComputeType.X2_LARGE}' - ` +
-               `'${_env.computeType}' was given`);
+    if (isLambdaComputeType(_env.computeType)) {
+      ret.push('x86-64 images do not support Lambda compute mode');
     }
 
     return ret;
@@ -2107,8 +2116,11 @@ export class WindowsBuildImage implements IBuildImage {
   public validate(buildEnvironment: BuildEnvironment): string[] {
     const ret: string[] = [];
 
-    const lambdaComputeTypes = Object.values(ComputeType).filter(value => value.startsWith('BUILD_LAMBDA'));
-    if (buildEnvironment.computeType && lambdaComputeTypes.includes(buildEnvironment.computeType)) {
+    if (buildEnvironment.privileged) {
+      ret.push('Windows images do not support privileged mode');
+    }
+
+    if (buildEnvironment.computeType && isLambdaComputeType(buildEnvironment.computeType)) {
       ret.push('Windows images do not support Lambda compute mode');
     }
 
@@ -2218,4 +2230,15 @@ export enum ProjectNotificationEvents {
 
 function isBindableBuildImage(x: unknown): x is IBindableBuildImage {
   return typeof x === 'object' && !!x && !!(x as any).bind;
+}
+
+export function isLambdaComputeType(computeType?: ComputeType): boolean {
+  if (!computeType) return false;
+  return [
+    ComputeType.LAMBDA_1GB,
+    ComputeType.LAMBDA_2GB,
+    ComputeType.LAMBDA_4GB,
+    ComputeType.LAMBDA_8GB,
+    ComputeType.LAMBDA_10GB,
+  ].includes(computeType);
 }

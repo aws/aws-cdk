@@ -415,9 +415,7 @@ new codebuild.Project(this, 'Project', {
 })
 ```
 
-Custom images are not supported, so please use a static method such as `AMAZON_LINUX_2_NODE_18`.
-See documentation for other constraints.
-https://docs.aws.amazon.com/codebuild/latest/userguide/lambda.html#lambda.limitations
+> Visit [AWS Lambda compute in AWS CodeBuild](https://docs.aws.amazon.com/codebuild/latest/userguide/lambda.html) for more details.
 
 ## Logs
 

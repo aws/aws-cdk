@@ -1662,6 +1662,19 @@ describe('Windows2019 image', () => {
         });
       }).toThrow(/Invalid CodeBuild environment: Windows images do not support Lambda compute mode/);
     });
+
+    test('cannot be used in conjunction with privileged property', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => {
+        new codebuild.PipelineProject(stack, 'Project', {
+          environment: {
+            buildImage: codebuild.WindowsBuildImage.WIN_SERVER_CORE_2019_BASE,
+            privileged: true,
+          },
+        });
+      }).toThrow(/Invalid CodeBuild environment: Windows images do not support privileged mode/);
+    });
   });
 });
 
@@ -1676,7 +1689,7 @@ describe('Linux x86-64 Image', () => {
           computeType: codebuild.ComputeType.LAMBDA_1GB,
         },
       });
-    }).toThrow(/Invalid CodeBuild environment: x86-64 images only support ComputeTypes between 'BUILD_GENERAL1_SMALL' and 'BUILD_GENERAL1_2XLARGE' - 'BUILD_LAMBDA_1GB' was given/);
+    }).toThrow(/Invalid CodeBuild environment: x86-64 images do not support Lambda compute mode/);
   });
 });
 

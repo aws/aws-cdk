@@ -127,7 +127,7 @@ describe('Linux Lambda build image', () => {
             buildImage: codebuild.LinuxLambdaBuildImage.AMAZON_LINUX_2_NODE_18,
           },
         });
-      }).toThrow(/Invalid CodeBuild environment: Lambda compute type does not support Privileged mode/);
+      }).toThrow(/Invalid CodeBuild environment: Lambda compute type does not support privileged mode/);
     });
 
     test('cannot be used in conjunction with queuedTimeout property', () => {

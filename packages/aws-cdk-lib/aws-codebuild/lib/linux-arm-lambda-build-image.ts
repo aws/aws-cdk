@@ -1,6 +1,6 @@
 import { BuildSpec } from './build-spec';
 import { runScriptLinuxBuildSpec } from './private/run-script-linux-build-spec';
-import { BuildEnvironment, ComputeType, IBuildImage } from './project';
+import { BuildEnvironment, ComputeType, IBuildImage, isLambdaComputeType } from './project';
 
 /**
  * Construction properties of `LinuxArmLambdaBuildImage`.
@@ -13,25 +13,24 @@ interface LinuxArmLambdaBuildImageProps {
 /**
  * A CodeBuild image running aarch64 Lambda.
  *
- * This class has a bunch of public constants that represent the CodeBuild aarch64 images.
- *
+ * This class has a bunch of public constants that represent the CodeBuild aarch64 Lambda images.
  *
  * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
  */
 export class LinuxArmLambdaBuildImage implements IBuildImage {
-  /** Image "aws/codebuild/amazonlinux-aarch64-lambda-standard:nodejs18". */
+  /** The `aws/codebuild/amazonlinux-aarch64-lambda-standard:nodejs18` build image. */
   public static readonly AMAZON_LINUX_2_NODE_18 = LinuxArmLambdaBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux-aarch64-lambda-standard:nodejs18');
-  /** Image "aws/codebuild/amazonlinux-aarch64-lambda-standard:python3.11". */
+  /** The `aws/codebuild/amazonlinux-aarch64-lambda-standard:python3.11` build image. */
   public static readonly AMAZON_LINUX_2_PYTHON_3_11 = LinuxArmLambdaBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux-aarch64-lambda-standard:python3.11');
-  /** Image "aws/codebuild/amazonlinux-aarch64-lambda-standard:ruby3.2". */
+  /** The `aws/codebuild/amazonlinux-aarch64-lambda-standard:ruby3.2` build image. */
   public static readonly AMAZON_LINUX_2_RUBY_3_2 = LinuxArmLambdaBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux-aarch64-lambda-standard:ruby3.2');
-  /** Image "aws/codebuild/amazonlinux-aarch64-lambda-standard:corretto17". */
+  /** The `aws/codebuild/amazonlinux-aarch64-lambda-standard:corretto17` build image. */
   public static readonly AMAZON_LINUX_2_CORRETTO_17 = LinuxArmLambdaBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux-aarch64-lambda-standard:corretto17');
-  /** Image "aws/codebuild/amazonlinux-aarch64-lambda-standard:corretto11". */
+  /** The `aws/codebuild/amazonlinux-aarch64-lambda-standard:corretto11` build image. */
   public static readonly AMAZON_LINUX_2_CORRETTO_11 = LinuxArmLambdaBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux-aarch64-lambda-standard:corretto11');
-  /** Image "aws/codebuild/amazonlinux-aarch64-lambda-standard:go1.21". */
+  /** The `aws/codebuild/amazonlinux-aarch64-lambda-standard:go1.21` build image. */
   public static readonly AMAZON_LINUX_2_GO_1_21 = LinuxArmLambdaBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux-aarch64-lambda-standard:go1.21');
-  /** Image "aws/codebuild/amazonlinux-aarch64-lambda-standard:dotnet6". */
+  /** The `aws/codebuild/amazonlinux-aarch64-lambda-standard:dotnet6` build image. */
   public static readonly AMAZON_LINUX_2_DOTNET_6 = LinuxArmLambdaBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux-aarch64-lambda-standard:dotnet6');
 
   /**
@@ -59,19 +58,14 @@ export class LinuxArmLambdaBuildImage implements IBuildImage {
     this.imageId = props.imageId;
   }
 
-  /**
-   * Validates by checking unsupported property and compute type
-   * @param buildEnvironment BuildEnvironment
-   */
   public validate(buildEnvironment: BuildEnvironment): string[] {
     const ret = [];
 
     if (buildEnvironment.privileged) {
-      ret.push('Lambda compute type does not support Privileged mode');
+      ret.push('Lambda compute type does not support privileged mode');
     }
 
-    const lambdaComputeTypes = Object.values(ComputeType).filter(value => value.startsWith('BUILD_LAMBDA'));
-    if (buildEnvironment.computeType && !lambdaComputeTypes.includes(buildEnvironment.computeType)) {
+    if (buildEnvironment.computeType && !isLambdaComputeType(buildEnvironment.computeType)) {
       ret.push(`Lambda images only support ComputeTypes between '${ComputeType.LAMBDA_1GB}' and '${ComputeType.LAMBDA_10GB}' - ` +
                `'${buildEnvironment.computeType}' was given`);
     }
