@@ -1,38 +1,26 @@
 {
  "Resources": {
-  "SomeParameterB1EDD45B": {
-   "Type": "AWS::SSM::Parameter",
-   "Properties": {
-    "Name": "KNOWN_PARAMETER_NAME",
-    "Type": "String",
-    "Value": "MY_PARAMETER_VALUE"
-   }
-  },
-  "ExportsWriteruseast2828FA26B86FBEFA7": {
-   "Type": "Custom::CrossRegionExportWriter",
+  "AwsApiCallSSMgetParameters4fa3e40a032be531e9097969f2c36e48": {
+   "Type": "Custom::DeployAssert@SdkCallSSMgetParameters",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
-      "CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A",
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
       "Arn"
      ]
     },
-    "WriterProps": {
-     "region": "us-east-2",
-     "exports": {
-      "/cdk/exports/CrossRegionRefConsumerInteg/CrossRegionRefProducerInteguseast1FnGetAttSomeParameterB1EDD45BValue399DD9D8": {
-       "Fn::GetAtt": [
-        "SomeParameterB1EDD45B",
-        "Value"
-       ]
-      }
-     }
-    }
+    "service": "SSM",
+    "api": "getParameters",
+    "parameters": {
+     "Names": "[\"KNOWN_PARAMETER_NAME\"]"
+    },
+    "flattenResponse": "false",
+    "salt": "1699655297834"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1": {
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -59,26 +47,12 @@
        "Version": "2012-10-17",
        "Statement": [
         {
+         "Action": [
+          "ssm:GetParameters"
+         ],
          "Effect": "Allow",
          "Resource": [
-          {
-           "Fn::Join": [
-            "",
-            [
-             "arn:aws:ssm:us-east-2:",
-             {
-              "Ref": "AWS::AccountId"
-             },
-             ":parameter/cdk/exports/*"
-            ]
-           ]
-          }
-         ],
-         "Action": [
-          "ssm:DeleteParameters",
-          "ssm:ListTagsForResource",
-          "ssm:GetParameters",
-          "ssm:PutParameter"
+          "*"
          ]
         }
        ]
@@ -87,29 +61,25 @@
     ]
    }
   },
-  "CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A": {
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
+    "Runtime": "nodejs18.x",
     "Code": {
      "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "137607a7bcc63f8f1168253ba8ce35e099cb16d594883a9a68dc91842f65da32.zip"
+     "S3Key": "6e5ba7464138b7720c27df56bcc0a5463093492a1f311ed8a4f4c6baf84acaa8.zip"
     },
-    "Timeout": 900,
-    "MemorySize": 128,
-    "Handler": "__entrypoint__.handler",
+    "Timeout": 120,
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
-      "CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1",
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
       "Arn"
      ]
-    },
-    "Runtime": "nodejs18.x"
-   },
-   "DependsOn": [
-    "CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1"
-   ]
+    }
+   }
   }
  },
  "Parameters": {
