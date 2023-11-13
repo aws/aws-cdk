@@ -29,3 +29,5 @@ test/test-archive-follow/data/linked
 
 !scripts/*.ts
 scripts/*.d.ts
+
+!lib/types.d.ts
