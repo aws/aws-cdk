@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "35.0.0",
   "artifacts": {
     "aws-cdk-lambda-runtime-inlinecode.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4ead45111870c9c1adb03a0aba3c5d2de7b2102d0e62479767984e93f983ebe3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0ebdc1ee0464a9de6deeef53b9dbfd33c32c14683b2f1c557bb194eaf4808018.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -176,6 +176,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "NODEJS18XfunctionName"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_20_X/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NODEJS20XServiceRole188A4E38"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_20_X/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NODEJS20X70A25ADE"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_20_X-functionName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NODEJS20XfunctionName"
           }
         ],
         "/aws-cdk-lambda-runtime-inlinecode/BootstrapVersion": [
