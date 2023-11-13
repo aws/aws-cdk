@@ -87,7 +87,7 @@ export class ResourceClass extends ClassType {
         }),
       },
       extends: CDK_CORE.CfnResource,
-      implements: [CDK_CORE.IInspectable, ...ResourceDecider.taggabilityInterfaces(props.resource)],
+      implements: [CDK_CORE.IInspectable, resourceInterface.type, ...ResourceDecider.taggabilityInterfaces(props.resource)],
     });
 
     this.db = props.db;

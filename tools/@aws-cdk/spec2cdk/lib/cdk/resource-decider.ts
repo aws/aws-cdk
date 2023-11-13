@@ -13,6 +13,9 @@ export const HAS_25610 = false;
 // This convenience typewriter builder is used all over the place
 const $this = $E(expr.this_());
 
+// This convenience typewriter builder is used for cloudformation intrinsics
+const $Fn = $E(expr.directCode('cdk.Fn'));
+
 /**
  * Decide how properties get mapped between model types, Typescript types, and CloudFormation
  */
@@ -56,41 +59,70 @@ export class ResourceDecider {
     // A list of possible names for the arn, in order of importance.
     // This is relevant because some resources, like AWS::VpcLattice::AccessLogSubscription
     // has both `Arn` and `ResourceArn`, and we want to select the `Arn` property.
-    const possibleArnNames = ['Arn', 'ResourceArn', `${this.resource.name}Arn`];
+    const possibleArnNames = ['Arn', `${this.resource.name}Arn`];
     for (const arn of possibleArnNames) {
-      const att = this.classAttributeProperties.filter((a) => a.propertySpec.name === attributePropertyName(arn));
-      const prop = this.propsProperties.filter((p) => p.propertySpec.name === propertyNameFromCloudFormation(arn));
-      if (att.length > 0 || prop.length > 0) {
-        return att[0] ? att[0].propertySpec : prop[0].propertySpec;
-      }
+      const att = this.classAttributeProperties.find((a) => a.propertySpec.name === attributePropertyName(arn));
+      if (att) { return att.propertySpec; }
     }
     return;
   }
 
+  private convertPropertySpecToRefAttribute(propSpec: PropertySpec): PropertySpec {
+    return {
+      ...propSpec,
+      name: attributePropertyName(propSpec.name[0].toUpperCase() + propSpec.name.slice(1)),
+      docs: {
+        ...propSpec.docs,
+        summary: (propSpec.docs?.summary ?? '').concat('\nThis property gets determined after the resource is created.'),
+        remarks: (propSpec.docs?.remarks ?? '').concat('@cloudformationAttribute Ref'),
+      },
+      immutable: true,
+    };
+  }
+
   private convertPrimaryIdentifier() {
-    for (const cfnName of this.resource.primaryIdentifier ?? []) {
+    if (this.resource.primaryIdentifier === undefined) { return; }
+    for (let i = 0; i < (this.resource.primaryIdentifier).length; i++) {
+      const cfnName = this.resource.primaryIdentifier[i];
       const att = this.findAttributeByName(attributePropertyName(cfnName));
       const prop = this.findPropertyByName(propertyNameFromCloudFormation(cfnName));
       if (att) {
         this.primaryIdentifier.push(att);
       } else if (prop) {
-        // rename the prop name as an attribute name, since it is gettable by ref
-        this.primaryIdentifier.push({
-          ...prop,
-          name: attributePropertyName(prop.name[0].toUpperCase() + prop.name.slice(1)),
-          docs: {
-            ...prop.docs,
-            remarks: prop.docs?.remarks?.concat(['\n', `@cloudformationRef ${prop.name}`].join('\n')),
-          },
+        const propSpec = prop.propertySpec;
+
+        // Build an attribute out of the property we're getting
+        // Create initializer for new attribute, if possible
+        let initializer: Expression | undefined = undefined;
+        if (propSpec.type === Type.STRING) { // handling only this case for now
+          if (this.resource.primaryIdentifier!.length === 1) {
+            initializer = CDK_CORE.tokenAsString($this.ref);
+          } else {
+            initializer = CDK_CORE.tokenAsString($Fn.select(expr.lit(i), $Fn.split(expr.lit('|'), $this.ref)));
+          }
+        }
+
+        // If we cannot come up with an initializer, we're dropping this property on the floor
+        if (!initializer) { continue; }
+
+        // Build an attribute spec out of the property spec
+        const attrPropertySpec = this.convertPropertySpecToRefAttribute(propSpec);
+
+        // Add the new attribute to the relevant places
+        this.classAttributeProperties.push({
+          propertySpec: attrPropertySpec,
+          initializer,
         });
+
+        this.primaryIdentifier.push(attrPropertySpec);
       }
     }
   }
 
-  private findPropertyByName(name: string): PropertySpec | undefined {
-    const props = this.propsProperties.filter((prop) => prop.propertySpec.name === name);
+  private findPropertyByName(name: string): ClassProperty | undefined {
+    const props = this.classProperties.filter((prop) => prop.propertySpec.name === name);
     // there's no way we have multiple properties with the same name
-    if (props.length > 0) { return props[0].propertySpec; }
+    if (props.length > 0) { return props[0]; }
     return;
   }
 

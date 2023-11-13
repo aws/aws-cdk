@@ -43,6 +43,62 @@ test('resource interface when primaryIdentifier is a property', () => {
   expect(rendered).toMatchSnapshot();
 });
 
+test('resource with optional primary identifier gets property from ref', () => {
+  // GIVEN
+  const resource = db.allocate('resource', {
+    name: 'Resource',
+    primaryIdentifier: ['Id'],
+    attributes: {},
+    properties: {
+      Id: {
+        type: { type: 'string' },
+        documentation: 'The identifier of the resource',
+      },
+    },
+    cloudFormationType: 'AWS::Some::Resource',
+  });
+  db.link('hasResource', service, resource);
+
+  // THEN
+  const foundResource = db.lookup('resource', 'cloudFormationType', 'equals', 'AWS::Some::Resource').only();
+
+  const ast = AstBuilder.forResource(foundResource, { db });
+
+  const rendered = renderer.render(ast.module);
+
+  expect(rendered).toMatchSnapshot();
+});
+
+test('resource with multiple primaryIdentifiers as properties', () => {
+  // GIVEN
+  const resource = db.allocate('resource', {
+    name: 'Resource',
+    primaryIdentifier: ['Id', 'AnotherId'],
+    attributes: {},
+    properties: {
+      Id: {
+        type: { type: 'string' },
+        documentation: 'The identifier of the resource',
+      },
+      AnotherId: {
+        type: { type: 'string' },
+        documentation: 'Another identifier of the resource',
+      },
+    },
+    cloudFormationType: 'AWS::Some::Resource',
+  });
+  db.link('hasResource', service, resource);
+
+  // THEN
+  const foundResource = db.lookup('resource', 'cloudFormationType', 'equals', 'AWS::Some::Resource').only();
+
+  const ast = AstBuilder.forResource(foundResource, { db });
+
+  const rendered = renderer.render(ast.module);
+
+  expect(rendered).toMatchSnapshot();
+});
+
 test('resource interface when primaryIdentifier is an attribute', () => {
   // GIVEN
   const resource = db.allocate('resource', {
@@ -103,36 +159,6 @@ test('resource interface with "Arn"', () => {
   // GIVEN
   const resource = db.allocate('resource', {
     name: 'Resource',
-    primaryIdentifier: ['Id', 'Another'],
-    properties: {},
-    attributes: {
-      Id: {
-        type: { type: 'string' },
-        documentation: 'The identifier of the resource',
-      },
-      Arn: {
-        type: { type: 'string' },
-        documentation: 'The arn for the resource',
-      },
-    },
-    cloudFormationType: 'AWS::Some::Resource',
-  });
-  db.link('hasResource', service, resource);
-
-  // THEN
-  const foundResource = db.lookup('resource', 'cloudFormationType', 'equals', 'AWS::Some::Resource').only();
-
-  const ast = AstBuilder.forResource(foundResource, { db });
-
-  const rendered = renderer.render(ast.module);
-
-  expect(rendered).toMatchSnapshot();
-});
-
-test('resource interface with "ResourceArn"', () => {
-  // GIVEN
-  const resource = db.allocate('resource', {
-    name: 'Resource',
     primaryIdentifier: ['Id'],
     properties: {},
     attributes: {
@@ -140,7 +166,7 @@ test('resource interface with "ResourceArn"', () => {
         type: { type: 'string' },
         documentation: 'The identifier of the resource',
       },
-      ResourceArn: {
+      Arn: {
         type: { type: 'string' },
         documentation: 'The arn for the resource',
       },
@@ -181,6 +207,37 @@ test('resource interface with "<Resource>Arn"', () => {
 
   // THEN
   const foundResource = db.lookup('resource', 'cloudFormationType', 'equals', 'AWS::Some::Something').only();
+
+  const ast = AstBuilder.forResource(foundResource, { db });
+
+  const rendered = renderer.render(ast.module);
+
+  expect(rendered).toMatchSnapshot();
+});
+
+test('resource interface with Arn as a property and not a primaryIdentifier', () => {
+  // GIVEN
+  const resource = db.allocate('resource', {
+    name: 'Resource',
+    primaryIdentifier: ['Id'],
+    properties: {
+      Arn: {
+        type: { type: 'string' },
+        documentation: 'The arn for the resource',
+      },
+    },
+    attributes: {
+      Id: {
+        type: { type: 'string' },
+        documentation: 'The identifier of the resource',
+      },
+    },
+    cloudFormationType: 'AWS::Some::Resource',
+  });
+  db.link('hasResource', service, resource);
+
+  // THEN
+  const foundResource = db.lookup('resource', 'cloudFormationType', 'equals', 'AWS::Some::Resource').only();
 
   const ast = AstBuilder.forResource(foundResource, { db });
 
