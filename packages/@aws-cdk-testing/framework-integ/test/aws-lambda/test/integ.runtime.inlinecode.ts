@@ -71,4 +71,11 @@ const node18xfn = new Function(stack, 'NODEJS_18_X', {
 });
 new CfnOutput(stack, 'NODEJS_18_X-functionName', { value: node18xfn.functionName });
 
+const node20xfn = new Function(stack, 'NODEJS_20_X', {
+  code: new InlineCode('exports.handler = async function(event) { return "success" }'),
+  handler: 'index.handler',
+  runtime: Runtime.NODEJS_20_X,
+});
+new CfnOutput(stack, 'NODEJS_20_X-functionName', { value: node20xfn.functionName });
+
 app.synth();
