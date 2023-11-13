@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.108.0](https://github.com/aws/aws-cdk/compare/v2.107.0...v2.108.0) (2023-11-13)
+
+
+### Features
+
+* **lambda:** add python 3.12 runtime ([#27967](https://github.com/aws/aws-cdk/issues/27967)) ([8a13cb3](https://github.com/aws/aws-cdk/commit/8a13cb3aa770871dcc145cfa6ebbccfc4ca89e83))
+
 ## [2.107.0](https://github.com/aws/aws-cdk/compare/v2.106.1...v2.107.0) (2023-11-13)
 
 
