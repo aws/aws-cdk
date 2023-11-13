@@ -1,6 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { InvalidResourceId } from '@aws-sdk/client-ssm';
-import { SSM_EXPORT_PATH_PREFIX } from 'aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/types';
+import { SSM_EXPORT_PATH_PREFIX } from '../../lib/core/types';
 import { handler } from '../../lib/core/cross-region-ssm-writer-handler/index';
 
 let mockPutParameter: jest.Mock = jest.fn() ;
