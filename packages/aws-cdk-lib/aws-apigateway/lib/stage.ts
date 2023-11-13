@@ -40,7 +40,7 @@ export interface StageOptions extends MethodDeploymentOptions {
   readonly stageName?: string;
 
   /**
-   * The CloudWatch Logs log group.
+   * The CloudWatch Logs log group or Firehose delivery stream where to write access logs.
    *
    * @default - No destination
    */
