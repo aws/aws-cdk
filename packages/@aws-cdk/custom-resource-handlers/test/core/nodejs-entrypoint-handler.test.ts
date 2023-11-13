@@ -4,7 +4,7 @@ import * as https from 'https';
 import * as os from 'os';
 import * as path from 'path';
 import * as url from 'url';
-import * as entrypoint from '../../lib/custom-resource-provider/nodejs-entrypoint';
+import * as entrypoint from '../../lib/core/nodejs-entrypoint-handler/index';
 
 describe('nodejs entrypoint', () => {
   describe('handler return value is sent back to cloudformation as a success response', () => {
