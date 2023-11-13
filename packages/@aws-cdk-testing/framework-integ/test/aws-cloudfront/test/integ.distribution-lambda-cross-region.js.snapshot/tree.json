@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.0.9"
-        }
-      },
       "integ-distribution-lambda-cross-region": {
         "id": "integ-distribution-lambda-cross-region",
         "path": "integ-distribution-lambda-cross-region",
@@ -28,19 +20,19 @@
                     "id": "Default",
                     "path": "integ-distribution-lambda-cross-region/Lambda/ArnReader/Default",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "aws-cdk-lib.CfnResource",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CustomResource",
+                  "fqn": "aws-cdk-lib.CustomResource",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-cloudfront.experimental.EdgeFunction",
+              "fqn": "aws-cdk-lib.aws_cloudfront.experimental.EdgeFunction",
               "version": "0.0.0"
             }
           },
@@ -52,7 +44,7 @@
                 "id": "Staging",
                 "path": "integ-distribution-lambda-cross-region/Custom::CrossRegionStringParameterReaderCustomResourceProvider/Staging",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.AssetStaging",
+                  "fqn": "aws-cdk-lib.AssetStaging",
                   "version": "0.0.0"
                 }
               },
@@ -60,7 +52,7 @@
                 "id": "Role",
                 "path": "integ-distribution-lambda-cross-region/Custom::CrossRegionStringParameterReaderCustomResourceProvider/Role",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
+                  "fqn": "aws-cdk-lib.CfnResource",
                   "version": "0.0.0"
                 }
               },
@@ -68,58 +60,14 @@
                 "id": "Handler",
                 "path": "integ-distribution-lambda-cross-region/Custom::CrossRegionStringParameterReaderCustomResourceProvider/Handler",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
+                  "fqn": "aws-cdk-lib.CfnResource",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CustomResourceProvider",
+              "fqn": "aws-cdk-lib.CustomResourceProvider",
               "version": "0.0.0"
-            }
-          },
-          "AssetParameters": {
-            "id": "AssetParameters",
-            "path": "integ-distribution-lambda-cross-region/AssetParameters",
-            "children": {
-              "e718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376a": {
-                "id": "e718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376a",
-                "path": "integ-distribution-lambda-cross-region/AssetParameters/e718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376a",
-                "children": {
-                  "S3Bucket": {
-                    "id": "S3Bucket",
-                    "path": "integ-distribution-lambda-cross-region/AssetParameters/e718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376a/S3Bucket",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "S3VersionKey": {
-                    "id": "S3VersionKey",
-                    "path": "integ-distribution-lambda-cross-region/AssetParameters/e718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376a/S3VersionKey",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "ArtifactHash": {
-                    "id": "ArtifactHash",
-                    "path": "integ-distribution-lambda-cross-region/AssetParameters/e718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376a/ArtifactHash",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.0.9"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.0.9"
             }
           },
           "Lambda2": {
@@ -134,19 +82,19 @@
                     "id": "Default",
                     "path": "integ-distribution-lambda-cross-region/Lambda2/ArnReader/Default",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "aws-cdk-lib.CfnResource",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CustomResource",
+                  "fqn": "aws-cdk-lib.CustomResource",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-cloudfront.experimental.EdgeFunction",
+              "fqn": "aws-cdk-lib.aws_cloudfront.experimental.EdgeFunction",
               "version": "0.0.0"
             }
           },
@@ -159,7 +107,7 @@
                 "path": "integ-distribution-lambda-cross-region/Dist/Origin1",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.0.9"
+                  "version": "10.2.70"
                 }
               },
               "Resource": {
@@ -212,19 +160,35 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-cloudfront.CfnDistribution",
+                  "fqn": "aws-cdk-lib.aws_cloudfront.CfnDistribution",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-cloudfront.Distribution",
+              "fqn": "aws-cdk-lib.aws_cloudfront.Distribution",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-distribution-lambda-cross-region/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-distribution-lambda-cross-region/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
         }
       },
@@ -240,6 +204,14 @@
                 "id": "ServiceRole",
                 "path": "edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6/Lambda/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6/Lambda/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6/Lambda/ServiceRole/Resource",
@@ -278,13 +250,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -297,18 +269,18 @@
                     "code": {
                       "zipFile": "foo"
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "LambdaServiceRoleA8ED4D3B",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
-                    "runtime": "nodejs14.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                   "version": "0.0.0"
                 }
               },
@@ -328,13 +300,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-lambda.CfnVersion",
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnVersion",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.Version",
+                  "fqn": "aws-cdk-lib.aws_lambda.Version",
                   "version": "0.0.0"
                 }
               },
@@ -348,21 +320,21 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::SSM::Parameter",
                       "aws:cdk:cloudformation:props": {
+                        "name": "/cdk/EdgeFunctionArn/eu-west-1/integ-distribution-lambda-cross-region/Lambda",
                         "type": "String",
                         "value": {
-                          "Ref": "LambdaCurrentVersionDF706F6A9a632a294ae3a9cd4d550f1c4e26619d"
-                        },
-                        "name": "/cdk/EdgeFunctionArn/eu-west-1/integ-distribution-lambda-cross-region/Lambda"
+                          "Ref": "LambdaCurrentVersionDF706F6Aceabca74f785ac2be6cd5e57eeaf3b05"
+                        }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ssm.CfnParameter",
+                      "fqn": "aws-cdk-lib.aws_ssm.CfnParameter",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ssm.StringParameter",
+                  "fqn": "aws-cdk-lib.aws_ssm.StringParameter",
                   "version": "0.0.0"
                 }
               },
@@ -381,7 +353,7 @@
                         },
                         "functionVersion": {
                           "Fn::GetAtt": [
-                            "LambdaCurrentVersionDF706F6A9a632a294ae3a9cd4d550f1c4e26619d",
+                            "LambdaCurrentVersionDF706F6Aceabca74f785ac2be6cd5e57eeaf3b05",
                             "Version"
                           ]
                         },
@@ -389,7 +361,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-lambda.CfnAlias",
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnAlias",
                       "version": "0.0.0"
                     }
                   },
@@ -397,25 +369,41 @@
                     "id": "ScalingRole",
                     "path": "edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6/Lambda/Aliaslive/ScalingRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.Alias",
+                  "fqn": "aws-cdk-lib.aws_lambda.Alias",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-lambda.Function",
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
         }
       },
@@ -431,6 +419,14 @@
                 "id": "ServiceRole",
                 "path": "edge-lambda-stack-eu-west-1-2/Lambda2/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "edge-lambda-stack-eu-west-1-2/Lambda2/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "edge-lambda-stack-eu-west-1-2/Lambda2/ServiceRole/Resource",
@@ -469,13 +465,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -488,18 +484,18 @@
                     "code": {
                       "zipFile": "foo"
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "Lambda2ServiceRole31A072E1",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
-                    "runtime": "nodejs14.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                   "version": "0.0.0"
                 }
               },
@@ -519,13 +515,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-lambda.CfnVersion",
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnVersion",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.Version",
+                  "fqn": "aws-cdk-lib.aws_lambda.Version",
                   "version": "0.0.0"
                 }
               },
@@ -539,21 +535,21 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::SSM::Parameter",
                       "aws:cdk:cloudformation:props": {
+                        "name": "/cdk/EdgeFunctionArn/eu-west-1/integ-distribution-lambda-cross-region/Lambda2",
                         "type": "String",
                         "value": {
-                          "Ref": "Lambda2CurrentVersion72012B74da2ca4572056a1112d9804f75b5b7491"
-                        },
-                        "name": "/cdk/EdgeFunctionArn/eu-west-1/integ-distribution-lambda-cross-region/Lambda2"
+                          "Ref": "Lambda2CurrentVersion72012B7448e7ccb012bdf87615c944d94691ab6d"
+                        }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ssm.CfnParameter",
+                      "fqn": "aws-cdk-lib.aws_ssm.CfnParameter",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ssm.StringParameter",
+                  "fqn": "aws-cdk-lib.aws_ssm.StringParameter",
                   "version": "0.0.0"
                 }
               },
@@ -572,7 +568,7 @@
                         },
                         "functionVersion": {
                           "Fn::GetAtt": [
-                            "Lambda2CurrentVersion72012B74da2ca4572056a1112d9804f75b5b7491",
+                            "Lambda2CurrentVersion72012B7448e7ccb012bdf87615c944d94691ab6d",
                             "Version"
                           ]
                         },
@@ -580,7 +576,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-lambda.CfnAlias",
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnAlias",
                       "version": "0.0.0"
                     }
                   },
@@ -588,31 +584,109 @@
                     "id": "ScalingRole",
                     "path": "edge-lambda-stack-eu-west-1-2/Lambda2/Aliaslive/ScalingRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.Alias",
+                  "fqn": "aws-cdk-lib.aws_lambda.Alias",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-lambda.Function",
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "edge-lambda-stack-eu-west-1-2/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "edge-lambda-stack-eu-west-1-2/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
+        }
+      },
+      "cdk-integ-distribution-lambda-cross-region": {
+        "id": "cdk-integ-distribution-lambda-cross-region",
+        "path": "cdk-integ-distribution-lambda-cross-region",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "cdk-integ-distribution-lambda-cross-region/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "cdk-integ-distribution-lambda-cross-region/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "cdk-integ-distribution-lambda-cross-region/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "cdk-integ-distribution-lambda-cross-region/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "cdk-integ-distribution-lambda-cross-region/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.2.70"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
+      "fqn": "aws-cdk-lib.App",
       "version": "0.0.0"
     }
   }
