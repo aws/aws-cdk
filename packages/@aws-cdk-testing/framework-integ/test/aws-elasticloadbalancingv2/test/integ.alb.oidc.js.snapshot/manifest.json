@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "35.0.0",
   "artifacts": {
     "IntegAlbOidc.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5811b336c555368b7a362b36dfb404d90854d312ccdcd019fe8449da53446182.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a4e9dc94e5a4c530be42d592066261940e90183aeae4236142090a006206f599.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -262,6 +262,12 @@
             "data": "ARecordE7B57761"
           }
         ],
+        "/IntegAlbOidc/User/Resource": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version. [ack: @aws-cdk/custom-resources:installLatestAwsSdkNotSpecified]"
+          }
+        ],
         "/IntegAlbOidc/User/Resource/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -272,6 +278,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "UserCustomResourcePolicyC2EB5139"
+          }
+        ],
+        "/IntegAlbOidc/User/SetUserPassword": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version. [ack: @aws-cdk/custom-resources:installLatestAwsSdkNotSpecified]"
           }
         ],
         "/IntegAlbOidc/User/SetUserPassword/Resource/Default": [
@@ -336,7 +348,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ba99c445f93e993845898c1a483b46473e6d8a9c246428e35707a6bc566d2314.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7ad93d6aadd7db4071df9ace76c2dafc4b32ddc45d4dfdd79bae3dfea53021ea.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
