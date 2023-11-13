@@ -1591,7 +1591,7 @@ export enum ComputeType {
   LAMBDA_10GB = 'BUILD_LAMBDA_10GB',
 }
 
-// Because LinuxArmLambdaBuildImage and LinuxLambdaBuildImage depend on ComputeType, it is necessary to import them below ComputeType.
+// LinuxArmLambdaBuildImage and LinuxLambdaBuildImage reference ComputeType, so these imports should be placed below ComputeType.
 /* eslint-disable no-duplicate-imports, import/order */
 import { LinuxArmLambdaBuildImage } from './linux-arm-lambda-build-image';
 import { LinuxLambdaBuildImage } from './linux-lambda-build-image';
