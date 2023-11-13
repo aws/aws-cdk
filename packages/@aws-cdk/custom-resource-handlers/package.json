@@ -37,6 +37,7 @@
     "@aws-sdk/client-account": "3.421.0",
     "@aws-sdk/client-eks": "3.421.0",
     "@aws-sdk/client-sts": "3.421.0",
+    "@aws-sdk/node-http-handler": "^3.370.0",
     "@smithy/util-stream": "^2.0.12",
     "@types/jest": "^29.5.8",
     "aws-sdk-client-mock": "^3.0.0",
@@ -53,7 +54,8 @@
     "@aws-sdk/client-synthetics": "3.421.0",
     "@aws-sdk/client-ecr": "3.421.0",
     "@aws-sdk/client-s3": "3.421.0",
-    "aws-sdk": "^2.1492.0"
+    "aws-sdk": "^2.1492.0",
+    "@aws-cdk/asset-node-proxy-agent-v6": "^2.0.1"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
