@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-eks-cluster-alb-controller-test/Vpc"
+      "Value": "aws-cdk-eks-cluster-alb-controller/Vpc"
      }
     ]
    }
@@ -43,7 +43,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PublicSubnet1"
+      "Value": "aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -61,7 +61,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PublicSubnet1"
+      "Value": "aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -106,7 +106,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PublicSubnet1"
+      "Value": "aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet1"
      }
     ]
    }
@@ -130,7 +130,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PublicSubnet1"
+      "Value": "aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet1"
      }
     ]
    },
@@ -167,7 +167,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PublicSubnet2"
+      "Value": "aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -185,7 +185,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PublicSubnet2"
+      "Value": "aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -247,7 +247,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PrivateSubnet1"
+      "Value": "aws-cdk-eks-cluster-alb-controller/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -265,7 +265,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PrivateSubnet1"
+      "Value": "aws-cdk-eks-cluster-alb-controller/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -324,7 +324,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PrivateSubnet2"
+      "Value": "aws-cdk-eks-cluster-alb-controller/Vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -342,7 +342,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PrivateSubnet2"
+      "Value": "aws-cdk-eks-cluster-alb-controller/Vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -379,7 +379,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-eks-cluster-alb-controller-test/Vpc"
+      "Value": "aws-cdk-eks-cluster-alb-controller/Vpc"
      }
     ]
    }
@@ -585,13 +585,13 @@
          {
           "Fn::GetAtt": [
            "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
-           "Outputs.awscdkeksclusteralbcontrollertestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRoleAE488DC9Arn"
+           "Outputs.awscdkeksclusteralbcontrollerawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole75085195Arn"
           ]
          },
          {
           "Fn::GetAtt": [
            "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
-           "Outputs.awscdkeksclusteralbcontrollertestawscdkawseksClusterResourceProviderOnEventHandlerServiceRoleEBBA51FAArn"
+           "Outputs.awscdkeksclusteralbcontrollerawscdkawseksClusterResourceProviderOnEventHandlerServiceRoleD37D32B7Arn"
           ]
          }
         ]
@@ -719,7 +719,7 @@
     "ServiceToken": {
      "Fn::GetAtt": [
       "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
-      "Outputs.awscdkeksclusteralbcontrollertestawscdkawseksClusterResourceProviderframeworkonEventB8A2CF0DArn"
+      "Outputs.awscdkeksclusteralbcontrollerawscdkawseksClusterResourceProviderframeworkonEvent9A4DBD44Arn"
      ]
     },
     "Config": {
@@ -837,14 +837,14 @@
     "ServiceToken": {
      "Fn::GetAtt": [
       "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
-      "Outputs.awscdkeksclusteralbcontrollertestawscdkawseksKubectlProviderframeworkonEvent4AFC769CArn"
+      "Outputs.awscdkeksclusteralbcontrollerawscdkawseksKubectlProviderframeworkonEvent17CBA575Arn"
      ]
     },
     "Manifest": {
      "Fn::Join": [
       "",
       [
-       "[{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"metadata\":{\"name\":\"aws-auth\",\"namespace\":\"kube-system\",\"labels\":{\"aws.cdk.eks/prune-c86d8ad0bb8e20754211361dd51b3b9516ab079f0c\":\"\"}},\"data\":{\"mapRoles\":\"[{\\\"rolearn\\\":\\\"",
+       "[{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"metadata\":{\"name\":\"aws-auth\",\"namespace\":\"kube-system\",\"labels\":{\"aws.cdk.eks/prune-c869bad087372177cf1359586fc6cf0bb5ed3152bb\":\"\"}},\"data\":{\"mapRoles\":\"[{\\\"rolearn\\\":\\\"",
        {
         "Fn::GetAtt": [
          "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04",
@@ -864,7 +864,7 @@
       "Arn"
      ]
     },
-    "PruneLabel": "aws.cdk.eks/prune-c86d8ad0bb8e20754211361dd51b3b9516ab079f0c",
+    "PruneLabel": "aws.cdk.eks/prune-c869bad087372177cf1359586fc6cf0bb5ed3152bb",
     "Overwrite": true
    },
    "DependsOn": [
@@ -966,21 +966,21 @@
     "ServiceToken": {
      "Fn::GetAtt": [
       "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
-      "Outputs.awscdkeksclusteralbcontrollertestawscdkawseksKubectlProviderframeworkonEvent4AFC769CArn"
+      "Outputs.awscdkeksclusteralbcontrollerawscdkawseksKubectlProviderframeworkonEvent17CBA575Arn"
      ]
     },
     "Manifest": {
      "Fn::Join": [
       "",
       [
-       "[{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"name\":\"hello-server-deployment-c852e88c\",\"labels\":{\"aws.cdk.eks/prune-c88b1dfeeaf63e3024ab07862029ba60fd8907fb04\":\"\"}},\"spec\":{\"minReadySeconds\":0,\"progressDeadlineSeconds\":600,\"replicas\":2,\"selector\":{\"matchLabels\":{\"cdk8s.io/metadata.addr\":\"hello-server-Deployment-c8659a74\"}},\"strategy\":{\"rollingUpdate\":{\"maxSurge\":\"25%\",\"maxUnavailable\":\"25%\"},\"type\":\"RollingUpdate\"},\"template\":{\"metadata\":{\"labels\":{\"cdk8s.io/metadata.addr\":\"hello-server-Deployment-c8659a74\"}},\"spec\":{\"automountServiceAccountToken\":false,\"containers\":[{\"args\":[\"-text\",\"hello\"],\"image\":\"hashicorp/http-echo\",\"imagePullPolicy\":\"Always\",\"name\":\"main\",\"ports\":[{\"containerPort\":5678}],\"resources\":{\"limits\":{\"cpu\":\"1500m\",\"memory\":\"2048Mi\"},\"requests\":{\"cpu\":\"1000m\",\"memory\":\"512Mi\"}},\"securityContext\":{\"allowPrivilegeEscalation\":false,\"privileged\":false,\"readOnlyRootFilesystem\":true,\"runAsNonRoot\":true,\"runAsUser\":1005},\"startupProbe\":{\"failureThreshold\":3,\"tcpSocket\":{\"port\":5678}}}],\"dnsPolicy\":\"ClusterFirst\",\"hostNetwork\":false,\"restartPolicy\":\"Always\",\"securityContext\":{\"fsGroupChangePolicy\":\"Always\",\"runAsNonRoot\":true},\"setHostnameAsFQDN\":false,\"terminationGracePeriodSeconds\":30}}}},{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"name\":\"hello-server-deployment-service-c8fd9c61\",\"labels\":{\"aws.cdk.eks/prune-c88b1dfeeaf63e3024ab07862029ba60fd8907fb04\":\"\"}},\"spec\":{\"externalIPs\":[],\"ports\":[{\"port\":5678,\"targetPort\":5678}],\"selector\":{\"cdk8s.io/metadata.addr\":\"hello-server-Deployment-c8659a74\"},\"type\":\"NodePort\"}},{\"apiVersion\":\"networking.k8s.io/v1\",\"kind\":\"Ingress\",\"metadata\":{\"annotations\":{\"kubernetes.io/ingress.class\":\"alb\",\"alb.ingress.kubernetes.io/scheme\":\"internal\",\"alb.ingress.kubernetes.io/inbound-cidrs\":\"",
+       "[{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"name\":\"hello-server-deployment-c852e88c\",\"labels\":{\"aws.cdk.eks/prune-c8979a3d59f977641193e8f98207f8eaa3c754d4ff\":\"\"}},\"spec\":{\"minReadySeconds\":0,\"progressDeadlineSeconds\":600,\"replicas\":2,\"selector\":{\"matchLabels\":{\"cdk8s.io/metadata.addr\":\"hello-server-Deployment-c8659a74\"}},\"strategy\":{\"rollingUpdate\":{\"maxSurge\":\"25%\",\"maxUnavailable\":\"25%\"},\"type\":\"RollingUpdate\"},\"template\":{\"metadata\":{\"labels\":{\"cdk8s.io/metadata.addr\":\"hello-server-Deployment-c8659a74\"}},\"spec\":{\"automountServiceAccountToken\":false,\"containers\":[{\"args\":[\"-text\",\"hello\"],\"image\":\"hashicorp/http-echo\",\"imagePullPolicy\":\"Always\",\"name\":\"main\",\"ports\":[{\"containerPort\":5678}],\"resources\":{\"limits\":{\"cpu\":\"1500m\",\"memory\":\"2048Mi\"},\"requests\":{\"cpu\":\"1000m\",\"memory\":\"512Mi\"}},\"securityContext\":{\"allowPrivilegeEscalation\":false,\"privileged\":false,\"readOnlyRootFilesystem\":true,\"runAsNonRoot\":true,\"runAsUser\":1005},\"startupProbe\":{\"failureThreshold\":3,\"tcpSocket\":{\"port\":5678}}}],\"dnsPolicy\":\"ClusterFirst\",\"hostNetwork\":false,\"restartPolicy\":\"Always\",\"securityContext\":{\"fsGroupChangePolicy\":\"Always\",\"runAsNonRoot\":true},\"setHostnameAsFQDN\":false,\"terminationGracePeriodSeconds\":30}}}},{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"name\":\"hello-server-deployment-service-c8fd9c61\",\"labels\":{\"aws.cdk.eks/prune-c8979a3d59f977641193e8f98207f8eaa3c754d4ff\":\"\"}},\"spec\":{\"externalIPs\":[],\"ports\":[{\"port\":5678,\"targetPort\":5678}],\"selector\":{\"cdk8s.io/metadata.addr\":\"hello-server-Deployment-c8659a74\"},\"type\":\"NodePort\"}},{\"apiVersion\":\"networking.k8s.io/v1\",\"kind\":\"Ingress\",\"metadata\":{\"annotations\":{\"kubernetes.io/ingress.class\":\"alb\",\"alb.ingress.kubernetes.io/scheme\":\"internal\",\"alb.ingress.kubernetes.io/inbound-cidrs\":\"",
        {
         "Fn::GetAtt": [
          "Vpc8378EB38",
          "CidrBlock"
         ]
        },
-       "\"},\"name\":\"hello-server-deployment-service-ingress-c896bd7e\",\"labels\":{\"aws.cdk.eks/prune-c88b1dfeeaf63e3024ab07862029ba60fd8907fb04\":\"\"}},\"spec\":{\"rules\":[{\"http\":{\"paths\":[{\"backend\":{\"service\":{\"name\":\"hello-server-deployment-service-c8fd9c61\",\"port\":{\"number\":5678}}},\"path\":\"/\",\"pathType\":\"Prefix\"}]}}]}}]"
+       "\"},\"name\":\"hello-server-deployment-service-ingress-c896bd7e\",\"labels\":{\"aws.cdk.eks/prune-c8979a3d59f977641193e8f98207f8eaa3c754d4ff\":\"\"}},\"spec\":{\"rules\":[{\"http\":{\"paths\":[{\"backend\":{\"service\":{\"name\":\"hello-server-deployment-service-c8fd9c61\",\"port\":{\"number\":5678}}},\"path\":\"/\",\"pathType\":\"Prefix\"}]}}]}}]"
       ]
      ]
     },
@@ -993,14 +993,14 @@
       "Arn"
      ]
     },
-    "PruneLabel": "aws.cdk.eks/prune-c88b1dfeeaf63e3024ab07862029ba60fd8907fb04"
+    "PruneLabel": "aws.cdk.eks/prune-c8979a3d59f977641193e8f98207f8eaa3c754d4ff"
    },
    "DependsOn": [
-    "awscdkeksclusteralbcontrollertestCluster481F6464AlbControlleralbsaConditionJsonCB1A2F4A",
-    "awscdkeksclusteralbcontrollertestCluster481F6464AlbControlleralbsamanifestalbsaServiceAccountResourceED5FA069",
-    "awscdkeksclusteralbcontrollertestCluster481F6464AlbControlleralbsaRoleDefaultPolicy2047BBBC",
-    "awscdkeksclusteralbcontrollertestCluster481F6464AlbControlleralbsaRole84609927",
-    "awscdkeksclusteralbcontrollertestCluster481F6464AlbControllerF943CD86",
+    "awscdkeksclusteralbcontrollerCluster0686D58BAlbControlleralbsaConditionJson853930C0",
+    "awscdkeksclusteralbcontrollerCluster0686D58BAlbControlleralbsamanifestalbsaServiceAccountResource49741BE5",
+    "awscdkeksclusteralbcontrollerCluster0686D58BAlbControlleralbsaRoleDefaultPolicy0BB22F48",
+    "awscdkeksclusteralbcontrollerCluster0686D58BAlbControlleralbsaRoleE08C7B02",
+    "awscdkeksclusteralbcontrollerCluster0686D58BAlbController2EB2FB81",
     "ClusterKubectlReadyBarrier200052AF"
    ],
    "UpdateReplacePolicy": "Delete",
@@ -1012,7 +1012,7 @@
     "ServiceToken": {
      "Fn::GetAtt": [
       "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
-      "Outputs.awscdkeksclusteralbcontrollertestawscdkawseksKubectlProviderframeworkonEvent4AFC769CArn"
+      "Outputs.awscdkeksclusteralbcontrollerawscdkawseksKubectlProviderframeworkonEvent17CBA575Arn"
      ]
     },
     "ClusterName": {
@@ -1055,7 +1055,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/dddc6aaca7cd529595d0885278f0f9657cd2964ad829b089b0a3d76f38582d47.json"
+       "/4a91122ba7471a52d11948b8faa9e741dd6d471b7d5e0092fe1062dbb7dea6ae.json"
       ]
      ]
     }
@@ -1067,22 +1067,22 @@
    "Type": "AWS::CloudFormation::Stack",
    "Properties": {
     "Parameters": {
-     "referencetoawscdkeksclusteralbcontrollertestKubectlLayerD13282C5Ref": {
+     "referencetoawscdkeksclusteralbcontrollerKubectlLayer4221D1EERef": {
       "Ref": "KubectlLayer600207B5"
      },
-     "referencetoawscdkeksclusteralbcontrollertestClusterKubectlHandlerRole205F60D2Arn": {
+     "referencetoawscdkeksclusteralbcontrollerClusterKubectlHandlerRoleC392E7EDArn": {
       "Fn::GetAtt": [
        "ClusterKubectlHandlerRole94549F93",
        "Arn"
       ]
      },
-     "referencetoawscdkeksclusteralbcontrollertestVpcPrivateSubnet1Subnet7C7DBEE5Ref": {
+     "referencetoawscdkeksclusteralbcontrollerVpcPrivateSubnet1SubnetE39C0DCCRef": {
       "Ref": "VpcPrivateSubnet1Subnet536B997A"
      },
-     "referencetoawscdkeksclusteralbcontrollertestVpcPrivateSubnet2Subnet7FBE197ERef": {
+     "referencetoawscdkeksclusteralbcontrollerVpcPrivateSubnet2SubnetAB95E4A2Ref": {
       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
      },
-     "referencetoawscdkeksclusteralbcontrollertestCluster80A60A64ClusterSecurityGroupId": {
+     "referencetoawscdkeksclusteralbcontrollerClusterABDFE911ClusterSecurityGroupId": {
       "Fn::GetAtt": [
        "Cluster9EE0221C",
        "ClusterSecurityGroupId"
@@ -1105,7 +1105,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/13a5da1860cf7a7149a55526e7545751ad677e7d38fe488d522954cfdf19196d.json"
+       "/53092355d13ebb604dd2b929ce32682e3f8a7380c56b54ffdb3d32841ef9a271.json"
       ]
      ]
     }
@@ -1121,7 +1121,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "awscdkeksclusteralbcontrollertestCluster481F6464AlbControlleralbsaConditionJsonCB1A2F4A": {
+  "awscdkeksclusteralbcontrollerCluster0686D58BAlbControlleralbsaConditionJson853930C0": {
    "Type": "Custom::AWSCDKCfnJson",
    "Properties": {
     "ServiceToken": {
@@ -1174,7 +1174,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "awscdkeksclusteralbcontrollertestCluster481F6464AlbControlleralbsaRole84609927": {
+  "awscdkeksclusteralbcontrollerCluster0686D58BAlbControlleralbsaRoleE08C7B02": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -1184,7 +1184,7 @@
        "Condition": {
         "StringEquals": {
          "Fn::GetAtt": [
-          "awscdkeksclusteralbcontrollertestCluster481F6464AlbControlleralbsaConditionJsonCB1A2F4A",
+          "awscdkeksclusteralbcontrollerCluster0686D58BAlbControlleralbsaConditionJson853930C0",
           "Value"
          ]
         }
@@ -1205,7 +1205,7 @@
     "ClusterNodegroupDefaultCapacityDA0920A3"
    ]
   },
-  "awscdkeksclusteralbcontrollertestCluster481F6464AlbControlleralbsaRoleDefaultPolicy2047BBBC": {
+  "awscdkeksclusteralbcontrollerCluster0686D58BAlbControlleralbsaRoleDefaultPolicy0BB22F48": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -1545,10 +1545,10 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "awscdkeksclusteralbcontrollertestCluster481F6464AlbControlleralbsaRoleDefaultPolicy2047BBBC",
+    "PolicyName": "awscdkeksclusteralbcontrollerCluster0686D58BAlbControlleralbsaRoleDefaultPolicy0BB22F48",
     "Roles": [
      {
-      "Ref": "awscdkeksclusteralbcontrollertestCluster481F6464AlbControlleralbsaRole84609927"
+      "Ref": "awscdkeksclusteralbcontrollerCluster0686D58BAlbControlleralbsaRoleE08C7B02"
      }
     ]
    },
@@ -1557,23 +1557,23 @@
     "ClusterNodegroupDefaultCapacityDA0920A3"
    ]
   },
-  "awscdkeksclusteralbcontrollertestCluster481F6464AlbControlleralbsamanifestalbsaServiceAccountResourceED5FA069": {
+  "awscdkeksclusteralbcontrollerCluster0686D58BAlbControlleralbsamanifestalbsaServiceAccountResource49741BE5": {
    "Type": "Custom::AWSCDK-EKS-KubernetesResource",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
       "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
-      "Outputs.awscdkeksclusteralbcontrollertestawscdkawseksKubectlProviderframeworkonEvent4AFC769CArn"
+      "Outputs.awscdkeksclusteralbcontrollerawscdkawseksKubectlProviderframeworkonEvent17CBA575Arn"
      ]
     },
     "Manifest": {
      "Fn::Join": [
       "",
       [
-       "[{\"apiVersion\":\"v1\",\"kind\":\"ServiceAccount\",\"metadata\":{\"name\":\"aws-load-balancer-controller\",\"namespace\":\"kube-system\",\"labels\":{\"aws.cdk.eks/prune-c87ed3e4d1c4d777a5673be4909059213f1c53a6f0\":\"\",\"app.kubernetes.io/name\":\"aws-load-balancer-controller\"},\"annotations\":{\"eks.amazonaws.com/role-arn\":\"",
+       "[{\"apiVersion\":\"v1\",\"kind\":\"ServiceAccount\",\"metadata\":{\"name\":\"aws-load-balancer-controller\",\"namespace\":\"kube-system\",\"labels\":{\"aws.cdk.eks/prune-c8f6f125d54f53dae5b00b5d2a563146e2074b70a5\":\"\",\"app.kubernetes.io/name\":\"aws-load-balancer-controller\"},\"annotations\":{\"eks.amazonaws.com/role-arn\":\"",
        {
         "Fn::GetAtt": [
-         "awscdkeksclusteralbcontrollertestCluster481F6464AlbControlleralbsaRole84609927",
+         "awscdkeksclusteralbcontrollerCluster0686D58BAlbControlleralbsaRoleE08C7B02",
          "Arn"
         ]
        },
@@ -1590,7 +1590,7 @@
       "Arn"
      ]
     },
-    "PruneLabel": "aws.cdk.eks/prune-c87ed3e4d1c4d777a5673be4909059213f1c53a6f0"
+    "PruneLabel": "aws.cdk.eks/prune-c8f6f125d54f53dae5b00b5d2a563146e2074b70a5"
    },
    "DependsOn": [
     "ClusterKubectlReadyBarrier200052AF",
@@ -1600,13 +1600,13 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "awscdkeksclusteralbcontrollertestCluster481F6464AlbControllerF943CD86": {
+  "awscdkeksclusteralbcontrollerCluster0686D58BAlbController2EB2FB81": {
    "Type": "Custom::AWSCDK-EKS-HelmChart",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
       "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
-      "Outputs.awscdkeksclusteralbcontrollertestawscdkawseksKubectlProviderframeworkonEvent4AFC769CArn"
+      "Outputs.awscdkeksclusteralbcontrollerawscdkawseksKubectlProviderframeworkonEvent17CBA575Arn"
      ]
     },
     "ClusterName": {
@@ -1648,10 +1648,10 @@
     "CreateNamespace": true
    },
    "DependsOn": [
-    "awscdkeksclusteralbcontrollertestCluster481F6464AlbControlleralbsaConditionJsonCB1A2F4A",
-    "awscdkeksclusteralbcontrollertestCluster481F6464AlbControlleralbsamanifestalbsaServiceAccountResourceED5FA069",
-    "awscdkeksclusteralbcontrollertestCluster481F6464AlbControlleralbsaRoleDefaultPolicy2047BBBC",
-    "awscdkeksclusteralbcontrollertestCluster481F6464AlbControlleralbsaRole84609927",
+    "awscdkeksclusteralbcontrollerCluster0686D58BAlbControlleralbsaConditionJson853930C0",
+    "awscdkeksclusteralbcontrollerCluster0686D58BAlbControlleralbsamanifestalbsaServiceAccountResource49741BE5",
+    "awscdkeksclusteralbcontrollerCluster0686D58BAlbControlleralbsaRoleDefaultPolicy0BB22F48",
+    "awscdkeksclusteralbcontrollerCluster0686D58BAlbControlleralbsaRoleE08C7B02",
     "ClusterAwsAuthmanifestFE51F8AE",
     "ClusterKubectlReadyBarrier200052AF",
     "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04",
@@ -1757,7 +1757,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "3e61d858eaa7724170872a455b8f788d5fcf18adba89aadbe603a52dab59d917.zip"
+     "S3Key": "f58e5b0009fc349d5e78d41594373bd6723e705a3c961a42adfbefa36cbe1bcf.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -1827,7 +1827,7 @@
   "IngressPingerFunctionSecurityGroup77C60B1A": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "Automatic security group for Lambda Function awscdkeksclusteralbcontrollertestIngressPingerFunction2F7B2C81",
+    "GroupDescription": "Automatic security group for Lambda Function awscdkeksclusteralbcontrollerIngressPingerFunctionCB8DD6F2",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -1981,7 +1981,7 @@
      },
      "S3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
     },
-    "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster-alb-controller-test/IngressPinger/Provider)",
+    "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster-alb-controller/IngressPinger/Provider)",
     "Environment": {
      "Variables": {
       "USER_ON_EVENT_FUNCTION_ARN": {

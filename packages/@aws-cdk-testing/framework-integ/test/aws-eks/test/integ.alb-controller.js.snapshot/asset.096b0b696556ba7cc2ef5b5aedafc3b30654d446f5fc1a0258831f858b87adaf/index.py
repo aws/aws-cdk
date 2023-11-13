@@ -23,3 +23,4 @@ def handler(event, context):
     return get_handler(event, context)
 
   raise Exception("unknown resource type %s" % resource_type)
+  
