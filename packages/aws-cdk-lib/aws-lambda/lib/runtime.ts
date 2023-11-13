@@ -105,6 +105,11 @@ export class Runtime {
   public static readonly NODEJS_18_X = new Runtime('nodejs18.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
   /**
+   * The NodeJS 20.x runtime (nodejs20.x)
+   */
+  public static readonly NODEJS_20_X = new Runtime('nodejs20.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
+
+  /**
    * The latest NodeJS version currently available
    */
   public static readonly NODEJS_LATEST = new Runtime('nodejs18.x', RuntimeFamily.NODEJS, { supportsInlineCode: true, isVariable: true });
