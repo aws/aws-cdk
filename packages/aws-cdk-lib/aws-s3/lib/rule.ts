@@ -130,6 +130,7 @@ export interface LifecycleRule {
 
   /**
    * Specifies the maximum object size in bytes for this rule to apply to.
+   * Objects must be smaller than this value in bytes.
    *
    * @default - No rule
    */
