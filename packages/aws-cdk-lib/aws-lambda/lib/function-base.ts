@@ -13,7 +13,7 @@ import { addAlias, flatMap } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
-import { Annotations, ArnFormat, IResource, Resource, Token } from '../../core';
+import { Annotations, ArnFormat, IResource, Resource, Token, Stack } from '../../core';
 
 export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
 
