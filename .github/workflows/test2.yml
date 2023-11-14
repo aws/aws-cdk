@@ -1,9 +1,11 @@
 name: CI
 
 on:
-  pull_request:
-    branches:
-      - master
+  pull_request_target:
+    types:
+      - opened
+      - edited
+      - reopened
 
 jobs:
   # ------------------------------------------------------------------------------------------------------------------------------------------------
