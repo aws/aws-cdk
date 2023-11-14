@@ -652,7 +652,7 @@ export abstract class BaseService extends Resource
       && props.taskDefinitionRevision
       && props.taskDefinitionRevision.revisionId !== 'latest'
     ) {
-      throw new Error('CODE_DEPLOY deploymentController cannot be used with a non-latest task definition revision');
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:nonLatestRevisionWithCodeDeploy', 'taskDefinition revision is always set to latest when using tje CODE_DEPLOY deploymentController, ignoring taskDefinitionRevision');
     }
 
     if (props.deploymentController?.type === DeploymentControllerType.CODE_DEPLOY) {
