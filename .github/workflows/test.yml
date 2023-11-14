@@ -6,13 +6,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download regions
+        env:
+          URL: https://d3akamx322av4k.cloudfront.net/regions.json
         id: download
 #        todo: USE THE PROD URL
         run: |
-          response=$(curl https://d3akamx322av4k.cloudfront.net/foo.json)
+          response=$(curl $URL)
           echo "REGIONS=${response}" >> "$GITHUB_OUTPUT"
           
-          status=$(curl -s -o /dev/null -w "%{http_code}" https://d3akamx322av4k.cloudfront.net/foo.json)
+          status=$(curl -s -o /dev/null -w "%{http_code}" $URL)
           echo "STATUS=${status}" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v3
       - uses: actions/github-script@v7
@@ -21,7 +23,7 @@ jobs:
           REGIONS: ${{ steps.download.outputs.REGIONS }}
         with:
           script: |
-            const script = require('./scripts/script.js')
+            const script = require('./scripts/update-metadata-regions.js')
             await script({github, context, core})
       - name: Create Patch
         run: |-
