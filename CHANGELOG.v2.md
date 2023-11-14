@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.108.1](https://github.com/aws/aws-cdk/compare/v2.108.0...v2.108.1) (2023-11-14)
+
+
+### Bug Fixes
+
+* **elasticloadbalancingv2:** access logging fails on imported bucket ([#27948](https://github.com/aws/aws-cdk/issues/27948)) ([8243601](https://github.com/aws/aws-cdk/commit/8243601866e8c1771a18adb4c93579a7099984e3)), closes [#27928](https://github.com/aws/aws-cdk/issues/27928)
+
 ## [2.108.0](https://github.com/aws/aws-cdk/compare/v2.107.0...v2.108.0) (2023-11-13)
 
 
