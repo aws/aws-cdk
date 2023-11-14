@@ -26,4 +26,5 @@ const stack = new TestStack(app, 'cdk-amplify-app-asset-deployment');
 // On updating the asset file and re-deploying it updates the existing Amplify app with the new change.
 new IntegTest(app, 'cdk-amplify-app-integ-test', {
   testCases: [stack],
+  diffAssets: true,
 });

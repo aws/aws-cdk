@@ -354,7 +354,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
       uuid: '8693BB64-9689-44B6-9AAF-B0CC9EB8757C',
       runtime: lambda.Runtime.PYTHON_3_9,
       handler: 'index.handler',
-      code: lambda.Code.fromAsset(path.join(__dirname, 'utils/role-policy')),
+      code: lambda.Code.fromAsset(path.join(__dirname, '..', '..', '..', 'custom-resource-handlers', 'dist', 'aws-stepfunctions-tasks', 'role-policy-handler')),
       timeout: cdk.Duration.seconds(30),
       memorySize: 256,
       layers: [cliLayer],

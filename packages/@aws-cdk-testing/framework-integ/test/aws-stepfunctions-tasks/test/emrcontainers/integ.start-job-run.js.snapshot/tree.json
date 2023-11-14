@@ -4,21 +4,21 @@
     "id": "App",
     "path": "",
     "children": {
-      "aws-stepfunctions-tasks-emr-containers-start-job-run-test": {
-        "id": "aws-stepfunctions-tasks-emr-containers-start-job-run-test",
-        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test",
+      "aws-stepfunctions-tasks-emr-containers-start-job-run": {
+        "id": "aws-stepfunctions-tasks-emr-containers-start-job-run",
+        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run",
         "children": {
           "integration-test-eks-cluster": {
             "id": "integration-test-eks-cluster",
-            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster",
+            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster",
             "children": {
               "DefaultVpc": {
                 "id": "DefaultVpc",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/Resource",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
                       "aws:cdk:cloudformation:props": {
@@ -29,7 +29,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc"
+                            "value": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc"
                           }
                         ]
                       }
@@ -41,11 +41,11 @@
                   },
                   "PublicSubnet1": {
                     "id": "PublicSubnet1",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/PublicSubnet1",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PublicSubnet1",
                     "children": {
                       "Subnet": {
                         "id": "Subnet",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/PublicSubnet1/Subnet",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PublicSubnet1/Subnet",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                           "aws:cdk:cloudformation:props": {
@@ -74,7 +74,7 @@
                               },
                               {
                                 "key": "Name",
-                                "value": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/PublicSubnet1"
+                                "value": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PublicSubnet1"
                               }
                             ],
                             "vpcId": {
@@ -89,7 +89,7 @@
                       },
                       "Acl": {
                         "id": "Acl",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/PublicSubnet1/Acl",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PublicSubnet1/Acl",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "0.0.0"
@@ -97,7 +97,7 @@
                       },
                       "RouteTable": {
                         "id": "RouteTable",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/PublicSubnet1/RouteTable",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PublicSubnet1/RouteTable",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                           "aws:cdk:cloudformation:props": {
@@ -108,7 +108,7 @@
                               },
                               {
                                 "key": "Name",
-                                "value": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/PublicSubnet1"
+                                "value": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PublicSubnet1"
                               }
                             ],
                             "vpcId": {
@@ -123,7 +123,7 @@
                       },
                       "RouteTableAssociation": {
                         "id": "RouteTableAssociation",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/PublicSubnet1/RouteTableAssociation",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PublicSubnet1/RouteTableAssociation",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                           "aws:cdk:cloudformation:props": {
@@ -142,7 +142,7 @@
                       },
                       "DefaultRoute": {
                         "id": "DefaultRoute",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/PublicSubnet1/DefaultRoute",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PublicSubnet1/DefaultRoute",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                           "aws:cdk:cloudformation:props": {
@@ -162,7 +162,7 @@
                       },
                       "EIP": {
                         "id": "EIP",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/PublicSubnet1/EIP",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PublicSubnet1/EIP",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                           "aws:cdk:cloudformation:props": {
@@ -174,7 +174,7 @@
                               },
                               {
                                 "key": "Name",
-                                "value": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/PublicSubnet1"
+                                "value": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PublicSubnet1"
                               }
                             ]
                           }
@@ -186,7 +186,7 @@
                       },
                       "NATGateway": {
                         "id": "NATGateway",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/PublicSubnet1/NATGateway",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PublicSubnet1/NATGateway",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                           "aws:cdk:cloudformation:props": {
@@ -206,7 +206,7 @@
                               },
                               {
                                 "key": "Name",
-                                "value": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/PublicSubnet1"
+                                "value": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PublicSubnet1"
                               }
                             ]
                           }
@@ -224,11 +224,11 @@
                   },
                   "PublicSubnet2": {
                     "id": "PublicSubnet2",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/PublicSubnet2",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PublicSubnet2",
                     "children": {
                       "Subnet": {
                         "id": "Subnet",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/PublicSubnet2/Subnet",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PublicSubnet2/Subnet",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                           "aws:cdk:cloudformation:props": {
@@ -257,7 +257,7 @@
                               },
                               {
                                 "key": "Name",
-                                "value": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/PublicSubnet2"
+                                "value": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PublicSubnet2"
                               }
                             ],
                             "vpcId": {
@@ -272,7 +272,7 @@
                       },
                       "Acl": {
                         "id": "Acl",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/PublicSubnet2/Acl",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PublicSubnet2/Acl",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "0.0.0"
@@ -280,7 +280,7 @@
                       },
                       "RouteTable": {
                         "id": "RouteTable",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/PublicSubnet2/RouteTable",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PublicSubnet2/RouteTable",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                           "aws:cdk:cloudformation:props": {
@@ -291,7 +291,7 @@
                               },
                               {
                                 "key": "Name",
-                                "value": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/PublicSubnet2"
+                                "value": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PublicSubnet2"
                               }
                             ],
                             "vpcId": {
@@ -306,7 +306,7 @@
                       },
                       "RouteTableAssociation": {
                         "id": "RouteTableAssociation",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/PublicSubnet2/RouteTableAssociation",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PublicSubnet2/RouteTableAssociation",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                           "aws:cdk:cloudformation:props": {
@@ -325,7 +325,7 @@
                       },
                       "DefaultRoute": {
                         "id": "DefaultRoute",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/PublicSubnet2/DefaultRoute",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PublicSubnet2/DefaultRoute",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                           "aws:cdk:cloudformation:props": {
@@ -345,7 +345,7 @@
                       },
                       "EIP": {
                         "id": "EIP",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/PublicSubnet2/EIP",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PublicSubnet2/EIP",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                           "aws:cdk:cloudformation:props": {
@@ -357,7 +357,7 @@
                               },
                               {
                                 "key": "Name",
-                                "value": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/PublicSubnet2"
+                                "value": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PublicSubnet2"
                               }
                             ]
                           }
@@ -369,7 +369,7 @@
                       },
                       "NATGateway": {
                         "id": "NATGateway",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/PublicSubnet2/NATGateway",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PublicSubnet2/NATGateway",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                           "aws:cdk:cloudformation:props": {
@@ -389,7 +389,7 @@
                               },
                               {
                                 "key": "Name",
-                                "value": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/PublicSubnet2"
+                                "value": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PublicSubnet2"
                               }
                             ]
                           }
@@ -407,11 +407,11 @@
                   },
                   "PrivateSubnet1": {
                     "id": "PrivateSubnet1",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/PrivateSubnet1",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PrivateSubnet1",
                     "children": {
                       "Subnet": {
                         "id": "Subnet",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/PrivateSubnet1/Subnet",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PrivateSubnet1/Subnet",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                           "aws:cdk:cloudformation:props": {
@@ -440,7 +440,7 @@
                               },
                               {
                                 "key": "Name",
-                                "value": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/PrivateSubnet1"
+                                "value": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PrivateSubnet1"
                               }
                             ],
                             "vpcId": {
@@ -455,7 +455,7 @@
                       },
                       "Acl": {
                         "id": "Acl",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/PrivateSubnet1/Acl",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PrivateSubnet1/Acl",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "0.0.0"
@@ -463,7 +463,7 @@
                       },
                       "RouteTable": {
                         "id": "RouteTable",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/PrivateSubnet1/RouteTable",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PrivateSubnet1/RouteTable",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                           "aws:cdk:cloudformation:props": {
@@ -474,7 +474,7 @@
                               },
                               {
                                 "key": "Name",
-                                "value": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/PrivateSubnet1"
+                                "value": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PrivateSubnet1"
                               }
                             ],
                             "vpcId": {
@@ -489,7 +489,7 @@
                       },
                       "RouteTableAssociation": {
                         "id": "RouteTableAssociation",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/PrivateSubnet1/RouteTableAssociation",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PrivateSubnet1/RouteTableAssociation",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                           "aws:cdk:cloudformation:props": {
@@ -508,7 +508,7 @@
                       },
                       "DefaultRoute": {
                         "id": "DefaultRoute",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/PrivateSubnet1/DefaultRoute",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PrivateSubnet1/DefaultRoute",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                           "aws:cdk:cloudformation:props": {
@@ -534,11 +534,11 @@
                   },
                   "PrivateSubnet2": {
                     "id": "PrivateSubnet2",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/PrivateSubnet2",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PrivateSubnet2",
                     "children": {
                       "Subnet": {
                         "id": "Subnet",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/PrivateSubnet2/Subnet",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PrivateSubnet2/Subnet",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                           "aws:cdk:cloudformation:props": {
@@ -567,7 +567,7 @@
                               },
                               {
                                 "key": "Name",
-                                "value": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/PrivateSubnet2"
+                                "value": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PrivateSubnet2"
                               }
                             ],
                             "vpcId": {
@@ -582,7 +582,7 @@
                       },
                       "Acl": {
                         "id": "Acl",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/PrivateSubnet2/Acl",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PrivateSubnet2/Acl",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "0.0.0"
@@ -590,7 +590,7 @@
                       },
                       "RouteTable": {
                         "id": "RouteTable",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/PrivateSubnet2/RouteTable",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PrivateSubnet2/RouteTable",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                           "aws:cdk:cloudformation:props": {
@@ -601,7 +601,7 @@
                               },
                               {
                                 "key": "Name",
-                                "value": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/PrivateSubnet2"
+                                "value": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PrivateSubnet2"
                               }
                             ],
                             "vpcId": {
@@ -616,7 +616,7 @@
                       },
                       "RouteTableAssociation": {
                         "id": "RouteTableAssociation",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/PrivateSubnet2/RouteTableAssociation",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PrivateSubnet2/RouteTableAssociation",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                           "aws:cdk:cloudformation:props": {
@@ -635,7 +635,7 @@
                       },
                       "DefaultRoute": {
                         "id": "DefaultRoute",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/PrivateSubnet2/DefaultRoute",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PrivateSubnet2/DefaultRoute",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                           "aws:cdk:cloudformation:props": {
@@ -661,14 +661,14 @@
                   },
                   "IGW": {
                     "id": "IGW",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/IGW",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/IGW",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc"
+                            "value": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc"
                           }
                         ]
                       }
@@ -680,7 +680,7 @@
                   },
                   "VPCGW": {
                     "id": "VPCGW",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/DefaultVpc/VPCGW",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/VPCGW",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                       "aws:cdk:cloudformation:props": {
@@ -705,11 +705,11 @@
               },
               "KubectlHandlerRole": {
                 "id": "KubectlHandlerRole",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/KubectlHandlerRole",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/KubectlHandlerRole",
                 "children": {
                   "ImportKubectlHandlerRole": {
                     "id": "ImportKubectlHandlerRole",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/KubectlHandlerRole/ImportKubectlHandlerRole",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/KubectlHandlerRole/ImportKubectlHandlerRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -717,7 +717,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/KubectlHandlerRole/Resource",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/KubectlHandlerRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -800,11 +800,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/KubectlHandlerRole/DefaultPolicy",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/KubectlHandlerRole/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/KubectlHandlerRole/DefaultPolicy/Resource",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/KubectlHandlerRole/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -860,11 +860,11 @@
               },
               "Role": {
                 "id": "Role",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/Role",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/Role",
                 "children": {
                   "ImportRole": {
                     "id": "ImportRole",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/Role/ImportRole",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/Role/ImportRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -872,7 +872,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/Role/Resource",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/Role/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -917,11 +917,11 @@
               },
               "ControlPlaneSecurityGroup": {
                 "id": "ControlPlaneSecurityGroup",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/ControlPlaneSecurityGroup",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/ControlPlaneSecurityGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/ControlPlaneSecurityGroup/Resource",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/ControlPlaneSecurityGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                       "aws:cdk:cloudformation:props": {
@@ -951,15 +951,15 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/Resource",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/Resource",
                 "children": {
                   "CreationRole": {
                     "id": "CreationRole",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/Resource/CreationRole",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/Resource/CreationRole",
                     "children": {
                       "ImportCreationRole": {
                         "id": "ImportCreationRole",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/Resource/CreationRole/ImportCreationRole",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/Resource/CreationRole/ImportCreationRole",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "0.0.0"
@@ -967,7 +967,7 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/Resource/CreationRole/Resource",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/Resource/CreationRole/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                           "aws:cdk:cloudformation:props": {
@@ -981,13 +981,13 @@
                                       {
                                         "Fn::GetAtt": [
                                           "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
-                                          "Outputs.awsstepfunctionstasksemrcontainersstartjobruntestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole43FB9134Arn"
+                                          "Outputs.awsstepfunctionstasksemrcontainersstartjobrunawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole8A0930F5Arn"
                                         ]
                                       },
                                       {
                                         "Fn::GetAtt": [
                                           "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
-                                          "Outputs.awsstepfunctionstasksemrcontainersstartjobruntestawscdkawseksClusterResourceProviderOnEventHandlerServiceRole663D4CFBArn"
+                                          "Outputs.awsstepfunctionstasksemrcontainersstartjobrunawscdkawseksClusterResourceProviderOnEventHandlerServiceRoleE118846DArn"
                                         ]
                                       },
                                       {
@@ -1011,11 +1011,11 @@
                       },
                       "DefaultPolicy": {
                         "id": "DefaultPolicy",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/Resource/CreationRole/DefaultPolicy",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/Resource/CreationRole/DefaultPolicy",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/Resource/CreationRole/DefaultPolicy/Resource",
+                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/Resource/CreationRole/DefaultPolicy/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                               "aws:cdk:cloudformation:props": {
@@ -1100,11 +1100,11 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/Resource/Resource",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/Resource/Resource",
                     "children": {
                       "Default": {
                         "id": "Default",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/Resource/Resource/Default",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/Resource/Resource/Default",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -1119,12 +1119,12 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               },
               "KubectlReadyBarrier": {
                 "id": "KubectlReadyBarrier",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/KubectlReadyBarrier",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/KubectlReadyBarrier",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnResource",
                   "version": "0.0.0"
@@ -1132,7 +1132,7 @@
               },
               "ClusterSecurityGroup": {
                 "id": "ClusterSecurityGroup",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/ClusterSecurityGroup",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/ClusterSecurityGroup",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
@@ -1140,7 +1140,7 @@
               },
               "HasEcrPublic": {
                 "id": "HasEcrPublic",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/HasEcrPublic",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/HasEcrPublic",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnCondition",
                   "version": "0.0.0"
@@ -1148,15 +1148,15 @@
               },
               "NodegroupDefaultCapacity": {
                 "id": "NodegroupDefaultCapacity",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/NodegroupDefaultCapacity",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/NodegroupDefaultCapacity",
                 "children": {
                   "NodeGroupRole": {
                     "id": "NodeGroupRole",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/NodegroupDefaultCapacity/NodeGroupRole",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/NodegroupDefaultCapacity/NodeGroupRole",
                     "children": {
                       "ImportNodeGroupRole": {
                         "id": "ImportNodeGroupRole",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/NodegroupDefaultCapacity/NodeGroupRole/ImportNodeGroupRole",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/NodegroupDefaultCapacity/NodeGroupRole/ImportNodeGroupRole",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "0.0.0"
@@ -1164,7 +1164,7 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/NodegroupDefaultCapacity/NodeGroupRole/Resource",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/NodegroupDefaultCapacity/NodeGroupRole/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                           "aws:cdk:cloudformation:props": {
@@ -1233,7 +1233,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/NodegroupDefaultCapacity/Resource",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/NodegroupDefaultCapacity/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EKS::Nodegroup",
                       "aws:cdk:cloudformation:props": {
@@ -1279,19 +1279,19 @@
               },
               "AwsAuth": {
                 "id": "AwsAuth",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/AwsAuth",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/AwsAuth",
                 "children": {
                   "manifest": {
                     "id": "manifest",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/AwsAuth/manifest",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/AwsAuth/manifest",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/AwsAuth/manifest/Resource",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/AwsAuth/manifest/Resource",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/AwsAuth/manifest/Resource/Default",
+                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/AwsAuth/manifest/Resource/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -1317,15 +1317,15 @@
               },
               "manifest-emrRole": {
                 "id": "manifest-emrRole",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/manifest-emrRole",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/manifest-emrRole",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/manifest-emrRole/Resource",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/manifest-emrRole/Resource",
                     "children": {
                       "Default": {
                         "id": "Default",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/manifest-emrRole/Resource/Default",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/manifest-emrRole/Resource/Default",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -1345,15 +1345,15 @@
               },
               "manifest-emrRoleBind": {
                 "id": "manifest-emrRoleBind",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/manifest-emrRoleBind",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/manifest-emrRoleBind",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/manifest-emrRoleBind/Resource",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/manifest-emrRoleBind/Resource",
                     "children": {
                       "Default": {
                         "id": "Default",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/manifest-emrRoleBind/Resource/Default",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/manifest-emrRoleBind/Resource/Default",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -1379,19 +1379,19 @@
           },
           "@aws-cdk--aws-eks.ClusterResourceProvider": {
             "id": "@aws-cdk--aws-eks.ClusterResourceProvider",
-            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider",
+            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider",
             "children": {
               "NodeProxyAgentLayer": {
                 "id": "NodeProxyAgentLayer",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer",
                 "children": {
                   "Code": {
                     "id": "Code",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Code",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Code",
                     "children": {
                       "Stage": {
                         "id": "Stage",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Code/Stage",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Code/Stage",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.AssetStaging",
                           "version": "0.0.0"
@@ -1399,7 +1399,7 @@
                       },
                       "AssetBucket": {
                         "id": "AssetBucket",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Code/AssetBucket",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Code/AssetBucket",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                           "version": "0.0.0"
@@ -1413,7 +1413,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Resource",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Lambda::LayerVersion",
                       "aws:cdk:cloudformation:props": {
@@ -1439,15 +1439,15 @@
               },
               "OnEventHandler": {
                 "id": "OnEventHandler",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler",
                 "children": {
                   "ServiceRole": {
                     "id": "ServiceRole",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole",
                     "children": {
                       "ImportServiceRole": {
                         "id": "ImportServiceRole",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/ImportServiceRole",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/ImportServiceRole",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "0.0.0"
@@ -1455,7 +1455,7 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/Resource",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                           "aws:cdk:cloudformation:props": {
@@ -1500,11 +1500,11 @@
                   },
                   "Code": {
                     "id": "Code",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Code",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Code",
                     "children": {
                       "Stage": {
                         "id": "Stage",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Code/Stage",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Code/Stage",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.AssetStaging",
                           "version": "0.0.0"
@@ -1512,7 +1512,7 @@
                       },
                       "AssetBucket": {
                         "id": "AssetBucket",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Code/AssetBucket",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Code/AssetBucket",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                           "version": "0.0.0"
@@ -1526,7 +1526,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Resource",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                       "aws:cdk:cloudformation:props": {
@@ -1534,7 +1534,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "b8426d60bacb99593213adedd37997b7d83efb99683ef98c85e692a82056e829.zip"
+                          "s3Key": "9efb96d8186dd343e3f84c72cfbcaaf16aa5579bbac0c02c60d4f19f4300d832.zip"
                         },
                         "description": "onEvent handler for EKS cluster resource provider",
                         "environment": {
@@ -1571,15 +1571,15 @@
               },
               "IsCompleteHandler": {
                 "id": "IsCompleteHandler",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler",
                 "children": {
                   "ServiceRole": {
                     "id": "ServiceRole",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole",
                     "children": {
                       "ImportServiceRole": {
                         "id": "ImportServiceRole",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/ImportServiceRole",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/ImportServiceRole",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "0.0.0"
@@ -1587,7 +1587,7 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/Resource",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                           "aws:cdk:cloudformation:props": {
@@ -1632,11 +1632,11 @@
                   },
                   "Code": {
                     "id": "Code",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Code",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Code",
                     "children": {
                       "Stage": {
                         "id": "Stage",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Code/Stage",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Code/Stage",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.AssetStaging",
                           "version": "0.0.0"
@@ -1644,7 +1644,7 @@
                       },
                       "AssetBucket": {
                         "id": "AssetBucket",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Code/AssetBucket",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Code/AssetBucket",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                           "version": "0.0.0"
@@ -1658,7 +1658,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Resource",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                       "aws:cdk:cloudformation:props": {
@@ -1666,7 +1666,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "b8426d60bacb99593213adedd37997b7d83efb99683ef98c85e692a82056e829.zip"
+                          "s3Key": "9efb96d8186dd343e3f84c72cfbcaaf16aa5579bbac0c02c60d4f19f4300d832.zip"
                         },
                         "description": "isComplete handler for EKS cluster resource provider",
                         "environment": {
@@ -1703,19 +1703,19 @@
               },
               "Provider": {
                 "id": "Provider",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider",
                 "children": {
                   "framework-onEvent": {
                     "id": "framework-onEvent",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent",
                     "children": {
                       "ServiceRole": {
                         "id": "ServiceRole",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole",
                         "children": {
                           "ImportServiceRole": {
                             "id": "ImportServiceRole",
-                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole",
+                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.Resource",
                               "version": "0.0.0"
@@ -1723,7 +1723,7 @@
                           },
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/Resource",
+                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                               "aws:cdk:cloudformation:props": {
@@ -1762,11 +1762,11 @@
                           },
                           "DefaultPolicy": {
                             "id": "DefaultPolicy",
-                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy",
+                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy",
                             "children": {
                               "Resource": {
                                 "id": "Resource",
-                                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource",
+                                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                                   "aws:cdk:cloudformation:props": {
@@ -1855,11 +1855,11 @@
                       },
                       "Code": {
                         "id": "Code",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/Code",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/Code",
                         "children": {
                           "Stage": {
                             "id": "Stage",
-                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/Code/Stage",
+                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/Code/Stage",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.AssetStaging",
                               "version": "0.0.0"
@@ -1867,7 +1867,7 @@
                           },
                           "AssetBucket": {
                             "id": "AssetBucket",
-                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/Code/AssetBucket",
+                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/Code/AssetBucket",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                               "version": "0.0.0"
@@ -1881,7 +1881,7 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/Resource",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                           "aws:cdk:cloudformation:props": {
@@ -1889,9 +1889,9 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "d002370061965c69bc4caf15dddb5eccc9df318933ade6e4fa57cddb81c5abef.zip"
+                              "s3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
                             },
-                            "description": "AWS CDK resource provider framework - onEvent (aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
+                            "description": "AWS CDK resource provider framework - onEvent (aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
                               "variables": {
                                 "USER_ON_EVENT_FUNCTION_ARN": {
@@ -1935,15 +1935,15 @@
                   },
                   "framework-isComplete": {
                     "id": "framework-isComplete",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete",
                     "children": {
                       "ServiceRole": {
                         "id": "ServiceRole",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole",
                         "children": {
                           "ImportServiceRole": {
                             "id": "ImportServiceRole",
-                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/ImportServiceRole",
+                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/ImportServiceRole",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.Resource",
                               "version": "0.0.0"
@@ -1951,7 +1951,7 @@
                           },
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/Resource",
+                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                               "aws:cdk:cloudformation:props": {
@@ -1990,11 +1990,11 @@
                           },
                           "DefaultPolicy": {
                             "id": "DefaultPolicy",
-                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/DefaultPolicy",
+                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/DefaultPolicy",
                             "children": {
                               "Resource": {
                                 "id": "Resource",
-                                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/DefaultPolicy/Resource",
+                                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/DefaultPolicy/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                                   "aws:cdk:cloudformation:props": {
@@ -2076,11 +2076,11 @@
                       },
                       "Code": {
                         "id": "Code",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/Code",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/Code",
                         "children": {
                           "Stage": {
                             "id": "Stage",
-                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/Code/Stage",
+                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/Code/Stage",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.AssetStaging",
                               "version": "0.0.0"
@@ -2088,7 +2088,7 @@
                           },
                           "AssetBucket": {
                             "id": "AssetBucket",
-                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/Code/AssetBucket",
+                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/Code/AssetBucket",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                               "version": "0.0.0"
@@ -2102,7 +2102,7 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/Resource",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                           "aws:cdk:cloudformation:props": {
@@ -2110,9 +2110,9 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "d002370061965c69bc4caf15dddb5eccc9df318933ade6e4fa57cddb81c5abef.zip"
+                              "s3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
                             },
-                            "description": "AWS CDK resource provider framework - isComplete (aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
+                            "description": "AWS CDK resource provider framework - isComplete (aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
                               "variables": {
                                 "USER_ON_EVENT_FUNCTION_ARN": {
@@ -2153,15 +2153,15 @@
                   },
                   "framework-onTimeout": {
                     "id": "framework-onTimeout",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout",
                     "children": {
                       "ServiceRole": {
                         "id": "ServiceRole",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole",
                         "children": {
                           "ImportServiceRole": {
                             "id": "ImportServiceRole",
-                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/ImportServiceRole",
+                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/ImportServiceRole",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.Resource",
                               "version": "0.0.0"
@@ -2169,7 +2169,7 @@
                           },
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/Resource",
+                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                               "aws:cdk:cloudformation:props": {
@@ -2208,11 +2208,11 @@
                           },
                           "DefaultPolicy": {
                             "id": "DefaultPolicy",
-                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/DefaultPolicy",
+                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/DefaultPolicy",
                             "children": {
                               "Resource": {
                                 "id": "Resource",
-                                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/DefaultPolicy/Resource",
+                                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/DefaultPolicy/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                                   "aws:cdk:cloudformation:props": {
@@ -2294,11 +2294,11 @@
                       },
                       "Code": {
                         "id": "Code",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/Code",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/Code",
                         "children": {
                           "Stage": {
                             "id": "Stage",
-                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/Code/Stage",
+                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/Code/Stage",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.AssetStaging",
                               "version": "0.0.0"
@@ -2306,7 +2306,7 @@
                           },
                           "AssetBucket": {
                             "id": "AssetBucket",
-                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/Code/AssetBucket",
+                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/Code/AssetBucket",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                               "version": "0.0.0"
@@ -2320,7 +2320,7 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/Resource",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                           "aws:cdk:cloudformation:props": {
@@ -2328,9 +2328,9 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "d002370061965c69bc4caf15dddb5eccc9df318933ade6e4fa57cddb81c5abef.zip"
+                              "s3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
                             },
-                            "description": "AWS CDK resource provider framework - onTimeout (aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
+                            "description": "AWS CDK resource provider framework - onTimeout (aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
                               "variables": {
                                 "USER_ON_EVENT_FUNCTION_ARN": {
@@ -2371,15 +2371,15 @@
                   },
                   "waiter-state-machine": {
                     "id": "waiter-state-machine",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine",
                     "children": {
                       "Role": {
                         "id": "Role",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role",
                         "children": {
                           "ImportRole": {
                             "id": "ImportRole",
-                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/ImportRole",
+                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/ImportRole",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.Resource",
                               "version": "0.0.0"
@@ -2387,7 +2387,7 @@
                           },
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/Resource",
+                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                               "aws:cdk:cloudformation:props": {
@@ -2412,11 +2412,11 @@
                           },
                           "DefaultPolicy": {
                             "id": "DefaultPolicy",
-                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/DefaultPolicy",
+                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/DefaultPolicy",
                             "children": {
                               "Resource": {
                                 "id": "Resource",
-                                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/DefaultPolicy/Resource",
+                                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/DefaultPolicy/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                                   "aws:cdk:cloudformation:props": {
@@ -2498,7 +2498,7 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Resource",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Resource",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -2507,7 +2507,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "version": "10.3.0"
                     }
                   }
                 },
@@ -2516,25 +2516,25 @@
                   "version": "0.0.0"
                 }
               },
-              "awsstepfunctionstasksemrcontainersstartjobruntestawscdkawseksClusterResourceProviderOnEventHandlerServiceRole663D4CFBArn": {
-                "id": "awsstepfunctionstasksemrcontainersstartjobruntestawscdkawseksClusterResourceProviderOnEventHandlerServiceRole663D4CFBArn",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/awsstepfunctionstasksemrcontainersstartjobruntestawscdkawseksClusterResourceProviderOnEventHandlerServiceRole663D4CFBArn",
+              "awsstepfunctionstasksemrcontainersstartjobrunawscdkawseksClusterResourceProviderOnEventHandlerServiceRoleE118846DArn": {
+                "id": "awsstepfunctionstasksemrcontainersstartjobrunawscdkawseksClusterResourceProviderOnEventHandlerServiceRoleE118846DArn",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/awsstepfunctionstasksemrcontainersstartjobrunawscdkawseksClusterResourceProviderOnEventHandlerServiceRoleE118846DArn",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
                 }
               },
-              "awsstepfunctionstasksemrcontainersstartjobruntestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole43FB9134Arn": {
-                "id": "awsstepfunctionstasksemrcontainersstartjobruntestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole43FB9134Arn",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/awsstepfunctionstasksemrcontainersstartjobruntestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole43FB9134Arn",
+              "awsstepfunctionstasksemrcontainersstartjobrunawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole8A0930F5Arn": {
+                "id": "awsstepfunctionstasksemrcontainersstartjobrunawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole8A0930F5Arn",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/awsstepfunctionstasksemrcontainersstartjobrunawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole8A0930F5Arn",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
                 }
               },
-              "awsstepfunctionstasksemrcontainersstartjobruntestawscdkawseksClusterResourceProviderframeworkonEventD72B3ABCArn": {
-                "id": "awsstepfunctionstasksemrcontainersstartjobruntestawscdkawseksClusterResourceProviderframeworkonEventD72B3ABCArn",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/awsstepfunctionstasksemrcontainersstartjobruntestawscdkawseksClusterResourceProviderframeworkonEventD72B3ABCArn",
+              "awsstepfunctionstasksemrcontainersstartjobrunawscdkawseksClusterResourceProviderframeworkonEvent534EC111Arn": {
+                "id": "awsstepfunctionstasksemrcontainersstartjobrunawscdkawseksClusterResourceProviderframeworkonEvent534EC111Arn",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/awsstepfunctionstasksemrcontainersstartjobrunawscdkawseksClusterResourceProviderframeworkonEvent534EC111Arn",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
@@ -2548,11 +2548,11 @@
           },
           "@aws-cdk--aws-eks.ClusterResourceProvider.NestedStack": {
             "id": "@aws-cdk--aws-eks.ClusterResourceProvider.NestedStack",
-            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStack",
+            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStack",
             "children": {
               "@aws-cdk--aws-eks.ClusterResourceProvider.NestedStackResource": {
                 "id": "@aws-cdk--aws-eks.ClusterResourceProvider.NestedStackResource",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStack/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStackResource",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStack/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStackResource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::CloudFormation::Stack",
                   "aws:cdk:cloudformation:props": {
@@ -2572,7 +2572,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/7d1e2e580648ff755add781dfd09bd2cf5920187ff1649a882fc2d97019de612.json"
+                          "/d4ba2457356cf0ed1548fac5ab02d75047d54b3bf0003b675975cddfe75de3a0.json"
                         ]
                       ]
                     }
@@ -2586,24 +2586,24 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.70"
+              "version": "10.3.0"
             }
           },
           "@aws-cdk--aws-eks.KubectlProvider": {
             "id": "@aws-cdk--aws-eks.KubectlProvider",
-            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider",
+            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider",
             "children": {
               "Handler": {
                 "id": "Handler",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/Handler",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/Handler",
                 "children": {
                   "Code": {
                     "id": "Code",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/Handler/Code",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/Handler/Code",
                     "children": {
                       "Stage": {
                         "id": "Stage",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/Handler/Code/Stage",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/Handler/Code/Stage",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.AssetStaging",
                           "version": "0.0.0"
@@ -2611,7 +2611,7 @@
                       },
                       "AssetBucket": {
                         "id": "AssetBucket",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/Handler/Code/AssetBucket",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/Handler/Code/AssetBucket",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                           "version": "0.0.0"
@@ -2625,7 +2625,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/Handler/Resource",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/Handler/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                       "aws:cdk:cloudformation:props": {
@@ -2633,7 +2633,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "7ee709fdaf72d4a95dabe6f431ed4176b1dbcb78127986bf956f0ed8cad04779.zip"
+                          "s3Key": "096b0b696556ba7cc2ef5b5aedafc3b30654d446f5fc1a0258831f858b87adaf.zip"
                         },
                         "description": "onEvent handler for EKS kubectl resource provider",
                         "handler": "index.handler",
@@ -2647,22 +2647,22 @@
                         ],
                         "memorySize": 1024,
                         "role": {
-                          "Ref": "referencetoawsstepfunctionstasksemrcontainersstartjobruntestintegrationtesteksclusterKubectlHandlerRole9370F2F5Arn"
+                          "Ref": "referencetoawsstepfunctionstasksemrcontainersstartjobrunintegrationtesteksclusterKubectlHandlerRole965AEA8DArn"
                         },
                         "runtime": "python3.10",
                         "timeout": 900,
                         "vpcConfig": {
                           "subnetIds": [
                             {
-                              "Ref": "referencetoawsstepfunctionstasksemrcontainersstartjobruntestintegrationtesteksclusterDefaultVpcPrivateSubnet1Subnet3A5831F1Ref"
+                              "Ref": "referencetoawsstepfunctionstasksemrcontainersstartjobrunintegrationtesteksclusterDefaultVpcPrivateSubnet1SubnetFE45EEEBRef"
                             },
                             {
-                              "Ref": "referencetoawsstepfunctionstasksemrcontainersstartjobruntestintegrationtesteksclusterDefaultVpcPrivateSubnet2Subnet38594BA0Ref"
+                              "Ref": "referencetoawsstepfunctionstasksemrcontainersstartjobrunintegrationtesteksclusterDefaultVpcPrivateSubnet2Subnet5042E9F4Ref"
                             }
                           ],
                           "securityGroupIds": [
                             {
-                              "Ref": "referencetoawsstepfunctionstasksemrcontainersstartjobruntestintegrationtesteksclusterA295C017ClusterSecurityGroupId"
+                              "Ref": "referencetoawsstepfunctionstasksemrcontainersstartjobrunintegrationtestekscluster59B73E28ClusterSecurityGroupId"
                             }
                           ]
                         }
@@ -2681,15 +2681,15 @@
               },
               "AwsCliLayer": {
                 "id": "AwsCliLayer",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer",
                 "children": {
                   "Code": {
                     "id": "Code",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer/Code",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer/Code",
                     "children": {
                       "Stage": {
                         "id": "Stage",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer/Code/Stage",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer/Code/Stage",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.AssetStaging",
                           "version": "0.0.0"
@@ -2697,7 +2697,7 @@
                       },
                       "AssetBucket": {
                         "id": "AssetBucket",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer/Code/AssetBucket",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer/Code/AssetBucket",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                           "version": "0.0.0"
@@ -2711,7 +2711,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer/Resource",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Lambda::LayerVersion",
                       "aws:cdk:cloudformation:props": {
@@ -2719,7 +2719,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "e2277687077a2abf9ae1af1cc9565e6715e2ebb62f79ec53aa75a1af9298f642.zip"
+                          "s3Key": "3fb6287214999ddeafa7cd0e3e58bc5144c8678bb720f3b5e45e8fd32f333eb3.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -2737,15 +2737,15 @@
               },
               "KubectlLayer": {
                 "id": "KubectlLayer",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/KubectlLayer",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/KubectlLayer",
                 "children": {
                   "Code": {
                     "id": "Code",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/KubectlLayer/Code",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/KubectlLayer/Code",
                     "children": {
                       "Stage": {
                         "id": "Stage",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/KubectlLayer/Code/Stage",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/KubectlLayer/Code/Stage",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.AssetStaging",
                           "version": "0.0.0"
@@ -2753,7 +2753,7 @@
                       },
                       "AssetBucket": {
                         "id": "AssetBucket",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/KubectlLayer/Code/AssetBucket",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/KubectlLayer/Code/AssetBucket",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                           "version": "0.0.0"
@@ -2767,7 +2767,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/KubectlLayer/Resource",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/KubectlLayer/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Lambda::LayerVersion",
                       "aws:cdk:cloudformation:props": {
@@ -2793,7 +2793,7 @@
               },
               "ConditionalPolicyArn": {
                 "id": "ConditionalPolicyArn",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/ConditionalPolicyArn",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/ConditionalPolicyArn",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
@@ -2801,7 +2801,7 @@
               },
               "conditionalPolicy": {
                 "id": "conditionalPolicy",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/conditionalPolicy",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/conditionalPolicy",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
@@ -2809,19 +2809,19 @@
               },
               "Provider": {
                 "id": "Provider",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/Provider",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/Provider",
                 "children": {
                   "framework-onEvent": {
                     "id": "framework-onEvent",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent",
                     "children": {
                       "ServiceRole": {
                         "id": "ServiceRole",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole",
                         "children": {
                           "ImportServiceRole": {
                             "id": "ImportServiceRole",
-                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole",
+                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.Resource",
                               "version": "0.0.0"
@@ -2829,7 +2829,7 @@
                           },
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource",
+                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                               "aws:cdk:cloudformation:props": {
@@ -2880,11 +2880,11 @@
                           },
                           "DefaultPolicy": {
                             "id": "DefaultPolicy",
-                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy",
+                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy",
                             "children": {
                               "Resource": {
                                 "id": "Resource",
-                                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource",
+                                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                                   "aws:cdk:cloudformation:props": {
@@ -2946,11 +2946,11 @@
                       },
                       "Code": {
                         "id": "Code",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/Code",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/Code",
                         "children": {
                           "Stage": {
                             "id": "Stage",
-                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/Code/Stage",
+                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/Code/Stage",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.AssetStaging",
                               "version": "0.0.0"
@@ -2958,7 +2958,7 @@
                           },
                           "AssetBucket": {
                             "id": "AssetBucket",
-                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/Code/AssetBucket",
+                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/Code/AssetBucket",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                               "version": "0.0.0"
@@ -2972,7 +2972,7 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/Resource",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                           "aws:cdk:cloudformation:props": {
@@ -2980,9 +2980,9 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "d002370061965c69bc4caf15dddb5eccc9df318933ade6e4fa57cddb81c5abef.zip"
+                              "s3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
                             },
-                            "description": "AWS CDK resource provider framework - onEvent (aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/Provider)",
+                            "description": "AWS CDK resource provider framework - onEvent (aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/Provider)",
                             "environment": {
                               "variables": {
                                 "USER_ON_EVENT_FUNCTION_ARN": {
@@ -3005,15 +3005,15 @@
                             "vpcConfig": {
                               "subnetIds": [
                                 {
-                                  "Ref": "referencetoawsstepfunctionstasksemrcontainersstartjobruntestintegrationtesteksclusterDefaultVpcPrivateSubnet1Subnet3A5831F1Ref"
+                                  "Ref": "referencetoawsstepfunctionstasksemrcontainersstartjobrunintegrationtesteksclusterDefaultVpcPrivateSubnet1SubnetFE45EEEBRef"
                                 },
                                 {
-                                  "Ref": "referencetoawsstepfunctionstasksemrcontainersstartjobruntestintegrationtesteksclusterDefaultVpcPrivateSubnet2Subnet38594BA0Ref"
+                                  "Ref": "referencetoawsstepfunctionstasksemrcontainersstartjobrunintegrationtesteksclusterDefaultVpcPrivateSubnet2Subnet5042E9F4Ref"
                                 }
                               ],
                               "securityGroupIds": [
                                 {
-                                  "Ref": "referencetoawsstepfunctionstasksemrcontainersstartjobruntestintegrationtesteksclusterA295C017ClusterSecurityGroupId"
+                                  "Ref": "referencetoawsstepfunctionstasksemrcontainersstartjobrunintegrationtestekscluster59B73E28ClusterSecurityGroupId"
                                 }
                               ]
                             }
@@ -3036,41 +3036,41 @@
                   "version": "0.0.0"
                 }
               },
-              "awsstepfunctionstasksemrcontainersstartjobruntestawscdkawseksKubectlProviderframeworkonEvent3B4C1982Arn": {
-                "id": "awsstepfunctionstasksemrcontainersstartjobruntestawscdkawseksKubectlProviderframeworkonEvent3B4C1982Arn",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/awsstepfunctionstasksemrcontainersstartjobruntestawscdkawseksKubectlProviderframeworkonEvent3B4C1982Arn",
+              "awsstepfunctionstasksemrcontainersstartjobrunawscdkawseksKubectlProviderframeworkonEventB25EDDAEArn": {
+                "id": "awsstepfunctionstasksemrcontainersstartjobrunawscdkawseksKubectlProviderframeworkonEventB25EDDAEArn",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/awsstepfunctionstasksemrcontainersstartjobrunawscdkawseksKubectlProviderframeworkonEventB25EDDAEArn",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
                 }
               },
-              "reference-to-awsstepfunctionstasksemrcontainersstartjobruntestintegrationtesteksclusterKubectlHandlerRole9370F2F5Arn": {
-                "id": "reference-to-awsstepfunctionstasksemrcontainersstartjobruntestintegrationtesteksclusterKubectlHandlerRole9370F2F5Arn",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksemrcontainersstartjobruntestintegrationtesteksclusterKubectlHandlerRole9370F2F5Arn",
+              "reference-to-awsstepfunctionstasksemrcontainersstartjobrunintegrationtesteksclusterKubectlHandlerRole965AEA8DArn": {
+                "id": "reference-to-awsstepfunctionstasksemrcontainersstartjobrunintegrationtesteksclusterKubectlHandlerRole965AEA8DArn",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksemrcontainersstartjobrunintegrationtesteksclusterKubectlHandlerRole965AEA8DArn",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnParameter",
                   "version": "0.0.0"
                 }
               },
-              "reference-to-awsstepfunctionstasksemrcontainersstartjobruntestintegrationtesteksclusterDefaultVpcPrivateSubnet1Subnet3A5831F1Ref": {
-                "id": "reference-to-awsstepfunctionstasksemrcontainersstartjobruntestintegrationtesteksclusterDefaultVpcPrivateSubnet1Subnet3A5831F1Ref",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksemrcontainersstartjobruntestintegrationtesteksclusterDefaultVpcPrivateSubnet1Subnet3A5831F1Ref",
+              "reference-to-awsstepfunctionstasksemrcontainersstartjobrunintegrationtesteksclusterDefaultVpcPrivateSubnet1SubnetFE45EEEBRef": {
+                "id": "reference-to-awsstepfunctionstasksemrcontainersstartjobrunintegrationtesteksclusterDefaultVpcPrivateSubnet1SubnetFE45EEEBRef",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksemrcontainersstartjobrunintegrationtesteksclusterDefaultVpcPrivateSubnet1SubnetFE45EEEBRef",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnParameter",
                   "version": "0.0.0"
                 }
               },
-              "reference-to-awsstepfunctionstasksemrcontainersstartjobruntestintegrationtesteksclusterDefaultVpcPrivateSubnet2Subnet38594BA0Ref": {
-                "id": "reference-to-awsstepfunctionstasksemrcontainersstartjobruntestintegrationtesteksclusterDefaultVpcPrivateSubnet2Subnet38594BA0Ref",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksemrcontainersstartjobruntestintegrationtesteksclusterDefaultVpcPrivateSubnet2Subnet38594BA0Ref",
+              "reference-to-awsstepfunctionstasksemrcontainersstartjobrunintegrationtesteksclusterDefaultVpcPrivateSubnet2Subnet5042E9F4Ref": {
+                "id": "reference-to-awsstepfunctionstasksemrcontainersstartjobrunintegrationtesteksclusterDefaultVpcPrivateSubnet2Subnet5042E9F4Ref",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksemrcontainersstartjobrunintegrationtesteksclusterDefaultVpcPrivateSubnet2Subnet5042E9F4Ref",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnParameter",
                   "version": "0.0.0"
                 }
               },
-              "reference-to-awsstepfunctionstasksemrcontainersstartjobruntestintegrationtesteksclusterA295C017ClusterSecurityGroupId": {
-                "id": "reference-to-awsstepfunctionstasksemrcontainersstartjobruntestintegrationtesteksclusterA295C017ClusterSecurityGroupId",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksemrcontainersstartjobruntestintegrationtesteksclusterA295C017ClusterSecurityGroupId",
+              "reference-to-awsstepfunctionstasksemrcontainersstartjobrunintegrationtestekscluster59B73E28ClusterSecurityGroupId": {
+                "id": "reference-to-awsstepfunctionstasksemrcontainersstartjobrunintegrationtestekscluster59B73E28ClusterSecurityGroupId",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksemrcontainersstartjobrunintegrationtestekscluster59B73E28ClusterSecurityGroupId",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnParameter",
                   "version": "0.0.0"
@@ -3084,28 +3084,28 @@
           },
           "@aws-cdk--aws-eks.KubectlProvider.NestedStack": {
             "id": "@aws-cdk--aws-eks.KubectlProvider.NestedStack",
-            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider.NestedStack",
+            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider.NestedStack",
             "children": {
               "@aws-cdk--aws-eks.KubectlProvider.NestedStackResource": {
                 "id": "@aws-cdk--aws-eks.KubectlProvider.NestedStackResource",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider.NestedStack/@aws-cdk--aws-eks.KubectlProvider.NestedStackResource",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider.NestedStack/@aws-cdk--aws-eks.KubectlProvider.NestedStackResource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::CloudFormation::Stack",
                   "aws:cdk:cloudformation:props": {
                     "parameters": {
-                      "referencetoawsstepfunctionstasksemrcontainersstartjobruntestintegrationtesteksclusterKubectlHandlerRole9370F2F5Arn": {
+                      "referencetoawsstepfunctionstasksemrcontainersstartjobrunintegrationtesteksclusterKubectlHandlerRole965AEA8DArn": {
                         "Fn::GetAtt": [
                           "integrationtesteksclusterKubectlHandlerRole9A4C37D2",
                           "Arn"
                         ]
                       },
-                      "referencetoawsstepfunctionstasksemrcontainersstartjobruntestintegrationtesteksclusterDefaultVpcPrivateSubnet1Subnet3A5831F1Ref": {
+                      "referencetoawsstepfunctionstasksemrcontainersstartjobrunintegrationtesteksclusterDefaultVpcPrivateSubnet1SubnetFE45EEEBRef": {
                         "Ref": "integrationtesteksclusterDefaultVpcPrivateSubnet1Subnet4E00CAFB"
                       },
-                      "referencetoawsstepfunctionstasksemrcontainersstartjobruntestintegrationtesteksclusterDefaultVpcPrivateSubnet2Subnet38594BA0Ref": {
+                      "referencetoawsstepfunctionstasksemrcontainersstartjobrunintegrationtesteksclusterDefaultVpcPrivateSubnet2Subnet5042E9F4Ref": {
                         "Ref": "integrationtesteksclusterDefaultVpcPrivateSubnet2Subnet0C3539A8"
                       },
-                      "referencetoawsstepfunctionstasksemrcontainersstartjobruntestintegrationtesteksclusterA295C017ClusterSecurityGroupId": {
+                      "referencetoawsstepfunctionstasksemrcontainersstartjobrunintegrationtestekscluster59B73E28ClusterSecurityGroupId": {
                         "Fn::GetAtt": [
                           "integrationtesteksclusterE5C0ED98",
                           "ClusterSecurityGroupId"
@@ -3128,7 +3128,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/9cb3146bb658283e5521b158afa91dff80b19807fe44cb63a1ab71d876960233.json"
+                          "/145c3308d8105b2039aa5d38c331857b285099504affd984d8f255739d4db58f.json"
                         ]
                       ]
                     }
@@ -3142,12 +3142,12 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.70"
+              "version": "10.3.0"
             }
           },
           "Virtual Cluster": {
             "id": "Virtual Cluster",
-            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/Virtual Cluster",
+            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/Virtual Cluster",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnResource",
               "version": "0.0.0"
@@ -3155,7 +3155,7 @@
           },
           "emrServiceRole": {
             "id": "emrServiceRole",
-            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/emrServiceRole",
+            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/emrServiceRole",
             "constructInfo": {
               "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
@@ -3163,15 +3163,15 @@
           },
           "Start a Job Run": {
             "id": "Start a Job Run",
-            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/Start a Job Run",
+            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/Start a Job Run",
             "children": {
               "Job-Execution-Role": {
                 "id": "Job-Execution-Role",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/Start a Job Run/Job-Execution-Role",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/Start a Job Run/Job-Execution-Role",
                 "children": {
                   "ImportJob-Execution-Role": {
                     "id": "ImportJob-Execution-Role",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/Start a Job Run/Job-Execution-Role/ImportJob-Execution-Role",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/Start a Job Run/Job-Execution-Role/ImportJob-Execution-Role",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -3179,7 +3179,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/Start a Job Run/Job-Execution-Role/Resource",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/Start a Job Run/Job-Execution-Role/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -3207,11 +3207,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/Start a Job Run/Job-Execution-Role/DefaultPolicy",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/Start a Job Run/Job-Execution-Role/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/Start a Job Run/Job-Execution-Role/DefaultPolicy/Resource",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/Start a Job Run/Job-Execution-Role/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -3271,11 +3271,11 @@
               },
               "GetEksClusterInfo": {
                 "id": "GetEksClusterInfo",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/Start a Job Run/GetEksClusterInfo",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/Start a Job Run/GetEksClusterInfo",
                 "children": {
                   "Provider": {
                     "id": "Provider",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/Start a Job Run/GetEksClusterInfo/Provider",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/Start a Job Run/GetEksClusterInfo/Provider",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
                       "version": "0.0.0"
@@ -3283,11 +3283,11 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/Start a Job Run/GetEksClusterInfo/Resource",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/Start a Job Run/GetEksClusterInfo/Resource",
                     "children": {
                       "Default": {
                         "id": "Default",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/Start a Job Run/GetEksClusterInfo/Resource/Default",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/Start a Job Run/GetEksClusterInfo/Resource/Default",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -3301,11 +3301,11 @@
                   },
                   "CustomResourcePolicy": {
                     "id": "CustomResourcePolicy",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/Start a Job Run/GetEksClusterInfo/CustomResourcePolicy",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/Start a Job Run/GetEksClusterInfo/CustomResourcePolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/Start a Job Run/GetEksClusterInfo/CustomResourcePolicy/Resource",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/Start a Job Run/GetEksClusterInfo/CustomResourcePolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -3346,15 +3346,15 @@
               },
               "awsclilayer": {
                 "id": "awsclilayer",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/Start a Job Run/awsclilayer",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/Start a Job Run/awsclilayer",
                 "children": {
                   "Code": {
                     "id": "Code",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/Start a Job Run/awsclilayer/Code",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/Start a Job Run/awsclilayer/Code",
                     "children": {
                       "Stage": {
                         "id": "Stage",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/Start a Job Run/awsclilayer/Code/Stage",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/Start a Job Run/awsclilayer/Code/Stage",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.AssetStaging",
                           "version": "0.0.0"
@@ -3362,7 +3362,7 @@
                       },
                       "AssetBucket": {
                         "id": "AssetBucket",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/Start a Job Run/awsclilayer/Code/AssetBucket",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/Start a Job Run/awsclilayer/Code/AssetBucket",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                           "version": "0.0.0"
@@ -3376,7 +3376,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/Start a Job Run/awsclilayer/Resource",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/Start a Job Run/awsclilayer/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Lambda::LayerVersion",
                       "aws:cdk:cloudformation:props": {
@@ -3384,7 +3384,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "e2277687077a2abf9ae1af1cc9565e6715e2ebb62f79ec53aa75a1af9298f642.zip"
+                          "s3Key": "3fb6287214999ddeafa7cd0e3e58bc5144c8678bb720f3b5e45e8fd32f333eb3.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -3402,7 +3402,7 @@
               },
               "Call Update-Role-Trust-Policy": {
                 "id": "Call Update-Role-Trust-Policy",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/Start a Job Run/Call Update-Role-Trust-Policy",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/Start a Job Run/Call Update-Role-Trust-Policy",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
                   "version": "0.0.0"
@@ -3410,19 +3410,19 @@
               },
               "CustomResourceProvider": {
                 "id": "CustomResourceProvider",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/Start a Job Run/CustomResourceProvider",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/Start a Job Run/CustomResourceProvider",
                 "children": {
                   "framework-onEvent": {
                     "id": "framework-onEvent",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/Start a Job Run/CustomResourceProvider/framework-onEvent",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/Start a Job Run/CustomResourceProvider/framework-onEvent",
                     "children": {
                       "ServiceRole": {
                         "id": "ServiceRole",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/Start a Job Run/CustomResourceProvider/framework-onEvent/ServiceRole",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/Start a Job Run/CustomResourceProvider/framework-onEvent/ServiceRole",
                         "children": {
                           "ImportServiceRole": {
                             "id": "ImportServiceRole",
-                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/Start a Job Run/CustomResourceProvider/framework-onEvent/ServiceRole/ImportServiceRole",
+                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/Start a Job Run/CustomResourceProvider/framework-onEvent/ServiceRole/ImportServiceRole",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.Resource",
                               "version": "0.0.0"
@@ -3430,7 +3430,7 @@
                           },
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/Start a Job Run/CustomResourceProvider/framework-onEvent/ServiceRole/Resource",
+                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/Start a Job Run/CustomResourceProvider/framework-onEvent/ServiceRole/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                               "aws:cdk:cloudformation:props": {
@@ -3469,11 +3469,11 @@
                           },
                           "DefaultPolicy": {
                             "id": "DefaultPolicy",
-                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/Start a Job Run/CustomResourceProvider/framework-onEvent/ServiceRole/DefaultPolicy",
+                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/Start a Job Run/CustomResourceProvider/framework-onEvent/ServiceRole/DefaultPolicy",
                             "children": {
                               "Resource": {
                                 "id": "Resource",
-                                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/Start a Job Run/CustomResourceProvider/framework-onEvent/ServiceRole/DefaultPolicy/Resource",
+                                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/Start a Job Run/CustomResourceProvider/framework-onEvent/ServiceRole/DefaultPolicy/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                                   "aws:cdk:cloudformation:props": {
@@ -3535,11 +3535,11 @@
                       },
                       "Code": {
                         "id": "Code",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/Start a Job Run/CustomResourceProvider/framework-onEvent/Code",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/Start a Job Run/CustomResourceProvider/framework-onEvent/Code",
                         "children": {
                           "Stage": {
                             "id": "Stage",
-                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/Start a Job Run/CustomResourceProvider/framework-onEvent/Code/Stage",
+                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/Start a Job Run/CustomResourceProvider/framework-onEvent/Code/Stage",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.AssetStaging",
                               "version": "0.0.0"
@@ -3547,7 +3547,7 @@
                           },
                           "AssetBucket": {
                             "id": "AssetBucket",
-                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/Start a Job Run/CustomResourceProvider/framework-onEvent/Code/AssetBucket",
+                            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/Start a Job Run/CustomResourceProvider/framework-onEvent/Code/AssetBucket",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                               "version": "0.0.0"
@@ -3561,7 +3561,7 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/Start a Job Run/CustomResourceProvider/framework-onEvent/Resource",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/Start a Job Run/CustomResourceProvider/framework-onEvent/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                           "aws:cdk:cloudformation:props": {
@@ -3569,9 +3569,9 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "d002370061965c69bc4caf15dddb5eccc9df318933ade6e4fa57cddb81c5abef.zip"
+                              "s3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
                             },
-                            "description": "AWS CDK resource provider framework - onEvent (aws-stepfunctions-tasks-emr-containers-start-job-run-test/Start a Job Run/CustomResourceProvider)",
+                            "description": "AWS CDK resource provider framework - onEvent (aws-stepfunctions-tasks-emr-containers-start-job-run/Start a Job Run/CustomResourceProvider)",
                             "environment": {
                               "variables": {
                                 "USER_ON_EVENT_FUNCTION_ARN": {
@@ -3612,11 +3612,11 @@
               },
               "Custom Resource": {
                 "id": "Custom Resource",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/Start a Job Run/Custom Resource",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/Start a Job Run/Custom Resource",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/Start a Job Run/Custom Resource/Default",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/Start a Job Run/Custom Resource/Default",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
                       "version": "0.0.0"
@@ -3636,15 +3636,15 @@
           },
           "AWS679f53fac002430cb0da5b7982bd2287": {
             "id": "AWS679f53fac002430cb0da5b7982bd2287",
-            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/AWS679f53fac002430cb0da5b7982bd2287",
+            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/AWS679f53fac002430cb0da5b7982bd2287",
             "children": {
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/ImportServiceRole",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -3652,7 +3652,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -3697,11 +3697,11 @@
               },
               "Code": {
                 "id": "Code",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/AWS679f53fac002430cb0da5b7982bd2287/Code",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/AWS679f53fac002430cb0da5b7982bd2287/Code",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/AWS679f53fac002430cb0da5b7982bd2287/Code/Stage",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/AWS679f53fac002430cb0da5b7982bd2287/Code/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -3709,7 +3709,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/AWS679f53fac002430cb0da5b7982bd2287/Code/AssetBucket",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/AWS679f53fac002430cb0da5b7982bd2287/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
@@ -3723,7 +3723,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/AWS679f53fac002430cb0da5b7982bd2287/Resource",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/AWS679f53fac002430cb0da5b7982bd2287/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
@@ -3731,7 +3731,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "e5178afc49b7c6a85127a67856ce958e4f0879ce6aad5e974cac2a088bf939db.zip"
+                      "s3Key": "b0de6372e1c756b7afa1a8a1d0a21ee4cd330150290abffc9bc163f285150514.zip"
                     },
                     "handler": "index.handler",
                     "role": {
@@ -3757,15 +3757,15 @@
           },
           "SingletonLambda8693BB64968944B69AAFB0CC9EB8757C": {
             "id": "SingletonLambda8693BB64968944B69AAFB0CC9EB8757C",
-            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/SingletonLambda8693BB64968944B69AAFB0CC9EB8757C",
+            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/SingletonLambda8693BB64968944B69AAFB0CC9EB8757C",
             "children": {
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/SingletonLambda8693BB64968944B69AAFB0CC9EB8757C/ServiceRole",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/SingletonLambda8693BB64968944B69AAFB0CC9EB8757C/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/SingletonLambda8693BB64968944B69AAFB0CC9EB8757C/ServiceRole/ImportServiceRole",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/SingletonLambda8693BB64968944B69AAFB0CC9EB8757C/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -3773,7 +3773,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/SingletonLambda8693BB64968944B69AAFB0CC9EB8757C/ServiceRole/Resource",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/SingletonLambda8693BB64968944B69AAFB0CC9EB8757C/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -3812,11 +3812,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/SingletonLambda8693BB64968944B69AAFB0CC9EB8757C/ServiceRole/DefaultPolicy",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/SingletonLambda8693BB64968944B69AAFB0CC9EB8757C/ServiceRole/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/SingletonLambda8693BB64968944B69AAFB0CC9EB8757C/ServiceRole/DefaultPolicy/Resource",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/SingletonLambda8693BB64968944B69AAFB0CC9EB8757C/ServiceRole/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -3895,11 +3895,11 @@
               },
               "Code": {
                 "id": "Code",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/SingletonLambda8693BB64968944B69AAFB0CC9EB8757C/Code",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/SingletonLambda8693BB64968944B69AAFB0CC9EB8757C/Code",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/SingletonLambda8693BB64968944B69AAFB0CC9EB8757C/Code/Stage",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/SingletonLambda8693BB64968944B69AAFB0CC9EB8757C/Code/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -3907,7 +3907,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/SingletonLambda8693BB64968944B69AAFB0CC9EB8757C/Code/AssetBucket",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/SingletonLambda8693BB64968944B69AAFB0CC9EB8757C/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
@@ -3921,7 +3921,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/SingletonLambda8693BB64968944B69AAFB0CC9EB8757C/Resource",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/SingletonLambda8693BB64968944B69AAFB0CC9EB8757C/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
@@ -3961,15 +3961,15 @@
           },
           "StateMachine": {
             "id": "StateMachine",
-            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/StateMachine",
+            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/StateMachine",
             "children": {
               "Role": {
                 "id": "Role",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/StateMachine/Role",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/StateMachine/Role",
                 "children": {
                   "ImportRole": {
                     "id": "ImportRole",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/StateMachine/Role/ImportRole",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/StateMachine/Role/ImportRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -3977,7 +3977,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/StateMachine/Role/Resource",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/StateMachine/Role/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -4002,11 +4002,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/StateMachine/Role/DefaultPolicy",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/StateMachine/Role/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/StateMachine/Role/DefaultPolicy/Resource",
+                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/StateMachine/Role/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -4116,7 +4116,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/StateMachine/Resource",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/StateMachine/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
                   "aws:cdk:cloudformation:props": {
@@ -4167,7 +4167,7 @@
           },
           "stateMachineArn": {
             "id": "stateMachineArn",
-            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/stateMachineArn",
+            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/stateMachineArn",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnOutput",
               "version": "0.0.0"
@@ -4175,7 +4175,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/BootstrapVersion",
+            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -4183,7 +4183,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/CheckBootstrapVersion",
+            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
@@ -4195,29 +4195,29 @@
           "version": "0.0.0"
         }
       },
-      "aws-stepfunctions-tasks-emr-containers-start-job-run": {
-        "id": "aws-stepfunctions-tasks-emr-containers-start-job-run",
-        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run",
+      "aws-stepfunctions-tasks-emr-containers-start-job-run-integ": {
+        "id": "aws-stepfunctions-tasks-emr-containers-start-job-run-integ",
+        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-integ",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/DefaultTest",
+            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-integ/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/DefaultTest/Default",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-integ/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/DefaultTest/DeployAssert",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-integ/DefaultTest/DeployAssert",
                 "children": {
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-integ/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
@@ -4225,7 +4225,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-integ/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"
@@ -4254,7 +4254,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },
