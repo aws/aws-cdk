@@ -2,6 +2,50 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.108.0](https://github.com/aws/aws-cdk/compare/v2.107.0...v2.108.0) (2023-11-13)
+
+
+### Features
+
+* **lambda:** add python 3.12 runtime ([#27967](https://github.com/aws/aws-cdk/issues/27967)) ([505907a](https://github.com/aws/aws-cdk/commit/505907a8331628bcc20918cc8126602c25c9815b))
+
+## [2.107.0](https://github.com/aws/aws-cdk/compare/v2.106.1...v2.107.0) (2023-11-13)
+
+
+### Features
+
+* **lambda:** node20 runtime ([#27897](https://github.com/aws/aws-cdk/issues/27897)) ([a5acd0f](https://github.com/aws/aws-cdk/commit/a5acd0f280e350bea6d874a3d766bd3dad70393b))
+
+## [2.106.1](https://github.com/aws/aws-cdk/compare/v2.106.0...v2.106.1) (2023-11-11)
+
+
+### Reverts
+
+* "chore(cdk): boostrap template uses deprecated AccessControl property" ([#27939](https://github.com/aws/aws-cdk/issues/27939)) ([bede2d1](https://github.com/aws/aws-cdk/commit/bede2d1195d65e61464a40d0da4213f9f09152ca)), closes [aws/aws-cdk#27764](https://github.com/aws/aws-cdk/issues/27764)
+
+## [2.106.0](https://github.com/aws/aws-cdk/compare/v2.105.0...v2.106.0) (2023-11-10)
+
+
+### Features
+
+* **cloudformation-diff:** use awscdk-service-spec as data source ([#27813](https://github.com/aws/aws-cdk/issues/27813)) ([aac52e5](https://github.com/aws/aws-cdk/commit/aac52e5b72c902edcb0a3d7020cb99b4ba72021d))
+* **ec2:** support for m7a, r7a and c7a instance types in aws-ec2 ([#27823](https://github.com/aws/aws-cdk/issues/27823)) ([e9ba676](https://github.com/aws/aws-cdk/commit/e9ba67616aaa42b87191a9f2d5c979e65a1e02a8)), closes [/docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-instance.html#cfn-ec2](https://github.com/aws//docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-instance.html/issues/cfn-ec2)
+* **ec2:** support for r7i instance type in aws-ec2 ([#27737](https://github.com/aws/aws-cdk/issues/27737)) ([9a56bce](https://github.com/aws/aws-cdk/commit/9a56bcec34fd512f3492bd2f4a8dde484ab92727)), closes [/docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance.html#cfn-ec2](https://github.com/aws//docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance.html/issues/cfn-ec2)
+* **ec2:** vpc flow logs supports kinesis data firehose ([#27604](https://github.com/aws/aws-cdk/issues/27604)) ([e6b59d6](https://github.com/aws/aws-cdk/commit/e6b59d6079fbaf8b2b79f47335b83902b1cda257)), closes [/docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-flowlog.html#cfn-ec2](https://github.com/aws//docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-flowlog.html/issues/cfn-ec2) [#27275](https://github.com/aws/aws-cdk/issues/27275)
+* **eks:** add AlbControllerVersion v2.5.2 - v2.5.4 and v2.6.0 - v2.6.2 ([#27910](https://github.com/aws/aws-cdk/issues/27910)) ([d33651f](https://github.com/aws/aws-cdk/commit/d33651f0237797ee841fe4fdd52a459f90c73f11)), closes [#27890](https://github.com/aws/aws-cdk/issues/27890)
+* **lambda:** new lambda runtime provided.al2023 ([#27856](https://github.com/aws/aws-cdk/issues/27856)) ([2717c5a](https://github.com/aws/aws-cdk/commit/2717c5a1b818d629ee9c1c9adfe90485ad98ab49))
+* update AWS Service Spec ([#27821](https://github.com/aws/aws-cdk/issues/27821)) ([fce26b6](https://github.com/aws/aws-cdk/commit/fce26b635d0ef2c443ca6d4e390a90f586130f05))
+* update AWS Service Spec ([#27851](https://github.com/aws/aws-cdk/issues/27851)) ([e6d57cd](https://github.com/aws/aws-cdk/commit/e6d57cdbe7c303675c0d2c356e55169c39f801ef))
+* update AWS Service Spec ([#27855](https://github.com/aws/aws-cdk/issues/27855)) ([aa45bfd](https://github.com/aws/aws-cdk/commit/aa45bfd21b14511fffd926a360238c94914adc00))
+
+
+### Bug Fixes
+
+* **s3:** InventoryConfiguration[].Id exceeds maximum size allowed by the PutBucketInventoryConfiguration API ([#27794](https://github.com/aws/aws-cdk/issues/27794)) ([1fa399e](https://github.com/aws/aws-cdk/commit/1fa399ec0b8db69da19268235403c2c75d423560)), closes [#27793](https://github.com/aws/aws-cdk/issues/27793)
+* update commented template test ([#27870](https://github.com/aws/aws-cdk/issues/27870)) ([028911f](https://github.com/aws/aws-cdk/commit/028911f69d63ed7c927d7c6ade058980cf141ced)), closes [#27869](https://github.com/aws/aws-cdk/issues/27869)
+* **ec2:** two undefined tunnelInsideCidr should not throw error ([#27778](https://github.com/aws/aws-cdk/issues/27778)) ([3c7ca51](https://github.com/aws/aws-cdk/commit/3c7ca516c8f9c46f16def62870143197644e2807)), closes [#27772](https://github.com/aws/aws-cdk/issues/27772)
+* **elasticloadbalancingv2:** circular dependency with access logging on bucket in extended ALB ([#27558](https://github.com/aws/aws-cdk/issues/27558)) ([1b86634](https://github.com/aws/aws-cdk/commit/1b86634c75623f34856a3578e361d81dae278f86)), closes [#27528](https://github.com/aws/aws-cdk/issues/27528)
+
 ## [2.105.0](https://github.com/aws/aws-cdk/compare/v2.104.0...v2.105.0) (2023-11-07)
 
 
