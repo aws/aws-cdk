@@ -282,7 +282,9 @@ export class Queue extends QueueBase {
       }
     }
 
-    return new Import(scope, id);
+    return new Import(scope, id, {
+      environmentFromArn: attrs.queueArn,
+    });
   }
 
   /**
