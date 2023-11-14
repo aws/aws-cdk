@@ -5,11 +5,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download regions
-        run: curl https://cli.cdk.dev-tools.aws.dev/notices.json -o ./notices.json
+        id: download
+        run: |
+          response=$(curl https://d3akamx322av4k.cloudfront.net/regions.json)
+          echo "REGIONS=${response}" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v3
       - uses: actions/github-script@v7
         env:
-          SHA: '${{env.parentSHA}}'
+          REGIONS: ${{ steps.download.outputs.REGIONS }}
         with:
           script: |
             const script = require('./scripts/script.js')
