@@ -10,7 +10,7 @@ function recFolderStructure(fileOrDir: string) {
       recFolderStructure(path.join(fileOrDir, i));
     }
   } else {
-    if (['index.ts', 'index.js', 'index.py'].some(fileName => fileOrDir.includes(fileName))) {
+    if (['index.ts', 'index.js', 'index.py', '__init__.py'].some(fileName => fileOrDir.includes(fileName))) {
       entryPoints.push(fileOrDir);
     }
   }
@@ -22,7 +22,7 @@ async function main() {
   recFolderStructure(bindingsDir);
 
   for (const ep of entryPoints) {
-    if (ep.includes('index.py')) {
+    if (['index.py', '__init__.py'].some(fileName => ep.includes(fileName))) {
       const outfile = calculateOutfile(ep);
       fs.mkdirSync(path.dirname(outfile), { recursive: true });
       fs.copyFileSync(ep, outfile);
