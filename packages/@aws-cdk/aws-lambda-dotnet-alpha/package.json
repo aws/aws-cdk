@@ -1,32 +1,35 @@
 {
-  "name": "@aws-cdk/aws-lambda-dotnet",
+  "name": "@aws-cdk/aws-lambda-dotnet-alpha",
   "version": "0.0.0",
-  "private": true,
-  "description": "The CDK Construct Library for AWS Lambda in .NET",
+  "description": "The CDK Construct Library for AWS Lambda with .NET",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.services.lambda.dotnet",
+        "package": "software.amazon.awscdk.services.lambda.dotnet.alpha",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "lambda-dotnet"
+          "artifactId": "lambda-dotnet-alpha"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Lambda.DotNet",
-        "packageId": "Amazon.CDK.AWS.Lambda.DotNet",
+        "namespace": "Amazon.CDK.AWS.Lambda.DotNet.Alpha",
+        "packageId": "Amazon.CDK.AWS.Lambda.DotNet.Alpha",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
-        "distName": "aws-cdk.aws-lambda-dotnet",
-        "module": "aws_cdk.aws_lambda_dotnet",
+        "distName": "aws-cdk.aws-lambda-dotnet-alpha",
+        "module": "aws_cdk.aws_lambda_dotnet_alpha",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 2"
         ]
+      },
+      "go": {
+        "moduleName": "github.com/aws/aws-cdk-go",
+        "packageName": "awscdklambdadotnetalpha"
       }
     },
     "projectReferences": true,
@@ -41,7 +44,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "packages/@aws-cdk/aws-lambda-dotnet"
+    "directory": "packages/@aws-cdk/aws-lambda-dotnet-alpha"
   },
   "scripts": {
     "build": "cdk-build",
@@ -72,36 +75,41 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assertions": "0.0.0",
-    "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
+    "@aws-cdk/integ-tests-alpha": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.5.2",
-    "delay": "5.0.0",
-    "esbuild": "^0.15.14"
-  },
-  "dependencies": {
-    "@aws-cdk/aws-lambda": "0.0.0",
-    "@aws-cdk/core": "0.0.0",
+    "@types/jest": "^29.5.8",
+    "aws-cdk-lib": "0.0.0",
     "constructs": "^10.0.0"
   },
+  "dependencies": {},
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-lambda": "0.0.0",
-    "@aws-cdk/core": "0.0.0",
+    "aws-cdk-lib": "^0.0.0",
     "constructs": "^10.0.0"
   },
   "engines": {
     "node": ">= 14.15.0"
   },
-  "stability": "stable",
-  "maturity": "stable",
+  "stability": "experimental",
+  "maturity": "experimental",
   "awscdkio": {
     "announce": false
   },
-  "nozem": false,
+  "nozem": {
+    "ostools": [
+      "docker"
+    ]
+  },
   "publishConfig": {
     "tag": "latest"
+  },
+  "private": false,
+  "pkglint": {
+    "exclude": [
+      "naming/package-matches-directory",
+      "assert/assert-dependency"
+    ]
   }
 }

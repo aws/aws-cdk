@@ -1,7 +1,7 @@
 // Fixture with packages imported, but nothing else
 import { Construct } from 'constructs';
 import { DockerImage, Stack } from '@aws-cdk/core';
-import * as nodejs from '@aws-cdk/aws-lambda-dotnet';
+import * as dotnet from '@aws-cdk/aws-lambda-dotnet-alpha';
 
 class Fixture extends Stack {
   constructor(scope: Construct, id: string) {
