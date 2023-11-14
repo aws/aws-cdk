@@ -7,9 +7,8 @@ jobs:
     steps:
       - name: Download regions
         env:
-          URL: https://d3akamx322av4k.cloudfront.net/regions.json
+          URL: https://d3mqmgkwnwa8vm.cloudfront.net/regions.json
         id: download
-#        todo: USE THE PROD URL
         run: |
           response=$(curl $URL)
           echo "REGIONS=${response}" >> "$GITHUB_OUTPUT"
