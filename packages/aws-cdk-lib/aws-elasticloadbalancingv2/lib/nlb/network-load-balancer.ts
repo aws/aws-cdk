@@ -432,7 +432,7 @@ class LookedUpNetworkLoadBalancer extends Resource implements INetworkLoadBalanc
   public readonly loadBalancerArn: string;
   public readonly vpc?: ec2.IVpc;
   public readonly metrics: INetworkLoadBalancerMetrics;
-  public readonly securityGroups: string[];
+  public readonly securityGroups?: string[];
 
   constructor(scope: Construct, id: string, props: cxapi.LoadBalancerContextResponse) {
     super(scope, id, { environmentFromArn: props.loadBalancerArn });
