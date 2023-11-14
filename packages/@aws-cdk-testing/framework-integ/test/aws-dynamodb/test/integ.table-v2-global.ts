@@ -16,7 +16,7 @@ class TestStack extends Stack {
       sortKey: { name: 'sk', type: AttributeType.NUMBER },
       billing: Billing.provisioned({
         readCapacity: Capacity.fixed(10),
-        writeCapacity: Capacity.autoscaled({ maxCapacity: 20, targetUtilizationPercent: 60 }),
+        writeCapacity: Capacity.autoscaled({ maxCapacity: 20, targetUtilizationPercent: 60, seedCapacity: 10 }),
       }),
       encryption: TableEncryptionV2.awsManagedKey(),
       contributorInsights: true,
@@ -52,6 +52,7 @@ class TestStack extends Stack {
               contributorInsights: false,
             },
           },
+          tags: [{ key: 'USE2ReplicaTagKey', value: 'USE2ReplicaTagValue' }],
         },
         {
           region: 'us-west-2',
@@ -62,8 +63,10 @@ class TestStack extends Stack {
               readCapacity: Capacity.fixed(15),
             },
           },
+          tags: [{ key: 'USW2ReplicaTagKey', value: 'USW2ReplicaTagValue' }],
         },
       ],
+      tags: [{ key: 'primaryTableTagKey', value: 'primaryTableTagValue' }],
     });
   }
 }

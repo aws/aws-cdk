@@ -1,5 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import * as ses from 'aws-cdk-lib/aws-ses';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 
@@ -22,4 +23,9 @@ new ses.AllowListReceiptFilter(stack, 'Allowlist', {
   ips: [
     '10.0.0.0/16',
   ],
+});
+
+new IntegTest(app, 'cdk-ses-receipt-integ', {
+  testCases: [stack],
+  diffAssets: true,
 });
