@@ -239,6 +239,10 @@ describe('tests', () => {
     const stack = new cdk.Stack(app, undefined, { env: { region: 'us-east-1' } });
     const vpc = new ec2.Vpc(stack, 'Stack');
     const bucket = s3.Bucket.fromBucketName(stack, 'ImportedAccessLoggingBucket', 'imported-bucket');
+    // Imported buckets have `autoCreatePolicy` disabled by default
+    bucket.policy = new s3.BucketPolicy(stack, 'ImportedAccessLoggingBucketPolicy', {
+      bucket,
+    });
     const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
 
     // WHEN
@@ -325,7 +329,7 @@ describe('tests', () => {
 
     // verify the NLB depends on the bucket policy
     Template.fromStack(stack).hasResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-      DependsOn: ['ImportedAccessLoggingBucketPolicy832A536F'],
+      DependsOn: ['ImportedAccessLoggingBucketPolicy97AE3371'],
     });
   });
 

@@ -252,21 +252,14 @@ export abstract class BaseLoadBalancer extends Resource {
     this.setAttribute('access_logs.s3.bucket', bucket.bucketName.toString());
     this.setAttribute('access_logs.s3.prefix', prefix);
 
-    const putObjectStatement = new PolicyStatement({
+    const logsDeliveryServicePrincipal = new ServicePrincipal('delivery.logs.amazonaws.com');
+    bucket.addToResourcePolicy(new PolicyStatement({
       actions: ['s3:PutObject'],
       principals: [this.resourcePolicyPrincipal()],
       resources: [
         bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${Stack.of(this).account}/*`),
       ],
-    });
-    bucket.addToResourcePolicy(putObjectStatement);
-    if (!bucket.policy) {
-      // Imported buckets have `autoCreatePolicy` disabled
-      bucket.policy = new s3.BucketPolicy(bucket, 'Policy', { bucket });
-      bucket.addToResourcePolicy(putObjectStatement);
-    }
-
-    const logsDeliveryServicePrincipal = new ServicePrincipal('delivery.logs.amazonaws.com');
+    }));
     bucket.addToResourcePolicy(
       new PolicyStatement({
         actions: ['s3:PutObject'],

@@ -16,6 +16,10 @@ const vpc = new ec2.Vpc(stack, 'VPC', {
 
 const bucket = new s3.Bucket(stack, 'Bucket');
 const importedBucket = s3.Bucket.fromBucketName(stack, 'ImportedBucket', bucket.bucketName);
+// Imported buckets have `autoCreatePolicy` disabled by default
+importedBucket.policy = new s3.BucketPolicy(stack, 'ImportedBucketPolicy', {
+  bucket: importedBucket,
+});
 
 const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', {
   vpc,

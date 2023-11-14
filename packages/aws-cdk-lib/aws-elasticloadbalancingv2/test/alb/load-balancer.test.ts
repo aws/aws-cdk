@@ -408,6 +408,10 @@ describe('tests', () => {
       const { stack, lb } = loggingSetup();
 
       const bucket = s3.Bucket.fromBucketName(stack, 'ImportedAccessLoggingBucket', 'imported-bucket');
+      // Imported buckets have `autoCreatePolicy` disabled by default
+      bucket.policy = new s3.BucketPolicy(stack, 'ImportedAccessLoggingBucketPolicy', {
+        bucket,
+      });
 
       // WHEN
       lb.logAccessLogs(bucket);
@@ -492,7 +496,7 @@ describe('tests', () => {
 
       // verify the ALB depends on the bucket policy
       Template.fromStack(stack).hasResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-        DependsOn: ['ImportedAccessLoggingBucketPolicy832A536F'],
+        DependsOn: ['ImportedAccessLoggingBucketPolicy97AE3371'],
       });
     });
 

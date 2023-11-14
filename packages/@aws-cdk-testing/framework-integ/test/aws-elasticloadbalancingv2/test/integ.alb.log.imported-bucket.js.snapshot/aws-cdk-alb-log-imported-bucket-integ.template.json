@@ -396,7 +396,7 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "ImportedBucketPolicy71C80354": {
+  "ImportedBucketPolicyAE50CA2C": {
    "Type": "AWS::S3::BucketPolicy",
    "Properties": {
     "Bucket": {
@@ -521,7 +521,7 @@
     "Type": "application"
    },
    "DependsOn": [
-    "ImportedBucketPolicy71C80354",
+    "ImportedBucketPolicyAE50CA2C",
     "VPCPublicSubnet1DefaultRoute91CEF279",
     "VPCPublicSubnet1RouteTableAssociation0B0896DC",
     "VPCPublicSubnet2DefaultRouteB7481BBA",
