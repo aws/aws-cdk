@@ -25,12 +25,7 @@ class SubscriptionFilterIntegStack extends Stack {
 }
 
 const app = new App();
-const testCase = new SubscriptionFilterIntegStack(app, 'aws-cdk-subscriptionfilter-integ', {
-  env: {
-    account: process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
-    region: process.env.CDK_INTEG_REGION || process.env.CDK_DEFAULT_REGION,
-  },
-});
+const testCase = new SubscriptionFilterIntegStack(app, 'aws-cdk-subscriptionfilter-integ');
 
 new IntegTest(app, 'integ-test', {
   testCases: [testCase],

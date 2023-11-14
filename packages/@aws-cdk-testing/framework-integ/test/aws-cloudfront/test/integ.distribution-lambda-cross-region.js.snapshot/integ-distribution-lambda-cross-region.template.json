@@ -11,7 +11,7 @@
     },
     "Region": "us-east-1",
     "ParameterName": "/cdk/EdgeFunctionArn/eu-west-1/integ-distribution-lambda-cross-region/Lambda",
-    "RefreshToken": "LambdaCurrentVersionDF706F6A9a632a294ae3a9cd4d550f1c4e26619d"
+    "RefreshToken": "LambdaCurrentVersionDF706F6Aceabca74f785ac2be6cd5e57eeaf3b05"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -48,11 +48,7 @@
           "Fn::Join": [
            "",
            [
-            "arn:",
-            {
-             "Ref": "AWS::Partition"
-            },
-            ":ssm:us-east-1:",
+            "arn:aws:ssm:us-east-1:",
             {
              "Ref": "AWS::AccountId"
             },
@@ -75,41 +71,9 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "AssetParameterse718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376aS3BucketA88C096E"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1"
      },
-     "S3Key": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParameterse718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376aS3VersionKeyF63BD825"
-            }
-           ]
-          }
-         ]
-        },
-        {
-         "Fn::Select": [
-          1,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParameterse718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376aS3VersionKeyF63BD825"
-            }
-           ]
-          }
-         ]
-        }
-       ]
-      ]
-     }
+     "S3Key": "cd19575860c0626abb20d8fd8434732eed25190474a6a59becad0eadd913b065.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -120,7 +84,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "CustomCrossRegionStringParameterReaderCustomResourceProviderRole71CD6825"
@@ -137,7 +101,7 @@
     },
     "Region": "us-east-1",
     "ParameterName": "/cdk/EdgeFunctionArn/eu-west-1/integ-distribution-lambda-cross-region/Lambda2",
-    "RefreshToken": "Lambda2CurrentVersion72012B74da2ca4572056a1112d9804f75b5b7491"
+    "RefreshToken": "Lambda2CurrentVersion72012B7448e7ccb012bdf87615c944d94691ab6d"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -189,17 +153,37 @@
   }
  },
  "Parameters": {
-  "AssetParameterse718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376aS3BucketA88C096E": {
-   "Type": "String",
-   "Description": "S3 bucket for asset \"e718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376a\""
-  },
-  "AssetParameterse718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376aS3VersionKeyF63BD825": {
-   "Type": "String",
-   "Description": "S3 key for asset version \"e718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376a\""
-  },
-  "AssetParameterse718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376aArtifactHashE4754D11": {
-   "Type": "String",
-   "Description": "Artifact hash for asset \"e718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376a\""
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
   }
  }
 }

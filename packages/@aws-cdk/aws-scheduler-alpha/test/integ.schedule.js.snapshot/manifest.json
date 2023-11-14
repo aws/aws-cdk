@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8e518d2f0d7b4fcf41623a37d5a30fa0a49f5185d9301205cad6e72cc59b84a8.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/eac1c2181558fb8d64de1b029b3b58376b7191ef29b61b4585bdc8f7a45b3671.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -52,6 +52,12 @@
             "data": "Role1ABCC5F0"
           }
         ],
+        "/aws-cdk-scheduler-schedule/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RoleDefaultPolicy5FFB7DAB"
+          }
+        ],
         "/aws-cdk-scheduler-schedule/DefaultSchedule/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -62,6 +68,30 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "DisabledScheduleA1DF7F0F"
+          }
+        ],
+        "/aws-cdk-scheduler-schedule/TargetOverrideSchedule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TargetOverrideScheduleFF8CB184"
+          }
+        ],
+        "/aws-cdk-scheduler-schedule/AllSchedulerErrorsAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AllSchedulerErrorsAlarmA3246F8C"
+          }
+        ],
+        "/aws-cdk-scheduler-schedule/ScheduleKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScheduleKey7E6B3A92"
+          }
+        ],
+        "/aws-cdk-scheduler-schedule/CustomerKmsSchedule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomerKmsSchedule12B1FEFE"
           }
         ],
         "/aws-cdk-scheduler-schedule/BootstrapVersion": [

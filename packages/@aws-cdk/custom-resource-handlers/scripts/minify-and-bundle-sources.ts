@@ -10,11 +10,7 @@ function recFolderStructure(fileOrDir: string) {
       recFolderStructure(path.join(fileOrDir, i));
     }
   } else {
-    // Only minify + bundle 'index.ts' files.
-    // The reason why they are called 'index.ts' is that aws-cdk-lib expects that
-    // as the file name and it is more intuitive to keep the same name rather than
-    // rename as we copy it out.
-    if (fileOrDir.includes('index.ts')) {
+    if (['index.ts', 'index.js', 'index.py', '__init__.py'].some(fileName => fileOrDir.includes(fileName))) {
       entryPoints.push(fileOrDir);
     }
   }
@@ -26,52 +22,60 @@ async function main() {
   recFolderStructure(bindingsDir);
 
   for (const ep of entryPoints) {
-    const result = await esbuild.build({
-      entryPoints: [ep],
-      outfile: calculateOutfile(ep),
-      external: ['@aws-sdk/*', 'aws-sdk'],
-      format: 'cjs',
-      platform: 'node',
-      bundle: true,
-      minify: true,
-      minifyWhitespace: true,
-      minifySyntax: true,
-      minifyIdentifiers: true,
-      sourcemap: false,
-      tsconfig: 'tsconfig.json',
+    if (['index.py', '__init__.py'].some(fileName => ep.includes(fileName))) {
+      const outfile = calculateOutfile(ep);
+      fs.mkdirSync(path.dirname(outfile), { recursive: true });
+      fs.copyFileSync(ep, outfile);
+    } else {
+      const result = await esbuild.build({
+        entryPoints: [ep],
+        outfile: calculateOutfile(ep),
+        external: ['@aws-sdk/*', 'aws-sdk'],
+        format: 'cjs',
+        platform: 'node',
+        bundle: true,
+        minify: true,
+        minifyWhitespace: true,
+        minifySyntax: true,
+        minifyIdentifiers: true,
+        sourcemap: false,
+        tsconfig: 'tsconfig.json',
 
-      // These should be checked because they can lead to runtime failures. There are
-      // false positives, and the esbuild API does not provide a way to suppress them,
-      // so we need to do some postprocessing.
-      logOverride: {
-        'unsupported-dynamic-import': 'warning',
-        'unsupported-require-call': 'warning',
-        'indirect-require': 'warning',
-      },
-      logLevel: 'error',
-    });
-
-    const failures = [
-      ...result.errors,
-      ...ignoreWarnings(result),
-    ];
-
-    if (failures.length > 0) {
-      const messages = esbuild.formatMessagesSync(failures, {
-        kind: 'error',
-        color: true,
+        // These should be checked because they can lead to runtime failures. There are
+        // false positives, and the esbuild API does not provide a way to suppress them,
+        // so we need to do some postprocessing.
+        logOverride: {
+          'unsupported-dynamic-import': 'warning',
+          'unsupported-require-call': 'warning',
+          'indirect-require': 'warning',
+        },
+        logLevel: 'error',
       });
-      // eslint-disable-next-line no-console
-      console.log(messages.join('\n'));
-      // eslint-disable-next-line no-console
-      console.log(`${messages.length} errors. For false positives, put '// esbuild-disable <code> - <motivation>' on the line before`);
-      process.exitCode = 1;
+
+      const failures = [
+        ...result.errors,
+        ...ignoreWarnings(result),
+      ];
+
+      if (failures.length > 0) {
+        const messages = esbuild.formatMessagesSync(failures, {
+          kind: 'error',
+          color: true,
+        });
+        // eslint-disable-next-line no-console
+        console.log(messages.join('\n'));
+        // eslint-disable-next-line no-console
+        console.log(`${messages.length} errors. For false positives, put '// esbuild-disable <code> - <motivation>' on the line before`);
+        process.exitCode = 1;
+      }
     }
   }
 
   function calculateOutfile(file: string) {
     // turn ts extension into js extension
-    file = path.join(path.dirname(file), path.basename(file, path.extname(file)) + '.js');
+    if (file.includes('index.ts')) {
+      file = path.join(path.dirname(file), path.basename(file, path.extname(file)) + '.js');
+    }
 
     // replace /lib with /dist
     const fileContents = file.split(path.sep);

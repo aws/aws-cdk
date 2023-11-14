@@ -201,7 +201,31 @@ Executing cross-account and cross-region targets are not supported yet.
 
 ### Specifying Encryption key
 
-TODO: Not yet implemented. See section in [L2 Event Bridge Scheduler RFC](https://github.com/aws/aws-cdk-rfcs/blob/master/text/0474-event-bridge-scheduler-l2.md)
+EventBridge Scheduler integrates with AWS Key Management Service (AWS KMS) to encrypt and decrypt your data using an AWS KMS key. 
+EventBridge Scheduler supports two types of KMS keys: AWS owned keys, and customer managed keys.
+
+By default, all events in Scheduler are encrypted with a key that AWS owns and manages. 
+If you wish you can also provide a customer managed key to encrypt and decrypt the payload that your schedule delivers to its target using the `key` property. 
+Target classes will automatically add AWS KMS Decrypt permission to your schedule's execution role permissions policy.
+
+```ts
+declare const key: kms.Key;
+declare const fn: lambda.Function;
+
+const target = new targets.LambdaInvoke(fn, {
+    input: ScheduleTargetInput.fromObject({
+        payload: 'useful',
+    }),
+});
+
+const schedule = new Schedule(this, 'Schedule', {
+    schedule: ScheduleExpression.rate(Duration.minutes(10)),
+    target,
+    key,
+});
+```
+
+> Visit [Data protection in Amazon EventBridge Scheduler](https://docs.aws.amazon.com/scheduler/latest/UserGuide/data-protection.html) for more details.
 
 ## Error-handling 
 
@@ -232,8 +256,22 @@ const target = new targets.LambdaInvoke(fn, {
 
 ## Overriding Target Properties 
 
-TODO: Not yet implemented. See section in [L2 Event Bridge Scheduler RFC](https://github.com/aws/aws-cdk-rfcs/blob/master/text/0474-event-bridge-scheduler-l2.md)
+If you wish to reuse the same target in multiple schedules, you can override target properties like `input`, 
+`retryAttempts` and `maxEventAge` when creating a Schedule using the `targetOverrides` parameter:
 
+```ts
+declare const target: targets.LambdaInvoke;
+
+const oneTimeSchedule = new Schedule(this, 'Schedule', {
+    schedule: ScheduleExpression.rate(cdk.Duration.hours(12)),
+    target,
+    targetOverrides: {
+        input: ScheduleTargetInput.fromText('Overriding Target Input'),
+        maxEventAge: Duration.seconds(180),
+        retryAttempts: 5,
+    },
+});
+```
 
 ## Monitoring
 
@@ -245,7 +283,16 @@ EventBridge Scheduler publishes additional metrics when your schedule exhausts i
 
 ### Metrics for all schedules
 
-TODO: Not yet implemented. See section in [L2 Event Bridge Scheduler RFC](https://github.com/aws/aws-cdk-rfcs/blob/master/text/0474-event-bridge-scheduler-l2.md)
+Class `Schedule` provides static methods for accessing all schedules metrics with default configuration,
+ such as `metricAllErrors` for viewing errors when executing targets.
+
+ ```ts
+new cloudwatch.Alarm(this, 'SchedulesErrorAlarm', {
+    metric: Schedule.metricAllErrors(),
+    threshold: 0,
+    evaluationPeriods: 1,
+});
+ ```
 
 ### Metrics for a Group
 

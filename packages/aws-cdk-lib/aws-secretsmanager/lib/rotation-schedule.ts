@@ -37,7 +37,9 @@ export interface RotationScheduleOptions {
    * Specifies the number of days after the previous rotation before
    * Secrets Manager triggers the next automatic rotation.
    *
-   * A value of zero will disable automatic rotation - `Duration.days(0)`.
+   * The maximum value is 1000 days.
+   *
+   * A value of zero (`Duration.days(0)`) will not create RotationRules.
    *
    * @default Duration.days(30)
    */
@@ -125,6 +127,9 @@ export class RotationSchedule extends Resource {
     }
 
     let automaticallyAfterDays: number | undefined = undefined;
+    if (props.automaticallyAfter && props.automaticallyAfter.toDays() > 1000) {
+      throw new Error(`automaticallyAfter must not be greater than 1000 days, got ${props.automaticallyAfter.toDays()} days`);
+    }
     if (props.automaticallyAfter?.toMilliseconds() !== 0) {
       automaticallyAfterDays = props.automaticallyAfter?.toDays() || 30;
     }

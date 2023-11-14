@@ -124,6 +124,9 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
   public grantInvokeUrl(identity: iam.IGrantable): iam.Grant {
     return this.lambda.grantInvokeUrl(identity);
   }
+  public grantInvokeCompositePrincipal(compositePrincipal: iam.CompositePrincipal): iam.Grant[] {
+    return this.lambda.grantInvokeCompositePrincipal(compositePrincipal);
+  }
   public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.lambda.metric(metricName, { ...props, region: EdgeFunction.EDGE_REGION });
   }
@@ -197,7 +200,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
 
     const resourceType = 'Custom::CrossRegionStringParameterReader';
     const serviceToken = CustomResourceProvider.getOrCreate(this, resourceType, {
-      codeDirectory: path.join(__dirname, 'edge-function'),
+      codeDirectory: path.join(__dirname, '..', '..', '..', 'custom-resource-handlers', 'dist', 'aws-cloudfront', 'edge-function'),
       runtime: CustomResourceProviderRuntime.NODEJS_18_X,
       policyStatements: [{
         Effect: 'Allow',
