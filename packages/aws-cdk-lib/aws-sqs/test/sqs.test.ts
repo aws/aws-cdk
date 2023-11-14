@@ -284,6 +284,38 @@ describe('export and import', () => {
     });
     expect(stack.resolve(imports.queueName)).toEqual('queue1');
   });
+
+  test('sets account for imported queue env by fromQueueAttributes', () => {
+    const stack = new Stack();
+    const imported = sqs.Queue.fromQueueAttributes(stack, 'Imported', {
+      queueArn: 'arn:aws:sqs:us-west-2:999999999999:queue',
+    });
+
+    expect(imported.env.account).toEqual('999999999999');
+  });
+
+  test('sets region for imported queue env by fromQueueAttributes', () => {
+    const stack = new Stack();
+    const imported = sqs.Queue.fromQueueAttributes(stack, 'Imported', {
+      queueArn: 'arn:aws:sqs:us-west-2:999999999999:queue',
+    });
+
+    expect(imported.env.region).toEqual('us-west-2');
+  });
+
+  test('sets account for imported queue env by fromQueueArn', () => {
+    const stack = new Stack();
+    const imported = sqs.Queue.fromQueueArn(stack, 'Imported', 'arn:aws:sqs:us-west-2:999999999999:queue');
+
+    expect(imported.env.account).toEqual('999999999999');
+  });
+
+  test('sets region for imported queue env by fromQueueArn', () => {
+    const stack = new Stack();
+    const imported = sqs.Queue.fromQueueArn(stack, 'Imported', 'arn:aws:sqs:us-west-2:123456789012:queue');
+
+    expect(imported.env.region).toEqual('us-west-2');
+  });
 });
 
 describe('grants', () => {
