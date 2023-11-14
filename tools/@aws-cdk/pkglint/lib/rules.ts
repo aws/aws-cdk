@@ -1074,6 +1074,9 @@ export class MustDependonCdkByPointVersions extends ValidationRule {
     // using scripts/align-version.sh
     const expectedVersion = require(path.join(monoRepoRoot(), 'package.json')).version; // eslint-disable-line @typescript-eslint/no-require-imports
     const ignore = [
+      '@aws-cdk/aws-service-spec',
+      '@aws-cdk/service-spec-importers',
+      '@aws-cdk/service-spec-types',
       '@aws-cdk/cloudformation-diff',
       '@aws-cdk/cx-api',
       '@aws-cdk/cloud-assembly-schema',
