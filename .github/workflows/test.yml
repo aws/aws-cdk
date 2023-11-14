@@ -52,7 +52,9 @@ jobs:
         with:
           # Git commit details
           branch: automation/spec-update
-          author: aws-cdk-automation <aws-cdk-automation@users.noreply.github.com>
+#          TODO: use aws-cdk-automation as the author
+          author: otaviomacedo <288203+otaviomacedo@users.noreply.github.com>
+#          author: aws-cdk-automation <aws-cdk-automation@users.noreply.github.com>
           commit-message: |-
             feat: update AWS Service Spec
             AWS Service Spec packages to latest versions.
