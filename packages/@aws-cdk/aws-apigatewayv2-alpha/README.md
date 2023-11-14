@@ -67,16 +67,15 @@ integration, HTTP proxy integration and, AWS service integrations, also known as
 [Configuring integrations](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations.html).
 
 Integrations are available at the `aws-apigatewayv2-integrations` module and more information is available in that module.
-As an early example, the following code snippet configures a route `GET /books` with an HTTP proxy integration all
-configures all other HTTP method calls to `/books` to a lambda proxy.
+As an early example, we have a website for a bookstore where the following code snippet configures a route `GET /books` with an HTTP proxy integration. All other HTTP method calls to `/books` route to a default lambda proxy for the bookstore.
 
 ```ts
 import { HttpUrlIntegration, HttpLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
 
 const getBooksIntegration = new HttpUrlIntegration('GetBooksIntegration', 'https://get-books-proxy.example.com');
 
-declare const booksDefaultFn: lambda.Function;
-const booksDefaultIntegration = new HttpLambdaIntegration('BooksIntegration', booksDefaultFn);
+declare const bookStoreDefaultFn: lambda.Function;
+const bookStoreDefaultIntegration = new HttpLambdaIntegration('BooksIntegration', bookStoreDefaultFn);
 
 const httpApi = new apigwv2.HttpApi(this, 'HttpApi');
 
@@ -88,7 +87,7 @@ httpApi.addRoutes({
 httpApi.addRoutes({
   path: '/books',
   methods: [ apigwv2.HttpMethod.ANY ],
-  integration: booksDefaultIntegration,
+  integration: bookStoreDefaultIntegration,
 });
 ```
 
