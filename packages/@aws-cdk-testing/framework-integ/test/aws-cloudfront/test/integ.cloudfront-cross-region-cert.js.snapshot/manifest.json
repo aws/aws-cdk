@@ -14,10 +14,11 @@
       "environment": "aws://12345678/us-east-1",
       "properties": {
         "templateFile": "integ-acm-stack.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-us-east-1/efad6aa3c8e76bd538291e5c612628a1f72ac8f64ad028b8dd511355d7c2bc2c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-us-east-1/75f3bf9761d2c2cc675ecb13430c72ab5f2331be49677a7d67543e58a55633df.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -85,10 +86,11 @@
       "environment": "aws://12345678/us-east-2",
       "properties": {
         "templateFile": "integ-cloudfront-stack.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-us-east-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-us-east-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-us-east-2/857571408e56e517eab531d1ac48b3089e0c6ae2c186020ce7ae3cfea6038f74.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-us-east-2/9517fbc3e55d40e02383f297ccdf11917414cc7dfc5c38b3422c4b7eb6bb81ed.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -157,6 +159,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "integcloudfrontcrossregionacmDefaultTestDeployAssertD48673AA.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
