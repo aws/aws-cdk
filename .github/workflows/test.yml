@@ -7,8 +7,8 @@ jobs:
     steps:
       - name: Download regions
         id: download
+#        todo: USE THE PROD URL
         run: |
-#          TODO: Use the prod URL
           response=$(curl https://d3akamx322av4k.cloudfront.net/foo.json)
           echo "REGIONS=${response}" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v3
