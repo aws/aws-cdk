@@ -31,7 +31,7 @@ jest.mock('@aws-sdk/s3-request-presigner', () => {
 import {
   onEvent,
   isComplete,
-} from '../../lib/asset-deployment-handler';
+} from '../../lib/aws-amplify-alpha/asset-deployment-handler/index';
 
 describe('handler', () => {
 
