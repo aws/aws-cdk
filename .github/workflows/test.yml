@@ -1,4 +1,4 @@
-#TODO: on timer rather than on push
+name: Update Metadata Regions
 on: push
 
 jobs:
@@ -24,7 +24,7 @@ jobs:
         with:
           script: |
             const script = require('./scripts/update-metadata-regions.js')
-            await script({github, context, core})
+            script({github, context, core})
       - name: Create Patch
         run: |-
           git add .
