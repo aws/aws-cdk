@@ -1,0 +1,19 @@
+name: Check Metadata region changes
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - packages/aws-cdk-lib/region-info/build-tools/metadata.ts
+
+jobs:
+  changed_files:
+    runs-on: ubuntu-latest
+    name: Inspect changed files
+    steps:
+      - name: Check for unauthorized requesters
+        if: ${{ github.event.pull_request.user.login != 'github-actions[bot]' }}
+        run: |
+          echo "Only github-actions[bot] is authorized to change the metadata.ts file."
+          exit 1
