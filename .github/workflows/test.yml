@@ -4,6 +4,8 @@ jobs:
   echo-input:
     runs-on: ubuntu-latest
     steps:
+      - name: Download regions
+        run: curl https://cli.cdk.dev-tools.aws.dev/notices.json -o .
       - uses: actions/checkout@v3
       - uses: actions/github-script@v7
         env:
