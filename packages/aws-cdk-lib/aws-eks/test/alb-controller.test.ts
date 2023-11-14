@@ -28,12 +28,12 @@ test('can configure a custom repository', () => {
   const { stack } = testFixture();
 
   const cluster = new Cluster(stack, 'Cluster', {
-    version: KubernetesVersion.V1_21,
+    version: KubernetesVersion.V1_27,
   });
 
   AlbController.create(stack, {
     cluster,
-    version: AlbControllerVersion.V2_4_1,
+    version: AlbControllerVersion.V2_6_2,
     repository: 'custom',
   });
 
@@ -50,7 +50,7 @@ test('can configure a custom repository', () => {
           {
             Ref: 'ClusterDefaultVpcFA9F2722',
           },
-          '","image":{"repository":"custom","tag":"v2.4.1"}}',
+          '","image":{"repository":"custom","tag":"v2.6.2"}}',
         ],
       ],
     },
@@ -61,7 +61,7 @@ test('throws when a policy is not defined for a custom version', () => {
   const { stack } = testFixture();
 
   const cluster = new Cluster(stack, 'Cluster', {
-    version: KubernetesVersion.V1_21,
+    version: KubernetesVersion.V1_27,
   });
 
   expect(() => AlbController.create(stack, {
@@ -70,21 +70,36 @@ test('throws when a policy is not defined for a custom version', () => {
   })).toThrowError("'albControllerOptions.policy' is required when using a custom controller version");
 });
 
-test('correct helm chart version is set for selected alb controller version', () => {
-  const { stack } = testFixture();
-
+test.each(['us-gov-west-1', 'cn-north-1'])('stack does not include hard-coded partition', (region) => {
+  const { stack } = testFixture(region);
   const cluster = new Cluster(stack, 'Cluster', {
-    version: KubernetesVersion.V1_21,
+    version: KubernetesVersion.V1_27,
   });
 
   AlbController.create(stack, {
     cluster,
-    version: AlbControllerVersion.V2_5_1,
+    version: AlbControllerVersion.V2_6_2,
+  });
+
+  const template = Template.fromStack(stack);
+  expect(JSON.stringify(template)).not.toContain('arn:aws');
+});
+
+test('correct helm chart version is set for selected alb controller version', () => {
+  const { stack } = testFixture();
+
+  const cluster = new Cluster(stack, 'Cluster', {
+    version: KubernetesVersion.V1_27,
+  });
+
+  AlbController.create(stack, {
+    cluster,
+    version: AlbControllerVersion.V2_6_2,
     repository: 'custom',
   });
 
   Template.fromStack(stack).hasResourceProperties(HelmChart.RESOURCE_TYPE, {
-    Version: '1.5.2', // The helm chart version associated with AlbControllerVersion.V2_5_1
+    Version: '1.6.2', // The helm chart version associated with AlbControllerVersion.V2_6_2
     Values: {
       'Fn::Join': [
         '',
@@ -97,7 +112,7 @@ test('correct helm chart version is set for selected alb controller version', ()
           {
             Ref: 'ClusterDefaultVpcFA9F2722',
           },
-          '","image":{"repository":"custom","tag":"v2.5.1"}}',
+          '","image":{"repository":"custom","tag":"v2.6.2"}}',
         ],
       ],
     },
