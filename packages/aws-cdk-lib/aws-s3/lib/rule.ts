@@ -135,7 +135,9 @@ export interface LifecycleRule {
    */
   readonly objectSizeLessThan?: number;
 
-  /** Specifies the minimum object size in bytes for this rule to apply to.
+  /**
+   * Specifies the minimum object size in bytes for this rule to apply to.
+   * Objects must be larger than this value in bytes.
    *
    * @default - No rule
    */
