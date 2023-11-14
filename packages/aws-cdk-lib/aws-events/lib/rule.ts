@@ -75,7 +75,9 @@ export class Rule extends Resource implements IRule {
       public ruleArn = eventRuleArn;
       public ruleName = parts.resourceName || '';
     }
-    return new Import(scope, id);
+    return new Import(scope, id, {
+      environmentFromArn: eventRuleArn,
+    });
   }
 
   public readonly ruleArn: string;

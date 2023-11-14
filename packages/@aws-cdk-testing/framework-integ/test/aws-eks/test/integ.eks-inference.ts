@@ -34,8 +34,8 @@ class EksClusterInferenceStack extends Stack {
 }
 
 const app = new App();
-const stack = new EksClusterInferenceStack(app, 'aws-cdk-eks-cluster-inference-test');
-new integ.IntegTest(app, 'aws-cdk-eks-cluster-interence', {
+const stack = new EksClusterInferenceStack(app, 'aws-cdk-eks-cluster-inference');
+new integ.IntegTest(app, 'aws-cdk-eks-cluster-interence-integ', {
   testCases: [stack],
   // Test includes assets that are updated weekly. If not disabled, the upgrade PR will fail.
   diffAssets: false,
