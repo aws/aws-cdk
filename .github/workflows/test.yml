@@ -1,3 +1,4 @@
+#TODO: on timer rather than on push
 on: push
 
 jobs:
@@ -63,10 +64,10 @@ jobs:
           author: otaviomacedo <288203+otaviomacedo@users.noreply.github.com>
 #          author: aws-cdk-automation <aws-cdk-automation@users.noreply.github.com>
           commit-message: |-
-            feat: update Metadata regions
+            feat(region-info): update Metadata regions
             Update the list of regions where the CDK deploys the `AWS::CDK::Metadata` resource.
           # Pull Request details
-          title: "feat: update Metadata regions"
+          title: "feat(region-info): update Metadata regions"
           body: |-
             Update the list of regions where the CDK deploys the `AWS::CDK::Metadata` resource.
 #            TODO: uncomment the labels and team-reviewers
