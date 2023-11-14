@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import * as nock from 'nock';
 import * as uuid from 'uuid';
 import * as xmlJs from 'xml-js';
@@ -63,7 +64,7 @@ export class FakeSts {
           headers: this.req.headers,
         });
         cb(null, [200, xmlJs.js2xml(response, { compact: true })]);
-      } catch (e) {
+      } catch (e: any) {
         cb(null, [400, xmlJs.js2xml({
           ErrorResponse: {
             _attributes: { xmlns: 'https://sts.amazonaws.com/doc/2011-06-15/' },

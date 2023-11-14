@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.kinesisfirehose"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.KinesisFirehose"
+    },
+    "python": {
+      "module": "aws_cdk.aws_kinesisfirehose"
+    }
+  }
+}

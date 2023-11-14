@@ -1,0 +1,12 @@
+{
+  "version": "30.1.0",
+  "testCases": {
+    "ApplicationAssociatorTest/DefaultTest": {
+      "stacks": [
+        "integ-servicecatalogappregistry-application"
+      ],
+      "assertionStack": "ApplicationAssociatorTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ApplicationAssociatorTestDefaultTestDeployAssert2A5F2DB9"
+    }
+  }
+}

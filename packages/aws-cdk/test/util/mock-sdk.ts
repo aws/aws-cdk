@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import { Account, ISDK, SDK, SdkProvider, SdkForEnvironment } from '../../lib/api/aws-auth';
@@ -305,7 +306,7 @@ export function mockBootstrapStack(sdk: ISDK | undefined, stack?: Partial<AWS.Cl
 
 export function mockToolkitInfo(stack?: Partial<AWS.CloudFormation.Stack>) {
   const sdk = new MockSdk();
-  return ToolkitInfo.fromStack(mockBootstrapStack(sdk, stack), sdk);
+  return ToolkitInfo.fromStack(mockBootstrapStack(sdk, stack));
 }
 
 export function mockResolvedEnvironment(): cxapi.Environment {

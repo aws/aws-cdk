@@ -1,0 +1,12 @@
+{
+  "version": "31.0.0",
+  "testCases": {
+    "custom-resource-test-node-18-integ/DefaultTest": {
+      "stacks": [
+        "custom-resource-test-node-18-stack"
+      ],
+      "assertionStack": "custom-resource-test-node-18-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "customresourcetestnode18integDefaultTestDeployAssert9B8E9A20"
+    }
+  }
+}

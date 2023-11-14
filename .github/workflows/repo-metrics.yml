@@ -1,0 +1,58 @@
+name: Monthly repo metrics
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 2 1 * *'
+
+permissions:
+  issues: write
+  pull-requests: read
+
+jobs:
+  build:
+    # this workflow will always fail in forks; bail if this isn't running in the upstream
+    if: github.repository == 'aws/aws-cdk'
+    name: metrics
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Get dates for last month
+      shell: bash
+      run: |
+        # Calculate the first day of the previous month
+        first_day=$(date -d "last month" +%Y-%m-01)
+
+        # Calculate the last day of the previous month
+        last_day=$(date -d "$first_day +1 month -1 day" +%Y-%m-%d)
+
+        # Set an environment variable with the date range
+        echo "$first_day..$last_day"
+        echo "last_month=$first_day..$last_day" >> "$GITHUB_ENV"
+
+    - name: Report on issues
+      uses: github/issue-metrics@v2
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SEARCH_QUERY: 'repo:aws/aws-cdk is:issue created:${{ env.last_month }} -reason:"not planned"'
+
+    - name: Create report for issues
+      uses: peter-evans/create-issue-from-file@v4
+      with:
+        title: Monthly issue metrics report
+        token: ${{ secrets.GITHUB_TOKEN }}
+        content-filepath: ./issue_metrics.md
+        assignees: evgenyka
+        
+    - name: Report on PRs
+      uses: github/issue-metrics@v2
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SEARCH_QUERY: 'repo:aws/aws-cdk is:pr created:${{ env.last_month }} -is:draft'
+
+    - name: Create report for PRs
+      uses: peter-evans/create-issue-from-file@v4
+      with:
+        title: Monthly PR metrics report
+        token: ${{ secrets.GITHUB_TOKEN }}
+        content-filepath: ./issue_metrics.md
+        assignees: evgenyka

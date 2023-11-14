@@ -1,0 +1,12 @@
+{
+  "version": "22.0.0",
+  "testCases": {
+    "StandaloneMatchmakingConfiguration/DefaultTest": {
+      "stacks": [
+        "aws-gamelift-standalone-matchmaking-configuration"
+      ],
+      "assertionStack": "StandaloneMatchmakingConfiguration/DefaultTest/DeployAssert",
+      "assertionStackName": "StandaloneMatchmakingConfigurationDefaultTestDeployAssertAA4E73AF"
+    }
+  }
+}

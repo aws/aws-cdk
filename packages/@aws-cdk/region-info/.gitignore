@@ -1,21 +1,10 @@
-
-dist
-tsconfig.json
-.LAST_PACKAGE
-.LAST_BUILD
-.jsii
-*.d.ts
-*.js
-*.snk
-
-.nyc_output
-coverage
-nyc.config.js
-!.eslintrc.js
+# This package is copied from aws-cdk-lib/region-info, ignore everything
+# except package.json
+*
+!package.json
+!.npmignore
 !jest.config.js
+!LICENSE
+!NOTICE
+!CONTRIBUTING.md
 
-junit.xml
-!**/*.snapshot/**/asset.*/*.js
-!**/*.snapshot/**/asset.*/*.d.ts
-
-!**/*.snapshot/**/asset.*/**

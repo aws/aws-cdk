@@ -1,8 +1,8 @@
 import { format } from 'util';
 import * as chalk from 'chalk';
-import { Difference, isPropertyDifference, ResourceDifference, ResourceImpact } from './diff-template';
 import { DifferenceCollection, TemplateDiff } from './diff/types';
 import { deepEqual } from './diff/util';
+import { Difference, isPropertyDifference, ResourceDifference, ResourceImpact } from './diff-template';
 import { formatTable } from './format-table';
 import { IamChanges } from './iam/iam-changes';
 import { SecurityGroupChanges } from './network/security-group-changes';
@@ -57,7 +57,7 @@ export function formatDifferences(
  * Renders a diff of security changes to the given stream
  */
 export function formatSecurityChanges(
-  stream: NodeJS.WriteStream,
+  stream: NodeJS.WritableStream,
   templateDiff: TemplateDiff,
   logicalToPathMap: {[logicalId: string]: string} = {},
   context?: number) {
@@ -305,12 +305,12 @@ class Formatter {
     for (const [logicalId, resourceDiff] of Object.entries(templateDiff.resources)) {
       if (!resourceDiff) { continue; }
 
-      const oldPathMetadata = resourceDiff.oldValue && resourceDiff.oldValue.Metadata && resourceDiff.oldValue.Metadata[PATH_METADATA_KEY];
+      const oldPathMetadata = resourceDiff.oldValue?.Metadata?.[PATH_METADATA_KEY];
       if (oldPathMetadata && !(logicalId in this.logicalToPathMap)) {
         this.logicalToPathMap[logicalId] = oldPathMetadata;
       }
 
-      const newPathMetadata = resourceDiff.newValue && resourceDiff.newValue.Metadata && resourceDiff.newValue.Metadata[PATH_METADATA_KEY];
+      const newPathMetadata = resourceDiff.newValue?.Metadata?.[PATH_METADATA_KEY];
       if (newPathMetadata && !(logicalId in this.logicalToPathMap)) {
         this.logicalToPathMap[logicalId] = newPathMetadata;
       }

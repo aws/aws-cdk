@@ -1,6 +1,6 @@
 import * as osPath from 'path';
+import { ICdk, ListOptions } from '@aws-cdk/cdk-cli-wrapper';
 import { TestCase, TestOptions, Manifest, IntegManifest } from '@aws-cdk/cloud-assembly-schema';
-import { ICdk, ListOptions } from 'cdk-cli-wrapper';
 import * as fs from 'fs-extra';
 import { IntegManifestReader } from './private/integ-manifest';
 
@@ -44,7 +44,6 @@ export class IntegTestSuite {
     public readonly testSuite: TestSuite,
     public readonly synthContext?: { [name: string]: string },
   ) {}
-
 
   /**
    * Returns a list of stacks that have stackUpdateWorkflow disabled
@@ -181,7 +180,6 @@ export class LegacyIntegTestSuite extends IntegTestSuite {
       ...ctxPragmaContext,
     };
   }
-
 
   /**
    * Reads stack names from the "!cdk-integ" pragma.

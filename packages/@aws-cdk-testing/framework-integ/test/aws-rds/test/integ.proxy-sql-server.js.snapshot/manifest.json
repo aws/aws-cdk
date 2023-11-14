@@ -1,0 +1,322 @@
+{
+  "version": "31.0.0",
+  "artifacts": {
+    "aws-cdk-rds-proxy-sql-server.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-rds-proxy-sql-server.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-rds-proxy-sql-server": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-rds-proxy-sql-server.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b4a5559af4ad6c38f2ee9f74b53b1b86efd673d82a598a085654e2c921d8edda.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-rds-proxy-sql-server.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-rds-proxy-sql-server.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-rds-proxy-sql-server/vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcA2121C38"
+          }
+        ],
+        "/aws-cdk-rds-proxy-sql-server/vpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet1Subnet2E65531E"
+          }
+        ],
+        "/aws-cdk-rds-proxy-sql-server/vpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet1RouteTable48A2DF9B"
+          }
+        ],
+        "/aws-cdk-rds-proxy-sql-server/vpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet1RouteTableAssociation5D3F4579"
+          }
+        ],
+        "/aws-cdk-rds-proxy-sql-server/vpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet1DefaultRoute10708846"
+          }
+        ],
+        "/aws-cdk-rds-proxy-sql-server/vpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet1EIPDA49DCBE"
+          }
+        ],
+        "/aws-cdk-rds-proxy-sql-server/vpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet1NATGateway9C16659E"
+          }
+        ],
+        "/aws-cdk-rds-proxy-sql-server/vpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet2Subnet009B674F"
+          }
+        ],
+        "/aws-cdk-rds-proxy-sql-server/vpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet2RouteTableEB40D4CB"
+          }
+        ],
+        "/aws-cdk-rds-proxy-sql-server/vpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet2RouteTableAssociation21F81B59"
+          }
+        ],
+        "/aws-cdk-rds-proxy-sql-server/vpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet2DefaultRouteA1EC0F60"
+          }
+        ],
+        "/aws-cdk-rds-proxy-sql-server/vpc/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet2EIP9B3743B1"
+          }
+        ],
+        "/aws-cdk-rds-proxy-sql-server/vpc/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet2NATGateway9B8AE11A"
+          }
+        ],
+        "/aws-cdk-rds-proxy-sql-server/vpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPrivateSubnet1Subnet934893E8"
+          }
+        ],
+        "/aws-cdk-rds-proxy-sql-server/vpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPrivateSubnet1RouteTableB41A48CC"
+          }
+        ],
+        "/aws-cdk-rds-proxy-sql-server/vpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPrivateSubnet1RouteTableAssociation67945127"
+          }
+        ],
+        "/aws-cdk-rds-proxy-sql-server/vpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPrivateSubnet1DefaultRoute1AA8E2E5"
+          }
+        ],
+        "/aws-cdk-rds-proxy-sql-server/vpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPrivateSubnet2Subnet7031C2BA"
+          }
+        ],
+        "/aws-cdk-rds-proxy-sql-server/vpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPrivateSubnet2RouteTable7280F23E"
+          }
+        ],
+        "/aws-cdk-rds-proxy-sql-server/vpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPrivateSubnet2RouteTableAssociation007E94D3"
+          }
+        ],
+        "/aws-cdk-rds-proxy-sql-server/vpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPrivateSubnet2DefaultRouteB0E07F99"
+          }
+        ],
+        "/aws-cdk-rds-proxy-sql-server/vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcIGWE57CBDCA"
+          }
+        ],
+        "/aws-cdk-rds-proxy-sql-server/vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcVPCGW7984C166"
+          }
+        ],
+        "/aws-cdk-rds-proxy-sql-server/SqlServerDbInstance/SubnetGroup/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SqlServerDbInstanceSubnetGroupAE46487C"
+          }
+        ],
+        "/aws-cdk-rds-proxy-sql-server/SqlServerDbInstance/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SqlServerDbInstanceSecurityGroupAE784A28"
+          }
+        ],
+        "/aws-cdk-rds-proxy-sql-server/SqlServerDbInstance/SecurityGroup/from awscdkrdsproxysqlserverDbProxyProxySecurityGroupEA4A8A53:{IndirectPort}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SqlServerDbInstanceSecurityGroupfromawscdkrdsproxysqlserverDbProxyProxySecurityGroupEA4A8A53IndirectPortB7F9EE50"
+          }
+        ],
+        "/aws-cdk-rds-proxy-sql-server/SqlServerDbInstance/Secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SqlServerDbInstanceSecretAC239A57"
+          }
+        ],
+        "/aws-cdk-rds-proxy-sql-server/SqlServerDbInstance/Secret/Attachment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SqlServerDbInstanceSecretAttachment87AE8779"
+          }
+        ],
+        "/aws-cdk-rds-proxy-sql-server/SqlServerDbInstance/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SqlServerDbInstance8422C0F9"
+          }
+        ],
+        "/aws-cdk-rds-proxy-sql-server/DbProxy/IAMRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DbProxyIAMRoleDB6E75F4"
+          }
+        ],
+        "/aws-cdk-rds-proxy-sql-server/DbProxy/IAMRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DbProxyIAMRoleDefaultPolicy3AB2F318"
+          }
+        ],
+        "/aws-cdk-rds-proxy-sql-server/DbProxy/ProxySecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DbProxyProxySecurityGroupCFB8B534"
+          }
+        ],
+        "/aws-cdk-rds-proxy-sql-server/DbProxy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DbProxy471ABCB4"
+          }
+        ],
+        "/aws-cdk-rds-proxy-sql-server/DbProxy/ProxyTargetGroup": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DbProxyProxyTargetGroupE3127B9C"
+          }
+        ],
+        "/aws-cdk-rds-proxy-sql-server/SqlProxyRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SqlProxyRole0DC4DDBC"
+          }
+        ],
+        "/aws-cdk-rds-proxy-sql-server/SqlProxyRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SqlProxyRoleDefaultPolicy225DB22D"
+          }
+        ],
+        "/aws-cdk-rds-proxy-sql-server/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-rds-proxy-sql-server/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-rds-proxy-sql-server"
+    },
+    "proxysqlserverintegtestDefaultTestDeployAssert14B31776.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "proxysqlserverintegtestDefaultTestDeployAssert14B31776.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "proxysqlserverintegtestDefaultTestDeployAssert14B31776": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "proxysqlserverintegtestDefaultTestDeployAssert14B31776.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "proxysqlserverintegtestDefaultTestDeployAssert14B31776.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "proxysqlserverintegtestDefaultTestDeployAssert14B31776.assets"
+      ],
+      "metadata": {
+        "/proxy-sql-server-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/proxy-sql-server-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "proxy-sql-server-integ-test/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

@@ -49,7 +49,6 @@ export function chunks(command: string): string[] {
   return result ?? [];
 }
 
-
 /**
  * A class holding a set of items which are being crossed off in time
  *

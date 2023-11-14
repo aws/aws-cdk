@@ -61,6 +61,8 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
   });
 }
 
+export type ProcessFailedError = ProcessFailed
+
 class ProcessFailed extends Error {
   public readonly code = 'PROCESS_FAILED';
 
@@ -105,7 +107,7 @@ function hasAnyChars(...chars: string[]): (x: string) => boolean {
  */
 function posixEscape(x: string) {
   // Turn ' -> '"'"'
-  x = x.replace("'", "'\"'\"'");
+  x = x.replace(/'/g, "'\"'\"'");
   return `'${x}'`;
 }
 

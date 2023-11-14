@@ -1,0 +1,188 @@
+{
+  "version": "34.0.0",
+  "artifacts": {
+    "stack-cors-allow-multiple-origins.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "stack-cors-allow-multiple-origins.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "stack-cors-allow-multiple-origins": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "stack-cors-allow-multiple-origins.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/10b38de28f6f291a0a2fe437096ce3ea526ffeb14c593b034d0df5e8452cde82.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "stack-cors-allow-multiple-origins.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "stack-cors-allow-multiple-origins.assets"
+      ],
+      "metadata": {
+        "/stack-cors-allow-multiple-origins/cors-api-test/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "corsapitest8682546E"
+          }
+        ],
+        "/stack-cors-allow-multiple-origins/cors-api-test/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "corsapitestDeployment2BF1633A506e17bacbb92c0f9e65d8c89b158b9c"
+          }
+        ],
+        "/stack-cors-allow-multiple-origins/cors-api-test/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "corsapitestDeploymentStageprod8F31F2AB"
+          }
+        ],
+        "/stack-cors-allow-multiple-origins/cors-api-test/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "corsapitestEndpointE63606AE"
+          }
+        ],
+        "/stack-cors-allow-multiple-origins/cors-api-test/Default/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "corsapitestOPTIONS15560589"
+          }
+        ],
+        "/stack-cors-allow-multiple-origins/cors-api-test/Default/my-resource/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "corsapitestmyresource73D41BDD"
+          }
+        ],
+        "/stack-cors-allow-multiple-origins/cors-api-test/Default/my-resource/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "corsapitestmyresourceOPTIONSD5275318"
+          }
+        ],
+        "/stack-cors-allow-multiple-origins/cors-api-test/Default/my-resource/GET/ApiPermission.stackcorsallowmultipleoriginscorsapitestC473FAE8.GET..my-resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "corsapitestmyresourceGETApiPermissionstackcorsallowmultipleoriginscorsapitestC473FAE8GETmyresourceB82B6C26"
+          }
+        ],
+        "/stack-cors-allow-multiple-origins/cors-api-test/Default/my-resource/GET/ApiPermission.Test.stackcorsallowmultipleoriginscorsapitestC473FAE8.GET..my-resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "corsapitestmyresourceGETApiPermissionTeststackcorsallowmultipleoriginscorsapitestC473FAE8GETmyresource29B41ABB"
+          }
+        ],
+        "/stack-cors-allow-multiple-origins/cors-api-test/Default/my-resource/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "corsapitestmyresourceGET844C52EA"
+          }
+        ],
+        "/stack-cors-allow-multiple-origins/handler/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "handlerServiceRole187D5A5A"
+          }
+        ],
+        "/stack-cors-allow-multiple-origins/handler/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "handlerE1533BD5"
+          }
+        ],
+        "/stack-cors-allow-multiple-origins/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/stack-cors-allow-multiple-origins/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ],
+        "corsapitestDeployment2BF1633Ad72428c37c88b8c23ef39eebb5b7e9fd": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "corsapitestDeployment2BF1633Ad72428c37c88b8c23ef39eebb5b7e9fd",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ]
+      },
+      "displayName": "stack-cors-allow-multiple-origins"
+    },
+    "integcorsallowmultipleoriginsDefaultTestDeployAssertEBF0A1B1.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integcorsallowmultipleoriginsDefaultTestDeployAssertEBF0A1B1.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integcorsallowmultipleoriginsDefaultTestDeployAssertEBF0A1B1": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integcorsallowmultipleoriginsDefaultTestDeployAssertEBF0A1B1.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integcorsallowmultipleoriginsDefaultTestDeployAssertEBF0A1B1.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integcorsallowmultipleoriginsDefaultTestDeployAssertEBF0A1B1.assets"
+      ],
+      "metadata": {
+        "/integ-cors-allow-multiple-origins/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-cors-allow-multiple-origins/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-cors-allow-multiple-origins/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

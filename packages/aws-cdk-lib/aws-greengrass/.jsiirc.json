@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.Greengrass"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.greengrass"
+    },
+    "python": {
+      "module": "aws_cdk.aws_greengrass"
+    }
+  }
+}

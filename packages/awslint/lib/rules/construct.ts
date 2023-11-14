@@ -1,15 +1,15 @@
 import * as reflect from 'jsii-reflect';
-import { Linter, MethodSignatureParameterExpectation } from '../linter';
 import { CoreTypes } from './core-types';
+import { Linter, MethodSignatureParameterExpectation } from '../linter';
 
-export const constructLinter = new Linter<ConstructReflection>(assembly => assembly.classes
+export const constructLinter = new Linter<ConstructReflection>(assembly => assembly.allClasses
   .filter(t => CoreTypes.isConstructClass(t))
   .map(construct => new ConstructReflection(construct)));
 
 export class ConstructReflection {
 
   public static findAllConstructs(assembly: reflect.Assembly) {
-    return assembly.classes
+    return assembly.allClasses
       .filter(c => CoreTypes.isConstructClass(c))
       .map(c => new ConstructReflection(c));
   }
@@ -44,12 +44,16 @@ export class ConstructReflection {
     this.sys = classType.system;
     this.core = new CoreTypes(this.sys);
     this.ROOT_CLASS = this.sys.findClass(this.core.constructClass.fqn);
-    this.interfaceFqn = `${classType.assembly.name}.I${classType.name}`;
-    this.propsFqn = `${classType.assembly.name}.${classType.name}Props`;
+    this.interfaceFqn = `${this.typePrefix(classType)}.I${classType.name}`;
+    this.propsFqn = `${this.typePrefix(classType)}.${classType.name}Props`;
     this.interfaceType = this.tryFindInterface();
     this.propsType = this.tryFindProps();
     this.initializer = classType.initializer;
     this.hasPropsArgument = this.initializer != null && this.initializer.parameters.length >= 3;
+  }
+
+  private typePrefix(classType: reflect.ClassType) {
+    return classType.assembly.name + (classType.namespace ? `.${classType.namespace}` : '');
   }
 
   private tryFindInterface() {

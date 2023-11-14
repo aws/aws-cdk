@@ -1,10 +1,10 @@
 import * as camelcase from 'camelcase';
 import * as reflect from 'jsii-reflect';
-import { Linter } from '../linter';
 import { CfnResourceReflection } from './cfn-resource';
 import { ConstructReflection } from './construct';
 import { CoreTypes } from './core-types';
 import { getDocTag } from './util';
+import { Linter } from '../linter';
 
 const GRANT_RESULT_FQN = '@aws-cdk/aws-iam.Grant';
 
@@ -185,9 +185,10 @@ resourceLinter.add({
   },
 });
 
+/*
+// This rule is the worst
 resourceLinter.add({
   code: 'resource-attribute',
-  warning: true,
   message:
     'resources must represent all cloudformation attributes as attribute properties. ' +
     '"@attribute ATTR[,ATTR]" can be used to tag non-standard attribute names. ' +
@@ -203,6 +204,7 @@ resourceLinter.add({
     }
   },
 });
+*/
 
 resourceLinter.add({
   code: 'grant-result',
@@ -276,8 +278,21 @@ function tryResolveCfnResource(resourceClass: reflect.ClassType): CfnResourceRef
 }
 
 function guessResourceName(fqn: string) {
-  const match = /@aws-cdk\/([a-z]+)-([a-z0-9]+)\.([A-Z][a-zA-Z0-9]+)/.exec(fqn);
+  // Strip any version suffixes e.g. 'TableV2' becomes 'Table'
+  var match = /^(.+?)(V[0-9]+)?$/.exec(fqn);
   if (!match) { return undefined; }
+  const [, versionless] = match;
+
+  match = /aws-cdk-lib\.([a-z]+)_([a-z0-9]+)\.([A-Z][a-zA-Z0-9]+)/.exec(versionless);
+
+  if (!match) {
+    // Alpha name
+    match = /@aws-cdk\/([a-z]+)-([a-z0-9]+)-alpha\.([A-Z][a-zA-Z0-9]+)/.exec(fqn);
+  }
+
+  if (!match) {
+    return undefined;
+  }
 
   const [, org, ns, rs] = match;
   if (!org || !ns || !rs) { return undefined; }

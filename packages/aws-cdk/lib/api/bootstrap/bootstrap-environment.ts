@@ -1,14 +1,14 @@
 import { info } from 'console';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
+import { BootstrapEnvironmentOptions, BootstrappingParameters } from './bootstrap-props';
+import { BootstrapStack, bootstrapVersionFromTemplate } from './deploy-bootstrap';
+import { legacyBootstrapTemplate } from './legacy-template';
 import { warning } from '../../logging';
 import { loadStructuredFile, serializeStructure } from '../../serialize';
 import { rootDir } from '../../util/directories';
 import { ISDK, Mode, SdkProvider } from '../aws-auth';
 import { DeployStackResult } from '../deploy-stack';
-import { BootstrapEnvironmentOptions, BootstrappingParameters } from './bootstrap-props';
-import { BootstrapStack, bootstrapVersionFromTemplate } from './deploy-bootstrap';
-import { legacyBootstrapTemplate } from './legacy-template';
 
 /* eslint-disable max-len */
 
@@ -16,7 +16,6 @@ export type BootstrapSource =
   { source: 'legacy' }
   | { source: 'default' }
   | { source: 'custom'; templateFile: string };
-
 
 export class Bootstrapper {
   constructor(private readonly source: BootstrapSource) {
@@ -117,7 +116,7 @@ export class Bootstrapper {
       const implicitPolicy = `arn:${partition}:iam::aws:policy/AdministratorAccess`;
       warning(`Using default execution policy of '${implicitPolicy}'. Pass '--cloudformation-execution-policies' to customize.`);
     } else if (cloudFormationExecutionPolicies.length === 0) {
-      throw new Error('Please pass \'--cloudformation-execution-policies\' when using \'--trust\' to specify deployment permissions. Try a managed policy of the form \'arn:aws:iam::aws:policy/<PolicyName>\'.');
+      throw new Error(`Please pass \'--cloudformation-execution-policies\' when using \'--trust\' to specify deployment permissions. Try a managed policy of the form \'arn:${partition}:iam::aws:policy/<PolicyName>\'.`);
     } else {
       // Remind people what the current settings are
       info(`Execution policies: ${cloudFormationExecutionPolicies.join(', ')}`);
@@ -139,16 +138,26 @@ export class Bootstrapper {
     *    - the name indicating the custom permissions boundary to be used
     * Re-bootstrapping will NOT be blocked by either tightening or relaxing the permissions' boundary.
     */
-    const currentPermissionsBoundary = current.parameters.InputPermissionsBoundary;
+
+    // InputPermissionsBoundary is an `any` type and if it is not defined it
+    // appears as an empty string ''. We need to force it to evaluate an empty string
+    // as undefined
+    const currentPermissionsBoundary: string | undefined = current.parameters.InputPermissionsBoundary || undefined;
     const inputPolicyName = params.examplePermissionsBoundary ? CDK_BOOTSTRAP_PERMISSIONS_BOUNDARY : params.customPermissionsBoundary;
-    let policyName;
+    let policyName: string | undefined;
     if (inputPolicyName) {
       // If the example policy is not already in place, it must be created.
       const sdk = (await sdkProvider.forEnvironment(environment, Mode.ForWriting)).sdk;
       policyName = await this.getPolicyName(environment, sdk, inputPolicyName, partition, params);
     }
     if (currentPermissionsBoundary !== policyName) {
-      warning(`Switching from ${currentPermissionsBoundary} to ${policyName} as permissions boundary`);
+      if (!currentPermissionsBoundary) {
+        warning(`Adding new permissions boundary ${policyName}`);
+      } else if (!policyName) {
+        warning(`Removing existing permissions boundary ${currentPermissionsBoundary}`);
+      } else {
+        warning(`Changing permissions boundary from ${currentPermissionsBoundary} to ${policyName}`);
+      }
     }
 
     return current.update(
@@ -200,7 +209,7 @@ export class Bootstrapper {
       if (getPolicyResp.Policy) {
         return arn;
       }
-    } catch (e) {
+    } catch (e: any) {
       // https://docs.aws.amazon.com/IAM/latest/APIReference/API_GetPolicy.html#API_GetPolicy_Errors
       if (e.name === 'NoSuchEntity') {
         //noop, proceed with creating the policy
@@ -270,7 +279,9 @@ export class Bootstrapper {
 
   private validatePolicyName(permissionsBoundary: string) {
     // https://docs.aws.amazon.com/IAM/latest/APIReference/API_CreatePolicy.html
-    const regexp: RegExp = /[\w+=,.@-]+/;
+    // Added support for policy names with a path
+    // See https://github.com/aws/aws-cdk/issues/26320
+    const regexp: RegExp = /[\w+\/=,.@-]+/;
     const matches = regexp.exec(permissionsBoundary);
     if (!(matches && matches.length === 1 && matches[0] === permissionsBoundary)) {
       throw new Error(`The permissions boundary name ${permissionsBoundary} does not match the IAM conventions.`);

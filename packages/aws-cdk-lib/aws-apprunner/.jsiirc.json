@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.AppRunner"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.apprunner"
+    },
+    "python": {
+      "module": "aws_cdk.aws_apprunner"
+    }
+  }
+}

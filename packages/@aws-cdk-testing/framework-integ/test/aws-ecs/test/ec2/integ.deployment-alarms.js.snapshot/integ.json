@@ -1,0 +1,12 @@
+{
+  "version": "33.0.0",
+  "testCases": {
+    "DeploymentAlarms/DefaultTest": {
+      "stacks": [
+        "integ-deployment-alarms"
+      ],
+      "assertionStack": "DeploymentAlarms/DefaultTest/DeployAssert",
+      "assertionStackName": "DeploymentAlarmsDefaultTestDeployAssertAFB973D1"
+    }
+  }
+}

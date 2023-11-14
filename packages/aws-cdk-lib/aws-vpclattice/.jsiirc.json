@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.VpcLattice"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.vpclattice"
+    },
+    "python": {
+      "module": "aws_cdk.aws_vpclattice"
+    }
+  }
+}

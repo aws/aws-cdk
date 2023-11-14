@@ -1,0 +1,476 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "SnsToSqsStack": {
+        "id": "SnsToSqsStack",
+        "path": "SnsToSqsStack",
+        "children": {
+          "MyTopic": {
+            "id": "MyTopic",
+            "path": "SnsToSqsStack/MyTopic",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "SnsToSqsStack/MyTopic/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sns.CfnTopic",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-sns.Topic",
+              "version": "0.0.0"
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "SnsToSqsStack/Exports",
+            "children": {
+              "Output{\"Ref\":\"MyTopic86869434\"}": {
+                "id": "Output{\"Ref\":\"MyTopic86869434\"}",
+                "path": "SnsToSqsStack/Exports/Output{\"Ref\":\"MyTopic86869434\"}",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.189"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "SnsToSqsStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "SnsToSqsStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "QueueStack": {
+        "id": "QueueStack",
+        "path": "QueueStack",
+        "children": {
+          "MyQueue": {
+            "id": "MyQueue",
+            "path": "QueueStack/MyQueue",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "QueueStack/MyQueue/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sqs.CfnQueue",
+                  "version": "0.0.0"
+                }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "QueueStack/MyQueue/Policy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "QueueStack/MyQueue/Policy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SQS::QueuePolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sqs:SendMessage",
+                              "Condition": {
+                                "ArnEquals": {
+                                  "aws:SourceArn": {
+                                    "Fn::ImportValue": "SnsToSqsStack:ExportsOutputRefMyTopic868694349D03D60F"
+                                  }
+                                }
+                              },
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "sns.amazonaws.com"
+                              },
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "MyQueueE6CA6235",
+                                  "Arn"
+                                ]
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "queues": [
+                          {
+                            "Ref": "MyQueueE6CA6235"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-sqs.CfnQueuePolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sqs.QueuePolicy",
+                  "version": "0.0.0"
+                }
+              },
+              "SnsToSqsStackMyTopic3F1182C2": {
+                "id": "SnsToSqsStackMyTopic3F1182C2",
+                "path": "QueueStack/MyQueue/SnsToSqsStackMyTopic3F1182C2",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "QueueStack/MyQueue/SnsToSqsStackMyTopic3F1182C2/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
+                      "aws:cdk:cloudformation:props": {
+                        "protocol": "sqs",
+                        "topicArn": {
+                          "Fn::ImportValue": "SnsToSqsStack:ExportsOutputRefMyTopic868694349D03D60F"
+                        },
+                        "endpoint": {
+                          "Fn::GetAtt": [
+                            "MyQueueE6CA6235",
+                            "Arn"
+                          ]
+                        },
+                        "filterPolicy": {
+                          "background": {
+                            "color": [
+                              "red",
+                              "green",
+                              {
+                                "anything-but": [
+                                  "white",
+                                  "orange"
+                                ]
+                              }
+                            ]
+                          },
+                          "price": [
+                            {
+                              "numeric": [
+                                "=",
+                                100
+                              ]
+                            },
+                            {
+                              "numeric": [
+                                "=",
+                                200
+                              ]
+                            },
+                            {
+                              "numeric": [
+                                ">",
+                                500
+                              ]
+                            },
+                            {
+                              "numeric": [
+                                "<",
+                                1000
+                              ]
+                            },
+                            {
+                              "numeric": [
+                                ">=",
+                                300,
+                                "<=",
+                                350
+                              ]
+                            },
+                            {
+                              "numeric": [
+                                ">",
+                                2000,
+                                "<",
+                                3000
+                              ]
+                            }
+                          ]
+                        },
+                        "filterPolicyScope": "MessageBody"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-sns.CfnSubscription",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sns.Subscription",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-sqs.Queue",
+              "version": "0.0.0"
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "QueueStack/Exports",
+            "children": {
+              "Output{\"Ref\":\"MyQueueE6CA6235\"}": {
+                "id": "Output{\"Ref\":\"MyQueueE6CA6235\"}",
+                "path": "QueueStack/Exports/Output{\"Ref\":\"MyQueueE6CA6235\"}",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.189"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "QueueStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "QueueStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "SNS Subscriptions": {
+        "id": "SNS Subscriptions",
+        "path": "SNS Subscriptions",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "SNS Subscriptions/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "SNS Subscriptions/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.189"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "SNS Subscriptions/DefaultTest/DeployAssert",
+                "children": {
+                  "AwsApiCallSNSpublish": {
+                    "id": "AwsApiCallSNSpublish",
+                    "path": "SNS Subscriptions/DefaultTest/DeployAssert/AwsApiCallSNSpublish",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "SNS Subscriptions/DefaultTest/DeployAssert/AwsApiCallSNSpublish/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "SNS Subscriptions/DefaultTest/DeployAssert/AwsApiCallSNSpublish/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.189"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "SNS Subscriptions/DefaultTest/DeployAssert/AwsApiCallSNSpublish/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "SNS Subscriptions/DefaultTest/DeployAssert/AwsApiCallSNSpublish/Default/Default",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
+                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "SNS Subscriptions/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "SNS Subscriptions/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "SNS Subscriptions/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "SNS Subscriptions/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.189"
+                    }
+                  },
+                  "AwsApiCallSQSreceiveMessage": {
+                    "id": "AwsApiCallSQSreceiveMessage",
+                    "path": "SNS Subscriptions/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "SNS Subscriptions/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "SNS Subscriptions/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.189"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "SNS Subscriptions/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "SNS Subscriptions/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/Default/Default",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "SNS Subscriptions/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "SNS Subscriptions/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.189"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

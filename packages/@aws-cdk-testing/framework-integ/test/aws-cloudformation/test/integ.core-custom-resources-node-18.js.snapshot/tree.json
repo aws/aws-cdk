@@ -1,0 +1,195 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "custom-resource-test-node-18-stack": {
+        "id": "custom-resource-test-node-18-stack",
+        "path": "custom-resource-test-node-18-stack",
+        "children": {
+          "Custom::ReflectCustomResourceProvider": {
+            "id": "Custom::ReflectCustomResourceProvider",
+            "path": "custom-resource-test-node-18-stack/Custom::ReflectCustomResourceProvider",
+            "children": {
+              "Staging": {
+                "id": "Staging",
+                "path": "custom-resource-test-node-18-stack/Custom::ReflectCustomResourceProvider/Staging",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.AssetStaging",
+                  "version": "0.0.0"
+                }
+              },
+              "Role": {
+                "id": "Role",
+                "path": "custom-resource-test-node-18-stack/Custom::ReflectCustomResourceProvider/Role",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "0.0.0"
+                }
+              },
+              "Handler": {
+                "id": "Handler",
+                "path": "custom-resource-test-node-18-stack/Custom::ReflectCustomResourceProvider/Handler",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CustomResourceProvider",
+              "version": "0.0.0"
+            }
+          },
+          "MyResource": {
+            "id": "MyResource",
+            "path": "custom-resource-test-node-18-stack/MyResource",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "custom-resource-test-node-18-stack/MyResource/Default",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CustomResource",
+              "version": "0.0.0"
+            }
+          },
+          "MyLengthyTypeResource": {
+            "id": "MyLengthyTypeResource",
+            "path": "custom-resource-test-node-18-stack/MyLengthyTypeResource",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "custom-resource-test-node-18-stack/MyLengthyTypeResource/Default",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CustomResource",
+              "version": "0.0.0"
+            }
+          },
+          "Ref": {
+            "id": "Ref",
+            "path": "custom-resource-test-node-18-stack/Ref",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "GetAtt.Attribute1": {
+            "id": "GetAtt.Attribute1",
+            "path": "custom-resource-test-node-18-stack/GetAtt.Attribute1",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "GetAtt.Attribute2": {
+            "id": "GetAtt.Attribute2",
+            "path": "custom-resource-test-node-18-stack/GetAtt.Attribute2",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "custom-resource-test-node-18-stack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "custom-resource-test-node-18-stack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "custom-resource-test-node-18-integ": {
+        "id": "custom-resource-test-node-18-integ",
+        "path": "custom-resource-test-node-18-integ",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "custom-resource-test-node-18-integ/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "custom-resource-test-node-18-integ/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.26"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "custom-resource-test-node-18-integ/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "custom-resource-test-node-18-integ/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "custom-resource-test-node-18-integ/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.2.26"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

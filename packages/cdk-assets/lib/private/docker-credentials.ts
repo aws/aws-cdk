@@ -1,8 +1,8 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { IAws } from '../aws';
 import { Logger } from './shell';
+import { IAws } from '../aws';
 
 export interface DockerCredentials {
   readonly Username: string;
@@ -33,7 +33,7 @@ export function cdkCredentialsConfig(): DockerCredentialsConfig | undefined {
   if (!_cdkCredentials) {
     try {
       _cdkCredentials = JSON.parse(fs.readFileSync(cdkCredentialsConfigFile(), { encoding: 'utf-8' })) as DockerCredentialsConfig;
-    } catch (err) { }
+    } catch { }
   }
   return _cdkCredentials;
 }

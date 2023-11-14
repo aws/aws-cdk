@@ -35,15 +35,16 @@ module.exports = {
     'import/resolver': {
       node: {},
       typescript: {
-        directory: './tsconfig.json',
+        project: './tsconfig.json',
       },
     },
   },
   ignorePatterns: ['*.js', '*.d.ts', 'node_modules/', '*.generated.ts'],
   rules: {
-    '@aws-cdk/no-core-construct': [ 'error' ],
-    '@aws-cdk/no-qualified-construct': [ 'error' ],
-    '@aws-cdk/invalid-cfn-imports': [ 'error' ],
+    '@aws-cdk/no-core-construct': ['error'],
+    '@aws-cdk/no-qualified-construct': ['error'],
+    '@aws-cdk/invalid-cfn-imports': ['error'],
+    '@aws-cdk/no-literal-partition': ['error'],
     // Require use of the `import { foo } from 'bar';` form instead of `import foo = require('bar');`
     '@typescript-eslint/no-require-imports': ['error'],
     '@typescript-eslint/indent': ['error', 2],
@@ -72,18 +73,14 @@ module.exports = {
           '**/test/**', // --> Unit tests
         ],
         optionalDependencies: false, // Disallow importing optional dependencies (those shouldn't be in use in the project)
-        peerDependencies: false, // Disallow importing peer dependencies (that aren't also direct dependencies)
       },
     ],
 
     // Require all imported libraries actually resolve (!!required for import/no-extraneous-dependencies to work!!)
     'import/no-unresolved': ['error'],
 
-    // Require an ordering on all imports -- unfortunately a different ordering than TSLint used to
-    // enforce, but there are no compatible ESLint rules as far as I can tell :(
-    //
-    // WARNING for now, otherwise this will mess up all open PRs. Make it into an error after a transitionary period.
-    'import/order': ['warn', {
+    // Require an ordering on all imports
+    'import/order': ['error', {
       groups: ['builtin', 'external'],
       alphabetize: { order: 'asc', caseInsensitive: true },
     }],
@@ -118,7 +115,7 @@ module.exports = {
     'quote-props': ['error', 'consistent-as-needed'],
 
     // No multiple empty lines
-    'no-multiple-empty-lines': ['error'],
+    'no-multiple-empty-lines': ['error', { 'max': 1 }],
 
     // Max line lengths
     'max-len': ['error', {
@@ -216,5 +213,7 @@ module.exports = {
     "jest/valid-expect": "off", // expect from '@aws-cdk/assert' can take a second argument
     "jest/valid-title": "off", // A little over-zealous with test('test foo') being an error.
     "jest/no-identical-title": "off", // TEMPORARY - Disabling this until https://github.com/jest-community/eslint-plugin-jest/issues/836 is resolved
+    'jest/no-disabled-tests': 'error', // Skipped tests are easily missed in PR reviews
+    'jest/no-focused-tests': 'error', // Focused tests are easily missed in PR reviews
   },
 };

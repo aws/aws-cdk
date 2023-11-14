@@ -1,0 +1,12 @@
+{
+  "version": "34.0.0",
+  "testCases": {
+    "integ-cors-allow-multiple-origins/DefaultTest": {
+      "stacks": [
+        "stack-cors-allow-multiple-origins"
+      ],
+      "assertionStack": "integ-cors-allow-multiple-origins/DefaultTest/DeployAssert",
+      "assertionStackName": "integcorsallowmultipleoriginsDefaultTestDeployAssertEBF0A1B1"
+    }
+  }
+}

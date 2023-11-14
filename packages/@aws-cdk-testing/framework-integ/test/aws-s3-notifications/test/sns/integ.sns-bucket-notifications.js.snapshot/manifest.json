@@ -1,0 +1,112 @@
+{
+  "version": "22.0.0",
+  "artifacts": {
+    "sns-bucket-notifications.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "sns-bucket-notifications.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "sns-bucket-notifications": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "sns-bucket-notifications.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/88df37172d4084ec83f30c0d40a37fb78b106a5e2f402f4e609b08c5e1406c8e.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "sns-bucket-notifications.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "sns-bucket-notifications.assets"
+      ],
+      "metadata": {
+        "/sns-bucket-notifications/ObjectCreatedTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ObjectCreatedTopic92F47E19"
+          }
+        ],
+        "/sns-bucket-notifications/ObjectCreatedTopic/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ObjectCreatedTopicPolicyA938ECFC"
+          }
+        ],
+        "/sns-bucket-notifications/ObjectDeletedTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ObjectDeletedTopic2A914EC0"
+          }
+        ],
+        "/sns-bucket-notifications/ObjectDeletedTopic/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ObjectDeletedTopicPolicy026B02E6"
+          }
+        ],
+        "/sns-bucket-notifications/MyBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyBucketF68F3FF0"
+          }
+        ],
+        "/sns-bucket-notifications/MyBucket/Notifications/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyBucketNotifications46AC0CD2"
+          }
+        ],
+        "/sns-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
+          }
+        ],
+        "/sns-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36"
+          }
+        ],
+        "/sns-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691"
+          }
+        ],
+        "/sns-bucket-notifications/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/sns-bucket-notifications/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "sns-bucket-notifications"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

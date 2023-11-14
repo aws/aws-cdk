@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 // The ECS hotswapping functionality in lib/api/hotswap/ecs-services.ts
 // uses some non-public APIs of the JS AWS SDK for waiting on the deployment to finish.
 // These unit tests are here to confirm the non-public elements are present and working as expected,

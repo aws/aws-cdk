@@ -1,8 +1,11 @@
-import { deployStack, DeployStackOptions, ToolkitInfo } from '../../lib/api';
+/* eslint-disable import/order */
+import { deployStack, DeployStackOptions } from '../../lib/api';
+import { HotswapMode } from '../../lib/api/hotswap/common';
 import { tryHotswapDeployment } from '../../lib/api/hotswap-deployments';
 import { setCI } from '../../lib/logging';
 import { DEFAULT_FAKE_TEMPLATE, testStack } from '../util';
 import { MockedObject, mockResolvedEnvironment, MockSdk, MockSdkProvider, SyncHandlerSubsetOf } from '../util/mock-sdk';
+import { NoBootstrapStackEnvironmentResources } from '../../lib/api/environment-resources';
 
 jest.mock('../../lib/api/hotswap-deployments');
 
@@ -74,20 +77,21 @@ beforeEach(() => {
 });
 
 function standardDeployStackArguments(): DeployStackOptions {
+  const resolvedEnvironment = mockResolvedEnvironment();
   return {
     stack: FAKE_STACK,
     sdk,
     sdkProvider,
-    resolvedEnvironment: mockResolvedEnvironment(),
-    toolkitInfo: ToolkitInfo.bootstraplessDeploymentsOnly(sdk),
+    resolvedEnvironment,
+    envResources: new NoBootstrapStackEnvironmentResources(resolvedEnvironment, sdk),
   };
 }
 
-test("calls tryHotswapDeployment() if 'hotswap' is true", async () => {
+test("calls tryHotswapDeployment() if 'hotswap' is `HotswapMode.CLASSIC`", async () => {
   // WHEN
   await deployStack({
     ...standardDeployStackArguments(),
-    hotswap: true,
+    hotswap: HotswapMode.FALL_BACK,
     extraUserAgent: 'extra-user-agent',
   });
 
@@ -97,6 +101,84 @@ test("calls tryHotswapDeployment() if 'hotswap' is true", async () => {
   expect(sdk.appendCustomUserAgent).toHaveBeenCalledWith('extra-user-agent');
   // check that the fallback has been called if hotswapping failed
   expect(sdk.appendCustomUserAgent).toHaveBeenCalledWith('cdk-hotswap/fallback');
+});
+
+test("calls tryHotswapDeployment() if 'hotswap' is `HotswapMode.HOTSWAP_ONLY`", async () => {
+  cfnMocks.describeStacks = jest.fn()
+    // we need the first call to return something in the Stacks prop,
+    // otherwise the access to `stackId` will fail
+    .mockImplementation(() => ({
+      Stacks: [
+        {
+          StackStatus: 'CREATE_COMPLETE',
+          StackStatusReason: 'It is magic',
+          EnableTerminationProtection: false,
+        },
+      ],
+    }));
+  sdk.stubCloudFormation(cfnMocks as any);
+  // WHEN
+  const deployStackResult = await deployStack({
+    ...standardDeployStackArguments(),
+    hotswap: HotswapMode.HOTSWAP_ONLY,
+    extraUserAgent: 'extra-user-agent',
+    force: true, // otherwise, deployment would be skipped
+  });
+
+  // THEN
+  expect(deployStackResult.noOp).toEqual(true);
+  expect(tryHotswapDeployment).toHaveBeenCalled();
+  // check that the extra User-Agent is honored
+  expect(sdk.appendCustomUserAgent).toHaveBeenCalledWith('extra-user-agent');
+  // check that the fallback has not been called if hotswapping failed
+  expect(sdk.appendCustomUserAgent).not.toHaveBeenCalledWith('cdk-hotswap/fallback');
+});
+
+test('correctly passes CFN parameters when hotswapping', async () => {
+  // WHEN
+  await deployStack({
+    ...standardDeployStackArguments(),
+    hotswap: HotswapMode.FALL_BACK,
+    parameters: {
+      A: 'A-value',
+      B: 'B=value',
+      C: undefined,
+      D: '',
+    },
+  });
+
+  // THEN
+  expect(tryHotswapDeployment).toHaveBeenCalledWith(expect.anything(), { A: 'A-value', B: 'B=value' }, expect.anything(), expect.anything(), HotswapMode.FALL_BACK);
+});
+
+test('correctly passes SSM parameters when hotswapping', async () => {
+  // GIVEN
+  givenStackExists({
+    Parameters: [
+      { ParameterKey: 'SomeParameter', ParameterValue: 'ParameterName', ResolvedValue: 'SomeValue' },
+    ],
+  });
+
+  // WHEN
+  await deployStack({
+    ...standardDeployStackArguments(),
+    stack: testStack({
+      stackName: 'stack',
+      template: {
+        Parameters: {
+          SomeParameter: {
+            Type: 'AWS::SSM::Parameter::Value<String>',
+            Default: 'ParameterName',
+          },
+        },
+      },
+    }),
+    hotswap: HotswapMode.FALL_BACK,
+    usePreviousParameters: true,
+  });
+
+  // THEN
+  expect(tryHotswapDeployment).toHaveBeenCalledWith(expect.anything(), { SomeParameter: 'SomeValue' }, expect.anything(), expect.anything(), HotswapMode.FALL_BACK);
 });
 
 test('call CreateStack when method=direct and the stack doesnt exist yet', async () => {
@@ -128,7 +210,7 @@ test("does not call tryHotswapDeployment() if 'hotswap' is false", async () => {
   // WHEN
   await deployStack({
     ...standardDeployStackArguments(),
-    hotswap: false,
+    hotswap: undefined,
   });
 
   // THEN
@@ -139,7 +221,7 @@ test("rollback still defaults to enabled even if 'hotswap' is enabled", async ()
   // WHEN
   await deployStack({
     ...standardDeployStackArguments(),
-    hotswap: true,
+    hotswap: HotswapMode.FALL_BACK,
     rollback: undefined,
   });
 
@@ -149,11 +231,11 @@ test("rollback still defaults to enabled even if 'hotswap' is enabled", async ()
   }));
 });
 
-test("rollback defaults to enabled if 'hotswap' is false", async () => {
+test("rollback defaults to enabled if 'hotswap' is undefined", async () => {
   // WHEN
   await deployStack({
     ...standardDeployStackArguments(),
-    hotswap: false,
+    hotswap: undefined,
     rollback: undefined,
   });
 
@@ -450,18 +532,19 @@ test('deploy not skipped if template did not change but tags changed', async () 
   });
 
   // WHEN
+  const resolvedEnvironment = mockResolvedEnvironment();
   await deployStack({
     stack: FAKE_STACK,
     sdk,
     sdkProvider,
-    resolvedEnvironment: mockResolvedEnvironment(),
+    resolvedEnvironment,
     tags: [
       {
         Key: 'Key',
         Value: 'NewValue',
       },
     ],
-    toolkitInfo: ToolkitInfo.bootstraplessDeploymentsOnly(sdk),
+    envResources: new NoBootstrapStackEnvironmentResources(resolvedEnvironment, sdk),
   });
 
   // THEN

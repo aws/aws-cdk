@@ -1,11 +1,12 @@
+/* eslint-disable import/order */
 import * as fs from 'fs';
 import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { AssetManifest } from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
+import { MockSdkProvider } from './util/mock-sdk';
 import { CloudExecutable } from '../lib/api/cxapp/cloud-executable';
 import { Configuration } from '../lib/settings';
-import { MockSdkProvider } from './util/mock-sdk';
 
 export const DEFAULT_FAKE_TEMPLATE = { No: 'Resources' };
 
@@ -146,7 +147,7 @@ export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
  * to how they are stored on disk (upper cased). In real synthesis this is done
  * by a special tags formatter.
  *
- * @see @aws-cdk/core/lib/stack.ts
+ * @see aws-cdk-lib/lib/stack.ts
  */
 function patchStackTags(metadata: { [path: string]: cxschema.MetadataEntry[] }): { [path: string]: cxschema.MetadataEntry[] } {
 
@@ -238,4 +239,8 @@ export function withMocked<A extends object, K extends keyof A, B>(obj: A, key: 
 
 function isPromise<A>(object: any): object is Promise<A> {
   return Promise.resolve(object) === object;
+}
+
+export async function sleep(ms: number) {
+  return new Promise(ok => setTimeout(ok, ms));
 }

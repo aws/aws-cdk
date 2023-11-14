@@ -1,17 +1,16 @@
+> REPLACE THIS TEXT BLOCK
+>
+> Describe the reason for this change, what the solution is, and any
+> important design decisions you made. 
+>
+> Remember to follow the [CONTRIBUTING GUIDE] and [DESIGN GUIDELINES] for any
+> code you submit.
+>
+> [CONTRIBUTING GUIDE]: https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md
+> [DESIGN GUIDELINES]: https://github.com/aws/aws-cdk/blob/main/docs/DESIGN_GUIDELINES.md
+
+Closes #<issue number here>.
 
 ----
-
-### All Submissions:
-
-* [ ] Have you followed the guidelines in our [Contributing guide?](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md)
-
-### Adding new Construct Runtime Dependencies:
-
-* [ ] This PR adds new construct runtime dependencies following the process described [here](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md/#adding-construct-runtime-dependencies)
-
-### New Features
-
-* [ ] Have you added the new feature to an [integration test](https://github.com/aws/aws-cdk/blob/main/INTEGRATION_TESTS.md)?
-	* [ ] Did you use `yarn integ` to deploy the infrastructure and generate the snapshot (i.e. `yarn integ` without `--dry-run`)?
 
 *By submitting this pull request, I confirm that my contribution is made under the terms of the Apache-2.0 license*

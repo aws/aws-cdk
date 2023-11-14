@@ -1,0 +1,1 @@
+export * from './emrcontainers.generated';

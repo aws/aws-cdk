@@ -1,0 +1,38 @@
+{
+  "folders": [{ "path": "." }],
+  "settings": {
+    "jest.jestCommandLine": "node_modules/.bin/jest",
+    "jest.autoRun": "off",
+    "jest.virtualFolders": [
+      { "name": "aws-cdk", "rootPath": "packages/aws-cdk" },
+      { "name": "aws-cdk-lib", "rootPath": "packages/aws-cdk-lib" },
+      {
+        "name": "cli-lib-alpha",
+        "rootPath": "packages/@aws-cdk/cli-lib-alpha"
+      },
+      {
+        "name": "cloudformation-diff",
+        "rootPath": "packages/@aws-cdk/cloudformation-diff"
+      },
+      {
+        "name": "custom-resource-handlers",
+        "rootPath": "packages/@aws-cdk/custom-resource-handlers"
+      },
+      {
+        "name": "integ-runner",
+        "rootPath": "packages/@aws-cdk/integ-runner"
+      },
+      {
+        "name": "integ-tests-alpha",
+        "rootPath": "packages/@aws-cdk/integ-tests-alpha"
+      },
+      {
+        "name": "sdk-v2-to-v3-adapter",
+        "rootPath": "packages/@aws-cdk/sdk-v2-to-v3-adapter"
+      }
+    ]
+  },
+  "extensions": {
+    "recommendations": ["dbaeumer.vscode-eslint", "Orta.vscode-jest"]
+  }
+}

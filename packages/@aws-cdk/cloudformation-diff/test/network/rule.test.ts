@@ -1,5 +1,6 @@
 import * as fc from 'fast-check';
 import { SecurityGroupRule } from '../../lib/network/security-group-rule';
+import { arbitraryRule, twoArbitraryRules } from '../test-arbitraries';
 
 test('can parse cidr-ip', () => {
   const rule = new SecurityGroupRule({
@@ -72,36 +73,4 @@ test('equality is symmetric', () => {
       return b.equal(a);
     },
   ));
-});
-
-const arbitraryRule = fc.record({
-  IpProtocol: fc.constantFrom('tcp', 'udp', 'icmp'),
-  FromPort: fc.integer(80, 81),
-  ToPort: fc.integer(81, 82),
-  CidrIp: fc.constantFrom('0.0.0.0/0', '1.2.3.4/8', undefined, undefined),
-  DestinationSecurityGroupId: fc.constantFrom('sg-1234', undefined),
-  DestinationPrefixListId: fc.constantFrom('pl-1', undefined),
-});
-
-const twoArbitraryRules = fc.record({
-  rule1: arbitraryRule,
-  rule2: arbitraryRule,
-  copyIp: fc.boolean(),
-  copyFromPort: fc.boolean(),
-  copyToPort: fc.boolean(),
-  copyCidrIp: fc.boolean(),
-  copySecurityGroupId: fc.boolean(),
-  copyPrefixListId: fc.boolean(),
-}).map(op => {
-  const original = op.rule1;
-  const modified = Object.create(original, {});
-
-  if (op.copyIp) { modified.IpProtocol = op.rule2.IpProtocol; }
-  if (op.copyFromPort) { modified.FromPort = op.rule2.FromPort; }
-  if (op.copyToPort) { modified.ToPort = op.rule2.ToPort; }
-  if (op.copyCidrIp) { modified.CidrIp = op.rule2.CidrIp; }
-  if (op.copySecurityGroupId) { modified.DestinationSecurityGroupId = op.rule2.DestinationSecurityGroupId; }
-  if (op.copyPrefixListId) { modified.DestinationPrefixListId = op.rule2.DestinationPrefixListId; }
-
-  return { rule1: original, rule2: modified };
 });

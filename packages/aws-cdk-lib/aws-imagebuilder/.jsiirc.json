@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.ImageBuilder"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.imagebuilder"
+    },
+    "python": {
+      "module": "aws_cdk.aws_imagebuilder"
+    }
+  }
+}

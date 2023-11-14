@@ -1,30 +1,26 @@
+/* eslint-disable import/order */
 jest.mock('../../lib/api/deploy-stack');
 jest.mock('../../lib/util/asset-publishing');
 
-import * as fs from 'fs';
-import * as os from 'os';
-import * as path from 'path';
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
-import { CloudFormationDeployments } from '../../lib/api/cloudformation-deployments';
+import { FakeCloudformationStack } from './fake-cloudformation-stack';
+import { Deployments } from '../../lib/api/deployments';
 import { deployStack } from '../../lib/api/deploy-stack';
-import { EcrRepositoryInfo, ToolkitInfo } from '../../lib/api/toolkit-info';
+import { HotswapMode } from '../../lib/api/hotswap/common';
+import { ToolkitInfo } from '../../lib/api/toolkit-info';
 import { CloudFormationStack } from '../../lib/api/util/cloudformation';
-import { buildAssets, publishAssets } from '../../lib/util/asset-publishing';
 import { testStack } from '../util';
 import { mockBootstrapStack, MockSdkProvider } from '../util/mock-sdk';
-import { FakeCloudformationStack } from './fake-cloudformation-stack';
 
 let sdkProvider: MockSdkProvider;
-let deployments: CloudFormationDeployments;
+let deployments: Deployments;
 let mockToolkitInfoLookup: jest.Mock;
 let currentCfnStackResources: { [key: string]: CloudFormation.StackResourceSummary[] };
 let numberOfTimesListStackResourcesWasCalled: number;
 beforeEach(() => {
   jest.resetAllMocks();
   sdkProvider = new MockSdkProvider();
-  deployments = new CloudFormationDeployments({ sdkProvider });
+  deployments = new Deployments({ sdkProvider });
 
   numberOfTimesListStackResourcesWasCalled = 0;
   currentCfnStackResources = {};
@@ -41,7 +37,7 @@ beforeEach(() => {
     },
   });
 
-  ToolkitInfo.lookup = mockToolkitInfoLookup = jest.fn().mockResolvedValue(ToolkitInfo.bootstrapStackNotFoundInfo(sdkProvider.sdk));
+  ToolkitInfo.lookup = mockToolkitInfoLookup = jest.fn().mockResolvedValue(ToolkitInfo.bootstrapStackNotFoundInfo('TestBootstrapStack'));
 });
 
 function mockSuccessfulBootstrapStackLookup(props?: Record<string, any>) {
@@ -59,39 +55,8 @@ function mockSuccessfulBootstrapStackLookup(props?: Record<string, any>) {
     })),
   });
 
-  mockToolkitInfoLookup.mockResolvedValue(ToolkitInfo.fromStack(fakeStack, sdkProvider.sdk));
+  mockToolkitInfoLookup.mockResolvedValue(ToolkitInfo.fromStack(fakeStack));
 }
-
-test('deployStack builds assets by default for backward compatibility', async () => {
-  const stack = testStackWithAssetManifest();
-
-  // WHEN
-  await deployments.deployStack({
-    stack,
-  });
-
-  // THEN
-  const expectedOptions = expect.objectContaining({
-    buildAssets: true,
-  });
-  expect(publishAssets).toHaveBeenCalledWith(expect.anything(), expect.anything(), expect.anything(), expectedOptions);
-});
-
-test('deployStack can disable asset building for prebuilds', async () => {
-  const stack = testStackWithAssetManifest();
-
-  // WHEN
-  await deployments.deployStack({
-    stack,
-    buildAssets: false,
-  });
-
-  // THEN
-  const expectedOptions = expect.objectContaining({
-    buildAssets: false,
-  });
-  expect(publishAssets).toHaveBeenCalledWith(expect.anything(), expect.anything(), expect.anything(), expectedOptions);
-});
 
 test('passes through hotswap=true to deployStack()', async () => {
   // WHEN
@@ -99,12 +64,12 @@ test('passes through hotswap=true to deployStack()', async () => {
     stack: testStack({
       stackName: 'boop',
     }),
-    hotswap: true,
+    hotswap: HotswapMode.FALL_BACK,
   });
 
   // THEN
   expect(deployStack).toHaveBeenCalledWith(expect.objectContaining({
-    hotswap: true,
+    hotswap: HotswapMode.FALL_BACK,
   }));
 });
 
@@ -169,12 +134,12 @@ test('deployment fails if bootstrap stack is too old', async () => {
   })).rejects.toThrow(/requires bootstrap stack version '99', found '5'/);
 });
 
-test('if toolkit stack cannot be found but SSM parameter name is present deployment succeeds', async () => {
-  // FIXME: Mocking a successful bootstrap stack lookup here should not be necessary.
-  // This should fail and return a placeholder failure object.
-  mockSuccessfulBootstrapStackLookup({
-    BootstrapVersion: 2,
-  });
+test.each([false, true])('if toolkit stack be found: %p but SSM parameter name is present deployment succeeds', async (canLookup) => {
+  if (canLookup) {
+    mockSuccessfulBootstrapStackLookup({
+      BootstrapVersion: 2,
+    });
+  }
 
   let requestedParameterName: string;
   sdkProvider.stubSSM({
@@ -281,9 +246,11 @@ test('readCurrentTemplateWithNestedStacks() can handle non-Resources in the temp
   );
 
   // WHEN
-  const deployedTemplate = await deployments.readCurrentTemplateWithNestedStacks(rootStack);
+  const nestedStackCount = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).nestedStackCount;
+  const deployedTemplate = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).deployedTemplate;
 
   // THEN
+  expect(nestedStackCount).toEqual(1);
   expect(deployedTemplate).toEqual({
     Resources: {
       NestedStack: {
@@ -438,7 +405,7 @@ test('readCurrentTemplateWithNestedStacks() with a 3-level nested + sibling stru
         break;
 
       default:
-        throw new Error('unknown stack name ' + stackName + ' found in cloudformation-deployments.test.ts');
+        throw new Error('unknown stack name ' + stackName + ' found in deployments.test.ts');
     }
 
     return cfnStack;
@@ -486,9 +453,11 @@ test('readCurrentTemplateWithNestedStacks() with a 3-level nested + sibling stru
   );
 
   // WHEN
-  const deployedTemplate = await deployments.readCurrentTemplateWithNestedStacks(rootStack);
+  const nestedStackCount = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).nestedStackCount;
+  const deployedTemplate = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).deployedTemplate;
 
   // THEN
+  expect(nestedStackCount).toEqual(3);
   expect(deployedTemplate).toEqual({
     Resources: {
       NestedStack: {
@@ -643,9 +612,11 @@ test('readCurrentTemplateWithNestedStacks() on an undeployed parent stack with a
   });
 
   // WHEN
-  const deployedTemplate = await deployments.readCurrentTemplateWithNestedStacks(rootStack);
+  const nestedStackCount = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).nestedStackCount;
+  const deployedTemplate = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).deployedTemplate;
 
   // THEN
+  expect(nestedStackCount).toEqual(2);
   expect(deployedTemplate).toEqual({
     Resources: {
       NestedStack: {
@@ -816,9 +787,11 @@ test('readCurrentTemplateWithNestedStacks() succesfully ignores stacks without m
   ));
 
   // WHEN
-  const deployedTemplate = await deployments.readCurrentTemplateWithNestedStacks(rootStack);
+  const nestedStackCount = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).nestedStackCount;
+  const deployedTemplate = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).deployedTemplate;
 
   // THEN
+  expect(nestedStackCount).toEqual(1);
   expect(deployedTemplate).toEqual({
     Resources: {
       WithMetadata: {
@@ -881,32 +854,6 @@ test('readCurrentTemplateWithNestedStacks() succesfully ignores stacks without m
   });
 });
 
-test('building assets', async () => {
-  // GIVEN
-  const stack = testStackWithAssetManifest();
-
-  // WHEN
-  await deployments.buildStackAssets({
-    stack,
-  });
-
-  // THEN
-  const expectedAssetManifest = expect.objectContaining({
-    directory: stack.assembly.directory,
-    manifest: expect.objectContaining({
-      files: expect.objectContaining({
-        fake: expect.anything(),
-      }),
-    }),
-  });
-  const expectedEnvironment = expect.objectContaining({
-    account: 'account',
-    name: 'aws://account/region',
-    region: 'region',
-  });
-  expect(buildAssets).toBeCalledWith(expectedAssetManifest, sdkProvider, expectedEnvironment, undefined);
-});
-
 function pushStackResourceSummaries(stackName: string, ...items: CloudFormation.StackResourceSummary[]) {
   if (!currentCfnStackResources[stackName]) {
     currentCfnStackResources[stackName] = [];
@@ -923,80 +870,4 @@ function stackSummaryOf(logicalId: string, resourceType: string, physicalResourc
     ResourceStatus: 'CREATE_COMPLETE',
     LastUpdatedTimestamp: new Date(),
   };
-}
-
-function testStackWithAssetManifest() {
-  const toolkitInfo = new class extends ToolkitInfo {
-    public found: boolean = true;
-    public bucketUrl: string = 's3://fake/here';
-    public bucketName: string = 'fake';
-    public version: number = 1234;
-    public get bootstrapStack(): CloudFormationStack {
-      throw new Error('This should never happen');
-    };
-
-    constructor() {
-      super(sdkProvider.sdk);
-    }
-
-    public validateVersion(): Promise<void> {
-      return Promise.resolve();
-    }
-
-    public prepareEcrRepository(): Promise<EcrRepositoryInfo> {
-      return Promise.resolve({
-        repositoryUri: 'fake',
-      });
-    }
-  };
-
-  ToolkitInfo.lookup = mockToolkitInfoLookup = jest.fn().mockResolvedValue(toolkitInfo);
-
-  const outDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk.out.'));
-  fs.writeFileSync(path.join(outDir, 'assets.json'), JSON.stringify({
-    version: '15.0.0',
-    files: {
-      fake: {
-        source: {
-          path: 'fake.json',
-          packaging: 'file',
-        },
-        destinations: {
-          'current_account-current_region': {
-            bucketName: 'fake-bucket',
-            objectKey: 'fake.json',
-            assumeRoleArn: 'arn:fake',
-          },
-        },
-      },
-    },
-    dockerImages: {},
-  }));
-  fs.writeFileSync(path.join(outDir, 'template.json'), JSON.stringify({
-    Resources: {
-      No: { Type: 'Resource' },
-    },
-  }));
-
-  const builder = new cxapi.CloudAssemblyBuilder(outDir);
-
-  builder.addArtifact('assets', {
-    type: cxschema.ArtifactType.ASSET_MANIFEST,
-    properties: {
-      file: 'assets.json',
-    },
-    environment: 'aws://account/region',
-  });
-
-  builder.addArtifact('stack', {
-    type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
-    properties: {
-      templateFile: 'template.json',
-    },
-    environment: 'aws://account/region',
-    dependencies: ['assets'],
-  });
-
-  const assembly = builder.buildAssembly();
-  return assembly.getStackArtifact('stack');
 }

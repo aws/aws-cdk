@@ -1,0 +1,260 @@
+{
+ "Resources": {
+  "Parameter9E1B4FBA": {
+   "Type": "AWS::SSM::Parameter",
+   "Properties": {
+    "Type": "String",
+    "Value": "api.example.com",
+    "Name": "email_url_Stack2"
+   }
+  },
+  "MySecret8FE80B51": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "GenerateSecretString": {}
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "MyFuncServiceRole54065130": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "MyFuncServiceRoleDefaultPolicyF3C36699": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "MySecret8FE80B51"
+       }
+      },
+      {
+       "Action": [
+        "ssm:DescribeParameters",
+        "ssm:GetParameter",
+        "ssm:GetParameterHistory",
+        "ssm:GetParameters"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ssm:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":parameter/",
+          {
+           "Ref": "Parameter9E1B4FBA"
+          }
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyFuncServiceRoleDefaultPolicyF3C36699",
+    "Roles": [
+     {
+      "Ref": "MyFuncServiceRole54065130"
+     }
+    ]
+   }
+  },
+  "MyFunc8A243A2C": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "b375dfd7699947c404936c2d1c4a0b91bd2bb49158ce52f6064bda6d3a7e0ead.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "MyFuncServiceRole54065130",
+      "Arn"
+     ]
+    },
+    "Architectures": [
+     "arm64"
+    ],
+    "Environment": {
+     "Variables": {
+      "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+      "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "100",
+      "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "8080",
+      "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "debug",
+      "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "5",
+      "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+      "SECRETS_MANAGER_TTL": "100",
+      "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+      "SSM_PARAMETER_STORE_TTL": "100"
+     }
+    },
+    "Handler": "index.handler",
+    "Layers": [
+     {
+      "Fn::FindInMap": [
+       "ParamsandsecretslayerMap",
+       {
+        "Ref": "AWS::Region"
+       },
+       "1x0x103xarm64"
+      ]
+     }
+    ],
+    "Runtime": "nodejs18.x"
+   },
+   "DependsOn": [
+    "MyFuncServiceRoleDefaultPolicyF3C36699",
+    "MyFuncServiceRole54065130"
+   ]
+  }
+ },
+ "Mappings": {
+  "ParamsandsecretslayerMap": {
+   "af-south-1": {
+    "1x0x103xarm64": "arn:aws:lambda:af-south-1:317013901791:layer:AWS-Parameters-and-Secrets-Lambda-Extension-Arm64:1"
+   },
+   "ap-east-1": {
+    "1x0x103xarm64": "arn:aws:lambda:ap-east-1:768336418462:layer:AWS-Parameters-and-Secrets-Lambda-Extension-Arm64:1"
+   },
+   "ap-northeast-1": {
+    "1x0x103xarm64": "arn:aws:lambda:ap-northeast-1:133490724326:layer:AWS-Parameters-and-Secrets-Lambda-Extension-Arm64:4"
+   },
+   "ap-northeast-2": {
+    "1x0x103xarm64": "arn:aws:lambda:ap-northeast-2:738900069198:layer:AWS-Parameters-and-Secrets-Lambda-Extension-Arm64:1"
+   },
+   "ap-south-1": {
+    "1x0x103xarm64": "arn:aws:lambda:ap-south-1:176022468876:layer:AWS-Parameters-and-Secrets-Lambda-Extension-Arm64:4"
+   },
+   "ap-southeast-1": {
+    "1x0x103xarm64": "arn:aws:lambda:ap-southeast-1:044395824272:layer:AWS-Parameters-and-Secrets-Lambda-Extension-Arm64:4"
+   },
+   "ap-southeast-2": {
+    "1x0x103xarm64": "arn:aws:lambda:ap-southeast-2:665172237481:layer:AWS-Parameters-and-Secrets-Lambda-Extension-Arm64:4"
+   },
+   "ap-southeast-3": {
+    "1x0x103xarm64": "arn:aws:lambda:ap-southeast-3:490737872127:layer:AWS-Parameters-and-Secrets-Lambda-Extension-Arm64:1"
+   },
+   "ca-central-1": {
+    "1x0x103xarm64": "arn:aws:lambda:ca-central-1:200266452380:layer:AWS-Parameters-and-Secrets-Lambda-Extension-Arm64:1"
+   },
+   "eu-central-1": {
+    "1x0x103xarm64": "arn:aws:lambda:eu-central-1:187925254637:layer:AWS-Parameters-and-Secrets-Lambda-Extension-Arm64:4"
+   },
+   "eu-north-1": {
+    "1x0x103xarm64": "arn:aws:lambda:eu-north-1:427196147048:layer:AWS-Parameters-and-Secrets-Lambda-Extension-Arm64:1"
+   },
+   "eu-south-1": {
+    "1x0x103xarm64": "arn:aws:lambda:eu-south-1:325218067255:layer:AWS-Parameters-and-Secrets-Lambda-Extension-Arm64:1"
+   },
+   "eu-west-1": {
+    "1x0x103xarm64": "arn:aws:lambda:eu-west-1:015030872274:layer:AWS-Parameters-and-Secrets-Lambda-Extension-Arm64:4"
+   },
+   "eu-west-2": {
+    "1x0x103xarm64": "arn:aws:lambda:eu-west-2:133256977650:layer:AWS-Parameters-and-Secrets-Lambda-Extension-Arm64:4"
+   },
+   "eu-west-3": {
+    "1x0x103xarm64": "arn:aws:lambda:eu-west-3:780235371811:layer:AWS-Parameters-and-Secrets-Lambda-Extension-Arm64:1"
+   },
+   "me-south-1": {
+    "1x0x103xarm64": "arn:aws:lambda:me-south-1:832021897121:layer:AWS-Parameters-and-Secrets-Lambda-Extension-Arm64:1"
+   },
+   "sa-east-1": {
+    "1x0x103xarm64": "arn:aws:lambda:sa-east-1:933737806257:layer:AWS-Parameters-and-Secrets-Lambda-Extension-Arm64:1"
+   },
+   "us-east-1": {
+    "1x0x103xarm64": "arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension-Arm64:4"
+   },
+   "us-east-2": {
+    "1x0x103xarm64": "arn:aws:lambda:us-east-2:590474943231:layer:AWS-Parameters-and-Secrets-Lambda-Extension-Arm64:4"
+   },
+   "us-west-1": {
+    "1x0x103xarm64": "arn:aws:lambda:us-west-1:997803712105:layer:AWS-Parameters-and-Secrets-Lambda-Extension-Arm64:1"
+   },
+   "us-west-2": {
+    "1x0x103xarm64": "arn:aws:lambda:us-west-2:345057560386:layer:AWS-Parameters-and-Secrets-Lambda-Extension-Arm64:4"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

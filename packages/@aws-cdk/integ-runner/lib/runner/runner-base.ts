@@ -1,13 +1,14 @@
+/* eslint-disable @aws-cdk/no-literal-partition */
 import * as path from 'path';
+import { CdkCliWrapper, ICdk } from '@aws-cdk/cdk-cli-wrapper';
 import { TestCase, DefaultCdkOptions } from '@aws-cdk/cloud-assembly-schema';
 import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY, TARGET_PARTITIONS, NEW_PROJECT_CONTEXT } from '@aws-cdk/cx-api';
-import { CdkCliWrapper, ICdk } from 'cdk-cli-wrapper';
 import * as fs from 'fs-extra';
-import { flatten } from '../utils';
-import { DestructiveChange } from '../workers/common';
 import { IntegTestSuite, LegacyIntegTestSuite } from './integ-test-suite';
 import { IntegTest } from './integration-tests';
 import { AssemblyManifestReader, ManifestTrace } from './private/cloud-assembly';
+import { flatten } from '../utils';
+import { DestructiveChange } from '../workers/common';
 
 const DESTRUCTIVE_CHANGES = '!!DESTRUCTIVE_CHANGES:';
 
@@ -191,7 +192,11 @@ export abstract class IntegRunner {
       },
       output: path.relative(this.directory, this.cdkOutDir),
     });
-    return this.loadManifest(this.cdkOutDir);
+    const manifest = this.loadManifest(this.cdkOutDir);
+    // after we load the manifest remove the tmp snapshot
+    // so that it doesn't mess up the real snapshot created later
+    this.cleanup();
+    return manifest;
   }
 
   /**
@@ -212,7 +217,7 @@ export abstract class IntegRunner {
     try {
       const testSuite = IntegTestSuite.fromPath(dir ?? this.snapshotDir);
       return testSuite;
-    } catch (e) {
+    } catch {
       const testCases = LegacyIntegTestSuite.fromLegacy({
         cdk: this.cdk,
         testName: this.test.normalizedTestName,
@@ -378,7 +383,6 @@ export abstract class IntegRunner {
     };
   }
 }
-
 
 // Default context we run all integ tests with, so they don't depend on the
 // account of the exercising user.

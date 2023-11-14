@@ -1,7 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`manifest load 1`] = `
-Object {
-  "version": "0.0.0",
-}
-`;

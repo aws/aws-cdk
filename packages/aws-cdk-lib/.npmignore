@@ -5,6 +5,7 @@
 !*.d.ts
 !*.js
 test/
+**/test/**
 
 # Coverage
 coverage
@@ -14,6 +15,8 @@ coverage
 # Build gear
 build-tools
 dist
+!custom-resource-handlers/dist/
+scripts
 .LAST_BUILD
 .LAST_PACKAGE
 
@@ -23,11 +26,21 @@ tsconfig.json
 !.jsii
 !.jsii.gz
 .eslintrc.js
+
 # exclude cdk artifacts
 **/cdk.out
 junit.xml
 
 !*.lit.ts
 
+# keep class map for cloudformation-include
+!cloudformation-include/cfn-types-2-classes.json
+
 # exclude source maps as they only work locally
 *.map
+
+# Nested node_modules
+aws-certificatemanager/lambda-packages/dns_validated_certificate_handler/node_modules
+
+# awslint config
+awslint.json

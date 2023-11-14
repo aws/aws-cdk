@@ -3,10 +3,10 @@ import { ISDK } from '../aws-auth';
 
 export const ICON = '✨';
 
-/**
- * An interface that represents a change that can be deployed in a short-circuit manner.
- */
-export interface HotswapOperation {
+export interface HotswappableChange {
+  readonly hotswappable: true;
+  readonly resourceType: string;
+  readonly propsChanged: Array<string>;
   /**
    * The name of the service being hotswapped.
    * Used to set a custom User-Agent for SDK calls.
@@ -18,44 +18,79 @@ export interface HotswapOperation {
    */
   readonly resourceNames: string[];
 
-  apply(sdk: ISDK): Promise<any>;
+  readonly apply: (sdk: ISDK) => Promise<void>;
 }
 
-/**
- * An enum that represents the result of detection whether a given change can be hotswapped.
- */
-export enum ChangeHotswapImpact {
+export interface NonHotswappableChange {
+  readonly hotswappable: false;
+  readonly resourceType: string;
+  readonly rejectedChanges: Array<string>;
+  readonly logicalId: string;
   /**
-   * This result means that the given change cannot be hotswapped,
-   * and requires a full deployment.
+   * Tells the user exactly why this change was deemed non-hotswappable and what its logical ID is.
+   * If not specified, `reason` will be autofilled to state that the properties listed in `rejectedChanges` are not hotswappable.
    */
-  REQUIRES_FULL_DEPLOYMENT = 'requires-full-deployment',
-
+  readonly reason?: string;
   /**
-   * This result means that the given change can be safely be ignored when determining
-   * whether the given Stack can be hotswapped or not
-   * (for example, it's a change to the CDKMetadata resource).
+   * Whether or not to show this change when listing non-hotswappable changes in HOTSWAP_ONLY mode. Does not affect
+   * listing in FALL_BACK mode.
+   *
+   * @default true
    */
-  IRRELEVANT = 'irrelevant',
+  readonly hotswapOnlyVisible?: boolean;
 }
 
-export type ChangeHotswapResult = HotswapOperation | ChangeHotswapImpact;
+export type ChangeHotswapResult = Array<HotswappableChange | NonHotswappableChange>;
+
+export interface ClassifiedResourceChanges {
+  hotswappableChanges: HotswappableChange[];
+  nonHotswappableChanges: NonHotswappableChange[];
+}
+
+export enum HotswapMode {
+  /**
+   * Will fall back to CloudFormation when a non-hotswappable change is detected
+   */
+  FALL_BACK = 'fall-back',
+
+  /**
+   * Will not fall back to CloudFormation when a non-hotswappable change is detected
+   */
+  HOTSWAP_ONLY = 'hotswap-only',
+
+  /**
+   * Will not attempt to hotswap anything and instead go straight to CloudFormation
+   */
+  FULL_DEPLOYMENT = 'full-deployment',
+}
 
 /**
  * Represents a change that can be hotswapped.
  */
 export class HotswappableChangeCandidate {
   /**
-   * The value the resource is being updated to.
+   * The logical ID of the resource which is being changed
+   */
+  public readonly logicalId: string;
+
+  /**
+   * The value the resource is being updated from
+   */
+  public readonly oldValue: cfn_diff.Resource;
+
+  /**
+   * The value the resource is being updated to
    */
   public readonly newValue: cfn_diff.Resource;
 
   /**
-   * The changes made to the resource properties.
+   * The changes made to the resource properties
    */
-  public readonly propertyUpdates: { [key: string]: cfn_diff.PropertyDifference<any> };
+  public readonly propertyUpdates: PropDiffs;
 
-  public constructor(newValue: cfn_diff.Resource, propertyUpdates: { [key: string]: cfn_diff.PropertyDifference<any> }) {
+  public constructor(logicalId: string, oldValue: cfn_diff.Resource, newValue: cfn_diff.Resource, propertyUpdates: PropDiffs) {
+    this.logicalId = logicalId;
+    this.oldValue = oldValue;
     this.newValue = newValue;
     this.propertyUpdates = propertyUpdates;
   }
@@ -98,4 +133,83 @@ export function transformObjectKeys(val: any, transform: (str: string) => string
  */
 export function lowerCaseFirstCharacter(str: string): string {
   return str.length > 0 ? `${str[0].toLowerCase()}${str.slice(1)}` : str;
+}
+
+export type PropDiffs = Record<string, cfn_diff.PropertyDifference<any>>;
+
+export class ClassifiedChanges {
+  public constructor(
+    public readonly change: HotswappableChangeCandidate,
+    public readonly hotswappableProps: PropDiffs,
+    public readonly nonHotswappableProps: PropDiffs,
+  ) { }
+
+  public reportNonHotswappablePropertyChanges(ret: ChangeHotswapResult):void {
+    const nonHotswappablePropNames = Object.keys(this.nonHotswappableProps);
+    if (nonHotswappablePropNames.length > 0) {
+      const tagOnlyChange = nonHotswappablePropNames.length === 1 && nonHotswappablePropNames[0] === 'Tags';
+      reportNonHotswappableChange(
+        ret,
+        this.change,
+        this.nonHotswappableProps,
+        tagOnlyChange ? 'Tags are not hotswappable' : `resource properties '${nonHotswappablePropNames}' are not hotswappable on this resource type`,
+      );
+    }
+  }
+
+  public get namesOfHotswappableProps(): string[] {
+    return Object.keys(this.hotswappableProps);
+  }
+}
+
+export function classifyChanges(
+  xs: HotswappableChangeCandidate,
+  hotswappablePropNames: string[],
+): ClassifiedChanges {
+  const hotswappableProps: PropDiffs = {};
+  const nonHotswappableProps: PropDiffs = {};
+
+  for (const [name, propDiff] of Object.entries(xs.propertyUpdates)) {
+    if (hotswappablePropNames.includes(name)) {
+      hotswappableProps[name] = propDiff;
+    } else {
+      nonHotswappableProps[name] = propDiff;
+    }
+  }
+
+  return new ClassifiedChanges(xs, hotswappableProps, nonHotswappableProps);
+}
+
+export function reportNonHotswappableChange(
+  ret: ChangeHotswapResult,
+  change: HotswappableChangeCandidate,
+  nonHotswappableProps?: PropDiffs,
+  reason?: string,
+  hotswapOnlyVisible?: boolean,
+): void {
+  let hotswapOnlyVisibility = true;
+  if (hotswapOnlyVisible === false) {
+    hotswapOnlyVisibility = false;
+  }
+  ret.push({
+    hotswappable: false,
+    rejectedChanges: Object.keys(nonHotswappableProps ?? change.propertyUpdates),
+    logicalId: change.logicalId,
+    resourceType: change.newValue.Type,
+    reason,
+    hotswapOnlyVisible: hotswapOnlyVisibility,
+  });
+}
+
+export function reportNonHotswappableResource(
+  change: HotswappableChangeCandidate,
+  reason?: string,
+): ChangeHotswapResult {
+  return [{
+    hotswappable: false,
+    rejectedChanges: Object.keys(change.propertyUpdates),
+    logicalId: change.logicalId,
+    resourceType: change.newValue.Type,
+    reason,
+  }];
 }

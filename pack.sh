@@ -38,16 +38,24 @@ function lerna_scopes() {
 
 scripts/run-rosetta.sh --infuse --pkgs-from $TMPDIR/jsii.txt
 
+# Execute any pre-package steps for the jsii modules here:
+echo "Running aws-cdk-lib pre-package"
+npx lerna run --scope aws-cdk-lib package -- --pre-only
+
 # Jsii packaging (all at once using jsii-pacmak)
 echo "Packaging jsii modules" >&2
 $PACMAK \
   --verbose \
   $(cat $TMPDIR/jsii.txt)
 
+# Execute any post-package steps for the jsii modules here:
+echo "Running aws-cdk-lib post-package"
+npx lerna run --scope aws-cdk-lib package -- --post-only
+
 # Non-jsii packaging, which means running 'package' in every individual
 # module
 echo "Packaging non-jsii modules" >&2
-lerna run $(lerna_scopes $(cat $TMPDIR/nonjsii.txt)) --sort --concurrency=1 --stream package
+npx lerna run $(lerna_scopes $(cat $TMPDIR/nonjsii.txt)) --sort --concurrency=1 --stream package
 
 # Finally rsync all 'dist' directories together into a global 'dist' directory
 for dir in $(find packages -name dist | grep -v node_modules | grep -v run-wrappers); do
@@ -99,9 +107,3 @@ if find dist/ | grep -F "${marker}"; then
   echo "This is expected for builds in a development environment but should not happen in CI builds!"
   exit 1
 fi
-
-# for posterity, print all files in dist
-echo "=============================================================================================="
-echo " dist contents"
-echo "=============================================================================================="
-find dist/

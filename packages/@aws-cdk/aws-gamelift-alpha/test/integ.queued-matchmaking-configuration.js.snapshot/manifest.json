@@ -1,0 +1,177 @@
+{
+  "version": "22.0.0",
+  "artifacts": {
+    "aws-gamelift-queued-matchmaking-configuration.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-gamelift-queued-matchmaking-configuration.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-gamelift-queued-matchmaking-configuration": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-gamelift-queued-matchmaking-configuration.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1b0d8d0db3da2b2fdabb9d8f394c65e95befb7f2a283179ccfd11289a1954afc.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-gamelift-queued-matchmaking-configuration.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-gamelift-queued-matchmaking-configuration.assets"
+      ],
+      "metadata": {
+        "/aws-gamelift-queued-matchmaking-configuration/QueuedMatchmakingConfiguration/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueuedMatchmakingConfiguration84BDFE18"
+          }
+        ],
+        "/aws-gamelift-queued-matchmaking-configuration/Build/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BuildServiceRole1F57E904"
+          }
+        ],
+        "/aws-gamelift-queued-matchmaking-configuration/Build/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BuildServiceRoleDefaultPolicyCB7101C6"
+          }
+        ],
+        "/aws-gamelift-queued-matchmaking-configuration/Build/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Build45A36621"
+          }
+        ],
+        "/aws-gamelift-queued-matchmaking-configuration/BuildFleet/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BuildFleetServiceRole32D49FB4"
+          }
+        ],
+        "/aws-gamelift-queued-matchmaking-configuration/BuildFleet/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BuildFleet027ED403"
+          }
+        ],
+        "/aws-gamelift-queued-matchmaking-configuration/MyGameSessionQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyGameSessionQueue1A15CE31"
+          }
+        ],
+        "/aws-gamelift-queued-matchmaking-configuration/MyQueuedMatchmakingConfiguration/Topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyQueuedMatchmakingConfigurationTopicBAC3E679"
+          }
+        ],
+        "/aws-gamelift-queued-matchmaking-configuration/MyQueuedMatchmakingConfiguration/TopicPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyQueuedMatchmakingConfigurationTopicPolicy17A129EA"
+          }
+        ],
+        "/aws-gamelift-queued-matchmaking-configuration/MyQueuedMatchmakingConfiguration/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyQueuedMatchmakingConfiguration94A9FD4E"
+          }
+        ],
+        "/aws-gamelift-queued-matchmaking-configuration/MatchmakingConfigurationArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MatchmakingConfigurationArn"
+          }
+        ],
+        "/aws-gamelift-queued-matchmaking-configuration/MatchmakingConfigurationName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MatchmakingConfigurationName"
+          }
+        ],
+        "/aws-gamelift-queued-matchmaking-configuration/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-gamelift-queued-matchmaking-configuration/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-gamelift-queued-matchmaking-configuration"
+    },
+    "QueuedMatchmakingConfigurationDefaultTestDeployAssert8FBBBB90.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "QueuedMatchmakingConfigurationDefaultTestDeployAssert8FBBBB90.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "QueuedMatchmakingConfigurationDefaultTestDeployAssert8FBBBB90": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "QueuedMatchmakingConfigurationDefaultTestDeployAssert8FBBBB90.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "QueuedMatchmakingConfigurationDefaultTestDeployAssert8FBBBB90.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "QueuedMatchmakingConfigurationDefaultTestDeployAssert8FBBBB90.assets"
+      ],
+      "metadata": {
+        "/QueuedMatchmakingConfiguration/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/QueuedMatchmakingConfiguration/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "QueuedMatchmakingConfiguration/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

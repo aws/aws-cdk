@@ -1,0 +1,13 @@
+{
+  "version": "34.0.0",
+  "testCases": {
+    "cdk-ses-receipt-integ/DefaultTest": {
+      "stacks": [
+        "aws-cdk-ses-receipt"
+      ],
+      "diffAssets": true,
+      "assertionStack": "cdk-ses-receipt-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "cdksesreceiptintegDefaultTestDeployAssertA2776C75"
+    }
+  }
+}

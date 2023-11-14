@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.IoTWireless"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.iotwireless"
+    },
+    "python": {
+      "module": "aws_cdk.aws_iotwireless"
+    }
+  }
+}

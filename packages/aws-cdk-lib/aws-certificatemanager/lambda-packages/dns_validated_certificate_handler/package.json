@@ -1,0 +1,49 @@
+{
+  "name": "@aws-cdk/dns_validated_certificate_handler",
+  "private": true,
+  "version": "0.0.0",
+  "description": "This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.",
+  "main": "lib/index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "build": "echo No build",
+    "test": "jest",
+    "eslint": "eslint lib",
+    "build+test+package": "npm run build+test",
+    "build+test": "npm run build && npm test",
+    "build+test+extract": "npm run build+test",
+    "build+extract": "npm run build"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "certificatemanager"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.111",
+    "@types/sinon": "^9.0.11",
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "aws-sdk": "^2.1329.0",
+    "aws-sdk-mock": "5.6.0",
+    "eslint": "^7.32.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.3.1",
+    "eslint-plugin-standard": "^4.1.0",
+    "jest": "^27.5.1",
+    "lambda-tester": "^3.6.0",
+    "sinon": "^9.2.4",
+    "nock": "^13.3.0",
+    "ts-jest": "^27.1.5"
+  }
+}

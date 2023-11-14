@@ -1,0 +1,12 @@
+{
+  "version": "30.1.0",
+  "testCases": {
+    "AppRunnerLaterSecretsEnvVars/DefaultTest": {
+      "stacks": [
+        "integ-apprunner-later-secrets-env-vars"
+      ],
+      "assertionStack": "AppRunnerLaterSecretsEnvVars/DefaultTest/DeployAssert",
+      "assertionStackName": "AppRunnerLaterSecretsEnvVarsDefaultTestDeployAssert07867A67"
+    }
+  }
+}

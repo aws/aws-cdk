@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.APS"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.aps"
+    },
+    "python": {
+      "module": "aws_cdk.aws_aps"
+    }
+  }
+}

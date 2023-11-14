@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { cdkCredentialsConfig, obtainEcrCredentials } from './docker-credentials';
-import { Logger, shell, ShellOptions } from './shell';
+import { Logger, shell, ShellOptions, ProcessFailedError } from './shell';
 import { createCriticalSection } from './util';
 
 interface BuildOptions {
@@ -15,8 +15,19 @@ interface BuildOptions {
   readonly target?: string;
   readonly file?: string;
   readonly buildArgs?: Record<string, string>;
+  readonly buildSecrets?: Record<string, string>;
+  readonly buildSsh?: string;
   readonly networkMode?: string;
   readonly platform?: string;
+  readonly outputs?: string[];
+  readonly cacheFrom?: DockerCacheOption[];
+  readonly cacheTo?: DockerCacheOption;
+  readonly quiet?: boolean;
+}
+
+interface PushOptions {
+  readonly tag: string;
+  readonly quiet?: boolean;
 }
 
 export interface DockerCredentialsConfig {
@@ -27,6 +38,16 @@ export interface DockerCredentialsConfig {
 export interface DockerDomainCredentials {
   readonly secretsManagerSecretId?: string;
   readonly ecrRepository?: string;
+}
+
+enum InspectImageErrorCode {
+  Docker = 1,
+  Podman = 125
+}
+
+export interface DockerCacheOption {
+  readonly type: string;
+  readonly params?: { [key: string]: string };
 }
 
 export class Docker {
@@ -43,9 +64,32 @@ export class Docker {
     try {
       await this.execute(['inspect', tag], { quiet: true });
       return true;
-    } catch (e) {
-      if (e.code !== 'PROCESS_FAILED' || e.exitCode !== 1) { throw e; }
-      return false;
+    } catch (e: any) {
+      const error: ProcessFailedError = e;
+
+      /**
+       * The only error we expect to be thrown will have this property and value.
+       * If it doesn't, it's unrecognized so re-throw it.
+       */
+      if (error.code !== 'PROCESS_FAILED') {
+        throw error;
+      }
+
+      /**
+       * If we know the shell command above returned an error, check to see
+       * if the exit code is one we know to actually mean that the image doesn't
+       * exist.
+       */
+      switch (error.exitCode) {
+        case InspectImageErrorCode.Docker:
+        case InspectImageErrorCode.Podman:
+          // Docker and Podman will return this exit code when an image doesn't exist, return false
+          // context: https://github.com/aws/aws-cdk/issues/16209
+          return false;
+        default:
+          // This is an error but it's not an exit code we recognize, throw.
+          throw error;
+      }
     }
   }
 
@@ -53,14 +97,22 @@ export class Docker {
     const buildCommand = [
       'build',
       ...flatten(Object.entries(options.buildArgs || {}).map(([k, v]) => ['--build-arg', `${k}=${v}`])),
+      ...flatten(Object.entries(options.buildSecrets || {}).map(([k, v]) => ['--secret', `id=${k},${v}`])),
+      ...options.buildSsh ? ['--ssh', options.buildSsh] : [],
       '--tag', options.tag,
       ...options.target ? ['--target', options.target] : [],
       ...options.file ? ['--file', options.file] : [],
       ...options.networkMode ? ['--network', options.networkMode] : [],
       ...options.platform ? ['--platform', options.platform] : [],
+      ...options.outputs ? options.outputs.map(output => [`--output=${output}`]) : [],
+      ...options.cacheFrom ? [...options.cacheFrom.map(cacheFrom => ['--cache-from', this.cacheOptionToFlag(cacheFrom)]).flat()] : [],
+      ...options.cacheTo ? ['--cache-to', this.cacheOptionToFlag(options.cacheTo)] : [],
       '.',
     ];
-    await this.execute(buildCommand, { cwd: options.directory });
+    await this.execute(buildCommand, {
+      cwd: options.directory,
+      quiet: options.quiet,
+    });
   }
 
   /**
@@ -87,8 +139,8 @@ export class Docker {
     await this.execute(['tag', sourceTag, targetTag]);
   }
 
-  public async push(tag: string) {
-    await this.execute(['push', tag]);
+  public async push(options: PushOptions) {
+    await this.execute(['push', options.tag], { quiet: options.quiet });
   }
 
   /**
@@ -140,12 +192,20 @@ export class Docker {
           PATH: `${pathToCdkAssets}${path.delimiter}${options.env?.PATH ?? process.env.PATH}`,
         },
       });
-    } catch (e) {
+    } catch (e: any) {
       if (e.code === 'ENOENT') {
         throw new Error('Unable to execute \'docker\' in order to build a container asset. Please install \'docker\' and try again.');
       }
       throw e;
     }
+  }
+
+  private cacheOptionToFlag(option: DockerCacheOption): string {
+    let flag = `type=${option.type}`;
+    if (option.params) {
+      flag += ',' + Object.entries(option.params).map(([k, v]) => `${k}=${v}`).join(',');
+    }
+    return flag;
   }
 }
 

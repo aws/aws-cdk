@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "services.backupgateway"
+    },
+    "dotnet": {
+      "package": "Amazon.CDK.AWS.BackupGateway"
+    },
+    "python": {
+      "module": "aws_cdk.aws_backupgateway"
+    }
+  }
+}

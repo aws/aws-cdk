@@ -1,0 +1,605 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "aws-gamelift-queued-matchmaking-configuration": {
+        "id": "aws-gamelift-queued-matchmaking-configuration",
+        "path": "aws-gamelift-queued-matchmaking-configuration",
+        "children": {
+          "QueuedMatchmakingConfiguration": {
+            "id": "QueuedMatchmakingConfiguration",
+            "path": "aws-gamelift-queued-matchmaking-configuration/QueuedMatchmakingConfiguration",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-gamelift-queued-matchmaking-configuration/QueuedMatchmakingConfiguration/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::GameLift::MatchmakingRuleSet",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "my-test-ruleset",
+                    "ruleSetBody": "{\"name\":\"three_team_game\",\"ruleLanguageVersion\":\"1.0\",\"playerAttributes\":[{\"name\":\"skill\",\"type\":\"number\",\"default\":10},{\"name\":\"character\",\"type\":\"string_list\",\"default\":[\"peasant\"]}],\"teams\":[{\"name\":\"trio\",\"minPlayers\":3,\"maxPlayers\":5,\"quantity\":3}],\"rules\":[{\"name\":\"FairTeamSkill\",\"description\":\"The average skill of players in each team is within 10 points from the average skill of players in the match\",\"type\":\"distance\",\"measurements\":[\"avg(teams[*].players.attributes[skill])\"],\"referenceValue\":\"avg(flatten(teams[*].players.attributes[skill]))\",\"maxDistance\":10},{\"name\":\"CloseTeamSizes\",\"description\":\"Only launch a game when the team sizes are within 1 of each other.  e.g. 3 v 3 v 4 is okay, but not 3 v 5 v 5\",\"type\":\"distance\",\"measurements\":[\"max(count(teams[*].players))\"],\"referenceValue\":\"min(count(teams[*].players))\",\"maxDistance\":1},{\"name\":\"OverallMedicLimit\",\"description\":\"Don't allow more than 5 medics in the game\",\"type\":\"collection\",\"measurements\":[\"flatten(teams[*].players.attributes[character])\"],\"operation\":\"contains\",\"referenceValue\":\"medic\",\"maxCount\":5},{\"name\":\"FastConnection\",\"description\":\"Prefer matches with fast player connections first\",\"type\":\"latency\",\"maxLatency\":50}],\"expansions\":[{\"target\":\"rules[FastConnection].maxLatency\",\"steps\":[{\"waitTimeSeconds\":10,\"value\":100},{\"waitTimeSeconds\":20,\"value\":150}]}]}"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-gamelift.CfnMatchmakingRuleSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-gamelift.MatchmakingRuleSet",
+              "version": "0.0.0"
+            }
+          },
+          "Build": {
+            "id": "Build",
+            "path": "aws-gamelift-queued-matchmaking-configuration/Build",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "aws-gamelift-queued-matchmaking-configuration/Build/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-gamelift-queued-matchmaking-configuration/Build/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-gamelift-queued-matchmaking-configuration/Build/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "gamelift.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-gamelift-queued-matchmaking-configuration/Build/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-gamelift-queued-matchmaking-configuration/Build/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "s3:GetObject",
+                                    "s3:GetObjectVersion"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":s3:::",
+                                        {
+                                          "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                        },
+                                        "/b95e4173bc399a8f686a4951aa26e01de1ed1e9d981ee1a7f18a15512dbdcb37.zip"
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "BuildServiceRoleDefaultPolicyCB7101C6",
+                            "roles": [
+                              {
+                                "Ref": "BuildServiceRole1F57E904"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Content": {
+                "id": "Content",
+                "path": "aws-gamelift-queued-matchmaking-configuration/Build/Content",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "aws-gamelift-queued-matchmaking-configuration/Build/Content/Stage",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "aws-gamelift-queued-matchmaking-configuration/Build/Content/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "AssetBucket": {
+                "id": "AssetBucket",
+                "path": "aws-gamelift-queued-matchmaking-configuration/Build/AssetBucket",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3.BucketBase",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-gamelift-queued-matchmaking-configuration/Build/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::GameLift::Build",
+                  "aws:cdk:cloudformation:props": {
+                    "operatingSystem": "AMAZON_LINUX_2",
+                    "storageLocation": {
+                      "bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "key": "b95e4173bc399a8f686a4951aa26e01de1ed1e9d981ee1a7f18a15512dbdcb37.zip",
+                      "roleArn": {
+                        "Fn::GetAtt": [
+                          "BuildServiceRole1F57E904",
+                          "Arn"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-gamelift.CfnBuild",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-gamelift.Build",
+              "version": "0.0.0"
+            }
+          },
+          "BuildFleet": {
+            "id": "BuildFleet",
+            "path": "aws-gamelift-queued-matchmaking-configuration/BuildFleet",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "aws-gamelift-queued-matchmaking-configuration/BuildFleet/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-gamelift-queued-matchmaking-configuration/BuildFleet/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-gamelift-queued-matchmaking-configuration/BuildFleet/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": [
+                                  "ec2.amazonaws.com",
+                                  "gamelift.amazonaws.com"
+                                ]
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-gamelift-queued-matchmaking-configuration/BuildFleet/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::GameLift::Fleet",
+                  "aws:cdk:cloudformation:props": {
+                    "buildId": {
+                      "Ref": "Build45A36621"
+                    },
+                    "certificateConfiguration": {
+                      "certificateType": "DISABLED"
+                    },
+                    "ec2InboundPermissions": [
+                      {
+                        "protocol": "TCP",
+                        "fromPort": 1935,
+                        "toPort": 1935,
+                        "ipRange": "0.0.0.0/0"
+                      }
+                    ],
+                    "ec2InstanceType": "c5.large",
+                    "fleetType": "ON_DEMAND",
+                    "instanceRoleArn": {
+                      "Fn::GetAtt": [
+                        "BuildFleetServiceRole32D49FB4",
+                        "Arn"
+                      ]
+                    },
+                    "maxSize": 1,
+                    "minSize": 0,
+                    "name": "test-fleet",
+                    "newGameSessionProtectionPolicy": "NoProtection",
+                    "runtimeConfiguration": {
+                      "gameSessionActivationTimeoutSeconds": 300,
+                      "maxConcurrentGameSessionActivations": 1,
+                      "serverProcesses": [
+                        {
+                          "parameters": "port:1935 gameSessionLengthSeconds:20",
+                          "launchPath": "/local/game/TestApplicationServer",
+                          "concurrentExecutions": 1
+                        }
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-gamelift.CfnFleet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-gamelift.BuildFleet",
+              "version": "0.0.0"
+            }
+          },
+          "MyGameSessionQueue": {
+            "id": "MyGameSessionQueue",
+            "path": "aws-gamelift-queued-matchmaking-configuration/MyGameSessionQueue",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-gamelift-queued-matchmaking-configuration/MyGameSessionQueue/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::GameLift::GameSessionQueue",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "test-gameSessionQueue",
+                    "destinations": [
+                      {
+                        "destinationArn": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              ":gamelift:",
+                              {
+                                "Ref": "AWS::Region"
+                              },
+                              ":",
+                              {
+                                "Ref": "AWS::AccountId"
+                              },
+                              ":fleet/",
+                              {
+                                "Ref": "BuildFleet027ED403"
+                              }
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-gamelift.CfnGameSessionQueue",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-gamelift.GameSessionQueue",
+              "version": "0.0.0"
+            }
+          },
+          "MyQueuedMatchmakingConfiguration": {
+            "id": "MyQueuedMatchmakingConfiguration",
+            "path": "aws-gamelift-queued-matchmaking-configuration/MyQueuedMatchmakingConfiguration",
+            "children": {
+              "Topic": {
+                "id": "Topic",
+                "path": "aws-gamelift-queued-matchmaking-configuration/MyQueuedMatchmakingConfiguration/Topic",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-gamelift-queued-matchmaking-configuration/MyQueuedMatchmakingConfiguration/Topic/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                      "aws:cdk:cloudformation:props": {}
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-sns.CfnTopic",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sns.Topic",
+                  "version": "0.0.0"
+                }
+              },
+              "TopicPolicy": {
+                "id": "TopicPolicy",
+                "path": "aws-gamelift-queued-matchmaking-configuration/MyQueuedMatchmakingConfiguration/TopicPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-gamelift-queued-matchmaking-configuration/MyQueuedMatchmakingConfiguration/TopicPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SNS::TopicPolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sns:Publish",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "gamelift.amazonaws.com"
+                              },
+                              "Resource": {
+                                "Ref": "MyQueuedMatchmakingConfigurationTopicBAC3E679"
+                              },
+                              "Sid": "0"
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "topics": [
+                          {
+                            "Ref": "MyQueuedMatchmakingConfigurationTopicBAC3E679"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-sns.CfnTopicPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sns.TopicPolicy",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-gamelift-queued-matchmaking-configuration/MyQueuedMatchmakingConfiguration/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::GameLift::MatchmakingConfiguration",
+                  "aws:cdk:cloudformation:props": {
+                    "acceptanceRequired": true,
+                    "name": "test-config-name",
+                    "requestTimeoutSeconds": 30,
+                    "ruleSetName": {
+                      "Ref": "QueuedMatchmakingConfiguration84BDFE18"
+                    },
+                    "acceptanceTimeoutSeconds": 30,
+                    "additionalPlayerCount": 3,
+                    "backfillMode": "MANUAL",
+                    "customEventData": "event-data",
+                    "description": "test description",
+                    "flexMatchMode": "WITH_QUEUE",
+                    "gameProperties": [
+                      {
+                        "key": "test-key",
+                        "value": "test-value"
+                      }
+                    ],
+                    "gameSessionData": "test-session-data",
+                    "gameSessionQueueArns": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":gamelift:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":",
+                            {
+                              "Ref": "AWS::AccountId"
+                            },
+                            ":gamesessionqueue/",
+                            {
+                              "Ref": "MyGameSessionQueue1A15CE31"
+                            }
+                          ]
+                        ]
+                      }
+                    ],
+                    "notificationTarget": {
+                      "Ref": "MyQueuedMatchmakingConfigurationTopicBAC3E679"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-gamelift.CfnMatchmakingConfiguration",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-gamelift.QueuedMatchmakingConfiguration",
+              "version": "0.0.0"
+            }
+          },
+          "MatchmakingConfigurationArn": {
+            "id": "MatchmakingConfigurationArn",
+            "path": "aws-gamelift-queued-matchmaking-configuration/MatchmakingConfigurationArn",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "MatchmakingConfigurationName": {
+            "id": "MatchmakingConfigurationName",
+            "path": "aws-gamelift-queued-matchmaking-configuration/MatchmakingConfigurationName",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-gamelift-queued-matchmaking-configuration/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-gamelift-queued-matchmaking-configuration/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "QueuedMatchmakingConfiguration": {
+        "id": "QueuedMatchmakingConfiguration",
+        "path": "QueuedMatchmakingConfiguration",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "QueuedMatchmakingConfiguration/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "QueuedMatchmakingConfiguration/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.168"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "QueuedMatchmakingConfiguration/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "QueuedMatchmakingConfiguration/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "QueuedMatchmakingConfiguration/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.168"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

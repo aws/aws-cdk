@@ -1,6 +1,6 @@
 import * as reflect from 'jsii-reflect';
-import { Linter } from '../linter';
 import { AttributeSite, ResourceReflection } from './resource';
+import { Linter } from '../linter';
 
 export const importsLinter = new Linter<ImportsReflection>(assembly => ResourceReflection
   .findAll(assembly)

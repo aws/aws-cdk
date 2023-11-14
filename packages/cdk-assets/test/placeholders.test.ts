@@ -1,7 +1,7 @@
 import { Manifest } from '@aws-cdk/cloud-assembly-schema';
 import * as mockfs from 'mock-fs';
-import { AssetManifest, AssetPublishing } from '../lib';
 import { mockAws, mockedApiResult } from './mock-aws';
+import { AssetManifest, AssetPublishing } from '../lib';
 
 let aws: ReturnType<typeof mockAws>;
 beforeEach(() => {

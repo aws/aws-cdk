@@ -1,0 +1,19 @@
+{
+  "version": "34.0.0",
+  "files": {
+    "0fecdddcc93cb59f37820c43eaa8030e35f0be824e2f8e7b63bde0bb0b24e264": {
+      "source": {
+        "path": "IntegApiGatewayV2Iam.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "0fecdddcc93cb59f37820c43eaa8030e35f0be824e2f8e7b63bde0bb0b24e264.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

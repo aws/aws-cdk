@@ -1,0 +1,19 @@
+{
+  "version": "22.0.0",
+  "files": {
+    "706116cb7bbce00b1ab402aeeaa66b35fc2fef8e57e4192f8ee4747dc5864691": {
+      "source": {
+        "path": "QueueStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "706116cb7bbce00b1ab402aeeaa66b35fc2fef8e57e4192f8ee4747dc5864691.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

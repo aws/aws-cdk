@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-export NODE_OPTIONS="--max-old-space-size=4096 ${NODE_OPTIONS:-}"
+export NODE_OPTIONS="--max-old-space-size=8196 ${NODE_OPTIONS:-}"
 
 #----------------------------------------------------------------------
 # PARSE ARGS

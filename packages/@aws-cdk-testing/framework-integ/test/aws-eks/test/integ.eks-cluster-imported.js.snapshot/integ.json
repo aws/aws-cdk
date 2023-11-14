@@ -1,0 +1,20 @@
+{
+  "version": "34.0.0",
+  "testCases": {
+    "aws-cdk-eks-import-cluster/DefaultTest": {
+      "stacks": [
+        "aws-cdk-eks-import-cluster-test"
+      ],
+      "diffAssets": false,
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": true
+          }
+        }
+      },
+      "assertionStack": "aws-cdk-eks-import-cluster/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksimportclusterDefaultTestDeployAssert71CEFD92"
+    }
+  }
+}

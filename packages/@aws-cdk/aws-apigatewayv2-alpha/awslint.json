@@ -1,0 +1,13 @@
+{
+    "exclude": [
+        "props-physical-name:@aws-cdk/aws-apigatewayv2-alpha.ApiMappingProps",
+        "props-physical-name:@aws-cdk/aws-apigatewayv2-alpha.HttpIntegrationProps",
+        "props-physical-name:@aws-cdk/aws-apigatewayv2-alpha.HttpRouteProps",
+        "props-physical-name:@aws-cdk/aws-apigatewayv2-alpha.WebSocketIntegrationProps",
+        "props-physical-name:@aws-cdk/aws-apigatewayv2-alpha.WebSocketRouteProps",
+        "from-method:@aws-cdk/aws-apigatewayv2-alpha.HttpIntegration",
+        "from-method:@aws-cdk/aws-apigatewayv2-alpha.HttpRoute",
+        "from-method:@aws-cdk/aws-apigatewayv2-alpha.WebSocketIntegration",
+        "from-method:@aws-cdk/aws-apigatewayv2-alpha.WebSocketRoute"
+    ]
+}

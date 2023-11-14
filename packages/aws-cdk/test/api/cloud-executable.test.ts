@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { DefaultSelection } from '../../lib/api/cxapp/cloud-assembly';
@@ -108,7 +109,6 @@ test('fails if lookups are disabled and missing context is synthesized', async (
   await expect(cloudExecutable.synthesize()).rejects.toThrow(/Context lookups have been disabled/);
 });
 
-
 async function testCloudExecutable({ env, versionReporting = true }: { env?: string, versionReporting?: boolean } = {}) {
   const cloudExec = new MockCloudExecutable({
     stacks: [{
@@ -134,7 +134,6 @@ async function testCloudExecutable({ env, versionReporting = true }: { env?: str
 
   return cloudExec;
 }
-
 
 async function withFakeCurrentCxVersion<A>(version: string, block: () => Promise<A>): Promise<A> {
   const currentVersionFn = cxschema.Manifest.version;

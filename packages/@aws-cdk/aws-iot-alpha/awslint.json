@@ -1,0 +1,5 @@
+{
+  "exclude": [
+    "no-unused-type:@aws-cdk/aws-iot-alpha.ActionConfig"
+  ]
+}

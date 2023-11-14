@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.Grafana"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.grafana"
+    },
+    "python": {
+      "module": "aws_cdk.aws_grafana"
+    }
+  }
+}

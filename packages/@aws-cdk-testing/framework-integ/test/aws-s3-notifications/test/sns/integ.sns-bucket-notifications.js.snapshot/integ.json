@@ -1,0 +1,14 @@
+{
+  "version": "22.0.0",
+  "testCases": {
+    "integ.sns-bucket-notifications": {
+      "stacks": [
+        "sns-bucket-notifications"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

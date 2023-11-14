@@ -1,0 +1,234 @@
+{
+ "Resources": {
+  "HttpApiCall5c7406415c21459755238de5e3d1af86": {
+   "Type": "Custom::DeployAssert@HttpCall",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "parameters": {
+     "url": {
+      "Fn::Join": [
+       "",
+       [
+        "https://",
+        {
+         "Fn::ImportValue": "integ-apigw-domain-name-mapping:ExportsOutputRefIntegDomain624DF323D17B7540"
+        },
+        "/orders/v1/items"
+       ]
+      ]
+     },
+     "fetchOptions": {}
+    },
+    "expected": "{\"$ObjectLike\":{\"body\":{\"message\":\"Hello, world\"},\"ok\":true,\"status\":201}}",
+    "salt": "1687522738197"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs14.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "939278de4f3903a6b4bdb449b0e6f69208d04d53be21684b360f6410e8416231.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "HttpApiCall87249be5ff18205c5f4320c2baec9418": {
+   "Type": "Custom::DeployAssert@HttpCall",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "parameters": {
+     "url": {
+      "Fn::Join": [
+       "",
+       [
+        "https://",
+        {
+         "Fn::ImportValue": "integ-apigw-domain-name-mapping:ExportsOutputRefIntegDomain624DF323D17B7540"
+        },
+        "/orders/v2/items"
+       ]
+      ]
+     },
+     "fetchOptions": {}
+    },
+    "expected": "{\"$ObjectLike\":{\"body\":{\"message\":\"Hello, world\"},\"ok\":true,\"status\":202}}",
+    "salt": "1687522738198"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "HttpApiCall39df1b9413ee8ef1155877d35e1a132f": {
+   "Type": "Custom::DeployAssert@HttpCall",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "parameters": {
+     "url": {
+      "Fn::Join": [
+       "",
+       [
+        "https://",
+        {
+         "Fn::ImportValue": "integ-apigw-domain-name-mapping:ExportsOutputRefInteg2Domain70CCEA688A08551F"
+        },
+        "/orders/items"
+       ]
+      ]
+     },
+     "fetchOptions": {}
+    },
+    "expected": "{\"$ObjectLike\":{\"body\":{\"message\":\"Hello, world\"},\"ok\":true,\"status\":201}}",
+    "salt": "1687522738198"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "HttpApiCallbfb4c2986471eaae77943449a0ea25f6": {
+   "Type": "Custom::DeployAssert@HttpCall",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "parameters": {
+     "url": {
+      "Fn::Join": [
+       "",
+       [
+        "https://",
+        {
+         "Fn::ImportValue": "integ-apigw-domain-name-mapping:ExportsOutputRefInteg2Domain70CCEA688A08551F"
+        },
+        "/orders/v2/items"
+       ]
+      ]
+     },
+     "fetchOptions": {}
+    },
+    "expected": "{\"$ObjectLike\":{\"body\":{\"message\":\"Hello, world\"},\"ok\":true,\"status\":202}}",
+    "salt": "1687522738198"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsHttpApiCall5c7406415c21459755238de5e3d1af86": {
+   "Value": {
+    "Fn::GetAtt": [
+     "HttpApiCall5c7406415c21459755238de5e3d1af86",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsHttpApiCall87249be5ff18205c5f4320c2baec9418": {
+   "Value": {
+    "Fn::GetAtt": [
+     "HttpApiCall87249be5ff18205c5f4320c2baec9418",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsHttpApiCall39df1b9413ee8ef1155877d35e1a132f": {
+   "Value": {
+    "Fn::GetAtt": [
+     "HttpApiCall39df1b9413ee8ef1155877d35e1a132f",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsHttpApiCallbfb4c2986471eaae77943449a0ea25f6": {
+   "Value": {
+    "Fn::GetAtt": [
+     "HttpApiCallbfb4c2986471eaae77943449a0ea25f6",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,177 @@
+{
+  "version": "34.0.0",
+  "artifacts": {
+    "aws-cdk-lambda-1.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-lambda-1.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-lambda-1": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-lambda-1.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/669e224258e7bbd01b117f2d2eb1059d8d6b1ba239210288523d574a6a800b0d.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-lambda-1.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-lambda-1.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-lambda-1/MyLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaServiceRole4539ECB6"
+          }
+        ],
+        "/aws-cdk-lambda-1/MyLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaCCE802FB"
+          }
+        ],
+        "/aws-cdk-lambda-1/MyRestApi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApi2D1F47A9"
+          }
+        ],
+        "/aws-cdk-lambda-1/MyRestApi/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiDeploymentB555B582f86f07eb1bf053df446e77125b5ae767"
+          }
+        ],
+        "/aws-cdk-lambda-1/MyRestApi/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiDeploymentStageprodC33B8E5F"
+          }
+        ],
+        "/aws-cdk-lambda-1/MyRestApi/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiEndpoint4C55E4CB"
+          }
+        ],
+        "/aws-cdk-lambda-1/MyRestApi/Default/GET/ApiPermission.awscdklambda1MyRestApi20890E8F.GET..": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiGETApiPermissionawscdklambda1MyRestApi20890E8FGET6B62C72C"
+          }
+        ],
+        "/aws-cdk-lambda-1/MyRestApi/Default/GET/ApiPermission.Test.awscdklambda1MyRestApi20890E8F.GET..": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiGETApiPermissionTestawscdklambda1MyRestApi20890E8FGETB5733BDE"
+          }
+        ],
+        "/aws-cdk-lambda-1/MyRestApi/Default/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiGETE3827D1C"
+          }
+        ],
+        "/aws-cdk-lambda-1/MyRestApi/Default/POST/ApiPermission.awscdklambda1MyRestApi20890E8F.POST..": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiPOSTApiPermissionawscdklambda1MyRestApi20890E8FPOST70683B77"
+          }
+        ],
+        "/aws-cdk-lambda-1/MyRestApi/Default/POST/ApiPermission.Test.awscdklambda1MyRestApi20890E8F.POST..": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiPOSTApiPermissionTestawscdklambda1MyRestApi20890E8FPOST931BCBA1"
+          }
+        ],
+        "/aws-cdk-lambda-1/MyRestApi/Default/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiPOST2EE84297"
+          }
+        ],
+        "/aws-cdk-lambda-1/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-lambda-1/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-lambda-1"
+    },
+    "LambdaTestDefaultTestDeployAssert1AF2B360.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "LambdaTestDefaultTestDeployAssert1AF2B360.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "LambdaTestDefaultTestDeployAssert1AF2B360": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "LambdaTestDefaultTestDeployAssert1AF2B360.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "LambdaTestDefaultTestDeployAssert1AF2B360.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "LambdaTestDefaultTestDeployAssert1AF2B360.assets"
+      ],
+      "metadata": {
+        "/LambdaTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/LambdaTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "LambdaTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

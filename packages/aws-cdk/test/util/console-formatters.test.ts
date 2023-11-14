@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import * as chalk from 'chalk';
 import { formatAsBanner } from '../../lib/util/console-formatters';
 

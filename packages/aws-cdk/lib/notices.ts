@@ -137,7 +137,7 @@ export class WebsiteNoticeDataSource implements NoticeDataSource {
                   }
                   debug('Notices refreshed');
                   resolve(data ?? []);
-                } catch (e) {
+                } catch (e: any) {
                   reject(new Error(`Failed to parse notices: ${e.message}`));
                 }
               });
@@ -149,7 +149,7 @@ export class WebsiteNoticeDataSource implements NoticeDataSource {
             }
           });
         req.on('error', reject);
-      } catch (e) {
+      } catch (e: any) {
         reject(new Error(`HTTPS 'get' call threw an error: ${e.message}`));
       }
     });

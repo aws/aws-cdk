@@ -38,16 +38,16 @@
   },
   "devDependencies": {
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.5.2",
-    "@types/node": "^14.18.33",
-    "@types/semver": "^7.3.13",
-    "@types/yarnpkg__lockfile": "^1.1.5",
-    "jest": "^27.5.1",
-    "typescript": "~3.9.10"
+    "@types/jest": "^29.5.8",
+    "@types/node": "18.11.19",
+    "@types/semver": "^7.5.5",
+    "@types/yarnpkg__lockfile": "^1.1.9",
+    "jest": "^29.7.0",
+    "typescript": "~5.1.6"
   },
   "dependencies": {
     "@yarnpkg/lockfile": "^1.1.0",
-    "semver": "^7.3.8"
+    "semver": "^7.5.4"
   },
   "keywords": [
     "aws",

@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.stepfunctions"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.StepFunctions"
+    },
+    "python": {
+      "module": "aws_cdk.aws_stepfunctions"
+    }
+  }
+}

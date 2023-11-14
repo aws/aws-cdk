@@ -1,0 +1,29 @@
+{
+  "Conditions": {
+    "ValcacheServerEnabled": true
+  },
+  "Resources": {
+    "TxAutoScalingGroup": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "Properties": {
+        "MinSize": "1",
+        "MaxSize": "3",
+        "Tags": [
+          {
+            "Fn::If": [
+              "ValcacheServerEnabled",
+              {
+                "Key": "datomic:cache-group",
+                "Value": "SystemName",
+                "PropagateAtLaunch": true
+              },
+              {
+                "Ref": "AWS::NoValue"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

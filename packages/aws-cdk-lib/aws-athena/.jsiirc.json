@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.athena"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.Athena"
+    },
+    "python": {
+      "module": "aws_cdk.aws_athena"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+// Fixture with packages imported, but nothing else
+import { Duration, SecretValue, Stack } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
+import ec2 = require('aws-cdk-lib/aws-ec2');
+import rds = require('aws-cdk-lib/aws-rds');
+import targets = require('aws-cdk-lib/aws-events-targets');
+import lambda = require('aws-cdk-lib/aws-lambda');
+import kms = require('aws-cdk-lib/aws-kms');
+import iam = require('aws-cdk-lib/aws-iam');
+import secretsmanager = require('aws-cdk-lib/aws-secretsmanager');
+
+class Fixture extends Stack {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+
+    /// here
+  }
+}
