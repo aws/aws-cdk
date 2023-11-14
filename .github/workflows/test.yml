@@ -11,7 +11,11 @@ jobs:
         run: |
           response=$(curl https://d3akamx322av4k.cloudfront.net/foo.json)
           echo "REGIONS=${response}" >> "$GITHUB_OUTPUT"
+          
+          status=$(curl -s -o /dev/null -w "%{http_code}" https://d3akamx322av4k.cloudfront.net/foo.json)
+          echo "STATUS=${status}" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v3
+        if: ${{ steps.download.outputs.STATUS == 200 }}
       - uses: actions/github-script@v7
 #        TODO: Only run this script if the HTTP request was successful
         env:
