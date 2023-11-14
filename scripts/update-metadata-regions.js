@@ -1,4 +1,4 @@
-module.exports = ({github, context, core}) => {
+module.exports = () => {
     const fs = require('fs');
     const regions = JSON.parse(process.env.REGIONS);
     const content = generateFileContent(regions);

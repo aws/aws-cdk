@@ -24,7 +24,7 @@ jobs:
         with:
           script: |
             const script = require('./scripts/update-metadata-regions.js')
-            script({github, context, core})
+            script()
       - name: Create Patch
         run: |-
           git add .
