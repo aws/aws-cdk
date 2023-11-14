@@ -1243,14 +1243,15 @@ export class TaskDefinitionRevision {
   /**
    * The most recent revision of a task
    */
-  static latest() {
-    return new TaskDefinitionRevision('latest');
-  }
+  public static readonly LATEST = new TaskDefinitionRevision('latest');
 
   /**
-   * A specfic numbered revision of a task
+   * Specfic revision of a task
    */
-  static revision(revision: number) {
+  public static of(revision: number) {
+    if (revision < 1) {
+      throw new Error(`A task definition revision must be 'latest' or a positive number, got ${revision}`);
+    }
     return new TaskDefinitionRevision(revision.toString());
   }
 

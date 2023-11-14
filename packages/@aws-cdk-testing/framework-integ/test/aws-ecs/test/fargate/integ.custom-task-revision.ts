@@ -22,13 +22,13 @@ taskDefinition.addContainer('web', {
 new ecs.FargateService(stack, 'FargateServiceFirst', {
   cluster,
   taskDefinition,
-  taskDefinitionRevision: ecs.TaskDefinitionRevision.revision(1),
+  taskDefinitionRevision: ecs.TaskDefinitionRevision.of(1),
 });
 
 new ecs.FargateService(stack, 'FargateServiceLatest', {
   cluster,
   taskDefinition,
-  taskDefinitionRevision: ecs.TaskDefinitionRevision.latest(),
+  taskDefinitionRevision: ecs.TaskDefinitionRevision.LATEST,
 });
 
 new integ.IntegTest(app, 'EcsCustomTaskRevision', {
