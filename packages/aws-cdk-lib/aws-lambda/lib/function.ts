@@ -507,8 +507,8 @@ export class Function extends FunctionBase {
   /**
    * Import a lambda function into the CDK using its ARN.
    *
-   * To be able to add permissions to this imported lambda, make sure that is in the same account
-   * and region as the stack you are importing it into.
+   * For `Function.addPermissions()` to work on this imported lambda, make sure that is
+   * in the same account and region as the stack you are importing it into.
    */
   public static fromFunctionArn(scope: Construct, id: string, functionArn: string): IFunction {
     return Function.fromFunctionAttributes(scope, id, { functionArn });
@@ -518,8 +518,8 @@ export class Function extends FunctionBase {
    * Creates a Lambda function object which represents a function not defined
    * within this stack.
    *
-   * To be able to add permissions, set the sameEnvironment property to true if this imported lambda is
-   * in the same account and region as the stack you are importing it into.
+   * For `Function.addPermissions()` to work on this imported lambda, set the sameEnvironment property to true
+   * if this imported lambda is in the same account and region as the stack you are importing it into.
    *
    * @param scope The parent construct
    * @param id The name of the lambda construct
