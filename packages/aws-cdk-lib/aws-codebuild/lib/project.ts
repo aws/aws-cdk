@@ -1364,7 +1364,7 @@ export class Project extends ProjectBase {
     return {
       type: this.buildImage.type,
       image: this.buildImage.imageId,
-      imagePullCredentialsType: this.isLambdaBuildImage(this.buildImage) ? imagePullPrincipalType : undefined,
+      imagePullCredentialsType: this.isLambdaBuildImage(this.buildImage) ? undefined : imagePullPrincipalType,
       registryCredential: secret
         ? {
           credentialProvider: 'SECRETS_MANAGER',
