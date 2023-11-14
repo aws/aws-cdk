@@ -1,7 +1,7 @@
 
 module.exports = async ({github, context, core}) => {
     const fs = require('fs');
-    const regions = process.env.REGIONS;
+    const regions = JSON.parse(process.env.REGIONS);
     console.log(generate(regions));
     const content = fs.readFileSync('./notices.json');
     //
