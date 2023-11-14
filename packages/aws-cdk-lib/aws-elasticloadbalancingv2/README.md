@@ -237,7 +237,7 @@ declare const sg: ec2.ISecurityGroup;
 const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
   vpc,
   internetFacing: true,
-  sg: [sg],
+  securityGroups: [sg],
 });
 
 // Add a listener on a particular port.
