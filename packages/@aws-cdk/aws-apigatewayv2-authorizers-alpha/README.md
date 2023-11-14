@@ -39,9 +39,9 @@ API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-acces
 
 ## HTTP APIs
 
-Access control for Http Apis is managed by restricting which routes can be invoked via.
+Access control for Http APIs is managed by restricting which routes can be invoked via.
 
-Authorizers and scopes can either be applied to the api, or specifically for each route.
+Authorizers and scopes can either be applied to the API, or specifically for each route.
 
 ### Default Authorization
 
@@ -150,7 +150,7 @@ api.addRoutes({
 
 #### User Pool Authorizer
 
-User Pool Authorizer is a type of JWT Authorizer that uses a Cognito user pool and app client to control who can access your Api. After a successful authorization from the app client, the generated access token will be used as the JWT.
+User Pool Authorizer is a type of JWT Authorizer that uses a Cognito user pool and app client to control who can access your API. After a successful authorization from the app client, the generated access token will be used as the JWT.
 
 Clients accessing an API that uses a user pool authorizer must first sign in to a user pool and obtain an identity or access token.
 They must then use this token in the specified `identitySource` for the API call. More information is available at [using Amazon Cognito user
