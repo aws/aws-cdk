@@ -1,4 +1,3 @@
-
 module.exports = async ({github, context, core}) => {
     const fs = require('fs');
     const regions = JSON.parse(process.env.REGIONS);
