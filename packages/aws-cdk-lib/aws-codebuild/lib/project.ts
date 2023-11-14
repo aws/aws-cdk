@@ -1341,12 +1341,9 @@ export class Project extends ProjectBase {
       throw new Error('Invalid CodeBuild environment: ' + errors.join('\n'));
     }
 
-    // For Lambda compute, specifying imagePullPrincipalType is not supported
-    const imagePullPrincipalType = this.isLambdaBuildImage(this.buildImage)
-      ? undefined
-      : this.buildImage.imagePullPrincipalType === ImagePullPrincipalType.CODEBUILD
-        ? ImagePullPrincipalType.CODEBUILD
-        : ImagePullPrincipalType.SERVICE_ROLE;
+    const imagePullPrincipalType = this.buildImage.imagePullPrincipalType === ImagePullPrincipalType.CODEBUILD
+      ? ImagePullPrincipalType.CODEBUILD
+      : ImagePullPrincipalType.SERVICE_ROLE;
     if (this.buildImage.repository) {
       if (imagePullPrincipalType === ImagePullPrincipalType.SERVICE_ROLE) {
         this.buildImage.repository.grantPull(this);
@@ -1367,7 +1364,7 @@ export class Project extends ProjectBase {
     return {
       type: this.buildImage.type,
       image: this.buildImage.imageId,
-      imagePullCredentialsType: imagePullPrincipalType,
+      imagePullCredentialsType: this.isLambdaBuildImage(this.buildImage) ? imagePullPrincipalType : undefined,
       registryCredential: secret
         ? {
           credentialProvider: 'SECRETS_MANAGER',
@@ -1591,12 +1588,6 @@ export enum ComputeType {
   LAMBDA_10GB = 'BUILD_LAMBDA_10GB',
 }
 
-// LinuxArmLambdaBuildImage and LinuxLambdaBuildImage reference ComputeType, so these imports should be placed below ComputeType.
-/* eslint-disable no-duplicate-imports, import/order */
-import { LinuxArmLambdaBuildImage } from './linux-arm-lambda-build-image';
-import { LinuxLambdaBuildImage } from './linux-lambda-build-image';
-/* eslint-enable no-duplicate-imports, import/order */
-
 /**
  * The type of principal CodeBuild will use to pull your build Docker image.
  */
@@ -1760,6 +1751,12 @@ interface LinuxBuildImageProps {
 // Keep around to resolve a circular dependency until removing deprecated ARM image constants from LinuxBuildImage
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { LinuxArmBuildImage } from './linux-arm-build-image';
+
+// LinuxArmLambdaBuildImage and LinuxLambdaBuildImage reference ComputeType, so these imports should be placed below ComputeType.
+/* eslint-disable no-duplicate-imports, import/order */
+import { LinuxArmLambdaBuildImage } from './linux-arm-lambda-build-image';
+import { LinuxLambdaBuildImage } from './linux-lambda-build-image';
+/* eslint-enable no-duplicate-imports, import/order */
 
 /**
  * A CodeBuild image running x86-64 Linux.
@@ -1948,7 +1945,7 @@ export class LinuxBuildImage implements IBuildImage {
   public validate(env: BuildEnvironment): string[] {
     const ret = [];
 
-    if (isLambdaComputeType(env.computeType)) {
+    if (env.computeType && isLambdaComputeType(env.computeType)) {
       ret.push('x86-64 images do not support Lambda compute types');
     }
 
@@ -2121,7 +2118,7 @@ export class WindowsBuildImage implements IBuildImage {
     }
 
     if (buildEnvironment.computeType && isLambdaComputeType(buildEnvironment.computeType)) {
-      ret.push('Windows images do not support Lambda compute mode');
+      ret.push('Windows images do not support Lambda compute types');
     }
 
     if (buildEnvironment.computeType === ComputeType.SMALL) {
@@ -2232,7 +2229,7 @@ function isBindableBuildImage(x: unknown): x is IBindableBuildImage {
   return typeof x === 'object' && !!x && !!(x as any).bind;
 }
 
-export function isLambdaComputeType(computeType?: ComputeType): boolean {
+export function isLambdaComputeType(computeType: ComputeType): boolean {
   if (!computeType) return false;
   return [
     ComputeType.LAMBDA_1GB,

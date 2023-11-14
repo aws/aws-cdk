@@ -1660,7 +1660,7 @@ describe('Windows2019 image', () => {
             computeType: codebuild.ComputeType.LAMBDA_1GB,
           },
         });
-      }).toThrow(/Invalid CodeBuild environment: Windows images do not support Lambda compute mode/);
+      }).toThrow(/Invalid CodeBuild environment: Windows images do not support Lambda compute types/);
     });
 
     test('cannot be used in conjunction with privileged property', () => {
