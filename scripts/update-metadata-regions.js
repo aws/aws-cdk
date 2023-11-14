@@ -20,5 +20,5 @@ $REGIONS
 ]);
 `;
 
-    return template.replace('$REGIONS', regions.map(r => `  '${r}'`).join('\n'));
+    return template.replace('$REGIONS', regions.sort().map(r => `  '${r}',`).join('\n'));
 }
