@@ -592,6 +592,28 @@ describe('tests', () => {
     });
   });
 
+  test('Trivial construction: no security groups', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN
+    new elbv2.NetworkLoadBalancer(stack, 'LB', {
+      vpc,
+      internetFacing: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Scheme: 'internet-facing',
+      Subnets: [
+        { Ref: 'StackPublicSubnet1Subnet0AD81D22' },
+        { Ref: 'StackPublicSubnet2Subnet3C7D2288' },
+      ],
+      SecurityGroups: Match.absent(),
+    });
+  });
+
   describe('lookup', () => {
     test('Can look up a NetworkLoadBalancer', () => {
       // GIVEN
@@ -705,7 +727,7 @@ describe('tests', () => {
       });
 
       // THEN
-      expect(nlb.securityGroups).toEqual([]);
+      expect(nlb.securityGroups).toBeUndefined();
     });
   });
 });
