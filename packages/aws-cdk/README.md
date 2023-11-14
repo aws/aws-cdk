@@ -1,4 +1,5 @@
 # AWS CDK Toolkit
+
 <!--BEGIN STABILITY BANNER-->
 
 ---
@@ -9,7 +10,14 @@
 
 <!--END STABILITY BANNER-->
 
+
+
+XUPETA
+
+
+
 The AWS CDK Toolkit provides the `cdk` command-line interface that can be used to work with AWS CDK applications.
+
 
 | Command                               | Description                                                                |
 | ------------------------------------- | -------------------------------------------------------------------------- |
@@ -33,7 +41,6 @@ The AWS CDK Toolkit provides the `cdk` command-line interface that can be used t
 - [SSO Support](#sso-support)
 - [Configuration](#configuration)
   - [Running in CI](#running-in-ci)
-
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
@@ -143,7 +150,6 @@ The `quiet` option can be set in the `cdk.json` file.
 See the [AWS Documentation](https://docs.aws.amazon.com/cdk/latest/guide/apps.html#apps_cloud_assembly) to learn more about cloud assemblies.
 See the [CDK reference documentation](https://docs.aws.amazon.com/cdk/api/latest/docs/cloud-assembly-schema-readme.html) for details on the cloud assembly specification
 
-
 ### `cdk diff`
 
 Computes differences between the infrastructure specified in the current state of the CDK app and the currently
@@ -211,8 +217,7 @@ If you want to deploy all of them, you can use the flag `--all` or the wildcard 
 
 #### Parameters
 
-Pass parameters to your template during deployment by using `--parameters
-(STACK:KEY=VALUE)`. This will apply the value `VALUE` to the key `KEY` for stack `STACK`.
+Pass parameters to your template during deployment by using `--parameters (STACK:KEY=VALUE)`. This will apply the value `VALUE` to the key `KEY` for stack `STACK`.
 
 Example of providing an attribute value for an SNS Topic through a parameter in TypeScript:
 
@@ -301,7 +306,6 @@ Read more about identifiers in the CDK [here](https://docs.aws.amazon.com/cdk/la
 
 If multiple stacks are being deployed or the wild card `*` is used to deploy all stacks, all outputs
 are written to the same output file where each stack artifact ID is a key in the JSON file
-
 
 ```console
 $ cdk deploy '**' --outputs-file "/Users/code/myproject/outputs.json"
@@ -573,18 +577,17 @@ This feature currently has the following limitations:
   bucket). Requires version 12 of the bootstrap stack, for the added
   IAM permissions to the `deploy-role`.
 
-
 ### `cdk migrate`
 
-⚠️**CAUTION**⚠️ 
+⚠️**CAUTION**⚠️
 
-CDK Migrate is currently experimental and may have breaking changes in the future. 
+CDK Migrate is currently experimental and may have breaking changes in the future.
 
-CDK Migrate Generates a CDK application using an existing CloudFormation template in JSON or YAML format. 
+CDK Migrate Generates a CDK application using an existing CloudFormation template in JSON or YAML format.
 Templates can be provided from either from a local file using `--from-path` or directly from a
-deployed CloudFormation stack with `--from-stack`. The generated CDK application will 
-synthesize a CloudFormation template with identical resource configurations to the provided template. 
-The generated application will be initialized in the current working directory with a single stack where 
+deployed CloudFormation stack with `--from-stack`. The generated CDK application will
+synthesize a CloudFormation template with identical resource configurations to the provided template.
+The generated application will be initialized in the current working directory with a single stack where
 the stack, app, and directory will all be named using the provided `--stack-name`. It will also
 be within a generated subdirectory in your current working directory unless `--output-path` is specified.
 If a directory already exists with the same name as `--stack-name`, it will be replaced with the new application.
@@ -597,7 +600,7 @@ $ # template.json is a valid cloudformation template in the local directory
 $ cdk migrate --stack-name MyAwesomeApplication --language typescript --from-path MyTemplate.json
 ```
 
-This command will generate a new directory named `MyAwesomeApplication` within your current working directory, and  
+This command will generate a new directory named `MyAwesomeApplication` within your current working directory, and
 then initialize a new CDK application within that directory which has the same resource configuration
 as the provided template.json
 
@@ -618,7 +621,7 @@ with the same resource configuration as the provided template.json.
 
 #### Generate a python application from a deployed stack
 
-If you already have a CloudFormation stack deployed in your account and would like to manage it with CDK, you can use the 
+If you already have a CloudFormation stack deployed in your account and would like to manage it with CDK, you can use the
 `--from-stack` option to generate the application. In this case the `--stack-name` must match the name of the deployed stack.
 
 ```console
@@ -631,40 +634,37 @@ This will generate a Python CDK application which will synthesize the same confi
 #### **CDK Migrate Limitations**
 
 - CDK Migrate does not currently support nested stacks, custom resources, or the `Fn::ForEach` intrinsic function.
-
 - CDK Migrate will only generate L1 constructs and does not currently support any higher level abstractions.
-
 - CDK Migrate successfully generating an application does *not* guarantee the application is immediately deployable.
-It simply generates a CDK application which will synthesize a template that has identical resource configurations 
-to the provided template. 
+  It simply generates a CDK application which will synthesize a template that has identical resource configurations
+  to the provided template.
 
-  - CDK Migrate does not interact with the CloudFormation service to verify the template 
-provided can deploy on its own. This means CDK Migrate will not verify that any resources in the provided 
-template are already managed in other CloudFormation templates, nor will it verify that the resources in the provided
-template are available in the desired regions, which may impact ADC or Opt-In regions. 
-
+  - CDK Migrate does not interact with the CloudFormation service to verify the template
+    provided can deploy on its own. This means CDK Migrate will not verify that any resources in the provided
+    template are already managed in other CloudFormation templates, nor will it verify that the resources in the provided
+    template are available in the desired regions, which may impact ADC or Opt-In regions.
   - If the provided template has parameters without default values, those will need to be provided
-before deploying the generated application.
+    before deploying the generated application.
 
 In practice this is how CDK Migrate generated applications will operate in the following scenarios:
 
-| Situation                                                                                         | Result                                                                        |
-| ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| Provided template + stack-name is from a deployed stack in the account/region                     | The CDK application will deploy as a changeset to the existing stack          |
-| Provided template has no overlap with resources already in the account/region                     | The CDK application will deploy a new stack successfully                      |
-| Provided template has overlap with Cloudformation managed resources already in the account/region | The CDK application will not be deployable unless those resources are removed |
-| Provided template has overlap with unmanaged resources already in the account/region              | The CDK application will not be deployable until those resources are adopted with [`cdk import`](#cdk-import) |
 
+| Situation                                                                                         | Result                                                                                                       |
+| ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Provided template + stack-name is from a deployed stack in the account/region                     | The CDK application will deploy as a changeset to the existing stack                                         |
+| Provided template has no overlap with resources already in the account/region                     | The CDK application will deploy a new stack successfully                                                     |
+| Provided template has overlap with Cloudformation managed resources already in the account/region | The CDK application will not be deployable unless those resources are removed                                |
+| Provided template has overlap with unmanaged resources already in the account/region              | The CDK application will not be deployable until those resources are adopted with[`cdk import`](#cdk-import) |
 
 ##### **The provided template is already deployed to CloudFormation in the account/region**
 
-If the provided template came directly from a deployed CloudFormation stack, and that stack has not experienced any drift, 
+If the provided template came directly from a deployed CloudFormation stack, and that stack has not experienced any drift,
 then the generated application will be immediately deployable, and will not cause any changes to the deployed resources.
 Drift might occur if a resource in your template was modified outside of CloudFormation, namely via the AWS Console or AWS CLI.
 
 ##### **The provided template is not deployed to CloudFormation in the account/region, and there *is not* overlap with existing resources in the account/region**
 
-If the provided template represents a set of resources that have no overlap with resources already deployed in the account/region, 
+If the provided template represents a set of resources that have no overlap with resources already deployed in the account/region,
 then the generated application will be immediately deployable. This could be because the stack has never been deployed, or
 the application was generated from a stack deployed in another account/region.
 
@@ -681,16 +681,16 @@ In practice this means for any resource in the provided template, for example,
     }
 ```
 
-There must not exist a resource of that type with the same identifier in the desired region. In this example that identfier 
+There must not exist a resource of that type with the same identifier in the desired region. In this example that identfier
 would be "MyBucket"
 
 ##### **The provided template is not deployed to CloudFormation in the account/region, and there *is* overlap with existing resources in the account/region**
 
-If the provided template represents a set of resources that overlap with resources already deployed in the account/region, 
-then the generated application will not be immediately deployable. If those overlapped resources are already managed by 
+If the provided template represents a set of resources that overlap with resources already deployed in the account/region,
+then the generated application will not be immediately deployable. If those overlapped resources are already managed by
 another CloudFormation stack in that account/region, then those resources will need to be manually removed from the provided
 template. Otherwise, if the overlapped resources are not managed by another CloudFormation stack, then first remove those
-resources from your CDK Application Stack, deploy the cdk application successfully, then re-add them and run `cdk import` 
+resources from your CDK Application Stack, deploy the cdk application successfully, then re-add them and run `cdk import`
 to import them into your deployed stack.
 
 ### `cdk destroy`
@@ -755,7 +755,7 @@ use the `--no-previous-parameters` CLI flag to change any of these parameters on
 future deployments.
 
 > **Note** Please note that when you use this flag, you must resupply
->*all* previously supplied parameters.
+> *all* previously supplied parameters.
 
 For example if you bootstrap with a custom permissions boundary
 
@@ -827,7 +827,6 @@ You can suppress warnings in a variety of ways:
 - per individual execution:
 
   `cdk deploy --no-notices`
-
 - disable all notices indefinitely through context in `cdk.json`:
 
   ```json
@@ -838,7 +837,6 @@ You can suppress warnings in a variety of ways:
     }
   }
   ```
-
 - acknowledging individual notices via `cdk acknowledge` (see below).
 
 ### `cdk acknowledge`
@@ -853,7 +851,6 @@ $cdk acknowledge 16603
 > Please note that the acknowledgements are made project by project. If you acknowledge an notice in one CDK
 > project, it will still appear on other projects when you run any CDK commands, unless you have suppressed
 > or disabled notices.
-
 
 ### `cdk notices`
 
@@ -973,4 +970,4 @@ And, update the `tsconfig.json` file to add the `ts-node` property.
 }
 ```
 
-The documentation may be found at <https://typestrong.org/ts-node/docs/swc/>
+The documentation may be found at [https://typestrong.org/ts-node/docs/swc/](https://typestrong.org/ts-node/docs/swc/)
