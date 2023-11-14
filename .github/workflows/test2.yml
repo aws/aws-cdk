@@ -12,24 +12,21 @@ jobs:
   # Event `pull_request`: Compare the last commit of the main branch or last remote commit of the PR branch -> to the current commit of a PR branch.
   # ------------------------------------------------------------------------------------------------------------------------------------------------
   changed_files:
-    runs-on: ubuntu-latest  # windows-latest || macos-latest
+    runs-on: ubuntu-latest
     name: Test changed-files
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # OR "2" -> To retrieve the preceding commit.
+          fetch-depth: 0
 
-      # Example 1
       - name: Get changed files
         id: changed-files
         uses: tj-actions/changed-files@v40
 
-        # To compare changes between the current commit and the last pushed remote commit set `since_last_remote_commit: true`. e.g
-        # with:
-        #   since_last_remote_commit: true
-
       - name: List all changed files
+#        if: ${{ github.event.pull_request.user.login !=  }}
         run: |
+          echo ${{ github.event.pull_request.user.login }};
           for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
             echo "$file was changed"
           done
