@@ -2,12 +2,14 @@ on: push
 
 jobs:
   update-regions:
+    name: Update Regions
     runs-on: ubuntu-latest
     steps:
       - name: Download regions
         id: download
         run: |
-          response=$(curl https://d3akamx322av4k.cloudfront.net/regions.json)
+#          TODO: Use the prod URL
+          response=$(curl https://d3akamx322av4k.cloudfront.net/foo.json)
           echo "REGIONS=${response}" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v3
       - uses: actions/github-script@v7
@@ -52,17 +54,17 @@ jobs:
         uses: peter-evans/create-pull-request@v5
         with:
           # Git commit details
-          branch: automation/spec-update
+          branch: automation/region-update
 #          TODO: use aws-cdk-automation as the author
           author: otaviomacedo <288203+otaviomacedo@users.noreply.github.com>
 #          author: aws-cdk-automation <aws-cdk-automation@users.noreply.github.com>
           commit-message: |-
-            feat: update AWS Service Spec
-            AWS Service Spec packages to latest versions.
+            feat: update Metadata regions
+            Update the list of regions where the CDK deploys the `AWS::CDK::Metadata` resource.
           # Pull Request details
-          title: "feat: update AWS Service Spec"
+          title: "feat: update Metadata regions"
           body: |-
-            AWS Service Spec packages to latest versions.
+            Update the list of regions where the CDK deploys the `AWS::CDK::Metadata` resource.
 #            TODO: uncomment the labels and team-reviewers
 #          labels: contribution/core,dependencies,auto-approve,pr-linter/exempt-integ-test,pr-linter/exempt-readme,pr-linter/exempt-test
 #          team-reviewers: aws-cdk-team
