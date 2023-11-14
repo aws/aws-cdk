@@ -105,6 +105,11 @@ export class Runtime {
   public static readonly NODEJS_18_X = new Runtime('nodejs18.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
   /**
+   * The NodeJS 20.x runtime (nodejs20.x)
+   */
+  public static readonly NODEJS_20_X = new Runtime('nodejs20.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
+
+  /**
    * The latest NodeJS version currently available
    */
   public static readonly NODEJS_LATEST = new Runtime('nodejs18.x', RuntimeFamily.NODEJS, { supportsInlineCode: true, isVariable: true });
@@ -163,6 +168,14 @@ export class Runtime {
    * The Python 3.11 runtime (python3.11)
    */
   public static readonly PYTHON_3_11 = new Runtime('python3.11', RuntimeFamily.PYTHON, {
+    supportsInlineCode: true,
+    supportsCodeGuruProfiling: true,
+  });
+
+  /**
+   * The Python 3.12 runtime (python3.12)
+   */
+  public static readonly PYTHON_3_12 = new Runtime('python3.12', RuntimeFamily.PYTHON, {
     supportsInlineCode: true,
     supportsCodeGuruProfiling: true,
   });
