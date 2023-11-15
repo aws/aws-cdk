@@ -40,20 +40,20 @@
     "Code": {
      "ZipFile": "foo"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "LambdaServiceRoleA8ED4D3B",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "LambdaServiceRoleA8ED4D3B"
    ]
   },
-  "LambdaCurrentVersionDF706F6A9a632a294ae3a9cd4d550f1c4e26619d": {
+  "LambdaCurrentVersionDF706F6Aceabca74f785ac2be6cd5e57eeaf3b05": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -64,11 +64,11 @@
   "LambdaParameterCDCFFB68": {
    "Type": "AWS::SSM::Parameter",
    "Properties": {
+    "Name": "/cdk/EdgeFunctionArn/eu-west-1/integ-distribution-lambda-cross-region/Lambda",
     "Type": "String",
     "Value": {
-     "Ref": "LambdaCurrentVersionDF706F6A9a632a294ae3a9cd4d550f1c4e26619d"
-    },
-    "Name": "/cdk/EdgeFunctionArn/eu-west-1/integ-distribution-lambda-cross-region/Lambda"
+     "Ref": "LambdaCurrentVersionDF706F6Aceabca74f785ac2be6cd5e57eeaf3b05"
+    }
    }
   },
   "LambdaAliaslive79C8A712": {
@@ -79,12 +79,46 @@
     },
     "FunctionVersion": {
      "Fn::GetAtt": [
-      "LambdaCurrentVersionDF706F6A9a632a294ae3a9cd4d550f1c4e26619d",
+      "LambdaCurrentVersionDF706F6Aceabca74f785ac2be6cd5e57eeaf3b05",
       "Version"
      ]
     },
     "Name": "live"
    }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
   }
  }
 }
