@@ -3,14 +3,14 @@ import { Runtime, RuntimeFamily } from '../../../aws-lambda';
 
 export abstract class LatestRuntime {
   public static fromNodejsRuntimes(runtimes: Runtime[]) {
-    return LatestRuntime.fromRuntimes(runtimes, RuntimeFamily.NODEJS);
+    return LatestRuntime.fromRuntimeFamily(runtimes, RuntimeFamily.NODEJS);
   }
 
   public static fromPythonRuntimes(runtimes: Runtime[]) {
-    return LatestRuntime.fromRuntimes(runtimes, RuntimeFamily.PYTHON);
+    return LatestRuntime.fromRuntimeFamily(runtimes, RuntimeFamily.PYTHON);
   }
 
-  public static fromRuntimes(runtimes: Runtime[], family?: RuntimeFamily) {
+  public static fromRuntimeFamily(runtimes: Runtime[], family?: RuntimeFamily) {
     const runtimesLength = runtimes.length;
     if (runtimesLength === 0) {
       throw new Error('You must specify at least one runtime');
