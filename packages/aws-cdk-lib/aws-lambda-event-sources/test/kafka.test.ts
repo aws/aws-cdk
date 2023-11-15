@@ -2,6 +2,7 @@ import { TestFunction } from './test-function';
 import { Template, Match } from '../../assertions';
 import { SecurityGroup, SubnetType, Vpc } from '../../aws-ec2';
 import * as lambda from '../../aws-lambda';
+import { Bucket } from '../../aws-s3';
 import { Secret } from '../../aws-secretsmanager';
 import * as cdk from '../../core';
 import * as sources from '../lib';
@@ -172,6 +173,36 @@ describe('KafkaEventSource', () => {
       });
     });
 
+    test('with s3 onfailure destination', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const testLambdaFunction = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+      const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
+      const s3OnFailureDestination = new sources.S3OnFailureDestination(bucket);
+
+      // WHEN
+      testLambdaFunction.addEventSource(new sources.ManagedKafkaEventSource(
+        {
+          clusterArn,
+          topic: kafkaTopic,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          onFailure: s3OnFailureDestination,
+        }));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        DestinationConfig: {
+          OnFailure: {
+            Destination: {
+              'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket']],
+            },
+          },
+        },
+      });
+    });
+
   });
 
   describe('self-managed kafka', () => {
@@ -299,6 +330,37 @@ describe('KafkaEventSource', () => {
           }));
       }).toThrow(/secret must be set/);
 
+    });
+
+    test('with s3 onFailure Destination', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const testLambdaFunction = new TestFunction(stack, 'Fn');
+      const kafkaTopic = 'some-topic';
+      const bootstrapServers = ['kafka-broker:9092'];
+      const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
+      const s3OnFailureDestination = new sources.S3OnFailureDestination(bucket);
+
+      // WHEN
+      testLambdaFunction.addEventSource(new sources.SelfManagedKafkaEventSource(
+        {
+          bootstrapServers: bootstrapServers,
+          topic: kafkaTopic,
+          secret: new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' }),
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          onFailure: s3OnFailureDestination,
+        }));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        DestinationConfig: {
+          OnFailure: {
+            Destination: {
+              'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket']],
+            },
+          },
+        },
+      });
     });
 
     describe('vpc', () => {
