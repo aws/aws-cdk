@@ -1,7 +1,7 @@
 import * as semver from 'semver';
 import { Construct } from 'constructs';
 import { Function, FunctionOptions, Runtime } from '../../../aws-lambda';
-import { CdkCode } from './cdk-handler';
+import { CdkCode } from './cdk-code';
 import { Lazy } from '../../../core';
 
 /**
