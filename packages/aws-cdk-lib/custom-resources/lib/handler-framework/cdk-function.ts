@@ -1,6 +1,8 @@
 import { Construct } from 'constructs';
 import { Function, FunctionOptions, Runtime } from '../../../aws-lambda';
 import { CdkHandler } from './cdk-handler';
+import { Lazy } from '../../../core';
+import { LatestRuntime } from './latest-runtime';
 
 /**
  *
@@ -13,22 +15,28 @@ export interface CdkFunctionProps extends FunctionOptions {
 }
 
 export class CdkFunction extends Function {
-  private static readonly PREVIOUS_RUNTIME = Runtime.NODEJS_16_X;
-  private static readonly DEFAULT_RUNTIME = Runtime.NODEJS_18_X;
+  private static readonly DEFAULT_RUNTIME = Runtime.NODEJS_LATEST;
 
   public constructor(scope: Construct, id: string, props: CdkFunctionProps) {
     super(scope, id, {
-      runtime: CdkFunction.DEFAULT_RUNTIME,
+      runtime: Lazy.any(
+        { produce: () => this.determineRuntime(props.cdkHandler.compatibleRuntimes) },
+      ) as unknown as Runtime,
       code: props.cdkHandler.code,
       handler: props.cdkHandler.handler,
       ...props,
     });
-    this.validateCompatibleRuntimes(props.cdkHandler.compatibleRuntimes);
   }
 
-  private validateCompatibleRuntimes (compatibleRuntime: Runtime[]) {
-    if (!compatibleRuntime.includes(CdkFunction.DEFAULT_RUNTIME) || !compatibleRuntime.includes(CdkFunction.PREVIOUS_RUNTIME)) {
-      throw new Error();
+  private determineRuntime(compatibleRuntimes: Runtime[]) {
+    if (compatibleRuntimes.length < 1) {
+      throw new Error('`cdkHandler` must specify at least 1 compatible runtime');
     }
+
+    if (compatibleRuntimes.some(runtime => runtime.runtimeEquals(CdkFunction.DEFAULT_RUNTIME))) {
+      return CdkFunction.DEFAULT_RUNTIME;
+    }
+
+    LatestRuntime.fromNodejsRuntimes(compatibleRuntimes);
   }
 }
