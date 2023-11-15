@@ -66,9 +66,9 @@ export interface CodeCommitSourceVariables {
  * @see https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_events_targets-readme.html
  */
 export interface ICustomEventRule {
-  /** @see https://docs.aws.amazon.com/codecommit/latest/userguide/monitoring-events.html */
+  /** event pattern when this rule should be triggered */
   eventPattern: EventPattern;
-  /** @see https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_events_targets-readme.html */
+  /** Target e.g. Lambda when event pattern is fulfilled */
   target: IRuleTarget
 }
 
@@ -123,7 +123,7 @@ export interface CodeCommitSourceActionProps extends codepipeline.CommonAwsActio
    * You can pass a `customEventRule` to set up a custom event rule for the CodeCommit source action.
    * You must put the `eventPattern` and `target` properties in the `customEventRule` object.
    * Check what `eventPattern` to put: https://docs.aws.amazon.com/codecommit/latest/userguide/monitoring-events.html
-   * @default undefined
+   * @default Event rule which is triggered by CodeCommit repository on commit
    */
   readonly customEventRule?: ICustomEventRule
 }

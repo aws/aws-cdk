@@ -111,10 +111,12 @@ const eventPattern = {
     referenceName: ['master'],
   },
 };
-
+declare const repo: codecommit.Repository;
+const sourceOutput = new codepipeline.Artifact();
 const sourceAction = new codepipeline_actions.CodeCommitSourceAction({
   actionName: 'CodeCommit',
   repository: repo,
+  output: sourceOutput,
   customEventRule: {
     eventPattern,
     target: new LambdaFunction(new Function(stack, 'TestFunction', {
