@@ -34,10 +34,10 @@ export interface CfnResourceProps {
  */
 export class CfnResource extends CfnRefElement {
   /**
-   * Check whether the given construct is a CfnResource
+   * Check whether the given object is a CfnResource
    */
-  public static isCfnResource(construct: IConstruct): construct is CfnResource {
-    return (construct as any).cfnResourceType !== undefined;
+  public static isCfnResource(x: any): x is CfnResource {
+    return x !== null && typeof(x) === 'object' && x.cfnResourceType !== undefined;
   }
 
   // MAINTAINERS NOTE: this class serves as the base class for the generated L1
