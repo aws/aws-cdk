@@ -38,7 +38,7 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
    * The runtime environment. Only runtimes of the Node.js family are
    * supported.
    *
-   * @default Check if the feature flag is enabled and default to NODEJS_LATEST if so. Otherwise default to NODEJS_16_X.
+   * @default `Runtime.NODEJS_LATEST` if the `@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion` feature flag is enabled, otherwise `Runtime.NODEJS_16_X`
    */
   readonly runtime?: lambda.Runtime;
 
