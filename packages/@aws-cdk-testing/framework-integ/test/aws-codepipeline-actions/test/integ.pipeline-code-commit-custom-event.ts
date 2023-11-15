@@ -10,7 +10,7 @@ import { Code, Runtime, Function } from 'aws-cdk-lib/aws-lambda';
 const defaultBranchFeatureFlag = { [CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME]: true };
 const app = new cdk.App({ postCliContext: defaultBranchFeatureFlag });
 
-const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-codecommit-main');
+const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-codecommit-custom-event');
 
 const repo = new codecommit.Repository(stack, 'MyRepo', {
   repositoryName: 'my-repo',
