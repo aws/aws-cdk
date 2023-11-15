@@ -74,6 +74,11 @@
            "Arn"
           ]
          }
+        },
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
         }
        },
        "Effect": "Allow",
@@ -113,6 +118,11 @@
            "Arn"
           ]
          }
+        },
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
         }
        },
        "Effect": "Allow",
@@ -133,6 +143,11 @@
            "Bucket25524B414",
            "Arn"
           ]
+         }
+        },
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
          }
         }
        },
@@ -163,6 +178,11 @@
             }
            ]
           ]
+         }
+        },
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
          }
         }
        },
