@@ -306,7 +306,6 @@ const clusterArn = 'arn:aws:kafka:us-east-1:0123456789019:cluster/SalesCluster/a
 // The Kafka topic you want to subscribe to
 const topic = 'some-cool-topic';
 
-declare const myFunction: lambda.Function;
 declare const bucket = s3.Bucket;
 
 const s3OnFailureDestination = new sources.S3OnFailureDestination(bucket);
@@ -315,11 +314,6 @@ myFunction.addEventSource(new ManagedKafkaEventSource({
   clusterArn,
   topic,
   startingPosition: lambda.StartingPosition.TRIM_HORIZON,
-  filters: [
-    lambda.FilterCriteria.filter({
-      stringEquals: lambda.FilterRule.isEqual('test'),
-    }),
-  ],
   onFailure: s3OnFailureDestination,
 }));
 ```
