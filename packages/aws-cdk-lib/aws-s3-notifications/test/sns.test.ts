@@ -42,6 +42,9 @@ test('asBucketNotificationDestination adds bucket permissions only once for each
                   ArnLike: {
                     'aws:SourceArn': { 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] },
                   },
+                  StringEquals: {
+                    'aws:SourceAccount': { Ref: 'AWS::AccountId' },
+                  },
                 },
                 Effect: 'Allow',
                 Principal: {

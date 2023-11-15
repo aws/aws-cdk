@@ -18,6 +18,11 @@
            "Arn"
           ]
          }
+        },
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
         }
        },
        "Effect": "Allow",
@@ -56,6 +61,11 @@
            "MyBucketF68F3FF0",
            "Arn"
           ]
+         }
+        },
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
          }
         }
        },
