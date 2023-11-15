@@ -16,6 +16,7 @@ describe('Linux ARM Lambda build image', () => {
       Environment: {
         Type: 'ARM_LAMBDA_CONTAINER',
         ComputeType: 'BUILD_LAMBDA_1GB',
+        ImagePullCredentialsType: 'CODEBUILD',
       },
     });
   });
@@ -33,6 +34,7 @@ describe('Linux ARM Lambda build image', () => {
       Environment: {
         Type: 'ARM_LAMBDA_CONTAINER',
         ComputeType: 'BUILD_LAMBDA_2GB',
+        ImagePullCredentialsType: 'CODEBUILD',
       },
     });
   });
@@ -50,6 +52,7 @@ describe('Linux ARM Lambda build image', () => {
       Environment: {
         Type: 'ARM_LAMBDA_CONTAINER',
         ComputeType: 'BUILD_LAMBDA_4GB',
+        ImagePullCredentialsType: 'CODEBUILD',
       },
     });
   });
@@ -67,6 +70,7 @@ describe('Linux ARM Lambda build image', () => {
       Environment: {
         Type: 'ARM_LAMBDA_CONTAINER',
         ComputeType: 'BUILD_LAMBDA_8GB',
+        ImagePullCredentialsType: 'CODEBUILD',
       },
     });
   });
@@ -84,6 +88,7 @@ describe('Linux ARM Lambda build image', () => {
       Environment: {
         Type: 'ARM_LAMBDA_CONTAINER',
         ComputeType: 'BUILD_LAMBDA_10GB',
+        ImagePullCredentialsType: 'CODEBUILD',
       },
     });
   });

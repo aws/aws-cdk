@@ -59,6 +59,7 @@ export class LinuxArmLambdaBuildImage implements IBuildImage {
 
   private constructor(props: LinuxArmLambdaBuildImageProps) {
     this.imageId = props.imageId;
+    this.imagePullPrincipalType = props.imagePullPrincipalType;
   }
 
   public validate(buildEnvironment: BuildEnvironment): string[] {
