@@ -37,6 +37,13 @@ export interface KafkaEventSourceProps extends BaseStreamEventSourceProps {
    * @default - none
    */
   readonly filters?: Array<{[key: string]: any}>
+
+  /**
+   * Add an on Failure Destination for this Kafka event. SNS/SQS/S3 are supported
+   *
+   * @default - discarded records are ignored
+   */
+  readonly onFailure?: lambda.IEventSourceDlq;
 }
 
 /**
@@ -143,6 +150,8 @@ export class ManagedKafkaEventSource extends StreamEventSource {
         sourceAccessConfigurations: this.sourceAccessConfigurations(),
         kafkaTopic: this.innerProps.topic,
         kafkaConsumerGroupId: this.innerProps.consumerGroupId,
+        onFailure: this.innerProps.onFailure,
+        supportS3OnFailureDestination: true,
       }),
     );
 
@@ -232,6 +241,8 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
         kafkaConsumerGroupId: this.innerProps.consumerGroupId,
         startingPosition: this.innerProps.startingPosition,
         sourceAccessConfigurations: this.sourceAccessConfigurations(),
+        onFailure: this.innerProps.onFailure,
+        supportS3OnFailureDestination: true,
       }),
     );
 
