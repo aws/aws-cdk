@@ -8,6 +8,7 @@ import { BuildEnvironment, ComputeType, IBuildImage, ImagePullPrincipalType, isL
  */
 interface LinuxArmLambdaBuildImageProps {
   readonly imageId: string;
+  readonly imagePullPrincipalType?: ImagePullPrincipalType;
 }
 
 /**
@@ -47,13 +48,14 @@ export class LinuxArmLambdaBuildImage implements IBuildImage {
   private static fromCodeBuildImageId(id: string): IBuildImage {
     return new LinuxArmLambdaBuildImage({
       imageId: id,
+      imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
     });
   }
 
   public readonly type = 'ARM_LAMBDA_CONTAINER';
   public readonly defaultComputeType = ComputeType.LAMBDA_1GB;
   public readonly imageId: string;
-  public readonly imagePullPrincipalType = ImagePullPrincipalType.CODEBUILD;
+  public readonly imagePullPrincipalType?: ImagePullPrincipalType;
 
   private constructor(props: LinuxArmLambdaBuildImageProps) {
     this.imageId = props.imageId;
