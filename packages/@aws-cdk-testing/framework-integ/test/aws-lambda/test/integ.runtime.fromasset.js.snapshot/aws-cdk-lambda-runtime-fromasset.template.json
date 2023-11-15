@@ -47,7 +47,7 @@
       "Arn"
      ]
     },
-    "Runtime": "java17"
+    "Runtime": "java21"
    },
    "DependsOn": [
     "MyFunctionServiceRole3C357FF2"
