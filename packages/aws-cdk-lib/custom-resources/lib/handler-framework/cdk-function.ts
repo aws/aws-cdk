@@ -35,17 +35,28 @@ export class CdkFunction extends Function {
     }
 
     const runtimes = new Map<RuntimeFamily, Runtime[]>();
+    // categorize runtimes by family
     for (let runtime of runtimes) {
 
     }
 
     if (runtimes.has(RuntimeFamily.NODEJS)) {
       const latestNodejsRuntime = LatestRuntime.fromNodejsRuntimes(runtimes.get(RuntimeFamily.NODEJS)!);
+      if (latestNodejsRuntime.isDeprecated) {
+        throw new Error();
+      }
+      return latestNodejsRuntime;
     }
 
     if (runtimes.has(RuntimeFamily.PYTHON)) {
       const latestPythonRuntime = LatestRuntime.fromPythonRuntimes(runtimes.get(RuntimeFamily.PYTHON)!);
+      if (latestPythonRuntime.isDeprecated) {
+        throw new Error();
+      }
+      return latestPythonRuntime;
     }
+
+    throw new Error();
   }
 
   public constructor(scope: Construct, id: string, props: CdkFunctionProps) {
