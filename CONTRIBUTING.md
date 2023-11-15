@@ -48,7 +48,47 @@ let us know if it's not up-to-date (even better, submit a PR with your  correcti
 - [Related Repositories](#related-repositories)
 
 ## Contribution Workflow Diagram
-![A workflow diagram for contributing code to the aws-cdk ecosytem](./docs/contribution_flow.png)
+```mermaid
+flowchart TD
+    A(Identify Desired Functionality) --> B(Search For Existing Artifacts)
+    B --> C[External Packages]
+    B --> D[Relevant Issues And PRs]
+    C --> E{"Does A High Quality
+            Solution Exist?"}
+    D --> F{"Is There A PR In Progress"}
+    E --> |Yes| G(("Ask How You
+                    Can Help"))
+    F --> |Yes| G
+    E --> |No| H(Evaluate Where To Contribute)
+    F --> |No| H
+    H --> I{"Is There Clear Evidence
+            For Inclusion In AWS-CDK"}
+    I --> |Yes| subEvidence
+    I --> |No| J{"Do You Want To Pursue Eventual
+                  Inclusion In AWS-CDK"}
+    J --> |No| L(("Create Private
+                  Implementation"))
+    J --> |Yes| K((Publish A Package))
+    subEvidence --> M(Make Pull Request)
+    M --> N{"Passes CI Checks, Linters,
+            And Follows Design Guidelines"}
+    N --> O(Review)
+    O --> |Accepted| R(Hooray!)
+    O --> P(Changes Requested)
+    P --> Q(Make Changes)
+    Q --> O
+    O --> |Refused| K
+
+subgraph subEvidence[Gather Evidence]
+    direction LR
+    engagement[Engagement from Multiple users]
+    core[Intersects With Core Framework Concerns]
+    quality["Clear, Well Defined, Solution With
+            Limited Scope And Clear Boundaries"]
+    external[External Packages]
+    issues[Relevant Issues And PRs]
+end
+```
 
 ## Where to Contribute
 
