@@ -5,11 +5,11 @@ import * as codepipeline from '../../../aws-codepipeline';
 import { LambdaFunction } from '../../../aws-events-targets';
 import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
+import { Code, Function, Runtime } from '../../../aws-lambda';
 import * as s3 from '../../../aws-s3';
 import { Stack, Lazy, App } from '../../../core';
 import { CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME } from '../../../cx-api';
 import * as cpactions from '../../lib';
-import { Code, Function, Runtime } from '../../../aws-lambda';
 import { CodeCommitSourceActionProps } from '../../lib';
 
 /* eslint-disable quote-props */
@@ -216,9 +216,9 @@ describe('CodeCommit Source Action', () => {
           target: new LambdaFunction(new Function(stack, 'TestFunction', {
             code: Code.fromInline('foo'),
             handler: 'bar',
-            runtime: Runtime.NODEJS_LATEST
-          }))
-        }
+            runtime: Runtime.NODEJS_LATEST,
+          })),
+        },
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -227,7 +227,7 @@ describe('CodeCommit Source Action', () => {
             'aws.codecommit',
           ],
           'resources': [{
-            'Fn::GetAtt': [ 'MyRepoF4F48043', 'Arn' ]
+            'Fn::GetAtt': ['MyRepoF4F48043', 'Arn'],
           }],
           'detail-type': [
             'CodeCommit Repository State Change',
@@ -238,12 +238,12 @@ describe('CodeCommit Source Action', () => {
               'referenceUpdated',
             ],
             'referenceName': [
-              'master'
-            ]
+              'master',
+            ],
           },
         },
       });
-    })
+    });
 
     test('cannot be created with an empty branch', () => {
       const stack = new Stack();
@@ -817,7 +817,7 @@ function minimalPipeline(stack: Stack, trigger?: cpactions.CodeCommitTrigger, cu
             }),
             output: sourceOutput,
             trigger,
-            customEventRule: customEventRule?.customEventRule
+            customEventRule: customEventRule?.customEventRule,
           }),
         ],
       },
