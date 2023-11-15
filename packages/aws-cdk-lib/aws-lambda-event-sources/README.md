@@ -298,7 +298,7 @@ myFunction.addEventSource(new ManagedKafkaEventSource({
 You can also specify an S3 bucket as an "on failure" destination:
 
 ```ts
-import { ManagedKafkaEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
+import { ManagedKafkaEventSource, S3OnFailureDestination } from 'aws-cdk-lib/aws-lambda-event-sources';
 
 // Your MSK cluster arn
 const clusterArn = 'arn:aws:kafka:us-east-1:0123456789019:cluster/SalesCluster/abcd1234-abcd-cafe-abab-9876543210ab-4';
@@ -306,9 +306,9 @@ const clusterArn = 'arn:aws:kafka:us-east-1:0123456789019:cluster/SalesCluster/a
 // The Kafka topic you want to subscribe to
 const topic = 'some-cool-topic';
 
-declare const bucket = s3.Bucket;
+declare const bucket: s3.IBucket;
 
-const s3OnFailureDestination = new sources.S3OnFailureDestination(bucket);
+const s3OnFailureDestination = new S3OnFailureDestination(bucket);
 
 myFunction.addEventSource(new ManagedKafkaEventSource({
   clusterArn,
