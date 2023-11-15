@@ -318,7 +318,7 @@ export class BucketDeployment extends Construct {
     const mountPath = `/mnt${accessPointPath}`;
     const handler = new lambda.SingletonFunction(this, 'CustomResourceHandler', {
       uuid: this.renderSingletonUuid(props.memoryLimit, props.ephemeralStorageSize, props.vpc),
-      code: lambda.Code.fromAsset(path.join(__dirname, 'lambda')),
+      code: lambda.Code.fromAsset(path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-s3-deployment', 'bucket-deployment-handler')),
       layers: [new AwsCliLayer(this, 'AwsCliLayer')],
       runtime: lambda.Runtime.PYTHON_3_9,
       environment: {
