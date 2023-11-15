@@ -6,7 +6,8 @@ import * as iam from '../../../aws-iam';
 import { FeatureFlags, Names, Stack, Token, TokenComparison } from '../../../core';
 import { CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME } from '../../../cx-api';
 import { Action } from '../action';
-import { sourceArtifactBounds } from '../common';
+import { sourceArtifactBounds } from '../common'
+import {EventPattern, IRuleTarget, OnEventOptions} from '../../../aws-events'
 
 /**
  * How should the CodeCommit Action detect changes.
@@ -100,6 +101,20 @@ export interface CodeCommitSourceActionProps extends codepipeline.CommonAwsActio
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodeCommit.html
    */
   readonly codeBuildCloneOutput?: boolean;
+
+  /**
+   * You can pass a `customEventRule` to set up a custom event rule for the CodeCommit source action.
+   * You must put the `eventPattern` and `target` properties in the `customEventRule` object.
+   * Check what `eventPattern` to put: https://docs.aws.amazon.com/codecommit/latest/userguide/monitoring-events.html
+   * @default false
+   * @see https://docs.aws.amazon.com/codecommit/latest/userguide/monitoring-events.html
+   * @see https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_events_targets-readme.html
+   *
+   */
+  readonly customEventRule?: Omit<
+    OnEventOptions,
+    'crossStackScope' | 'eventPattern' | 'target'
+  > & {eventPattern: EventPattern; target: IRuleTarget} // Make it required (before that it was optional)
 }
 
 /**
@@ -169,15 +184,20 @@ export class CodeCommitSourceAction extends Action {
 
     const createEvent = this.props.trigger === undefined ||
       this.props.trigger === CodeCommitTrigger.EVENTS;
+    const eventId = this.generateEventId(stage);
     if (createEvent) {
-      const eventId = this.generateEventId(stage);
       this.props.repository.onCommit(eventId, {
         target: new targets.CodePipeline(stage.pipeline, {
           eventRole: this.props.eventRole,
         }),
         branches: [branchOrDefault],
         crossStackScope: stage.pipeline as unknown as Construct,
-      });
+      })
+    } else if (this.props.customEventRule !== undefined) {
+      this.props.repository.onEvent(eventId, {
+        ...this.props.customEventRule,
+        crossStackScope: stage.pipeline as unknown as Construct,
+      })
     }
 
     // the Action will write the contents of the Git repository to the Bucket,
@@ -191,16 +211,16 @@ export class CodeCommitSourceAction extends Action {
 
     // https://docs.aws.amazon.com/codecommit/latest/userguide/auth-and-access-control-permissions-reference.html#aa-acp
     options.role.addToPrincipalPolicy(new iam.PolicyStatement({
-      resources: [this.props.repository.repositoryArn],
-      actions: [
-        'codecommit:GetBranch',
-        'codecommit:GetCommit',
-        'codecommit:UploadArchive',
-        'codecommit:GetUploadArchiveStatus',
-        'codecommit:CancelUploadArchive',
-        ...(this.props.codeBuildCloneOutput === true ? ['codecommit:GetRepository'] : []),
+        resources: [this.props.repository.repositoryArn],
+        actions: [
+          'codecommit:GetBranch',
+          'codecommit:GetCommit',
+          'codecommit:UploadArchive',
+          'codecommit:GetUploadArchiveStatus',
+          'codecommit:CancelUploadArchive',
+          ...(this.props.codeBuildCloneOutput === true ? ['codecommit:GetRepository'] : []),
       ],
-    }));
+      }));
 
     return {
       configuration: {
@@ -208,8 +228,8 @@ export class CodeCommitSourceAction extends Action {
         BranchName: branchOrDefault,
         PollForSourceChanges: this.props.trigger === CodeCommitTrigger.POLL,
         OutputArtifactFormat: this.props.codeBuildCloneOutput === true
-          ? 'CODEBUILD_CLONE_REF'
-          : undefined,
+            ? 'CODEBUILD_CLONE_REF'
+            : undefined,
       },
     };
   }
