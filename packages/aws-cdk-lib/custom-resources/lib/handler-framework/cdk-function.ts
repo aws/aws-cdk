@@ -1,8 +1,8 @@
+import * as semver from 'semver';
 import { Construct } from 'constructs';
 import { Function, FunctionOptions, Runtime } from '../../../aws-lambda';
 import { CdkHandler } from './cdk-handler';
 import { Lazy } from '../../../core';
-import { LatestRuntime } from './latest-runtime';
 
 /**
  *
@@ -29,7 +29,8 @@ export class CdkFunction extends Function {
   }
 
   private determineRuntime(compatibleRuntimes: Runtime[]) {
-    if (compatibleRuntimes.length < 1) {
+    const compatibleRuntimesLength = compatibleRuntimes.length;
+    if (compatibleRuntimesLength < 1) {
       throw new Error('`cdkHandler` must specify at least 1 compatible runtime');
     }
 
@@ -37,6 +38,19 @@ export class CdkFunction extends Function {
       return CdkFunction.DEFAULT_RUNTIME;
     }
 
-    LatestRuntime.fromNodejsRuntimes(compatibleRuntimes);
+    const sliceStart = 'nodejs'.length;
+    let latestRuntime = compatibleRuntimes[0];
+    for (let idx = 1; idx < compatibleRuntimesLength; idx++) {
+      const runtime = compatibleRuntimes[idx];
+      if (semver.gte(runtime.name.slice(sliceStart), latestRuntime.name.slice(sliceStart))) {
+        latestRuntime = runtime;
+      }
+    }
+
+    if (latestRuntime.isDeprecated) {
+      throw new Error('Latest compatible runtime is deprecated');
+    }
+
+    return latestRuntime;
   }
 }

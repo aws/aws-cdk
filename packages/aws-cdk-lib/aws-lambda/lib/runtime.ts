@@ -30,6 +30,12 @@ export interface LambdaRuntimeProps {
    * @default false
    */
   readonly supportsSnapStart?: boolean;
+
+  /**
+   * Whether this runtime is deprecated.
+   * @default false
+   */
+  readonly isDeprecated?: boolean;
 }
 
 export enum RuntimeFamily {
@@ -324,11 +330,17 @@ export class Runtime {
    */
   public readonly isVariable: boolean;
 
+  /**
+   *
+   */
+  public readonly isDeprecated: boolean;
+
   constructor(name: string, family?: RuntimeFamily, props: LambdaRuntimeProps = {}) {
     this.name = name;
     this.supportsInlineCode = !!props.supportsInlineCode;
     this.family = family;
     this.isVariable = !!props.isVariable;
+    this.isDeprecated = props.isDeprecated ?? false;
 
     const imageName = props.bundlingDockerImage ?? `public.ecr.aws/sam/build-${name}`;
     this.bundlingDockerImage = DockerImage.fromRegistry(imageName);
