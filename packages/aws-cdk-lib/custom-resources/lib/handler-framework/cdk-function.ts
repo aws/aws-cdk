@@ -1,39 +1,30 @@
-import * as semver from 'semver';
 import { Construct } from 'constructs';
-import { Function, FunctionOptions, Runtime } from '../../../aws-lambda';
 import { CdkCode } from './cdk-code';
-import { Lazy } from '../../../core';
+import { Function, FunctionOptions, Runtime, RuntimeFamily } from '../../../aws-lambda';
+import { LatestRuntime } from '../helpers-internal/latest-runtime';
 
 /**
- *
+ * Placeholder
  */
 export interface CdkFunctionProps extends FunctionOptions {
   /**
-   *
+   * Placeholder
    */
   readonly code: CdkCode;
 
   /**
-   *
+   * Placeholder
    */
   readonly handler: string;
 }
 
+/**
+ * Placeholder
+ */
 export class CdkFunction extends Function {
   private static readonly DEFAULT_RUNTIME = Runtime.NODEJS_LATEST;
 
-  public constructor(scope: Construct, id: string, props: CdkFunctionProps) {
-    super(scope, id, {
-      ...props,
-      runtime: Lazy.any(
-        { produce: () => this.determineRuntime(props.code.compatibleRuntimes) },
-      ) as unknown as Runtime,
-      code: props.code.codeFromAsset,
-      handler: props.handler,
-    });
-  }
-
-  private determineRuntime(compatibleRuntimes: Runtime[]) {
+  private static determineRuntime(compatibleRuntimes: Runtime[]) {
     const compatibleRuntimesLength = compatibleRuntimes.length;
     if (compatibleRuntimesLength < 1) {
       throw new Error('`cdkHandler` must specify at least 1 compatible runtime');
@@ -43,19 +34,26 @@ export class CdkFunction extends Function {
       return CdkFunction.DEFAULT_RUNTIME;
     }
 
-    const sliceStart = 'nodejs'.length;
-    let latestRuntime = compatibleRuntimes[0];
-    for (let idx = 1; idx < compatibleRuntimesLength; idx++) {
-      const runtime = compatibleRuntimes[idx];
-      if (semver.gte(runtime.name.slice(sliceStart), latestRuntime.name.slice(sliceStart))) {
-        latestRuntime = runtime;
-      }
+    const runtimes = new Map<RuntimeFamily, Runtime[]>();
+    for (let runtime of runtimes) {
+
     }
 
-    if (latestRuntime.isDeprecated) {
-      throw new Error('Latest compatible runtime is deprecated');
+    if (runtimes.has(RuntimeFamily.NODEJS)) {
+      const latestNodejsRuntime = LatestRuntime.fromNodejsRuntimes(runtimes.get(RuntimeFamily.NODEJS)!);
     }
 
-    return latestRuntime;
+    if (runtimes.has(RuntimeFamily.PYTHON)) {
+      const latestPythonRuntime = LatestRuntime.fromPythonRuntimes(runtimes.get(RuntimeFamily.PYTHON)!);
+    }
+  }
+
+  public constructor(scope: Construct, id: string, props: CdkFunctionProps) {
+    super(scope, id, {
+      ...props,
+      runtime: CdkFunction.determineRuntime(props.code.compatibleRuntimes),
+      code: props.code.codeFromAsset,
+      handler: props.handler,
+    });
   }
 }

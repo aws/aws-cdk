@@ -331,7 +331,7 @@ export class Runtime {
   public readonly isVariable: boolean;
 
   /**
-   *
+   * Whether the runtime is deprecated.
    */
   public readonly isDeprecated: boolean;
 
