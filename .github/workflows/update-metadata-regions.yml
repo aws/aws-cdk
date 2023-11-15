@@ -1,0 +1,78 @@
+name: Update Metadata Regions
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  update-regions:
+    name: Update Regions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download regions
+        env:
+          URL: https://d3mqmgkwnwa8vm.cloudfront.net/regions.json
+        id: download
+        run: |
+          response=$(curl $URL)
+          echo "REGIONS=${response}" >> "$GITHUB_OUTPUT"
+          
+          status=$(curl -s -o /dev/null -w "%{http_code}" $URL)
+          echo "STATUS=${status}" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v3
+      - uses: actions/github-script@v7
+        if: ${{ steps.download.outputs.STATUS == 200 }}
+        env:
+          REGIONS: ${{ steps.download.outputs.REGIONS }}
+        with:
+          script: |
+            const script = require('./scripts/update-metadata-regions.js')
+            script()
+      - name: Create Patch
+        run: |-
+          git add .
+          git diff --patch --staged > ${{ runner.temp }}/update-spec.patch
+      - name: Upload Patch
+        uses: actions/upload-artifact@v3
+        with:
+          name: update-spec.patch
+          path: ${{ runner.temp }}/update-spec.patch
+
+  pr:
+    name: Create Pull Request
+    needs: update-regions
+    permissions:
+      contents: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Out
+        uses: actions/checkout@v4
+
+      - name: Download patch
+        uses: actions/download-artifact@v3
+        with:
+          name: update-spec.patch
+          path: ${{ runner.temp }}
+
+      - name: Apply patch
+        run: '[ -s ${{ runner.temp }}/update-spec.patch ] && git apply ${{ runner.temp }}/update-spec.patch || echo "Empty patch. Skipping."'
+
+      - name: Make Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          # Git commit details
+          branch: automation/region-update
+          author: aws-cdk-automation <aws-cdk-automation@users.noreply.github.com>
+          commit-message: |-
+            feat(region-info): update Metadata regions
+            Update the list of regions where the CDK deploys the `AWS::CDK::Metadata` resource.
+          # Pull Request details
+          title: "feat(region-info): update Metadata regions"
+          body: |-
+            Update the list of regions where the CDK deploys the `AWS::CDK::Metadata` resource.
+          labels: contribution/core,dependencies,auto-approve,pr-linter/exempt-integ-test,pr-linter/exempt-readme,pr-linter/exempt-test
+          team-reviewers: aws-cdk-team
+          # Github prevents further Github actions to be run if the default Github token is used.
+          # Instead use a privileged token here, so further GH actions can be triggered on this PR.
+          token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
