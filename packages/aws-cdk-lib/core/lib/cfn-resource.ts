@@ -4,7 +4,7 @@ import { CfnCondition } from './cfn-condition';
 /* eslint-disable import/order */
 import { CfnRefElement } from './cfn-element';
 import { CfnCreationPolicy, CfnDeletionPolicy, CfnUpdatePolicy } from './cfn-resource-policy';
-import { Construct, IConstruct, Node } from 'constructs';
+import { Construct, Node } from 'constructs';
 import { addDependency, obtainDependencies, removeDependency } from './deps';
 import { CfnReference } from './private/cfn-reference';
 import { Reference } from './reference';
