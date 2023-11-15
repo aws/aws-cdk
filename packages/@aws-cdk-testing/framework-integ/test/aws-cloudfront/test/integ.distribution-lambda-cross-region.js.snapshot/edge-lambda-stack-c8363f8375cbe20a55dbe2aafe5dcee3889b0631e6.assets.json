@@ -1,0 +1,20 @@
+{
+  "version": "34.0.0",
+  "files": {
+    "71ebd11a0fa60b517c8aa0db1219ed23e7b261de5880fc9cf40965406489c300": {
+      "source": {
+        "path": "edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-us-east-1": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
+          "objectKey": "71ebd11a0fa60b517c8aa0db1219ed23e7b261de5880fc9cf40965406489c300.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

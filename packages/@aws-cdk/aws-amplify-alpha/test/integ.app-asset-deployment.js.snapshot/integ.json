@@ -1,14 +1,13 @@
 {
-  "version": "34.0.0",
+  "version": "35.0.0",
   "testCases": {
-    "integ.app-asset-deployment": {
+    "cdk-amplify-app-integ-test/DefaultTest": {
       "stacks": [
         "cdk-amplify-app-asset-deployment"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "diffAssets": true,
+      "assertionStack": "cdk-amplify-app-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkamplifyappintegtestDefaultTestDeployAssert8ED3E8A4"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }
