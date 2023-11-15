@@ -1,6 +1,6 @@
 import { BuildSpec } from './build-spec';
 import { runScriptLinuxBuildSpec } from './private/run-script-linux-build-spec';
-import { BuildEnvironment, ComputeType, IBuildImage, isLambdaComputeType } from './project';
+import { BuildEnvironment, ComputeType, IBuildImage, ImagePullPrincipalType, isLambdaComputeType } from './project';
 
 /**
  * Construction properties of `LinuxArmLambdaBuildImage`.
@@ -53,6 +53,7 @@ export class LinuxArmLambdaBuildImage implements IBuildImage {
   public readonly type = 'ARM_LAMBDA_CONTAINER';
   public readonly defaultComputeType = ComputeType.LAMBDA_1GB;
   public readonly imageId: string;
+  public readonly imagePullPrincipalType = ImagePullPrincipalType.CODEBUILD;
 
   private constructor(props: LinuxArmLambdaBuildImageProps) {
     this.imageId = props.imageId;
