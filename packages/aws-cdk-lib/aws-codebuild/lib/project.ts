@@ -1364,7 +1364,7 @@ export class Project extends ProjectBase {
     return {
       type: this.buildImage.type,
       image: this.buildImage.imageId,
-      imagePullCredentialsType: this.isLambdaBuildImage(this.buildImage) ? undefined : imagePullPrincipalType,
+      imagePullCredentialsType: imagePullPrincipalType,
       registryCredential: secret
         ? {
           credentialProvider: 'SECRETS_MANAGER',
@@ -2230,7 +2230,6 @@ function isBindableBuildImage(x: unknown): x is IBindableBuildImage {
 }
 
 export function isLambdaComputeType(computeType: ComputeType): boolean {
-  if (!computeType) return false;
   return [
     ComputeType.LAMBDA_1GB,
     ComputeType.LAMBDA_2GB,
