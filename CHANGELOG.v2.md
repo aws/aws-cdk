@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file. See [standa
 * **lambda:** add python 3.12 runtime ([#27967](https://github.com/aws/aws-cdk/issues/27967)) ([9d17fe2](https://github.com/aws/aws-cdk/commit/9d17fe2414b72595802ff94057af5a7efe711268))
 * **lambda:** node20 runtime ([#27897](https://github.com/aws/aws-cdk/issues/27897)) ([2e3cdd9](https://github.com/aws/aws-cdk/commit/2e3cdd9ac478685c83256af093952386155fb416))
 * **lambda:** Support S3 as onFailure destinations on MSK and SelfManagedKafka events ([#28010](https://github.com/aws/aws-cdk/issues/28010)) ([e789adc](https://github.com/aws/aws-cdk/commit/e789adca33b0ef2f1a3a94373867e0ae123edc02))
+* **rds:** support for aurora mysql 3.04.1 ([#28002](https://github.com/aws/aws-cdk/pull/28002)) ([846c26a](https://github.com/aws/aws-cdk/commit/846c26ad5a060deaa31f7bfc094cd3d79e8af603))
 * update AWS Service Spec ([#27958](https://github.com/aws/aws-cdk/issues/27958)) ([1466207](https://github.com/aws/aws-cdk/commit/14662072692e5555cdfe44d9cfa5d9d66e03c7bf))
 
 
