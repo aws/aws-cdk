@@ -27,33 +27,45 @@ export class CdkFunction extends Function {
   private static determineRuntime(compatibleRuntimes: Runtime[]) {
     const compatibleRuntimesLength = compatibleRuntimes.length;
     if (compatibleRuntimesLength < 1) {
-      throw new Error('`cdkHandler` must specify at least 1 compatible runtime');
+      throw new Error('`code` must specify at least 1 compatible runtime');
     }
 
     if (compatibleRuntimes.some(runtime => runtime.runtimeEquals(CdkFunction.DEFAULT_RUNTIME))) {
       return CdkFunction.DEFAULT_RUNTIME;
     }
 
-    const runtimes = new Map<RuntimeFamily, Runtime[]>();
+    const runtimesByFamily = new Map<RuntimeFamily, Runtime[]>();
     // categorize runtimes by family
-    for (let runtime of runtimes) {
-
+    for (let runtime of compatibleRuntimes) {
+      if (runtime.family !== undefined) {
+        if (runtimesByFamily.has(runtime.family)) {
+          const runtimesForFamily = runtimesByFamily.get(runtime.family);
+          if (runtimesForFamily !== undefined) {
+            runtimesForFamily.push(runtime);
+            runtimesByFamily.set(runtime.family, runtimesForFamily);
+          }
+        } else {
+          runtimesByFamily.set(runtime.family, [runtime]);
+        }
+      }
     }
 
-    if (runtimes.has(RuntimeFamily.NODEJS)) {
-      const latestNodejsRuntime = LatestRuntime.fromNodejsRuntimes(runtimes.get(RuntimeFamily.NODEJS)!);
-      if (latestNodejsRuntime.isDeprecated) {
+    const nodejsRuntimes = runtimesByFamily.get(RuntimeFamily.NODEJS);
+    if (nodejsRuntimes !== undefined && nodejsRuntimes.length > 0) {
+      const latestRuntime = LatestRuntime.fromNodejsRuntimes(nodejsRuntimes);
+      if (latestRuntime.isDeprecated) {
         throw new Error();
       }
-      return latestNodejsRuntime;
+      return latestRuntime;
     }
 
-    if (runtimes.has(RuntimeFamily.PYTHON)) {
-      const latestPythonRuntime = LatestRuntime.fromPythonRuntimes(runtimes.get(RuntimeFamily.PYTHON)!);
-      if (latestPythonRuntime.isDeprecated) {
+    const pythonRuntimes = runtimesByFamily.get(RuntimeFamily.PYTHON);
+    if (pythonRuntimes !== undefined && pythonRuntimes.length > 0) {
+      const latestRuntime = LatestRuntime.fromPythonRuntimes(pythonRuntimes);
+      if (latestRuntime.isDeprecated) {
         throw new Error();
       }
-      return latestPythonRuntime;
+      return latestRuntime;
     }
 
     throw new Error();

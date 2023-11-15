@@ -11,6 +11,11 @@ export abstract class LatestRuntime {
   }
 
   public static fromRuntimes(runtimes: Runtime[], family?: RuntimeFamily) {
+    const runtimesLength = runtimes.length;
+    if (runtimesLength === 0) {
+      throw new Error('You must specify at least one runtime');
+    }
+
     let sliceStart: number;
     switch (family) {
       case RuntimeFamily.NODEJS: {
@@ -34,7 +39,7 @@ export abstract class LatestRuntime {
     }
 
     let latestRuntime = runtimes[0];
-    for (let idx = 1; idx < runtimes.length; idx++) {
+    for (let idx = 1; idx < runtimesLength; idx++) {
       const runtime = runtimes[idx];
       if (semver.gte(runtime.name.slice(sliceStart), latestRuntime.name.slice(sliceStart))) {
         latestRuntime = runtime;
