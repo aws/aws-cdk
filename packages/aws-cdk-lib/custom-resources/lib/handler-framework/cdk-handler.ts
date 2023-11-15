@@ -3,44 +3,33 @@ import { Code, Runtime } from '../../../aws-lambda';
 /**
  *
  */
-export interface CdkHandlerProps {
+export interface CdkCodeProps {
   /**
    *
    */
   readonly compatibleRuntimes: Runtime[];
-
-  /**
-   *
-   */
-  readonly handler: string;
 }
 
-export class CdkHandler {
+export class CdkCode {
   /**
    *
    */
-  public static fromAsset(path: string, props: CdkHandlerProps) {
-    return new CdkHandler(path, props);
+  public static fromAsset(path: string, props: CdkCodeProps) {
+    return new CdkCode(path, props);
   }
 
   /**
    *
    */
-  public readonly code: Code;
-
-  /**
-   *
-   */
-  public readonly handler: string;
+  public readonly codeFromAsset: Code;
 
   /**
    *
    */
   public readonly compatibleRuntimes: Runtime[];
 
-  private constructor(path: string, props: CdkHandlerProps) {
-    this.code = Code.fromAsset(path);
-    this.handler = props.handler;
+  private constructor(path: string, props: CdkCodeProps) {
+    this.codeFromAsset = Code.fromAsset(path);
     this.compatibleRuntimes = props.compatibleRuntimes;
   }
 }

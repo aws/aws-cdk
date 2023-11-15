@@ -1,7 +1,7 @@
 import * as semver from 'semver';
 import { Construct } from 'constructs';
 import { Function, FunctionOptions, Runtime } from '../../../aws-lambda';
-import { CdkHandler } from './cdk-handler';
+import { CdkCode } from './cdk-handler';
 import { Lazy } from '../../../core';
 
 /**
@@ -11,7 +11,12 @@ export interface CdkFunctionProps extends FunctionOptions {
   /**
    *
    */
-  readonly cdkHandler: CdkHandler,
+  readonly code: CdkCode;
+
+  /**
+   *
+   */
+  readonly handler: string;
 }
 
 export class CdkFunction extends Function {
@@ -19,12 +24,12 @@ export class CdkFunction extends Function {
 
   public constructor(scope: Construct, id: string, props: CdkFunctionProps) {
     super(scope, id, {
-      runtime: Lazy.any(
-        { produce: () => this.determineRuntime(props.cdkHandler.compatibleRuntimes) },
-      ) as unknown as Runtime,
-      code: props.cdkHandler.code,
-      handler: props.cdkHandler.handler,
       ...props,
+      runtime: Lazy.any(
+        { produce: () => this.determineRuntime(props.code.compatibleRuntimes) },
+      ) as unknown as Runtime,
+      code: props.code.codeFromAsset,
+      handler: props.handler,
     });
   }
 
