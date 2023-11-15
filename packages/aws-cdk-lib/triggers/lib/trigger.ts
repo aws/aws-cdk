@@ -116,7 +116,7 @@ export class Trigger extends Construct implements ITrigger {
 
     const provider = CustomResourceProvider.getOrCreateProvider(this, 'AWSCDK.TriggerCustomResourceProvider', {
       runtime: CustomResourceProviderRuntime.NODEJS_18_X,
-      codeDirectory: join(__dirname, 'lambda'),
+      codeDirectory: join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'triggers', 'lambda'),
     });
 
     provider.addToRolePolicy({

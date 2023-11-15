@@ -141,8 +141,9 @@ export class IntegTestRunner extends IntegRunner {
         });
       } catch (e) {
         logger.warning('%s\n%s',
-          `Could not checkout snapshot directory ${this.snapshotDir} using these commands: `,
-          `git merge-base HEAD ${baseBranch} && git checkout {merge-base} -- ${relativeSnapshotDir}`,
+          `Could not checkout snapshot directory '${this.snapshotDir}'. Please verify the following command completes correctly:`,
+          `git checkout $(git merge-base HEAD ${baseBranch}) -- ${relativeSnapshotDir}`,
+          '',
         );
         logger.warning('error: %s', e);
       }

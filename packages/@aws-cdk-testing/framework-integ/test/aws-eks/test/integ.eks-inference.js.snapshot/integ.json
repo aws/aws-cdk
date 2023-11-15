@@ -1,9 +1,9 @@
 {
-  "version": "34.0.0",
+  "version": "35.0.0",
   "testCases": {
-    "aws-cdk-eks-cluster-interence/DefaultTest": {
+    "aws-cdk-eks-cluster-interence-integ/DefaultTest": {
       "stacks": [
-        "aws-cdk-eks-cluster-inference-test"
+        "aws-cdk-eks-cluster-inference"
       ],
       "diffAssets": false,
       "cdkCommandOptions": {
@@ -13,8 +13,8 @@
           }
         }
       },
-      "assertionStack": "aws-cdk-eks-cluster-interence/DefaultTest/DeployAssert",
-      "assertionStackName": "awscdkeksclusterinterenceDefaultTestDeployAssert715EC778"
+      "assertionStack": "aws-cdk-eks-cluster-interence-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksclusterinterenceintegDefaultTestDeployAssert08800940"
     }
   }
 }

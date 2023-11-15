@@ -1,10 +1,12 @@
 {
-  "version": "17.0.0",
+  "version": "34.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
+    "integ-distribution-lambda-cross-region.assets": {
+      "type": "cdk:asset-manifest",
       "properties": {
-        "file": "tree.json"
+        "file": "integ-distribution-lambda-cross-region.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
     "integ-distribution-lambda-cross-region": {
@@ -12,27 +14,28 @@
       "environment": "aws://unknown-account/eu-west-1",
       "properties": {
         "templateFile": "integ-distribution-lambda-cross-region.template.json",
-        "validateOnSynth": false
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-eu-west-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-eu-west-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1/ab40c6a0af0e70ec9cefcdc68e814c0be0bee877728096da03192d558d007d37.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-distribution-lambda-cross-region.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-eu-west-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
       },
       "dependencies": [
         "edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6",
-        "edge-lambda-stack-eu-west-1-2"
+        "edge-lambda-stack-eu-west-1-2",
+        "integ-distribution-lambda-cross-region.assets"
       ],
       "metadata": {
-        "/integ-distribution-lambda-cross-region": [
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "asset.e718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376a",
-              "id": "e718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376a",
-              "packaging": "zip",
-              "sourceHash": "e718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376a",
-              "s3BucketParameter": "AssetParameterse718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376aS3BucketA88C096E",
-              "s3KeyParameter": "AssetParameterse718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376aS3VersionKeyF63BD825",
-              "artifactHashParameter": "AssetParameterse718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376aArtifactHashE4754D11"
-            }
-          }
-        ],
         "/integ-distribution-lambda-cross-region/Lambda/ArnReader/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -51,24 +54,6 @@
             "data": "CustomCrossRegionStringParameterReaderCustomResourceProviderHandler65B5F33A"
           }
         ],
-        "/integ-distribution-lambda-cross-region/AssetParameters/e718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376a/S3Bucket": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameterse718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376aS3BucketA88C096E"
-          }
-        ],
-        "/integ-distribution-lambda-cross-region/AssetParameters/e718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376a/S3VersionKey": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameterse718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376aS3VersionKeyF63BD825"
-          }
-        ],
-        "/integ-distribution-lambda-cross-region/AssetParameters/e718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376a/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameterse718f39096261b3e336dd6d896baabf1049bb1938cb1865de1b5e576cb57376aArtifactHashE4754D11"
-          }
-        ],
         "/integ-distribution-lambda-cross-region/Lambda2/ArnReader/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -80,17 +65,54 @@
             "type": "aws:cdk:logicalId",
             "data": "DistB3B78991"
           }
+        ],
+        "/integ-distribution-lambda-cross-region/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-distribution-lambda-cross-region/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
         ]
       },
       "displayName": "integ-distribution-lambda-cross-region"
+    },
+    "edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
     },
     "edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/us-east-1",
       "properties": {
         "templateFile": "edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6.template.json",
-        "validateOnSynth": false
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/71ebd11a0fa60b517c8aa0db1219ed23e7b261de5880fc9cf40965406489c300.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
       },
+      "dependencies": [
+        "edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6.assets"
+      ],
       "metadata": {
         "/edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6/Lambda/ServiceRole/Resource": [
           {
@@ -107,7 +129,7 @@
         "/edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6/Lambda/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LambdaCurrentVersionDF706F6A9a632a294ae3a9cd4d550f1c4e26619d"
+            "data": "LambdaCurrentVersionDF706F6Aceabca74f785ac2be6cd5e57eeaf3b05"
           }
         ],
         "/edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6/Lambda/Parameter/Resource": [
@@ -122,25 +144,53 @@
             "data": "LambdaAliaslive79C8A712"
           }
         ],
-        "LambdaCurrentVersionDF706F6A8cedba3e8e1b3bbf7614644bfafda118": [
+        "/edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LambdaCurrentVersionDF706F6A8cedba3e8e1b3bbf7614644bfafda118",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
           }
         ]
       },
       "displayName": "edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6"
+    },
+    "edge-lambda-stack-eu-west-1-2.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "edge-lambda-stack-eu-west-1-2.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
     },
     "edge-lambda-stack-eu-west-1-2": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/us-east-1",
       "properties": {
         "templateFile": "edge-lambda-stack-eu-west-1-2.template.json",
-        "validateOnSynth": false
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/3598199e79496725ac0835e63b1e99fd14e28067430ac568efb4684804d81ad8.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "edge-lambda-stack-eu-west-1-2.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
       },
+      "dependencies": [
+        "edge-lambda-stack-eu-west-1-2.assets"
+      ],
       "metadata": {
         "/edge-lambda-stack-eu-west-1-2/Lambda2/ServiceRole/Resource": [
           {
@@ -157,7 +207,7 @@
         "/edge-lambda-stack-eu-west-1-2/Lambda2/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Lambda2CurrentVersion72012B74da2ca4572056a1112d9804f75b5b7491"
+            "data": "Lambda2CurrentVersion72012B7448e7ccb012bdf87615c944d94691ab6d"
           }
         ],
         "/edge-lambda-stack-eu-west-1-2/Lambda2/Parameter/Resource": [
@@ -172,17 +222,74 @@
             "data": "Lambda2Aliaslive77F6085F"
           }
         ],
-        "Lambda2CurrentVersion72012B74f573e76ebc7c7027f95b6b63cc2c7d0f": [
+        "/edge-lambda-stack-eu-west-1-2/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Lambda2CurrentVersion72012B74f573e76ebc7c7027f95b6b63cc2c7d0f",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/edge-lambda-stack-eu-west-1-2/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
           }
         ]
       },
       "displayName": "edge-lambda-stack-eu-west-1-2"
+    },
+    "cdkintegdistributionlambdacrossregionDefaultTestDeployAssert47F14485.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "cdkintegdistributionlambdacrossregionDefaultTestDeployAssert47F14485.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "cdkintegdistributionlambdacrossregionDefaultTestDeployAssert47F14485": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdkintegdistributionlambdacrossregionDefaultTestDeployAssert47F14485.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "cdkintegdistributionlambdacrossregionDefaultTestDeployAssert47F14485.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cdkintegdistributionlambdacrossregionDefaultTestDeployAssert47F14485.assets"
+      ],
+      "metadata": {
+        "/cdk-integ-distribution-lambda-cross-region/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cdk-integ-distribution-lambda-cross-region/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "cdk-integ-distribution-lambda-cross-region/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }
