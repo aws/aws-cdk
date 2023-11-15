@@ -31,7 +31,6 @@ class PostgresS3TestStack extends cdk.Stack {
       s3ImportBuckets: [importExportBucket],
       s3ExportBuckets: [importExportBucket],
     });
-
   }
 }
 
