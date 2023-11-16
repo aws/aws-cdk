@@ -74,3 +74,12 @@ test('equality is symmetric', () => {
     },
   ));
 });
+
+test('can describe protocol', () => {
+  expect(new SecurityGroupRule({ IpProtocol: -1 }).describeProtocol()).toEqual('Everything');
+  expect(new SecurityGroupRule({ IpProtocol: '-1' }).describeProtocol()).toEqual('Everything');
+  expect(new SecurityGroupRule({ FromPort: -1 }).describeProtocol()).toEqual('All *UNKNOWN*');
+  expect(new SecurityGroupRule({ IpProtocol: 'tcp', FromPort: -1, ToPort: -1 }).describeProtocol()).toEqual('All TCP');
+  expect(new SecurityGroupRule({ IpProtocol: 'tcp', FromPort: 10, ToPort: 20 }).describeProtocol()).toEqual('TCP 10-20');
+  expect(new SecurityGroupRule({ IpProtocol: 'tcp', FromPort: 10, ToPort: 10 }).describeProtocol()).toEqual('TCP 10');
+});
