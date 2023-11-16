@@ -11,7 +11,7 @@ describe('', () => {
       compatibleRuntimes: [Runtime.NODEJS_16_X, Runtime.NODEJS_14_X],
     });
 
-    new CdkFunction(stack, 'CdkFunction', {
+    const fn = new CdkFunction(stack, 'CdkFunction', {
       code,
       handler: 'index.handler',
     });

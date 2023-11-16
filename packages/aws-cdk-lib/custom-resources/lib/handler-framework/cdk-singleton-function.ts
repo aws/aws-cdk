@@ -1,23 +1,42 @@
 import { Construct } from 'constructs';
-import { FunctionOptions, SingletonFunction } from '../../../aws-lambda';
 import { CdkCode } from './cdk-code';
-import { CdkFunctionBase } from './cdk-function-base';
+import { FunctionOptions, SingletonFunction } from '../../../aws-lambda';
+import { RuntimeDeterminer } from '../helpers-internal/runtime-determiner';
 
+/**
+ * Placeholder
+ */
 export interface CdkSingletonFunctionProps extends FunctionOptions {
+  /**
+   * Placeholder
+   */
   readonly uuid: string;
+
+  /**
+   * Placeholder
+   */
   readonly code: CdkCode;
+
+  /**
+   * Placeholder
+   */
   readonly handler: string;
+
+  /**
+   * Placeholder
+   */
   readonly lambdaPurpose?: string;
 }
 
-export class CdkSingletonFunction extends CdkFunctionBase {
+/**
+ * Placeholder
+ */
+export class CdkSingletonFunction extends SingletonFunction {
   public constructor(scope: Construct, id: string, props: CdkSingletonFunctionProps) {
-    super();
-
-    new SingletonFunction(scope, id, {
+    super(scope, id, {
       ...props,
       code: props.code.codeFromAsset,
-      runtime: this.determineRuntime(props.code.compatibleRuntimes),
+      runtime: RuntimeDeterminer.determineRuntime(props.code.compatibleRuntimes),
     });
   }
 }
