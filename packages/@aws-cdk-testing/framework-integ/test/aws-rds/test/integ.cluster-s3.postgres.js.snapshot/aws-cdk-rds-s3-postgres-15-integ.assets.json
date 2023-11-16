@@ -1,0 +1,19 @@
+{
+  "version": "35.0.0",
+  "files": {
+    "ea895614984ac841bbd8a10c8301e71d72ec6b84142e6fbb849ad47874282215": {
+      "source": {
+        "path": "aws-cdk-rds-s3-postgres-15-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "ea895614984ac841bbd8a10c8301e71d72ec6b84142e6fbb849ad47874282215.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
