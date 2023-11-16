@@ -62,10 +62,9 @@ The result of the `StringParameter.valueFromLookup()` operation will be written 
 called `cdk.context.json`. You must commit this file to source control so
 that the lookup values are available in non-privileged environments such
 as CI build steps, and to ensure your template builds are repeatable.
-If you do not want the key of the context variable to be global
-(ie, having the same value returned any time you call `fromLookup` across your entire app),
-you can set the `additionalCacheKey` argument (eg, to `this.node.path` to tie it
-to the scope of the current construct)
+To customize the cache key use the `additionalCacheKey` parameter.
+This can be useful if you want to scope the context variable to a construct 
+(eg, using `additionalCacheKey: this.node.path`).
 
 
 When using `valueFromLookup` an initial value of 'dummy-value-for-${parameterName}'
