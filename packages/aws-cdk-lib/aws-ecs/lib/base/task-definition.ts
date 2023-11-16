@@ -1246,7 +1246,7 @@ export class TaskDefinitionRevision {
   public static readonly LATEST = new TaskDefinitionRevision('latest');
 
   /**
-   * Specfic revision of a task
+   * Specific revision of a task
    */
   public static of(revision: number) {
     if (revision < 1) {

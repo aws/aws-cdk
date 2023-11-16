@@ -519,7 +519,7 @@ describe('task definition', () => {
 });
 
 describe('task definition revision', () => {
-  describe('Validate reviion number', () => {
+  describe('validate revision number', () => {
     test('should throw if zero', () => {
       expect(() => {
         ecs.TaskDefinitionRevision.of(0);
