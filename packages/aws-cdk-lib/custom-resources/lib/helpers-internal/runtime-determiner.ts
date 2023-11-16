@@ -92,4 +92,6 @@ export class RuntimeDeterminer {
 
     return runtime1;
   }
+
+  private constructor() {}
 }
