@@ -152,7 +152,7 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
       + (this.windowsVersion ? 'image_id' : 'recommended/image_id');
 
     this.cachedInContext = props?.cachedInContext ?? false;
-    if (props?.additionalCacheKey) this.additionalCacheKey = props.additionalCacheKey;
+    this.additionalCacheKey = props?.additionalCacheKey;
   }
 
   /**
@@ -274,7 +274,7 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
       + (this.windowsVersion ? 'image_id' : 'recommended/image_id');
 
     this.cachedInContext = props.cachedInContext ?? false;
-    if (props.additionalCacheKey) this.additionalCacheKey = props.additionalCacheKey;
+    this.additionalCacheKey = props.additionalCacheKey;
   }
 
   /**
@@ -387,7 +387,7 @@ export class BottleRocketImage implements ec2.IMachineImage {
     this.amiParameterName = `/aws/service/bottlerocket/${this.variant}/${this.architecture}/latest/image_id`;
 
     this.cachedInContext = props.cachedInContext ?? false;
-    if (props.additionalCacheKey) this.additionalCacheKey = props.additionalCacheKey;
+    this.additionalCacheKey = props.additionalCacheKey;
   }
 
   /**

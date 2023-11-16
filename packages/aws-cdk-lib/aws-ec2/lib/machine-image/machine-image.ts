@@ -523,20 +523,17 @@ export class AmazonLinuxImage extends GenericSSMParameterImage {
 
   private readonly cachedInContext: boolean;
 
-  private readonly additionalCacheKey?: string;
-
   constructor(private readonly props: AmazonLinuxImageProps = {}) {
     super(AmazonLinuxImage.ssmParameterName(props), OperatingSystemType.LINUX, props.userData);
 
     this.cachedInContext = props.cachedInContext ?? false;
-    if (props.additionalCacheKey) this.additionalCacheKey = props.additionalCacheKey;
   }
 
   /**
    * Return the image to use in the given context
    */
   public getImage(scope: Construct): MachineImageConfig {
-    const imageId = lookupImage(scope, this.cachedInContext, this.parameterName, this.additionalCacheKey);
+    const imageId = lookupImage(scope, this.cachedInContext, this.parameterName, this.props.additionalCacheKey);
 
     const osType = OperatingSystemType.LINUX;
     return {

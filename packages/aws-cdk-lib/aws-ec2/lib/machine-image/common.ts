@@ -72,14 +72,12 @@ export interface AmazonLinuxImageSsmParameterBaseProps extends AmazonLinuxImageS
 
 export abstract class AmazonLinuxImageSsmParameterBase implements IMachineImage {
   private readonly cachedInContext: boolean;
-  private readonly additionalCacheKey?: string;
   constructor(private readonly props: AmazonLinuxImageSsmParameterBaseProps) {
     this.cachedInContext = this.props.cachedInContext ?? true;
-    if (props.additionalCacheKey) this.additionalCacheKey = this.props.additionalCacheKey;
   }
 
   getImage(scope: Construct): MachineImageConfig {
-    const imageId = lookupImage(scope, this.cachedInContext, this.props.parameterName, this.additionalCacheKey);
+    const imageId = lookupImage(scope, this.cachedInContext, this.props.parameterName, this.props.additionalCacheKey);
 
     const osType = OperatingSystemType.LINUX;
     return {
