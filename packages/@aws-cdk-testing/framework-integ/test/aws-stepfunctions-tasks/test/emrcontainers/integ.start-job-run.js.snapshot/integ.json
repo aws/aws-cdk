@@ -1,9 +1,9 @@
 {
-  "version": "35.0.0",
+  "version": "34.0.0",
   "testCases": {
-    "aws-stepfunctions-tasks-emr-containers-start-job-run-integ/DefaultTest": {
+    "aws-stepfunctions-tasks-emr-containers-start-job-run/DefaultTest": {
       "stacks": [
-        "aws-stepfunctions-tasks-emr-containers-start-job-run"
+        "aws-stepfunctions-tasks-emr-containers-start-job-run-test"
       ],
       "diffAssets": false,
       "cdkCommandOptions": {
@@ -13,8 +13,8 @@
           }
         }
       },
-      "assertionStack": "aws-stepfunctions-tasks-emr-containers-start-job-run-integ/DefaultTest/DeployAssert",
-      "assertionStackName": "awsstepfunctionstasksemrcontainersstartjobrunintegDefaultTestDeployAssertD11471F0"
+      "assertionStack": "aws-stepfunctions-tasks-emr-containers-start-job-run/DefaultTest/DeployAssert",
+      "assertionStackName": "awsstepfunctionstasksemrcontainersstartjobrunDefaultTestDeployAssert0C0D5C7F"
     }
   }
 }

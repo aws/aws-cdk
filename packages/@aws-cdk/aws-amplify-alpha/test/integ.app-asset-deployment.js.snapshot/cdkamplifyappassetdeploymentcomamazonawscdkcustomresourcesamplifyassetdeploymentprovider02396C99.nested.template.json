@@ -705,12 +705,6 @@
       ]
      ]
     },
-    "RoleArn": {
-     "Fn::GetAtt": [
-      "amplifyassetdeploymenthandlerproviderwaiterstatemachineRole014FC0BB",
-      "Arn"
-     ]
-    },
     "LoggingConfiguration": {
      "Destinations": [
       {
@@ -726,6 +720,12 @@
      ],
      "IncludeExecutionData": false,
      "Level": "ERROR"
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "amplifyassetdeploymenthandlerproviderwaiterstatemachineRole014FC0BB",
+      "Arn"
+     ]
     }
    },
    "DependsOn": [
