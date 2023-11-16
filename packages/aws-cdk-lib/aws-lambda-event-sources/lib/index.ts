@@ -8,3 +8,4 @@ export * from './sns-dlq';
 export * from './stream';
 export * from './sqs';
 export * from './sqs-dlq';
+export * from './s3-onfailuire-destination';

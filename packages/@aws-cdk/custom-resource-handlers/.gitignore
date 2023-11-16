@@ -31,3 +31,4 @@ test/test-archive-follow/data/linked
 scripts/*.d.ts
 
 !lib/aws-certificatemanager/dns-validated-certificate-handler/index.js
+!lib/aws-cloudfront/edge-function/index.js
