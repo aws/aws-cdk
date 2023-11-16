@@ -24,3 +24,6 @@ junit.xml
 !**/*.snapshot/**/asset.*/*.d.ts
 
 !**/*.snapshot/**/asset.*/**
+
+test/**/bin
+test/**/obj

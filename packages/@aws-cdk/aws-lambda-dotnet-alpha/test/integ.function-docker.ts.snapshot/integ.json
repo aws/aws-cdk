@@ -1,0 +1,13 @@
+{
+  "version": "35.0.0",
+  "testCases": {
+    "lambda-dotnet-docker/DefaultTest": {
+      "stacks": [
+        "integ-lambda-dotnet-docker"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "lambda-dotnet-docker/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdadotnetdockerDefaultTestDeployAssertA7C8A975"
+    }
+  }
+}

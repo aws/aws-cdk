@@ -1,0 +1,13 @@
+{
+  "version": "35.0.0",
+  "testCases": {
+    "lambda-dotnet-tools/DefaultTest": {
+      "stacks": [
+        "cdk-integ-lambda-dotnet-tools"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "lambda-dotnet-tools/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdadotnettoolsDefaultTestDeployAssert5B1BF5B1"
+    }
+  }
+}
