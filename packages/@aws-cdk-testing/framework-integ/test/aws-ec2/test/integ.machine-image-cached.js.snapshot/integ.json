@@ -2,12 +2,12 @@
   "enableLookups": true,
   "version": "34.0.0",
   "testCases": {
-    "integ-test/DefaultTest": {
+    "integ-ec2-machine-image-cached/DefaultTest": {
       "stacks": [
-        "integ-ec2-machine-image-cached-test"
+        "cdk-ec2-machine-image-cached"
       ],
-      "assertionStack": "integ-test/DefaultTest/DeployAssert",
-      "assertionStackName": "integtestDefaultTestDeployAssert24D5C536"
+      "assertionStack": "integ-ec2-machine-image-cached/DefaultTest/DeployAssert",
+      "assertionStackName": "integec2machineimagecachedDefaultTestDeployAssert24B647BE"
     }
   }
 }

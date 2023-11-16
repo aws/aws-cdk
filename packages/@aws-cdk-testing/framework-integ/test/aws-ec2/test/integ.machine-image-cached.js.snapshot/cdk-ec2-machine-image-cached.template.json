@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-machine-image-cached-test/Vpc"
+      "Value": "cdk-ec2-machine-image-cached/Vpc"
      }
     ]
    }
@@ -32,7 +32,7 @@
      },
      {
       "Key": "Name",
-      "Value": "integ-ec2-machine-image-cached-test/Vpc/PublicSubnet1"
+      "Value": "cdk-ec2-machine-image-cached/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -46,7 +46,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-machine-image-cached-test/Vpc/PublicSubnet1"
+      "Value": "cdk-ec2-machine-image-cached/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -87,7 +87,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-machine-image-cached-test/Vpc/PublicSubnet1"
+      "Value": "cdk-ec2-machine-image-cached/Vpc/PublicSubnet1"
      }
     ]
    }
@@ -107,7 +107,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-machine-image-cached-test/Vpc/PublicSubnet1"
+      "Value": "cdk-ec2-machine-image-cached/Vpc/PublicSubnet1"
      }
     ]
    },
@@ -133,7 +133,7 @@
      },
      {
       "Key": "Name",
-      "Value": "integ-ec2-machine-image-cached-test/Vpc/PublicSubnet2"
+      "Value": "cdk-ec2-machine-image-cached/Vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -147,7 +147,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-machine-image-cached-test/Vpc/PublicSubnet2"
+      "Value": "cdk-ec2-machine-image-cached/Vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -188,7 +188,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-machine-image-cached-test/Vpc/PublicSubnet2"
+      "Value": "cdk-ec2-machine-image-cached/Vpc/PublicSubnet2"
      }
     ]
    }
@@ -208,7 +208,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-machine-image-cached-test/Vpc/PublicSubnet2"
+      "Value": "cdk-ec2-machine-image-cached/Vpc/PublicSubnet2"
      }
     ]
    },
@@ -234,7 +234,7 @@
      },
      {
       "Key": "Name",
-      "Value": "integ-ec2-machine-image-cached-test/Vpc/PublicSubnet3"
+      "Value": "cdk-ec2-machine-image-cached/Vpc/PublicSubnet3"
      }
     ],
     "VpcId": {
@@ -248,7 +248,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-machine-image-cached-test/Vpc/PublicSubnet3"
+      "Value": "cdk-ec2-machine-image-cached/Vpc/PublicSubnet3"
      }
     ],
     "VpcId": {
@@ -289,7 +289,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-machine-image-cached-test/Vpc/PublicSubnet3"
+      "Value": "cdk-ec2-machine-image-cached/Vpc/PublicSubnet3"
      }
     ]
    }
@@ -309,7 +309,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-machine-image-cached-test/Vpc/PublicSubnet3"
+      "Value": "cdk-ec2-machine-image-cached/Vpc/PublicSubnet3"
      }
     ]
    },
@@ -335,7 +335,7 @@
      },
      {
       "Key": "Name",
-      "Value": "integ-ec2-machine-image-cached-test/Vpc/PrivateSubnet1"
+      "Value": "cdk-ec2-machine-image-cached/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -349,7 +349,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-machine-image-cached-test/Vpc/PrivateSubnet1"
+      "Value": "cdk-ec2-machine-image-cached/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -397,7 +397,7 @@
      },
      {
       "Key": "Name",
-      "Value": "integ-ec2-machine-image-cached-test/Vpc/PrivateSubnet2"
+      "Value": "cdk-ec2-machine-image-cached/Vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -411,7 +411,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-machine-image-cached-test/Vpc/PrivateSubnet2"
+      "Value": "cdk-ec2-machine-image-cached/Vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -459,7 +459,7 @@
      },
      {
       "Key": "Name",
-      "Value": "integ-ec2-machine-image-cached-test/Vpc/PrivateSubnet3"
+      "Value": "cdk-ec2-machine-image-cached/Vpc/PrivateSubnet3"
      }
     ],
     "VpcId": {
@@ -473,7 +473,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-machine-image-cached-test/Vpc/PrivateSubnet3"
+      "Value": "cdk-ec2-machine-image-cached/Vpc/PrivateSubnet3"
      }
     ],
     "VpcId": {
@@ -510,7 +510,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-machine-image-cached-test/Vpc"
+      "Value": "cdk-ec2-machine-image-cached/Vpc"
      }
     ]
    }
@@ -529,7 +529,7 @@
   "al2023CachedInstanceSecurityGroup2719C9BA": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "integ-ec2-machine-image-cached-test/al2023Cached/InstanceSecurityGroup",
+    "GroupDescription": "cdk-ec2-machine-image-cached/al2023Cached/InstanceSecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -540,7 +540,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-machine-image-cached-test/al2023Cached"
+      "Value": "cdk-ec2-machine-image-cached/al2023Cached"
      }
     ],
     "VpcId": {
@@ -566,7 +566,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-machine-image-cached-test/al2023Cached"
+      "Value": "cdk-ec2-machine-image-cached/al2023Cached"
      }
     ]
    }
@@ -604,7 +604,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-machine-image-cached-test/al2023Cached"
+      "Value": "cdk-ec2-machine-image-cached/al2023Cached"
      }
     ],
     "UserData": {
@@ -618,7 +618,7 @@
   "al2023CachedScopeInstanceSecurityGroupADC3C195": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "integ-ec2-machine-image-cached-test/al2023CachedScope/InstanceSecurityGroup",
+    "GroupDescription": "cdk-ec2-machine-image-cached/al2023CachedScope/InstanceSecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -629,7 +629,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-machine-image-cached-test/al2023CachedScope"
+      "Value": "cdk-ec2-machine-image-cached/al2023CachedScope"
      }
     ],
     "VpcId": {
@@ -655,7 +655,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-machine-image-cached-test/al2023CachedScope"
+      "Value": "cdk-ec2-machine-image-cached/al2023CachedScope"
      }
     ]
    }
@@ -693,7 +693,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-machine-image-cached-test/al2023CachedScope"
+      "Value": "cdk-ec2-machine-image-cached/al2023CachedScope"
      }
     ],
     "UserData": {

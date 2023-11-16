@@ -45,7 +45,9 @@ export class TestCase extends Stack {
 }
 
 const app = new App();
-new IntegTest(app, 'integ-test', {
-  testCases: [new TestCase(app, 'integ-ec2-machine-image-cached-test', { env })],
+const stack = new TestCase(app, 'cdk-ec2-machine-image-cached', { env });
+new IntegTest(app, 'integ-ec2-machine-image-cached', {
+  testCases: [stack],
   enableLookups: true,
 });
+app.synth();

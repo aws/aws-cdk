@@ -1,27 +1,27 @@
 {
   "version": "34.0.0",
   "artifacts": {
-    "integ-ec2-machine-image-cached-test.assets": {
+    "cdk-ec2-machine-image-cached.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "integ-ec2-machine-image-cached-test.assets.json",
+        "file": "cdk-ec2-machine-image-cached.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "integ-ec2-machine-image-cached-test": {
+    "cdk-ec2-machine-image-cached": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://12345678/test-region",
       "properties": {
-        "templateFile": "integ-ec2-machine-image-cached-test.template.json",
+        "templateFile": "cdk-ec2-machine-image-cached.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/28b0c40087d5092de80f9eb21ff6e74380b5503e7fe85d136141b47f90ba55dc.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/18035a5c59b3c622a6f952b627e53ba58bcfc4f09c0ba6b55886e25644395ce6.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "integ-ec2-machine-image-cached-test.assets"
+          "cdk-ec2-machine-image-cached.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-lookup-role-12345678-test-region",
@@ -30,283 +30,283 @@
         }
       },
       "dependencies": [
-        "integ-ec2-machine-image-cached-test.assets"
+        "cdk-ec2-machine-image-cached.assets"
       ],
       "metadata": {
-        "/integ-ec2-machine-image-cached-test/Vpc/Resource": [
+        "/cdk-ec2-machine-image-cached/Vpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Vpc8378EB38"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/Vpc/PublicSubnet1/Subnet": [
+        "/cdk-ec2-machine-image-cached/Vpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1Subnet5C2D37C4"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/Vpc/PublicSubnet1/RouteTable": [
+        "/cdk-ec2-machine-image-cached/Vpc/PublicSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1RouteTable6C95E38E"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/Vpc/PublicSubnet1/RouteTableAssociation": [
+        "/cdk-ec2-machine-image-cached/Vpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1RouteTableAssociation97140677"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/Vpc/PublicSubnet1/DefaultRoute": [
+        "/cdk-ec2-machine-image-cached/Vpc/PublicSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/Vpc/PublicSubnet1/EIP": [
+        "/cdk-ec2-machine-image-cached/Vpc/PublicSubnet1/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1EIPD7E02669"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/Vpc/PublicSubnet1/NATGateway": [
+        "/cdk-ec2-machine-image-cached/Vpc/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1NATGateway4D7517AA"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/Vpc/PublicSubnet2/Subnet": [
+        "/cdk-ec2-machine-image-cached/Vpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2Subnet691E08A3"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/Vpc/PublicSubnet2/RouteTable": [
+        "/cdk-ec2-machine-image-cached/Vpc/PublicSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2RouteTable94F7E489"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/Vpc/PublicSubnet2/RouteTableAssociation": [
+        "/cdk-ec2-machine-image-cached/Vpc/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/Vpc/PublicSubnet2/DefaultRoute": [
+        "/cdk-ec2-machine-image-cached/Vpc/PublicSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2DefaultRoute97F91067"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/Vpc/PublicSubnet2/EIP": [
+        "/cdk-ec2-machine-image-cached/Vpc/PublicSubnet2/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2EIP3C605A87"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/Vpc/PublicSubnet2/NATGateway": [
+        "/cdk-ec2-machine-image-cached/Vpc/PublicSubnet2/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2NATGateway9182C01D"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/Vpc/PublicSubnet3/Subnet": [
+        "/cdk-ec2-machine-image-cached/Vpc/PublicSubnet3/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet3SubnetBE12F0B6"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/Vpc/PublicSubnet3/RouteTable": [
+        "/cdk-ec2-machine-image-cached/Vpc/PublicSubnet3/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet3RouteTable93458DBB"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/Vpc/PublicSubnet3/RouteTableAssociation": [
+        "/cdk-ec2-machine-image-cached/Vpc/PublicSubnet3/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet3RouteTableAssociation1F1EDF02"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/Vpc/PublicSubnet3/DefaultRoute": [
+        "/cdk-ec2-machine-image-cached/Vpc/PublicSubnet3/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet3DefaultRoute4697774F"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/Vpc/PublicSubnet3/EIP": [
+        "/cdk-ec2-machine-image-cached/Vpc/PublicSubnet3/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet3EIP3A666A23"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/Vpc/PublicSubnet3/NATGateway": [
+        "/cdk-ec2-machine-image-cached/Vpc/PublicSubnet3/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet3NATGateway7640CD1D"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/Vpc/PrivateSubnet1/Subnet": [
+        "/cdk-ec2-machine-image-cached/Vpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1Subnet536B997A"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/Vpc/PrivateSubnet1/RouteTable": [
+        "/cdk-ec2-machine-image-cached/Vpc/PrivateSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1RouteTableB2C5B500"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/Vpc/PrivateSubnet1/RouteTableAssociation": [
+        "/cdk-ec2-machine-image-cached/Vpc/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/Vpc/PrivateSubnet1/DefaultRoute": [
+        "/cdk-ec2-machine-image-cached/Vpc/PrivateSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/Vpc/PrivateSubnet2/Subnet": [
+        "/cdk-ec2-machine-image-cached/Vpc/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2Subnet3788AAA1"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/Vpc/PrivateSubnet2/RouteTable": [
+        "/cdk-ec2-machine-image-cached/Vpc/PrivateSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2RouteTableA678073B"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/Vpc/PrivateSubnet2/RouteTableAssociation": [
+        "/cdk-ec2-machine-image-cached/Vpc/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/Vpc/PrivateSubnet2/DefaultRoute": [
+        "/cdk-ec2-machine-image-cached/Vpc/PrivateSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2DefaultRoute060D2087"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/Vpc/PrivateSubnet3/Subnet": [
+        "/cdk-ec2-machine-image-cached/Vpc/PrivateSubnet3/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet3SubnetF258B56E"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/Vpc/PrivateSubnet3/RouteTable": [
+        "/cdk-ec2-machine-image-cached/Vpc/PrivateSubnet3/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet3RouteTableD98824C7"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/Vpc/PrivateSubnet3/RouteTableAssociation": [
+        "/cdk-ec2-machine-image-cached/Vpc/PrivateSubnet3/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet3RouteTableAssociation16BDDC43"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/Vpc/PrivateSubnet3/DefaultRoute": [
+        "/cdk-ec2-machine-image-cached/Vpc/PrivateSubnet3/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet3DefaultRoute94B74F0D"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/Vpc/IGW": [
+        "/cdk-ec2-machine-image-cached/Vpc/IGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcIGWD7BA715C"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/Vpc/VPCGW": [
+        "/cdk-ec2-machine-image-cached/Vpc/VPCGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcVPCGWBF912B6E"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/al2023Cached/InstanceSecurityGroup/Resource": [
+        "/cdk-ec2-machine-image-cached/al2023Cached/InstanceSecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "al2023CachedInstanceSecurityGroup2719C9BA"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/al2023Cached/InstanceRole/Resource": [
+        "/cdk-ec2-machine-image-cached/al2023Cached/InstanceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "al2023CachedInstanceRoleD76E1DF5"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/al2023Cached/InstanceProfile": [
+        "/cdk-ec2-machine-image-cached/al2023Cached/InstanceProfile": [
           {
             "type": "aws:cdk:logicalId",
             "data": "al2023CachedInstanceProfileD264357E"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/al2023Cached/Resource": [
+        "/cdk-ec2-machine-image-cached/al2023Cached/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "al2023Cached1FFF710B"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/al2023CachedScope/InstanceSecurityGroup/Resource": [
+        "/cdk-ec2-machine-image-cached/al2023CachedScope/InstanceSecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "al2023CachedScopeInstanceSecurityGroupADC3C195"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/al2023CachedScope/InstanceRole/Resource": [
+        "/cdk-ec2-machine-image-cached/al2023CachedScope/InstanceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "al2023CachedScopeInstanceRoleB7C63F12"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/al2023CachedScope/InstanceProfile": [
+        "/cdk-ec2-machine-image-cached/al2023CachedScope/InstanceProfile": [
           {
             "type": "aws:cdk:logicalId",
             "data": "al2023CachedScopeInstanceProfileD8064966"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/al2023CachedScope/Resource": [
+        "/cdk-ec2-machine-image-cached/al2023CachedScope/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "al2023CachedScopeF8E30E37"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/BootstrapVersion": [
+        "/cdk-ec2-machine-image-cached/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/integ-ec2-machine-image-cached-test/CheckBootstrapVersion": [
+        "/cdk-ec2-machine-image-cached/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "integ-ec2-machine-image-cached-test"
+      "displayName": "cdk-ec2-machine-image-cached"
     },
-    "integtestDefaultTestDeployAssert24D5C536.assets": {
+    "integec2machineimagecachedDefaultTestDeployAssert24B647BE.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "integtestDefaultTestDeployAssert24D5C536.assets.json",
+        "file": "integec2machineimagecachedDefaultTestDeployAssert24B647BE.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "integtestDefaultTestDeployAssert24D5C536": {
+    "integec2machineimagecachedDefaultTestDeployAssert24B647BE": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "integtestDefaultTestDeployAssert24D5C536.template.json",
+        "templateFile": "integec2machineimagecachedDefaultTestDeployAssert24B647BE.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -314,7 +314,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "integtestDefaultTestDeployAssert24D5C536.assets"
+          "integec2machineimagecachedDefaultTestDeployAssert24B647BE.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -323,23 +323,23 @@
         }
       },
       "dependencies": [
-        "integtestDefaultTestDeployAssert24D5C536.assets"
+        "integec2machineimagecachedDefaultTestDeployAssert24B647BE.assets"
       ],
       "metadata": {
-        "/integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/integ-ec2-machine-image-cached/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/integ-ec2-machine-image-cached/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "integ-test/DefaultTest/DeployAssert"
+      "displayName": "integ-ec2-machine-image-cached/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
