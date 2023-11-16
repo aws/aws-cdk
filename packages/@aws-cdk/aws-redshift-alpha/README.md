@@ -240,7 +240,18 @@ new Table(this, 'Table', {
 
 ### Granting Privileges
 
-You can give a user privileges to perform certain actions on a table by using the
+You can grant a *cluster* IAM permissions to perform actions on other AWS services.
+For example, you may want to allow a cluster to read from a S3 bucket for Redshift Spectrum.
+
+```ts fixture=cluster
+const bucket = new s3.Bucket(stack, 'KmsBucket',{
+  encryptionKey: new kms.Key(stack,'Key')
+})
+bucket.grantRead(cluster)
+```
+
+
+You can give a *user* privileges to perform certain actions on a table by using the
 `Table.grant()` method.
 
 ```ts fixture=cluster
