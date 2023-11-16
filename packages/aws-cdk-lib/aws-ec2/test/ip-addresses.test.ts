@@ -420,6 +420,8 @@ test.each([
   [{ count: 4096, netmask: 28, index: 123 }, /* -> */ { count: 16, hostbits: 12, select: 0 }, { count: 256, hostbits: 4, select: 123 }],
   // Index into second block
   [{ count: 4096, netmask: 28, index: 300 }, /* -> */ { count: 16, hostbits: 12, select: 1 }, { count: 256, hostbits: 4, select: 44 }],
+  // Index into third block
+  [{ count: 4096, netmask: 28, index: 513 }, /* -> */ { count: 16, hostbits: 12, select: 2 }, { count: 256, hostbits: 4, select: 1 }],
   // Count too low for netmask (wasting space)
   [{ count: 4000, netmask: 28, index: 300 }, /* -> */ { count: 16, hostbits: 12, select: 1 }, { count: 256, hostbits: 4, select: 44 }],
 ])('recursive splitting when CIDR needs to be split more than 256 times: %p', (split: CidrSplit, first: CfnSplit, second: CfnSplit) => {
