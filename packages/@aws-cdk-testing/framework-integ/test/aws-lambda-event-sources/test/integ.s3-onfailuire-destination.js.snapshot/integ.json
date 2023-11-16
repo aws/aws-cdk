@@ -1,0 +1,12 @@
+{
+  "version": "34.0.0",
+  "testCases": {
+    "LambdaEventSourceS3OnFailureDestinationInteg/DefaultTest": {
+      "stacks": [
+        "lambda-event-source-s3ofd"
+      ],
+      "assertionStack": "LambdaEventSourceS3OnFailureDestinationInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "LambdaEventSourceS3OnFailureDestinationIntegDefaultTestDeployAssert62366951"
+    }
+  }
+}
