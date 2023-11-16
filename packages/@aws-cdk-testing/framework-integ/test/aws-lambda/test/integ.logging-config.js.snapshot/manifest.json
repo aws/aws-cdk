@@ -1,0 +1,179 @@
+{
+  "version": "34.0.0",
+  "artifacts": {
+    "aws-cdk-lambda-logging-config.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-lambda-logging-config.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-lambda-logging-config": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-lambda-logging-config.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c10a26dd32e7f7d2a9c057ec71b82b23ad867563a9b092f09ed73ef671035641.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-lambda-logging-config.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-lambda-logging-config.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-lambda-logging-config/MyLogGroupWithLogGroupName/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLogGroupWithLogGroupNameB577EB65"
+          }
+        ],
+        "/aws-cdk-lambda-logging-config/LambdaWithLogGroup/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaWithLogGroupServiceRoleC5DDB031"
+          }
+        ],
+        "/aws-cdk-lambda-logging-config/LambdaWithLogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaWithLogGroupC3B62A1A"
+          }
+        ],
+        "/aws-cdk-lambda-logging-config/MyLogGroupWithoutLogGroupName/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLogGroupWithoutLogGroupName385E46B7"
+          }
+        ],
+        "/aws-cdk-lambda-logging-config/LambdaWithLogGroupAndNoLogGroupName/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaWithLogGroupAndNoLogGroupNameServiceRoleFEE6AF87"
+          }
+        ],
+        "/aws-cdk-lambda-logging-config/LambdaWithLogGroupAndNoLogGroupName/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaWithLogGroupAndNoLogGroupName1F5C7375"
+          }
+        ],
+        "/aws-cdk-lambda-logging-config/LambdaWithTextFormat/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaWithTextFormatServiceRoleABCC0E93"
+          }
+        ],
+        "/aws-cdk-lambda-logging-config/LambdaWithTextFormat/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaWithTextFormatA0EDE227"
+          }
+        ],
+        "/aws-cdk-lambda-logging-config/LambdaWithJSONFormat/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaWithJSONFormatServiceRole37FFB486"
+          }
+        ],
+        "/aws-cdk-lambda-logging-config/LambdaWithJSONFormat/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaWithJSONFormat20E01C00"
+          }
+        ],
+        "/aws-cdk-lambda-logging-config/LambdaWithLogLevel/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaWithLogLevelServiceRole90A45743"
+          }
+        ],
+        "/aws-cdk-lambda-logging-config/LambdaWithLogLevel/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaWithLogLevelCBBBEFFC"
+          }
+        ],
+        "/aws-cdk-lambda-logging-config/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-lambda-logging-config/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-lambda-logging-config"
+    },
+    "lambdaloggingconfigDefaultTestDeployAssert24012B25.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "lambdaloggingconfigDefaultTestDeployAssert24012B25.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "lambdaloggingconfigDefaultTestDeployAssert24012B25": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "lambdaloggingconfigDefaultTestDeployAssert24012B25.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "lambdaloggingconfigDefaultTestDeployAssert24012B25.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "lambdaloggingconfigDefaultTestDeployAssert24012B25.assets"
+      ],
+      "metadata": {
+        "/lambda-logging-config/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/lambda-logging-config/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "lambda-logging-config/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
