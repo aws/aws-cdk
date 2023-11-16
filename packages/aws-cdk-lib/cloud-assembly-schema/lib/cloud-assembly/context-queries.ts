@@ -245,6 +245,12 @@ export interface VpcContextQuery {
    * @default true
    */
   readonly returnVpnGateways?: boolean;
+
+  /**
+   * When the vpc is cached in cdk.context.json, adds an additional discriminator to the
+   * cache key so that separate lookups with the same parameters can have separate cache lifecycles
+   */
+  readonly additionalCacheKey?: string;
 }
 
 /**
@@ -331,6 +337,12 @@ export interface LoadBalancerContextQuery extends LoadBalancerFilter {
    * @default - None
    */
   readonly lookupRoleArn?: string;
+
+  /**
+   * When the load balancer is cached in cdk.context.json, adds an additional discriminator to the
+   * cache key so that separate lookups with the same parameters can have separate cache lifecycles
+   */
+  readonly additionalCacheKey?: string;
 }
 
 /**
@@ -406,6 +418,12 @@ export interface LoadBalancerListenerContextQuery extends LoadBalancerFilter {
    * @default - does not filter by a listener port
    */
   readonly listenerPort?: number;
+
+  /**
+   * When listener is cached in cdk.context.json, adds an additional discriminator to the
+   * cache key so that separate lookups with the same parameters can have separate cache lifecycles
+   */
+  readonly additionalCacheKey?: string;
 }
 
 /**
@@ -449,6 +467,12 @@ export interface SecurityGroupContextQuery {
    * @default - None
    */
   readonly vpcId?: string;
+
+  /**
+   * When the security group is cached in cdk.context.json, adds an additional discriminator to the
+   * cache key so that separate lookups with the same parameters can have separate cache lifecycles
+   */
+  readonly additionalCacheKey?: string;
 }
 
 /**
@@ -476,6 +500,12 @@ export interface KeyContextQuery {
    * Alias name used to search the Key
    */
   readonly aliasName: string;
+
+  /**
+   * When the key is cached in cdk.context.json, adds an additional discriminator to the
+   * cache key so that separate lookups with the same parameters can have separate cache lifecycles
+   */
+  readonly additionalCacheKey?: string;
 }
 
 /**

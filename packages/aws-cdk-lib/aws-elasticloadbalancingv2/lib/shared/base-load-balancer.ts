@@ -136,7 +136,7 @@ export abstract class BaseLoadBalancer extends Resource {
         loadBalancerArn: options.userOptions.loadBalancerArn,
         loadBalancerTags: cxschemaTags,
         loadBalancerType: options.loadBalancerType,
-        ...(options.userOptions.additionalCacheKey ? { additionalCacheKey: options.userOptions.additionalCacheKey } : {}),
+        additionalCacheKey: options.userOptions.additionalCacheKey,
       } as cxschema.LoadBalancerContextQuery,
       dummyValue: {
         ipAddressType: cxapi.LoadBalancerIpAddressType.DUAL_STACK,

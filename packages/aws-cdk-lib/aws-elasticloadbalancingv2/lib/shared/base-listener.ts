@@ -103,7 +103,7 @@ export abstract class BaseListener extends Resource implements IListener {
         loadBalancerArn: options.userOptions.loadBalancerArn,
         loadBalancerTags: cxschemaTags,
         loadBalancerType: options.loadBalancerType,
-        ...(options.userOptions.additionalCacheKey ? { additionalCacheKey: options.userOptions.additionalCacheKey } : {}),
+        additionalCacheKey: options.userOptions.additionalCacheKey,
       } as cxschema.LoadBalancerListenerContextQuery,
       dummyValue: {
         // eslint-disable-next-line @aws-cdk/no-literal-partition
