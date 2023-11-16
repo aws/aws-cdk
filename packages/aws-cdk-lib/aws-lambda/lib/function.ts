@@ -785,7 +785,6 @@ export class Function extends FunctionBase {
 
   private _architecture?: Architecture;
   private hashMixins = new Array<string>();
-  private readonly loggingConfig: CfnFunction.LoggingConfigProperty | undefined;
 
   constructor(scope: Construct, id: string, props: FunctionProps) {
     super(scope, id, {
@@ -937,17 +936,14 @@ export class Function extends FunctionBase {
       architectures: this._architecture ? [this._architecture.name] : undefined,
       runtimeManagementConfig: props.runtimeManagementMode?.runtimeManagementConfig,
       snapStart: this.configureSnapStart(props),
+      loggingConfig: this.getLoggingConfig(props),
     });
 
     if ((props.tracing !== undefined) || (props.adotInstrumentation !== undefined)) {
       resource.tracingConfig = this.buildTracingConfig(props.tracing ?? Tracing.ACTIVE);
     }
 
-    this.loggingConfig = this.getLoggingConfig(props);
-    if (this.loggingConfig !== undefined) {
-      resource.loggingConfig = this.loggingConfig;
-      this._logGroup = props.logGroup;
-    }
+    this._logGroup = props.logGroup;
 
     resource.node.addDependency(this.role);
 
