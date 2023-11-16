@@ -41,7 +41,7 @@ describe('hosted zone provider', () => {
       expect(zoneRef.hostedZoneId).toEqual(fakeZoneId);
     });
 
-    test('HostedZoneProvider will return context values if available when linked to scope', () => {
+    test('HostedZoneProvider will return context values if available', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'TestStack', {
@@ -82,15 +82,15 @@ describe('hosted zone provider', () => {
 
     });
 
-    test('HostedZoneProvider will return context values if available', () => {
+    test('HostedZoneProvider will return context values if available with additional cache key', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'TestStack', {
         env: { account: '12345', region: 'us-east-1' },
       });
-      const filter = { domainName: 'test.com' };
+      const filter = { domainName: 'test.com', additionalCacheKey: 'cacheKey' };
 
-      HostedZone.fromLookup(stack, 'Ref', filter, true);
+      HostedZone.fromLookup(stack, 'Ref', filter);
 
       const assembly = app.synth().getStackArtifact(stack.artifactId);
       const missing = assembly.assembly.manifest.missing!;
@@ -114,7 +114,7 @@ describe('hosted zone provider', () => {
       stack2.node.setContext(missing[0].key, fakeZone);
 
       // WHEN
-      const zoneRef = HostedZone.fromLookup(stack2, 'MyZoneProvider', filter, true);
+      const zoneRef = HostedZone.fromLookup(stack2, 'MyZoneProvider', filter);
 
       // THEN
       expect(zoneRef.hostedZoneId).toEqual(fakeZoneId);
