@@ -89,14 +89,14 @@
         },
         "ArtifactType": {
             "description": "Type of cloud artifact.",
+            "type": "string",
             "enum": [
                 "aws:cloudformation:stack",
                 "cdk:asset-manifest",
                 "cdk:cloud-assembly",
                 "cdk:tree",
                 "none"
-            ],
-            "type": "string"
+            ]
         },
         "MetadataEntry": {
             "description": "A metadata entry in a cloud assembly artifact.",
@@ -488,6 +488,7 @@
         },
         "ContextProvider": {
             "description": "Identifier for the context provider",
+            "type": "string",
             "enum": [
                 "ami",
                 "availability-zones",
@@ -500,8 +501,7 @@
                 "security-group",
                 "ssm",
                 "vpc-provider"
-            ],
-            "type": "string"
+            ]
         },
         "ContextQueryProperties": {
             "anyOf": [
@@ -700,6 +700,10 @@
                 "returnVpnGateways": {
                     "description": "Whether to populate the `vpnGatewayId` field of the `VpcContextResponse`,\nwhich contains the VPN Gateway ID, if one exists. You can explicitly\ndisable this in order to avoid the lookup if you know the VPC does not have\na VPN Gatway attached. (Default true)",
                     "type": "boolean"
+                },
+                "additionalCacheKey": {
+                    "description": "When the vpc is cached in cdk.context.json, adds an additional discriminator to the\ncache key so that separate lookups with the same parameters can have separate cache lifecycles",
+                    "type": "string"
                 }
             },
             "required": [
@@ -751,6 +755,10 @@
                     "description": "The ARN of the role that should be used to look up the missing values (Default - None)",
                     "type": "string"
                 },
+                "additionalCacheKey": {
+                    "description": "When the load balancer is cached in cdk.context.json, adds an additional discriminator to the\ncache key so that separate lookups with the same parameters can have separate cache lifecycles",
+                    "type": "string"
+                },
                 "loadBalancerType": {
                     "$ref": "#/definitions/LoadBalancerType",
                     "description": "Filter load balancers by their type"
@@ -775,11 +783,11 @@
         },
         "LoadBalancerType": {
             "description": "Type of load balancer",
+            "type": "string",
             "enum": [
                 "application",
                 "network"
-            ],
-            "type": "string"
+            ]
         },
         "LoadBalancerListenerContextQuery": {
             "description": "Query input for looking up a load balancer listener",
@@ -816,6 +824,10 @@
                 "listenerPort": {
                     "description": "Filter listeners by listener port (Default - does not filter by a listener port)",
                     "type": "number"
+                },
+                "additionalCacheKey": {
+                    "description": "When listener is cached in cdk.context.json, adds an additional discriminator to the\ncache key so that separate lookups with the same parameters can have separate cache lifecycles",
+                    "type": "string"
                 },
                 "loadBalancerType": {
                     "$ref": "#/definitions/LoadBalancerType",
@@ -866,6 +878,10 @@
                 "vpcId": {
                     "description": "VPC ID (Default - None)",
                     "type": "string"
+                },
+                "additionalCacheKey": {
+                    "description": "When the security group is cached in cdk.context.json, adds an additional discriminator to the\ncache key so that separate lookups with the same parameters can have separate cache lifecycles",
+                    "type": "string"
                 }
             },
             "required": [
@@ -891,6 +907,10 @@
                 },
                 "aliasName": {
                     "description": "Alias name used to search the Key",
+                    "type": "string"
+                },
+                "additionalCacheKey": {
+                    "description": "When the key is cached in cdk.context.json, adds an additional discriminator to the\ncache key so that separate lookups with the same parameters can have separate cache lifecycles",
                     "type": "string"
                 }
             },
