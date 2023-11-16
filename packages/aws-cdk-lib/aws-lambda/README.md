@@ -162,7 +162,7 @@ import { ILogGroup } from 'aws-cdk-lib/aws-logs';
 
 declare const logGroup: ILogGroup;  
 
-new lambda.Function(stack, 'Lambda', {
+new lambda.Function(this, 'Lambda', {
   code: new lambda.InlineCode('foo'),
   handler: 'index.handler',
   runtime: lambda.Runtime.NODEJS_18_X,
