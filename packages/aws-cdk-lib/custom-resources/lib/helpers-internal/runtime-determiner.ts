@@ -4,6 +4,8 @@ import { Runtime, RuntimeFamily } from '../../../aws-lambda';
  * A utility class used to determine the latest runtime for a specific runtime family
  */
 export class RuntimeDeterminer {
+  public static readonly DEFAULT_RUNTIME = Runtime.NODEJS_LATEST;
+
   public static determineLatestNodeJsRuntime(runtimes: Runtime[]) {
     const nodeJsRuntimes = runtimes.filter(runtime => runtime.family === RuntimeFamily.NODEJS);
 
@@ -37,8 +39,6 @@ export class RuntimeDeterminer {
 
     return latestRuntime;
   }
-
-  private static readonly DEFAULT_RUNTIME = Runtime.NODEJS_LATEST;
 
   private static compareNodeJsRuntimes(runtime1: Runtime, runtime2: Runtime) {
     return RuntimeDeterminer.compareRuntimes(runtime1, runtime2, RuntimeFamily.NODEJS);

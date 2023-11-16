@@ -4,22 +4,22 @@ import { Function, FunctionOptions, Runtime } from '../../../aws-lambda';
 import { RuntimeDeterminer } from '../helpers-internal/runtime-determiner';
 
 /**
- * Placeholder
+ * Properties used to define a Lambda function used as a custom resource provider.
  */
 export interface CdkFunctionProps extends FunctionOptions {
   /**
-   * Placeholder
+   * The source code of your Lambda function.
    */
   readonly code: CdkCode;
 
   /**
-   * Placeholder
+   * The name of the method within your code that Lambda calls to execute your function.
    */
   readonly handler: string;
 }
 
 /**
- * Placeholder
+ * Represents a Lambda function used as a custom resource provider.
  */
 export class CdkFunction extends Function {
   private static determineRuntime(compatibleRuntimes: Runtime[]) {

@@ -4,32 +4,42 @@ import { FunctionOptions, Runtime, SingletonFunction } from '../../../aws-lambda
 import { RuntimeDeterminer } from '../helpers-internal/runtime-determiner';
 
 /**
- * Placeholder
+ * Properties used to define a singleton Lambda function to be used as a custom resource
+ * provider.
  */
 export interface CdkSingletonFunctionProps extends FunctionOptions {
   /**
-   * Placeholder
+   * A unique identifier to identify this lambda
+   *
+   * The identifier should be unique across all custom resource providers.
+   * We recommend generating a UUID per provider.
    */
   readonly uuid: string;
 
   /**
-   * Placeholder
+   * The source code of your Lambda function.
    */
   readonly code: CdkCode;
 
   /**
-   * Placeholder
+   * The name of the method within your code that Lambda calls to execute your function.
    */
   readonly handler: string;
 
   /**
-   * Placeholder
+   * A descriptive name for the purpose of this Lambda.
+   *
+   * If the Lambda does not have a physical name, this string will be
+   * reflected its generated name. The combination of lambdaPurpose
+   * and uuid must be unique.
+   *
+   * @default SingletonLambda
    */
   readonly lambdaPurpose?: string;
 }
 
 /**
- * Placeholder
+ * Represents a singleton Lambda function to be used as a custom resource provider.
  */
 export class CdkSingletonFunction extends SingletonFunction {
   private static determineRuntime(compatibleRuntimes: Runtime[]) {

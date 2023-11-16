@@ -1,33 +1,35 @@
 import { Code, Runtime } from '../../../aws-lambda';
 
 /**
- * Placeholder
+ * Properties used to define source code executed within a Lambda function acting as a
+ * custom resource provider.
  */
 export interface CdkCodeProps {
   /**
-   * Placeholder
+   * Runtimes that are compatible with the source code.
    */
   readonly compatibleRuntimes: Runtime[];
 }
 
 /**
- * Placeholder
+ * Represents source code that will be executed within a Lambda function acting as a
+ * custom resource provider.
  */
 export class CdkCode {
   /**
-   * Placeholder
+   * Loads the source code from a local disk path.
    */
   public static fromAsset(path: string, props: CdkCodeProps) {
     return new CdkCode(path, props);
   }
 
   /**
-   * Placeholder
+   * The source code loaded from a local disk path.
    */
   public readonly codeFromAsset: Code;
 
   /**
-   * Placeholder
+   * Runtimes that are compatible with the source code.
    */
   public readonly compatibleRuntimes: Runtime[];
 

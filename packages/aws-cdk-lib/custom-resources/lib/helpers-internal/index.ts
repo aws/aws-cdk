@@ -1,2 +1,2 @@
 export * from './sdk-info';
-export * from './version-compare';
+export * from './runtime-determiner';
