@@ -1010,6 +1010,40 @@ describe('integration tests required on features', () => {
       expect(mockAddLabel.mock.calls).toEqual([]);
     });
   });
+
+  describe('metadata file changed', () => {
+    const files: linter.GitHubFile[] = [{
+      filename: 'packages/aws-cdk-lib/region-info/build-tools/metadata.ts',
+    }];
+
+    test('with aws-cdk-automation author', async () => {
+      const pr = {
+        title: 'chore: Update regions',
+        number: 1234,
+        labels: [],
+        user: {
+          login: 'aws-cdk-automation'
+        },
+      };
+
+      const prLinter = configureMock(pr, files);
+      await expect(prLinter.validatePullRequestTarget(SHA)).resolves;
+    });
+
+    test('with another author', async () => {
+      const pr = {
+        title: 'chore: Update regions',
+        number: 1234,
+        labels: [],
+        user: {
+          login: 'johndoe',
+        },
+      };
+
+      const prLinter = configureMock(pr, files);
+      await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow();
+    });
+  });
 });
 
 function configureMock(pr: Subset<linter.GitHubPr>, prFiles?: linter.GitHubFile[]): linter.PullRequestLinter {
