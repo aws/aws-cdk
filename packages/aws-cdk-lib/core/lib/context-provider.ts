@@ -67,10 +67,9 @@ export class ContextProvider {
   public static getKey(scope: Construct, options: GetContextKeyOptions): GetContextKeyResult {
     const stack = Stack.of(scope);
 
-    const props = {
-      ...((options.includeEnvironment ?? true) ? { account: stack.account, region: stack.region } : {}),
-      ...options.props,
-    };
+    const props = options.includeEnvironment ?? true
+      ? { account: stack.account, region: stack.region, ...options.props }
+      : (options.props ?? {});
 
     if (Object.values(props).find(x => Token.isUnresolved(x))) {
       throw new Error(
