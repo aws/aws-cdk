@@ -650,7 +650,7 @@ export abstract class BaseService extends Resource
     if (
       props.deploymentController?.type === DeploymentControllerType.CODE_DEPLOY
       && props.taskDefinitionRevision
-      && props.taskDefinitionRevision !== TaskDefinitionRevision.LATEST
+      && props.taskDefinitionRevision.revision !== 'latest'
     ) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:nonLatestRevisionWithCodeDeploy', 'The task definition is always set to the latest revision when using the CODE_DEPLOY deployment type, ignoring taskDefinitionRevision.');
     }
@@ -663,8 +663,8 @@ export abstract class BaseService extends Resource
       this.node.addDependency(taskDefinition);
     } else if (props.taskDefinitionRevision) {
       this.resource.taskDefinition = taskDefinition.family;
-      if (props.taskDefinitionRevision.revisionId !== 'latest') {
-        this.resource.taskDefinition += `:${props.taskDefinitionRevision.revisionId}`;
+      if (props.taskDefinitionRevision.revision !== 'latest') {
+        this.resource.taskDefinition += `:${props.taskDefinitionRevision.revision}`;
       }
       this.node.addDependency(taskDefinition);
     }
