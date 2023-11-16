@@ -1,11 +1,11 @@
+import * as cdk from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
-import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as cdk from 'aws-cdk-lib';
-import { Cluster, ClusterParameterGroup, ClusterSubnetGroup, ClusterType } from '../lib';
 import { CfnCluster } from 'aws-cdk-lib/aws-redshift';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import { Cluster, ClusterParameterGroup, ClusterSubnetGroup, ClusterType } from '../lib';
 
 let stack: cdk.Stack;
 let vpc: ec2.IVpc;
@@ -779,6 +779,31 @@ describe('default IAM role', () => {
 });
 
 describe('IAM role', () => {
+
+  test('cluster instantiated with a default grantable IAM Role', () => {
+    // GIVEN
+    const cluster = new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+    });
+
+    const bucket = new s3.Bucket(stack, 'Bucket');
+    bucket.grantRead(cluster);
+    // THEN
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::Redshift::Cluster', {
+      IamRoles: Match.arrayEquals([
+        { 'Fn::GetAtt': [Match.stringLikeRegexp('ServiceRole*'), 'Arn'] },
+      ]),
+    });
+
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: Match.objectLike({ Statement: Match.arrayEquals([Match.objectLike({ Resource: Match.arrayWith([Match.objectLike({ 'Fn::GetAtt': [stack.getLogicalId(bucket.node.defaultChild as s3.CfnBucket), 'Arn'] })]) })]) }),
+    });
+  });
   test('roles can be directly attached to cluster during declaration', () => {
     // GIVEN
     const role = new iam.Role(stack, 'Role', {
@@ -796,6 +821,7 @@ describe('IAM role', () => {
     Template.fromStack(stack).hasResource('AWS::Redshift::Cluster', {
       Properties: {
         IamRoles: Match.arrayEquals([
+          { 'Fn::GetAtt': [Match.stringLikeRegexp('ServiceRole*'), 'Arn'] },
           { 'Fn::GetAtt': [Match.stringLikeRegexp('Role*'), 'Arn'] },
         ]),
       },
@@ -821,6 +847,7 @@ describe('IAM role', () => {
     Template.fromStack(stack).hasResource('AWS::Redshift::Cluster', {
       Properties: {
         IamRoles: Match.arrayEquals([
+          { 'Fn::GetAtt': [Match.stringLikeRegexp('ServiceRole*'), 'Arn'] },
           { 'Fn::GetAtt': [Match.stringLikeRegexp('Role*'), 'Arn'] },
         ]),
       },
@@ -848,6 +875,7 @@ describe('IAM role', () => {
     Template.fromStack(stack).hasResource('AWS::Redshift::Cluster', {
       Properties: {
         IamRoles: Match.arrayEquals([
+          { 'Fn::GetAtt': [Match.stringLikeRegexp('ServiceRole*'), 'Arn'] },
           { 'Fn::ImportValue': Match.stringLikeRegexp('NewTestStack:ExportsOutputFnGetAttRole*') },
         ]),
       },

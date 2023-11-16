@@ -158,6 +158,25 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "ClusterServiceRole32F1A0E2": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "redshift.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "ClusterSubnetsDCFA5CB7": {
    "Type": "AWS::Redshift::ClusterSubnetGroup",
    "Properties": {
@@ -233,6 +252,14 @@
     "ClusterType": "multi-node",
     "DBName": "default_db",
     "Encrypted": true,
+    "IamRoles": [
+     {
+      "Fn::GetAtt": [
+       "ClusterServiceRole32F1A0E2",
+       "Arn"
+      ]
+     }
+    ],
     "MasterUserPassword": {
      "Fn::Join": [
       "",

@@ -1,17 +1,17 @@
-import * as path from 'path';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { CfnCluster } from 'aws-cdk-lib/aws-redshift';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import { ArnFormat, CustomResource, Duration, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token } from 'aws-cdk-lib/core';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId, Provider } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
+import * as path from 'path';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { ClusterParameterGroup, IClusterParameterGroup } from './parameter-group';
-import { CfnCluster } from 'aws-cdk-lib/aws-redshift';
 import { ClusterSubnetGroup, IClusterSubnetGroup } from './subnet-group';
 /**
  * Possible Node Types to use in the cluster
@@ -299,10 +299,17 @@ export interface ClusterProps {
   readonly masterUser: Login;
 
   /**
-   * A list of AWS Identity and Access Management (IAM) role that can be used by the cluster to access other AWS services.
+   * A default AWS Identity and Access Management (IAM) role to be used by the cluster to access other AWS services.
+   *
+   * @default - Create a new role
+   */
+  readonly serviceRole?: iam.IRole;
+
+  /**
+   * A list of additional AWS Identity and Access Management (IAM) roles that can be used by the cluster to access other AWS services.
    * The maximum number of roles to attach to a cluster is subject to a quota.
    *
-   * @default - No role is attached to the cluster.
+   * @default - Only the serviceRole is attached to the cluster.
    */
   readonly roles?: iam.IRole[];
 
@@ -417,7 +424,7 @@ abstract class ClusterBase extends Resource implements ICluster {
  *
  * @resource AWS::Redshift::Cluster
  */
-export class Cluster extends ClusterBase {
+export class Cluster extends ClusterBase implements iam.IGrantable {
   /**
    * Import an existing DatabaseCluster from properties
    */
@@ -453,6 +460,16 @@ export class Cluster extends ClusterBase {
    * The secret attached to this cluster
    */
   public readonly secret?: secretsmanager.ISecret;
+
+  /**
+   *  A default AWS Identity and Access Management (IAM) role to be used by the cluster to access other AWS services.
+   */
+  public readonly serviceRole: iam.IRole;
+
+  /**
+   * The principal this cluster is using.
+   */
+  public readonly grantPrincipal: iam.IPrincipal;
 
   private readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
   private readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
@@ -492,7 +509,13 @@ export class Cluster extends ClusterBase {
       subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
     };
     this.parameterGroup = props.parameterGroup;
-    this.roles = props?.roles ? [...props.roles] : [];
+
+    this.serviceRole = props.serviceRole ?? new iam.Role(this, 'ServiceRole', {
+      assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com'),
+    });
+    this.grantPrincipal = this.serviceRole;
+
+    this.roles = props?.roles ? [this.serviceRole, ...props.roles] : [this.serviceRole];
 
     const removalPolicy = props.removalPolicy ?? RemovalPolicy.RETAIN;
 

@@ -274,6 +274,49 @@
             "id": "Cluster",
             "path": "aws-cdk-redshift-cluster-create/Cluster",
             "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "aws-cdk-redshift-cluster-create/Cluster/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-cdk-redshift-cluster-create/Cluster/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-redshift-cluster-create/Cluster/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "redshift.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
               "Subnets": {
                 "id": "Subnets",
                 "path": "aws-cdk-redshift-cluster-create/Cluster/Subnets",
@@ -416,6 +459,14 @@
                     "clusterType": "multi-node",
                     "dbName": "default_db",
                     "encrypted": true,
+                    "iamRoles": [
+                      {
+                        "Fn::GetAtt": [
+                          "ClusterServiceRole32F1A0E2",
+                          "Arn"
+                        ]
+                      }
+                    ],
                     "masterUsername": {
                       "Fn::Join": [
                         "",
@@ -1175,6 +1226,49 @@
             "id": "Cluster",
             "path": "aws-cdk-redshift-cluster-update/Cluster",
             "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "aws-cdk-redshift-cluster-update/Cluster/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-cdk-redshift-cluster-update/Cluster/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-redshift-cluster-update/Cluster/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "redshift.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
               "Subnets": {
                 "id": "Subnets",
                 "path": "aws-cdk-redshift-cluster-update/Cluster/Subnets",
@@ -1317,6 +1411,14 @@
                     "clusterType": "multi-node",
                     "dbName": "default_db",
                     "encrypted": true,
+                    "iamRoles": [
+                      {
+                        "Fn::GetAtt": [
+                          "ClusterServiceRole32F1A0E2",
+                          "Arn"
+                        ]
+                      }
+                    ],
                     "masterUsername": {
                       "Fn::Join": [
                         "",
@@ -1803,7 +1905,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.70"
+              "version": "10.3.0"
             }
           },
           "BootstrapVersion": {
@@ -1841,7 +1943,7 @@
                 "path": "aws-cdk-redshift-reboot-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -1861,7 +1963,7 @@
                             "path": "aws-cdk-redshift-reboot-test/DefaultTest/DeployAssert/AwsApiCallRedshiftdescribeClusters6bafd43948798e58841b1b8573ec604a/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.70"
+                              "version": "10.3.0"
                             }
                           }
                         },
@@ -1933,7 +2035,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "version": "10.3.0"
                     }
                   },
                   "AwsApiCallRedshiftdescribeClusterParameters801759f1ed4aa244ea8caa72110acfce": {
@@ -1949,7 +2051,7 @@
                             "path": "aws-cdk-redshift-reboot-test/DefaultTest/DeployAssert/AwsApiCallRedshiftdescribeClusterParameters801759f1ed4aa244ea8caa72110acfce/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.70"
+                              "version": "10.3.0"
                             }
                           }
                         },
@@ -2003,7 +2105,7 @@
                             "path": "aws-cdk-redshift-reboot-test/DefaultTest/DeployAssert/AwsApiCallRedshiftdescribeClusterParameters484bd6887b66878d75dbc528712556c7/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.70"
+                              "version": "10.3.0"
                             }
                           }
                         },
@@ -2083,7 +2185,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },

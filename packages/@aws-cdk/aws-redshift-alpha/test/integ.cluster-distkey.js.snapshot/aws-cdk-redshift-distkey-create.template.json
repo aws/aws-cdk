@@ -472,6 +472,25 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "ClusterServiceRole32F1A0E2": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "redshift.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "ClusterSubnetsDCFA5CB7": {
    "Type": "AWS::Redshift::ClusterSubnetGroup",
    "Properties": {
@@ -547,6 +566,14 @@
     "ClusterType": "multi-node",
     "DBName": "my_db",
     "Encrypted": true,
+    "IamRoles": [
+     {
+      "Fn::GetAtt": [
+       "ClusterServiceRole32F1A0E2",
+       "Arn"
+      ]
+     }
+    ],
     "KmsKeyId": {
      "Ref": "customkmskey377C6F9A"
     },
@@ -688,7 +715,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
+     "S3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-redshift-distkey-create/Table/Resource/Provider)",
     "Environment": {
@@ -831,7 +858,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "95dfca0d51dadef71390a414c093b29c52f39e1ff2acef2a26ded36e756bf386.zip"
+     "S3Key": "e275fde8d2a03c793e28878ff6a48e84af45d2655f0c79418b5b86f2add826f7.zip"
     },
     "Handler": "index.handler",
     "Role": {

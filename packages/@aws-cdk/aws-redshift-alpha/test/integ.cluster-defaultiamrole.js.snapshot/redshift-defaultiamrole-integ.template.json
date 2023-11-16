@@ -408,6 +408,23 @@
     }
    }
   },
+  "Cluster1ServiceRole62B18E46": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "redshift.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
   "Cluster1Subnets31ACF7AC": {
    "Type": "AWS::Redshift::ClusterSubnetGroup",
    "Properties": {
@@ -477,6 +494,12 @@
     "DBName": "default_db",
     "Encrypted": true,
     "IamRoles": [
+     {
+      "Fn::GetAtt": [
+       "Cluster1ServiceRole62B18E46",
+       "Arn"
+      ]
+     },
      {
       "Fn::GetAtt": [
        "IAMF8C44BCA",
@@ -708,7 +731,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "e5178afc49b7c6a85127a67856ce958e4f0879ce6aad5e974cac2a088bf939db.zip"
+     "S3Key": "b0de6372e1c756b7afa1a8a1d0a21ee4cd330150290abffc9bc163f285150514.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -724,6 +747,23 @@
     "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E",
     "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
    ]
+  },
+  "Cluster2ServiceRole7B955676": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "redshift.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
   },
   "Cluster2SubnetsB040B959": {
    "Type": "AWS::Redshift::ClusterSubnetGroup",
@@ -794,6 +834,12 @@
     "DBName": "default_db",
     "Encrypted": true,
     "IamRoles": [
+     {
+      "Fn::GetAtt": [
+       "Cluster2ServiceRole7B955676",
+       "Arn"
+      ]
+     },
      {
       "Fn::GetAtt": [
        "IAMF8C44BCA",

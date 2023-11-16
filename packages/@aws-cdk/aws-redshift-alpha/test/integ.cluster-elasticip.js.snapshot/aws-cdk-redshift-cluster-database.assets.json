@@ -1,7 +1,7 @@
 {
-  "version": "29.0.0",
+  "version": "35.0.0",
   "files": {
-    "df6d8dd1b5d25c8d69910f850500b42f43ae98b5dfe06f5f0d1843148539d7f3": {
+    "342a77fdd94211b1711879c1c8574bb117284fca310fca15c026cdfc3d7f82a0": {
       "source": {
         "path": "aws-cdk-redshift-cluster-database.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "df6d8dd1b5d25c8d69910f850500b42f43ae98b5dfe06f5f0d1843148539d7f3.json",
+          "objectKey": "342a77fdd94211b1711879c1c8574bb117284fca310fca15c026cdfc3d7f82a0.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

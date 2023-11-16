@@ -698,6 +698,49 @@
             "id": "Cluster1",
             "path": "redshift-defaultiamrole-integ/Cluster1",
             "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "redshift-defaultiamrole-integ/Cluster1/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "redshift-defaultiamrole-integ/Cluster1/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "redshift-defaultiamrole-integ/Cluster1/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "redshift.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
               "Subnets": {
                 "id": "Subnets",
                 "path": "redshift-defaultiamrole-integ/Cluster1/Subnets",
@@ -838,6 +881,12 @@
                     "dbName": "default_db",
                     "encrypted": true,
                     "iamRoles": [
+                      {
+                        "Fn::GetAtt": [
+                          "Cluster1ServiceRole62B18E46",
+                          "Arn"
+                        ]
+                      },
                       {
                         "Fn::GetAtt": [
                           "IAMF8C44BCA",
@@ -1109,7 +1158,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "e5178afc49b7c6a85127a67856ce958e4f0879ce6aad5e974cac2a088bf939db.zip"
+                      "s3Key": "b0de6372e1c756b7afa1a8a1d0a21ee4cd330150290abffc9bc163f285150514.zip"
                     },
                     "handler": "index.handler",
                     "role": {
@@ -1137,6 +1186,49 @@
             "id": "Cluster2",
             "path": "redshift-defaultiamrole-integ/Cluster2",
             "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "redshift-defaultiamrole-integ/Cluster2/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "redshift-defaultiamrole-integ/Cluster2/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "redshift-defaultiamrole-integ/Cluster2/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "redshift.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
               "Subnets": {
                 "id": "Subnets",
                 "path": "redshift-defaultiamrole-integ/Cluster2/Subnets",
@@ -1277,6 +1369,12 @@
                     "dbName": "default_db",
                     "encrypted": true,
                     "iamRoles": [
+                      {
+                        "Fn::GetAtt": [
+                          "Cluster2ServiceRole7B955676",
+                          "Arn"
+                        ]
+                      },
                       {
                         "Fn::GetAtt": [
                           "IAMF8C44BCA",
@@ -1442,7 +1540,7 @@
                 "path": "DefaultIamRoleInteg/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -1488,7 +1586,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },
