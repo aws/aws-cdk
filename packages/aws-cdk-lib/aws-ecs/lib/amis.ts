@@ -410,7 +410,7 @@ Object.defineProperty(BottleRocketImage.prototype, BR_IMAGE_SYMBOL, {
   writable: false,
 });
 
-function lookupImage(scope: Construct, cachedInContext: boolean, parameterName: string, additionalCacheKey?: string) {
+function lookupImage(scope: Construct, cachedInContext: boolean | undefined, parameterName: string, additionalCacheKey?: string) {
   return cachedInContext
     ? ssm.StringParameter.valueFromLookup(scope, parameterName, additionalCacheKey)
     : ssm.StringParameter.valueForTypedStringParameterV2(scope, parameterName, ssm.ParameterValueType.AWS_EC2_IMAGE_ID);
