@@ -20,10 +20,6 @@ export class RuntimeDeterminer {
       latestRuntime = RuntimeDeterminer.compareNodeJsRuntimes(latestRuntime, nodeJsRuntimes[idx]);
     }
 
-    if (latestRuntime.isDeprecated) {
-      throw new Error(`Latest compatible Python runtime found ${latestRuntime} is deprecated`);
-    }
-
     return latestRuntime;
   }
 
@@ -35,13 +31,8 @@ export class RuntimeDeterminer {
     }
 
     let latestRuntime = pythonRuntimes[0];
-
     for (let idx = 1; idx < pythonRuntimes.length; idx++) {
       latestRuntime = RuntimeDeterminer.comparePythonRuntimes(latestRuntime, pythonRuntimes[idx]);
-    }
-
-    if (latestRuntime.isDeprecated) {
-      throw new Error(`Latest compatible Python runtime found ${latestRuntime} is deprecated`);
     }
 
     return latestRuntime;
@@ -50,18 +41,10 @@ export class RuntimeDeterminer {
   private static readonly DEFAULT_RUNTIME = Runtime.NODEJS_LATEST;
 
   private static compareNodeJsRuntimes(runtime1: Runtime, runtime2: Runtime) {
-    if (runtime1.family !== RuntimeFamily.NODEJS) {}
-
-    if (runtime2.family !== RuntimeFamily.NODEJS) {}
-
     return RuntimeDeterminer.compareRuntimes(runtime1, runtime2, RuntimeFamily.NODEJS);
   }
 
   private static comparePythonRuntimes(runtime1: Runtime, runtime2: Runtime) {
-    if (runtime1.family !== RuntimeFamily.PYTHON) {}
-
-    if (runtime2.family !== RuntimeFamily.PYTHON) {}
-
     return RuntimeDeterminer.compareRuntimes(runtime1, runtime2, RuntimeFamily.PYTHON);
   }
 
