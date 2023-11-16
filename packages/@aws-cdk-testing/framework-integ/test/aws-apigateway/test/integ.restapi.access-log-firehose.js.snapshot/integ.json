@@ -1,0 +1,12 @@
+{
+  "version": "34.0.0",
+  "testCases": {
+    "apigateway-access-logs-firehose/DefaultTest": {
+      "stacks": [
+        "test-apigateway-access-logs-firehose"
+      ],
+      "assertionStack": "apigateway-access-logs-firehose/DefaultTest/DeployAssert",
+      "assertionStackName": "apigatewayaccesslogsfirehoseDefaultTestDeployAssert6376A91B"
+    }
+  }
+}
