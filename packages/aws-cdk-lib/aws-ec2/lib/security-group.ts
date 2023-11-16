@@ -444,7 +444,7 @@ export class SecurityGroup extends SecurityGroupBase {
         securityGroupId: options.securityGroupId,
         securityGroupName: options.securityGroupName,
         vpcId: options.vpc?.vpcId,
-        ...(options.additionalCacheKey ? { additionalCacheKey: options.additionalCacheKey } : {}),
+        additionalCacheKey: options.additionalCacheKey,
       },
       dummyValue: {
         securityGroupId: 'sg-12345678',

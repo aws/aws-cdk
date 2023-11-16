@@ -1292,7 +1292,7 @@ export class Vpc extends VpcBase {
         returnAsymmetricSubnets: true,
         returnVpnGateways: options.returnVpnGateways,
         subnetGroupNameTag: options.subnetGroupNameTag,
-        ...(options.additionalCacheKey ? { additionalCacheKey: options.additionalCacheKey } : {}),
+        additionalCacheKey: options.additionalCacheKey,
       } as cxschema.VpcContextQuery,
       dummyValue: undefined,
     }).value;
