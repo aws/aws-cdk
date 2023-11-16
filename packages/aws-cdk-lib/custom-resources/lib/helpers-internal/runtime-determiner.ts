@@ -6,6 +6,12 @@ import { Runtime, RuntimeFamily } from '../../../aws-lambda';
 export class RuntimeDeterminer {
   public static readonly DEFAULT_RUNTIME = Runtime.NODEJS_LATEST;
 
+  /**
+   * Determines the latest nodejs runtime from a list of runtimes
+   *
+   * @param runtimes the list of runtimes to search in
+   * @returns the latest nodejs runtime or undefined if no nodejs runtimes are provided
+   */
   public static determineLatestNodeJsRuntime(runtimes: Runtime[]) {
     const nodeJsRuntimes = runtimes.filter(runtime => runtime.family === RuntimeFamily.NODEJS);
 
@@ -25,6 +31,12 @@ export class RuntimeDeterminer {
     return latestRuntime;
   }
 
+  /**
+   * Determines the latest python runtime from a list of runtimes
+   *
+   * @param runtimes the list of runtimes to search in
+   * @returns the latest python runtime or undefined if no python runtimes are provided
+   */
   public static determineLatestPythonRuntime(runtimes: Runtime[]) {
     const pythonRuntimes = runtimes.filter(runtime => runtime.family === RuntimeFamily.PYTHON);
 
