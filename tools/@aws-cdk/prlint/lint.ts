@@ -567,6 +567,11 @@ export class PullRequestLinter {
       testRuleSet: [{ test: noCliChanges }],
     });
 
+    validationCollector.validateRuleSet({
+      exemption: (pr) => pr.user?.login === 'aws-cdk-automation',
+      testRuleSet: [{ test: noMetadataChanges }],
+    })
+
     await this.deletePRLinterComment();
     try {
       await this.communicateResult(validationCollector);
@@ -732,13 +737,13 @@ function validateTitleScope(pr: GitHubPr): TestResult {
 
 /**
  * Check that the PR is not opened from main branch of author's fork
- * 
+ *
  * @param pr github pr
  * @returns test result
  */
 function validateBranch(pr: GitHubPr): TestResult {
   const result = new TestResult();
-  
+
   if (pr.head && pr.head.ref) {
     result.assessFailure(pr.head.ref === 'main', PR_FROM_MAIN_ERROR);
   }
@@ -764,6 +769,13 @@ function noCliChanges(pr: GitHubPr, files: GitHubFile[]): TestResult {
     cliCodeChanged,
     `CLI code has changed. A maintainer must run the code through the testing pipeline (git fetch origin ${branch} && git push -f origin FETCH_HEAD:test-main-pipeline), then add the '${Exemption.CLI_INTEG_TESTED}' label when the pipeline succeeds.`,
   );
+}
+
+function noMetadataChanges(_pr: GitHubPr, files: GitHubFile[]): TestResult {
+  const result = new TestResult();
+  const condition = files.some(file => file.filename === 'packages/aws-cdk-lib/region-info/build-tools/metadata.ts');
+  result.assessFailure(condition, 'Manual changes to the metadata.ts file are not allowed.');
+  return result;
 }
 
 require('make-runnable/custom')({
