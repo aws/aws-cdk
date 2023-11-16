@@ -61,7 +61,7 @@ describe('python runtimes', () => {
 
   test('returns undefined if no python runtimes specified', () => {
     // GIVEN
-    const runtimes = [Runtime.NODEJS_16_X, Runtime.NODEJS_18_X, Runtime.PYTHON_3_11];
+    const runtimes = [Runtime.NODEJS_16_X, Runtime.NODEJS_18_X, Runtime.NODEJS_20_X];
 
     // WHEN
     const latestRuntime = RuntimeDeterminer.determineLatestPythonRuntime(runtimes);
