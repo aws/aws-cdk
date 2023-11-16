@@ -1,4 +1,5 @@
 import { Template } from '../../assertions';
+import * as firehose from '../../aws-kinesisfirehose';
 import * as logs from '../../aws-logs';
 import * as cdk from '../../core';
 import * as apigateway from '../lib';
@@ -360,6 +361,70 @@ describe('stage', () => {
     });
   });
 
+  test('if only the custom log destination firehose delivery stream is set', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
+    const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
+    api.root.addMethod('GET');
+
+    // WHEN
+    const testDeliveryStream = new firehose.CfnDeliveryStream(stack, 'MyStream', {
+      deliveryStreamName: 'amazon-apigateway-delivery-stream',
+    });
+    new apigateway.Stage(stack, 'my-stage', {
+      deployment,
+      accessLogDestination: new apigateway.FirehoseLogDestination(testDeliveryStream),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Stage', {
+      AccessLogSetting: {
+        DestinationArn: {
+          'Fn::GetAtt': [
+            'MyStream',
+            'Arn',
+          ],
+        },
+        Format: '$context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] "$context.httpMethod $context.resourcePath $context.protocol" $context.status $context.responseLength $context.requestId',
+      },
+      StageName: 'prod',
+    });
+  });
+
+  test('if the custom log destination firehose delivery stream and format is set', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
+    const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
+    api.root.addMethod('GET');
+
+    // WHEN
+    const testDeliveryStream = new firehose.CfnDeliveryStream(stack, 'MyStream', {
+      deliveryStreamName: 'amazon-apigateway-delivery-stream',
+    });
+    const testFormat = apigateway.AccessLogFormat.jsonWithStandardFields();
+    new apigateway.Stage(stack, 'my-stage', {
+      deployment,
+      accessLogDestination: new apigateway.FirehoseLogDestination(testDeliveryStream),
+      accessLogFormat: testFormat,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Stage', {
+      AccessLogSetting: {
+        DestinationArn: {
+          'Fn::GetAtt': [
+            'MyStream',
+            'Arn',
+          ],
+        },
+        Format: '{"requestId":"$context.requestId","ip":"$context.identity.sourceIp","user":"$context.identity.user","caller":"$context.identity.caller","requestTime":"$context.requestTime","httpMethod":"$context.httpMethod","resourcePath":"$context.resourcePath","status":"$context.status","protocol":"$context.protocol","responseLength":"$context.responseLength"}',
+      },
+      StageName: 'prod',
+    });
+  });
+
   describe('access log check', () => {
     test('fails when access log format does not contain `contextRequestId()` or `contextExtendedRequestId()', () => {
       // GIVEN
@@ -499,6 +564,25 @@ describe('stage', () => {
         deployment,
         accessLogFormat: testFormat,
       })).toThrow(/Access log format is specified without a destination/);
+    });
+
+    test('fails if firehose delivery stream name does not start with amazon-apigateway-', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
+      const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
+      api.root.addMethod('GET');
+
+      // WHEN
+      const testDeliveryStream = new firehose.CfnDeliveryStream(stack, 'MyStream', {
+        deliveryStreamName: 'invalid',
+      });
+      expect(() => {
+        new apigateway.Stage(stack, 'my-stage', {
+          deployment,
+          accessLogDestination: new apigateway.FirehoseLogDestination(testDeliveryStream),
+        });
+      }).toThrow(/Firehose delivery stream name for access log destination must begin with 'amazon-apigateway-', got 'invalid'/);
     });
   });
 
