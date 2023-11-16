@@ -667,7 +667,7 @@ export class GenericWindowsImage implements IMachineImage {
  * will be used on future runs. To refresh the AMI lookup, you will have to
  * evict the value from the cache using the `cdk context` command. See
  * https://docs.aws.amazon.com/cdk/latest/guide/context.html for more information.
- * If `props.additionalCacheKey` is true, the context key use that value as a discriminator
+ * If `props.additionalCacheKey` is set, the context key uses that value as a discriminator
  * rather than the cached value being global across all lookups
  */
 export class LookupMachineImage implements IMachineImage {
