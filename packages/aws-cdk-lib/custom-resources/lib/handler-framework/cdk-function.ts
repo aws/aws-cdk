@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { CdkCode } from './cdk-code';
 import { Function, FunctionOptions, Runtime, RuntimeFamily } from '../../../aws-lambda';
-import { LatestRuntime } from '../helpers-internal/latest-runtime';
+import { latestNodejsRuntime, latestPythonRuntime } from '../helpers-internal/version-compare';
 
 /**
  * Placeholder
@@ -25,50 +25,43 @@ export class CdkFunction extends Function {
   private static readonly DEFAULT_RUNTIME = Runtime.NODEJS_LATEST;
 
   private static determineRuntime(compatibleRuntimes: Runtime[]) {
-    const compatibleRuntimesLength = compatibleRuntimes.length;
-    if (compatibleRuntimesLength < 1) {
-      throw new Error('`code` must specify at least 1 compatible runtime');
+    if (compatibleRuntimes.length === 0) {
+      throw new Error('`code` must specify at least one compatible runtime');
     }
 
+    // check for default runtime
     if (compatibleRuntimes.some(runtime => runtime.runtimeEquals(CdkFunction.DEFAULT_RUNTIME))) {
       return CdkFunction.DEFAULT_RUNTIME;
     }
 
-    const runtimesByFamily = new Map<RuntimeFamily, Runtime[]>();
-    // categorize runtimes by family
-    for (let runtime of compatibleRuntimes) {
-      if (runtime.family !== undefined) {
-        if (runtimesByFamily.has(runtime.family)) {
-          const runtimesForFamily = runtimesByFamily.get(runtime.family);
-          if (runtimesForFamily !== undefined) {
-            runtimesForFamily.push(runtime);
-            runtimesByFamily.set(runtime.family, runtimesForFamily);
-          }
-        } else {
-          runtimesByFamily.set(runtime.family, [runtime]);
-        }
-      }
-    }
-
-    const nodejsRuntimes = runtimesByFamily.get(RuntimeFamily.NODEJS);
+    // first try for latest nodejs runtime
+    const nodejsRuntimes = compatibleRuntimes.filter(runtime => runtime.family === RuntimeFamily.NODEJS);
     if (nodejsRuntimes !== undefined && nodejsRuntimes.length > 0) {
-      const latestRuntime = LatestRuntime.fromNodejsRuntimes(nodejsRuntimes);
+      let latestRuntime = nodejsRuntimes[0];
+      for (let idx = 1; idx < nodejsRuntimes.length; idx++) {
+        latestRuntime = latestNodejsRuntime(latestRuntime, nodejsRuntimes[idx]);
+      }
       if (latestRuntime.isDeprecated) {
-        throw new Error();
+        throw new Error(`Latest compatible Nodejs runtime found ${latestRuntime} is deprecated`);
       }
       return latestRuntime;
     }
 
-    const pythonRuntimes = runtimesByFamily.get(RuntimeFamily.PYTHON);
+    // next try for latest python runtime
+    const pythonRuntimes = compatibleRuntimes.filter(runtime => runtime.family === RuntimeFamily.PYTHON);
     if (pythonRuntimes !== undefined && pythonRuntimes.length > 0) {
-      const latestRuntime = LatestRuntime.fromPythonRuntimes(pythonRuntimes);
+      let latestRuntime = pythonRuntimes[0];
+      for (let idx = 1; idx < pythonRuntimes.length; idx++) {
+        latestRuntime = latestPythonRuntime(latestRuntime, pythonRuntimes[idx]);
+      }
       if (latestRuntime.isDeprecated) {
-        throw new Error();
+        throw new Error(`Latest compatible Python runtime found ${latestRuntime} is deprecated`);
       }
       return latestRuntime;
     }
 
-    throw new Error();
+    // throw if nodejs or python runtimes aren't specified
+    throw new Error('Compatible runtimes can only be python or nodejs');
   }
 
   public constructor(scope: Construct, id: string, props: CdkFunctionProps) {
