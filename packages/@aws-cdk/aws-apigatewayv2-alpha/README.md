@@ -46,7 +46,7 @@ This module supports features under [API Gateway v2](https://docs.aws.amazon.com
 that lets users set up Websocket and HTTP APIs.
 REST APIs can be created using the `aws-cdk-lib/aws-apigateway` module.
 
-HTTP and Websocket APIs use the same Cloudformation resources under the hood. However, this module separates them into two separate constructs for a more efficient abstraction since there are a number of Cloudformation properties that specifically apply only to each type of API.
+HTTP and Websocket APIs use the same CloudFormation resources under the hood. However, this module separates them into two separate constructs for a more efficient abstraction since there are a number of CloudFormation properties that specifically apply only to each type of API.
 
 ## HTTP API
 
