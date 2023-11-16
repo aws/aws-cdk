@@ -1,0 +1,191 @@
+{
+  "version": "34.0.0",
+  "artifacts": {
+    "test-apigateway-access-logs-firehose.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "test-apigateway-access-logs-firehose.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "test-apigateway-access-logs-firehose": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "test-apigateway-access-logs-firehose.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/82152e7007729e7e3c85aee383e9aa74f272a1c2b9eec64572fc7592d7303e25.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "test-apigateway-access-logs-firehose.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "test-apigateway-access-logs-firehose.assets"
+      ],
+      "metadata": {
+        "/test-apigateway-access-logs-firehose/Bucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Bucket83908E77"
+          }
+        ],
+        "/test-apigateway-access-logs-firehose/Bucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketPolicyE9A3008A"
+          }
+        ],
+        "/test-apigateway-access-logs-firehose/Bucket/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketAutoDeleteObjectsCustomResourceBAFD23C2"
+          }
+        ],
+        "/test-apigateway-access-logs-firehose/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+          }
+        ],
+        "/test-apigateway-access-logs-firehose/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+          }
+        ],
+        "/test-apigateway-access-logs-firehose/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Role1ABCC5F0"
+          }
+        ],
+        "/test-apigateway-access-logs-firehose/MyStream": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyStream"
+          }
+        ],
+        "/test-apigateway-access-logs-firehose/MyApi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyApi49610EDF"
+          }
+        ],
+        "/test-apigateway-access-logs-firehose/MyApi/CloudWatchRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyApiCloudWatchRole2BEC1A9C"
+          }
+        ],
+        "/test-apigateway-access-logs-firehose/MyApi/Account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyApiAccount13882D84"
+          }
+        ],
+        "/test-apigateway-access-logs-firehose/MyApi/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyApiDeploymentECB0D05E81594d6748b4b291f993111a5070d710"
+          }
+        ],
+        "/test-apigateway-access-logs-firehose/MyApi/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyApiDeploymentStageprodE1054AF0"
+          }
+        ],
+        "/test-apigateway-access-logs-firehose/MyApi/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyApiEndpoint869ABE96"
+          }
+        ],
+        "/test-apigateway-access-logs-firehose/MyApi/Default/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyApiGETD0C7AA0C"
+          }
+        ],
+        "/test-apigateway-access-logs-firehose/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/test-apigateway-access-logs-firehose/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "test-apigateway-access-logs-firehose"
+    },
+    "apigatewayaccesslogsfirehoseDefaultTestDeployAssert6376A91B.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "apigatewayaccesslogsfirehoseDefaultTestDeployAssert6376A91B.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "apigatewayaccesslogsfirehoseDefaultTestDeployAssert6376A91B": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "apigatewayaccesslogsfirehoseDefaultTestDeployAssert6376A91B.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "apigatewayaccesslogsfirehoseDefaultTestDeployAssert6376A91B.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "apigatewayaccesslogsfirehoseDefaultTestDeployAssert6376A91B.assets"
+      ],
+      "metadata": {
+        "/apigateway-access-logs-firehose/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/apigateway-access-logs-firehose/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "apigateway-access-logs-firehose/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
