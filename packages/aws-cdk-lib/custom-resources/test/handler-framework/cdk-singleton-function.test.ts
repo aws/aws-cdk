@@ -1,10 +1,44 @@
 import * as path from 'path';
+import { Template } from '../../../assertions';
 import { Runtime } from '../../../aws-lambda';
 import { Stack } from '../../../core';
 import { CdkCode } from '../../lib/handler-framework/cdk-code';
 import { CdkSingletonFunction } from '../../lib/handler-framework/cdk-singleton-function';
 
 describe('cdk singleton function', () => {
+  test('stack contains expected lambda function', () => {
+    // GIVEN
+    const stack = new Stack();
+    const code = CdkCode.fromAsset(path.join(__dirname, 'test-handler'), {
+      compatibleRuntimes: [Runtime.NODEJS_16_X, Runtime.NODEJS_18_X],
+    });
+
+    // WHEN
+    new CdkSingletonFunction(stack, 'Function', {
+      handler: 'index.handler',
+      code,
+      uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Code: {
+        S3Bucket: {
+          'Fn::Sub': 'cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}',
+        },
+        S3Key: '02227527d0e41dc9ca1090db083832a1fd9a8ec58cc140edb308086dc100a25b.zip',
+      },
+      Handler: 'index.handler',
+      Role: {
+        'Fn::GetAtt': [
+          'SingletonLambda84c0de93353f42179b0b45b6c993251aServiceRole26D59235',
+          'Arn',
+        ],
+      },
+      Runtime: 'nodejs18.x',
+    });
+  });
+
   test('throws if no nodejs or python runtimes are specified in cdk code', () => {
     // GIVEN
     const stack = new Stack();

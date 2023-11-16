@@ -1,15 +1,14 @@
 import * as path from 'path';
 import { Template } from '../../../assertions';
 import { Runtime } from '../../../aws-lambda';
-import { App, Stack } from '../../../core';
+import { Stack } from '../../../core';
 import { CdkCode } from '../../lib/handler-framework/cdk-code';
 import { CdkFunction } from '../../lib/handler-framework/cdk-function';
 
 describe('cdk function', () => {
   test('stack contains expected lambda function', () => {
     // GIVEN
-    const app = new App();
-    const stack = new Stack(app, 'Stack');
+    const stack = new Stack();
     const code = CdkCode.fromAsset(path.join(__dirname, 'test-handler'), {
       compatibleRuntimes: [Runtime.NODEJS_16_X, Runtime.NODEJS_18_X],
     });
