@@ -2052,15 +2052,6 @@
     "@smithy/types" "^2.3.3"
     tslib "^2.5.0"
 
-"@aws-sdk/middleware-sdk-route53@3.433.0":
-  version "3.433.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/middleware-sdk-route53/-/middleware-sdk-route53-3.433.0.tgz#cd0c5aa23d00c31f0dd0765a4b0db95bded31340"
-  integrity sha512-bQ/dNrpWN1Zwc4hJ8FneYmo164WqXrbJTzaCwVvHbhlwc9q7tQ8ElYUpodxVJ7aHCvX4NaVI6FJLtd7AynENnA==
-  dependencies:
-    "@aws-sdk/types" "3.433.0"
-    "@smithy/types" "^2.4.0"
-    tslib "^2.5.0"
-
 "@aws-sdk/middleware-sdk-s3@3.418.0":
   version "3.418.0"
   resolved "https://registry.npmjs.org/@aws-sdk/middleware-sdk-s3/-/middleware-sdk-s3-3.418.0.tgz#b1de52d54e0cbc8d46ce0bc4c6c54b527f409aaf"
