@@ -1,5 +1,4 @@
-import { Event } from '../lib';
-import { handler } from '../lib/eval-nodejs-handler';
+import { handler, Event } from '../../lib/aws-stepfunctions-tasks/eval-nodejs-handler';
 
 beforeAll(() => {
   jest.spyOn(console, 'log').mockImplementation();
