@@ -1614,7 +1614,7 @@ test('using ComputeType.Small with a Windows image fails validation', () => {
       }),
       environment: invalidEnvironment,
     });
-  }).toThrow(/Windows images do not support the Small ComputeType/);
+  }).toThrow(/Windows images do not support the 'BUILD_GENERAL1_SMALL' compute type/);
 });
 
 test('using ComputeType.X2Large with a Windows image fails validation', () => {
@@ -1632,7 +1632,7 @@ test('using ComputeType.X2Large with a Windows image fails validation', () => {
       }),
       environment: invalidEnvironment,
     });
-  }).toThrow(/Windows images do not support the 2xLarge ComputeType/);
+  }).toThrow(/Windows images do not support the 'BUILD_GENERAL1_2XLARGE' compute type/);
 });
 
 test('fromCodebuildImage', () => {
