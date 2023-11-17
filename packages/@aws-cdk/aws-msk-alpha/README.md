@@ -219,7 +219,6 @@ making it cost-effective to build streaming data applications.
 
 > Visit [Tiered storage](https://docs.aws.amazon.com/msk/latest/developerguide/msk-tiered-storage.html) for more details.
 
-
 ```ts
 declare const vpc: ec2.Vpc;
 declare const bucket: s3.IBucket;
@@ -228,6 +227,6 @@ const cluster = new msk.Cluster(this, 'cluster', {
   clusterName: 'myCluster',
   kafkaVersion: msk.KafkaVersion.V2_8_2_TIERED,
   vpc,
-  storageMode: msk.StorageMode.TIERED
+  storageMode: msk.StorageMode.TIERED,
 });
 ```

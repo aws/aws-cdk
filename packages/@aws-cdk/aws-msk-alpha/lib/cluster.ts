@@ -103,6 +103,7 @@ export interface ClusterProps {
    * @default - 1000 GiB EBS volume
    */
   readonly ebsStorageInfo?: EbsStorageInfo;
+  
   /**
    * This controls storage mode for supported storage tiers.
    *
@@ -697,7 +698,7 @@ export class Cluster extends ClusterBase {
         props.numberOfBrokerNodes !== undefined ?
           subnetSelection.availabilityZones.length * props.numberOfBrokerNodes : subnetSelection.availabilityZones.length,
       brokerNodeGroupInfo: {
-        instanceType: instanceType,
+        instanceType,
         clientSubnets: subnetSelection.subnetIds,
         securityGroups: this.connections.securityGroups.map(
           (group) => group.securityGroupId,
