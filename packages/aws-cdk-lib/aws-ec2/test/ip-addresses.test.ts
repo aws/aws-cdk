@@ -1,7 +1,8 @@
 
 import { Template } from '../../assertions';
 import { Stack } from '../../core';
-import { IpAddresses, SubnetType, Vpc } from '../lib';
+import { IpAddresses, SubnetType, Vpc, cidrSplitToCfnExpression } from '../lib';
+import { CidrSplit } from '../lib/cidr-splits';
 
 describe('Cidr vpc allocation', () => {
 
@@ -406,5 +407,35 @@ describe('AwsIpam Vpc Integration', () => {
     template.resourceCountIs('AWS::EC2::Subnet', 2);
 
   });
+});
 
+type CfnSplit = {
+  count: number;
+  hostbits: number;
+  select: number;
+}
+
+test.each([
+  // Index into first block
+  [{ count: 4096, netmask: 28, index: 123 }, /* -> */ { count: 16, hostbits: 12, select: 0 }, { count: 256, hostbits: 4, select: 123 }],
+  // Index into second block
+  [{ count: 4096, netmask: 28, index: 300 }, /* -> */ { count: 16, hostbits: 12, select: 1 }, { count: 256, hostbits: 4, select: 44 }],
+  // Index into third block
+  [{ count: 4096, netmask: 28, index: 513 }, /* -> */ { count: 16, hostbits: 12, select: 2 }, { count: 256, hostbits: 4, select: 1 }],
+  // Count too low for netmask (wasting space)
+  [{ count: 4000, netmask: 28, index: 300 }, /* -> */ { count: 16, hostbits: 12, select: 1 }, { count: 256, hostbits: 4, select: 44 }],
+])('recursive splitting when CIDR needs to be split more than 256 times: %p', (split: CidrSplit, first: CfnSplit, second: CfnSplit) => {
+  const stack = new Stack();
+  expect(stack.resolve(cidrSplitToCfnExpression('10.0.0.0/16', split))).toEqual({
+    'Fn::Select': [
+      second.select,
+      {
+        'Fn::Cidr': [
+          { 'Fn::Select': [first.select, { 'Fn::Cidr': ['10.0.0.0/16', first.count, `${first.hostbits}`] }] },
+          second.count,
+          `${second.hostbits}`,
+        ],
+      },
+    ],
+  });
 });
