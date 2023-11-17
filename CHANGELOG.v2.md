@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.110.0](https://github.com/aws/aws-cdk/compare/v2.109.0...v2.110.0) (2023-11-16)
+
+
+### Features
+
+* **lambda:** support for advanced logging ([#28039](https://github.com/aws/aws-cdk/issues/28039)) ([3278c19](https://github.com/aws/aws-cdk/commit/3278c190e1d63d0a99d60c1ae8a2ae690d64113f))
+* update AWS Service Spec ([#28034](https://github.com/aws/aws-cdk/issues/28034)) ([1d1876c](https://github.com/aws/aws-cdk/commit/1d1876c2caf741953cf42ffc59029ea875ebccb7))
+
 ## [2.109.0](https://github.com/aws/aws-cdk/compare/v2.108.1...v2.109.0) (2023-11-15)
 
 
