@@ -1,3 +1,6 @@
+import { loadAwsServiceSpecSync } from '@aws-cdk/aws-service-spec';
+import { Resource, SpecDatabase } from '@aws-cdk/service-spec-types';
+
 /**
  * Compares two objects for equality, deeply. The function handles arguments that are
  * +null+, +undefined+, arrays and objects. For objects, the function will not take the
@@ -162,4 +165,24 @@ export function mangleLikeCloudFormation(payload: string) {
  */
 function safeParseFloat(str: string): number {
   return Number(str);
+}
+
+/**
+ * Lazily load the service spec database and cache the loaded db
+*/
+let DATABASE: SpecDatabase | undefined;
+function database(): SpecDatabase {
+  if (!DATABASE) {
+    DATABASE = loadAwsServiceSpecSync();
+  }
+  return DATABASE;
+}
+
+/**
+ * Load a Resource model from the Service Spec Database
+ *
+ * The database is loaded lazily and cached across multiple calls to `loadResourceModel`.
+ */
+export function loadResourceModel(type: string): Resource | undefined {
+  return database().lookup('resource', 'cloudFormationType', 'equals', type).at(0);
 }
