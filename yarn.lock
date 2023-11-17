@@ -5805,7 +5805,7 @@ aws-sdk-mock@5.8.0:
     sinon "^14.0.1"
     traverse "^0.6.6"
 
-aws-sdk@^2.1231.0, aws-sdk@^2.1498.0, aws-sdk@^2.928.0:
+aws-sdk@^2.1231.0, aws-sdk@^2.1492.0, aws-sdk@^2.1498.0, aws-sdk@^2.928.0:
   version "2.1498.0"
   resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1498.0.tgz#7f6249d2d5aa08c1933b65e2f6e187d7d723a23c"
   integrity sha512-m3yxYWrXsn9FJRcWBZZ4ySOEKxodP8KMhwoGJMALd0MLtfPUl/Yf0YuwVyTct2ZzRGMU8i7XoZYPY1fr76LD1w==
@@ -6234,6 +6234,17 @@ cdk8s-plus-24@2.12.1:
   integrity sha512-R7pJnR3riVINwJzgEbPdPlr662Lasz3IB630+O7xL5Ylu31eLCqCNO3vdIgI5l49qbSui8xD7MBxlhTdsu3/MA==
   dependencies:
     minimatch "^3.1.2"
+
+cdk8s@2.64.23:
+  version "2.64.23"
+  resolved "https://registry.npmjs.org/cdk8s/-/cdk8s-2.64.23.tgz#35d3e609918236f10cf4cc09c3f021c6b582ac9d"
+  integrity sha512-aweandhvYeITpstj6uuAXMeaiEJ5shoaYNJiMLqbcYEGKoS/luEf2tfql5Pl8NsG49ctTUcaJEiMpKlVusKpJw==
+  dependencies:
+    fast-json-patch "^3.1.1"
+    follow-redirects "^1.15.2"
+    yaml "2.3.2"
+  optionalDependencies:
+    backport "8.5.0"
 
 cdk8s@2.68.5:
   version "2.68.5"
