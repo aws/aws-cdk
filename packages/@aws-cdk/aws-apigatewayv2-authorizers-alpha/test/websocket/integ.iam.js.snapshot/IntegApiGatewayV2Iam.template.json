@@ -100,7 +100,7 @@
        {
         "Ref": "WebSocketApi34BCF99B"
        },
-       "/*/*$connect"
+       "/*$connect"
       ]
      ]
     }

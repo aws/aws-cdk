@@ -31,3 +31,4 @@ test/test-archive-follow/data/linked
 scripts/*.d.ts
 
 !lib/types.d.ts
+!lib/aws-cloudfront/edge-function/index.js
