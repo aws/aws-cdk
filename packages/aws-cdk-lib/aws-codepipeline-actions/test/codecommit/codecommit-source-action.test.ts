@@ -206,7 +206,7 @@ describe('CodeCommit Source Action', () => {
         'detail': {
           referenceType: ['branch'],
           event: ['referenceCreated', 'referenceUpdated'],
-          referenceName: ['master'],
+          referenceName: ['test-branch'],
         },
       };
 
@@ -214,9 +214,9 @@ describe('CodeCommit Source Action', () => {
         customEventRule: {
           eventPattern,
           target: new LambdaFunction(new Function(stack, 'TestFunction', {
-            code: Code.fromInline('foo'),
-            handler: 'bar',
             runtime: Runtime.NODEJS_LATEST,
+            handler: 'index.handler',
+            code: Code.fromInline('exports.handler = handler.toString()'),
           })),
         },
       });
@@ -226,21 +226,34 @@ describe('CodeCommit Source Action', () => {
           'source': [
             'aws.codecommit',
           ],
-          'resources': [{
-            'Fn::GetAtt': ['MyRepoF4F48043', 'Arn'],
+          'resources': ['foo', {
+            'Fn::GetAtt': [
+              'MyRepoF4F48043',
+              'Arn',
+            ],
           }],
           'detail-type': [
             'CodeCommit Repository State Change',
           ],
           'detail': {
+            'referenceType': [
+              'branch',
+            ],
             'event': [
               'referenceCreated',
               'referenceUpdated',
             ],
             'referenceName': [
-              'master',
+              'test-branch',
             ],
           },
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+        'Handler': 'index.handler',
+        'Code': {
+          'ZipFile': 'exports.handler = handler.toString()',
         },
       });
     });

@@ -70,6 +70,10 @@ export interface ICustomEventRule {
   eventPattern: EventPattern;
   /** Target e.g. Lambda when event pattern is fulfilled */
   target: IRuleTarget
+  /** Rulename */
+  ruleName?: string;
+  /** Description */
+  description?: string;
 }
 
 /**
@@ -196,7 +200,8 @@ export class CodeCommitSourceAction extends Action {
     const createEvent = this.props.trigger === undefined ||
       this.props.trigger === CodeCommitTrigger.EVENTS;
     const eventId = this.generateEventId(stage);
-    if (createEvent) {
+
+    if (createEvent && this.props.customEventRule === undefined) {
       this.props.repository.onCommit(eventId, {
         target: new targets.CodePipeline(stage.pipeline, {
           eventRole: this.props.eventRole,
