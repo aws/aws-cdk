@@ -147,7 +147,7 @@ describe('logging Config', () => {
         logFormat: lambda.LogFormat.TEXT,
         applicationLogLevel: lambda.ApplicationLogLevel.INFO,
       });
-    }).toThrow(/ApplicationLogLevel and SystemLogLevel cannot be specified without LogFormat being set to JSON./);
+    }).toThrow(/To use ApplicationLogLevel and\/or SystemLogLevel you must set LogFormat to 'JSON', got 'Text'./);
   });
 
   test('Throws when systemLogLevel is specified with TEXT logFormat', () => {
@@ -161,7 +161,7 @@ describe('logging Config', () => {
         logFormat: lambda.LogFormat.TEXT,
         systemLogLevel: lambda.SystemLogLevel.INFO,
       });
-    }).toThrow(/ApplicationLogLevel and SystemLogLevel cannot be specified without LogFormat being set to JSON./);
+    }).toThrow(/To use ApplicationLogLevel and\/or SystemLogLevel you must set LogFormat to 'JSON', got 'Text'./);
   });
 
   test('Throws when applicationLogLevel is specified if logFormat is undefined', () => {
@@ -174,7 +174,7 @@ describe('logging Config', () => {
         runtime: lambda.Runtime.NODEJS_18_X,
         applicationLogLevel: lambda.ApplicationLogLevel.INFO,
       });
-    }).toThrow(/ApplicationLogLevel and SystemLogLevel cannot be specified without LogFormat being set to JSON./);
+    }).toThrow(/To use ApplicationLogLevel and\/or SystemLogLevel you must set LogFormat to 'JSON', got 'undefined'./);
   });
 
   test('Throws when systemLogLevel is specified if logFormat is undefined', () => {
@@ -187,6 +187,6 @@ describe('logging Config', () => {
         runtime: lambda.Runtime.NODEJS_18_X,
         systemLogLevel: lambda.SystemLogLevel.INFO,
       });
-    }).toThrow(/ApplicationLogLevel and SystemLogLevel cannot be specified without LogFormat being set to JSON./);
+    }).toThrow(/To use ApplicationLogLevel and\/or SystemLogLevel you must set LogFormat to 'JSON', got 'undefined'./);
   });
 });
