@@ -8,7 +8,7 @@ import * as cdk from '../../core';
  */
 export interface IAccelerator extends cdk.IResource {
   /**
-   * The ARN of the accelerator
+   * The ARN of the accelerator.
    *
    * @attribute
    */
@@ -21,6 +21,20 @@ export interface IAccelerator extends cdk.IResource {
    * @attribute
    */
   readonly dnsName: string;
+
+  /**
+   * IP addressess associated with the accelerator.
+   *
+   * @attribute
+   */
+  readonly ipAddresses?: string[];
+
+  /**
+   * The IP address type that the accelerator supports. For a standard accelerator, the value can be IPV4 or DUAL_STACK.
+   *
+   * @attribute
+   */
+  readonly ipAddressType?: string;
 }
 
 /**
@@ -40,6 +54,20 @@ export interface AcceleratorProps {
    * @default true
    */
   readonly enabled?: boolean;
+
+  /**
+   * IP addressess associated with the accelerator.
+   *
+   * @default - undefined. IP addresses will be from Amazon's pool of IP addresses.
+   */
+  readonly ipAddresses?: string[];
+
+  /**
+  * The IP address type that an accelerator supports. For a standard accelerator, the value can be IPV4 or DUAL_STACK.
+  *
+  * @default - undefined
+  */
+  readonly ipAddressType?: string;
 }
 
 /**
@@ -55,6 +83,16 @@ export interface AcceleratorAttributes {
    * The DNS name of the accelerator
    */
   readonly dnsName: string;
+
+  /**
+   * IP addressess associated with the accelerator.
+   */
+  readonly ipAddresses?: string[];
+
+  /**
+   * The IP address type that an accelerator supports. For a standard accelerator, the value can be IPV4 or DUAL_STACK.
+   */
+  readonly ipAddressType?: string;
 }
 
 /**
@@ -68,6 +106,8 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
     class Import extends cdk.Resource implements IAccelerator {
       public readonly acceleratorArn = attrs.acceleratorArn;
       public readonly dnsName = attrs.dnsName;
+      public readonly ipAddresses = attrs.ipAddresses ?? undefined;
+      public readonly ipAddressType = attrs.ipAddressType ?? undefined;
     }
     return new Import(scope, id);
   }
@@ -82,6 +122,16 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
    */
   public readonly dnsName: string;
 
+  /**
+   * IP addressess associated with the accelerator
+   */
+  public readonly ipAddresses?: string[];
+
+  /**
+   * The IP address type that an accelerator supports. For a standard accelerator, the value can be IPV4 or DUAL_STACK.
+  */
+  public readonly ipAddressType?: string;
+
   constructor(scope: Construct, id: string, props: AcceleratorProps = {}) {
     super(scope, id);
 
@@ -92,10 +142,14 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
     const resource = new ga.CfnAccelerator(this, 'Resource', {
       enabled: props.enabled ?? true,
       name,
+      ipAddresses: props.ipAddresses ?? undefined,
+      ipAddressType: props.ipAddressType ?? undefined,
     });
 
     this.acceleratorArn = resource.attrAcceleratorArn;
     this.dnsName = resource.attrDnsName;
+    this.ipAddresses = resource.ipAddresses;
+    this.ipAddressType = resource.ipAddressType;
   }
 
   /**

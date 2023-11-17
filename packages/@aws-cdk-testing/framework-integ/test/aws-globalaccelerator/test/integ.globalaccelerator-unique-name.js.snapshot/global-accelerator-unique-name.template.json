@@ -3,8 +3,15 @@
   "Accelerator8EB0B6B1": {
    "Type": "AWS::GlobalAccelerator::Accelerator",
    "Properties": {
-    "Name": "globalacceleratoruniquenameAccelerator519EC5EE",
-    "Enabled": true
+    "Enabled": true,
+    "Name": "globalacceleratoruniquenameAccelerator519EC5EE"
+   }
+  },
+  "AcceleratorIpAddressTypeA76A861D": {
+   "Type": "AWS::GlobalAccelerator::Accelerator",
+   "Properties": {
+    "Enabled": true,
+    "Name": "globalacceleratoruniquenameAcceleratorIpAddressTypeC99146E6"
    }
   }
  },

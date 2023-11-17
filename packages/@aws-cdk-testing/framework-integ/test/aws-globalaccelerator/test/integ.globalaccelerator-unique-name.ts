@@ -9,6 +9,10 @@ const stack = new Stack(app, 'global-accelerator-unique-name');
 
 new ga.Accelerator(stack, 'Accelerator');
 
+new ga.Accelerator(stack, 'AcceleratorIpAddressType', {
+  ipAddressType: 'IPV4',
+});
+
 new IntegTest(app, 'GlobalAcceleratorUniqueName', {
   testCases: [stack],
 });

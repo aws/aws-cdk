@@ -18,8 +18,33 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::GlobalAccelerator::Accelerator",
                   "aws:cdk:cloudformation:props": {
-                    "name": "globalacceleratoruniquenameAccelerator519EC5EE",
-                    "enabled": true
+                    "enabled": true,
+                    "name": "globalacceleratoruniquenameAccelerator519EC5EE"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_globalaccelerator.CfnAccelerator",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_globalaccelerator.Accelerator",
+              "version": "0.0.0"
+            }
+          },
+          "AcceleratorIpAddressType": {
+            "id": "AcceleratorIpAddressType",
+            "path": "global-accelerator-unique-name/AcceleratorIpAddressType",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "global-accelerator-unique-name/AcceleratorIpAddressType/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::GlobalAccelerator::Accelerator",
+                  "aws:cdk:cloudformation:props": {
+                    "enabled": true,
+                    "name": "globalacceleratoruniquenameAcceleratorIpAddressTypeC99146E6"
                   }
                 },
                 "constructInfo": {
@@ -68,7 +93,7 @@
                 "path": "GlobalAcceleratorUniqueName/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -114,7 +139,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.3.0"
         }
       }
     },

@@ -1,5 +1,5 @@
 import { testFixture } from './util';
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import { Duration } from '../../core';
 import * as ga from '../lib';
 
@@ -222,6 +222,47 @@ test('create accelerator with uniqueResourceName if acceleratorName is not speci
   Template.fromStack(stack).hasResourceProperties('AWS::GlobalAccelerator::Accelerator', {
     Enabled: true,
     Name: 'StackAccelerator472129D8',
+  });
+});
+
+test('create accelerator with IpAddresses and IpAddressType', () => {
+  // GIVEN
+  const { stack } = testFixture();
+
+  // WHEN
+  new ga.Accelerator(stack, 'Accelerator', {
+    ipAddresses: [
+      '1.1.1.1',
+      '2.2.2.2',
+    ],
+    ipAddressType: 'IPV4',
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::GlobalAccelerator::Accelerator', {
+    Enabled: true,
+    Name: 'StackAccelerator472129D8',
+    IpAddresses: [
+      '1.1.1.1',
+      '2.2.2.2',
+    ],
+    IpAddressType: 'IPV4',
+  });
+});
+
+test('create accelerator with no IpAddresses and IpAddressType', () => {
+  // GIVEN
+  const { stack } = testFixture();
+
+  // WHEN
+  new ga.Accelerator(stack, 'Accelerator');
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::GlobalAccelerator::Accelerator', {
+    Enabled: true,
+    Name: 'StackAccelerator472129D8',
+    IpAddresses: Match.absent(),
+    IpAddressType: Match.absent(),
   });
 });
 
