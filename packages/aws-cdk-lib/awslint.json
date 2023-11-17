@@ -349,6 +349,8 @@
     "docs-public-apis:aws-cdk-lib.aws_events_targets.SfnStateMachine.machine",
     "docs-public-apis:aws-cdk-lib.aws_events_targets.SnsTopic.topic",
     "docs-public-apis:aws-cdk-lib.aws_events_targets.SqsQueue.queue",
+    "docs-public-apis:aws-cdk-lib.aws_globalaccelerator.AcceleratorAttributes.ipAddresses",
+    "docs-public-apis:aws-cdk-lib.aws_globalaccelerator.AcceleratorAttributes.ipAddressType",
     "docs-public-apis:aws-cdk-lib.aws_lambda.Alias.fromAliasAttributes",
     "docs-public-apis:aws-cdk-lib.aws_lambda.FunctionBase",
     "docs-public-apis:aws-cdk-lib.aws_lambda.QualifiedFunctionBase",
