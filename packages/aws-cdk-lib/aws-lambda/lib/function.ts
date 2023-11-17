@@ -1048,6 +1048,7 @@ export class Function extends FunctionBase {
     const reservedEnvironmentVariables = [
       '_HANDLER',
       '_X_AMZN_TRACE_ID',
+      'AWS_DEFAULT_REGION',
       'AWS_REGION',
       'AWS_EXECUTION_ENV',
       'AWS_LAMBDA_FUNCTION_NAME',
