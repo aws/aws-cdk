@@ -27,6 +27,8 @@ export interface EvaluateExpressionProps extends sfn.TaskStateBaseProps {
 /**
  * The event received by the Lambda function
  *
+ * Shared definition with packages/@aws-cdk/custom-resource-handlers/lib/custom-resources/aws-stepfunctions-tasks/index.ts
+ *
  * @internal
  */
 export interface Event {
@@ -119,7 +121,7 @@ function createEvalFn(runtime: lambda.Runtime | undefined, scope: Construct) {
     uuid,
     handler: 'index.handler',
     lambdaPurpose,
-    code: lambda.Code.fromAsset(path.join(__dirname, 'eval-nodejs-handler'), {
+    code: lambda.Code.fromAsset(path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-stepfunctions-tasks', 'eval-nodejs-handler'), {
       exclude: ['*.ts'],
     }),
   });
