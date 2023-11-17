@@ -40,14 +40,14 @@
      },
      "S3Key": "ff6ca8da1c8c599aa9f53b242d0e817f8a336ad653e62805a13a5ad46ea7ebe1.zip"
     },
+    "Handler": "com.mycompany.app.LambdaMethodHandler::handleRequest",
     "Role": {
      "Fn::GetAtt": [
       "MyFunctionServiceRole3C357FF2",
       "Arn"
      ]
     },
-    "Handler": "com.mycompany.app.LambdaMethodHandler::handleRequest",
-    "Runtime": "java17"
+    "Runtime": "java21"
    },
    "DependsOn": [
     "MyFunctionServiceRole3C357FF2"

@@ -5,6 +5,7 @@
       "stacks": [
         "aws-cdk-lambda-log-retention"
       ],
+      "diffAssets": true,
       "assertionStack": "LambdaLogRetentionInteg/DefaultTest/DeployAssert",
       "assertionStackName": "LambdaLogRetentionIntegDefaultTestDeployAssert90E53934"
     }

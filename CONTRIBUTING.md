@@ -146,7 +146,7 @@ The following tools need to be installed on your system prior to installing the 
   - We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
 - [Yarn >= 1.19.1, < 2](https://yarnpkg.com/lang/en/docs/install)
 - [.NET SDK >= 6.0.x](https://www.microsoft.com/net/download)
-- [Python >= 3.6.5, < 4.0](https://www.python.org/downloads/release/python-365/)
+- [Python >= 3.8.0, < 4.0](https://www.python.org/downloads/release/python-380/)
 - [Docker >= 19.03](https://docs.docker.com/get-docker/)
   - the Docker daemon must also be running
 
