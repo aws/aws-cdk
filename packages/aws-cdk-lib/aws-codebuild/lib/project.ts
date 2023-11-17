@@ -1341,9 +1341,10 @@ export class Project extends ProjectBase {
       throw new Error('Invalid CodeBuild environment: ' + errors.join('\n'));
     }
 
-    const imagePullPrincipalType = this.buildImage.imagePullPrincipalType === ImagePullPrincipalType.CODEBUILD
-      ? ImagePullPrincipalType.CODEBUILD
-      : ImagePullPrincipalType.SERVICE_ROLE;
+    const imagePullPrincipalType = this.isLambdaBuildImage(this.buildImage) ? undefined :
+      this.buildImage.imagePullPrincipalType === ImagePullPrincipalType.CODEBUILD
+        ? ImagePullPrincipalType.CODEBUILD
+        : ImagePullPrincipalType.SERVICE_ROLE;
     if (this.buildImage.repository) {
       if (imagePullPrincipalType === ImagePullPrincipalType.SERVICE_ROLE) {
         this.buildImage.repository.grantPull(this);

@@ -137,7 +137,6 @@
     "Environment": {
      "ComputeType": "BUILD_LAMBDA_1GB",
      "Image": "aws/codebuild/amazonlinux-x86_64-lambda-standard:nodejs18",
-     "ImagePullCredentialsType": "CODEBUILD",
      "PrivilegedMode": false,
      "Type": "LINUX_LAMBDA_CONTAINER"
     },
