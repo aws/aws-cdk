@@ -100,14 +100,21 @@ export class CoreTypes {
    * @deprecated - use `baseConstructClass()`
    */
   public get constructClass() {
-    return this.sys.findClass(CoreTypesFqn.Construct);
+    return this.baseConstructClass;
   }
 
   /**
    * @returns `classType` for the core type Construct
    */
   public get baseConstructClass() {
-    return this.sys.findClass(CoreTypesFqn.Construct);
+    return this.sys.findClass(this.baseConstructClassFqn);
+  }
+
+  /**
+   * @returns `classType` for the core type Construct
+   */
+  public get baseConstructClassFqn() {
+    return CoreTypesFqn.Construct;
   }
 
   /**
@@ -115,35 +122,63 @@ export class CoreTypes {
    * @deprecated - use `baseConstructInterface()`
    */
   public get constructInterface() {
-    return this.sys.findInterface(CoreTypesFqn.ConstructInterface);
+    return this.baseConstructInterface;
   }
 
   /**
    * @returns `interfacetype` for the core type Construct
    */
   public get baseConstructInterface() {
-    return this.sys.findInterface(CoreTypesFqn.ConstructInterface);
+    return this.sys.findInterface(this.baseConstructInterfaceFqn);
   }
 
   /**
-   * @returns `classType` for the core type Construct
+   * @returns fqn for for the core Construct interface
+   */
+  public get baseConstructInterfaceFqn() {
+    return CoreTypesFqn.ConstructInterface;
+  }
+
+  /**
+   * @returns `classType` for the core type Resource
    */
   public get resourceClass() {
-    return this.sys.findClass(CoreTypesFqn.Resource);
+    return this.sys.findClass(this.resourceClassFqn);
+  }
+
+  /**
+   * @returns fqn for the core type Resource
+   */
+  public get resourceClassFqn() {
+    return CoreTypesFqn.Resource;
+  }
+
+  /**
+   * @returns fqn for the core Resource interface
+   */
+  public get resourceInterface() {
+    return this.sys.findInterface(this.resourceInterfaceFqn);
   }
 
   /**
    * @returns `interfaceType` for the core type Resource
    */
-  public get resourceInterface() {
-    return this.sys.findInterface(CoreTypesFqn.ResourceInterface);
+  public get resourceInterfaceFqn() {
+    return CoreTypesFqn.ResourceInterface;
   }
 
   /**
    * @returns `classType` for the core type Token
    */
   public get tokenInterface() {
-    return this.sys.findInterface(CoreTypesFqn.ResolvableInterface);
+    return this.sys.findInterface(this.tokenInterfaceFqn);
+  }
+
+  /**
+   * @returns fqn for the core type Token
+   */
+  public get tokenInterfaceFqn() {
+    return CoreTypesFqn.ResolvableInterface;
   }
 
   public get physicalNameClass() {
@@ -157,12 +192,6 @@ export class CoreTypes {
     if (!sys.includesAssembly(CORE_MODULE)) {
       // disable-all-checks
       return;
-    }
-
-    for (const fqn of Object.values(CoreTypesFqn)) {
-      if (!this.sys.tryFindFqn(fqn)) {
-        throw new Error(`core FQN type not found: ${fqn}`);
-      }
     }
   }
 }
