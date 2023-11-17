@@ -1,4 +1,4 @@
-name: CodeGuru Security Example
+name: CodeGuru Security
 on:
   push:
     branches:
