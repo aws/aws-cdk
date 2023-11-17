@@ -89,7 +89,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-12345678-us-east-1",
-     "S3Key": "1a067234d252533a95ecaaccd4b3e821e6a69df0b03b918b596fc5a40eeb71a1.zip"
+     "S3Key": "0dfca907fd15148be57ff2c4bf72903a5684be8c5f342df63f11b1c360a3b760.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
