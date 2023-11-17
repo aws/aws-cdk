@@ -1,7 +1,7 @@
-import * as camelcase from 'camelcase';
 import * as reflect from 'jsii-reflect';
 import { CoreTypes } from './core-types';
 import { ResourceReflection } from './resource';
+import { pascalize } from '../case';
 import { Linter } from '../linter';
 
 const cfnResourceTagName = 'cloudformationResource';
@@ -100,6 +100,6 @@ export class CfnResourceReflection {
       return 'Id';
     }
 
-    return camelcase(name, { pascalCase: true });
+    return pascalize(name);
   }
 }
