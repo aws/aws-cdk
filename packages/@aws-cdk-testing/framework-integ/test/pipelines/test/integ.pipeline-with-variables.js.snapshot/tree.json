@@ -431,7 +431,7 @@
                                 },
                                 "outputArtifacts": [
                                   {
-                                    "name": "c8afb86a650460a8cc607cf72a0827e7c93d0d6d5c_key_Source"
+                                    "name": "c8afb86a650460a8cc607cf72a0827e7c93d0d6d5c_Source"
                                   }
                                 ],
                                 "actionTypeId": {
@@ -463,7 +463,7 @@
                                 "name": "Synth",
                                 "inputArtifacts": [
                                   {
-                                    "name": "c8afb86a650460a8cc607cf72a0827e7c93d0d6d5c_key_Source"
+                                    "name": "c8afb86a650460a8cc607cf72a0827e7c93d0d6d5c_Source"
                                   }
                                 ],
                                 "outputArtifacts": [
@@ -499,7 +499,7 @@
                                 "name": "Produce",
                                 "inputArtifacts": [
                                   {
-                                    "name": "c8afb86a650460a8cc607cf72a0827e7c93d0d6d5c_key_Source"
+                                    "name": "c8afb86a650460a8cc607cf72a0827e7c93d0d6d5c_Source"
                                   }
                                 ],
                                 "actionTypeId": {
@@ -526,7 +526,7 @@
                                 "name": "Consume",
                                 "inputArtifacts": [
                                   {
-                                    "name": "c8afb86a650460a8cc607cf72a0827e7c93d0d6d5c_key_Source"
+                                    "name": "c8afb86a650460a8cc607cf72a0827e7c93d0d6d5c_Source"
                                   }
                                 ],
                                 "actionTypeId": {

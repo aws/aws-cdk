@@ -57,7 +57,7 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "myapiDeployment92F2CB4993c0f175ba8d5964f5e1cc7bc64fe6e6": {
+  "myapiDeployment92F2CB49069d16df09c59427069eb74581a0403d": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "Description": "beta stage",
@@ -66,8 +66,8 @@
     }
    },
    "DependsOn": [
-    "myapiv1appliancesallGETC4DF552D",
-    "myapiv1appliancesallCF8C6A16",
+    "myapiv1appliancesallGETB8EB1B77",
+    "myapiv1appliancesallD279897B",
     "myapiv1booksGETC6B996D0",
     "myapiv1booksPOST53E2832E",
     "myapiv1books1D4BE6C1",
@@ -86,7 +86,7 @@
     "CacheClusterEnabled": true,
     "CacheClusterSize": "0.5",
     "DeploymentId": {
-     "Ref": "myapiDeployment92F2CB4993c0f175ba8d5964f5e1cc7bc64fe6e6"
+     "Ref": "myapiDeployment92F2CB49069d16df09c59427069eb74581a0403d"
     },
     "Description": "beta stage",
     "MethodSettings": [
@@ -290,19 +290,19 @@
     }
    }
   },
-  "myapiv1appliancesallCF8C6A16": {
+  "myapiv1appliancesallD279897B": {
    "Type": "AWS::ApiGateway::Resource",
    "Properties": {
     "ParentId": {
      "Ref": "myapiv113487378"
     },
-    "PathPart": "appliances:all",
+    "PathPart": "$appliances:all",
     "RestApiId": {
      "Ref": "myapi4C7BF186"
     }
    }
   },
-  "myapiv1appliancesallGETC4DF552D": {
+  "myapiv1appliancesallGETB8EB1B77": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
     "AuthorizationType": "NONE",
@@ -311,7 +311,7 @@
      "Type": "MOCK"
     },
     "ResourceId": {
-     "Ref": "myapiv1appliancesallCF8C6A16"
+     "Ref": "myapiv1appliancesallD279897B"
     },
     "RestApiId": {
      "Ref": "myapi4C7BF186"
@@ -682,7 +682,7 @@
     }
    },
    "DependsOn": [
-    "myapiv1appliancesallGETC4DF552D",
+    "myapiv1appliancesallGETB8EB1B77",
     "myapiv1booksGETC6B996D0",
     "myapiv1booksPOST53E2832E",
     "myapiv1toysGET7348114D",

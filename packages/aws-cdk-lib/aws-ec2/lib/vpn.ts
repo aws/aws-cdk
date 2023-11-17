@@ -319,7 +319,9 @@ export class VpnConnection extends VpnConnectionBase {
         throw new Error('Cannot specify more than two `tunnelOptions`');
       }
 
-      if (props.tunnelOptions.length === 2 && props.tunnelOptions[0].tunnelInsideCidr === props.tunnelOptions[1].tunnelInsideCidr) {
+      if (props.tunnelOptions.length === 2 &&
+        props.tunnelOptions[0].tunnelInsideCidr === props.tunnelOptions[1].tunnelInsideCidr &&
+        props.tunnelOptions[0].tunnelInsideCidr !== undefined) {
         throw new Error(`Same ${props.tunnelOptions[0].tunnelInsideCidr} \`tunnelInsideCidr\` cannot be used for both tunnels.`);
       }
 
