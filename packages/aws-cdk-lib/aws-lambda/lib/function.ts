@@ -1078,7 +1078,7 @@ export class Function extends FunctionBase {
    */
   private getLoggingConfig(props: FunctionProps): CfnFunction.LoggingConfigProperty | undefined {
     if ((props.applicationLogLevel || props.systemLogLevel) && props.logFormat !== LogFormat.JSON) {
-      throw new Error('ApplicationLogLevel and SystemLogLevel cannot be specified without LogFormat being set to JSON.');
+      throw new Error(`To use ApplicationLogLevel and/or SystemLogLevel you must set LogFormat to '${LogFormat.JSON}', got '${props.logFormat}'.`);
     }
 
     let loggingConfig: CfnFunction.LoggingConfigProperty;
