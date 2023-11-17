@@ -1,5 +1,7 @@
 import { IResolvable } from '../../resolvable';
 
+// Shared definition with packages/@aws-cdk/custom-resource-handlers/lib/core/cross-region-export-handlers/types.ts
+
 /**
  * The SSM parameter prefix that will be used for
  * all cross region exports
