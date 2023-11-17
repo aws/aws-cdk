@@ -1,28 +1,28 @@
 {
   "version": "35.0.0",
   "artifacts": {
-    "global-accelerator-unique-name.assets": {
+    "global-accelerator-ip-address-type.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "global-accelerator-unique-name.assets.json",
+        "file": "global-accelerator-ip-address-type.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "global-accelerator-unique-name": {
+    "global-accelerator-ip-address-type": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "global-accelerator-unique-name.template.json",
+        "templateFile": "global-accelerator-ip-address-type.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c23e37bb9e549e184722a2fabaa890032fa56a11b7bd9e2c63511e075175d12a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d5118384586d633f091daaafac8fa9ec50b40e61687e0e94fefe68d1462d8f16.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "global-accelerator-unique-name.assets"
+          "global-accelerator-ip-address-type.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,52 +31,43 @@
         }
       },
       "dependencies": [
-        "global-accelerator-unique-name.assets"
+        "global-accelerator-ip-address-type.assets"
       ],
       "metadata": {
-        "/global-accelerator-unique-name/Accelerator/Resource": [
+        "/global-accelerator-ip-address-type/Accelerator/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Accelerator8EB0B6B1"
           }
         ],
-        "/global-accelerator-unique-name/BootstrapVersion": [
+        "/global-accelerator-ip-address-type/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/global-accelerator-unique-name/CheckBootstrapVersion": [
+        "/global-accelerator-ip-address-type/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "AccIpAddressTypeB72ABC9C": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AccIpAddressTypeB72ABC9C",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
-      "displayName": "global-accelerator-unique-name"
+      "displayName": "global-accelerator-ip-address-type"
     },
-    "GlobalAcceleratorUniqueNameDefaultTestDeployAssertCA235111.assets": {
+    "GlobalAcceleratorIpAddressTypeDefaultTestDeployAssertFE50B593.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "GlobalAcceleratorUniqueNameDefaultTestDeployAssertCA235111.assets.json",
+        "file": "GlobalAcceleratorIpAddressTypeDefaultTestDeployAssertFE50B593.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "GlobalAcceleratorUniqueNameDefaultTestDeployAssertCA235111": {
+    "GlobalAcceleratorIpAddressTypeDefaultTestDeployAssertFE50B593": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "GlobalAcceleratorUniqueNameDefaultTestDeployAssertCA235111.template.json",
+        "templateFile": "GlobalAcceleratorIpAddressTypeDefaultTestDeployAssertFE50B593.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -85,7 +76,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "GlobalAcceleratorUniqueNameDefaultTestDeployAssertCA235111.assets"
+          "GlobalAcceleratorIpAddressTypeDefaultTestDeployAssertFE50B593.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -94,23 +85,23 @@
         }
       },
       "dependencies": [
-        "GlobalAcceleratorUniqueNameDefaultTestDeployAssertCA235111.assets"
+        "GlobalAcceleratorIpAddressTypeDefaultTestDeployAssertFE50B593.assets"
       ],
       "metadata": {
-        "/GlobalAcceleratorUniqueName/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/GlobalAcceleratorIpAddressType/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/GlobalAcceleratorUniqueName/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/GlobalAcceleratorIpAddressType/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "GlobalAcceleratorUniqueName/DefaultTest/DeployAssert"
+      "displayName": "GlobalAcceleratorIpAddressType/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

@@ -235,7 +235,7 @@ test('create accelerator with IpAddresses and IpAddressType', () => {
       '1.1.1.1',
       '2.2.2.2',
     ],
-    ipAddressType: 'IPV4',
+    ipAddressType: 'DUAL_STACK',
   });
 
   // THEN
@@ -246,7 +246,7 @@ test('create accelerator with IpAddresses and IpAddressType', () => {
       '1.1.1.1',
       '2.2.2.2',
     ],
-    IpAddressType: 'IPV4',
+    IpAddressType: 'DUAL_STACK',
   });
 });
 

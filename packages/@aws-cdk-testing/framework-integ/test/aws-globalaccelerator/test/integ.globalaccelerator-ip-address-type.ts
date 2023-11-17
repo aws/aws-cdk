@@ -5,11 +5,14 @@ import * as ga from 'aws-cdk-lib/aws-globalaccelerator';
 
 const app = new App({});
 
-const stack = new Stack(app, 'global-accelerator-unique-name');
+const stack = new Stack(app, 'global-accelerator-ip-address-type');
 
-new ga.Accelerator(stack, 'Accelerator');
+new ga.Accelerator(stack, 'Accelerator', {
+  acceleratorName: 'acceleratorWithIpAddressType',
+  ipAddressType: 'DUAL_STACK',
+});
 
-new IntegTest(app, 'GlobalAcceleratorUniqueName', {
+new IntegTest(app, 'GlobalAcceleratorIpAddressType', {
   testCases: [stack],
 });
 
