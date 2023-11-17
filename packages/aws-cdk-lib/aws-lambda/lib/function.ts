@@ -1077,6 +1077,10 @@ export class Function extends FunctionBase {
    * function and undefined if not.
    */
   private getLoggingConfig(props: FunctionProps): CfnFunction.LoggingConfigProperty | undefined {
+    if ((props.applicationLogLevel || props.systemLogLevel) && props.logFormat !== LogFormat.JSON) {
+      throw new Error('ApplicationLogLevel and SystemLogLevel cannot be specified without LogFormat being set to JSON.');
+    }
+
     let loggingConfig: CfnFunction.LoggingConfigProperty;
     if (props.logFormat || props.logGroup) {
       loggingConfig = {
