@@ -34,7 +34,7 @@ Integrations connect a route to backend resources. HTTP APIs support Lambda prox
 Lambda integrations enable integrating an HTTP API route with a Lambda function. When a client invokes the route, the
 API Gateway service forwards the request to the Lambda function and returns the function's response to the client.
 
-The API Gateway service will invoke the lambda function with an event payload of a specific format. The service expects
+The API Gateway service will invoke the Lambda function with an event payload of a specific format. The service expects
 the function to respond in a specific format. The details on this format are available at [Working with AWS Lambda
 proxy integrations](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html).
 
@@ -206,7 +206,7 @@ WebSocket integrations connect a route to backend resources. The following integ
 Lambda integrations enable integrating a WebSocket API route with a Lambda function. When a client connects/disconnects
 or sends a message specific to a route, the API Gateway service forwards the request to the Lambda function
 
-The API Gateway service will invoke the lambda function with an event payload of a specific format.
+The API Gateway service will invoke the Lambda function with an event payload of a specific format.
 
 The following code configures a `sendMessage` route with a Lambda integration
 
