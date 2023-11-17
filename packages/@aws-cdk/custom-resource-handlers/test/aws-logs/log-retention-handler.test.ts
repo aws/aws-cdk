@@ -1,8 +1,9 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { CloudWatchLogsClient, CloudWatchLogsClientResolvedConfig, CreateLogGroupCommand, DeleteLogGroupCommand, DeleteRetentionPolicyCommand, OperationAbortedException, PutRetentionPolicyCommand, ResourceAlreadyExistsException, ServiceInputTypes, ServiceOutputTypes } from '@aws-sdk/client-cloudwatch-logs';
 import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';
 import * as nock from 'nock';
-import * as provider from '../lib/log-retention-provider';
+import * as provider from '../../lib/aws-logs/log-retention-handler/index';
 
 const cloudwatchLogsMock = mockClient(CloudWatchLogsClient);
 const OPERATION_ABORTED = new OperationAbortedException({ message: '', $metadata: {} });
