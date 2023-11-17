@@ -1,0 +1,46 @@
+name: CodeGuru Security Example
+on:
+  push:
+    branches:
+      - 'main'
+
+permissions:
+  id-token: write
+  # for writing security events.
+  security-events: write
+  # only required for workflows in private repositories
+  actions: read
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Respository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::048169001733:role/GuruGitHubCICDRole
+          aws-region: us-east-1
+          role-session-name: GitHubActionScript
+
+      - name: CodeGuru Security
+        uses: aws-actions/codeguru-security@v1
+        with:
+          source_path: .
+          aws_region: us-east-1
+          fail_on_severity: Critical
+      - name: Print findings
+        run: |
+          ls -l
+          cat codeguru-security-results.sarif.json
+
+      - name: Upload result
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: codeguru-security-results.sarif.json
+
