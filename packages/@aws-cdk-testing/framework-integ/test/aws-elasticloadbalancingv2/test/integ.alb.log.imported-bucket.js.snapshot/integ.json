@@ -1,0 +1,13 @@
+{
+  "version": "34.0.0",
+  "testCases": {
+    "cdk-integ-alb-log-imported-bucket/DefaultTest": {
+      "stacks": [
+        "aws-cdk-alb-log-imported-bucket-integ"
+      ],
+      "diffAssets": true,
+      "assertionStack": "cdk-integ-alb-log-imported-bucket/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegalblogimportedbucketDefaultTestDeployAssert163162C1"
+    }
+  }
+}
