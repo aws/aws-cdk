@@ -1,5 +1,21 @@
 /* eslint-disable no-console */
-import { Event } from '../evaluate-expression';
+
+/**
+ * The event received by the Lambda function
+ *
+ * @internal
+ */
+export interface Event {
+  /**
+   * The expression to evaluate
+   */
+  readonly expression: string;
+
+  /**
+   * The expression attribute values
+   */
+  readonly expressionAttributeValues: { [key: string]: any };
+}
 
 function escapeRegex(x: string) {
   return x.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
@@ -15,5 +31,6 @@ export async function handler(event: Event): Promise<any> {
     );
   console.log(`Expression: ${expression}`);
 
-  return eval(expression);
+  // direct eval with bundler is not recommended - using indirect eval
+  return [eval][0](expression);
 }
