@@ -173,6 +173,8 @@ new lambda.Function(this, 'Lambda', {
 });
 ```
 
+To use `ApplicationLogLevel` and/or `SystemLogLevel` you must set `LogFormat` to `LogFormat.JSON`.
+
 ## Resource-based Policies
 
 AWS Lambda supports resource-based policies for controlling access to Lambda
