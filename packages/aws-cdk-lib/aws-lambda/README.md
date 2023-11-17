@@ -173,7 +173,7 @@ new lambda.Function(this, 'Lambda', {
 });
 ```
 
-To use `ApplicationLogLevel` and/or `SystemLogLevel` you must set `LogFormat` to `LogFormat.JSON`.
+To use `applicationLogLevel` and/or `systemLogLevel` you must set `logFormat` to `LogFormat.JSON`.
 
 ## Resource-based Policies
 
