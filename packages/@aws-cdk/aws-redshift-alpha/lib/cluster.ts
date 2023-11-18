@@ -301,13 +301,15 @@ export interface ClusterProps {
   /**
    * A default AWS Identity and Access Management (IAM) role to be used by the cluster to access other AWS services.
    *
-   * @default - Create a new role
+   * @default - Creates a new role
    */
   readonly serviceRole?: iam.IRole;
 
   /**
-   * A list of additional AWS Identity and Access Management (IAM) roles that can be used by the cluster to access other AWS services.
+   * A list of AWS Identity and Access Management (IAM) roles that can be used by the cluster to access other AWS services.
+   *
    * The maximum number of roles to attach to a cluster is subject to a quota.
+   * @see https://docs.aws.amazon.com/redshift/latest/mgmt/amazon-redshift-limits.html
    *
    * @default - Only the serviceRole is attached to the cluster.
    */
@@ -515,7 +517,7 @@ export class Cluster extends ClusterBase implements iam.IGrantable {
     });
     this.grantPrincipal = this.serviceRole;
 
-    this.roles = props?.roles ? [this.serviceRole, ...props.roles] : [this.serviceRole];
+    this.roles = props.roles ? [this.serviceRole, ...props.roles] : [this.serviceRole];
 
     const removalPolicy = props.removalPolicy ?? RemovalPolicy.RETAIN;
 
