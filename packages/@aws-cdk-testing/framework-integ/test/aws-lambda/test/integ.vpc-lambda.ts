@@ -1,6 +1,7 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 
@@ -14,4 +15,14 @@ new lambda.Function(stack, 'MyLambda', {
   vpc,
 });
 
-app.synth();
+new lambda.Function(stack, 'IPv6EnabledLambda', {
+  vpc,
+  code: new lambda.InlineCode('def main(event, context): pass'),
+  handler: 'index.main',
+  runtime: lambda.Runtime.PYTHON_3_9,
+  ipv6AllowedForDualStack: true,
+});
+
+new integ.IntegTest(app, 'VpcLambdaTest', {
+  testCases: [stack],
+});
