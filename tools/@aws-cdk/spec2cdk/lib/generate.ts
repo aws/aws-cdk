@@ -225,7 +225,7 @@ async function generator(
 
   const result = {
     modules: moduleMap,
-    resources: Object.values(moduleMap).flat().map(pick('resources')).reduce(mergeObjects),
+    resources: Object.values(moduleMap).flat().map(pick('resources')).reduce(mergeObjects, {}),
     outputFiles: Object.values(moduleMap).flat().flatMap(pick('outputFiles')),
   };
 

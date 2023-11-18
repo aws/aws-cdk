@@ -30,10 +30,10 @@
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/changelog-parser": "^2.8.2",
+    "@types/changelog-parser": "^2.8.4",
     "@types/fs-extra": "^9.0.13",
-    "@types/jest": "^29.5.5",
-    "@types/yargs": "^15.0.16",
+    "@types/jest": "^29.5.8",
+    "@types/yargs": "^15.0.18",
     "jest": "^29.7.0"
   },
   "dependencies": {

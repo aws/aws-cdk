@@ -13,6 +13,7 @@ Any code you submit will be released under that license.
 This document describes how to set up a development environment and submit your changes. Please
 let us know if it's not up-to-date (even better, submit a PR with your  corrections ;-)).
 
+- [Where To Contribute](#where-to-contribute)
 - [Getting Started](#getting-started)
   - [Local setup](#setup)
   - [Dev Container](#dev-container)
@@ -27,7 +28,6 @@ let us know if it's not up-to-date (even better, submit a PR with your  correcti
   - [Rosetta](#rosetta)
 - [Tools](#tools-advanced)
   - [Linters](#linters)
-  - [cfn2ts](#cfn2ts)
   - [scripts/foreach.sh](#scriptsforeachsh)
   - [Jetbrains support (WebStorm/IntelliJ)](#jetbrains-support-webstormintellij)
   - [Linking against this repository](#linking-against-this-repository)
@@ -47,6 +47,91 @@ let us know if it's not up-to-date (even better, submit a PR with your  correcti
 - [Badges (Pilot Program)](#badges-pilot-program)
 - [Related Repositories](#related-repositories)
 
+## Contribution Workflow Diagram
+```mermaid
+flowchart TD
+    A(Identify Desired Functionality) --> B(Search For Existing Artifacts)
+    B --> C[External Packages]
+    B --> D[Relevant Issues And PRs]
+    C --> E{"Does A High Quality
+            Solution Exist?"}
+    D --> F{"Is There A PR In Progress"}
+    E --> |Yes| G(("Ask How You
+                    Can Help"))
+    F --> |Yes| G
+    E --> |No| H(Evaluate Where To Contribute)
+    F --> |No| H
+    H --> I{"Is There Clear Evidence
+            For Inclusion In AWS-CDK"}
+    I --> |Yes| subEvidence
+    I --> |No| J{"Do You Want To Pursue Eventual
+                  Inclusion In AWS-CDK"}
+    J --> |No| L(("Create Private
+                  Implementation"))
+    J --> |Yes| K((Publish A Package))
+    subEvidence --> M(Make Pull Request)
+    M --> N{"Passes CI Checks, Linters,
+            And Follows Design Guidelines"}
+    N --> O(Review)
+    O --> |Accepted| R(Hooray!)
+    O --> P(Changes Requested)
+    P --> Q(Make Changes)
+    Q --> O
+    O --> |Refused| K
+
+subgraph subEvidence[Gather Evidence]
+    direction LR
+    engagement[Engagement from Multiple users]
+    core[Intersects With Core Framework Concerns]
+    quality["Clear, Well Defined, Solution With
+            Limited Scope And Clear Boundaries"]
+    external[External Packages]
+    issues[Relevant Issues And PRs]
+end
+```
+
+## Where to Contribute
+
+Contributions are accepted through a number of channels, including direct pull requests to the aws/aws-cdk repository. However, this may not be the ideal method depending on the circumstances of your proposed additions or changes. The aws-cdk team has limited availability for reviews, which means that sometimes, if making your change available for immediate use by yourself is your goal, it may be better to publish it in your own package or otherwise bypass the CDK team's review and feedback cycle. That being said, if your contribution contains changes that are desired by a large number of cdk users, we absolutely want to make sure those changes are included in the aws-cdk core packages.
+
+Here are some things we look at when evaluating a contribution:
+
+1. Signal - Is there a github issue, or possibly multiple related ones, that the contribution addresses. Do the issues have a lot of engagement, such as comments, +1 reactions, etc that indicate that many users are affected by it?
+1. Size - Is the contribution limited to a relatively self-contained surface area? Is it broken up into the smallest possible unit of functionality that makes sense?
+1. Priority - Does the contribution address an issue in, or add a new feature of, a service that has a high priority for coverage? These are generally core services most commonly used on AWS such as IAM, EC2, Lambda, and ECS.
+1. Quality - Does the contribution take into account all of the guidance provided in our documentation regarding design patterns, test coverage, and best practices as it relates to code within the aws-cdk repository? Does it also make an effort to follow patterns commonly used within the aws-cdk repository and not deviate unecessarily from these conventions?
+1. Breaking Changes - Does the contribution introduce any risk for breaking existing users applications? Specifically, does it require any code changes or can it trigger any resource replacement in cloudformation that would result in downtime?
+
+### Demonstrating Value
+
+When you create a pull-request, make sure to include justification related to all of the relevant criteria within the PR description in order to make it clear to reviewers why your contribution should be accepted. Specifically, provide justification for why this is functionality that should live within the core aws-cdk packages and be maintained by the cdk team. Are there technical reasons why this functionality could not be vended separately etc? If we are not convinced that the functionality should be part of the core framework, and therefore close your pull request, here are some ways you can go about gathering evidence to convince us otherwise.
+
+1. Link any relevant issues that you find and note their engagement by other users.
+1. Describe common use cases that are not currently well served that your contribution addresses.
+1. Link to any third party packages, including any published by you, and other prior art providing the same functionality.
+1. Iterate the steps you have taken to ensure that the contribution is well thought out and stable.
+1. Include any alternative solutions you explored and your reasoning as to why they weren't chosen.
+
+All of this information will help make it clear to reviewers why your contribution should be accepted. If a reviewer is still not convinced that the contribution is necessary or effective, an alternative route should be pursued.
+
+### Publishing Your Own Package
+
+This is by far the strongest signal you can give to the CDK team that a feature should be included within the core aws-cdk packages. A package published on npm, pypi, maven central, nuget, and github (for go) that has good documentation, a clear purpose, and an active group of users is a good indication that the functionality it provides is useful and should be examined for inclusion in the core aws-cdk packages. This may not be the goal of any given package, and some constructs and features do not provide functionality that should ever be vended as part of the core framework. However, if a package you own does include functionality that you and other users believe should be vended as part of the core CDK, we encourage making a pull request, or RFC if appropriate, proposing it's inclusion.
+
+#### Trust and Third Party Packages 
+
+An argument we commonly hear why contributors don't want to publish their contributions in their own packages, is that organizations have restrictions on what packages they allow to be used and these restrictions commonly include limiting usage of packages to those owned and distributed only from trusted sources. We recognize trust is an important part of the software dependency chain, and we take that into consideration when evaluating contributions in aws-cdk. However, not everything can be owned by the aws-cdk team. Strictly from a technical limitation perspective, `aws-cdk-lib` is big. Continuing a system that makes it, potentially, many multiple times bigger, has a cost on usability. Additionally, as the surface area widens, the aws-cdk team becomes stretched ever thinner and isn't able to property maintain what we own.
+
+That being said, "trust", isn't as black and white as "it's owned by aws, so it's okay". The best way to trust that the packages you depend on to help generate your aws resources is to use [policy validation](https://docs.aws.amazon.com/cdk/v2/guide/policy-validation-synthesis.html) on the output of your application in order to ensure it is following the rules that are important to you or your organization.
+
+#### Third Party Package Administration
+
+Another reason we hear from authors that they don't want to publish their own packages, is they don't want to go through the trouble of setting up their own repository and publishing toolchain. This is something we are continuously working on making easier and we encourage you to check out some of the tools that we have available to aid in this.
+
+1. [Projen](https://github.com/projen/projen) - A tool with common repository and publishing setup abstracted, has a construct specifically for CDK construct libraries.
+1. [Publib](https://github.com/cdklabs/publib) - A toolchain for publishing packages to multiple repositories. A lot of this is included in projen and we recommend using that instead of publib directly, but it may be useful for specific cases.
+1. [Construct Hub](https://constructs.dev) - An index of all construct libraries published to NPM. When you publish a construct library, it will automatically have documentation generated and published to Construct Hub.
+
 ## Getting Started
 
 The following steps describe how to set up the AWS CDK repository on your local machine.
@@ -61,7 +146,7 @@ The following tools need to be installed on your system prior to installing the 
   - We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
 - [Yarn >= 1.19.1, < 2](https://yarnpkg.com/lang/en/docs/install)
 - [.NET SDK >= 6.0.x](https://www.microsoft.com/net/download)
-- [Python >= 3.6.5, < 4.0](https://www.python.org/downloads/release/python-365/)
+- [Python >= 3.8.0, < 4.0](https://www.python.org/downloads/release/python-380/)
 - [Docker >= 19.03](https://docs.docker.com/get-docker/)
   - the Docker daemon must also be running
 
@@ -1009,22 +1094,6 @@ Here are a few useful commands:
    evaluate only the rule specified [awslint README](./packages/awslint/README.md)
    for details on include/exclude rule patterns.
 
-### cfn2ts
-
-This tool is used to generate our low-level CloudFormation resources
-(L1/`CfnFoo`). It is executed as part of the build step of all modules in the
-AWS Construct Library.
-
-The tool consults the `cdk-build.cloudformation` key in `package.json` to
-determine which CloudFormation namespace this library represents (e.g.
-`AWS::EC2` is the namespace for `aws-ec2`). We maintain strict 1:1 relationship
-between those.
-
-Each module also has an npm script called `cfn2ts`:
-
-* `yarn cfn2ts`: generates L1 for a specific module
-* `lerna run cfn2ts`: generates L1 for the entire repo
-
 ### Jetbrains support (WebStorm/IntelliJ)
 
 This project uses lerna and utilizes symlinks inside nested `node_modules` directories. You may encounter an issue during
@@ -1078,6 +1147,20 @@ cannot be taken as dependencies by `aws-cdk-lib`
 Experimental packages are used to develop new constructs and experiment with their APIs before marking
 them as stable and including them within `aws-cdk-lib`. Once they are included in `aws-cdk-lib`, no
 more breaking api changes can be made.
+
+When you want to build an alpha package (for example, `some-package-alpha`), you can execute the following in the root of the repository to build it and it's dependencies.
+
+```
+$ npx lerna run build --scope=@aws-cdk/some-package-alpha
+```
+
+At this point, you can run build and test the alpha package.
+
+```
+$ cd packages/@aws-cdk/some-package-alpha
+$ yarn build
+$ yarn test
+```
 
 ## Changing Cloud Assembly Schema
 

@@ -107,7 +107,7 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
     }
 
     const requestorFunction = new lambda.Function(this, 'CertificateRequestorFunction', {
-      code: lambda.Code.fromAsset(path.resolve(__dirname, '..', 'lambda-packages', 'dns_validated_certificate_handler', 'lib')),
+      code: lambda.Code.fromAsset(path.resolve(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-certificatemanager', 'dns-validated-certificate-handler')),
       handler: 'index.certificateRequestHandler',
       runtime: lambda.Runtime.NODEJS_18_X,
       timeout: cdk.Duration.minutes(15),
