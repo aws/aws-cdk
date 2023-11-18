@@ -250,8 +250,7 @@ const bucket = new s3.Bucket(stack, 'KmsBucket',{
 bucket.grantRead(cluster)
 ```
 
-
-You can give a *user* privileges to perform certain actions on a table by using the
+You can give a user privileges to perform certain actions on a table by using the
 `Table.grant()` method.
 
 ```ts fixture=cluster
