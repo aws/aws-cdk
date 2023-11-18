@@ -334,9 +334,47 @@ describe('lambda + vpc', () => {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
         runtime: lambda.Runtime.NODEJS_LATEST,
-        vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
+        vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
       });
     }).toThrow('Cannot configure \'vpcSubnets\' without configuring a VPC');
+  });
+
+  test('specifying ipv6AllowedForDualStack without a vpc throws an Error', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      ipv6AllowedForDualStack: true,
+    })).toThrow(/Cannot configure 'ipv6AllowedForDualStack' without configuring a VPC/);
+  });
+
+  test('can specify ipv6AllowedForDualStack for Lambda', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', {
+      maxAzs: 3,
+      natGateways: 1,
+    });
+
+    // WHEN
+    new lambda.Function(stack, 'MyLambda', {
+      vpc,
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      ipv6AllowedForDualStack: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      VpcConfig: {
+        Ipv6AllowedForDualStack: true,
+      },
+    });
   });
 });
 

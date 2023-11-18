@@ -265,6 +265,13 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   readonly allowAllOutbound?: boolean;
 
   /**
+   * Indicates whether IPv6 protocols will be allowed for dual stack subnets.
+   *
+   * @default false
+   */
+  readonly ipv6AllowedForDualStack?: boolean;
+
+  /**
    * Enabled DLQ. If `deadLetterQueue` is undefined,
    * an SQS queue with default options will be defined for your Function.
    *
@@ -1370,6 +1377,9 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       if (props.vpcSubnets) {
         throw new Error('Cannot configure \'vpcSubnets\' without configuring a VPC');
       }
+      if (props.ipv6AllowedForDualStack) {
+        throw new Error('Cannot configure \'ipv6AllowedForDualStack\' without configuring a VPC');
+      }
       return undefined;
     }
 
@@ -1412,6 +1422,9 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
           'If you are aware of this limitation and would still like to place the function in a public subnet, set `allowPublicSubnet` to true');
       }
     }
+
+    const ipv6AllowedForDualStack = props.ipv6AllowedForDualStack ?? false;
+
     this.node.addDependency(selectedSubnets.internetConnectivityEstablished);
 
     // List can't be empty here, if we got this far you intended to put your Lambda
@@ -1421,6 +1434,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     return {
       subnetIds: selectedSubnets.subnetIds,
       securityGroupIds: securityGroups.map(sg => sg.securityGroupId),
+      ipv6AllowedForDualStack,
     };
   }
 
