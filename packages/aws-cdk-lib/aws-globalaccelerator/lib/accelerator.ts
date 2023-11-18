@@ -30,7 +30,9 @@ export interface IAccelerator extends cdk.IResource {
   readonly ipAddresses?: string[];
 
   /**
-   * The IP address type that the accelerator supports. For a standard accelerator, the value can be IPV4 or DUAL_STACK.
+   * The IP address type that the accelerator supports.
+   *
+   * For a standard accelerator, the value can be IPV4 or DUAL_STACK.
    *
    * @attribute
    */
@@ -63,9 +65,11 @@ export interface AcceleratorProps {
   readonly ipAddresses?: string[];
 
   /**
-  * The IP address type that an accelerator supports. For a standard accelerator, the value can be IPV4 or DUAL_STACK.
+  * The IP address type that an accelerator supports.
   *
-  * @default - undefined
+  * For a standard accelerator, the value can be IPV4 or DUAL_STACK.
+  *
+  * @default - "IPV4"
   */
   readonly ipAddressType?: string;
 }
@@ -90,7 +94,9 @@ export interface AcceleratorAttributes {
   readonly ipAddresses?: string[];
 
   /**
-   * The IP address type that an accelerator supports. For a standard accelerator, the value can be IPV4 or DUAL_STACK.
+   * The IP address type that an accelerator supports.
+   *
+   * For a standard accelerator, the value can be IPV4 or DUAL_STACK.
    */
   readonly ipAddressType?: string;
 }
@@ -128,7 +134,9 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
   public readonly ipAddresses?: string[];
 
   /**
-   * The IP address type that an accelerator supports. For a standard accelerator, the value can be IPV4 or DUAL_STACK.
+   * The IP address type that an accelerator supports.
+   *
+   * For a standard accelerator, the value can be IPV4 or DUAL_STACK.
   */
   public readonly ipAddressType?: string;
 
@@ -143,6 +151,7 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
       enabled: props.enabled ?? true,
       name,
       ipAddresses: props.ipAddresses ?? undefined,
+      // ipAddressType is undefined here for backwards compatibility, but the service selects "IPV4" as a default.
       ipAddressType: props.ipAddressType ?? undefined,
     });
 

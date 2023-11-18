@@ -56,7 +56,6 @@ listener.addEndpointGroup('Group2', {
 ### Create an Accelerator with IP addresses and IP address type
 
 ```ts
-// Create an Accelerator
 const accelerator = new globalaccelerator.Accelerator(this, 'Accelerator', {
   IpAddresses: [
     '1.1.1.1',
