@@ -235,7 +235,7 @@ test('create accelerator with IpAddresses and IpAddressType', () => {
       '1.1.1.1',
       '2.2.2.2',
     ],
-    ipAddressType: 'DUAL_STACK',
+    ipAddressType: ga.IpAddressType.DUAL_STACK,
   });
 
   // THEN

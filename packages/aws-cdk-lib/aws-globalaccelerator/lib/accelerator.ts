@@ -36,7 +36,7 @@ export interface IAccelerator extends cdk.IResource {
    *
    * @attribute
    */
-  readonly ipAddressType?: string;
+  readonly ipAddressType?: IpAddressType;
 }
 
 /**
@@ -71,7 +71,7 @@ export interface AcceleratorProps {
   *
   * @default - "IPV4"
   */
-  readonly ipAddressType?: string;
+  readonly ipAddressType?: IpAddressType;
 }
 
 /**
@@ -98,7 +98,21 @@ export interface AcceleratorAttributes {
    *
    * For a standard accelerator, the value can be IPV4 or DUAL_STACK.
    */
-  readonly ipAddressType?: string;
+  readonly ipAddressType?: IpAddressType;
+}
+
+/**
+ * The IP address type that an accelerator supports.
+ */
+export enum IpAddressType {
+  /**
+   * IPV4
+   */
+  IPV4 = 'IPV4',
+  /**
+   * DUAL_STACK
+   */
+  DUAL_STACK = 'DUAL_STACK',
 }
 
 /**
@@ -138,7 +152,7 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
    *
    * For a standard accelerator, the value can be IPV4 or DUAL_STACK.
   */
-  public readonly ipAddressType?: string;
+  public readonly ipAddressType?: IpAddressType;
 
   constructor(scope: Construct, id: string, props: AcceleratorProps = {}) {
     super(scope, id);
@@ -151,14 +165,15 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
       enabled: props.enabled ?? true,
       name,
       ipAddresses: props.ipAddresses ?? undefined,
-      // ipAddressType is undefined here for backwards compatibility, but the service selects "IPV4" as a default.
+      // ipAddressType is undefined as a default here for backwards compatibility,
+      // but the service selects "IPV4".
       ipAddressType: props.ipAddressType ?? undefined,
     });
 
     this.acceleratorArn = resource.attrAcceleratorArn;
     this.dnsName = resource.attrDnsName;
-    this.ipAddresses = resource.ipAddresses;
-    this.ipAddressType = resource.ipAddressType;
+    this.ipAddresses = props.ipAddresses ?? undefined;
+    this.ipAddressType = props.ipAddressType ?? undefined;
   }
 
   /**

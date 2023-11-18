@@ -9,7 +9,7 @@ const stack = new Stack(app, 'global-accelerator-ip-address-type');
 
 new ga.Accelerator(stack, 'Accelerator', {
   acceleratorName: 'acceleratorWithIpAddressType',
-  ipAddressType: 'DUAL_STACK',
+  ipAddressType: ga.IpAddressType.DUAL_STACK,
 });
 
 new IntegTest(app, 'GlobalAcceleratorIpAddressType', {

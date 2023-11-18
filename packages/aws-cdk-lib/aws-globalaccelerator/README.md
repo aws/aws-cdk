@@ -61,7 +61,7 @@ const accelerator = new globalaccelerator.Accelerator(this, 'Accelerator', {
     '1.1.1.1',
     '2.2.2.2',
   ],
-  IpAddressType: 'IPV4',
+  IpAddressType: globalaccelerator.IpAddressType.IPV4,
 });
 ```
 
