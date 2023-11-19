@@ -250,6 +250,13 @@ export interface EventSourceMappingOptions {
    * @default - none
    */
   readonly filters?: Array<{[key: string]: any}>
+
+  /**
+   * Check if support S3 onfailure destination(ODF). Currently only MSK and self managed kafka event support S3 ODF
+   *
+   * @default false
+   */
+  readonly supportS3OnFailureDestination?: boolean;
 }
 
 /**
