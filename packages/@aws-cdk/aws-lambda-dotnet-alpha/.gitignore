@@ -14,12 +14,11 @@ nyc.config.js
 .LAST_PACKAGE
 *.snk
 
-!test/integ-handlers/js-handler.js
-!test/function.test.handler2.js
 !.eslintrc.js
 !jest.config.js
 
 junit.xml
+
 !**/*.snapshot/**/asset.*/*.js
 !**/*.snapshot/**/asset.*/*.d.ts
 
