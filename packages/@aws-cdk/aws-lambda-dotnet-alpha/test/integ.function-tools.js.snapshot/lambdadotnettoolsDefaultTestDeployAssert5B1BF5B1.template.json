@@ -19,7 +19,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "integ-lambda-dotnet-docker:ExportsOutputReflambdahandler909F920591EA4974"
+         "Fn::ImportValue": "cdk-integ-lambda-dotnet-tools:ExportsOutputReflambdahandler909F920591EA4974"
         },
         "\""
        ]
@@ -27,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1700169486062"
+    "salt": "1700386002118"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -37,7 +37,7 @@
    "Properties": {
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
-     "Fn::ImportValue": "integ-lambda-dotnet-docker:ExportsOutputReflambdahandler909F920591EA4974"
+     "Fn::ImportValue": "cdk-integ-lambda-dotnet-tools:ExportsOutputReflambdahandler909F920591EA4974"
     },
     "Principal": {
      "Fn::GetAtt": [
@@ -106,7 +106,7 @@
              },
              ":function:",
              {
-              "Fn::ImportValue": "integ-lambda-dotnet-docker:ExportsOutputReflambdahandler909F920591EA4974"
+              "Fn::ImportValue": "cdk-integ-lambda-dotnet-tools:ExportsOutputReflambdahandler909F920591EA4974"
              }
             ]
            ]
@@ -127,7 +127,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "6e5ba7464138b7720c27df56bcc0a5463093492a1f311ed8a4f4c6baf84acaa8.zip"
+     "S3Key": "2039afff5ee58473c609351d85a209bceb4ce0c16644a1baba0a0f8231c3ee17.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",

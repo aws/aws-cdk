@@ -4,21 +4,21 @@
     "id": "App",
     "path": "",
     "children": {
-      "integ-lambda-dotnet-docker": {
-        "id": "integ-lambda-dotnet-docker",
-        "path": "integ-lambda-dotnet-docker",
+      "integ-lambda-dotnet-function": {
+        "id": "integ-lambda-dotnet-function",
+        "path": "integ-lambda-dotnet-function",
         "children": {
           "lambda-handler": {
             "id": "lambda-handler",
-            "path": "integ-lambda-dotnet-docker/lambda-handler",
+            "path": "integ-lambda-dotnet-function/lambda-handler",
             "children": {
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "integ-lambda-dotnet-docker/lambda-handler/ServiceRole",
+                "path": "integ-lambda-dotnet-function/lambda-handler/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "integ-lambda-dotnet-docker/lambda-handler/ServiceRole/ImportServiceRole",
+                    "path": "integ-lambda-dotnet-function/lambda-handler/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -26,7 +26,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "integ-lambda-dotnet-docker/lambda-handler/ServiceRole/Resource",
+                    "path": "integ-lambda-dotnet-function/lambda-handler/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -71,11 +71,11 @@
               },
               "Code": {
                 "id": "Code",
-                "path": "integ-lambda-dotnet-docker/lambda-handler/Code",
+                "path": "integ-lambda-dotnet-function/lambda-handler/Code",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "integ-lambda-dotnet-docker/lambda-handler/Code/Stage",
+                    "path": "integ-lambda-dotnet-function/lambda-handler/Code/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -83,7 +83,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "integ-lambda-dotnet-docker/lambda-handler/Code/AssetBucket",
+                    "path": "integ-lambda-dotnet-function/lambda-handler/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
@@ -97,7 +97,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "integ-lambda-dotnet-docker/lambda-handler/Resource",
+                "path": "integ-lambda-dotnet-function/lambda-handler/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
@@ -105,7 +105,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "1c478646be2f00e3b2f07847ad70ced7f8bdc9ec310326e140b5dfd8982d317b.zip"
+                      "s3Key": "ad364f5714356a06c5ceb8b14111a44cf5e61211d1737fc3a937202cec039714.zip"
                     },
                     "handler": "LambdaHandler::LambdaHandler.Function::FunctionHandler",
                     "role": {
@@ -130,7 +130,7 @@
           },
           "FunctionArn": {
             "id": "FunctionArn",
-            "path": "integ-lambda-dotnet-docker/FunctionArn",
+            "path": "integ-lambda-dotnet-function/FunctionArn",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnOutput",
               "version": "0.0.0"
@@ -138,11 +138,11 @@
           },
           "Exports": {
             "id": "Exports",
-            "path": "integ-lambda-dotnet-docker/Exports",
+            "path": "integ-lambda-dotnet-function/Exports",
             "children": {
               "Output{\"Ref\":\"lambdahandler909F9205\"}": {
                 "id": "Output{\"Ref\":\"lambdahandler909F9205\"}",
-                "path": "integ-lambda-dotnet-docker/Exports/Output{\"Ref\":\"lambdahandler909F9205\"}",
+                "path": "integ-lambda-dotnet-function/Exports/Output{\"Ref\":\"lambdahandler909F9205\"}",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
@@ -156,7 +156,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "integ-lambda-dotnet-docker/BootstrapVersion",
+            "path": "integ-lambda-dotnet-function/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -164,7 +164,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "integ-lambda-dotnet-docker/CheckBootstrapVersion",
+            "path": "integ-lambda-dotnet-function/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
@@ -176,17 +176,17 @@
           "version": "0.0.0"
         }
       },
-      "lambda-dotnet-docker": {
-        "id": "lambda-dotnet-docker",
-        "path": "lambda-dotnet-docker",
+      "lambda-dotnet-function": {
+        "id": "lambda-dotnet-function",
+        "path": "lambda-dotnet-function",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "lambda-dotnet-docker/DefaultTest",
+            "path": "lambda-dotnet-function/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "lambda-dotnet-docker/DefaultTest/Default",
+                "path": "lambda-dotnet-function/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
@@ -194,19 +194,19 @@
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "lambda-dotnet-docker/DefaultTest/DeployAssert",
+                "path": "lambda-dotnet-function/DefaultTest/DeployAssert",
                 "children": {
                   "LambdaInvokece74e9560f1fda89c7913fc5a3d498a1": {
                     "id": "LambdaInvokece74e9560f1fda89c7913fc5a3d498a1",
-                    "path": "lambda-dotnet-docker/DefaultTest/DeployAssert/LambdaInvokece74e9560f1fda89c7913fc5a3d498a1",
+                    "path": "lambda-dotnet-function/DefaultTest/DeployAssert/LambdaInvokece74e9560f1fda89c7913fc5a3d498a1",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "lambda-dotnet-docker/DefaultTest/DeployAssert/LambdaInvokece74e9560f1fda89c7913fc5a3d498a1/SdkProvider",
+                        "path": "lambda-dotnet-function/DefaultTest/DeployAssert/LambdaInvokece74e9560f1fda89c7913fc5a3d498a1/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "lambda-dotnet-docker/DefaultTest/DeployAssert/LambdaInvokece74e9560f1fda89c7913fc5a3d498a1/SdkProvider/AssertionsProvider",
+                            "path": "lambda-dotnet-function/DefaultTest/DeployAssert/LambdaInvokece74e9560f1fda89c7913fc5a3d498a1/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.3.0"
@@ -220,11 +220,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "lambda-dotnet-docker/DefaultTest/DeployAssert/LambdaInvokece74e9560f1fda89c7913fc5a3d498a1/Default",
+                        "path": "lambda-dotnet-function/DefaultTest/DeployAssert/LambdaInvokece74e9560f1fda89c7913fc5a3d498a1/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "lambda-dotnet-docker/DefaultTest/DeployAssert/LambdaInvokece74e9560f1fda89c7913fc5a3d498a1/Default/Default",
+                            "path": "lambda-dotnet-function/DefaultTest/DeployAssert/LambdaInvokece74e9560f1fda89c7913fc5a3d498a1/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -238,7 +238,7 @@
                       },
                       "Invoke": {
                         "id": "Invoke",
-                        "path": "lambda-dotnet-docker/DefaultTest/DeployAssert/LambdaInvokece74e9560f1fda89c7913fc5a3d498a1/Invoke",
+                        "path": "lambda-dotnet-function/DefaultTest/DeployAssert/LambdaInvokece74e9560f1fda89c7913fc5a3d498a1/Invoke",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -246,7 +246,7 @@
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
-                        "path": "lambda-dotnet-docker/DefaultTest/DeployAssert/LambdaInvokece74e9560f1fda89c7913fc5a3d498a1/AssertionResults",
+                        "path": "lambda-dotnet-function/DefaultTest/DeployAssert/LambdaInvokece74e9560f1fda89c7913fc5a3d498a1/AssertionResults",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnOutput",
                           "version": "0.0.0"
@@ -260,11 +260,11 @@
                   },
                   "SingletonFunction1488541a7b23466481b69b4408076b81": {
                     "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
-                    "path": "lambda-dotnet-docker/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "lambda-dotnet-function/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
                     "children": {
                       "Staging": {
                         "id": "Staging",
-                        "path": "lambda-dotnet-docker/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "path": "lambda-dotnet-function/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.AssetStaging",
                           "version": "0.0.0"
@@ -272,7 +272,7 @@
                       },
                       "Role": {
                         "id": "Role",
-                        "path": "lambda-dotnet-docker/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "path": "lambda-dotnet-function/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -280,7 +280,7 @@
                       },
                       "Handler": {
                         "id": "Handler",
-                        "path": "lambda-dotnet-docker/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "path": "lambda-dotnet-function/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -294,7 +294,7 @@
                   },
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "lambda-dotnet-docker/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "lambda-dotnet-function/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
@@ -302,7 +302,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "lambda-dotnet-docker/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "lambda-dotnet-function/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"

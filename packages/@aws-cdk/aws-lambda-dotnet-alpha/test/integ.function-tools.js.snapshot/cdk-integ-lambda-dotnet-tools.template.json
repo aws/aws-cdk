@@ -38,7 +38,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "fb6af827b26c2f90374c81b50772b736d3f42fe093f2dd2e287af4afc059ed70.zip"
+     "S3Key": "5460fb39f4f8f16f8774f516926afe465964cb3c315427d3f8dccf4a55132a80.zip"
     },
     "Handler": "LambdaHandler::LambdaHandler.Function::FunctionHandler",
     "Role": {
@@ -68,7 +68,7 @@
     "Ref": "lambdahandler909F9205"
    },
    "Export": {
-    "Name": "integ-lambda-dotnet-function:ExportsOutputReflambdahandler909F920591EA4974"
+    "Name": "cdk-integ-lambda-dotnet-tools:ExportsOutputReflambdahandler909F920591EA4974"
    }
   }
  },
