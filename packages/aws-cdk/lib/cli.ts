@@ -130,6 +130,7 @@ async function parseCommandLineArguments(args: string[]) {
         requiresArg: true,
         desc: 'How to perform the deployment. Direct is a bit faster but lacks progress information',
       })
+      .option('import-existing-resources', { type: 'boolean', desc: 'Indicates if the stack set imports resources that already exist.', default: false })
       .option('force', { alias: 'f', type: 'boolean', desc: 'Always deploy stack even if templates are identical', default: false })
       .option('parameters', { type: 'array', desc: 'Additional parameters passed to CloudFormation at deploy time (STACK:KEY=VALUE)', nargs: 1, requiresArg: true, default: {} })
       .option('outputs-file', { type: 'string', alias: 'O', desc: 'Path to file where stack outputs will be written as JSON', requiresArg: true })
@@ -547,16 +548,19 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
             if (args.changeSetName) {
               throw new Error('--change-set-name cannot be used with method=direct');
             }
+            if (args.importExistingResources !== undefined) {
+              throw new Error('--import-existing-resources cannot be used with method=direct');
+            }
             deploymentMethod = { method: 'direct' };
             break;
           case 'change-set':
-            deploymentMethod = { method: 'change-set', execute: true, changeSetName: args.changeSetName };
+            deploymentMethod = { method: 'change-set', execute: true, changeSetName: args.changeSetName, importExistingResources: args.importExistingResources };
             break;
           case 'prepare-change-set':
-            deploymentMethod = { method: 'change-set', execute: false, changeSetName: args.changeSetName };
+            deploymentMethod = { method: 'change-set', execute: false, changeSetName: args.changeSetName, importExistingResources: args.importExistingResources };
             break;
           case undefined:
-            deploymentMethod = { method: 'change-set', execute: args.execute ?? true, changeSetName: args.changeSetName };
+            deploymentMethod = { method: 'change-set', execute: args.execute ?? true, changeSetName: args.changeSetName, importExistingResources: args.importExistingResources };
             break;
         }
 

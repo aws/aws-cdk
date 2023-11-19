@@ -280,6 +280,28 @@ integTest('deploy without execute a named change set', withDefaultFixture(async 
   expect(changeSets[0].Status).toEqual('CREATE_COMPLETE');
 }));
 
+integTest('deploy with import-existing-resources true', withDefaultFixture(async (fixture) => {
+  const stackArn = await fixture.cdkDeploy('test-3', {
+    options: ['--no-execute', '--import-existing-resources', 'true'],
+    captureStderr: false,
+  });
+  // verify that we only deployed a single stack (there's a single ARN in the output)
+  expect(stackArn.split('\n').length).toEqual(1);
+
+  const response = await fixture.aws.cloudFormation('describeStacks', {
+    StackName: stackArn,
+  });
+  expect(response.Stacks?.[0].StackStatus).toEqual('REVIEW_IN_PROGRESS');
+
+  //verify a change set was successfully
+  const changeSetResponse = await fixture.aws.cloudFormation('listChangeSets', {
+    StackName: stackArn,
+  });
+  const changeSets = changeSetResponse.Summaries || [];
+  expect(changeSets.length).toEqual(1);
+  expect(changeSets[0].Status).toEqual('CREATE_COMPLETE');
+}));
+
 integTest('security related changes without a CLI are expected to fail', withDefaultFixture(async (fixture) => {
   // redirect /dev/null to stdin, which means there will not be tty attached
   // since this stack includes security-related changes, the deployment should

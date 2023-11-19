@@ -357,6 +357,7 @@ export class Deployments {
       if (deploymentMethod) {
         throw new Error('You cannot supply both \'deploymentMethod\' and \'changeSetName/execute\'. Supply one or the other.');
       }
+      // actually, deploymentMethod should not be undefined here
       deploymentMethod = {
         method: 'change-set',
         changeSetName: options.changeSetName,
