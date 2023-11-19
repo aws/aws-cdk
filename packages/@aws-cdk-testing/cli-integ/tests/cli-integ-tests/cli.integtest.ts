@@ -293,7 +293,8 @@ integTest('deploy with import-existing-resources true', withDefaultFixture(async
   });
   expect(response.Stacks?.[0].StackStatus).toEqual('REVIEW_IN_PROGRESS');
 
-  //verify a change set was successfully
+  // verify a change set was successfully created
+  // Here, we do not test whether a resource is actually imported, because that is a CloudFormation feature, not a CDK feature.
   const changeSetResponse = await fixture.aws.cloudFormation('listChangeSets', {
     StackName: stackArn,
   });
