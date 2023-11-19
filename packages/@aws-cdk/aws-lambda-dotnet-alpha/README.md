@@ -24,7 +24,7 @@ To use this module you will either need to have `.NET SDK` installed (`.NET 6.0`
 Define a `DotNetFunction`:
 
 ```ts
-new DotNetFunction(this, 'MyFunction', {
+new dotnet.DotNetFunction(this, 'MyFunction', {
   projectDir: 'src/MyFunction'
 });
 ```
