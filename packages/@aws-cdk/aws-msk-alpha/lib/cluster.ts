@@ -103,7 +103,6 @@ export interface ClusterProps {
    * @default - 1000 GiB EBS volume
    */
   readonly ebsStorageInfo?: EbsStorageInfo;
-  
   /**
    * This controls storage mode for supported storage tiers.
    *
