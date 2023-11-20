@@ -19,7 +19,7 @@ jobs:
           
           status=$(curl -s -o /dev/null -w "%{http_code}" $URL)
           echo "STATUS=${status}" >> "$GITHUB_OUTPUT"
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/github-script@v7
         if: ${{ steps.download.outputs.STATUS == 200 }}
         env:

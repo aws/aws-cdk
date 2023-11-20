@@ -1,10 +1,11 @@
 {
-  "version": "33.0.0",
+  "version": "34.0.0",
   "testCases": {
     "LambdaTest/DefaultTest": {
       "stacks": [
         "aws-cdk-ec2-lt-metadata-1"
       ],
+      "diffAssets": true,
       "assertionStack": "LambdaTest/DefaultTest/DeployAssert",
       "assertionStackName": "LambdaTestDefaultTestDeployAssert1AF2B360"
     }
