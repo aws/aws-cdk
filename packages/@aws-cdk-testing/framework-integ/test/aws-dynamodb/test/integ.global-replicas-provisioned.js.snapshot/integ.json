@@ -1,13 +1,13 @@
 {
-  "version": "34.0.0",
+  "version": "35.0.0",
   "testCases": {
-    "aws-cdk-dynamodb-global-replicas-provisioned-test/DefaultTest": {
+    "aws-cdk-dynamodb-global-replicas-provisioned-integ/DefaultTest": {
       "stacks": [
-        "aws-cdk-dynamodb-global-replicas-provisioned"
+        "dynamodb-global-replicas-provisioned"
       ],
       "diffAssets": true,
-      "assertionStack": "aws-cdk-dynamodb-global-replicas-provisioned-test/DefaultTest/DeployAssert",
-      "assertionStackName": "awscdkdynamodbglobalreplicasprovisionedtestDefaultTestDeployAssertE7F91F54"
+      "assertionStack": "aws-cdk-dynamodb-global-replicas-provisioned-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkdynamodbglobalreplicasprovisionedintegDefaultTestDeployAssertEF84B38D"
     }
   }
 }
