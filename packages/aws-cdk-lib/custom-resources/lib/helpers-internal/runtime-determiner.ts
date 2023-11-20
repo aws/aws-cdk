@@ -14,7 +14,6 @@ export class RuntimeDeterminer {
    */
   public static determineLatestNodeJsRuntime(runtimes: Runtime[]) {
     const nodeJsRuntimes = runtimes.filter(runtime => runtime.family === RuntimeFamily.NODEJS);
-
     if (nodeJsRuntimes.length === 0) {
       return undefined;
     }
@@ -39,7 +38,6 @@ export class RuntimeDeterminer {
    */
   public static determineLatestPythonRuntime(runtimes: Runtime[]) {
     const pythonRuntimes = runtimes.filter(runtime => runtime.family === RuntimeFamily.PYTHON);
-
     if (pythonRuntimes.length === 0) {
       return undefined;
     }

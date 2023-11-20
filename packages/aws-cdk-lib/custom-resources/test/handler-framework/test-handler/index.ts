@@ -1,3 +1,3 @@
-export function handler() {
-  return { message: 'hello world!' };
+export async function handler() {
+  return { message: 'Hello, world!' };
 }
