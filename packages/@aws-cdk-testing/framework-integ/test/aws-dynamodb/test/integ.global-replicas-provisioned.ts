@@ -17,7 +17,7 @@ table.autoScaleWriteCapacity({
   maxCapacity: 10,
 }).scaleOnUtilization({ targetUtilizationPercent: 75 });
 
-new IntegTest(app, 'aws-cdk-dynamodb-global-replicas-provisioned-test', {
+new IntegTest(app, 'aws-cdk-dynamodb-global-replicas-provisioned-integ', {
   testCases: [stack],
   diffAssets: true,
 });
