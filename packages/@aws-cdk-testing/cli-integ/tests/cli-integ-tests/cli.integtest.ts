@@ -281,7 +281,7 @@ integTest('deploy without execute a named change set', withDefaultFixture(async 
 }));
 
 integTest('deploy with import-existing-resources true', withDefaultFixture(async (fixture) => {
-  const stackArn = await fixture.cdkDeploy('test-3', {
+  const stackArn = await fixture.cdkDeploy('test-2', {
     options: ['--no-execute', '--import-existing-resources', 'true'],
     captureStderr: false,
   });
@@ -301,6 +301,7 @@ integTest('deploy with import-existing-resources true', withDefaultFixture(async
   const changeSets = changeSetResponse.Summaries || [];
   expect(changeSets.length).toEqual(1);
   expect(changeSets[0].Status).toEqual('CREATE_COMPLETE');
+  expect(changeSets[0].ImportExistingResources).toEqual(true);
 }));
 
 integTest('security related changes without a CLI are expected to fail', withDefaultFixture(async (fixture) => {
