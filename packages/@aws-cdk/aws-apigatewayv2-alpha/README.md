@@ -311,9 +311,15 @@ The following code creates a `VpcLink` to a private VPC.
 
 ```ts
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as elb from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 
 const vpc = new ec2.Vpc(this, 'VPC');
+const alb = new elb.ApplicationLoadBalancer(stack, 'AppLoadBalancer', { vpc });
+
 const vpcLink = new apigwv2.VpcLink(this, 'VpcLink', { vpc });
+
+// Creating an HTTP ALB Integration:
+const albIntegration = new integrations.HttpAlbIntegration('ALBIntegration', alb.listeners[0], {});
 ```
 
 Any existing `VpcLink` resource can be imported into the CDK app via the `VpcLink.fromVpcLinkAttributes()`.
