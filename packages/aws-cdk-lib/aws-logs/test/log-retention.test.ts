@@ -517,7 +517,7 @@ describe('log retention', () => {
     stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
     stack.node.setContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT, true);
 
-    const assetLocation = path.join(__dirname, '../', '/lib', '/log-retention-provider');
+    const assetLocation = path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-logs', 'log-retention-handler');
 
     // WHEN
     new LogRetention(stack, 'MyLambda', {
