@@ -18,7 +18,7 @@ export async function handler(props: TableAndClusterProps, event: AWSLambda.Clou
     return { PhysicalResourceId: makePhysicalId(tableNamePrefix, tableAndClusterProps, event.StackId.substring(event.StackId.length - 12)) };
   } else if (event.RequestType === 'Delete') {
     await dropTable(
-      event.PhysicalResourceId.includes(event.StackId.substring(event.StackId.length - 12)) ? tableName : event.PhysicalResourceId, 
+      event.PhysicalResourceId.includes(event.StackId.substring(event.StackId.length - 12)) ? tableName : event.PhysicalResourceId,
       tableAndClusterProps,
     );
     return;
