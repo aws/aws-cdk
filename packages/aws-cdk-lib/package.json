@@ -124,7 +124,7 @@
     "@balena/dockerignore": "^1.0.2",
     "case": "1.6.3",
     "fs-extra": "^11.1.1",
-    "ignore": "^5.2.4",
+    "ignore": "^5.3.0",
     "jsonschema": "^1.4.1",
     "minimatch": "^3.1.2",
     "punycode": "^2.3.1",
@@ -133,7 +133,7 @@
     "yaml": "1.10.2"
   },
   "devDependencies": {
-    "@aws-cdk/aws-service-spec": "^0.0.26",
+    "@aws-cdk/aws-service-spec": "^0.0.30",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
@@ -163,11 +163,11 @@
     "@types/lodash": "^4.14.201",
     "@types/punycode": "^2.1.2",
     "@aws-cdk/lazify": "0.0.0",
-    "aws-sdk": "^2.1492.0",
+    "aws-sdk": "^2.1498.0",
     "aws-sdk-client-mock": "^3.0.0",
     "aws-sdk-client-mock-jest": "^3.0.0",
     "aws-sdk-mock": "5.8.0",
-    "cdk8s": "2.64.23",
+    "cdk8s": "2.68.5",
     "constructs": "^10.0.0",
     "delay": "5.0.0",
     "esbuild": "^0.19.5",
@@ -489,7 +489,7 @@
   },
   "jsiiRosetta": {
     "exampleDependencies": {
-      "@aws-cdk/lambda-layer-kubectl-v27": "^2.0.0",
+      "@aws-cdk/lambda-layer-kubectl-v28": "^2.0.0",
       "cdk8s-plus-25": "^2.7.0",
       "@aws-cdk/aws-apigatewayv2-alpha": "*",
       "@aws-cdk/aws-kinesisfirehose-alpha": "*",
