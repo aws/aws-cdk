@@ -289,9 +289,9 @@ describe('tests', () => {
       lb.logAccessLogs(bucket);
 
       // THEN
-      // verify the ALB depends on the bucket *and* the bucket policy
+      // verify the ALB depends on the bucket policy
       Template.fromStack(stack).hasResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-        DependsOn: ['AccessLoggingBucketA6D88F29'],
+        DependsOn: ['AccessLoggingBucketPolicy700D7CC6'],
       });
     });
 
@@ -400,6 +400,103 @@ describe('tests', () => {
             },
           ],
         },
+      });
+    });
+
+    test('access logging on imported bucket', () => {
+      // GIVEN
+      const { stack, lb } = loggingSetup();
+
+      const bucket = s3.Bucket.fromBucketName(stack, 'ImportedAccessLoggingBucket', 'imported-bucket');
+      // Imported buckets have `autoCreatePolicy` disabled by default
+      bucket.policy = new s3.BucketPolicy(stack, 'ImportedAccessLoggingBucketPolicy', {
+        bucket,
+      });
+
+      // WHEN
+      lb.logAccessLogs(bucket);
+
+      // THEN
+      // verify that the LB attributes reference the bucket
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: Match.arrayWith([
+          {
+            Key: 'access_logs.s3.enabled',
+            Value: 'true',
+          },
+          {
+            Key: 'access_logs.s3.bucket',
+            Value: 'imported-bucket',
+          },
+          {
+            Key: 'access_logs.s3.prefix',
+            Value: '',
+          },
+        ]),
+      });
+
+      // verify the bucket policy allows the ALB to put objects in the bucket
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Action: 's3:PutObject',
+              Effect: 'Allow',
+              Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':s3:::imported-bucket/AWSLogs/',
+                    { Ref: 'AWS::AccountId' },
+                    '/*',
+                  ],
+                ],
+              },
+            },
+            {
+              Action: 's3:PutObject',
+              Effect: 'Allow',
+              Principal: { Service: 'delivery.logs.amazonaws.com' },
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':s3:::imported-bucket/AWSLogs/',
+                    { Ref: 'AWS::AccountId' },
+                    '/*',
+                  ],
+                ],
+              },
+              Condition: { StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' } },
+            },
+            {
+              Action: 's3:GetBucketAcl',
+              Effect: 'Allow',
+              Principal: { Service: 'delivery.logs.amazonaws.com' },
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':s3:::imported-bucket',
+                  ],
+                ],
+              },
+            },
+          ],
+        },
+      });
+
+      // verify the ALB depends on the bucket policy
+      Template.fromStack(stack).hasResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        DependsOn: ['ImportedAccessLoggingBucketPolicy97AE3371'],
       });
     });
 
