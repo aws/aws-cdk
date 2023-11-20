@@ -176,9 +176,7 @@ describe('delete', () => {
 describe('update', () => {
   const event: AWSLambda.CloudFormationCustomResourceUpdateEvent = {
     RequestType: 'Update',
-    OldResourceProperties: {
-      ...resourceProperties,
-    },
+    OldResourceProperties: resourceProperties,
     PhysicalResourceId: physicalResourceId,
     ...genericEvent,
   };
