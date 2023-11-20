@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "35.0.0",
   "files": {
     "19044c50ec489a0413f51a8e60d6272e5746e9b5a0356ed15c12de97c3ca93ec": {
       "source": {
@@ -16,7 +16,7 @@
     },
     "01f1f22cef4fedb5237147fa8010b633dff484879b4c558102725a9d9494c8fe": {
       "source": {
-        "path": "aws-cdk-ses-receipt.template.json",
+        "path": "AwsCdkSesReceipt.template.json",
         "packaging": "file"
       },
       "destinations": {
