@@ -4,17 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "cdk-dynamodb-global-20191121": {
-        "id": "cdk-dynamodb-global-20191121",
-        "path": "cdk-dynamodb-global-20191121",
+      "cdk-dynamodb-global": {
+        "id": "cdk-dynamodb-global",
+        "path": "cdk-dynamodb-global",
         "children": {
           "Table": {
             "id": "Table",
-            "path": "cdk-dynamodb-global-20191121/Table",
+            "path": "cdk-dynamodb-global/Table",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "cdk-dynamodb-global-20191121/Table/Resource",
+                "path": "cdk-dynamodb-global/Table/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
                   "aws:cdk:cloudformation:props": {
@@ -61,23 +61,23 @@
               },
               "ScalingRole": {
                 "id": "ScalingRole",
-                "path": "cdk-dynamodb-global-20191121/Table/ScalingRole",
+                "path": "cdk-dynamodb-global/Table/ScalingRole",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               },
-              "SourceTableAttachedManagedPolicy-cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole6F43DF4A": {
-                "id": "SourceTableAttachedManagedPolicy-cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole6F43DF4A",
-                "path": "cdk-dynamodb-global-20191121/Table/SourceTableAttachedManagedPolicy-cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole6F43DF4A",
+              "SourceTableAttachedManagedPolicy-cdkdynamodbglobalawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRoleFA284B4F": {
+                "id": "SourceTableAttachedManagedPolicy-cdkdynamodbglobalawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRoleFA284B4F",
+                "path": "cdk-dynamodb-global/Table/SourceTableAttachedManagedPolicy-cdkdynamodbglobalawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRoleFA284B4F",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "cdk-dynamodb-global-20191121/Table/SourceTableAttachedManagedPolicy-cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole6F43DF4A/Resource",
+                    "path": "cdk-dynamodb-global/Table/SourceTableAttachedManagedPolicy-cdkdynamodbglobalawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRoleFA284B4F/Resource",
                     "children": {
                       "ImportedResource": {
                         "id": "ImportedResource",
-                        "path": "cdk-dynamodb-global-20191121/Table/SourceTableAttachedManagedPolicy-cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole6F43DF4A/Resource/ImportedResource",
+                        "path": "cdk-dynamodb-global/Table/SourceTableAttachedManagedPolicy-cdkdynamodbglobalawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRoleFA284B4F/Resource/ImportedResource",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "0.0.0"
@@ -85,7 +85,7 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "cdk-dynamodb-global-20191121/Table/SourceTableAttachedManagedPolicy-cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole6F43DF4A/Resource/Resource",
+                        "path": "cdk-dynamodb-global/Table/SourceTableAttachedManagedPolicy-cdkdynamodbglobalawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRoleFA284B4F/Resource/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::ManagedPolicy",
                           "aws:cdk:cloudformation:props": {
@@ -166,7 +166,7 @@
                               {
                                 "Fn::GetAtt": [
                                   "awscdkawsdynamodbReplicaProviderNestedStackawscdkawsdynamodbReplicaProviderNestedStackResource18E3F12D",
-                                  "Outputs.cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole3E8625F3Ref"
+                                  "Outputs.cdkdynamodbglobalawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole5E3708DERef"
                                 ]
                               }
                             ]
@@ -186,20 +186,20 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               },
-              "SourceTableAttachedManagedPolicy-cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole39716128": {
-                "id": "SourceTableAttachedManagedPolicy-cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole39716128",
-                "path": "cdk-dynamodb-global-20191121/Table/SourceTableAttachedManagedPolicy-cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole39716128",
+              "SourceTableAttachedManagedPolicy-cdkdynamodbglobalawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRoleA6271B34": {
+                "id": "SourceTableAttachedManagedPolicy-cdkdynamodbglobalawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRoleA6271B34",
+                "path": "cdk-dynamodb-global/Table/SourceTableAttachedManagedPolicy-cdkdynamodbglobalawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRoleA6271B34",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "cdk-dynamodb-global-20191121/Table/SourceTableAttachedManagedPolicy-cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole39716128/Resource",
+                    "path": "cdk-dynamodb-global/Table/SourceTableAttachedManagedPolicy-cdkdynamodbglobalawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRoleA6271B34/Resource",
                     "children": {
                       "ImportedResource": {
                         "id": "ImportedResource",
-                        "path": "cdk-dynamodb-global-20191121/Table/SourceTableAttachedManagedPolicy-cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole39716128/Resource/ImportedResource",
+                        "path": "cdk-dynamodb-global/Table/SourceTableAttachedManagedPolicy-cdkdynamodbglobalawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRoleA6271B34/Resource/ImportedResource",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "0.0.0"
@@ -207,7 +207,7 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "cdk-dynamodb-global-20191121/Table/SourceTableAttachedManagedPolicy-cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole39716128/Resource/Resource",
+                        "path": "cdk-dynamodb-global/Table/SourceTableAttachedManagedPolicy-cdkdynamodbglobalawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRoleA6271B34/Resource/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::ManagedPolicy",
                           "aws:cdk:cloudformation:props": {
@@ -258,7 +258,7 @@
                               {
                                 "Fn::GetAtt": [
                                   "awscdkawsdynamodbReplicaProviderNestedStackawscdkawsdynamodbReplicaProviderNestedStackResource18E3F12D",
-                                  "Outputs.cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole2F936EC4Ref"
+                                  "Outputs.cdkdynamodbglobalawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole2EE22431Ref"
                                 ]
                               }
                             ]
@@ -278,16 +278,16 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               },
               "Replicaeu-west-2": {
                 "id": "Replicaeu-west-2",
-                "path": "cdk-dynamodb-global-20191121/Table/Replicaeu-west-2",
+                "path": "cdk-dynamodb-global/Table/Replicaeu-west-2",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "cdk-dynamodb-global-20191121/Table/Replicaeu-west-2/Default",
+                    "path": "cdk-dynamodb-global/Table/Replicaeu-west-2/Default",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
                       "version": "0.0.0"
@@ -301,11 +301,11 @@
               },
               "Replicaeu-central-1": {
                 "id": "Replicaeu-central-1",
-                "path": "cdk-dynamodb-global-20191121/Table/Replicaeu-central-1",
+                "path": "cdk-dynamodb-global/Table/Replicaeu-central-1",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "cdk-dynamodb-global-20191121/Table/Replicaeu-central-1/Default",
+                    "path": "cdk-dynamodb-global/Table/Replicaeu-central-1/Default",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
                       "version": "0.0.0"
@@ -325,19 +325,19 @@
           },
           "@aws-cdk--aws-dynamodb.ReplicaProvider": {
             "id": "@aws-cdk--aws-dynamodb.ReplicaProvider",
-            "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider",
+            "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider",
             "children": {
               "OnEventHandler": {
                 "id": "OnEventHandler",
-                "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler",
+                "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler",
                 "children": {
                   "ServiceRole": {
                     "id": "ServiceRole",
-                    "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/ServiceRole",
+                    "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/ServiceRole",
                     "children": {
                       "ImportServiceRole": {
                         "id": "ImportServiceRole",
-                        "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/ServiceRole/ImportServiceRole",
+                        "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/ServiceRole/ImportServiceRole",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "0.0.0"
@@ -345,7 +345,7 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/ServiceRole/Resource",
+                        "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/ServiceRole/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                           "aws:cdk:cloudformation:props": {
@@ -384,11 +384,11 @@
                       },
                       "DefaultPolicy": {
                         "id": "DefaultPolicy",
-                        "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/ServiceRole/DefaultPolicy",
+                        "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/ServiceRole/DefaultPolicy",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/ServiceRole/DefaultPolicy/Resource",
+                            "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/ServiceRole/DefaultPolicy/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                               "aws:cdk:cloudformation:props": {
@@ -436,7 +436,7 @@
                                               },
                                               ":table/",
                                               {
-                                                "Ref": "referencetocdkdynamodbglobal20191121TableB640876BRef"
+                                                "Ref": "referencetocdkdynamodbglobalTableF3B61EA4Ref"
                                               }
                                             ]
                                           ]
@@ -455,7 +455,7 @@
                                               },
                                               ":table/",
                                               {
-                                                "Ref": "referencetocdkdynamodbglobal20191121TableB640876BRef"
+                                                "Ref": "referencetocdkdynamodbglobalTableF3B61EA4Ref"
                                               }
                                             ]
                                           ]
@@ -492,11 +492,11 @@
                   },
                   "Code": {
                     "id": "Code",
-                    "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/Code",
+                    "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/Code",
                     "children": {
                       "Stage": {
                         "id": "Stage",
-                        "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/Code/Stage",
+                        "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/Code/Stage",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.AssetStaging",
                           "version": "0.0.0"
@@ -504,7 +504,7 @@
                       },
                       "AssetBucket": {
                         "id": "AssetBucket",
-                        "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/Code/AssetBucket",
+                        "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/Code/AssetBucket",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                           "version": "0.0.0"
@@ -518,7 +518,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/Resource",
+                    "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                       "aws:cdk:cloudformation:props": {
@@ -552,15 +552,15 @@
               },
               "IsCompleteHandler": {
                 "id": "IsCompleteHandler",
-                "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler",
+                "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler",
                 "children": {
                   "ServiceRole": {
                     "id": "ServiceRole",
-                    "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler/ServiceRole",
+                    "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler/ServiceRole",
                     "children": {
                       "ImportServiceRole": {
                         "id": "ImportServiceRole",
-                        "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler/ServiceRole/ImportServiceRole",
+                        "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler/ServiceRole/ImportServiceRole",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "0.0.0"
@@ -568,7 +568,7 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler/ServiceRole/Resource",
+                        "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler/ServiceRole/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                           "aws:cdk:cloudformation:props": {
@@ -611,9 +611,35 @@
                       "version": "0.0.0"
                     }
                   },
+                  "Code": {
+                    "id": "Code",
+                    "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler/Code",
+                    "children": {
+                      "Stage": {
+                        "id": "Stage",
+                        "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler/Code/Stage",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssetBucket": {
+                        "id": "AssetBucket",
+                        "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler/Code/AssetBucket",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
-                    "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler/Resource",
+                    "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                       "aws:cdk:cloudformation:props": {
@@ -647,19 +673,19 @@
               },
               "Provider": {
                 "id": "Provider",
-                "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider",
+                "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider",
                 "children": {
                   "framework-onEvent": {
                     "id": "framework-onEvent",
-                    "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent",
+                    "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent",
                     "children": {
                       "ServiceRole": {
                         "id": "ServiceRole",
-                        "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/ServiceRole",
+                        "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/ServiceRole",
                         "children": {
                           "ImportServiceRole": {
                             "id": "ImportServiceRole",
-                            "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole",
+                            "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.Resource",
                               "version": "0.0.0"
@@ -667,7 +693,7 @@
                           },
                           "Resource": {
                             "id": "Resource",
-                            "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/ServiceRole/Resource",
+                            "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/ServiceRole/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                               "aws:cdk:cloudformation:props": {
@@ -706,11 +732,11 @@
                           },
                           "DefaultPolicy": {
                             "id": "DefaultPolicy",
-                            "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy",
+                            "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy",
                             "children": {
                               "Resource": {
                                 "id": "Resource",
-                                "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource",
+                                "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                                   "aws:cdk:cloudformation:props": {
@@ -799,11 +825,11 @@
                       },
                       "Code": {
                         "id": "Code",
-                        "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/Code",
+                        "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/Code",
                         "children": {
                           "Stage": {
                             "id": "Stage",
-                            "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/Code/Stage",
+                            "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/Code/Stage",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.AssetStaging",
                               "version": "0.0.0"
@@ -811,7 +837,7 @@
                           },
                           "AssetBucket": {
                             "id": "AssetBucket",
-                            "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/Code/AssetBucket",
+                            "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/Code/AssetBucket",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                               "version": "0.0.0"
@@ -825,7 +851,7 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/Resource",
+                        "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                           "aws:cdk:cloudformation:props": {
@@ -835,7 +861,7 @@
                               },
                               "s3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
                             },
-                            "description": "AWS CDK resource provider framework - onEvent (cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider)",
+                            "description": "AWS CDK resource provider framework - onEvent (cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider)",
                             "environment": {
                               "variables": {
                                 "USER_ON_EVENT_FUNCTION_ARN": {
@@ -879,15 +905,15 @@
                   },
                   "framework-isComplete": {
                     "id": "framework-isComplete",
-                    "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete",
+                    "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete",
                     "children": {
                       "ServiceRole": {
                         "id": "ServiceRole",
-                        "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/ServiceRole",
+                        "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/ServiceRole",
                         "children": {
                           "ImportServiceRole": {
                             "id": "ImportServiceRole",
-                            "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/ServiceRole/ImportServiceRole",
+                            "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/ServiceRole/ImportServiceRole",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.Resource",
                               "version": "0.0.0"
@@ -895,7 +921,7 @@
                           },
                           "Resource": {
                             "id": "Resource",
-                            "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/ServiceRole/Resource",
+                            "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/ServiceRole/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                               "aws:cdk:cloudformation:props": {
@@ -934,11 +960,11 @@
                           },
                           "DefaultPolicy": {
                             "id": "DefaultPolicy",
-                            "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/ServiceRole/DefaultPolicy",
+                            "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/ServiceRole/DefaultPolicy",
                             "children": {
                               "Resource": {
                                 "id": "Resource",
-                                "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/ServiceRole/DefaultPolicy/Resource",
+                                "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/ServiceRole/DefaultPolicy/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                                   "aws:cdk:cloudformation:props": {
@@ -1020,11 +1046,11 @@
                       },
                       "Code": {
                         "id": "Code",
-                        "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/Code",
+                        "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/Code",
                         "children": {
                           "Stage": {
                             "id": "Stage",
-                            "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/Code/Stage",
+                            "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/Code/Stage",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.AssetStaging",
                               "version": "0.0.0"
@@ -1032,7 +1058,7 @@
                           },
                           "AssetBucket": {
                             "id": "AssetBucket",
-                            "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/Code/AssetBucket",
+                            "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/Code/AssetBucket",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                               "version": "0.0.0"
@@ -1046,7 +1072,7 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/Resource",
+                        "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                           "aws:cdk:cloudformation:props": {
@@ -1056,7 +1082,7 @@
                               },
                               "s3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
                             },
-                            "description": "AWS CDK resource provider framework - isComplete (cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider)",
+                            "description": "AWS CDK resource provider framework - isComplete (cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider)",
                             "environment": {
                               "variables": {
                                 "USER_ON_EVENT_FUNCTION_ARN": {
@@ -1097,15 +1123,15 @@
                   },
                   "framework-onTimeout": {
                     "id": "framework-onTimeout",
-                    "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout",
+                    "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout",
                     "children": {
                       "ServiceRole": {
                         "id": "ServiceRole",
-                        "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/ServiceRole",
+                        "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/ServiceRole",
                         "children": {
                           "ImportServiceRole": {
                             "id": "ImportServiceRole",
-                            "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/ServiceRole/ImportServiceRole",
+                            "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/ServiceRole/ImportServiceRole",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.Resource",
                               "version": "0.0.0"
@@ -1113,7 +1139,7 @@
                           },
                           "Resource": {
                             "id": "Resource",
-                            "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/ServiceRole/Resource",
+                            "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/ServiceRole/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                               "aws:cdk:cloudformation:props": {
@@ -1152,11 +1178,11 @@
                           },
                           "DefaultPolicy": {
                             "id": "DefaultPolicy",
-                            "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/ServiceRole/DefaultPolicy",
+                            "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/ServiceRole/DefaultPolicy",
                             "children": {
                               "Resource": {
                                 "id": "Resource",
-                                "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/ServiceRole/DefaultPolicy/Resource",
+                                "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/ServiceRole/DefaultPolicy/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                                   "aws:cdk:cloudformation:props": {
@@ -1238,11 +1264,11 @@
                       },
                       "Code": {
                         "id": "Code",
-                        "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/Code",
+                        "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/Code",
                         "children": {
                           "Stage": {
                             "id": "Stage",
-                            "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/Code/Stage",
+                            "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/Code/Stage",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.AssetStaging",
                               "version": "0.0.0"
@@ -1250,7 +1276,7 @@
                           },
                           "AssetBucket": {
                             "id": "AssetBucket",
-                            "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/Code/AssetBucket",
+                            "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/Code/AssetBucket",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                               "version": "0.0.0"
@@ -1264,7 +1290,7 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/Resource",
+                        "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                           "aws:cdk:cloudformation:props": {
@@ -1274,7 +1300,7 @@
                               },
                               "s3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
                             },
-                            "description": "AWS CDK resource provider framework - onTimeout (cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider)",
+                            "description": "AWS CDK resource provider framework - onTimeout (cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider)",
                             "environment": {
                               "variables": {
                                 "USER_ON_EVENT_FUNCTION_ARN": {
@@ -1315,15 +1341,15 @@
                   },
                   "waiter-state-machine": {
                     "id": "waiter-state-machine",
-                    "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine",
+                    "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine",
                     "children": {
                       "Role": {
                         "id": "Role",
-                        "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/Role",
+                        "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/Role",
                         "children": {
                           "ImportRole": {
                             "id": "ImportRole",
-                            "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/Role/ImportRole",
+                            "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/Role/ImportRole",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.Resource",
                               "version": "0.0.0"
@@ -1331,7 +1357,7 @@
                           },
                           "Resource": {
                             "id": "Resource",
-                            "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/Role/Resource",
+                            "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/Role/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                               "aws:cdk:cloudformation:props": {
@@ -1356,11 +1382,11 @@
                           },
                           "DefaultPolicy": {
                             "id": "DefaultPolicy",
-                            "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/Role/DefaultPolicy",
+                            "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/Role/DefaultPolicy",
                             "children": {
                               "Resource": {
                                 "id": "Resource",
-                                "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/Role/DefaultPolicy/Resource",
+                                "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/Role/DefaultPolicy/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                                   "aws:cdk:cloudformation:props": {
@@ -1442,7 +1468,7 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/Resource",
+                        "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/Resource",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -1451,7 +1477,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "version": "10.3.0"
                     }
                   }
                 },
@@ -1460,33 +1486,33 @@
                   "version": "0.0.0"
                 }
               },
-              "cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole3E8625F3Ref": {
-                "id": "cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole3E8625F3Ref",
-                "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole3E8625F3Ref",
+              "cdkdynamodbglobalawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole5E3708DERef": {
+                "id": "cdkdynamodbglobalawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole5E3708DERef",
+                "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/cdkdynamodbglobalawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole5E3708DERef",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
                 }
               },
-              "cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole2F936EC4Ref": {
-                "id": "cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole2F936EC4Ref",
-                "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole2F936EC4Ref",
+              "cdkdynamodbglobalawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole2EE22431Ref": {
+                "id": "cdkdynamodbglobalawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole2EE22431Ref",
+                "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/cdkdynamodbglobalawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole2EE22431Ref",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
                 }
               },
-              "cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderframeworkonEventCFDD0BA0Arn": {
-                "id": "cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderframeworkonEventCFDD0BA0Arn",
-                "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderframeworkonEventCFDD0BA0Arn",
+              "cdkdynamodbglobalawscdkawsdynamodbReplicaProviderframeworkonEvent28092A46Arn": {
+                "id": "cdkdynamodbglobalawscdkawsdynamodbReplicaProviderframeworkonEvent28092A46Arn",
+                "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/cdkdynamodbglobalawscdkawsdynamodbReplicaProviderframeworkonEvent28092A46Arn",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
                 }
               },
-              "reference-to-cdkdynamodbglobal20191121TableB640876BRef": {
-                "id": "reference-to-cdkdynamodbglobal20191121TableB640876BRef",
-                "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/reference-to-cdkdynamodbglobal20191121TableB640876BRef",
+              "reference-to-cdkdynamodbglobalTableF3B61EA4Ref": {
+                "id": "reference-to-cdkdynamodbglobalTableF3B61EA4Ref",
+                "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/reference-to-cdkdynamodbglobalTableF3B61EA4Ref",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnParameter",
                   "version": "0.0.0"
@@ -1500,16 +1526,16 @@
           },
           "@aws-cdk--aws-dynamodb.ReplicaProvider.NestedStack": {
             "id": "@aws-cdk--aws-dynamodb.ReplicaProvider.NestedStack",
-            "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider.NestedStack",
+            "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider.NestedStack",
             "children": {
               "@aws-cdk--aws-dynamodb.ReplicaProvider.NestedStackResource": {
                 "id": "@aws-cdk--aws-dynamodb.ReplicaProvider.NestedStackResource",
-                "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider.NestedStack/@aws-cdk--aws-dynamodb.ReplicaProvider.NestedStackResource",
+                "path": "cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider.NestedStack/@aws-cdk--aws-dynamodb.ReplicaProvider.NestedStackResource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::CloudFormation::Stack",
                   "aws:cdk:cloudformation:props": {
                     "parameters": {
-                      "referencetocdkdynamodbglobal20191121TableB640876BRef": {
+                      "referencetocdkdynamodbglobalTableF3B61EA4Ref": {
                         "Ref": "TableCD117FA1"
                       }
                     },
@@ -1525,7 +1551,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1"
                           },
-                          "/4084e346026d946757a61510812eb9915ac9ec3a1ed9aa6f16f5076fa98d7c16.json"
+                          "/3f2f4a04bcc13d7e3154cb2b34655661309e4af39496b52a2199412cb3784efc.json"
                         ]
                       ]
                     }
@@ -1539,12 +1565,12 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.70"
+              "version": "10.3.0"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "cdk-dynamodb-global-20191121/BootstrapVersion",
+            "path": "cdk-dynamodb-global/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -1552,7 +1578,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "cdk-dynamodb-global-20191121/CheckBootstrapVersion",
+            "path": "cdk-dynamodb-global/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
@@ -1564,29 +1590,29 @@
           "version": "0.0.0"
         }
       },
-      "cdk-dynamodb-global-20191121-test": {
-        "id": "cdk-dynamodb-global-20191121-test",
-        "path": "cdk-dynamodb-global-20191121-test",
+      "cdk-dynamodb-global-integ": {
+        "id": "cdk-dynamodb-global-integ",
+        "path": "cdk-dynamodb-global-integ",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "cdk-dynamodb-global-20191121-test/DefaultTest",
+            "path": "cdk-dynamodb-global-integ/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "cdk-dynamodb-global-20191121-test/DefaultTest/Default",
+                "path": "cdk-dynamodb-global-integ/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "cdk-dynamodb-global-20191121-test/DefaultTest/DeployAssert",
+                "path": "cdk-dynamodb-global-integ/DefaultTest/DeployAssert",
                 "children": {
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "cdk-dynamodb-global-20191121-test/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "cdk-dynamodb-global-integ/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
@@ -1594,7 +1620,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "cdk-dynamodb-global-20191121-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "cdk-dynamodb-global-integ/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"
@@ -1623,7 +1649,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },

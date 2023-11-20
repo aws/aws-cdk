@@ -78,7 +78,7 @@
            },
            ":table/",
            {
-            "Ref": "referencetocdkdynamodbglobal20191121TableB640876BRef"
+            "Ref": "referencetocdkdynamodbglobalTableF3B61EA4Ref"
            }
           ]
          ]
@@ -97,7 +97,7 @@
            },
            ":table/",
            {
-            "Ref": "referencetocdkdynamodbglobal20191121TableB640876BRef"
+            "Ref": "referencetocdkdynamodbglobalTableF3B61EA4Ref"
            }
           ]
          ]
@@ -302,7 +302,7 @@
      },
      "S3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
     },
-    "Description": "AWS CDK resource provider framework - onEvent (cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider)",
+    "Description": "AWS CDK resource provider framework - onEvent (cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider)",
     "Environment": {
      "Variables": {
       "USER_ON_EVENT_FUNCTION_ARN": {
@@ -439,7 +439,7 @@
      },
      "S3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
     },
-    "Description": "AWS CDK resource provider framework - isComplete (cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider)",
+    "Description": "AWS CDK resource provider framework - isComplete (cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider)",
     "Environment": {
      "Variables": {
       "USER_ON_EVENT_FUNCTION_ARN": {
@@ -573,7 +573,7 @@
      },
      "S3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
     },
-    "Description": "AWS CDK resource provider framework - onTimeout (cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider)",
+    "Description": "AWS CDK resource provider framework - onTimeout (cdk-dynamodb-global/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider)",
     "Environment": {
      "Variables": {
       "USER_ON_EVENT_FUNCTION_ARN": {
@@ -723,17 +723,17 @@
   }
  },
  "Outputs": {
-  "cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole3E8625F3Ref": {
+  "cdkdynamodbglobalawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole5E3708DERef": {
    "Value": {
     "Ref": "OnEventHandlerServiceRole15A26729"
    }
   },
-  "cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole2F936EC4Ref": {
+  "cdkdynamodbglobalawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole2EE22431Ref": {
    "Value": {
     "Ref": "IsCompleteHandlerServiceRole5810CC58"
    }
   },
-  "cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderframeworkonEventCFDD0BA0Arn": {
+  "cdkdynamodbglobalawscdkawsdynamodbReplicaProviderframeworkonEvent28092A46Arn": {
    "Value": {
     "Fn::GetAtt": [
      "ProviderframeworkonEvent83C1D0A7",
@@ -743,7 +743,7 @@
   }
  },
  "Parameters": {
-  "referencetocdkdynamodbglobal20191121TableB640876BRef": {
+  "referencetocdkdynamodbglobalTableF3B61EA4Ref": {
    "Type": "String"
   }
  }

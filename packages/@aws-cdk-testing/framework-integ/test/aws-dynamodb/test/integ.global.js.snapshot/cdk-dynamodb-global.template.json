@@ -41,7 +41,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "TableSourceTableAttachedManagedPolicycdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole6F43DF4A23250B4C": {
+  "TableSourceTableAttachedManagedPolicycdkdynamodbglobalawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRoleFA284B4F92C5A167": {
    "Type": "AWS::IAM::ManagedPolicy",
    "Properties": {
     "Description": {
@@ -121,13 +121,13 @@
      {
       "Fn::GetAtt": [
        "awscdkawsdynamodbReplicaProviderNestedStackawscdkawsdynamodbReplicaProviderNestedStackResource18E3F12D",
-       "Outputs.cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole3E8625F3Ref"
+       "Outputs.cdkdynamodbglobalawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole5E3708DERef"
       ]
      }
     ]
    }
   },
-  "TableSourceTableAttachedManagedPolicycdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole3971612857304880": {
+  "TableSourceTableAttachedManagedPolicycdkdynamodbglobalawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRoleA6271B348DC1641D": {
    "Type": "AWS::IAM::ManagedPolicy",
    "Properties": {
     "Description": {
@@ -177,7 +177,7 @@
      {
       "Fn::GetAtt": [
        "awscdkawsdynamodbReplicaProviderNestedStackawscdkawsdynamodbReplicaProviderNestedStackResource18E3F12D",
-       "Outputs.cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole2F936EC4Ref"
+       "Outputs.cdkdynamodbglobalawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole2EE22431Ref"
       ]
      }
     ]
@@ -189,7 +189,7 @@
     "ServiceToken": {
      "Fn::GetAtt": [
       "awscdkawsdynamodbReplicaProviderNestedStackawscdkawsdynamodbReplicaProviderNestedStackResource18E3F12D",
-      "Outputs.cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderframeworkonEventCFDD0BA0Arn"
+      "Outputs.cdkdynamodbglobalawscdkawsdynamodbReplicaProviderframeworkonEvent28092A46Arn"
      ]
     },
     "TableName": {
@@ -198,8 +198,8 @@
     "Region": "eu-west-2"
    },
    "DependsOn": [
-    "TableSourceTableAttachedManagedPolicycdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole3971612857304880",
-    "TableSourceTableAttachedManagedPolicycdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole6F43DF4A23250B4C"
+    "TableSourceTableAttachedManagedPolicycdkdynamodbglobalawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRoleA6271B348DC1641D",
+    "TableSourceTableAttachedManagedPolicycdkdynamodbglobalawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRoleFA284B4F92C5A167"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -210,7 +210,7 @@
     "ServiceToken": {
      "Fn::GetAtt": [
       "awscdkawsdynamodbReplicaProviderNestedStackawscdkawsdynamodbReplicaProviderNestedStackResource18E3F12D",
-      "Outputs.cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderframeworkonEventCFDD0BA0Arn"
+      "Outputs.cdkdynamodbglobalawscdkawsdynamodbReplicaProviderframeworkonEvent28092A46Arn"
      ]
     },
     "TableName": {
@@ -220,8 +220,8 @@
    },
    "DependsOn": [
     "TableReplicaeuwest290D3CD3A",
-    "TableSourceTableAttachedManagedPolicycdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole3971612857304880",
-    "TableSourceTableAttachedManagedPolicycdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole6F43DF4A23250B4C"
+    "TableSourceTableAttachedManagedPolicycdkdynamodbglobalawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRoleA6271B348DC1641D",
+    "TableSourceTableAttachedManagedPolicycdkdynamodbglobalawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRoleFA284B4F92C5A167"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -230,7 +230,7 @@
    "Type": "AWS::CloudFormation::Stack",
    "Properties": {
     "Parameters": {
-     "referencetocdkdynamodbglobal20191121TableB640876BRef": {
+     "referencetocdkdynamodbglobalTableF3B61EA4Ref": {
       "Ref": "TableCD117FA1"
      }
     },
@@ -246,7 +246,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1"
        },
-       "/4084e346026d946757a61510812eb9915ac9ec3a1ed9aa6f16f5076fa98d7c16.json"
+       "/3f2f4a04bcc13d7e3154cb2b34655661309e4af39496b52a2199412cb3784efc.json"
       ]
      ]
     }
