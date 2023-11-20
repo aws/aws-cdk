@@ -1,7 +1,7 @@
 import 'aws-sdk-client-mock-jest';
 import { AuthorizeSecurityGroupEgressCommand, AuthorizeSecurityGroupIngressCommand, EC2, RevokeSecurityGroupEgressCommand, RevokeSecurityGroupIngressCommand } from '@aws-sdk/client-ec2';
 import { mockClient } from 'aws-sdk-client-mock';
-import { handler } from '../lib/restrict-default-security-group-handler';
+import { handler } from '../../lib/aws-ec2/restrict-default-security-group-handler';
 
 const mockEc2Client = mockClient(EC2);
 
