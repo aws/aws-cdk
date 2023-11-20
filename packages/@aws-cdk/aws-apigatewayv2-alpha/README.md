@@ -315,7 +315,7 @@ import * as elb from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import { HttpAlbIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
 
 const vpc = new ec2.Vpc(this, 'VPC');
-const alb = new elb.ApplicationLoadBalancer(stack, 'AppLoadBalancer', { vpc });
+const alb = new elb.ApplicationLoadBalancer(this, 'AppLoadBalancer', { vpc });
 
 const vpcLink = new apigwv2.VpcLink(this, 'VpcLink', { vpc });
 
