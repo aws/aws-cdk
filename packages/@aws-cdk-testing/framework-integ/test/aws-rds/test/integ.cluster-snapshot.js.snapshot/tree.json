@@ -1054,7 +1054,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "4e271f0c846907e2a923a4a2845e2c88d8dbbf3300880de4e5c73cc9e2c3b789.zip"
+                          "s3Key": "37796da9adf5863c68c608fe0068001d55f6c1d1e364a13eeee6b17112bea3b5.zip"
                         },
                         "handler": "index.onEventHandler",
                         "role": {
@@ -1231,7 +1231,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "4e271f0c846907e2a923a4a2845e2c88d8dbbf3300880de4e5c73cc9e2c3b789.zip"
+                          "s3Key": "37796da9adf5863c68c608fe0068001d55f6c1d1e364a13eeee6b17112bea3b5.zip"
                         },
                         "handler": "index.isCompleteHandler",
                         "role": {
@@ -2060,7 +2060,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "version": "10.3.0"
                     }
                   }
                 },
@@ -2090,7 +2090,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.70"
+              "version": "10.3.0"
             }
           },
           "FromSnapshot": {
@@ -2646,7 +2646,7 @@
                 "path": "ClusterSnapshotInteg/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -2692,7 +2692,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },

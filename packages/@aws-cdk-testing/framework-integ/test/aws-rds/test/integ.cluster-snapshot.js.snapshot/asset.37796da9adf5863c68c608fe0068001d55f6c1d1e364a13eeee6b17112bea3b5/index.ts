@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-/// <reference path="../../../../../../../node_modules/@aws-cdk/custom-resource-handlers/lib/types.d.ts" />
+/// <reference path="../../../../../../../node_modules/aws-cdk-lib/custom-resources/lib/provider-framework/types.d.ts" />
 import { RDS } from '@aws-sdk/client-rds'; // eslint-disable-line import/no-extraneous-dependencies
 
 export async function onEventHandler(event: AWSCDKAsyncCustomResource.OnEventRequest): Promise<AWSCDKAsyncCustomResource.OnEventResponse> {
