@@ -40,48 +40,41 @@ describe('cdk function', () => {
     // GIVEN
     const stack = new Stack();
     const handler = CdkHandler.fromAsset(path.join(__dirname, 'test-handler'), {
-      
+      handler: 'index.handler',
       compatibleRuntimes: [Runtime.JAVA_11, Runtime.RUBY_3_2],
     });
 
     // WHEN / THEN
     expect(() => {
-      new CdkFunction(stack, 'Function', {
-        handler: 'index.handler',
-        code,
-      });
+      new CdkFunction(stack, 'Function', { handler });
     }).toThrow('Compatible runtimes must contain either nodejs or python runtimes');
   });
 
   test('throws if latest nodejs runtime is deprecated', () => {
     // GIVEN
     const stack = new Stack();
-    const code = CdkCode.fromAsset(path.join(__dirname, 'test-handler'), {
+    const handler = CdkHandler.fromAsset(path.join(__dirname, 'test-handler'), {
+      handler: 'index.handler',
       compatibleRuntimes: [Runtime.NODEJS_12_X, Runtime.NODEJS_14_X],
     });
 
     // WHEN / THEN
     expect(() => {
-      new CdkFunction(stack, 'Function', {
-        handler: 'index.handler',
-        code,
-      });
+      new CdkFunction(stack, 'Function', { handler });
     }).toThrow(`Latest nodejs runtime ${Runtime.NODEJS_14_X} is deprecated`);
   });
 
   test('throws if latest python runtime is deprecated', () => {
     // GIVEN
     const stack = new Stack();
-    const code = CdkCode.fromAsset(path.join(__dirname, 'test-handler'), {
+    const handler = CdkHandler.fromAsset(path.join(__dirname, 'test-handler'), {
+      handler: 'index.handler',
       compatibleRuntimes: [Runtime.PYTHON_2_7, Runtime.PYTHON_3_6],
     });
 
     // WHEN / THEN
     expect(() => {
-      new CdkFunction(stack, 'Function', {
-        handler: 'index.handler',
-        code,
-      });
+      new CdkFunction(stack, 'Function', { handler });
     }).toThrow(`Latest python runtime ${Runtime.PYTHON_3_6} is deprecated`);
   });
 });

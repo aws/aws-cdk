@@ -8,7 +8,7 @@ import { RuntimeDeterminer } from '../helpers-internal/runtime-determiner';
  */
 export interface CdkFunctionProps extends FunctionOptions {
   /**
-   * The source code of your Lambda function.
+   * The source code, compatible runtimes, and the method within your code that Lambda calls to execute your function.
    */
   readonly handler: CdkHandler;
 }
