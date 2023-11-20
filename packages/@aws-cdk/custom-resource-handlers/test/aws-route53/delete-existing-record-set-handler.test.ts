@@ -1,4 +1,4 @@
-import { handler } from '../lib/delete-existing-record-set-handler';
+import { handler } from '../../lib/aws-route53/delete-existing-record-set-handler';
 
 const mockListResourceRecordSetsResponse = jest.fn();
 const mockChangeResourceRecordSetsResponse = jest.fn();
