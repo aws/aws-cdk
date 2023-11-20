@@ -29,8 +29,9 @@ export interface BaseListenerLookupOptions {
   readonly listenerPort?: number;
 
   /**
-   * When the listener is cached in cdk.context.json, adds an additional discriminator to the
-   * cache key so that separate lookups with the same parameters can have separate cache lifecycles
+   * Adds an additional discriminator to the `cdk.context.json` cache key.
+   *
+   * @default - no additional cache key
    */
   readonly additionalCacheKey?: string;
 }

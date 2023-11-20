@@ -92,6 +92,13 @@ export interface AmiContextQuery {
    * Filters to DescribeImages call
    */
   readonly filters: {[key: string]: string[]};
+
+  /**
+   * Adds an additional discriminator to the `cdk.context.json` cache key.
+   *
+   * @default - no additional cache key
+   */
+  readonly additionalCacheKey?: string;
 }
 
 /**
@@ -247,8 +254,9 @@ export interface VpcContextQuery {
   readonly returnVpnGateways?: boolean;
 
   /**
-   * When the vpc is cached in cdk.context.json, adds an additional discriminator to the
-   * cache key so that separate lookups with the same parameters can have separate cache lifecycles
+   * Adds an additional discriminator to the `cdk.context.json` cache key.
+   *
+   * @default - no additional cache key
    */
   readonly additionalCacheKey?: string;
 }
@@ -339,8 +347,9 @@ export interface LoadBalancerContextQuery extends LoadBalancerFilter {
   readonly lookupRoleArn?: string;
 
   /**
-   * When the load balancer is cached in cdk.context.json, adds an additional discriminator to the
-   * cache key so that separate lookups with the same parameters can have separate cache lifecycles
+   * Adds an additional discriminator to the `cdk.context.json` cache key.
+   *
+   * @default - no additional cache key
    */
   readonly additionalCacheKey?: string;
 }
@@ -420,8 +429,9 @@ export interface LoadBalancerListenerContextQuery extends LoadBalancerFilter {
   readonly listenerPort?: number;
 
   /**
-   * When listener is cached in cdk.context.json, adds an additional discriminator to the
-   * cache key so that separate lookups with the same parameters can have separate cache lifecycles
+   * Adds an additional discriminator to the `cdk.context.json` cache key.
+   *
+   * @default - no additional cache key
    */
   readonly additionalCacheKey?: string;
 }
@@ -469,8 +479,9 @@ export interface SecurityGroupContextQuery {
   readonly vpcId?: string;
 
   /**
-   * When the security group is cached in cdk.context.json, adds an additional discriminator to the
-   * cache key so that separate lookups with the same parameters can have separate cache lifecycles
+   * Adds an additional discriminator to the `cdk.context.json` cache key.
+   *
+   * @default - no additional cache key
    */
   readonly additionalCacheKey?: string;
 }
@@ -502,8 +513,9 @@ export interface KeyContextQuery {
   readonly aliasName: string;
 
   /**
-   * When the key is cached in cdk.context.json, adds an additional discriminator to the
-   * cache key so that separate lookups with the same parameters can have separate cache lifecycles
+   * Adds an additional discriminator to the `cdk.context.json` cache key.
+   *
+   * @default - no additional cache key
    */
   readonly additionalCacheKey?: string;
 }

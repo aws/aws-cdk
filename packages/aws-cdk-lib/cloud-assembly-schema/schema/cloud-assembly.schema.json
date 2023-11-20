@@ -572,6 +572,10 @@
                             "type": "string"
                         }
                     }
+                },
+                "additionalCacheKey": {
+                    "description": "Adds an additional discriminator to the `cdk.context.json` cache key. (Default - no additional cache key)",
+                    "type": "string"
                 }
             },
             "required": [
@@ -702,7 +706,7 @@
                     "type": "boolean"
                 },
                 "additionalCacheKey": {
-                    "description": "When the vpc is cached in cdk.context.json, adds an additional discriminator to the\ncache key so that separate lookups with the same parameters can have separate cache lifecycles",
+                    "description": "Adds an additional discriminator to the `cdk.context.json` cache key. (Default - no additional cache key)",
                     "type": "string"
                 }
             },
@@ -756,7 +760,7 @@
                     "type": "string"
                 },
                 "additionalCacheKey": {
-                    "description": "When the load balancer is cached in cdk.context.json, adds an additional discriminator to the\ncache key so that separate lookups with the same parameters can have separate cache lifecycles",
+                    "description": "Adds an additional discriminator to the `cdk.context.json` cache key. (Default - no additional cache key)",
                     "type": "string"
                 },
                 "loadBalancerType": {
@@ -826,7 +830,7 @@
                     "type": "number"
                 },
                 "additionalCacheKey": {
-                    "description": "When listener is cached in cdk.context.json, adds an additional discriminator to the\ncache key so that separate lookups with the same parameters can have separate cache lifecycles",
+                    "description": "Adds an additional discriminator to the `cdk.context.json` cache key. (Default - no additional cache key)",
                     "type": "string"
                 },
                 "loadBalancerType": {
@@ -880,7 +884,7 @@
                     "type": "string"
                 },
                 "additionalCacheKey": {
-                    "description": "When the security group is cached in cdk.context.json, adds an additional discriminator to the\ncache key so that separate lookups with the same parameters can have separate cache lifecycles",
+                    "description": "Adds an additional discriminator to the `cdk.context.json` cache key. (Default - no additional cache key)",
                     "type": "string"
                 }
             },
@@ -910,7 +914,7 @@
                     "type": "string"
                 },
                 "additionalCacheKey": {
-                    "description": "When the key is cached in cdk.context.json, adds an additional discriminator to the\ncache key so that separate lookups with the same parameters can have separate cache lifecycles",
+                    "description": "Adds an additional discriminator to the `cdk.context.json` cache key. (Default - no additional cache key)",
                     "type": "string"
                 }
             },

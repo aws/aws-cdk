@@ -156,10 +156,9 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
-If you do not want the value of the context variable to be global (ie, having the same
-value returned any time you call `EcsOptimizedImage.amazonLinux` across your entire app),
-you can set the `additionalCacheKey` argument (eg, to `this.node.path` to tie it
-to the scope of the current construct)
+To customize the cache key use the `additionalCacheKey` parameter.
+This can be useful if you want to scope the context variable to a construct 
+(eg, using `additionalCacheKey: this.node.path`).
 
 ```ts
 declare const vpc: ec2.Vpc;

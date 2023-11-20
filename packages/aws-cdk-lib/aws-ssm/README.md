@@ -62,10 +62,14 @@ The result of the `StringParameter.valueFromLookup()` operation will be written 
 called `cdk.context.json`. You must commit this file to source control so
 that the lookup values are available in non-privileged environments such
 as CI build steps, and to ensure your template builds are repeatable.
+
 To customize the cache key use the `additionalCacheKey` parameter.
 This can be useful if you want to scope the context variable to a construct 
 (eg, using `additionalCacheKey: this.node.path`).
 
+```ts
+const stringValue = ssm.StringParameter.valueFromLookup(this, '/My/Public/Parameter', this.node.path);
+```
 
 When using `valueFromLookup` an initial value of 'dummy-value-for-${parameterName}'
 (`dummy-value-for-/My/Public/Parameter` in the above example)

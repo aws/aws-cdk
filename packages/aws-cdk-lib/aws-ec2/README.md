@@ -505,6 +505,7 @@ The result of the `Vpc.fromLookup()` operation will be written to a file
 called `cdk.context.json`. You must commit this file to source control so
 that the lookup values are available in non-privileged environments such
 as CI build steps, and to ensure your template builds are repeatable.
+
 To customize the cache key use the `additionalCacheKey` parameter.
 This can be useful if you want to scope the context variable to a construct 
 (eg, using `additionalCacheKey: this.node.path`).
@@ -748,7 +749,13 @@ If the security group ID is known and configuration details are unknown, use met
 const sg = ec2.SecurityGroup.fromLookupById(this, 'SecurityGroupLookup', 'sg-1234');
 ```
 
-The result of `SecurityGroup.fromLookupByName` and `SecurityGroup.fromLookupById` operations will be written to a file called `cdk.context.json`. You must commit this file to source control so that the lookup values are available in non-privileged environments such as CI build steps, and to ensure your template builds are repeatable. To customize the cache key use the `additionalCacheKey` parameter. This can be useful if you want to scope the context variable to a construct (eg, using `additionalCacheKey: this.node.path`).
+The result of `SecurityGroup.fromLookupByName` and `SecurityGroup.fromLookupById` operations will be
+written to a file called `cdk.context.json`. 
+You must commit this file to source control so that the lookup values are available in non-privileged
+environments such as CI build steps, and to ensure your template builds are repeatable.
+
+To customize the cache key use the `additionalCacheKey` parameter. 
+This can be useful if you want to scope the context variable to a construct (eg, using `additionalCacheKey: this.node.path`).
 
 ### Cross Stack Connections
 
@@ -836,10 +843,9 @@ examples of images you might want to use:
 > [Runtime Context](https://docs.aws.amazon.com/cdk/latest/guide/context.html) in the CDK
 > developer guide.
 > 
-> If you do not want the value of the context variable to be to be global
-> (ie, having the same value returned any time you call `lookup` across your entire app),
-> you can set the `additionalCacheKey` argument (eg, to `this.node.path` to tie it
-> to the scope of the current construct)
+> To customize the cache key use the `additionalCacheKey` parameter.
+> This can be useful if you want to scope the context variable to a construct 
+> (eg, using `additionalCacheKey: this.node.path`).
 >
 > `MachineImage.genericLinux()`, `MachineImage.genericWindows()` will use `CfnMapping` in
 > an agnostic stack.

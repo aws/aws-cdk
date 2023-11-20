@@ -523,6 +523,7 @@ The result of a `fromLookup()` operation will be written to a file
 called `cdk.context.json`. You must commit this file to source control so
 that the lookup values are available in non-privileged environments such
 as CI build steps, and to ensure your template builds are repeatable.
+
 To customize the cache key use the `additionalCacheKey` parameter.
 This can be useful if you want to scope the context variable to a construct 
 (eg, using `additionalCacheKey: this.node.path`).
@@ -556,7 +557,18 @@ const loadBalancer = elbv2.ApplicationLoadBalancer.fromLookup(this, 'ALB', {
 });
 ```
 
-## Load Balancer Listener lookup options
+**Look up a Application Load Balancer by ARN, customizing the cache key**
+
+```ts
+const loadBalancer = elbv2.ApplicationLoadBalancer.fromLookup(this, 'ALB', {
+  loadBalancerArn: 'arn:aws:elasticloadbalancing:us-east-2:123456789012:loadbalancer/app/my-load-balancer/1234567890123456',
+  additionalCacheKey: this.node.path,
+});
+```
+
+**
+
+### Load Balancer Listener lookup options
 
 You may look up a load balancer listener by the following criteria:
 
@@ -601,6 +613,17 @@ const listener = elbv2.NetworkListener.fromLookup(this, 'ALBListener', {
   },
   listenerProtocol: elbv2.Protocol.TCP,
   listenerPort: 12345,
+});
+```
+
+**Look up a Listener by associated Load Balancer, Port, and Protocol**
+
+```ts
+const listener = elbv2.ApplicationListener.fromLookup(this, 'ALBListener', {
+  loadBalancerArn: 'arn:aws:elasticloadbalancing:us-east-2:123456789012:loadbalancer/app/my-load-balancer/1234567890123456',
+  listenerProtocol: elbv2.ApplicationProtocol.HTTPS,
+  listenerPort: 443,
+  additionalCacheKey: this.node.path,
 });
 ```
 

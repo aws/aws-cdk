@@ -303,8 +303,9 @@ export interface SsmParameterImageOptions {
   readonly cachedInContext?: boolean;
 
   /**
-   * When the image is cached in cdk.context.json, adds an additional discriminator to the
-   * cache key so that separate lookups with the same parameters can have separate cache lifecycles
+   * Adds an additional discriminator to the `cdk.context.json` cache key.
+   *
+   * @default - no additional cache key
    */
   readonly additionalCacheKey?: string;
 
@@ -467,8 +468,9 @@ export interface AmazonLinuxImageProps {
   readonly cachedInContext?: boolean;
 
   /**
-   * When the image is cached in cdk.context.json, adds an additional discriminator to the
-   * cache key so that separate lookups with the same parameters can have separate cache lifecycles
+   * Adds an additional discriminator to the `cdk.context.json` cache key.
+   *
+   * @default - no additional cache key
    */
   readonly additionalCacheKey?: string;
 }
@@ -679,7 +681,7 @@ export class GenericWindowsImage implements IMachineImage {
  * evict the value from the cache using the `cdk context` command. See
  * https://docs.aws.amazon.com/cdk/latest/guide/context.html for more information.
  * If `props.additionalCacheKey` is set, the context key uses that value as a discriminator
- * rather than the cached value being global across all lookups
+ * rather than the cached value being global across all lookups.
  */
 export class LookupMachineImage implements IMachineImage {
   constructor(private readonly props: LookupMachineImageProps) {
@@ -704,7 +706,7 @@ export class LookupMachineImage implements IMachineImage {
       props: {
         owners: this.props.owners,
         filters,
-        ...(this.props.additionalCacheKey ? { additionalCacheKey: this.props.additionalCacheKey } : {}),
+        additionalCacheKey: this.props.additionalCacheKey,
       } as cxschema.AmiContextQuery,
       dummyValue: 'ami-1234',
     }).value as cxapi.AmiContextResponse;
@@ -762,8 +764,9 @@ export interface LookupMachineImageProps {
   readonly userData?: UserData;
 
   /**
-   * When the image is cached in cdk.context.json, adds an additional discriminator to the
-   * cache key so that separate lookups with the same parameters can have separate cache lifecycles
+   * Adds an additional discriminator to the `cdk.context.json` cache key.
+   *
+   * @default - no additional cache key
    */
   readonly additionalCacheKey?: string;
 }
