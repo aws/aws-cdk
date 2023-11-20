@@ -91,11 +91,11 @@
             "description": "Type of cloud artifact.",
             "type": "string",
             "enum": [
+                "none",
                 "aws:cloudformation:stack",
-                "cdk:asset-manifest",
-                "cdk:cloud-assembly",
                 "cdk:tree",
-                "none"
+                "cdk:asset-manifest",
+                "cdk:cloud-assembly"
             ]
         },
         "MetadataEntry": {
@@ -492,15 +492,15 @@
             "enum": [
                 "ami",
                 "availability-zones",
-                "endpoint-service-availability-zones",
                 "hosted-zone",
-                "key-provider",
+                "ssm",
+                "vpc-provider",
+                "endpoint-service-availability-zones",
                 "load-balancer",
                 "load-balancer-listener",
-                "plugin",
                 "security-group",
-                "ssm",
-                "vpc-provider"
+                "key-provider",
+                "plugin"
             ]
         },
         "ContextQueryProperties": {
@@ -789,8 +789,8 @@
             "description": "Type of load balancer",
             "type": "string",
             "enum": [
-                "application",
-                "network"
+                "network",
+                "application"
             ]
         },
         "LoadBalancerListenerContextQuery": {
