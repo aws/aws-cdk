@@ -2,22 +2,20 @@ import * as path from 'path';
 import { Template } from '../../../assertions';
 import { Runtime } from '../../../aws-lambda';
 import { Stack } from '../../../core';
-import { CdkCode } from '../../lib/handler-framework/cdk-code';
 import { CdkFunction } from '../../lib/handler-framework/cdk-function';
+import { CdkHandler } from '../../lib/handler-framework/cdk-handler';
 
 describe('cdk function', () => {
   test('stack contains expected lambda function', () => {
     // GIVEN
     const stack = new Stack();
-    const code = CdkCode.fromAsset(path.join(__dirname, 'test-handler'), {
+    const handler = CdkHandler.fromAsset(path.join(__dirname, 'test-handler'), {
+      handler: 'index.handler',
       compatibleRuntimes: [Runtime.NODEJS_16_X, Runtime.NODEJS_18_X],
     });
 
     // WHEN
-    new CdkFunction(stack, 'Function', {
-      code,
-      handler: 'index.handler',
-    });
+    new CdkFunction(stack, 'Function', { handler });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
@@ -41,7 +39,8 @@ describe('cdk function', () => {
   test('throws if no nodejs or python runtimes are specified in cdk code', () => {
     // GIVEN
     const stack = new Stack();
-    const code = CdkCode.fromAsset(path.join(__dirname, 'test-handler'), {
+    const handler = CdkHandler.fromAsset(path.join(__dirname, 'test-handler'), {
+      
       compatibleRuntimes: [Runtime.JAVA_11, Runtime.RUBY_3_2],
     });
 

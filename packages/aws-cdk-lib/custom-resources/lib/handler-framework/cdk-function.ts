@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CdkCode } from './cdk-code';
+import { CdkHandler } from './cdk-handler';
 import { Function, FunctionOptions, Runtime } from '../../../aws-lambda';
 import { RuntimeDeterminer } from '../helpers-internal/runtime-determiner';
 
@@ -10,12 +10,7 @@ export interface CdkFunctionProps extends FunctionOptions {
   /**
    * The source code of your Lambda function.
    */
-  readonly code: CdkCode;
-
-  /**
-   * The name of the method within your code that Lambda calls to execute your function.
-   */
-  readonly handler: string;
+  readonly handler: CdkHandler;
 }
 
 /**
@@ -45,8 +40,9 @@ export class CdkFunction extends Function {
   public constructor(scope: Construct, id: string, props: CdkFunctionProps) {
     super(scope, id, {
       ...props,
-      code: props.code.codeFromAsset,
-      runtime: CdkFunction.determineRuntime(props.code.compatibleRuntimes),
+      code: props.handler.code,
+      handler: props.handler.handler,
+      runtime: CdkFunction.determineRuntime(props.handler.compatibleRuntimes),
     });
   }
 }
