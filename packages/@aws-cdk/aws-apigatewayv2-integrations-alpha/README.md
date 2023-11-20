@@ -225,4 +225,3 @@ webSocketApi.addRoute('sendMessage', {
   integration: new WebSocketLambdaIntegration('SendMessageIntegration', messageHandler),
 });
 ```
-Extra line so this shows up in the files changes for the API Review - delete later
