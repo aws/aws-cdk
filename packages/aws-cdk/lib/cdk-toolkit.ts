@@ -293,6 +293,8 @@ export class CdkToolkit {
           reuseAssets: options.reuseAssets,
           notificationArns: options.notificationArns,
           tags,
+          execute: options.execute,
+          changeSetName: options.changeSetName,
           deploymentMethod: options.deploymentMethod,
           force: options.force,
           parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName]),
