@@ -542,7 +542,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           throw new Error('Can not supply both --[no-]execute and --method at the same time');
         }
 
-        let deploymentMethod: DeploymentMethod | undefined;
+        let deploymentMethod: DeploymentMethod;
         switch (args.method) {
           case 'direct':
             if (args.changeSetName) {
@@ -559,7 +559,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           case 'prepare-change-set':
             deploymentMethod = { method: 'change-set', execute: false, changeSetName: args.changeSetName, importExistingResources: args.importExistingResources };
             break;
-          case undefined:
+          default:
             deploymentMethod = { method: 'change-set', execute: args.execute ?? true, changeSetName: args.changeSetName, importExistingResources: args.importExistingResources };
             break;
         }

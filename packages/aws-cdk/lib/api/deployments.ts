@@ -99,22 +99,6 @@ export interface DeployStackOptions {
   readonly tags?: Tag[];
 
   /**
-   * Stage the change set but don't execute it
-   *
-   * @default - true
-   * @deprecated Use 'deploymentMethod' instead
-   */
-  readonly execute?: boolean;
-
-  /**
-   * Optional name to use for the CloudFormation change set.
-   * If not provided, a name will be generated automatically.
-   *
-   * @deprecated Use 'deploymentMethod' instead
-   */
-  readonly changeSetName?: string;
-
-  /**
    * Select the deployment method (direct or using a change set)
    *
    * @default - Change set with default options
@@ -352,18 +336,6 @@ export class Deployments {
   }
 
   public async deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
-    let deploymentMethod = options.deploymentMethod;
-    if (options.changeSetName || options.execute !== undefined) {
-      if (deploymentMethod) {
-        throw new Error('You cannot supply both \'deploymentMethod\' and \'changeSetName/execute\'. Supply one or the other.');
-      }
-      deploymentMethod = {
-        method: 'change-set',
-        changeSetName: options.changeSetName,
-        execute: options.execute,
-      };
-    }
-
     const {
       stackSdk,
       resolvedEnvironment,
@@ -390,7 +362,7 @@ export class Deployments {
       reuseAssets: options.reuseAssets,
       envResources,
       tags: options.tags,
-      deploymentMethod,
+      deploymentMethod: options.deploymentMethod,
       force: options.force,
       parameters: options.parameters,
       usePreviousParameters: options.usePreviousParameters,
