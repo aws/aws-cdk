@@ -7,35 +7,30 @@ import { areColumnsEqual, getDistKeyColumn, getSortKeyColumns, makePhysicalId } 
 
 export async function handler(props: TableAndClusterProps, event: AWSLambda.CloudFormationCustomResourceEvent) {
   const tableNamePrefix = props.tableName.prefix;
-  const tableNameSuffix = props.tableName.generateSuffix === 'true' ? `${event.StackId.substring(event.StackId.length - 12)}` : '';
+  const getTableNameSuffix = (generateSuffix: string) => generateSuffix === 'true' ? `${event.StackId.substring(event.StackId.length - 12)}` : '';
   const tableColumns = props.tableColumns;
   const tableAndClusterProps = props;
   const useColumnIds = props.useColumnIds;
-  let tableName = tableNamePrefix + tableNameSuffix;
+  let tableName = tableNamePrefix + getTableNameSuffix(props.tableName.generateSuffix);
 
   if (event.RequestType === 'Create') {
-    tableName = await createTable(tableNamePrefix, tableNameSuffix, tableColumns, tableAndClusterProps);
-    return {
-      PhysicalResourceId: makePhysicalId(tableName, tableAndClusterProps, event.RequestId),
-      Data: { TableName: tableName },
-    };
+    tableName = await createTable(tableNamePrefix, getTableNameSuffix(props.tableName.generateSuffix), tableColumns, tableAndClusterProps);
+    return { PhysicalResourceId: makePhysicalId(tableNamePrefix, tableAndClusterProps, event.StackId.substring(event.StackId.length - 12)) };
   } else if (event.RequestType === 'Delete') {
     await dropTable(tableName, tableAndClusterProps);
     return;
   } else if (event.RequestType === 'Update') {
+    const oldTableName = event.OldResourceProperties.tableName.prefix + getTableNameSuffix(event.OldResourceProperties.tableName.generateSuffix);
     tableName = await updateTable(
-      event.OldResourceProperties?.Data?.TableName ?? event.PhysicalResourceId,
+      event.PhysicalResourceId.includes(event.StackId.substring(event.StackId.length - 12)) ? oldTableName : event.PhysicalResourceId,
       tableNamePrefix,
-      tableNameSuffix,
+      getTableNameSuffix(props.tableName.generateSuffix),
       tableColumns,
       useColumnIds,
       tableAndClusterProps,
       event.OldResourceProperties as TableAndClusterProps,
     );
-    return {
-      PhysicalResourceId: event.PhysicalResourceId,
-      Data: { TableName: tableName },
-    };
+    return { PhysicalResourceId: event.PhysicalResourceId };
   } else {
     /* eslint-disable-next-line dot-notation */
     throw new Error(`Unrecognized event type: ${event['RequestType']}`);
