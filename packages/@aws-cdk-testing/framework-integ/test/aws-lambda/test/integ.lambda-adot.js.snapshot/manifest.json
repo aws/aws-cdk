@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/09e175cc660d94fff052a12aace2078eda6689da88fd89ccf203b417ccb951e4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/75e2bf084797f71f99ed5cb6f35bb6f1ee8a42cbbdb4ccd99008c5792941bbed.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -50,12 +50,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyFunc11BE70A62"
-          }
-        ],
-        "/Stack1/Adot-lambda-layerMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AdotlambdalayerMap"
           }
         ],
         "/Stack1/MyFunc2/ServiceRole/Resource": [
@@ -162,7 +156,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9f515fedf55b94cfbfb76ba9205af76d296f2291c191fd0a938530221daff238.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0a53257b39135563c9bc8a0266ed700fb15d8858f13e44c476dbfd549668a4c6.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -194,12 +188,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyFunc11BE70A62"
-          }
-        ],
-        "/Stack2/Adot-lambda-layerMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AdotlambdalayerMap"
           }
         ],
         "/Stack2/MyFunc2/ServiceRole/Resource": [
