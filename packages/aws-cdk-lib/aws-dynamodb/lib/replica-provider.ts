@@ -4,8 +4,6 @@ import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import { Aws, Duration, NestedStack, Stack } from '../../core';
 import * as cr from '../../custom-resources';
-import { CdkFunction } from '../../custom-resources/lib/handler-framework/cdk-function';
-import { CdkHandler } from '../../custom-resources/lib/handler-framework/cdk-handler';
 
 /**
  * Properties for a ReplicaProvider
@@ -59,23 +57,13 @@ export class ReplicaProvider extends NestedStack {
 
     const code = lambda.Code.fromAsset(path.join(__dirname, 'replica-handler'));
 
-    const onEventHandler = CdkHandler.fromAsset(path.join(__dirname, 'replica-handler'), {
+    // Issues UpdateTable API calls
+    this.onEventHandler = new lambda.Function(this, 'OnEventHandler', {
+      code,
+      runtime: lambda.Runtime.NODEJS_18_X,
       handler: 'index.onEventHandler',
-      compatibleRuntimes: [lambda.Runtime.NODEJS_18_X],
-    });
-
-    this.onEventHandler = new CdkFunction(this, 'OnEventHandler', {
-      handler: onEventHandler,
       timeout: Duration.minutes(5),
     });
-
-    // Issues UpdateTable API calls
-    // this.onEventHandler = new lambda.Function(this, 'OnEventHandler', {
-    //   code,
-    //   runtime: lambda.Runtime.NODEJS_18_X,
-    //   handler: 'index.onEventHandler',
-    //   timeout: Duration.minutes(5),
-    // });
 
     // Checks if table is back to `ACTIVE` state
     this.isCompleteHandler = new lambda.Function(this, 'IsCompleteHandler', {

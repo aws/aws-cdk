@@ -1,11 +1,11 @@
 /* eslint-disable no-console */
 /* eslint-disable import/no-extraneous-dependencies */
+/// <reference path="../../../../../../../../node_modules/aws-cdk-lib/custom-resources/lib/provider-framework/types.d.ts" />
 import { DynamoDB } from '@aws-sdk/client-dynamodb';
-import { OnEventRequest, OnEventResponse } from '../../../../custom-resources/lib/provider-framework/types';
 
 const dynamodb = new DynamoDB({});
 
-export async function onEventHandler(event: OnEventRequest): Promise<OnEventResponse> {
+export async function onEventHandler(event: AWSCDKAsyncCustomResource.OnEventRequest): Promise<AWSCDKAsyncCustomResource.OnEventResponse> {
   console.log('Event: %j', { ...event, ResponseURL: '...' });
 
   const tableName = event.ResourceProperties.TableName;

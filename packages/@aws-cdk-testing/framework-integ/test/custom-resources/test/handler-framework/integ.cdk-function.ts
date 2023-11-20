@@ -9,7 +9,7 @@ import { Runtime } from 'aws-cdk-lib/aws-lambda';
 
 class ProviderStack extends Stack {
   public readonly provider: Provider;
-  public readonly onEventHandler: CdkFunction;
+  public readonly onEventFunction: CdkFunction;
 
   public constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
@@ -19,13 +19,13 @@ class ProviderStack extends Stack {
       compatibleRuntimes: [Runtime.NODEJS_18_X],
     });
 
-    this.onEventHandler = new CdkFunction(this, 'OnEventHandler', {
+    this.onEventFunction = new CdkFunction(this, 'OnEventHandler', {
       handler: onEventHandler,
       timeout: Duration.minutes(3),
     });
 
     this.provider = new Provider(this, 'Provider', {
-      onEventHandler: this.onEventHandler,
+      onEventHandler: this.onEventFunction,
     });
   }
 }
@@ -36,13 +36,14 @@ class TestStack extends Stack {
 
     const providerStack = new ProviderStack(this, 'ProviderStack');
 
+    const date = new Date();
     new CustomResource(this, 'CdkFunctionInteg', {
       serviceToken: providerStack.provider.serviceToken,
       resourceType: 'Custom::CdkFunction',
       properties: {
         TableName: 'CdkFunctionTable',
         Region: this.region,
-        RequestTime: '',
+        RequestTime: date.toISOString(),
       },
     });
   }
