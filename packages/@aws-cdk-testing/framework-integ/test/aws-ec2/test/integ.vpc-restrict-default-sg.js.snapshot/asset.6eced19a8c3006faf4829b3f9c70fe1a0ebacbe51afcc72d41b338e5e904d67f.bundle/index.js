@@ -806,9 +806,13 @@ var require_helpers_internal = __commonJS({
           __createBinding3(exports2, m, p);
     };
     Object.defineProperty(exports, "__esModule", { value: true });
-    Object.defineProperty(exports, "Match", { configurable: true, get: () => (init_match(), __toCommonJS(match_exports)).Match });
-    Object.defineProperty(exports, "Matcher", { configurable: true, get: () => (init_matcher(), __toCommonJS(matcher_exports)).Matcher });
-    Object.defineProperty(exports, "MatchResult", { configurable: true, get: () => (init_matcher(), __toCommonJS(matcher_exports)).MatchResult });
+    var _noFold;
+    exports.Match = void 0;
+    Object.defineProperty(exports, _noFold = "Match", { enumerable: true, configurable: true, get: () => (init_match(), __toCommonJS(match_exports)).Match });
+    exports.Matcher = void 0;
+    Object.defineProperty(exports, _noFold = "Matcher", { enumerable: true, configurable: true, get: () => (init_matcher(), __toCommonJS(matcher_exports)).Matcher });
+    exports.MatchResult = void 0;
+    Object.defineProperty(exports, _noFold = "MatchResult", { enumerable: true, configurable: true, get: () => (init_matcher(), __toCommonJS(matcher_exports)).MatchResult });
   }
 });
 
@@ -8875,9 +8879,9 @@ var require_getAwsChunkedEncodingStream = __commonJS({
   }
 });
 
-// ../../../node_modules/@smithy/querystring-builder/dist-cjs/index.js
+// ../../../node_modules/@smithy/node-http-handler/node_modules/@smithy/querystring-builder/dist-cjs/index.js
 var require_dist_cjs32 = __commonJS({
-  "../../../node_modules/@smithy/querystring-builder/dist-cjs/index.js"(exports) {
+  "../../../node_modules/@smithy/node-http-handler/node_modules/@smithy/querystring-builder/dist-cjs/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.buildQueryString = void 0;
@@ -33240,11 +33244,10 @@ var HttpHandler = class extends CustomResourceHandler {
       statusText: response.statusText,
       headers: response.headers.raw()
     };
+    result.body = await response.text();
     try {
-      const jsonResponse = await response.json();
-      result.body = jsonResponse;
+      result.body = JSON.parse(result.body);
     } catch (e) {
-      result.body = {};
     }
     return {
       apiCallResponse: result
