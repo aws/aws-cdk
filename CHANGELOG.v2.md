@@ -2,6 +2,49 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.110.0](https://github.com/aws/aws-cdk/compare/v2.109.0...v2.110.0) (2023-11-16)
+
+
+### Features
+
+* **lambda:** support for advanced logging ([#28039](https://github.com/aws/aws-cdk/issues/28039)) ([3278c19](https://github.com/aws/aws-cdk/commit/3278c190e1d63d0a99d60c1ae8a2ae690d64113f))
+* update AWS Service Spec ([#28034](https://github.com/aws/aws-cdk/issues/28034)) ([1d1876c](https://github.com/aws/aws-cdk/commit/1d1876c2caf741953cf42ffc59029ea875ebccb7))
+
+## [2.109.0](https://github.com/aws/aws-cdk/compare/v2.108.1...v2.109.0) (2023-11-15)
+
+
+### Features
+
+* update AWS Service Spec ([#28011](https://github.com/aws/aws-cdk/issues/28011)) ([f0939f2](https://github.com/aws/aws-cdk/commit/f0939f23c59b8f676880627b3fdf606edcc07db4))
+* **apigateway:** support firehose access log destination ([#27959](https://github.com/aws/aws-cdk/issues/27959)) ([33357aa](https://github.com/aws/aws-cdk/commit/33357aa2cfc09352c5ce95d1e894ae7eb53f3b32)), closes [#27954](https://github.com/aws/aws-cdk/issues/27954)
+* **eks:** support for Kubernetes version 1.28 ([#27930](https://github.com/aws/aws-cdk/issues/27930)) ([0b1f818](https://github.com/aws/aws-cdk/commit/0b1f8180a87a120d94bd0f37f89080096439f147)), closes [#27500](https://github.com/aws/aws-cdk/issues/27500)
+* **lambda:** add java 21 lambda runtime ([#27822](https://github.com/aws/aws-cdk/issues/27822)) ([ef4dee6](https://github.com/aws/aws-cdk/commit/ef4dee6b15108466cda8109056a8a4c5c6120ee6))
+* **lambda:** add python 3.12 runtime ([#27967](https://github.com/aws/aws-cdk/issues/27967)) ([9d17fe2](https://github.com/aws/aws-cdk/commit/9d17fe2414b72595802ff94057af5a7efe711268))
+* **lambda:** node20 runtime ([#27897](https://github.com/aws/aws-cdk/issues/27897)) ([2e3cdd9](https://github.com/aws/aws-cdk/commit/2e3cdd9ac478685c83256af093952386155fb416))
+* **lambda:** Support S3 as onFailure destinations on MSK and SelfManagedKafka events ([#28010](https://github.com/aws/aws-cdk/issues/28010)) ([e789adc](https://github.com/aws/aws-cdk/commit/e789adca33b0ef2f1a3a94373867e0ae123edc02))
+* **rds:** support for aurora mysql 3.04.1 ([#28002](https://github.com/aws/aws-cdk/pull/28002)) ([846c26a](https://github.com/aws/aws-cdk/commit/846c26ad5a060deaa31f7bfc094cd3d79e8af603))
+* update AWS Service Spec ([#27958](https://github.com/aws/aws-cdk/issues/27958)) ([1466207](https://github.com/aws/aws-cdk/commit/14662072692e5555cdfe44d9cfa5d9d66e03c7bf))
+
+
+### Bug Fixes
+
+* **ec2:** `AmazonLinuxImage` construct generates incorrect SSM parameter name for AL2023 images ([#27698](https://github.com/aws/aws-cdk/issues/27698)) ([f6c1e62](https://github.com/aws/aws-cdk/commit/f6c1e624315a5b79335338c682464a26c8154661)), closes [/github.com/aws/aws-cdk/blob/d0d75478e1cf3bb9a06f33642b9a06fc68d0c99d/packages/aws-cdk-lib/aws-ec2/lib/machine-image/amazon-linux2.ts#L77-L84](https://github.com/aws//github.com/aws/aws-cdk/blob/d0d75478e1cf3bb9a06f33642b9a06fc68d0c99d/packages/aws-cdk-lib/aws-ec2/lib/machine-image/amazon-linux2.ts/issues/L77-L84) [/github.com/aws/aws-cdk/blob/d0d75478e1cf3bb9a06f33642b9a06fc68d0c99d/packages/aws-cdk-lib/aws-ec2/lib/machine-image/amazon-linux-2023.ts#L59-L66](https://github.com/aws//github.com/aws/aws-cdk/blob/d0d75478e1cf3bb9a06f33642b9a06fc68d0c99d/packages/aws-cdk-lib/aws-ec2/lib/machine-image/amazon-linux-2023.ts/issues/L59-L66) [#27638](https://github.com/aws/aws-cdk/issues/27638)
+* **elasticloadbalancingv2:** access logging fails on imported bucket ([#27948](https://github.com/aws/aws-cdk/issues/27948)) ([ba11f36](https://github.com/aws/aws-cdk/commit/ba11f36a227cd8c953589c5a67ff51e9125f067b)), closes [#27928](https://github.com/aws/aws-cdk/issues/27928)
+* **events:** imported event rule ignores environment from arn ([#27907](https://github.com/aws/aws-cdk/issues/27907)) ([bfbe756](https://github.com/aws/aws-cdk/commit/bfbe756a3397c243d4dd2ae77018db7ef614023f))
+* **sqs:** imported queue ignores environment from arn ([#27906](https://github.com/aws/aws-cdk/issues/27906)) ([633dbe2](https://github.com/aws/aws-cdk/commit/633dbe281e200a63a2588803c8dd30c8daf3f672))
+
+
+### Reverts
+
+* "chore(cdk): boostrap template uses deprecated AccessControl property" ([#27939](https://github.com/aws/aws-cdk/issues/27939)) ([093c4ed](https://github.com/aws/aws-cdk/commit/093c4ed58b6b43062018c23b91b2c5358cf64dd1)), closes [aws/aws-cdk#27764](https://github.com/aws/aws-cdk/issues/27764)
+
+## [2.108.1](https://github.com/aws/aws-cdk/compare/v2.108.0...v2.108.1) (2023-11-14)
+
+
+### Bug Fixes
+
+* **elasticloadbalancingv2:** access logging fails on imported bucket ([#27948](https://github.com/aws/aws-cdk/issues/27948)) ([8243601](https://github.com/aws/aws-cdk/commit/8243601866e8c1771a18adb4c93579a7099984e3)), closes [#27928](https://github.com/aws/aws-cdk/issues/27928)
+
 ## [2.108.0](https://github.com/aws/aws-cdk/compare/v2.107.0...v2.108.0) (2023-11-13)
 
 
@@ -514,6 +557,7 @@ All notable changes to this project will be documented in this file. See [standa
 * **ec2:** support using ssm parameter to resolve AMI ID at instance launch time ([#26273](https://github.com/aws/aws-cdk/issues/26273)) ([2462b0b](https://github.com/aws/aws-cdk/commit/2462b0b0155a5cf5382b1780e8a8cd40d1206a95))
 * **eks:** support eks with k8s 1.27 ([#25897](https://github.com/aws/aws-cdk/issues/25897)) ([fdd3309](https://github.com/aws/aws-cdk/commit/fdd3309ee98a8dcd9542d8ffec9defcdbdcd28af))
 * **lambda-event-sources:** added filters support to kafka sources ([#26366](https://github.com/aws/aws-cdk/issues/26366)) ([c575dde](https://github.com/aws/aws-cdk/commit/c575dded26834bd55618813b74046d2f380d1940)), closes [#26348](https://github.com/aws/aws-cdk/issues/26348)
+* **lambda:** Add Lambda runtime Python 3.11, `PYTHON_3_11` ([#26248](https://github.com/aws/aws-cdk/issues/26248)) ([e2b7791](https://github.com/aws/aws-cdk/commit/e2b7791072e187f441eb72a5f6d0462748ec5112))
 * **opensearch:** opensearch 2.7 engine version ([#26313](https://github.com/aws/aws-cdk/issues/26313)) ([fb580b5](https://github.com/aws/aws-cdk/commit/fb580b56541a63485fc1ef24cd75e5f9ae18f940))
 * **opensearchservice:** support for MultiAZWithStandBy (under feature flag) ([#26082](https://github.com/aws/aws-cdk/issues/26082)) ([6c75581](https://github.com/aws/aws-cdk/commit/6c75581ae2b9537fa9d1d724b837fe81ae22d345)), closes [#26026](https://github.com/aws/aws-cdk/issues/26026)
 * **rds:** support Aurora MySQL engine v. 2.11.3 ([#26419](https://github.com/aws/aws-cdk/issues/26419)) ([c646644](https://github.com/aws/aws-cdk/commit/c6466448e53f2f486ec40ff176b8623257e4b3f8)), closes [#26407](https://github.com/aws/aws-cdk/issues/26407)
@@ -885,7 +929,7 @@ CHANGES:
 
 ### Features
 
-* **aws-lambda:** Add AWS Lambda runtime python3.10 ([08fb3cd](https://github.com/aws/aws-cdk/commit/08fb3cdab13e2e2a68ceadb36702a108c429e674))
+* **aws-lambda:** Add AWS Lambda runtime Python 3.10, `PYTHON_3_10` ([08fb3cd](https://github.com/aws/aws-cdk/commit/08fb3cdab13e2e2a68ceadb36702a108c429e674))
 
 ## [2.74.0](https://github.com/aws/aws-cdk/compare/v2.73.0...v2.74.0) (2023-04-13)
 
